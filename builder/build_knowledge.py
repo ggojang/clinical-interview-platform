@@ -189,6 +189,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-weight-constitutional-change.json",
         "version": "0.1.0",
     },
+    "reproductive_genital_symptoms": {
+        "base_graph": ROOT / "knowledge/base/primary-care-reproductive-genital-symptoms.json",
+        "base_rules": ROOT / "rules/base/primary-care-reproductive-genital-symptoms.json",
+        "fragment_root": ROOT / "knowledge/generated/genitourinary/reproductive-genital-symptoms",
+        "output_graph": ROOT / "knowledge/graph/primary-care-reproductive-genital-symptoms.json",
+        "output_rules": ROOT / "rules/primary-care-reproductive-genital-symptoms.json",
+        "version": "0.1.0",
+    },
 }
 
 

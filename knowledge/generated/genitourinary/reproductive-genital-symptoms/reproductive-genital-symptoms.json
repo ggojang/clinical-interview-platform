@@ -1,0 +1,2161 @@
+{
+  "id": "knowledge.generated.reproductive-genital-symptoms",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-reproductive-genital-symptoms-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-07-14",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-07-15",
+    "next_full_review_at": "2027-01-10",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.reproductive-genital.routing",
+      "type": "ClinicalGroup",
+      "display": "routing"
+    },
+    {
+      "id": "group.reproductive-genital.shared-safety",
+      "type": "ClinicalGroup",
+      "display": "shared-safety"
+    },
+    {
+      "id": "group.reproductive-genital.sexual-health",
+      "type": "ClinicalGroup",
+      "display": "sexual-health"
+    },
+    {
+      "id": "group.reproductive-genital.background",
+      "type": "ClinicalGroup",
+      "display": "background"
+    },
+    {
+      "id": "group.reproductive-genital.vaginal-vulvar-pelvic",
+      "type": "ClinicalGroup",
+      "display": "vaginal-vulvar-pelvic"
+    },
+    {
+      "id": "group.reproductive-genital.penile-urethral",
+      "type": "ClinicalGroup",
+      "display": "penile-urethral"
+    },
+    {
+      "id": "group.reproductive-genital.testicular-scrotal",
+      "type": "ClinicalGroup",
+      "display": "testicular-scrotal"
+    }
+  ],
+  "group_hypothesis_edges": [],
+  "safety_rules": [
+    {
+      "id": "rule.reproductive-genital-symptoms.safety.severe-injury-bleeding",
+      "priority": 1000,
+      "when": {
+        "fact": "genital.severe_injury_or_uncontrolled_bleeding",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.reproductive-genital-symptoms.safety.rapid-spread-fever",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "genital.rapid_spread_discoloration_or_tissue_change",
+            "equals": true
+          },
+          {
+            "fact": "symptom.fever_or_systemically_unwell",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.reproductive-genital-symptoms.safety.not-safe-after-assault",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "safeguarding.unwanted_sexual_contact",
+            "in": [
+              "yes_recent",
+              "yes_past"
+            ]
+          },
+          {
+            "fact": "safeguarding.safe_now",
+            "in": [
+              "not_safe",
+              "uncertain"
+            ]
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.reproductive-genital-symptoms.safety.pregnancy-pain-faint-heavy",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "pregnancy.possible_or_test_result",
+            "in": [
+              "possible",
+              "positive",
+              "uncertain"
+            ]
+          },
+          {
+            "fact": "pelvic.pain_current",
+            "equals": true
+          },
+          {
+            "fact": "pregnancy.fainting_shoulder_tip_or_collapse",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.reproductive-genital-symptoms.safety.severe-pelvic-heavy-bleeding",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "pelvic.pain_severe_worsening_or_tender",
+            "equals": true
+          },
+          {
+            "fact": "vaginal.heavy_bleeding",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.reproductive-genital-symptoms.safety.pregnancy-pain-bleeding",
+      "priority": 950,
+      "when": {
+        "all": [
+          {
+            "fact": "pregnancy.possible_or_test_result",
+            "in": [
+              "possible",
+              "positive",
+              "uncertain"
+            ]
+          },
+          {
+            "fact": "pelvic.pain_current",
+            "equals": true
+          },
+          {
+            "fact": "vaginal.bleeding_pattern",
+            "in": [
+              "between_periods",
+              "after_sex",
+              "during_possible_pregnancy",
+              "other"
+            ]
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.reproductive-genital-symptoms.safety.pelvic-pain-fever",
+      "priority": 900,
+      "when": {
+        "all": [
+          {
+            "fact": "pelvic.pain_current",
+            "equals": true
+          },
+          {
+            "fact": "symptom.fever_or_systemically_unwell",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.reproductive-genital-symptoms.safety.priapism",
+      "priority": 1000,
+      "when": {
+        "fact": "penile.erection_over_three_to_four_hours",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.reproductive-genital-symptoms.safety.trapped-foreskin",
+      "priority": 1000,
+      "when": {
+        "fact": "penile.foreskin_trapped_with_glans_swelling",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.reproductive-genital-symptoms.safety.penile-retention",
+      "priority": 900,
+      "when": {
+        "fact": "penile.painful_swelling_with_urinary_retention",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.reproductive-genital-symptoms.safety.sudden-testicle-pain",
+      "priority": 1000,
+      "when": {
+        "fact": "testicular.sudden_severe_unilateral_pain",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.reproductive-genital-symptoms.safety.testicle-pain-nausea",
+      "priority": 1000,
+      "when": {
+        "fact": "testicular.pain_with_nausea_vomiting_or_abdominal_pain",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.reproductive-genital-symptoms.safety.testicle-pain-over-hour",
+      "priority": 1000,
+      "when": {
+        "fact": "testicular.pain_over_one_hour_or_at_rest",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.reproductive-genital-symptoms.safety.scrotal-pain-fever",
+      "priority": 900,
+      "when": {
+        "all": [
+          {
+            "fact": "testicular.swelling_redness_or_position_change",
+            "equals": true
+          },
+          {
+            "fact": "symptom.fever_or_systemically_unwell",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.reproductive-genital-symptoms.safety.global-retention-swelling",
+      "priority": 900,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.unable_to_urinate",
+            "equals": true
+          },
+          {
+            "fact": "genital.rapid_spread_discoloration_or_tissue_change",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "genital.primary_symptom_group",
+        "display": "Primary Genital Symptom Group",
+        "value_type": "coded",
+        "allowed_values": [
+          "vaginal_vulvar_pelvic",
+          "penile_urethral",
+          "testicular_scrotal",
+          "other_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.primary-group",
+        "display": "Primary Genital Symptom Group",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.primary-group",
+        "wording": "가장 불편한 부위는 질·외음부·골반, 음경·요도, 고환·음낭 중 어디인가요? 해당 부위가 없거나 확실하지 않으면 기타·불명확을 선택할 수 있습니다.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "primary-group"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "genital.symptom_duration",
+        "display": "Genital Symptom Duration",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.duration",
+        "display": "Genital Symptom Duration",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.duration",
+        "wording": "증상은 언제 시작됐고 계속되는지 반복되는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 108,
+          "reason": "duration"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.background"
+      ]
+    },
+    {
+      "fact": {
+        "id": "genital.severe_injury_or_uncontrolled_bleeding",
+        "display": "Severe Genital Injury or Uncontrolled Bleeding",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.severe-injury-bleeding",
+        "display": "Severe Genital Injury or Uncontrolled Bleeding",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.severe-injury-bleeding",
+        "wording": "성기나 골반 부위에 큰 외상이 있거나 압박해도 멈추지 않는 심한 출혈이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "severe-injury-bleeding"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.shared-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "genital.rapid_spread_discoloration_or_tissue_change",
+        "display": "Rapid Genital Spread Discoloration or Tissue Change",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.rapid-spread",
+        "display": "Rapid Genital Spread Discoloration or Tissue Change",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.rapid-spread",
+        "wording": "성기·회음부 통증과 부종이 빠르게 퍼지거나 피부가 검붉게 변하고 물집·조직 손상이 보이나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "rapid-spread"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.shared-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.fever_or_systemically_unwell",
+        "display": "Fever or Systemically Unwell",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.fever-unwell",
+        "display": "Fever or Systemically Unwell",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.fever-unwell",
+        "wording": "열, 오한 또는 온몸이 매우 아픈 느낌이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 127,
+          "reason": "fever-unwell"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.shared-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.unable_to_urinate",
+        "display": "Unable to Urinate",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.urinary-retention",
+        "display": "Unable to Urinate",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.urinary-retention",
+        "wording": "소변이 마려운데 전혀 나오지 않거나 방광이 심하게 불편한가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 126,
+          "reason": "urinary-retention"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.shared-safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "safeguarding.unwanted_sexual_contact",
+        "display": "Unwanted Sexual Contact",
+        "value_type": "coded",
+        "allowed_values": [
+          "yes_recent",
+          "yes_past",
+          "no",
+          "prefer_not_to_answer"
+        ],
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.unwanted-contact",
+        "display": "Unwanted Sexual Contact",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.unwanted-contact",
+        "wording": "원하지 않은 성적 접촉이나 강요와 관련된 증상인가요? 답변하지 않아도 됩니다.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 125,
+          "reason": "unwanted-contact"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.shared-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "safeguarding.safe_now",
+        "display": "Safe Now",
+        "value_type": "coded",
+        "allowed_values": [
+          "safe",
+          "not_safe",
+          "uncertain",
+          "not_applicable"
+        ],
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.safe-now",
+        "display": "Safe Now",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.safe-now",
+        "wording": "현재 안전한 곳에 있고 상대방의 즉각적인 위협이 없나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 124,
+          "reason": "safe-now"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.shared-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "sexual_health.recent_new_or_unprotected_contact",
+        "display": "Recent New or Unprotected Sexual Contact",
+        "value_type": "coded",
+        "allowed_values": [
+          "yes",
+          "no",
+          "uncertain",
+          "prefer_not_to_answer"
+        ]
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.sexual-contact",
+        "display": "Recent New or Unprotected Sexual Contact",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.sexual-contact",
+        "wording": "최근 새 파트너와의 성접촉이나 콘돔 없이 한 성접촉이 있었나요? 답변하지 않아도 됩니다.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 93,
+          "reason": "sexual-contact"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.sexual-health"
+      ]
+    },
+    {
+      "fact": {
+        "id": "sexual_health.partner_symptoms_or_sti_notice",
+        "display": "Partner Symptoms or STI Notice",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.partner-symptoms",
+        "display": "Partner Symptoms or STI Notice",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.partner-symptoms",
+        "wording": "파트너에게 분비물·통증·궤양 같은 증상이 있거나 STI 진단·검사 안내를 받은 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 92,
+          "reason": "partner-symptoms"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.sexual-health"
+      ]
+    },
+    {
+      "fact": {
+        "id": "sexual_health.recent_sti_test_or_history",
+        "display": "Recent STI Test or History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.sti-history",
+        "display": "Recent STI Test or History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.sti-history",
+        "wording": "최근 STI 검사 시기와 결과, 과거 진단·치료가 있다면 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 91,
+          "reason": "sti-history"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.sexual-health"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.genital_recent_treatment_or_antibiotic",
+        "display": "Recent Genital Treatment or Antibiotic",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.recent-treatment",
+        "display": "Recent Genital Treatment or Antibiotic",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.recent-treatment",
+        "wording": "최근 항생제, 항진균제, 연고, 호르몬 또는 자가치료를 사용했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 88,
+          "reason": "recent-treatment"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.background"
+      ]
+    },
+    {
+      "fact": {
+        "id": "history.diabetes_immunosuppression_or_recurrent_genital_problem",
+        "display": "Diabetes Immunosuppression or Recurrent Genital Problem",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.background-history",
+        "display": "Diabetes Immunosuppression or Recurrent Genital Problem",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.background-history",
+        "wording": "당뇨·면역저하가 있거나 비슷한 성기 증상이 반복된 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 87,
+          "reason": "background-history"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.background"
+      ]
+    },
+    {
+      "fact": {
+        "id": "exposure.genital_irritant_or_hygiene_product",
+        "display": "Genital Irritant or Hygiene Product",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.irritant",
+        "display": "Genital Irritant or Hygiene Product",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.irritant",
+        "wording": "새 비누·세정제·윤활제·콘돔·생리용품·면도 또는 꽉 끼는 옷과 관련 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 86,
+          "reason": "irritant"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.background"
+      ]
+    },
+    {
+      "fact": {
+        "id": "genital.other_detail_or_patient_priority",
+        "display": "Other Genital Detail or Patient Priority",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.other-detail",
+        "display": "Other Genital Detail or Patient Priority",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.other-detail",
+        "wording": "질문에 없지만 꼭 전달하고 싶은 증상이나 가장 걱정되는 점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 80,
+          "reason": "other-detail"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.routing",
+        "group.reproductive-genital.background"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vaginal.discharge_changed",
+        "display": "Changed Vaginal Discharge",
+        "value_type": "boolean",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "271939006"
+        }
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.vaginal-discharge",
+        "display": "Changed Vaginal Discharge",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.vaginal-discharge",
+        "wording": "평소와 다른 질 분비물이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 118,
+          "reason": "vaginal-discharge"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.vaginal-vulvar-pelvic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vaginal.discharge_character",
+        "display": "Vaginal Discharge Character",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.discharge-character",
+        "display": "Vaginal Discharge Character",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.discharge-character",
+        "wording": "분비물의 양, 색, 냄새와 묽기·덩어리·거품 같은 모양을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 107,
+          "reason": "discharge-character"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.vaginal-vulvar-pelvic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vulvar.itch_soreness_or_swelling",
+        "display": "Vulvar Itch Soreness or Swelling",
+        "value_type": "boolean",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "67882000"
+        }
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.vulvar-itch",
+        "display": "Vulvar Itch Soreness or Swelling",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.vulvar-itch",
+        "wording": "외음부가 가렵거나 화끈거리고 붓거나 아픈가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 106,
+          "reason": "vulvar-itch"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.vaginal-vulvar-pelvic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vulvar.blister_ulcer_lump_or_mass",
+        "display": "Vulvar Blister Ulcer Lump or Mass",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.vulvar-lesion",
+        "display": "Vulvar Blister Ulcer Lump or Mass",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.vulvar-lesion",
+        "wording": "외음부나 질 입구에 물집, 궤양, 사마귀, 멍울 또는 만져지는 덩이가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 105,
+          "reason": "vulvar-lesion"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.vaginal-vulvar-pelvic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pelvic.pain_current",
+        "display": "Current Pelvic Pain",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.pelvic-pain",
+        "display": "Current Pelvic Pain",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.pelvic-pain",
+        "wording": "아랫배나 골반 통증이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 123,
+          "reason": "pelvic-pain"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.vaginal-vulvar-pelvic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pelvic.pain_severe_worsening_or_tender",
+        "display": "Severe or Worsening Pelvic Pain",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.severe-pelvic-pain",
+        "display": "Severe or Worsening Pelvic Pain",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.severe-pelvic-pain",
+        "wording": "통증이 매우 심하거나 빠르게 악화되며 움직이거나 만질 때 더 아픈가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 122,
+          "reason": "severe-pelvic-pain"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.vaginal-vulvar-pelvic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vaginal.bleeding_pattern",
+        "display": "Vaginal Bleeding Pattern",
+        "value_type": "coded",
+        "allowed_values": [
+          "none",
+          "between_periods",
+          "after_sex",
+          "postmenopausal",
+          "during_possible_pregnancy",
+          "other"
+        ],
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.bleeding-pattern",
+        "display": "Vaginal Bleeding Pattern",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.bleeding-pattern",
+        "wording": "비정상 출혈은 없음, 생리 사이, 성관계 후, 폐경 후, 임신 중, 기타 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 121,
+          "reason": "bleeding-pattern"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.vaginal-vulvar-pelvic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vaginal.heavy_bleeding",
+        "display": "Heavy Vaginal Bleeding",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.heavy-bleeding",
+        "display": "Heavy Vaginal Bleeding",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.heavy-bleeding",
+        "wording": "패드를 매우 자주 갈 정도의 많은 출혈, 큰 혈덩이 또는 멈추지 않는 출혈이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 120,
+          "reason": "heavy-bleeding"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.vaginal-vulvar-pelvic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pregnancy.possible_or_test_result",
+        "display": "Pregnancy Possibility or Test Result",
+        "value_type": "coded",
+        "allowed_values": [
+          "possible",
+          "positive",
+          "negative",
+          "not_applicable",
+          "uncertain"
+        ],
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.pregnancy",
+        "display": "Pregnancy Possibility or Test Result",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.pregnancy",
+        "wording": "임신 가능성은 있음, 검사 양성, 검사 음성, 해당 없음, 불확실 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 119,
+          "reason": "pregnancy"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.vaginal-vulvar-pelvic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pregnancy.fainting_shoulder_tip_or_collapse",
+        "display": "Pregnancy Fainting Shoulder Tip Pain or Collapse",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.ectopic-warning",
+        "display": "Pregnancy Fainting Shoulder Tip Pain or Collapse",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.ectopic-warning",
+        "wording": "임신 가능성이 있으면서 어지럼·실신, 어깨 끝 통증 또는 쓰러짐이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 117,
+          "reason": "ectopic-warning"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.vaginal-vulvar-pelvic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vaginal.menstrual_or_menopause_context",
+        "display": "Menstrual or Menopause Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.menstrual-context",
+        "display": "Menstrual or Menopause Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.menstrual-context",
+        "wording": "마지막 생리일, 주기 변화, 폐경 여부와 호르몬·피임 사용을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 104,
+          "reason": "menstrual-context"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.vaginal-vulvar-pelvic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vaginal.dysuria_or_urinary_frequency",
+        "display": "Vaginal Branch Dysuria or Frequency",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.vaginal-urinary",
+        "display": "Vaginal Branch Dysuria or Frequency",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.vaginal-urinary",
+        "wording": "소변볼 때 아프거나 평소보다 자주·급하게 보나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 103,
+          "reason": "vaginal-urinary"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.vaginal-vulvar-pelvic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vaginal.deep_pain_during_sex",
+        "display": "Deep Pain during Sex",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.dyspareunia",
+        "display": "Deep Pain during Sex",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.dyspareunia",
+        "wording": "성관계 중이나 후에 깊은 골반 통증이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 102,
+          "reason": "dyspareunia"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.vaginal-vulvar-pelvic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vaginal.recent_birth_procedure_or_iud",
+        "display": "Recent Birth Procedure or IUD",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.procedure-context",
+        "display": "Recent Birth Procedure or IUD",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.procedure-context",
+        "wording": "최근 출산·유산·임신중지·골반 시술 또는 자궁내장치 삽입이 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 101,
+          "reason": "procedure-context"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.vaginal-vulvar-pelvic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vaginal.dryness_or_hormonal_context",
+        "display": "Vaginal Dryness or Hormonal Context",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.dryness",
+        "display": "Vaginal Dryness or Hormonal Context",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.dryness",
+        "wording": "질 건조, 성교통 또는 임신·수유·폐경·암치료와 관련된 호르몬 변화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 90,
+          "reason": "dryness"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.vaginal-vulvar-pelvic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "penile.discharge",
+        "display": "Penile Discharge",
+        "value_type": "boolean",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "2910007"
+        }
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.penile-discharge",
+        "display": "Penile Discharge",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.penile-discharge",
+        "wording": "음경 끝에서 평소와 다른 분비물이 나오나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 118,
+          "reason": "penile-discharge"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.penile-urethral"
+      ]
+    },
+    {
+      "fact": {
+        "id": "penile.dysuria",
+        "display": "Penile Branch Dysuria",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.penile-dysuria",
+        "display": "Penile Branch Dysuria",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.penile-dysuria",
+        "wording": "소변볼 때 음경이나 요도가 따갑거나 아픈가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 107,
+          "reason": "penile-dysuria"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.penile-urethral"
+      ]
+    },
+    {
+      "fact": {
+        "id": "penile.rash_itch_swelling_or_odor",
+        "display": "Penile Rash Itch Swelling or Odor",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.penile-rash",
+        "display": "Penile Rash Itch Swelling or Odor",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.penile-rash",
+        "wording": "음경 끝이나 포피가 붓고 가렵거나 아프고, 발진·냄새가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 106,
+          "reason": "penile-rash"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.penile-urethral"
+      ]
+    },
+    {
+      "fact": {
+        "id": "penile.blister_ulcer_lump_or_persistent_change",
+        "display": "Penile Blister Ulcer Lump or Persistent Change",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.penile-lesion",
+        "display": "Penile Blister Ulcer Lump or Persistent Change",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.penile-lesion",
+        "wording": "음경에 물집, 궤양, 사마귀, 멍울 또는 낫지 않는 피부 변화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 105,
+          "reason": "penile-lesion"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.penile-urethral"
+      ]
+    },
+    {
+      "fact": {
+        "id": "penile.foreskin_trapped_with_glans_swelling",
+        "display": "Foreskin Trapped with Glans Swelling",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.trapped-foreskin",
+        "display": "Foreskin Trapped with Glans Swelling",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.trapped-foreskin",
+        "wording": "젖혀진 포피가 원래 위치로 돌아오지 않고 귀두가 심하게 붓고 아픈가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 123,
+          "reason": "trapped-foreskin"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.penile-urethral"
+      ]
+    },
+    {
+      "fact": {
+        "id": "penile.erection_over_three_to_four_hours",
+        "display": "Erection over Three to Four Hours",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.priapism",
+        "display": "Erection over Three to Four Hours",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.priapism",
+        "wording": "성적 자극과 무관하게 아픈 발기가 3~4시간 넘게 지속되나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 122,
+          "reason": "priapism"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.penile-urethral"
+      ]
+    },
+    {
+      "fact": {
+        "id": "penile.painful_swelling_with_urinary_retention",
+        "display": "Painful Penile Swelling with Urinary Retention",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.penile-retention",
+        "display": "Painful Penile Swelling with Urinary Retention",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.penile-retention",
+        "wording": "음경·포피가 심하게 붓고 아프면서 소변을 볼 수 없나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 121,
+          "reason": "penile-retention"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.penile-urethral"
+      ]
+    },
+    {
+      "fact": {
+        "id": "penile.erectile_ejaculatory_or_curvature_change",
+        "display": "Erectile Ejaculatory or Curvature Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.sexual-function",
+        "display": "Erectile Ejaculatory or Curvature Change",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.sexual-function",
+        "wording": "발기, 사정, 통증 또는 새로 생긴 휘어짐 변화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 100,
+          "reason": "sexual-function"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.penile-urethral"
+      ]
+    },
+    {
+      "fact": {
+        "id": "penile.blood_in_semen_or_urethral_bleeding",
+        "display": "Blood in Semen or Urethral Bleeding",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.blood-semen",
+        "display": "Blood in Semen or Urethral Bleeding",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.blood-semen",
+        "wording": "정액에 피가 섞이거나 요도에서 출혈하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 99,
+          "reason": "blood-semen"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.penile-urethral"
+      ]
+    },
+    {
+      "fact": {
+        "id": "penile.recent_injury_or_instrumentation",
+        "display": "Recent Penile Injury or Instrumentation",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.penile-injury",
+        "display": "Recent Penile Injury or Instrumentation",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.penile-injury",
+        "wording": "최근 성관계·운동 중 외상, 도뇨관·시술 또는 이물질 사용이 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 98,
+          "reason": "penile-injury"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.penile-urethral"
+      ]
+    },
+    {
+      "fact": {
+        "id": "testicular.sudden_severe_unilateral_pain",
+        "display": "Sudden Severe Unilateral Testicular Pain",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "63901009"
+        }
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.sudden-testicle-pain",
+        "display": "Sudden Severe Unilateral Testicular Pain",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.sudden-testicle-pain",
+        "wording": "한쪽 고환에 갑자기 심한 통증이 시작됐나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 123,
+          "reason": "sudden-testicle-pain"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.testicular-scrotal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "testicular.pain_over_one_hour_or_at_rest",
+        "display": "Testicular Pain over One Hour or at Rest",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.testicle-pain-hour",
+        "display": "Testicular Pain over One Hour or at Rest",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.testicle-pain-hour",
+        "wording": "고환 통증이 1시간 넘게 지속되거나 쉬어도 계속되나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 122,
+          "reason": "testicle-pain-hour"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.testicular-scrotal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "testicular.pain_with_nausea_vomiting_or_abdominal_pain",
+        "display": "Testicular Pain with Nausea Vomiting or Abdominal Pain",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.testicle-nausea",
+        "display": "Testicular Pain with Nausea Vomiting or Abdominal Pain",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.testicle-nausea",
+        "wording": "고환 통증과 함께 메스꺼움·구토 또는 아랫배 통증이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 121,
+          "reason": "testicle-nausea"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.testicular-scrotal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "testicular.swelling_redness_or_position_change",
+        "display": "Testicular Swelling Redness or Position Change",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.scrotal-swelling",
+        "display": "Testicular Swelling Redness or Position Change",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.scrotal-swelling",
+        "wording": "음낭이 붓거나 붉고, 한쪽 고환 위치가 평소보다 높거나 달라 보이나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 120,
+          "reason": "scrotal-swelling"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.testicular-scrotal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "testicular.painless_lump_shape_or_texture_change",
+        "display": "Painless Testicular Lump Shape or Texture Change",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.testicle-lump",
+        "display": "Painless Testicular Lump Shape or Texture Change",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.testicle-lump",
+        "wording": "통증이 없더라도 고환의 멍울, 커짐, 모양·단단함 변화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 107,
+          "reason": "testicle-lump"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.testicular-scrotal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "testicular.dull_ache_or_heaviness",
+        "display": "Testicular Dull Ache or Heaviness",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.testicle-ache",
+        "display": "Testicular Dull Ache or Heaviness",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.testicle-ache",
+        "wording": "고환·음낭의 묵직함이나 계속되는 뻐근한 통증이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 106,
+          "reason": "testicle-ache"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.testicular-scrotal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "testicular.recent_trauma_activity_or_surgery",
+        "display": "Recent Testicular Trauma Activity or Surgery",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.testicle-context",
+        "display": "Recent Testicular Trauma Activity or Surgery",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.testicle-context",
+        "wording": "최근 외상, 격한 운동, 수술·시술 또는 탈장 병력이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 101,
+          "reason": "testicle-context"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.testicular-scrotal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "testicular.urinary_or_urethral_symptoms",
+        "display": "Testicular Branch Urinary or Urethral Symptoms",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.testicle-urinary",
+        "display": "Testicular Branch Urinary or Urethral Symptoms",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.testicle-urinary",
+        "wording": "소변 통증·빈뇨 또는 음경 분비물이 함께 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 100,
+          "reason": "testicle-urinary"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.testicular-scrotal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "testicular.fertility_or_undescended_history",
+        "display": "Fertility or Undescended Testis History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.reproductive-genital-symptoms.testicle-history",
+        "display": "Fertility or Undescended Testis History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.reproductive-genital-symptoms.testicle-history",
+        "wording": "잠복고환, 불임 평가, 과거 고환 염전·감염 또는 관련 수술 병력이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 97,
+          "reason": "testicle-history"
+        }
+      ],
+      "supports": [
+        "group.reproductive-genital.testicular-scrotal"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nice.ng126.ectopic-pregnancy.2026",
+      "source.nice.ng12.genital-symptoms.2026",
+      "source.nhs.vaginal-discharge.2024",
+      "source.nhs.pelvic-pain.2025",
+      "source.nhs.sti.2024",
+      "source.nhs.testicle-lumps.2023",
+      "source.nhs.priapism.2026",
+      "source.nhs.sexual-assault-support.2026"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

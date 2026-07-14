@@ -18,16 +18,23 @@ from runtime.memory import ClinicalMemory
 from runtime.package import (
     ABDOMINAL_PAIN_PACKAGE, BACK_PAIN_PACKAGE, BOWEL_SYMPTOMS_PACKAGE, CHEST_PAIN_PACKAGE, DEFAULT_PACKAGE,
     DIZZINESS_SYNCOPE_PACKAGE, DYSPNEA_PACKAGE, FEVER_PACKAGE, HEADACHE_PACKAGE,
-    EDEMA_PACKAGE, FATIGUE_PACKAGE, FOCAL_WEAKNESS_NUMBNESS_PACKAGE, HYPERTENSION_FOLLOW_UP_PACKAGE, JOINT_LIMB_COMPLAINT_PACKAGE, MEDICATION_REVIEW_PACKAGE, MENTAL_HEALTH_SLEEP_PACKAGE, PALPITATIONS_PACKAGE, SKIN_COMPLAINT_PACKAGE,
+    EDEMA_PACKAGE, FATIGUE_PACKAGE, FOCAL_WEAKNESS_NUMBNESS_PACKAGE, HYPERTENSION_FOLLOW_UP_PACKAGE, JOINT_LIMB_COMPLAINT_PACKAGE, MEDICATION_REVIEW_PACKAGE, MENTAL_HEALTH_SLEEP_PACKAGE, PALPITATIONS_PACKAGE, REPRODUCTIVE_GENITAL_SYMPTOMS_PACKAGE, SKIN_COMPLAINT_PACKAGE,
     UPPER_RESPIRATORY_SYMPTOMS_PACKAGE, URINARY_SYMPTOMS_PACKAGE, WEIGHT_CONSTITUTIONAL_CHANGE_PACKAGE,
     VOMITING_DIARRHEA_PACKAGE,
     PackageLoadError, load_package,
 )
 from runtime.session import InterviewSession
 from sources.check_refresh import due_sources
+from tools.validator.audit_expansion_queue import run as run_expansion_audit
 
 
 class CompilerTests(unittest.TestCase):
+    def test_grouped_expansion_queue_passes_release_gate_audit(self):
+        report = run_expansion_audit()
+        self.assertTrue(report["passed"])
+        self.assertEqual(report["entry_count"], 10)
+        self.assertEqual(report["queue_status"], "materialized_unreviewed")
+
     def test_compilation_is_deterministic(self):
         first = compile_package()
         second = compile_package()
@@ -54,6 +61,7 @@ class CompilerTests(unittest.TestCase):
             "edema",
             "hypertension_follow_up",
             "weight_constitutional_change",
+            "reproductive_genital_symptoms",
         ):
             with self.subTest(profile=profile), self.assertRaises(CompilationError):
                 compile_package(production=True, profile=profile)
@@ -598,6 +606,24 @@ class CompilerTests(unittest.TestCase):
         self.assertEqual(mapping["validation"]["result"], "partial_provisional_pass")
         self.assertFalse(mapping["validation"]["clinical_rule_authority"])
 
+    def test_reproductive_genital_package_is_complete(self):
+        package = compile_package(profile="reproductive_genital_symptoms")
+        facts = {n["id"] for n in package["knowledge_graph"]["nodes"] if n["type"] == "Fact"}
+        self.assertEqual(len(facts), 49)
+        self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
+        self.assertEqual(package["coverage"]["total_safety_rules"], 15)
+        self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 15)
+        self.assertEqual(package["coverage"]["uncovered_safety_rules"], [])
+        conditional = package["interview_completion_policy"]["conditional_required_facts"][0]
+        self.assertEqual(conditional["selector_fact"], "genital.primary_symptom_group")
+        self.assertEqual(set(conditional["cases"]), {"vaginal_vulvar_pelvic", "penile_urethral", "testicular_scrotal"})
+
+    def test_reproductive_genital_mrcm_is_build_time_only(self):
+        mapping = json.loads((Path(__file__).resolve().parents[1] / "mappings/terminology/snomed-mrcm-reproductive-genital-symptoms.json").read_text(encoding="utf-8"))
+        self.assertEqual(len(mapping["focus_concepts"]), 4)
+        self.assertEqual(mapping["validation"]["result"], "provisional_pass")
+        self.assertFalse(mapping["validation"]["clinical_rule_authority"])
+
 
 class ClinicalMemoryTests(unittest.TestCase):
     def setUp(self):
@@ -1019,6 +1045,21 @@ class PackageRuntimeTests(unittest.TestCase):
         self.assertEqual(state["package"]["id"], "package.primary-care-weight-constitutional-change")
         with self.assertRaises(PackageLoadError):
             load_package(WEIGHT_CONSTITUTIONAL_CHANGE_PACKAGE, execution_mode="production")
+
+    def test_reproductive_genital_simulation_and_conditional_runtime(self):
+        report = run_evaluation(REPRODUCTIVE_GENITAL_SYMPTOMS_PACKAGE)
+        self.assertTrue(report["passed"])
+        self.assertEqual(report["case_count"], 16)
+        vaginal = next(item for item in report["results"] if item["case_id"] == "GEN-VAGINAL-DATA-ABSENT")
+        self.assertTrue(any(fact_id.startswith("vaginal.") for fact_id in vaginal["selected_facts"]))
+        self.assertFalse(any(fact_id.startswith("penile.") for fact_id in vaginal["selected_facts"]))
+        self.assertFalse(any(fact_id.startswith("testicular.") for fact_id in vaginal["selected_facts"]))
+        session = InterviewSession("genital-runtime", package_path=REPRODUCTIVE_GENITAL_SYMPTOMS_PACKAGE)
+        state = session.process("고환이 갑자기 아파요.")
+        self.assertIn("genitourinary.reproductive_genital_symptoms", state["active_patterns"])
+        self.assertEqual(state["package"]["id"], "package.primary-care-reproductive-genital-symptoms")
+        with self.assertRaises(PackageLoadError):
+            load_package(REPRODUCTIVE_GENITAL_SYMPTOMS_PACKAGE, execution_mode="production")
 
 
 if __name__ == "__main__":

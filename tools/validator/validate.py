@@ -90,6 +90,7 @@ try:
         ROOT / "packages/generated/primary-care-edema-0.1.0.json",
         ROOT / "packages/generated/primary-care-hypertension-follow-up-0.1.0.json",
         ROOT / "packages/generated/primary-care-weight-constitutional-change-0.1.0.json",
+        ROOT / "packages/generated/primary-care-reproductive-genital-symptoms-0.1.0.json",
     ]
     package_fact_counts = {}
     for package_path in package_paths:

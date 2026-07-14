@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "1.13.0"
+VERSION = "1.14.0"
 GENERATED_AT = "2026-07-14T00:00:00Z"
 PRIVATE_KEYS = {
     "raw_text", "raw_input", "patient_response", "patient_responses",
@@ -152,6 +152,14 @@ def rfe_resource(
     package: dict[str, Any],
     items: list[dict[str, Any]],
 ) -> dict[str, Any]:
+    compact_items = [compact(item) for item in items]
+    if resource_type == "ReasonForEncounterRuleCollection":
+        # The envelope carries the review status for every compiled rule.
+        # Keep rule type and executable semantics, but omit repeated status text.
+        compact_items = [
+            {key: value for key, value in item.items() if key != "status"}
+            for item in compact_items
+        ]
     return {
         "resource_type": resource_type,
         "version": VERSION,
@@ -171,7 +179,7 @@ def rfe_resource(
             "clinical_sources_are_compiled_not_queried_live": True,
         },
         "count": len(items),
-        "items": [compact(item) for item in items],
+        "items": compact_items,
     }
 
 

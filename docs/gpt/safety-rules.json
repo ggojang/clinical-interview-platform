@@ -1,7 +1,7 @@
 {
   "complete_rule_payloads": "/gpt/rfe/{rfe}/rules.json",
   "contains_patient_responses": false,
-  "count": 223,
+  "count": 238,
   "generated_at": "2026-07-14T00:00:00Z",
   "items": [
     {
@@ -2822,6 +2822,292 @@
       }
     },
     {
+      "id": "rule.reproductive-genital-symptoms.safety.global-retention-swelling",
+      "priority": 900,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.unable_to_urinate"
+          },
+          {
+            "equals": true,
+            "fact": "genital.rapid_spread_discoloration_or_tissue_change"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.reproductive-genital-symptoms.safety.not-safe-after-assault",
+      "priority": 1000,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "when": {
+        "all": [
+          {
+            "fact": "safeguarding.unwanted_sexual_contact",
+            "in": [
+              "yes_recent",
+              "yes_past"
+            ]
+          },
+          {
+            "fact": "safeguarding.safe_now",
+            "in": [
+              "not_safe",
+              "uncertain"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.reproductive-genital-symptoms.safety.pelvic-pain-fever",
+      "priority": 900,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "pelvic.pain_current"
+          },
+          {
+            "equals": true,
+            "fact": "symptom.fever_or_systemically_unwell"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.reproductive-genital-symptoms.safety.penile-retention",
+      "priority": 900,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "when": {
+        "equals": true,
+        "fact": "penile.painful_swelling_with_urinary_retention"
+      }
+    },
+    {
+      "id": "rule.reproductive-genital-symptoms.safety.pregnancy-pain-bleeding",
+      "priority": 950,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "when": {
+        "all": [
+          {
+            "fact": "pregnancy.possible_or_test_result",
+            "in": [
+              "possible",
+              "positive",
+              "uncertain"
+            ]
+          },
+          {
+            "equals": true,
+            "fact": "pelvic.pain_current"
+          },
+          {
+            "fact": "vaginal.bleeding_pattern",
+            "in": [
+              "between_periods",
+              "after_sex",
+              "during_possible_pregnancy",
+              "other"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.reproductive-genital-symptoms.safety.pregnancy-pain-faint-heavy",
+      "priority": 1000,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "when": {
+        "all": [
+          {
+            "fact": "pregnancy.possible_or_test_result",
+            "in": [
+              "possible",
+              "positive",
+              "uncertain"
+            ]
+          },
+          {
+            "equals": true,
+            "fact": "pelvic.pain_current"
+          },
+          {
+            "equals": true,
+            "fact": "pregnancy.fainting_shoulder_tip_or_collapse"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.reproductive-genital-symptoms.safety.priapism",
+      "priority": 1000,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "when": {
+        "equals": true,
+        "fact": "penile.erection_over_three_to_four_hours"
+      }
+    },
+    {
+      "id": "rule.reproductive-genital-symptoms.safety.rapid-spread-fever",
+      "priority": 1000,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "genital.rapid_spread_discoloration_or_tissue_change"
+          },
+          {
+            "equals": true,
+            "fact": "symptom.fever_or_systemically_unwell"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.reproductive-genital-symptoms.safety.scrotal-pain-fever",
+      "priority": 900,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "testicular.swelling_redness_or_position_change"
+          },
+          {
+            "equals": true,
+            "fact": "symptom.fever_or_systemically_unwell"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.reproductive-genital-symptoms.safety.severe-injury-bleeding",
+      "priority": 1000,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "when": {
+        "equals": true,
+        "fact": "genital.severe_injury_or_uncontrolled_bleeding"
+      }
+    },
+    {
+      "id": "rule.reproductive-genital-symptoms.safety.severe-pelvic-heavy-bleeding",
+      "priority": 1000,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "pelvic.pain_severe_worsening_or_tender"
+          },
+          {
+            "equals": true,
+            "fact": "vaginal.heavy_bleeding"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.reproductive-genital-symptoms.safety.sudden-testicle-pain",
+      "priority": 1000,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "when": {
+        "equals": true,
+        "fact": "testicular.sudden_severe_unilateral_pain"
+      }
+    },
+    {
+      "id": "rule.reproductive-genital-symptoms.safety.testicle-pain-nausea",
+      "priority": 1000,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "when": {
+        "equals": true,
+        "fact": "testicular.pain_with_nausea_vomiting_or_abdominal_pain"
+      }
+    },
+    {
+      "id": "rule.reproductive-genital-symptoms.safety.testicle-pain-over-hour",
+      "priority": 1000,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "when": {
+        "equals": true,
+        "fact": "testicular.pain_over_one_hour_or_at_rest"
+      }
+    },
+    {
+      "id": "rule.reproductive-genital-symptoms.safety.trapped-foreskin",
+      "priority": 1000,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "when": {
+        "equals": true,
+        "fact": "penile.foreskin_trapped_with_glans_swelling"
+      }
+    },
+    {
       "id": "rule.safety.chest_pain_with_dyspnea",
       "priority": 900,
       "then": {
@@ -3737,5 +4023,5 @@
     "research_test",
     "simulation"
   ],
-  "version": "1.13.0"
+  "version": "1.14.0"
 }

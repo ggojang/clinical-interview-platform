@@ -420,6 +420,9 @@ class InterviewSession:
         if self.reason_for_encounter == "rfe.weight_constitutional_change":
             self._update_weight_constitutional_patterns()
             return
+        if self.reason_for_encounter == "rfe.reproductive_genital_symptoms":
+            self._update_reproductive_genital_patterns()
+            return
         active = ["respiratory.cough"]
         cold_support = sum(
             self.memory.value(fact_id) is True
@@ -832,6 +835,26 @@ class InterviewSession:
             active.append("constitutional.nutrition_risk")
         self.active_patterns = active
 
+    def _update_reproductive_genital_patterns(self) -> None:
+        active = ["genitourinary.reproductive_genital_symptoms"]
+        branch = self.memory.value("genital.primary_symptom_group")
+        if branch:
+            active.append(f"genital.branch.{branch}")
+        if any(self.memory.value(x) is True for x in (
+            "genital.severe_injury_or_uncontrolled_bleeding",
+            "genital.rapid_spread_discoloration_or_tissue_change",
+            "symptom.unable_to_urinate",
+        )):
+            active.append("genital.immediate_safety_features")
+        if self.memory.value("pregnancy.possible_or_test_result") in ("possible", "positive", "uncertain"):
+            active.append("genital.pregnancy_context")
+        if any(self.memory.value(x) not in (None, False, "", "no") for x in (
+            "sexual_health.recent_new_or_unprotected_contact",
+            "sexual_health.partner_symptoms_or_sti_notice",
+        )):
+            active.append("genital.sexual_health_context")
+        self.active_patterns = active
+
     def _update_dyspnea_patterns(self) -> None:
         active = ["respiratory.dyspnea"]
         if any(self.memory.value(item) is True for item in (
@@ -926,6 +949,20 @@ class InterviewSession:
             required.update(configured.get(classification, []))
         else:
             required.update(configured.get("routine", []))
+        for conditional in policy.get("conditional_required_facts", []):
+            selector = conditional.get("selector_fact")
+            value = self.memory.value(selector) if selector else None
+            cases = conditional.get("cases", {})
+            if isinstance(value, list):
+                matched = [item for item in value if item in cases]
+                for item in matched:
+                    required.update(cases[item])
+                if not matched:
+                    required.update(conditional.get("default", []))
+            elif value in cases:
+                required.update(cases[value])
+            elif value is not None:
+                required.update(conditional.get("default", []))
         return sorted(required)
 
     def _completion(

@@ -25,6 +25,7 @@ python3 compiler/build_package.py --profile mental_health_sleep
 python3 compiler/build_package.py --profile edema
 python3 compiler/build_package.py --profile hypertension_follow_up
 python3 compiler/build_package.py --profile weight_constitutional_change
+python3 compiler/build_package.py --profile reproductive_genital_symptoms
 ```
 
 Validate a generated package:

@@ -278,6 +278,17 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/general/weight-constitutional-change",
         "research_manifests": [ROOT / "sources/manifests/primary-care-weight-constitutional-change-research.json"],
     },
+    "reproductive_genital_symptoms": {
+        "graph": ROOT / "knowledge/graph/primary-care-reproductive-genital-symptoms.json",
+        "rules": ROOT / "rules/primary-care-reproductive-genital-symptoms.json",
+        "sources": ROOT / "sources/manifests/primary-care-reproductive-genital-symptoms.json",
+        "completion_policy": ROOT / "policies/primary-care-reproductive-genital-symptoms-completion.json",
+        "output": ROOT / "packages/generated/primary-care-reproductive-genital-symptoms-0.1.0.json",
+        "package_id": "package.primary-care-reproductive-genital-symptoms", "package_version": "0.1.0",
+        "rfe": "rfe.reproductive_genital_symptoms",
+        "simulation_root": ROOT / "simulation/patients/genitourinary/reproductive-genital-symptoms",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-reproductive-genital-symptoms-research.json"],
+    },
 }
 
 ALLOWED_NODE_TYPES = {
@@ -558,6 +569,28 @@ def compile_package(
         missing = set(fact_ids) - all_fact_ids
         if missing:
             raise CompilationError(f"completion policy has unresolved Facts: {sorted(missing)}")
+    for conditional in completion_policy.get("conditional_required_facts", []):
+        selector_id = conditional.get("selector_fact")
+        if selector_id not in all_fact_ids:
+            raise CompilationError(
+                f"conditional completion policy has unresolved selector Fact: {selector_id}"
+            )
+        selector = node_index[selector_id]
+        allowed = set(selector.get("allowed_values", []))
+        cases = conditional.get("cases")
+        if not isinstance(cases, dict) or not cases:
+            raise CompilationError("conditional completion policy requires non-empty cases")
+        if allowed and set(cases) - allowed:
+            raise CompilationError(
+                "conditional completion policy has selector cases outside allowed values: "
+                f"{sorted(set(cases) - allowed)}"
+            )
+        for fact_ids in [*cases.values(), conditional.get("default", [])]:
+            missing = set(fact_ids) - all_fact_ids
+            if missing:
+                raise CompilationError(
+                    f"conditional completion policy has unresolved Facts: {sorted(missing)}"
+                )
     for rule_id, fact_ids in completion_policy.get("clarification_facts_by_rule", {}).items():
         if rule_id not in {rule["id"] for rule in sorted_rules}:
             raise CompilationError(f"completion policy has unresolved Rule: {rule_id}")
