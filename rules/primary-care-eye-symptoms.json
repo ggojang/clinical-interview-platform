@@ -1,0 +1,5135 @@
+{
+  "id": "rules.primary-care-eye-symptoms",
+  "provenance": {
+    "created_at": "2026-07-14T00:00:00Z",
+    "created_by": {
+      "id": "codex-gpt5",
+      "type": "ai"
+    },
+    "review_status": "unreviewed",
+    "source_refs": [
+      "specifications/reasoning-loop.md"
+    ],
+    "version": "0.1.0"
+  },
+  "rules": [
+    {
+      "id": "rule.activate.eye-symptoms",
+      "priority": 100,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "specifications/reasoning-loop.md"
+        ],
+        "version": "0.1.0"
+      },
+      "status": "research_only",
+      "then": {
+        "activate_intents": [
+          "intent.characterize_symptom",
+          "intent.screen_red_flags",
+          "intent.differentiate_common_causes",
+          "intent.risk_assessment"
+        ]
+      },
+      "type": "activation",
+      "version": "0.1.0",
+      "when": {
+        "rfe": "rfe.eye_symptoms"
+      }
+    },
+    {
+      "id": "rule.eye-symptoms.safety.chemical-exposure",
+      "priority": 1000,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "equals": true,
+        "fact": "eye.chemical_exposure"
+      }
+    },
+    {
+      "id": "rule.eye-symptoms.safety.contact-lens-warning",
+      "priority": 900,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "equals": true,
+        "fact": "eye.contact_lens_with_pain_or_vision_change"
+      }
+    },
+    {
+      "id": "rule.eye-symptoms.safety.curtain-shadow",
+      "priority": 950,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "equals": true,
+        "fact": "eye.curtain_shadow_or_field_loss"
+      }
+    },
+    {
+      "id": "rule.eye-symptoms.safety.embedded-object",
+      "priority": 1000,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "equals": true,
+        "fact": "eye.object_embedded_or_globe_deformed"
+      }
+    },
+    {
+      "id": "rule.eye-symptoms.safety.halos-nausea",
+      "priority": 1000,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "equals": true,
+        "fact": "eye.halos_headache_nausea_or_vomiting"
+      }
+    },
+    {
+      "id": "rule.eye-symptoms.safety.neurological-deficit",
+      "priority": 1000,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "equals": true,
+        "fact": "symptom.new_focal_neurological_deficit"
+      }
+    },
+    {
+      "id": "rule.eye-symptoms.safety.new-flashes-floaters",
+      "priority": 920,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "equals": true,
+        "fact": "eye.new_or_increased_flashes_floaters"
+      }
+    },
+    {
+      "id": "rule.eye-symptoms.safety.orbital-warning",
+      "priority": 900,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "equals": true,
+        "fact": "eye.proptosis_or_painful_restricted_movement"
+      }
+    },
+    {
+      "id": "rule.eye-symptoms.safety.penetrating-injury",
+      "priority": 1000,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "equals": true,
+        "fact": "eye.penetrating_or_high_velocity_injury"
+      }
+    },
+    {
+      "id": "rule.eye-symptoms.safety.periorbital-fever",
+      "priority": 900,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "equals": true,
+        "fact": "eye.periorbital_swelling_with_fever_or_unwell"
+      }
+    },
+    {
+      "id": "rule.eye-symptoms.safety.photophobia",
+      "priority": 900,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "equals": true,
+        "fact": "eye.photophobia"
+      }
+    },
+    {
+      "id": "rule.eye-symptoms.safety.recent-procedure-warning",
+      "priority": 900,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "equals": true,
+        "fact": "eye.recent_surgery_injection_with_pain_or_vision_loss"
+      }
+    },
+    {
+      "id": "rule.eye-symptoms.safety.red-pain-vision",
+      "priority": 920,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "equals": true,
+        "fact": "eye.red_painful_with_vision_change"
+      }
+    },
+    {
+      "id": "rule.eye-symptoms.safety.severe-pain-vision",
+      "priority": 1000,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "eye.severe_or_sudden_pain"
+          },
+          {
+            "fact": "eye.current_vision_impact",
+            "in": [
+              "major_blur",
+              "near_complete_loss"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.eye-symptoms.safety.sudden-vision-loss",
+      "priority": 1000,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "equals": true,
+        "fact": "eye.sudden_complete_or_major_vision_loss"
+      }
+    },
+    {
+      "id": "rule.generated.complete.arteritic-context",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.arteritic-context"
+      }
+    },
+    {
+      "id": "rule.generated.complete.chemical-exposure",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.chemical-exposure"
+      }
+    },
+    {
+      "id": "rule.generated.complete.contact-lens-warning",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.contact-lens-warning"
+      }
+    },
+    {
+      "id": "rule.generated.complete.curtain-shadow",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.curtain-shadow"
+      }
+    },
+    {
+      "id": "rule.generated.complete.diplopia-cover",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.diplopia-cover"
+      }
+    },
+    {
+      "id": "rule.generated.complete.discharge",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.discharge"
+      }
+    },
+    {
+      "id": "rule.generated.complete.duration",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.duration"
+      }
+    },
+    {
+      "id": "rule.generated.complete.embedded-object",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.embedded-object"
+      }
+    },
+    {
+      "id": "rule.generated.complete.eyelid-inflammation",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.eyelid-inflammation"
+      }
+    },
+    {
+      "id": "rule.generated.complete.eyelid-problem",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.eyelid-problem"
+      }
+    },
+    {
+      "id": "rule.generated.complete.first-aid",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.first-aid"
+      }
+    },
+    {
+      "id": "rule.generated.complete.flashes-floaters",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.flashes-floaters"
+      }
+    },
+    {
+      "id": "rule.generated.complete.foreign-body",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.foreign-body"
+      }
+    },
+    {
+      "id": "rule.generated.complete.gritty",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.gritty"
+      }
+    },
+    {
+      "id": "rule.generated.complete.halos-nausea",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.halos-nausea"
+      }
+    },
+    {
+      "id": "rule.generated.complete.infection-context",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.infection-context"
+      }
+    },
+    {
+      "id": "rule.generated.complete.injury-mechanism",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.injury-mechanism"
+      }
+    },
+    {
+      "id": "rule.generated.complete.itching",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.itching"
+      }
+    },
+    {
+      "id": "rule.generated.complete.laterality",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.laterality"
+      }
+    },
+    {
+      "id": "rule.generated.complete.medical-context",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.medical-context"
+      }
+    },
+    {
+      "id": "rule.generated.complete.mono-binocular",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.mono-binocular"
+      }
+    },
+    {
+      "id": "rule.generated.complete.neurological-deficit",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.neurological-deficit"
+      }
+    },
+    {
+      "id": "rule.generated.complete.onset-progression",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.onset-progression"
+      }
+    },
+    {
+      "id": "rule.generated.complete.orbital-warning",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.orbital-warning"
+      }
+    },
+    {
+      "id": "rule.generated.complete.other-detail",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.other-detail"
+      }
+    },
+    {
+      "id": "rule.generated.complete.pain-severity",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.pain-severity"
+      }
+    },
+    {
+      "id": "rule.generated.complete.penetrating-injury",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.penetrating-injury"
+      }
+    },
+    {
+      "id": "rule.generated.complete.periorbital-fever",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.periorbital-fever"
+      }
+    },
+    {
+      "id": "rule.generated.complete.photophobia",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.photophobia"
+      }
+    },
+    {
+      "id": "rule.generated.complete.primary-group",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.primary-group"
+      }
+    },
+    {
+      "id": "rule.generated.complete.prior-history",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.prior-history"
+      }
+    },
+    {
+      "id": "rule.generated.complete.recent-procedure-warning",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.recent-procedure-warning"
+      }
+    },
+    {
+      "id": "rule.generated.complete.red-pain-vision",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.red-pain-vision"
+      }
+    },
+    {
+      "id": "rule.generated.complete.redness",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.redness"
+      }
+    },
+    {
+      "id": "rule.generated.complete.retinal-risk",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.retinal-risk"
+      }
+    },
+    {
+      "id": "rule.generated.complete.severe-pain",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.severe-pain"
+      }
+    },
+    {
+      "id": "rule.generated.complete.sudden-vision-loss",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.sudden-vision-loss"
+      }
+    },
+    {
+      "id": "rule.generated.complete.surface-context",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.surface-context"
+      }
+    },
+    {
+      "id": "rule.generated.complete.trauma-severity",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.trauma-severity"
+      }
+    },
+    {
+      "id": "rule.generated.complete.treatment-context",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.treatment-context"
+      }
+    },
+    {
+      "id": "rule.generated.complete.vesicle-rash",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.vesicle-rash"
+      }
+    },
+    {
+      "id": "rule.generated.complete.vision-impact",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.vision-impact"
+      }
+    },
+    {
+      "id": "rule.generated.complete.visual-type",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.visual-type"
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.arteritic-context",
+      "priority": 98,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "arteritic-context",
+        "target": "target.eye-symptoms.arteritic-context"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.arteritic-context": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.chemical-exposure",
+      "priority": 128,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "chemical-exposure",
+        "target": "target.eye-symptoms.chemical-exposure"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.chemical-exposure": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.contact-lens-warning",
+      "priority": 119,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "contact-lens-warning",
+        "target": "target.eye-symptoms.contact-lens-warning"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.contact-lens-warning": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.curtain-shadow",
+      "priority": 120,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "curtain-shadow",
+        "target": "target.eye-symptoms.curtain-shadow"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.curtain-shadow": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.diplopia-cover",
+      "priority": 99,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "diplopia-cover",
+        "target": "target.eye-symptoms.diplopia-cover"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.diplopia-cover": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.discharge",
+      "priority": 104,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "discharge",
+        "target": "target.eye-symptoms.discharge"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.discharge": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.duration",
+      "priority": 110,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "duration",
+        "target": "target.eye-symptoms.duration"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.duration": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.embedded-object",
+      "priority": 126,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "embedded-object",
+        "target": "target.eye-symptoms.embedded-object"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.embedded-object": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.eyelid-inflammation",
+      "priority": 104,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "eyelid-inflammation",
+        "target": "target.eye-symptoms.eyelid-inflammation"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.eyelid-inflammation": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.eyelid-problem",
+      "priority": 105,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "eyelid-problem",
+        "target": "target.eye-symptoms.eyelid-problem"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.eyelid-problem": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.first-aid",
+      "priority": 103,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "first-aid",
+        "target": "target.eye-symptoms.first-aid"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.first-aid": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.flashes-floaters",
+      "priority": 121,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "flashes-floaters",
+        "target": "target.eye-symptoms.flashes-floaters"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.flashes-floaters": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.foreign-body",
+      "priority": 104,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "foreign-body",
+        "target": "target.eye-symptoms.foreign-body"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.foreign-body": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.gritty",
+      "priority": 102,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "gritty",
+        "target": "target.eye-symptoms.gritty"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.gritty": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.halos-nausea",
+      "priority": 122,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "halos-nausea",
+        "target": "target.eye-symptoms.halos-nausea"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.halos-nausea": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.infection-context",
+      "priority": 93,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "infection-context",
+        "target": "target.eye-symptoms.infection-context"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.infection-context": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.injury-mechanism",
+      "priority": 105,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "injury-mechanism",
+        "target": "target.eye-symptoms.injury-mechanism"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.injury-mechanism": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.itching",
+      "priority": 103,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "itching",
+        "target": "target.eye-symptoms.itching"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.itching": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.laterality",
+      "priority": 108,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "laterality",
+        "target": "target.eye-symptoms.laterality"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.laterality": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.medical-context",
+      "priority": 94,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "medical-context",
+        "target": "target.eye-symptoms.medical-context"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.medical-context": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.mono-binocular",
+      "priority": 104,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "mono-binocular",
+        "target": "target.eye-symptoms.mono-binocular"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.mono-binocular": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.neurological-deficit",
+      "priority": 115,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "neurological-deficit",
+        "target": "target.eye-symptoms.neurological-deficit"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.neurological-deficit": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.onset-progression",
+      "priority": 109,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "onset-progression",
+        "target": "target.eye-symptoms.onset-progression"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.onset-progression": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.orbital-warning",
+      "priority": 117,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "orbital-warning",
+        "target": "target.eye-symptoms.orbital-warning"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.orbital-warning": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.other-detail",
+      "priority": 80,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "other-detail",
+        "target": "target.eye-symptoms.other-detail"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.other-detail": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.pain-severity",
+      "priority": 106,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "pain-severity",
+        "target": "target.eye-symptoms.pain-severity"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.pain-severity": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.penetrating-injury",
+      "priority": 127,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "penetrating-injury",
+        "target": "target.eye-symptoms.penetrating-injury"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.penetrating-injury": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.periorbital-fever",
+      "priority": 116,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "periorbital-fever",
+        "target": "target.eye-symptoms.periorbital-fever"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.periorbital-fever": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.photophobia",
+      "priority": 124,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "photophobia",
+        "target": "target.eye-symptoms.photophobia"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.photophobia": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.primary-group",
+      "priority": 130,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "primary-group",
+        "target": "target.eye-symptoms.primary-group"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.primary-group": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.prior-history",
+      "priority": 96,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "prior-history",
+        "target": "target.eye-symptoms.prior-history"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.prior-history": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.recent-procedure-warning",
+      "priority": 118,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "recent-procedure-warning",
+        "target": "target.eye-symptoms.recent-procedure-warning"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.recent-procedure-warning": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.red-pain-vision",
+      "priority": 123,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "red-pain-vision",
+        "target": "target.eye-symptoms.red-pain-vision"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.red-pain-vision": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.redness",
+      "priority": 105,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "redness",
+        "target": "target.eye-symptoms.redness"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.redness": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.retinal-risk",
+      "priority": 97,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "retinal-risk",
+        "target": "target.eye-symptoms.retinal-risk"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.retinal-risk": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.severe-pain",
+      "priority": 125,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "severe-pain",
+        "target": "target.eye-symptoms.severe-pain"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.severe-pain": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.sudden-vision-loss",
+      "priority": 129,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "sudden-vision-loss",
+        "target": "target.eye-symptoms.sudden-vision-loss"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.sudden-vision-loss": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.surface-context",
+      "priority": 93,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "surface-context",
+        "target": "target.eye-symptoms.surface-context"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.surface-context": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.trauma-severity",
+      "priority": 102,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "trauma-severity",
+        "target": "target.eye-symptoms.trauma-severity"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.trauma-severity": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.treatment-context",
+      "priority": 95,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "treatment-context",
+        "target": "target.eye-symptoms.treatment-context"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.treatment-context": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.vesicle-rash",
+      "priority": 103,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "vesicle-rash",
+        "target": "target.eye-symptoms.vesicle-rash"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.vesicle-rash": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.vision-impact",
+      "priority": 107,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "vision-impact",
+        "target": "target.eye-symptoms.vision-impact"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.vision-impact": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.visual-type",
+      "priority": 105,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.red-eye.2025",
+          "source.nhs.eye-pain.2025",
+          "source.nhs.vision-loss.2025",
+          "source.nhs.floaters-flashes.2023",
+          "source.nhs.glaucoma.2025",
+          "source.uhd.chemical-eye-injury.2026",
+          "source.moorfields.orbital-cellulitis.2021",
+          "source.stom.eye.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "visual-type",
+        "target": "target.eye-symptoms.visual-type"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.visual-type": "active"
+        }
+      }
+    }
+  ],
+  "version": "0.1.0"
+}

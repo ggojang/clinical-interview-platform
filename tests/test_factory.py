@@ -18,7 +18,7 @@ from runtime.memory import ClinicalMemory
 from runtime.package import (
     ABDOMINAL_PAIN_PACKAGE, BACK_PAIN_PACKAGE, BOWEL_SYMPTOMS_PACKAGE, CHEST_PAIN_PACKAGE, DEFAULT_PACKAGE,
     DIZZINESS_SYNCOPE_PACKAGE, DYSPNEA_PACKAGE, FEVER_PACKAGE, HEADACHE_PACKAGE,
-    EDEMA_PACKAGE, FATIGUE_PACKAGE, FOCAL_WEAKNESS_NUMBNESS_PACKAGE, HYPERTENSION_FOLLOW_UP_PACKAGE, JOINT_LIMB_COMPLAINT_PACKAGE, MEDICATION_REVIEW_PACKAGE, MENTAL_HEALTH_SLEEP_PACKAGE, PALPITATIONS_PACKAGE, REPRODUCTIVE_GENITAL_SYMPTOMS_PACKAGE, SKIN_COMPLAINT_PACKAGE,
+    EDEMA_PACKAGE, EYE_SYMPTOMS_PACKAGE, FATIGUE_PACKAGE, FOCAL_WEAKNESS_NUMBNESS_PACKAGE, HYPERTENSION_FOLLOW_UP_PACKAGE, JOINT_LIMB_COMPLAINT_PACKAGE, MEDICATION_REVIEW_PACKAGE, MENTAL_HEALTH_SLEEP_PACKAGE, PALPITATIONS_PACKAGE, REPRODUCTIVE_GENITAL_SYMPTOMS_PACKAGE, SKIN_COMPLAINT_PACKAGE,
     UPPER_RESPIRATORY_SYMPTOMS_PACKAGE, URINARY_SYMPTOMS_PACKAGE, WEIGHT_CONSTITUTIONAL_CHANGE_PACKAGE,
     VOMITING_DIARRHEA_PACKAGE,
     PackageLoadError, load_package,
@@ -62,6 +62,7 @@ class CompilerTests(unittest.TestCase):
             "hypertension_follow_up",
             "weight_constitutional_change",
             "reproductive_genital_symptoms",
+            "eye_symptoms",
         ):
             with self.subTest(profile=profile), self.assertRaises(CompilationError):
                 compile_package(production=True, profile=profile)
@@ -624,6 +625,20 @@ class CompilerTests(unittest.TestCase):
         self.assertEqual(mapping["validation"]["result"], "provisional_pass")
         self.assertFalse(mapping["validation"]["clinical_rule_authority"])
 
+    def test_eye_symptoms_package_is_complete_and_lateralizable(self):
+        package = compile_package(profile="eye_symptoms")
+        facts = {n["id"] for n in package["knowledge_graph"]["nodes"] if n["type"] == "Fact"}
+        self.assertEqual(len(facts), 43)
+        self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
+        self.assertEqual(package["coverage"]["total_safety_rules"], 15)
+        self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 15)
+        conditional = package["interview_completion_policy"]["conditional_required_facts"][0]
+        self.assertEqual(conditional["selector_fact"], "eye.primary_symptom_group")
+        mapping = json.loads((Path(__file__).resolve().parents[1] / "mappings/terminology/snomed-mrcm-eye-symptoms.json").read_text(encoding="utf-8"))
+        self.assertTrue(mapping["laterality"]["member"])
+        self.assertEqual(mapping["laterality"]["reference_set"], "723264001")
+        self.assertFalse(mapping["validation"]["clinical_rule_authority"])
+
 
 class ClinicalMemoryTests(unittest.TestCase):
     def setUp(self):
@@ -1179,6 +1194,22 @@ class PackageRuntimeTests(unittest.TestCase):
         self.assertEqual(state["package"]["id"], "package.primary-care-reproductive-genital-symptoms")
         with self.assertRaises(PackageLoadError):
             load_package(REPRODUCTIVE_GENITAL_SYMPTOMS_PACKAGE, execution_mode="production")
+
+    def test_eye_simulation_and_conditional_runtime(self):
+        report = run_evaluation(EYE_SYMPTOMS_PACKAGE)
+        self.assertTrue(report["passed"])
+        self.assertEqual(report["case_count"], 16)
+        red = next(item for item in report["results"] if item["case_id"] == "EYE-RED-DATA-ABSENT")
+        self.assertIn("eye.redness_present", red["selected_facts"])
+        self.assertNotIn("eye.injury_mechanism_and_time", red["selected_facts"])
+        session = InterviewSession("eye-runtime", package_path=EYE_SYMPTOMS_PACKAGE)
+        session.memory.next_turn()
+        session.memory.merge("eye.primary_symptom_group", {"value": "visual_disturbance", "raw_text": "시야가 흐려요", "confidence": .9})
+        state = session.process("시야에 검은 커튼이 보여요")
+        self.assertIn("ophthalmic.eye_symptoms", state["active_patterns"])
+        self.assertEqual(state["package"]["id"], "package.primary-care-eye-symptoms")
+        with self.assertRaises(PackageLoadError):
+            load_package(EYE_SYMPTOMS_PACKAGE, execution_mode="production")
 
 
 if __name__ == "__main__":

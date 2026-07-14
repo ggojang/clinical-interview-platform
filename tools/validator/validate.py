@@ -67,31 +67,7 @@ if errors:
 
 try:
     from compiler.build_package import load_json, validate_package
-    package_paths = [
-        ROOT / "packages/generated/primary-care-cough-0.3.0.json",
-        ROOT / "packages/generated/primary-care-fever-0.1.0.json",
-        ROOT / "packages/generated/primary-care-dyspnea-0.1.0.json",
-        ROOT / "packages/generated/primary-care-abdominal-pain-0.1.0.json",
-        ROOT / "packages/generated/primary-care-chest-pain-0.1.0.json",
-        ROOT / "packages/generated/primary-care-headache-0.1.0.json",
-        ROOT / "packages/generated/primary-care-dizziness-syncope-0.1.0.json",
-        ROOT / "packages/generated/primary-care-vomiting-diarrhea-0.1.0.json",
-        ROOT / "packages/generated/primary-care-urinary-symptoms-0.1.0.json",
-        ROOT / "packages/generated/primary-care-fatigue-0.1.0.json",
-        ROOT / "packages/generated/primary-care-back-pain-0.1.0.json",
-        ROOT / "packages/generated/primary-care-skin-complaint-0.1.0.json",
-        ROOT / "packages/generated/primary-care-medication-review-0.1.0.json",
-        ROOT / "packages/generated/primary-care-upper-respiratory-symptoms-0.1.0.json",
-        ROOT / "packages/generated/primary-care-palpitations-0.1.0.json",
-        ROOT / "packages/generated/primary-care-bowel-symptoms-0.1.0.json",
-        ROOT / "packages/generated/primary-care-focal-weakness-numbness-0.1.0.json",
-        ROOT / "packages/generated/primary-care-joint-limb-0.1.0.json",
-        ROOT / "packages/generated/primary-care-mental-health-sleep-0.1.0.json",
-        ROOT / "packages/generated/primary-care-edema-0.1.0.json",
-        ROOT / "packages/generated/primary-care-hypertension-follow-up-0.1.0.json",
-        ROOT / "packages/generated/primary-care-weight-constitutional-change-0.1.0.json",
-        ROOT / "packages/generated/primary-care-reproductive-genital-symptoms-0.1.0.json",
-    ]
+    package_paths = sorted((ROOT / "packages/generated").glob("*.json"))
     package_fact_counts = {}
     for package_path in package_paths:
         package = load_json(package_path)

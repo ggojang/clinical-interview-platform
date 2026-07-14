@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "1.20.0"
+VERSION = "1.21.0"
 GENERATED_AT = "2026-07-14T00:00:00Z"
 PRIVATE_KEYS = {
     "raw_text", "raw_input", "patient_response", "patient_responses",
@@ -86,7 +86,7 @@ def compact_fact_index(item: dict[str, Any]) -> dict[str, Any]:
     """Keep the legacy aggregate as discovery metadata, not a knowledge payload."""
     # Korean labels for shared Facts remain in common-facts.json. Omitting the
     # duplicate label here keeps this legacy cross-RFE discovery index bounded.
-    keys = ("id", "display", "value_type")
+    keys = ("id", "value_type")
     result = {key: item[key] for key in keys if key in item}
     if item.get("safety_relevant") is True:
         result["safety_relevant"] = True
@@ -97,7 +97,7 @@ def compact_safety_rule_index(item: dict[str, Any]) -> dict[str, Any]:
     """Keep executable safety essentials without repeated collection metadata."""
     return {
         key: compact(item[key])
-        for key in ("id", "priority", "when", "then")
+        for key in ("id", "when", "then")
         if key in item
     }
 

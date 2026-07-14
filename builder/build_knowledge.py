@@ -197,6 +197,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-reproductive-genital-symptoms.json",
         "version": "0.1.0",
     },
+    "eye_symptoms": {
+        "base_graph": ROOT / "knowledge/base/primary-care-eye-symptoms.json",
+        "base_rules": ROOT / "rules/base/primary-care-eye-symptoms.json",
+        "fragment_root": ROOT / "knowledge/generated/ophthalmic/eye-symptoms",
+        "output_graph": ROOT / "knowledge/graph/primary-care-eye-symptoms.json",
+        "output_rules": ROOT / "rules/primary-care-eye-symptoms.json",
+        "version": "0.1.0",
+    },
 }
 
 

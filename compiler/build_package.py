@@ -289,6 +289,17 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/genitourinary/reproductive-genital-symptoms",
         "research_manifests": [ROOT / "sources/manifests/primary-care-reproductive-genital-symptoms-research.json"],
     },
+    "eye_symptoms": {
+        "graph": ROOT / "knowledge/graph/primary-care-eye-symptoms.json",
+        "rules": ROOT / "rules/primary-care-eye-symptoms.json",
+        "sources": ROOT / "sources/manifests/primary-care-eye-symptoms.json",
+        "completion_policy": ROOT / "policies/primary-care-eye-symptoms-completion.json",
+        "output": ROOT / "packages/generated/primary-care-eye-symptoms-0.1.0.json",
+        "package_id": "package.primary-care-eye-symptoms", "package_version": "0.1.0",
+        "rfe": "rfe.eye_symptoms",
+        "simulation_root": ROOT / "simulation/patients/ophthalmic/eye-symptoms",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-eye-symptoms-research.json"],
+    },
 }
 
 ALLOWED_NODE_TYPES = {

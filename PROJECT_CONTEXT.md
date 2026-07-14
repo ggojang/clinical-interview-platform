@@ -569,6 +569,8 @@ Planned Primary Care packages are implemented through the versioned queue in `kn
 
 The grouped expansion governed by `knowledge/catalog/planned-package-work-queue-v0.2.json` is fully materialized as unreviewed research content. It prioritizes reusable question groups rather than disease enumeration: upper-respiratory symptoms, palpitations, bowel symptoms, focal weakness or numbness, joint or limb complaints, mental-health or sleep concerns, edema, hypertension follow-up, weight or constitutional change, and reproductive or genital symptoms. Each grouped RFE preserves symptom-specific safety branches and does not collapse distinct Facts merely because their wording is similar. `tools/validator/audit_expansion_queue.py` verifies the definition of done for every queue entry.
 
+The next expansion queue, `knowledge/catalog/planned-package-work-queue-v0.3.json`, is active. Its first materialized slice is grouped eye symptoms: red eye or ocular-surface discomfort, vision change, eyelid or periorbital symptoms, and trauma or foreign body. It contains explicit sight-threatening safety Facts, conditional branch completion, and laterality support based on STOM verification that `371398005 |Eye region structure|` belongs to `723264001 |Lateralizable body structure reference set|`. All content remains `unreviewed/research_only`; MRCM and reference-set results constrain terminology representation only and never create clinical safety rules.
+
 ---
 
 # 21. Feedback and Evolution
@@ -666,7 +668,7 @@ A presentation may not exist for vaccination, health checks, medication review o
 
 # 25. Current Repository State
 
-The current implementation is an early multi-RFE executable Knowledge Factory with cough, fever, breathing-difficulty, abdominal-pain, chest-pain, headache, dizziness-or-syncope, vomiting-or-diarrhoea, urinary-symptom, fatigue, back-pain, skin-complaint, medication-review, grouped upper-respiratory-symptom, palpitations, bowel-symptom, focal-weakness-or-numbness, joint-or-limb, mental-health-or-sleep, edema, hypertension-follow-up, weight-or-constitutional-change and reproductive-or-genital-symptom vertical slices.
+The current implementation is an early multi-RFE executable Knowledge Factory with cough, fever, breathing-difficulty, abdominal-pain, chest-pain, headache, dizziness-or-syncope, vomiting-or-diarrhoea, urinary-symptom, fatigue, back-pain, skin-complaint, medication-review, grouped upper-respiratory-symptom, palpitations, bowel-symptom, focal-weakness-or-numbness, joint-or-limb, mental-health-or-sleep, edema, hypertension-follow-up, weight-or-constitutional-change, reproductive-or-genital-symptom and eye-symptom vertical slices.
 
 It includes a profile-driven deterministic Builder, a Primary Care Reason for Encounter catalog, 643 unique research Facts across twenty-three independently compiled packages, complete Fact-to-Question linkage within every package, shared Fact identity, versioned Source Manifests, source-specific refresh scheduling, deterministic Compiler, integrity-checked draft Knowledge Packages, evidence-preserving Clinical Memory with coded `dataAbsentReason`, package-driven and conditionally branched multi-turn Runtime, multi-domain warning-feature examples, limited English and Korean extraction, 266 synthetic JSON Simulations, Evaluation, computed Coverage, validation and 130 automated tests.
 
@@ -678,7 +680,7 @@ Known gaps include:
 
 - no live external Knowledge Acquisition connector or complete multi-domain Builder pipeline;
 - no persistent graph database or general-purpose graph authoring workflow;
-- Compiler and Knowledge Packages currently cover only cough, adult fever, breathing difficulty, abdominal pain, chest pain, headache, dizziness-or-syncope, vomiting-or-diarrhoea, urinary-symptom, fatigue, back-pain, skin-complaint, medication-review, grouped upper-respiratory-symptom, palpitations, bowel-symptom, focal-weakness-or-numbness, joint-or-limb, mental-health-or-sleep, edema, hypertension-follow-up, weight-or-constitutional-change and reproductive-or-genital-symptom vertical slices;
+- Compiler and Knowledge Packages currently cover only cough, adult fever, breathing difficulty, abdominal pain, chest pain, headache, dizziness-or-syncope, vomiting-or-diarrhoea, urinary-symptom, fatigue, back-pain, skin-complaint, medication-review, grouped upper-respiratory-symptom, palpitations, bowel-symptom, focal-weakness-or-numbness, joint-or-limb, mental-health-or-sleep, edema, hypertension-follow-up, weight-or-constitutional-change, reproductive-or-genital-symptom and eye-symptom vertical slices;
 - no signed or production-approved Knowledge Package;
 - Clinical Memory merge supports evidence and conflict but not the complete longitudinal policy;
 - Runtime provenance is present but not yet production-grade;

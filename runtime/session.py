@@ -656,6 +656,9 @@ class InterviewSession:
         if self.reason_for_encounter == "rfe.reproductive_genital_symptoms":
             self._update_reproductive_genital_patterns()
             return
+        if self.reason_for_encounter == "rfe.eye_symptoms":
+            self._update_eye_patterns()
+            return
         active = ["respiratory.cough"]
         cold_support = sum(
             self.memory.value(fact_id) is True
@@ -1086,6 +1089,27 @@ class InterviewSession:
             "sexual_health.partner_symptoms_or_sti_notice",
         )):
             active.append("genital.sexual_health_context")
+        self.active_patterns = active
+
+    def _update_eye_patterns(self) -> None:
+        active = ["ophthalmic.eye_symptoms"]
+        branch = self.memory.value("eye.primary_symptom_group")
+        if branch:
+            active.append(f"eye.branch.{branch}")
+        if any(self.memory.value(x) is True for x in (
+            "eye.sudden_complete_or_major_vision_loss", "eye.chemical_exposure",
+            "eye.penetrating_or_high_velocity_injury", "eye.object_embedded_or_globe_deformed",
+        )):
+            active.append("eye.immediate_sight_threat_features")
+        if any(self.memory.value(x) is True for x in (
+            "eye.new_or_increased_flashes_floaters", "eye.curtain_shadow_or_field_loss",
+        )):
+            active.append("eye.retinal_warning_features")
+        if any(self.memory.value(x) is True for x in (
+            "eye.proptosis_or_painful_restricted_movement",
+            "eye.periorbital_swelling_with_fever_or_unwell",
+        )):
+            active.append("eye.orbital_warning_features")
         self.active_patterns = active
 
     def _update_dyspnea_patterns(self) -> None:

@@ -92,6 +92,7 @@ class GptExportTests(unittest.TestCase):
                 "rfe-hypertension_follow_up-facts", "rfe-hypertension_follow_up-questions", "rfe-hypertension_follow_up-rules",
                 "rfe-weight_constitutional_change-facts", "rfe-weight_constitutional_change-questions", "rfe-weight_constitutional_change-rules",
                 "rfe-reproductive_genital_symptoms-facts", "rfe-reproductive_genital_symptoms-questions", "rfe-reproductive_genital_symptoms-rules",
+                "rfe-eye_symptoms-facts", "rfe-eye_symptoms-questions", "rfe-eye_symptoms-rules",
             }.issubset(names))
             for resource in manifest["resources"]:
                 self.assertEqual(len(resource["sha256"]), 64)
@@ -115,7 +116,7 @@ class GptExportTests(unittest.TestCase):
                 implemented,
                 {
                     "abdominal_pain", "back_pain", "bowel_symptoms", "chest_pain", "cough", "dizziness_syncope",
-                    "dyspnea", "edema", "fatigue", "fever", "focal_weakness_numbness", "headache", "hypertension_follow_up", "joint_limb_complaint", "medication_review", "mental_health_sleep",
+                    "dyspnea", "edema", "eye_symptoms", "fatigue", "fever", "focal_weakness_numbness", "headache", "hypertension_follow_up", "joint_limb_complaint", "medication_review", "mental_health_sleep",
                     "palpitations", "reproductive_genital_symptoms", "skin_complaint", "upper_respiratory_symptoms", "urinary_symptoms",
                     "vomiting_diarrhea", "weight_constitutional_change",
                 },
@@ -209,6 +210,8 @@ class GptExportTests(unittest.TestCase):
             self.assertEqual(constitutional["count"], 38)
             genital = json.loads((output_path / "rfe/reproductive_genital_symptoms/facts.json").read_text(encoding="utf-8"))
             self.assertEqual(genital["count"], 49)
+            eye = json.loads((output_path / "rfe/eye_symptoms/facts.json").read_text(encoding="utf-8"))
+            self.assertEqual(eye["count"], 43)
             for slug in implemented:
                 for kind in ("facts", "questions", "rules"):
                     document = json.loads(

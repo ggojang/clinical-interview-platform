@@ -32,6 +32,7 @@ EDEMA_PACKAGE = ROOT / "packages/generated/primary-care-edema-0.1.0.json"
 HYPERTENSION_FOLLOW_UP_PACKAGE = ROOT / "packages/generated/primary-care-hypertension-follow-up-0.1.0.json"
 WEIGHT_CONSTITUTIONAL_CHANGE_PACKAGE = ROOT / "packages/generated/primary-care-weight-constitutional-change-0.1.0.json"
 REPRODUCTIVE_GENITAL_SYMPTOMS_PACKAGE = ROOT / "packages/generated/primary-care-reproductive-genital-symptoms-0.1.0.json"
+EYE_SYMPTOMS_PACKAGE = ROOT / "packages/generated/primary-care-eye-symptoms-0.1.0.json"
 
 
 class PackageLoadError(RuntimeError):

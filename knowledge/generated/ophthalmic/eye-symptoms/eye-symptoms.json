@@ -1,0 +1,1958 @@
+{
+  "id": "knowledge.generated.eye-symptoms",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-eye-symptoms-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-07-14",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-07-15",
+    "next_full_review_at": "2027-01-10",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.eye.routing",
+      "type": "ClinicalGroup",
+      "display": "routing"
+    },
+    {
+      "id": "group.eye.shared-safety",
+      "type": "ClinicalGroup",
+      "display": "shared-safety"
+    },
+    {
+      "id": "group.eye.common",
+      "type": "ClinicalGroup",
+      "display": "common"
+    },
+    {
+      "id": "group.eye.red-eye-surface",
+      "type": "ClinicalGroup",
+      "display": "red-eye-surface"
+    },
+    {
+      "id": "group.eye.visual-disturbance",
+      "type": "ClinicalGroup",
+      "display": "visual-disturbance"
+    },
+    {
+      "id": "group.eye.eyelid-periorbital",
+      "type": "ClinicalGroup",
+      "display": "eyelid-periorbital"
+    },
+    {
+      "id": "group.eye.trauma-foreign-body",
+      "type": "ClinicalGroup",
+      "display": "trauma-foreign-body"
+    }
+  ],
+  "group_hypothesis_edges": [],
+  "safety_rules": [
+    {
+      "id": "rule.eye-symptoms.safety.sudden-vision-loss",
+      "priority": 1000,
+      "when": {
+        "fact": "eye.sudden_complete_or_major_vision_loss",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.eye-symptoms.safety.chemical-exposure",
+      "priority": 1000,
+      "when": {
+        "fact": "eye.chemical_exposure",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.eye-symptoms.safety.penetrating-injury",
+      "priority": 1000,
+      "when": {
+        "fact": "eye.penetrating_or_high_velocity_injury",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.eye-symptoms.safety.embedded-object",
+      "priority": 1000,
+      "when": {
+        "fact": "eye.object_embedded_or_globe_deformed",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.eye-symptoms.safety.severe-pain-vision",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "eye.severe_or_sudden_pain",
+            "equals": true
+          },
+          {
+            "fact": "eye.current_vision_impact",
+            "in": [
+              "major_blur",
+              "near_complete_loss"
+            ]
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.eye-symptoms.safety.halos-nausea",
+      "priority": 1000,
+      "when": {
+        "fact": "eye.halos_headache_nausea_or_vomiting",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.eye-symptoms.safety.neurological-deficit",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.new_focal_neurological_deficit",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.eye-symptoms.safety.curtain-shadow",
+      "priority": 950,
+      "when": {
+        "fact": "eye.curtain_shadow_or_field_loss",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.eye-symptoms.safety.new-flashes-floaters",
+      "priority": 920,
+      "when": {
+        "fact": "eye.new_or_increased_flashes_floaters",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.eye-symptoms.safety.red-pain-vision",
+      "priority": 920,
+      "when": {
+        "fact": "eye.red_painful_with_vision_change",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.eye-symptoms.safety.photophobia",
+      "priority": 900,
+      "when": {
+        "fact": "eye.photophobia",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.eye-symptoms.safety.contact-lens-warning",
+      "priority": 900,
+      "when": {
+        "fact": "eye.contact_lens_with_pain_or_vision_change",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.eye-symptoms.safety.recent-procedure-warning",
+      "priority": 900,
+      "when": {
+        "fact": "eye.recent_surgery_injection_with_pain_or_vision_loss",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.eye-symptoms.safety.orbital-warning",
+      "priority": 900,
+      "when": {
+        "fact": "eye.proptosis_or_painful_restricted_movement",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.eye-symptoms.safety.periorbital-fever",
+      "priority": 900,
+      "when": {
+        "fact": "eye.periorbital_swelling_with_fever_or_unwell",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "eye.primary_symptom_group",
+        "display": "Primary Eye Symptom Group",
+        "value_type": "coded",
+        "allowed_values": [
+          "red_eye_surface",
+          "visual_disturbance",
+          "eyelid_periorbital",
+          "trauma_foreign_body",
+          "other_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.eye-symptoms.primary-group",
+        "display": "Primary Eye Symptom Group",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.primary-group",
+        "wording": "가장 불편한 증상은 충혈·표면 불편, 시력·시야 변화, 눈꺼풀·눈 주변 문제, 외상·이물질 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "primary-group"
+        }
+      ],
+      "supports": [
+        "group.eye.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.sudden_complete_or_major_vision_loss",
+        "display": "Sudden Complete or Major Vision Loss",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "15203004"
+        }
+      },
+      "target": {
+        "id": "target.eye-symptoms.sudden-vision-loss",
+        "display": "Sudden Complete or Major Vision Loss",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.sudden-vision-loss",
+        "wording": "한쪽 또는 양쪽 눈이 갑자기 보이지 않거나 시력이 크게 떨어졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "sudden-vision-loss"
+        }
+      ],
+      "supports": [
+        "group.eye.shared-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.chemical_exposure",
+        "display": "Chemical Eye Exposure",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.eye-symptoms.chemical-exposure",
+        "display": "Chemical Eye Exposure",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.chemical-exposure",
+        "wording": "세제·산·알칼리·시멘트 같은 화학물질이 눈에 들어갔나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "chemical-exposure"
+        }
+      ],
+      "supports": [
+        "group.eye.shared-safety",
+        "group.eye.trauma-foreign-body"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.penetrating_or_high_velocity_injury",
+        "display": "Penetrating or High Velocity Eye Injury",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "367132005"
+        }
+      },
+      "target": {
+        "id": "target.eye-symptoms.penetrating-injury",
+        "display": "Penetrating or High Velocity Eye Injury",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.penetrating-injury",
+        "wording": "날카로운 물체가 눈을 찔렀거나 금속·유리 조각 등이 빠르게 튀어 눈을 맞았나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 127,
+          "reason": "penetrating-injury"
+        }
+      ],
+      "supports": [
+        "group.eye.shared-safety",
+        "group.eye.trauma-foreign-body"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.object_embedded_or_globe_deformed",
+        "display": "Embedded Object or Globe Deformity",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.eye-symptoms.embedded-object",
+        "display": "Embedded Object or Globe Deformity",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.embedded-object",
+        "wording": "물체가 눈에 박혀 있거나 눈 모양이 달라지고 피가 나는 것처럼 보이나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 126,
+          "reason": "embedded-object"
+        }
+      ],
+      "supports": [
+        "group.eye.shared-safety",
+        "group.eye.trauma-foreign-body"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.severe_or_sudden_pain",
+        "display": "Severe or Sudden Eye Pain",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "41652007"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.eye-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.eye-symptoms.severe-pain",
+        "display": "Severe or Sudden Eye Pain",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.severe-pain",
+        "wording": "눈 통증이 갑자기 시작됐거나 매우 심한가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 125,
+          "reason": "severe-pain"
+        }
+      ],
+      "supports": [
+        "group.eye.shared-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.photophobia",
+        "display": "Photophobia",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "409668002"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.eye-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.eye-symptoms.photophobia",
+        "display": "Photophobia",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.photophobia",
+        "wording": "빛을 볼 때 눈이 심하게 아프거나 견디기 어렵나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 124,
+          "reason": "photophobia"
+        }
+      ],
+      "supports": [
+        "group.eye.shared-safety",
+        "group.eye.red-eye-surface"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.red_painful_with_vision_change",
+        "display": "Red Painful Eye with Vision Change",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.eye-symptoms.red-pain-vision",
+        "display": "Red Painful Eye with Vision Change",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.red-pain-vision",
+        "wording": "눈이 붉고 아프면서 시야가 흐리거나 시력이 변했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 123,
+          "reason": "red-pain-vision"
+        }
+      ],
+      "supports": [
+        "group.eye.shared-safety",
+        "group.eye.red-eye-surface"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.halos_headache_nausea_or_vomiting",
+        "display": "Halos Headache Nausea or Vomiting",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.eye-symptoms.halos-nausea",
+        "display": "Halos Headache Nausea or Vomiting",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.halos-nausea",
+        "wording": "불빛 주변에 무지개빛 테가 보이면서 심한 두통, 메스꺼움 또는 구토가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 122,
+          "reason": "halos-nausea"
+        }
+      ],
+      "supports": [
+        "group.eye.shared-safety",
+        "group.eye.visual-disturbance"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.new_or_increased_flashes_floaters",
+        "display": "New or Increased Flashes or Floaters",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "139547009"
+        }
+      },
+      "target": {
+        "id": "target.eye-symptoms.flashes-floaters",
+        "display": "New or Increased Flashes or Floaters",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.flashes-floaters",
+        "wording": "처음 생겼거나 갑자기 늘어난 번쩍임·검은 점·실오라기 같은 것이 보이나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 121,
+          "reason": "flashes-floaters"
+        }
+      ],
+      "supports": [
+        "group.eye.shared-safety",
+        "group.eye.visual-disturbance"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.curtain_shadow_or_field_loss",
+        "display": "Curtain Shadow or Visual Field Loss",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.eye-symptoms.curtain-shadow",
+        "display": "Curtain Shadow or Visual Field Loss",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.curtain-shadow",
+        "wording": "시야 한쪽에서 검은 커튼이나 그림자가 퍼지거나 일부가 가려지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 120,
+          "reason": "curtain-shadow"
+        }
+      ],
+      "supports": [
+        "group.eye.shared-safety",
+        "group.eye.visual-disturbance"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.contact_lens_with_pain_or_vision_change",
+        "display": "Contact Lens with Pain or Vision Change",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.eye-symptoms.contact-lens-warning",
+        "display": "Contact Lens with Pain or Vision Change",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.contact-lens-warning",
+        "wording": "콘택트렌즈를 착용하는 눈이 붉고 아프거나 시력이 달라졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 119,
+          "reason": "contact-lens-warning"
+        }
+      ],
+      "supports": [
+        "group.eye.shared-safety",
+        "group.eye.red-eye-surface"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.recent_surgery_injection_with_pain_or_vision_loss",
+        "display": "Recent Eye Procedure with Pain or Vision Loss",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.eye-symptoms.recent-procedure-warning",
+        "display": "Recent Eye Procedure with Pain or Vision Loss",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.recent-procedure-warning",
+        "wording": "최근 4주 안에 눈 수술·주사·레이저를 받은 뒤 심한 통증이나 시력 저하가 생겼나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 118,
+          "reason": "recent-procedure-warning"
+        }
+      ],
+      "supports": [
+        "group.eye.shared-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.proptosis_or_painful_restricted_movement",
+        "display": "Proptosis or Painful Restricted Eye Movement",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.eye-symptoms.orbital-warning",
+        "display": "Proptosis or Painful Restricted Eye Movement",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.orbital-warning",
+        "wording": "눈이 앞으로 튀어나와 보이거나 눈을 움직일 때 아프고 잘 움직이지 않나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 117,
+          "reason": "orbital-warning"
+        }
+      ],
+      "supports": [
+        "group.eye.shared-safety",
+        "group.eye.eyelid-periorbital"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.periorbital_swelling_with_fever_or_unwell",
+        "display": "Periorbital Swelling with Fever or Systemic Illness",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.eye-symptoms.periorbital-fever",
+        "display": "Periorbital Swelling with Fever or Systemic Illness",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.periorbital-fever",
+        "wording": "눈꺼풀·눈 주변이 심하게 붓고 열이 나거나 온몸이 많이 아픈가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 116,
+          "reason": "periorbital-fever"
+        }
+      ],
+      "supports": [
+        "group.eye.shared-safety",
+        "group.eye.eyelid-periorbital"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.new_focal_neurological_deficit",
+        "display": "New Focal Neurological Deficit",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.eye-symptoms.neurological-deficit",
+        "display": "New Focal Neurological Deficit",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.neurological-deficit",
+        "wording": "시력 변화와 함께 한쪽 힘 빠짐·감각 저하, 말이 어눌함, 얼굴 처짐이 새로 생겼나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 115,
+          "reason": "neurological-deficit"
+        }
+      ],
+      "supports": [
+        "group.eye.shared-safety",
+        "group.eye.visual-disturbance"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "eye.symptom_duration",
+        "display": "Eye Symptom Duration",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.eye-symptoms.duration",
+        "display": "Eye Symptom Duration",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.duration",
+        "wording": "증상은 언제 시작됐고 계속되는지 반복되는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 110,
+          "reason": "duration"
+        }
+      ],
+      "supports": [
+        "group.eye.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.onset_and_progression",
+        "display": "Eye Symptom Onset and Progression",
+        "value_type": "coded",
+        "allowed_values": [
+          "sudden_improving",
+          "sudden_same",
+          "sudden_worsening",
+          "gradual_improving",
+          "gradual_same",
+          "gradual_worsening",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.eye-symptoms.onset-progression",
+        "display": "Eye Symptom Onset and Progression",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.onset-progression",
+        "wording": "증상은 갑자기 또는 서서히 시작했고, 좋아짐·같음·악화 중 어느 쪽인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 109,
+          "reason": "onset-progression"
+        }
+      ],
+      "supports": [
+        "group.eye.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.laterality",
+        "display": "Eye Laterality",
+        "value_type": "coded",
+        "allowed_values": [
+          "left",
+          "right",
+          "bilateral",
+          "unclear"
+        ],
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.eye-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.eye-symptoms.laterality",
+        "display": "Eye Laterality",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.laterality",
+        "wording": "왼쪽 눈, 오른쪽 눈, 양쪽 눈 중 어디인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 108,
+          "reason": "laterality"
+        }
+      ],
+      "supports": [
+        "group.eye.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.current_vision_impact",
+        "display": "Current Vision Impact",
+        "value_type": "coded",
+        "allowed_values": [
+          "none",
+          "mild_blur",
+          "major_blur",
+          "near_complete_loss",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.eye-symptoms.vision-impact",
+        "display": "Current Vision Impact",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.vision-impact",
+        "wording": "현재 시력 영향은 없음, 약간 흐림, 많이 흐림, 거의 보이지 않음 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 107,
+          "reason": "vision-impact"
+        }
+      ],
+      "supports": [
+        "group.eye.common",
+        "group.eye.visual-disturbance"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.pain_severity",
+        "display": "Eye Pain Severity",
+        "value_type": "coded",
+        "allowed_values": [
+          "none",
+          "mild",
+          "moderate",
+          "severe"
+        ]
+      },
+      "target": {
+        "id": "target.eye-symptoms.pain-severity",
+        "display": "Eye Pain Severity",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.pain-severity",
+        "wording": "눈 통증은 없음, 가벼움, 중간, 심함 중 어느 정도인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 106,
+          "reason": "pain-severity"
+        }
+      ],
+      "supports": [
+        "group.eye.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.prior_eye_disease_or_similar_episode",
+        "display": "Prior Eye Disease or Similar Episode",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.eye-symptoms.prior-history",
+        "display": "Prior Eye Disease or Similar Episode",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.prior-history",
+        "wording": "녹내장·망막질환·포도막염·각막질환 같은 눈 질환이나 비슷한 증상 병력이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 96,
+          "reason": "prior-history"
+        }
+      ],
+      "supports": [
+        "group.eye.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.current_drops_medication_or_contact_lens",
+        "display": "Eye Drops Medication or Contact Lens",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.eye-symptoms.treatment-context",
+        "display": "Eye Drops Medication or Contact Lens",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.treatment-context",
+        "wording": "사용 중인 안약·눈 관련 약, 콘택트렌즈 종류와 마지막 착용 시점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 95,
+          "reason": "treatment-context"
+        }
+      ],
+      "supports": [
+        "group.eye.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "history.diabetes_immunosuppression_or_autoimmune_disease",
+        "display": "Diabetes Immunosuppression or Autoimmune Disease",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.eye-symptoms.medical-context",
+        "display": "Diabetes Immunosuppression or Autoimmune Disease",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.medical-context",
+        "wording": "당뇨, 면역저하, 자가면역질환 또는 암 치료 중인 상태가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 94,
+          "reason": "medical-context"
+        }
+      ],
+      "supports": [
+        "group.eye.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.other_detail_or_patient_priority",
+        "display": "Other Eye Detail or Patient Priority",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.eye-symptoms.other-detail",
+        "display": "Other Eye Detail or Patient Priority",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.other-detail",
+        "wording": "질문에 없지만 꼭 전달하고 싶은 눈 증상이나 가장 걱정되는 점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 80,
+          "reason": "other-detail"
+        }
+      ],
+      "supports": [
+        "group.eye.routing",
+        "group.eye.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.redness_present",
+        "display": "Eye Redness Present",
+        "value_type": "boolean",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "703630003"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.eye-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.eye-symptoms.redness",
+        "display": "Eye Redness Present",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.redness",
+        "wording": "눈 흰자나 눈꺼풀 안쪽이 붉나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 105,
+          "reason": "redness"
+        }
+      ],
+      "supports": [
+        "group.eye.red-eye-surface"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.discharge_character",
+        "display": "Eye Discharge Character",
+        "value_type": "coded",
+        "allowed_values": [
+          "none",
+          "watery",
+          "sticky_purulent",
+          "unclear"
+        ],
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "246679005"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.eye-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.eye-symptoms.discharge",
+        "display": "Eye Discharge Character",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.discharge",
+        "wording": "눈곱·분비물은 없음, 물 같음, 끈적하거나 고름 같음 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 104,
+          "reason": "discharge"
+        }
+      ],
+      "supports": [
+        "group.eye.red-eye-surface"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.itching",
+        "display": "Eye Itching",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.eye-symptoms.itching",
+        "display": "Eye Itching",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.itching",
+        "wording": "눈이 주로 가렵나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 103,
+          "reason": "itching"
+        }
+      ],
+      "supports": [
+        "group.eye.red-eye-surface"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.gritty_or_foreign_body_sensation",
+        "display": "Gritty or Foreign Body Sensation",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.eye-symptoms.gritty",
+        "display": "Gritty or Foreign Body Sensation",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.gritty",
+        "wording": "모래가 들어간 듯 까끌거리거나 이물감이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 102,
+          "reason": "gritty"
+        }
+      ],
+      "supports": [
+        "group.eye.red-eye-surface"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.recent_uri_allergy_or_exposure",
+        "display": "Recent URI Allergy or Eye Exposure",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.eye-symptoms.surface-context",
+        "display": "Recent URI Allergy or Eye Exposure",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.surface-context",
+        "wording": "최근 감기·알레르기, 아픈 사람 접촉, 화장품·수영장·연기·먼지 노출이 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 93,
+          "reason": "surface-context"
+        }
+      ],
+      "supports": [
+        "group.eye.red-eye-surface"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.visual_change_type",
+        "display": "Visual Change Type",
+        "value_type": "coded",
+        "allowed_values": [
+          "blur",
+          "double",
+          "flashes_floaters",
+          "field_defect",
+          "color_change",
+          "transient_loss",
+          "other_unclear"
+        ],
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "267726008"
+        }
+      },
+      "target": {
+        "id": "target.eye-symptoms.visual-type",
+        "display": "Visual Change Type",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.visual-type",
+        "wording": "시야 변화는 흐림, 겹쳐 보임, 번쩍임·비문, 시야 일부 가림, 색 변화, 일시적 소실 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 105,
+          "reason": "visual-type"
+        }
+      ],
+      "supports": [
+        "group.eye.visual-disturbance"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.monocular_or_binocular_visual_change",
+        "display": "Monocular or Binocular Visual Change",
+        "value_type": "coded",
+        "allowed_values": [
+          "monocular",
+          "binocular",
+          "not_checked",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.eye-symptoms.mono-binocular",
+        "display": "Monocular or Binocular Visual Change",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.mono-binocular",
+        "wording": "한쪽씩 가려보면 한 눈에서만 지속되나요, 두 눈에서 보이나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 104,
+          "reason": "mono-binocular"
+        }
+      ],
+      "supports": [
+        "group.eye.visual-disturbance"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.double_vision_resolves_covering_one_eye",
+        "display": "Diplopia Cover Test History",
+        "value_type": "coded",
+        "allowed_values": [
+          "resolves",
+          "persists",
+          "not_applicable",
+          "not_checked"
+        ]
+      },
+      "target": {
+        "id": "target.eye-symptoms.diplopia-cover",
+        "display": "Diplopia Cover Test History",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.diplopia-cover",
+        "wording": "겹쳐 보일 때 한쪽 눈을 가리면 겹침이 사라지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 99,
+          "reason": "diplopia-cover"
+        }
+      ],
+      "supports": [
+        "group.eye.visual-disturbance"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.headache_scalp_tenderness_or_jaw_pain",
+        "display": "Headache Scalp Tenderness or Jaw Pain",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.eye-symptoms.arteritic-context",
+        "display": "Headache Scalp Tenderness or Jaw Pain",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.arteritic-context",
+        "wording": "새 두통, 두피를 만질 때 통증, 씹을 때 턱 통증이 함께 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 98,
+          "reason": "arteritic-context"
+        }
+      ],
+      "supports": [
+        "group.eye.visual-disturbance"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.myopia_retinal_history_or_family_detachment",
+        "display": "Myopia Retinal or Detachment History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.eye-symptoms.retinal-risk",
+        "display": "Myopia Retinal or Detachment History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.retinal-risk",
+        "wording": "심한 근시, 망막질환·망막박리, 백내장 수술 또는 가족의 망막박리 병력이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 97,
+          "reason": "retinal-risk"
+        }
+      ],
+      "supports": [
+        "group.eye.visual-disturbance"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.eyelid_swelling_lump_or_droop",
+        "display": "Eyelid Swelling Lump or Droop",
+        "value_type": "coded",
+        "allowed_values": [
+          "diffuse_swelling",
+          "localized_lump",
+          "droop",
+          "skin_change",
+          "other_unclear"
+        ],
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "193967004"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.eye-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.eye-symptoms.eyelid-problem",
+        "display": "Eyelid Swelling Lump or Droop",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.eyelid-problem",
+        "wording": "눈꺼풀 문제는 전체 부종, 국소 멍울, 처짐, 피부 변화 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 105,
+          "reason": "eyelid-problem"
+        }
+      ],
+      "supports": [
+        "group.eye.eyelid-periorbital"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.eyelid_tender_red_hot_or_draining",
+        "display": "Tender Red Hot or Draining Eyelid",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.eye-symptoms.eyelid-inflammation",
+        "display": "Tender Red Hot or Draining Eyelid",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.eyelid-inflammation",
+        "wording": "눈꺼풀·눈 주변이 붉고 뜨겁거나 아프고 진물·고름이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 104,
+          "reason": "eyelid-inflammation"
+        }
+      ],
+      "supports": [
+        "group.eye.eyelid-periorbital"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.vesicles_rash_or_facial_spread",
+        "display": "Vesicles Rash or Facial Spread",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.eye-symptoms.vesicle-rash",
+        "display": "Vesicles Rash or Facial Spread",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.vesicle-rash",
+        "wording": "눈꺼풀이나 이마·코 주변에 물집·발진이 있거나 붉은 부위가 퍼지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 103,
+          "reason": "vesicle-rash"
+        }
+      ],
+      "supports": [
+        "group.eye.eyelid-periorbital"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.recent_sinus_dental_skin_infection",
+        "display": "Recent Sinus Dental or Skin Infection",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.eye-symptoms.infection-context",
+        "display": "Recent Sinus Dental or Skin Infection",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.infection-context",
+        "wording": "최근 부비동염·감기, 치과 감염, 눈 주변 상처·벌레 물림이 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 93,
+          "reason": "infection-context"
+        }
+      ],
+      "supports": [
+        "group.eye.eyelid-periorbital"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.injury_mechanism_and_time",
+        "display": "Eye Injury Mechanism and Time",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.eye-symptoms.injury-mechanism",
+        "display": "Eye Injury Mechanism and Time",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.injury-mechanism",
+        "wording": "언제 무엇에 어떻게 다쳤는지, 충격 속도와 보호안경 착용 여부를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 105,
+          "reason": "injury-mechanism"
+        }
+      ],
+      "supports": [
+        "group.eye.trauma-foreign-body"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.foreign_body_sensation_after_exposure",
+        "display": "Foreign Body Sensation after Exposure",
+        "value_type": "boolean",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "82576008"
+        }
+      },
+      "target": {
+        "id": "target.eye-symptoms.foreign-body",
+        "display": "Foreign Body Sensation after Exposure",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.foreign-body",
+        "wording": "먼지·모래·금속·유리 등이 들어간 뒤 계속 이물감이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 104,
+          "reason": "foreign-body"
+        }
+      ],
+      "supports": [
+        "group.eye.trauma-foreign-body"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.irrigation_or_first_aid_done",
+        "display": "Eye Irrigation or First Aid Done",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.eye-symptoms.first-aid",
+        "display": "Eye Irrigation or First Aid Done",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.first-aid",
+        "wording": "눈을 씻었는지, 콘택트렌즈를 뺐는지 등 지금까지 한 처치를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 103,
+          "reason": "first-aid"
+        }
+      ],
+      "supports": [
+        "group.eye.trauma-foreign-body"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.bleeding_cut_or_inability_to_open",
+        "display": "Eye Bleeding Cut or Inability to Open",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.eye-symptoms.trauma-severity",
+        "display": "Eye Bleeding Cut or Inability to Open",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.trauma-severity",
+        "wording": "눈이나 눈꺼풀에 깊은 상처·출혈이 있거나 눈을 뜰 수 없나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 102,
+          "reason": "trauma-severity"
+        }
+      ],
+      "supports": [
+        "group.eye.trauma-foreign-body"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nhs.red-eye.2025",
+      "source.nhs.eye-pain.2025",
+      "source.nhs.vision-loss.2025",
+      "source.nhs.floaters-flashes.2023",
+      "source.nhs.glaucoma.2025",
+      "source.uhd.chemical-eye-injury.2026",
+      "source.moorfields.orbital-cellulitis.2021",
+      "source.stom.eye.20260714"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}
