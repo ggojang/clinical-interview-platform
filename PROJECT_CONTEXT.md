@@ -294,6 +294,8 @@ For a test-result follow-up Reason for Encounter, Runtime distinguishes institut
 
 When a user voluntarily uploads a report, prescription, screening form, image or scanned document, Runtime may extract explicit interview Facts into conversation state with document provenance, date and uncertainty. It reuses current explicit Facts to avoid duplicate questions, preserves conflicts with patient-reported information for clarification, never treats unreadable or absent document content as negative, and does not persist or publish the material in the public test version.
 
+Runtime never infers completion merely because no further question is selected. After the final free-text concern and required safety follow-up, it presents a distinct completion handoff for user confirmation. Until confirmed, the response remains in progress. Confirmed completion, user stop, post-completion correction and administrative invalidation remain distinguishable for future FHIR R4 `QuestionnaireResponse.status` mapping, and completion confirmation never substitutes for Consent.
+
 Longitudinal background information is reviewed on the first encounter and thereafter by recency. Research defaults are 90 days for current medication and 365 days for current conditions, family history, alcohol and smoking. Runtime asks only due or change-relevant groups and records each group's last confirmation date. When no persistent confirmation timestamp is available, Runtime asks one combined first-use/recency gating question before repeating the background inventory.
 
 ---

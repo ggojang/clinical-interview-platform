@@ -135,6 +135,28 @@ class GptExportTests(unittest.TestCase):
                 "preserve_both_sources_and_ask_targeted_clarification",
             )
             self.assertTrue(upload_policy["do_not_send_patient_material_to_actions"])
+            completion_policy = manifest["completion_handoff_policy"]
+            self.assertTrue(
+                completion_policy["requires_explicit_user_confirmation"]
+            )
+            self.assertTrue(
+                completion_policy["do_not_mark_completed_before_confirmation"]
+            )
+            option_numbers = [
+                option["number"] for option in completion_policy["options"]
+            ]
+            self.assertEqual(option_numbers, [1, 2, 3, 4, 5])
+            self.assertEqual(len(option_numbers), len(set(option_numbers)))
+            fhir_status = completion_policy[
+                "future_fhir_r4_questionnaire_response_status"
+            ]
+            self.assertEqual(fhir_status["awaiting_user_confirmation"], "in-progress")
+            self.assertEqual(fhir_status["user_completed"], "completed")
+            self.assertEqual(fhir_status["user_stopped"], "stopped")
+            self.assertEqual(fhir_status["corrected_after_completion"], "amended")
+            self.assertTrue(
+                completion_policy["completion_confirmation_is_not_consent"]
+            )
             review_policy = manifest["longitudinal_context_review_policy"]
             self.assertEqual(
                 review_policy["unknown_last_confirmed_at"],

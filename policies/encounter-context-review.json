@@ -38,6 +38,44 @@
     "do_not_publish_patient_material": true,
     "conversation_only_in_test_version": true
   },
+  "completion_handoff": {
+    "requires_explicit_user_confirmation": true,
+    "pre_confirmation_steps": [
+      "offer_final_free_text_concern",
+      "resolve_required_safety_follow_up",
+      "summarize_missing_uncertain_and_conflicting_information"
+    ],
+    "confirmation_question_ko": "설문을 어떻게 마칠까요?",
+    "options": [
+      {"number": 1, "code": "complete", "display_ko": "설문 종료 및 결과 확정"},
+      {"number": 2, "code": "continue_or_edit", "display_ko": "답변 추가·수정"},
+      {"number": 3, "code": "stop", "display_ko": "설문 중단"},
+      {"number": 4, "code": "unknown", "display_ko": "잘 모르겠음"},
+      {"number": 5, "code": "decline", "display_ko": "답변하지 않음"}
+    ],
+    "do_not_mark_completed_before_confirmation": true,
+    "completion_announcement_ko": "설문이 종료되었습니다. 현재 응답은 이 종료 시점을 기준으로 확정되었습니다. 이후 입력은 기존 결과의 수정 요청 또는 새로운 상담 사유로 구분됩니다.",
+    "record_on_transition": [
+      "interview_status",
+      "completion_reason",
+      "completion_confirmed_at",
+      "last_modified_at",
+      "unanswered_fact_ids",
+      "dataAbsentReason",
+      "consent_state"
+    ],
+    "completion_confirmation_is_not_consent": true,
+    "future_fhir_r4_questionnaire_response_status": {
+      "collecting": "in-progress",
+      "awaiting_user_confirmation": "in-progress",
+      "paused_or_undecided": "in-progress",
+      "user_completed": "completed",
+      "user_stopped": "stopped",
+      "corrected_after_completion": "amended",
+      "administratively_invalidated": "entered-in-error"
+    },
+    "post_completion_input": "classify_as_amendment_or_new_reason_for_encounter_before_collecting"
+  },
   "longitudinal_context_review": {
     "review_all_on_first_encounter": true,
     "unknown_last_confirmed_at": "ask_single_recency_gate_then_due_if_still_unknown",
