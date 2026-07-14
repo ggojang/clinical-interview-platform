@@ -1,0 +1,44 @@
+{
+  "id": "policy.encounter-context-review",
+  "version": "0.1.0",
+  "status": "research_only",
+  "review_status": "unreviewed",
+  "result_follow_up": {
+    "clarification_question_ko": "오늘은 의료기관에서 검사결과를 확인하려는 것인가요, 아니면 검사결과의 판독이나 설명을 원하시나요?",
+    "options": [
+      {"code": "institution_result_check", "display_ko": "의료기관에서 결과 확인"},
+      {"code": "interpretation_request", "display_ko": "검사결과 판독·설명 요청"},
+      {"code": "both", "display_ko": "둘 다"}
+    ],
+    "institution_result_check": {
+      "request_upload": false,
+      "check": ["result.abnormal_notice", "result.new_concern"],
+      "when_no_abnormality_or_concern": "ask_additional_request_then_complete"
+    },
+    "interpretation_request": {
+      "request_upload_once": true,
+      "accepted_input": ["image", "pdf", "text"],
+      "never_repeat_upload_request": true
+    }
+  },
+  "longitudinal_context_review": {
+    "review_all_on_first_encounter": true,
+    "unknown_last_confirmed_at_is_due": true,
+    "groups": {
+      "history.conditions": {"interval_days": 365},
+      "medication.current": {"interval_days": 90},
+      "history.family": {"interval_days": 365},
+      "social.alcohol": {"interval_days": 365},
+      "social.smoking": {"interval_days": 365}
+    },
+    "review_only_due_groups": true,
+    "allow_user_reported_change_to_trigger_review": true
+  },
+  "provenance": {
+    "created_by": {"type": "ai", "id": "codex-gpt5"},
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": ["docs/context/002-encounter-context.md", "docs/context/017-clinical-memory.md"],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

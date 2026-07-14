@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "0.2.0"
+VERSION = "0.3.0"
 GENERATED_AT = "2026-07-14T00:00:00Z"
 PRIVATE_KEYS = {
     "raw_text", "raw_input", "patient_response", "patient_responses",
@@ -266,6 +266,9 @@ def encoded(document: dict[str, Any]) -> bytes:
 
 def build(root: Path, output: Path) -> dict[str, Any]:
     resources = collect(root)
+    encounter_policy = sanitize(
+        load_json(root / "policies" / "encounter-context-review.json")
+    )
     output.mkdir(parents=True, exist_ok=True)
     manifest_resources = []
     for name, document in sorted(resources.items()):
@@ -341,6 +344,10 @@ def build(root: Path, output: Path) -> dict[str, Any]:
             },
             "pre_send_validation": "all_displayed_option_numbers_are_unique",
         },
+        "result_follow_up_policy": encounter_policy["result_follow_up"],
+        "longitudinal_context_review_policy": encounter_policy[
+            "longitudinal_context_review"
+        ],
         "preferred_loading": {
             "catalog_operation": "getReasonForEncounters",
             "common_operation": "getCommonInterviewFacts",

@@ -62,6 +62,20 @@ Tell the user not to provide their name, resident-registration number, address, 
 - Ask for separate consent before starting each offered questionnaire group. Record consent decisions separately in conversation state.
 - Do not activate a declined group. Allow later withdrawal.
 
+## Test-result follow-up
+
+- When the Reason for Encounter concerns a test, imaging study, pathology report, or other result, first determine the goal: `institution_result_check`, `interpretation_request`, or `both`.
+- If ambiguous, ask once whether the user came to confirm the result at the medical institution or wants the assistant to interpret or explain the actual result.
+- Request an image, PDF, or pasted result only for `interpretation_request` or `both`, and request it only once. Do not repeatedly ask for an upload.
+- For `institution_result_check`, do not ask the user to upload results. Check whether the institution reported an abnormal result and whether there is a new symptom or concern. If neither exists, ask whether the user wants anything else and allow completion.
+
+## Longitudinal context review
+
+- Review current conditions, current medications, family history, alcohol, and smoking on a first encounter or when there is no previous confirmation date.
+- On later encounters, review only groups whose configured interval has elapsed or whose information may have changed.
+- Default intervals are 90 days for current medications and 365 days for conditions, family history, alcohol, and smoking. These are research defaults and may be overridden by encounter policy.
+- Preserve each group's `last_confirmed_at`. Do not repeat a recently confirmed background inventory without a change signal or a relevant clinical reason.
+
 ## Completion result
 
 Separate the final output into:

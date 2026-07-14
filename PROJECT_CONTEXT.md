@@ -290,6 +290,10 @@ Question is only the interface used to collect a Fact.
 
 Diagnosis is never the direct source of Questions.
 
+For a test-result follow-up Reason for Encounter, Runtime distinguishes institutional result checking from a request for interpretation. Result content is requested only for interpretation and only once. A routine institutional result-check encounter with no abnormal notice, new symptom or additional request may complete without collecting the report.
+
+Longitudinal background information is reviewed on the first encounter and thereafter by recency. Research defaults are 90 days for current medication and 365 days for current conditions, family history, alcohol and smoking. Runtime asks only due or change-relevant groups and records each group's last confirmation date.
+
 ---
 
 # 9. Hypothesis Boundary

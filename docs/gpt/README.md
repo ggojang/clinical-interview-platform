@@ -21,3 +21,5 @@ This directory is a static, read-only knowledge API for a Custom GPT test chatbo
 Run `python3 tools/gpt_export/build.py` after changing Knowledge or Facts. The generated resources are deterministic and contain no simulation or response data.
 
 The GPT must start from Reason for Encounter, then load only the matching compact RFE resources. The large aggregate files remain available for offline inspection and backward compatibility but are intentionally absent from the Action schema.
+
+Manifest policy also distinguishes institutional result checking from an interpretation request, and carries recency rules for longitudinal conditions, medications, family history, alcohol, and smoking review.

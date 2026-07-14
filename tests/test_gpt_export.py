@@ -106,7 +106,7 @@ class GptExportTests(unittest.TestCase):
             output_path = Path(output)
             manifest = build(ROOT, output_path)
             self.assertEqual(manifest["interview_entry"]["type"], "reason_for_encounter")
-            self.assertEqual(len(manifest["interview_entry"]["catalog"]), 14)
+            self.assertEqual(len(manifest["interview_entry"]["catalog"]), 15)
             self.assertTrue(
                 manifest["additional_comment_policy"][
                     "resolution_includes_service_improvement"
@@ -117,6 +117,20 @@ class GptExportTests(unittest.TestCase):
             self.assertTrue(numbering["option_numbers_must_be_unique_within_question"])
             self.assertEqual(
                 set(numbering["binary_question_only_codes"]), {"1", "2", "3", "5"}
+            )
+            result_policy = manifest["result_follow_up_policy"]
+            self.assertFalse(
+                result_policy["institution_result_check"]["request_upload"]
+            )
+            self.assertTrue(
+                result_policy["interpretation_request"]["request_upload_once"]
+            )
+            review_policy = manifest["longitudinal_context_review_policy"]
+            self.assertEqual(
+                review_policy["groups"]["medication.current"]["interval_days"], 90
+            )
+            self.assertEqual(
+                review_policy["groups"]["history.conditions"]["interval_days"], 365
             )
             for name in ("facts.json", "question-groups.json", "safety-rules.json"):
                 self.assertLess((output_path / name).stat().st_size, 100_000, name)
