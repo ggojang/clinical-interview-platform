@@ -525,6 +525,8 @@ SNOMED CT supports terminology alignment.
 
 MRCM is acquired and summarized only at Build Time. A Fact may retain a versioned provisional MRCM validation reference for permitted SNOMED CT attributes, domains, ranges and cardinality. Runtime never executes MRCM, and an MRCM result never creates a clinical Rule or determines question priority, diagnosis or safety. The abdominal-pain research package is the first package to retain such a validation reference for Finding site and Severity.
 
+When a clinical finding has an anatomical Finding site, laterality is collected and post-coordinated only if the versioned body-structure concept is a verified member of `723264001 |Lateralizable body structure reference set|`. The classifiable expression nests `272741003 |Laterality|` on the value of `363698007 |Finding site|`; it does not add Laterality as a parallel attribute to the focus finding. Bilateral input is expanded into separate left and right Finding-site role groups. If membership, MRCM, normal-form compatibility, or terminology service availability cannot be verified, Finding site and laterality remain separate Facts and no post-coordinated expression is asserted.
+
 LOINC supports observable alignment.
 
 FHIR supports exchange.

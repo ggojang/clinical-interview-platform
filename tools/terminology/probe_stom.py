@@ -353,6 +353,19 @@ def probe() -> dict:
     if parameter_value(lookup, "display") != "Cough (finding)":
         raise RuntimeError("SNOMED CT cough lookup did not return expected display")
 
+    lateralizable_member = request_json(
+        "/members/SNOMEDCT/723264001",
+        query={"refcpntid": "71341001", "page": 1, "size": 5, "view": "list"},
+    )
+    non_lateralizable_member = request_json(
+        "/members/SNOMEDCT/723264001",
+        query={"refcpntid": "113345001", "page": 1, "size": 5, "view": "list"},
+    )
+    if lateralizable_member.get("totalElements") != 1:
+        raise RuntimeError("expected femur body structure refset membership was not returned")
+    if non_lateralizable_member.get("totalElements") != 0:
+        raise RuntimeError("midline body structure unexpectedly returned as lateralizable")
+
     hira = request_json(
         "/hira/약제/search",
         query={"q": "암로디핀", "page": 1, "size": 3},
@@ -384,6 +397,15 @@ def probe() -> dict:
             "focus_code": "21522001",
             "verified_attribute_ids": ["246112005", "363698007"],
             "attribute_count_returned": len(mrcm_attributes),
+            "clinical_rule_authority": False,
+        },
+        "snomed_lateralizable_body_structure_refset": {
+            "refset_id": "723264001",
+            "member_probe_code": "71341001",
+            "member_result": True,
+            "nonmember_probe_code": "113345001",
+            "nonmember_result": True,
+            "concept_activity_verified_separately_with_fhir_lookup": True,
             "clinical_rule_authority": False,
         },
         "chest_pain_snomed_mrcm": {

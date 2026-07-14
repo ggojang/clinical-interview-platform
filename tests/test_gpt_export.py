@@ -386,7 +386,27 @@ class GptExportTests(unittest.TestCase):
             self.assertTrue(
                 terminology["send_only_minimal_normalized_term_or_code"]
             )
+            self.assertIn(
+                "verify_finding_site_membership_in_723264001_before_laterality",
+                terminology["mapping_flow"],
+            )
             self.assertIn("stom-openapi.yaml", terminology["action_schema_url"])
+            laterality = manifest["snomed_laterality_postcoordination_policy"]
+            self.assertEqual(
+                laterality["codes"]["lateralizable_body_structure_refset"],
+                "723264001",
+            )
+            self.assertEqual(laterality["codes"]["finding_site_attribute"], "363698007")
+            self.assertEqual(laterality["codes"]["laterality_attribute"], "272741003")
+            self.assertTrue(
+                laterality["expression_model"]["nest_laterality_on_finding_site_value"]
+            )
+            self.assertTrue(
+                laterality["expression_model"]["never_emit_single_nested_right_and_left_as_final_classifiable_form"]
+            )
+            self.assertTrue(
+                laterality["normal_form_preconditions"]["reject_already_lateralized_anatomical_value"]
+            )
             provenance_display = manifest["response_provenance_display_policy"]
             self.assertTrue(
                 provenance_display["compact_marker_required_for_every_question"]
@@ -479,6 +499,7 @@ class GptExportTests(unittest.TestCase):
                     "occupation.current",
                     "patient.smoking.status",
                     "patient.alcohol.pattern",
+                    "finding.site_laterality",
                     "encounter.is_first",
                     "context.last_confirmed_at",
                 }.issubset(common_ids)
@@ -515,6 +536,8 @@ class GptExportTests(unittest.TestCase):
         self.assertIn("https://stom.infoclinic.co", schema)
         self.assertIn("operationId: searchSnomedMappingCandidates", schema)
         self.assertIn("operationId: lookupTerminologyCode", schema)
+        self.assertIn("operationId: checkSnomedReferenceSetMembership", schema)
+        self.assertIn("723264001", schema)
         self.assertIn("operationId: searchLoinc", schema)
         self.assertIn("operationId: searchHiraDrug", schema)
         self.assertNotIn("\n    put:", schema.lower())

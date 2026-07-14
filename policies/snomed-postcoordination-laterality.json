@@ -1,0 +1,80 @@
+{
+  "id": "policy.snomed-postcoordination-laterality",
+  "version": "0.1.0",
+  "status": "research_only",
+  "review_status": "unreviewed",
+  "scope": ["clinical_finding"],
+  "codes": {
+    "system": "http://snomed.info/sct",
+    "lateralizable_body_structure_refset": "723264001",
+    "finding_site_attribute": "363698007",
+    "laterality_attribute": "272741003",
+    "side_range_parent": "182353008",
+    "left": "7771000",
+    "right": "24028007",
+    "right_and_left_input": "51440002"
+  },
+  "activation": {
+    "anatomical_structure_present": true,
+    "finding_site_is_active": true,
+    "finding_site_refset_membership_required": true,
+    "membership_ecl": "^ 723264001 |Lateralizable body structure reference set|",
+    "membership_read_operation": "GET /members/SNOMEDCT/723264001?refcpntid={finding_site_code}",
+    "mrcm_finding_site_compatibility_required": true,
+    "never_infer_membership_from_bilateral_wording_or_anatomical_name": true
+  },
+  "normal_form_preconditions": {
+    "focus_is_clinical_finding": true,
+    "one_finding_site_role_group_or_repeated_identical_site": true,
+    "reject_multiple_different_finding_sites": true,
+    "reject_already_lateralized_anatomical_value": true,
+    "do_not_apply_laterality_as_parallel_attribute_to_focus_finding": true
+  },
+  "fact_collection": {
+    "collect_finding_site_before_laterality": true,
+    "ask_laterality_only_after_membership_is_verified": true,
+    "allowed_user_states": ["left", "right", "bilateral", "unknown", "declined", "not_applicable"],
+    "unknown_or_declined_remains_separate_data_absent_state": true,
+    "do_not_postcoordinate_unknown_declined_or_not_applicable": true,
+    "reusable_fact_id": "finding.site_laterality"
+  },
+  "expression_model": {
+    "nest_laterality_on_finding_site_value": true,
+    "template": "=== {focus} : { 363698007 = ( {site} : 272741003 = {side} ) }",
+    "bilateral_input": "51440002 |Right and left|",
+    "bilateral_classifiable_form": "two_role_groups_one_left_and_one_right",
+    "never_emit_single_nested_right_and_left_as_final_classifiable_form": true,
+    "preserve_focus_site_laterality_and_expression_components": true
+  },
+  "validation": {
+    "timing": "build_time_or_export_time",
+    "runtime_live_lookup": "optional_minimal_code_only",
+    "runtime_failure_fallback": "preserve_separate_finding_site_and_laterality_facts_without_postcoordination",
+    "terminology_result_never_controls_clinical_priority_or_safety": true,
+    "record": [
+      "edition_version",
+      "refset_id",
+      "membership_result",
+      "membership_source",
+      "mrcm_result",
+      "expression_form",
+      "validation_time"
+    ]
+  },
+  "fhir_projection": {
+    "retain_separate_components_for_audit": true,
+    "use_expression_as_coding_code_only_when_receiver_supports_snomed_expressions": true,
+    "otherwise_exchange_precoordinated_code_or_separate_components": true
+  },
+  "provenance": {
+    "created_by": {"type": "ai", "id": "codex-gpt5"},
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "https://docs.snomed.org/snomed-ct-practical-guides/snomed-ct-postcoordination-guide/expressions-in-a-terminology-server/implementation/transformation-level-1",
+      "https://docs.snomed.org/snomed-ct-specifications/snomed-ct-editorial-guide/readme/authoring/domain-specific-modeling/body-structure/anatomical-concept-model/laterality",
+      "source.stom.fhir-r4-terminology-server"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

@@ -56,6 +56,40 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
+  /members/SNOMEDCT/{refsetid}:
+    get:
+      operationId: checkSnomedReferenceSetMembership
+      summary: Check whether one SNOMED CT concept is a member of a reference set
+      description: >-
+        Use only a terminology code. For laterality, refsetid must be 723264001.
+        Verify concept activity separately with FHIR CodeSystem $lookup.
+      parameters:
+        - name: refsetid
+          in: path
+          required: true
+          schema: {type: string, enum: ['723264001']}
+        - name: refcpntid
+          in: query
+          required: true
+          schema: {type: string, pattern: '^[0-9]{6,18}$'}
+        - name: page
+          in: query
+          required: false
+          schema: {type: integer, enum: [1], default: 1}
+        - name: size
+          in: query
+          required: false
+          schema: {type: integer, enum: [5], default: 5}
+        - name: view
+          in: query
+          required: false
+          schema: {type: string, enum: [list], default: list}
+      responses:
+        '200':
+          description: Reference-set membership page; totalElements greater than zero means member
+          content:
+            application/json:
+              schema: {type: object, additionalProperties: true}
             application/json:
               schema:
                 type: object

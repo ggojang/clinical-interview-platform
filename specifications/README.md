@@ -14,6 +14,7 @@ A valid JSON or YAML object may still violate a specification. Runtime code, tes
 - `provenance.md`: traceability requirements
 - `safety-escalation.md`: urgent-information behavior
 - `common-cause-prioritization.md`: safety-gated common-cause ordering
+- `snomed-laterality.md`: refset-gated Finding-site laterality post-coordination
 
 ## Change policy
 

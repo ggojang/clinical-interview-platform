@@ -34,6 +34,8 @@ The common Fact resource and manifest jointly expose the first-encounter baselin
 
 The STOM Action is intentionally separate from the compiled Knowledge Action. It accepts only a short de-identified normalized term or terminology code and provides provisional SNOMED CT, LOINC, KCD-8, HIRA, and FHIR lookup results. It must never receive raw patient answers or control clinical rules.
 
+For anatomical Finding sites, the STOM Action can check membership in `723264001 |Lateralizable body structure reference set|`. The manifest then governs nested Finding-site/Laterality post-coordination, including separate left and right role groups for bilateral findings.
+
 Verify the approved live read operations with synthetic normalized terms:
 
 ```bash
