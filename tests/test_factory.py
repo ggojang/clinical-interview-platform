@@ -19,7 +19,7 @@ from runtime.package import (
     ABDOMINAL_PAIN_PACKAGE, BACK_PAIN_PACKAGE, CHEST_PAIN_PACKAGE, DEFAULT_PACKAGE,
     DIZZINESS_SYNCOPE_PACKAGE, DYSPNEA_PACKAGE, FEVER_PACKAGE, HEADACHE_PACKAGE,
     FATIGUE_PACKAGE, MEDICATION_REVIEW_PACKAGE, SKIN_COMPLAINT_PACKAGE,
-    URINARY_SYMPTOMS_PACKAGE,
+    UPPER_RESPIRATORY_SYMPTOMS_PACKAGE, URINARY_SYMPTOMS_PACKAGE,
     VOMITING_DIARRHEA_PACKAGE,
     PackageLoadError, load_package,
 )
@@ -45,6 +45,7 @@ class CompilerTests(unittest.TestCase):
             "back_pain",
             "skin_complaint",
             "medication_review",
+            "upper_respiratory_symptoms",
         ):
             with self.subTest(profile=profile), self.assertRaises(CompilationError):
                 compile_package(production=True, profile=profile)
@@ -459,6 +460,32 @@ class CompilerTests(unittest.TestCase):
         self.assertEqual(mapping["validation"]["result"], "provisional_pass")
         self.assertFalse(mapping["validation"]["clinical_rule_authority"])
 
+    def test_upper_respiratory_package_is_complete_and_deterministic(self):
+        first = compile_package(profile="upper_respiratory_symptoms")
+        second = compile_package(profile="upper_respiratory_symptoms")
+        self.assertEqual(first, second)
+        facts = {
+            node["id"] for node in first["knowledge_graph"]["nodes"]
+            if node["type"] == "Fact"
+        }
+        self.assertEqual(len(facts), 39)
+        self.assertEqual(facts, set(first["indexes"]["questions_by_fact"]))
+        self.assertEqual(first["coverage"]["total_safety_rules"], 10)
+        self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 10)
+        self.assertEqual(first["coverage"]["uncovered_safety_rules"], [])
+
+    def test_upper_respiratory_mrcm_preserves_unsupported_nasal_discharge(self):
+        mapping = json.loads(
+            (
+                Path(__file__).resolve().parents[1]
+                / "mappings/terminology/snomed-mrcm-upper-respiratory-symptoms.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(len(mapping["focus_concepts"]), 5)
+        self.assertEqual(mapping["validation"]["result"], "partial_provisional_pass")
+        self.assertEqual(mapping["unsupported_checks"][0]["focus_code"], "64531003")
+        self.assertFalse(mapping["validation"]["clinical_rule_authority"])
+
 
 class ClinicalMemoryTests(unittest.TestCase):
     def setUp(self):
@@ -770,6 +797,28 @@ class PackageRuntimeTests(unittest.TestCase):
     def test_medication_review_research_package_is_rejected_in_production(self):
         with self.assertRaises(PackageLoadError):
             load_package(MEDICATION_REVIEW_PACKAGE, execution_mode="production")
+
+    def test_upper_respiratory_simulation_evaluation_passes(self):
+        report = run_evaluation(UPPER_RESPIRATORY_SYMPTOMS_PACKAGE)
+        self.assertTrue(report["passed"])
+        self.assertEqual(report["case_count"], 11)
+        self.assertLessEqual(max(item["turns"] for item in report["results"]), 40)
+
+    def test_upper_respiratory_runtime_uses_grouped_rfe(self):
+        session = InterviewSession(
+            "upper-respiratory-runtime",
+            package_path=UPPER_RESPIRATORY_SYMPTOMS_PACKAGE,
+        )
+        state = session.process("목이 아프고 코가 막혀요.")
+        self.assertIn("upper_respiratory.symptoms", state["active_patterns"])
+        self.assertEqual(
+            state["package"]["id"],
+            "package.primary-care-upper-respiratory-symptoms",
+        )
+
+    def test_upper_respiratory_research_package_is_rejected_in_production(self):
+        with self.assertRaises(PackageLoadError):
+            load_package(UPPER_RESPIRATORY_SYMPTOMS_PACKAGE, execution_mode="production")
 
 
 if __name__ == "__main__":

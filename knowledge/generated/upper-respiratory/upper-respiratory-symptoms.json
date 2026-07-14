@@ -1,0 +1,1749 @@
+{
+  "id": "knowledge.generated.upper-respiratory-symptoms",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-upper-respiratory-symptoms-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-07-14",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-07-15",
+    "next_full_review_at": "2027-01-10",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.upper-respiratory.immediate-safety",
+      "type": "ClinicalGroup",
+      "display": "Immediate Safety"
+    },
+    {
+      "id": "group.upper-respiratory.throat",
+      "type": "ClinicalGroup",
+      "display": "Throat"
+    },
+    {
+      "id": "group.upper-respiratory.nasal-sinus",
+      "type": "ClinicalGroup",
+      "display": "Nasal Sinus"
+    },
+    {
+      "id": "group.upper-respiratory.allergic",
+      "type": "ClinicalGroup",
+      "display": "Allergic"
+    },
+    {
+      "id": "group.upper-respiratory.voice-persistence",
+      "type": "ClinicalGroup",
+      "display": "Voice Persistence"
+    },
+    {
+      "id": "group.upper-respiratory.context",
+      "type": "ClinicalGroup",
+      "display": "Context"
+    },
+    {
+      "id": "hypothesis.upper-respiratory.immediate-safety",
+      "type": "Hypothesis",
+      "display": "Immediate Upper Airway Safety Warning Pattern"
+    },
+    {
+      "id": "hypothesis.upper-respiratory.throat",
+      "type": "Hypothesis",
+      "display": "Throat Symptom Pattern"
+    },
+    {
+      "id": "hypothesis.upper-respiratory.sinus",
+      "type": "Hypothesis",
+      "display": "Nasal and Sinus Symptom Pattern"
+    },
+    {
+      "id": "hypothesis.upper-respiratory.allergic",
+      "type": "Hypothesis",
+      "display": "Allergic Upper Respiratory Pattern"
+    },
+    {
+      "id": "hypothesis.upper-respiratory.persistence",
+      "type": "Hypothesis",
+      "display": "Persistent Voice or Lesion Warning Pattern"
+    }
+  ],
+  "group_hypothesis_edges": [
+    [
+      "group.upper-respiratory.immediate-safety",
+      "hypothesis.upper-respiratory.immediate-safety"
+    ],
+    [
+      "group.upper-respiratory.throat",
+      "hypothesis.upper-respiratory.throat"
+    ],
+    [
+      "group.upper-respiratory.nasal-sinus",
+      "hypothesis.upper-respiratory.sinus"
+    ],
+    [
+      "group.upper-respiratory.allergic",
+      "hypothesis.upper-respiratory.allergic"
+    ],
+    [
+      "group.upper-respiratory.voice-persistence",
+      "hypothesis.upper-respiratory.persistence"
+    ]
+  ],
+  "safety_rules": [
+    {
+      "id": "rule.upper-respiratory.safety.breathing-stridor",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.severe_breathing_or_stridor",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.upper-respiratory.safety.unable-swallow-drooling",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.unable_to_swallow_saliva_or_drooling",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.upper-respiratory.safety.rapid-worsening",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.upper_respiratory.severe_rapid_worsening",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.upper-respiratory.safety.allergic-swelling",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.sudden_lip_tongue_or_throat_swelling",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.upper-respiratory.safety.orbital-complication",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.periorbital_swelling_or_displaced_eye",
+            "equals": true
+          },
+          {
+            "fact": "symptom.double_vision_painful_eye_movement_or_reduced_vision",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.upper-respiratory.safety.intracranial-warning",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.sinus_intracranial_warning",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.upper-respiratory.safety.confusion-systemic",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.confusion",
+            "equals": true
+          },
+          {
+            "fact": "symptom.fever",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.upper-respiratory.safety.immunocompromised-fever",
+      "priority": 900,
+      "when": {
+        "all": [
+          {
+            "fact": "patient.immunocompromised",
+            "equals": true
+          },
+          {
+            "fact": "symptom.fever",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.upper-respiratory.safety.dehydration",
+      "priority": 900,
+      "when": {
+        "fact": "symptom.dehydration_or_unable_fluids",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.upper-respiratory.safety.deep-neck-warning",
+      "priority": 900,
+      "when": {
+        "fact": "symptom.neck_swelling_trismus_or_muffled_voice",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "symptom.upper_respiratory.current",
+        "display": "Current Upper Respiratory Symptom",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.upper-respiratory.current",
+        "display": "Current Upper Respiratory Symptom",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.current",
+        "wording": "지금도 목 통증, 코막힘·콧물, 재채기 또는 목소리 변화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "confirm_presentation"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.throat",
+        "group.upper-respiratory.nasal-sinus"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.upper_respiratory.main_type",
+        "display": "Main Upper Respiratory Symptom",
+        "value_type": "coded",
+        "allowed_values": [
+          "sore_throat",
+          "nasal_obstruction",
+          "nasal_discharge",
+          "sneezing_itch",
+          "facial_pain",
+          "hoarseness",
+          "other"
+        ]
+      },
+      "target": {
+        "id": "target.upper-respiratory.main-type",
+        "display": "Main Upper Respiratory Symptom",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.main-type",
+        "wording": "가장 불편한 것은 목 통증, 코막힘, 콧물, 재채기·가려움, 얼굴 통증, 쉰목소리 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 105,
+          "reason": "characterize_type"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.throat",
+        "group.upper-respiratory.nasal-sinus"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.duration",
+        "display": "Symptom Duration",
+        "value_type": "quantity"
+      },
+      "target": {
+        "id": "target.upper-respiratory.duration",
+        "display": "Symptom Duration",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.duration",
+        "wording": "증상은 언제부터 시작했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 104,
+          "reason": "characterize_duration"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.context"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.upper_respiratory.onset",
+        "display": "Upper Respiratory Symptom Onset",
+        "value_type": "coded",
+        "allowed_values": [
+          "sudden",
+          "gradual",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.upper-respiratory.onset",
+        "display": "Upper Respiratory Symptom Onset",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.onset",
+        "wording": "갑자기 시작했나요, 서서히 시작했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 103,
+          "reason": "characterize_onset"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.upper_respiratory.severity",
+        "display": "Upper Respiratory Symptom Severity",
+        "value_type": "coded",
+        "allowed_values": [
+          "mild",
+          "moderate",
+          "severe"
+        ]
+      },
+      "target": {
+        "id": "target.upper-respiratory.severity",
+        "display": "Upper Respiratory Symptom Severity",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.severity",
+        "wording": "전체 불편은 가벼움, 중간, 심함 중 어디에 가깝나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 102,
+          "reason": "characterize_severity"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.severe_breathing_or_stridor",
+        "display": "Severe Breathing Difficulty or Stridor",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.upper-respiratory.breathing-stridor",
+        "display": "Severe Breathing Difficulty or Stridor",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.breathing-stridor",
+        "wording": "숨쉬기 어렵거나 들이쉴 때 높은 소리가 나나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "airway_gate"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.immediate-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.unable_to_swallow_saliva_or_drooling",
+        "display": "Unable to Swallow Saliva or Drooling",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.upper-respiratory.drooling",
+        "display": "Unable to Swallow Saliva or Drooling",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.drooling",
+        "wording": "침도 삼키기 어려워 흘리거나 계속 뱉고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "airway_gate"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.immediate-safety",
+        "group.upper-respiratory.throat"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.upper_respiratory.severe_rapid_worsening",
+        "display": "Severe and Rapidly Worsening Upper Respiratory Symptoms",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.upper-respiratory.rapid-worsening",
+        "display": "Severe and Rapidly Worsening Upper Respiratory Symptoms",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.rapid-worsening",
+        "wording": "증상이 매우 심하면서 빠르게 악화하고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 127,
+          "reason": "rapid_deterioration_gate"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.immediate-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.sudden_lip_tongue_or_throat_swelling",
+        "display": "Sudden Lip Tongue or Throat Swelling",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.upper-respiratory.allergic-swelling",
+        "display": "Sudden Lip Tongue or Throat Swelling",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.allergic-swelling",
+        "wording": "입술, 혀 또는 목이 갑자기 붓고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 126,
+          "reason": "anaphylaxis_gate"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.immediate-safety",
+        "group.upper-respiratory.allergic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.periorbital_swelling_or_displaced_eye",
+        "display": "Periorbital Swelling or Displaced Eye",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.upper-respiratory.orbital-swelling",
+        "display": "Periorbital Swelling or Displaced Eye",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.orbital-swelling",
+        "wording": "한쪽 눈 주위가 심하게 붓거나 눈이 앞으로 나오거나 위치가 달라 보이나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 125,
+          "reason": "orbital_gate"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.immediate-safety",
+        "group.upper-respiratory.nasal-sinus"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.double_vision_painful_eye_movement_or_reduced_vision",
+        "display": "Double Vision Painful Eye Movement or Reduced Vision",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.upper-respiratory.orbital-vision",
+        "display": "Double Vision Painful Eye Movement or Reduced Vision",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.orbital-vision",
+        "wording": "겹쳐 보이거나 눈을 움직일 때 아프거나 시력이 새로 떨어졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 124,
+          "reason": "orbital_gate"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.immediate-safety",
+        "group.upper-respiratory.nasal-sinus"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.sinus_intracranial_warning",
+        "display": "Sinus Intracranial Warning Feature",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.upper-respiratory.intracranial",
+        "display": "Sinus Intracranial Warning Feature",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.intracranial",
+        "wording": "심한 이마 두통과 함께 목이 뻣뻣하거나 한쪽 팔다리 힘·말하기가 달라졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 123,
+          "reason": "intracranial_gate"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.immediate-safety",
+        "group.upper-respiratory.nasal-sinus"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.fever",
+        "display": "Fever",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.upper-respiratory.fever",
+        "display": "Fever",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.fever",
+        "wording": "열이 나거나 몸이 뜨겁고 춥고 떨리나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 122,
+          "reason": "infection_gate"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.immediate-safety",
+        "group.upper-respiratory.throat",
+        "group.upper-respiratory.nasal-sinus"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.systemically_unwell",
+        "display": "Systemically Unwell",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.upper-respiratory.systemically-unwell",
+        "display": "Systemically Unwell",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.systemically-unwell",
+        "wording": "평소와 달리 전신 상태가 몹시 나쁘고 기운이 없나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 121,
+          "reason": "systemic_gate"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.immediate-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.confusion",
+        "display": "New Confusion",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.upper-respiratory.confusion",
+        "display": "New Confusion",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.confusion",
+        "wording": "새로 혼란스럽거나 깨우기 어렵거나 평소와 다르게 반응하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 120,
+          "reason": "sepsis_gate"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.immediate-safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "patient.immunocompromised",
+        "display": "Immunocompromised",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.upper-respiratory.immunocompromised",
+        "display": "Immunocompromised",
+        "intents": [
+          "intent.screen_red_flags",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.immunocompromised",
+        "wording": "면역을 낮추는 약을 사용하거나 면역이 약해지는 질환·치료를 받고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 119,
+          "reason": "complication_risk"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.immediate-safety",
+        "group.upper-respiratory.context"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.dehydration_or_unable_fluids",
+        "display": "Dehydration or Unable to Take Fluids",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.upper-respiratory.dehydration",
+        "display": "Dehydration or Unable to Take Fluids",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.dehydration",
+        "wording": "물을 충분히 마실 수 없거나 소변이 크게 줄고 진해졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 118,
+          "reason": "dehydration_gate"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.immediate-safety",
+        "group.upper-respiratory.throat"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.neck_swelling_trismus_or_muffled_voice",
+        "display": "Neck Swelling Trismus or Muffled Voice",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.upper-respiratory.deep-neck",
+        "display": "Neck Swelling Trismus or Muffled Voice",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.deep-neck",
+        "wording": "목 한쪽이 붓거나 입을 벌리기 어렵거나 목소리가 입에 무언가 문 듯 변했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 117,
+          "reason": "suppurative_complication_gate"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.immediate-safety",
+        "group.upper-respiratory.throat"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.throat_pain",
+        "display": "Throat Pain",
+        "value_type": "coded",
+        "allowed_values": [
+          "none",
+          "mild",
+          "moderate",
+          "severe"
+        ],
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "focus_code": "162397003",
+          "attribute_code": "246112005"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.upper-respiratory-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.upper-respiratory.throat-pain",
+        "display": "Throat Pain",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.throat-pain",
+        "wording": "목 통증은 없음, 가벼움, 중간, 심함 중 어느 정도인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 98,
+          "reason": "throat_characterization"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.throat"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.painful_swallowing",
+        "display": "Painful Swallowing",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.upper-respiratory.painful-swallow",
+        "display": "Painful Swallowing",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.painful-swallow",
+        "wording": "음식이나 물을 삼킬 때 목이 아픈가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 97,
+          "reason": "throat_characterization"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.throat"
+      ]
+    },
+    {
+      "fact": {
+        "id": "observation.tonsillar_exudate_or_pus",
+        "display": "Tonsillar Exudate or Pus",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.upper-respiratory.tonsillar-exudate",
+        "display": "Tonsillar Exudate or Pus",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.tonsillar-exudate",
+        "wording": "편도에 흰 점이나 고름처럼 보이는 것이 있나요? 보지 못했다면 모름으로 답해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 91,
+          "reason": "feverpain_context"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.throat"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.tender_anterior_neck_nodes",
+        "display": "Tender Anterior Neck Nodes",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.upper-respiratory.neck-nodes",
+        "display": "Tender Anterior Neck Nodes",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.neck-nodes",
+        "wording": "목 앞쪽 림프절이 붓고 누르면 아픈가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 90,
+          "reason": "centor_context"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.throat"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.cough",
+        "display": "Cough",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.upper-respiratory.cough",
+        "display": "Cough",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.cough",
+        "wording": "기침이 함께 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 89,
+          "reason": "upper_respiratory_context"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.throat",
+        "group.upper-respiratory.nasal-sinus"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.nasal_obstruction",
+        "display": "Nasal Obstruction",
+        "value_type": "coded",
+        "allowed_values": [
+          "none",
+          "unilateral",
+          "bilateral"
+        ],
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "232209000"
+        }
+      },
+      "target": {
+        "id": "target.upper-respiratory.nasal-obstruction",
+        "display": "Nasal Obstruction",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.nasal-obstruction",
+        "wording": "코막힘은 없음, 한쪽, 양쪽 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 96,
+          "reason": "nasal_characterization"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.nasal-sinus"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.nasal_discharge",
+        "display": "Nasal Discharge",
+        "value_type": "coded",
+        "allowed_values": [
+          "none",
+          "clear",
+          "discoloured",
+          "blood_stained"
+        ],
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "64531003"
+        }
+      },
+      "target": {
+        "id": "target.upper-respiratory.nasal-discharge",
+        "display": "Nasal Discharge",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.nasal-discharge",
+        "wording": "콧물은 없음, 맑음, 누렇거나 녹색, 피가 섞임 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 95,
+          "reason": "nasal_characterization"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.nasal-sinus"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.unilateral_purulent_nasal_discharge",
+        "display": "Unilateral Purulent Nasal Discharge",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.upper-respiratory.unilateral-discharge",
+        "display": "Unilateral Purulent Nasal Discharge",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.unilateral-discharge",
+        "wording": "누렇거나 녹색 콧물이 주로 한쪽 코에서 나오나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 88,
+          "reason": "sinus_context"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.nasal-sinus"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.facial_pain_or_pressure",
+        "display": "Facial Pain or Pressure",
+        "value_type": "coded",
+        "allowed_values": [
+          "none",
+          "mild",
+          "moderate",
+          "severe"
+        ]
+      },
+      "target": {
+        "id": "target.upper-respiratory.facial-pain",
+        "display": "Facial Pain or Pressure",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.facial-pain",
+        "wording": "눈·볼·이마 주변 통증이나 압박은 없음, 가벼움, 중간, 심함 중 어느 정도인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 94,
+          "reason": "sinus_context"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.nasal-sinus"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.double_worsening_after_initial_improvement",
+        "display": "Worsening after Initial Improvement",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.upper-respiratory.double-worsening",
+        "display": "Worsening after Initial Improvement",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.double-worsening",
+        "wording": "처음에는 나아지다가 다시 뚜렷하게 심해졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 87,
+          "reason": "sinus_context"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.nasal-sinus"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.reduced_or_lost_smell",
+        "display": "Reduced or Lost Smell",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.upper-respiratory.smell",
+        "display": "Reduced or Lost Smell",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.smell",
+        "wording": "후각이 줄거나 없어졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 86,
+          "reason": "nasal_context"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.nasal-sinus"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.sneezing_or_itchy_nose",
+        "display": "Sneezing or Itchy Nose",
+        "value_type": "boolean",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "76067001"
+        }
+      },
+      "target": {
+        "id": "target.upper-respiratory.sneezing-itch",
+        "display": "Sneezing or Itchy Nose",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.sneezing-itch",
+        "wording": "재채기가 반복되거나 코가 가려운가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 93,
+          "reason": "allergic_context"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.allergic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.itchy_red_watery_eyes",
+        "display": "Itchy Red Watery Eyes",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.upper-respiratory.itchy-eyes",
+        "display": "Itchy Red Watery Eyes",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.itchy-eyes",
+        "wording": "눈이 가렵고 붉거나 눈물이 나나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 85,
+          "reason": "allergic_context"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.allergic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "exposure.upper_respiratory_allergen",
+        "display": "Upper Respiratory Allergen Exposure",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.upper-respiratory.allergen",
+        "display": "Upper Respiratory Allergen Exposure",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.allergen",
+        "wording": "꽃가루, 집먼지진드기, 동물, 곰팡이, 목재·밀가루 가루 또는 라텍스 접촉 뒤 심해지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 84,
+          "reason": "allergic_context"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.allergic",
+        "group.upper-respiratory.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.hoarseness",
+        "display": "Hoarseness",
+        "value_type": "boolean",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "50219008"
+        }
+      },
+      "target": {
+        "id": "target.upper-respiratory.hoarseness",
+        "display": "Hoarseness",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.hoarseness",
+        "wording": "목소리가 쉬거나 평소와 달라졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 92,
+          "reason": "voice_context"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.voice-persistence"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.hoarseness_persistent_three_weeks",
+        "display": "Hoarseness Persistent Three Weeks",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.upper-respiratory.persistent-hoarseness",
+        "display": "Hoarseness Persistent Three Weeks",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.persistent-hoarseness",
+        "wording": "쉰목소리가 3주 이상 계속되거나 점점 심해지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 83,
+          "reason": "persistent_voice_context"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.voice-persistence"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.persistent_mouth_ulcer_or_neck_lump",
+        "display": "Persistent Mouth Ulcer or Neck Lump",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.upper-respiratory.persistent-lump-ulcer",
+        "display": "Persistent Mouth Ulcer or Neck Lump",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.persistent-lump-ulcer",
+        "wording": "입안 궤양이나 입·목의 덩이가 3주 이상 지속되나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 82,
+          "reason": "persistent_warning_context"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.voice-persistence",
+        "group.upper-respiratory.throat"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.upper_respiratory.recurrent",
+        "display": "Recurrent Upper Respiratory Symptoms",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.upper-respiratory.recurrent",
+        "display": "Recurrent Upper Respiratory Symptoms",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.recurrent",
+        "wording": "같은 증상이 자주 반복되나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 81,
+          "reason": "recurrence_context"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "exposure.sick_contact",
+        "display": "Sick Contact",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.upper-respiratory.sick-contact",
+        "display": "Sick Contact",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.sick-contact",
+        "wording": "가족, 직장 또는 학교에 비슷한 증상이 있는 사람이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 80,
+          "reason": "infectious_context"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.context"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "patient.smoking_or_inhaled_irritant",
+        "display": "Smoking or Inhaled Irritant Exposure",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.upper-respiratory.smoke-irritant",
+        "display": "Smoking or Inhaled Irritant Exposure",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.smoke-irritant",
+        "wording": "흡연·전자담배를 하거나 연기·먼지·화학 자극에 노출되나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 79,
+          "reason": "irritant_context"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.context",
+        "group.upper-respiratory.voice-persistence"
+      ]
+    },
+    {
+      "fact": {
+        "id": "treatment.upper_respiratory_self_care_response",
+        "display": "Upper Respiratory Self-care Response",
+        "value_type": "coded",
+        "allowed_values": [
+          "not_tried",
+          "improved",
+          "unchanged",
+          "worsened"
+        ]
+      },
+      "target": {
+        "id": "target.upper-respiratory.self-care",
+        "display": "Upper Respiratory Self-care Response",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.self-care",
+        "wording": "수분 섭취, 가글, 일반 진통제·비강 세척·알레르기약 등을 사용했다면 좋아짐, 변화 없음, 악화 중 무엇인가요? 안 해봤다면 안 해봄으로 답해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 78,
+          "reason": "management_context"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.context"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nhs.sore-throat.2024",
+      "source.nice.ng84.sore-throat.2025",
+      "source.nice.ng79.sinusitis.2026",
+      "source.nhs.allergic-rhinitis.2026"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

@@ -259,6 +259,41 @@ def probe() -> dict:
     if not isinstance(medication_review_mrcm, list) or not medication_review_mrcm:
         raise RuntimeError("medication-review MRCM response is empty or invalid")
 
+    upper_respiratory_results = {}
+    for code, expected_display in {
+        "162397003": "Pain in throat (finding)",
+        "232209000": "Nasal obstruction (disorder)",
+        "64531003": "Nasal discharge (finding)",
+        "76067001": "Sneezing (finding)",
+        "50219008": "Hoarse (finding)",
+    }.items():
+        concept_lookup = request_json(
+            "/fhir/CodeSystem/$lookup",
+            query={"system": "http://snomed.info/sct", "code": code, "_format": "json"},
+        )
+        display = parameter_value(concept_lookup, "display")
+        if display != expected_display:
+            raise RuntimeError(
+                f"SNOMED CT upper-respiratory lookup changed for {code}: {display!r}"
+            )
+        attributes = request_json(f"/allow/attributes/SNOMEDCT/{code}")
+        if not isinstance(attributes, list):
+            raise RuntimeError(f"upper-respiratory MRCM response is invalid for {code}")
+        if code != "64531003":
+            attribute_index = {item.get("id"): item for item in attributes}
+            for attribute_id in ("363698007", "246112005"):
+                if attribute_id not in attribute_index:
+                    raise RuntimeError(
+                        f"expected upper-respiratory MRCM attribute missing for {code}: {attribute_id}"
+                    )
+        elif attributes:
+            raise RuntimeError("nasal-discharge MRCM support changed; review mapping status")
+        upper_respiratory_results[code] = {
+            "display": display,
+            "version": parameter_value(concept_lookup, "version"),
+            "attribute_count_returned": len(attributes),
+        }
+
     lookup = request_json(
         "/fhir/CodeSystem/$lookup",
         query={
@@ -365,6 +400,12 @@ def probe() -> dict:
             "display": medication_review_display,
             "version": parameter_value(medication_review_lookup, "version"),
             "attribute_count_returned": len(medication_review_mrcm),
+            "clinical_rule_authority": False,
+        },
+        "upper_respiratory_snomed_mrcm": {
+            "concepts": upper_respiratory_results,
+            "verified_attribute_ids_for_supported_concepts": ["246112005", "363698007"],
+            "unsupported_focus_codes": ["64531003"],
             "clinical_rule_authority": False,
         },
         "hira_drug_search": {

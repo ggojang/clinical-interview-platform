@@ -16,6 +16,7 @@ python3 compiler/build_package.py --profile fatigue
 python3 compiler/build_package.py --profile back_pain
 python3 compiler/build_package.py --profile skin_complaint
 python3 compiler/build_package.py --profile medication_review
+python3 compiler/build_package.py --profile upper_respiratory_symptoms
 ```
 
 Validate a generated package:

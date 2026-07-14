@@ -177,6 +177,18 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/medication/medication-review",
         "research_manifests": [ROOT / "sources/manifests/primary-care-medication-review-research.json"],
     },
+    "upper_respiratory_symptoms": {
+        "graph": ROOT / "knowledge/graph/primary-care-upper-respiratory-symptoms.json",
+        "rules": ROOT / "rules/primary-care-upper-respiratory-symptoms.json",
+        "sources": ROOT / "sources/manifests/primary-care-upper-respiratory-symptoms.json",
+        "completion_policy": ROOT / "policies/primary-care-upper-respiratory-symptoms-completion.json",
+        "output": ROOT / "packages/generated/primary-care-upper-respiratory-symptoms-0.1.0.json",
+        "package_id": "package.primary-care-upper-respiratory-symptoms",
+        "package_version": "0.1.0",
+        "rfe": "rfe.upper_respiratory_symptoms",
+        "simulation_root": ROOT / "simulation/patients/upper-respiratory",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-upper-respiratory-symptoms-research.json"],
+    },
 }
 
 ALLOWED_NODE_TYPES = {

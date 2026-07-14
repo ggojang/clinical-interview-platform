@@ -78,6 +78,9 @@ class GptExportTests(unittest.TestCase):
                 "rfe-skin_complaint-rules",
                 "rfe-medication_review-facts", "rfe-medication_review-questions",
                 "rfe-medication_review-rules",
+                "rfe-upper_respiratory_symptoms-facts",
+                "rfe-upper_respiratory_symptoms-questions",
+                "rfe-upper_respiratory_symptoms-rules",
             }.issubset(names))
             for resource in manifest["resources"]:
                 self.assertEqual(len(resource["sha256"]), 64)
@@ -102,7 +105,7 @@ class GptExportTests(unittest.TestCase):
                 {
                     "abdominal_pain", "back_pain", "chest_pain", "cough", "dizziness_syncope",
                     "dyspnea", "fatigue", "fever", "headache", "medication_review",
-                    "skin_complaint", "urinary_symptoms",
+                    "skin_complaint", "upper_respiratory_symptoms", "urinary_symptoms",
                     "vomiting_diarrhea",
                 },
             )
@@ -167,6 +170,12 @@ class GptExportTests(unittest.TestCase):
                 )
             )
             self.assertEqual(medication["count"], 36)
+            upper = json.loads(
+                (output_path / "rfe/upper_respiratory_symptoms/facts.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            self.assertEqual(upper["count"], 39)
             for slug in implemented:
                 for kind in ("facts", "questions", "rules"):
                     document = json.loads(
@@ -201,7 +210,15 @@ class GptExportTests(unittest.TestCase):
             output_path = Path(output)
             manifest = build(ROOT, output_path)
             self.assertEqual(manifest["interview_entry"]["type"], "reason_for_encounter")
-            self.assertEqual(len(manifest["interview_entry"]["catalog"]), 15)
+            source_catalog = json.loads(
+                (ROOT / "knowledge/catalog/primary-care-rfe.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            self.assertEqual(
+                len(manifest["interview_entry"]["catalog"]),
+                len(source_catalog["entries"]),
+            )
             self.assertTrue(
                 manifest["additional_comment_policy"][
                     "resolution_includes_service_improvement"

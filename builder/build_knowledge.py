@@ -120,6 +120,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-medication-review.json",
         "version": "0.1.0",
     },
+    "upper_respiratory_symptoms": {
+        "base_graph": ROOT / "knowledge/base/primary-care-upper-respiratory-symptoms.json",
+        "base_rules": ROOT / "rules/base/primary-care-upper-respiratory-symptoms.json",
+        "fragment_root": ROOT / "knowledge/generated/upper-respiratory",
+        "output_graph": ROOT / "knowledge/graph/primary-care-upper-respiratory-symptoms.json",
+        "output_rules": ROOT / "rules/primary-care-upper-respiratory-symptoms.json",
+        "version": "0.1.0",
+    },
 }
 
 

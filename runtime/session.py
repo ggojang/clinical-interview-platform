@@ -393,6 +393,9 @@ class InterviewSession:
         if self.reason_for_encounter == "rfe.medication_review":
             self._update_medication_review_patterns()
             return
+        if self.reason_for_encounter == "rfe.upper_respiratory_symptoms":
+            self._update_upper_respiratory_patterns()
+            return
         active = ["respiratory.cough"]
         cold_support = sum(
             self.memory.value(fact_id) is True
@@ -665,6 +668,29 @@ class InterviewSession:
             "medication.administration_difficulty", "medication.access_or_cost_problem",
         )):
             active.append("medication.use_support_need")
+        self.active_patterns = active
+
+    def _update_upper_respiratory_patterns(self) -> None:
+        active = ["upper_respiratory.symptoms"]
+        if any(self.memory.value(item) not in (None, False, "", "none") for item in (
+            "symptom.throat_pain", "symptom.painful_swallowing",
+            "observation.tonsillar_exudate_or_pus", "symptom.tender_anterior_neck_nodes",
+        )):
+            active.append("upper_respiratory.throat_features")
+        if any(self.memory.value(item) not in (None, False, "", "none") for item in (
+            "symptom.nasal_obstruction", "symptom.nasal_discharge",
+            "symptom.facial_pain_or_pressure", "symptom.reduced_or_lost_smell",
+        )):
+            active.append("upper_respiratory.nasal_sinus_features")
+        if any(self.memory.value(item) is True for item in (
+            "symptom.sneezing_or_itchy_nose", "symptom.itchy_red_watery_eyes",
+        )):
+            active.append("upper_respiratory.allergic_features")
+        if any(self.memory.value(item) is True for item in (
+            "symptom.hoarseness_persistent_three_weeks",
+            "symptom.persistent_mouth_ulcer_or_neck_lump",
+        )):
+            active.append("upper_respiratory.persistent_warning_features")
         self.active_patterns = active
 
     def _update_dyspnea_patterns(self) -> None:

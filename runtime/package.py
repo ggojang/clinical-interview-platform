@@ -22,6 +22,7 @@ FATIGUE_PACKAGE = ROOT / "packages/generated/primary-care-fatigue-0.1.0.json"
 BACK_PAIN_PACKAGE = ROOT / "packages/generated/primary-care-back-pain-0.1.0.json"
 SKIN_COMPLAINT_PACKAGE = ROOT / "packages/generated/primary-care-skin-complaint-0.1.0.json"
 MEDICATION_REVIEW_PACKAGE = ROOT / "packages/generated/primary-care-medication-review-0.1.0.json"
+UPPER_RESPIRATORY_SYMPTOMS_PACKAGE = ROOT / "packages/generated/primary-care-upper-respiratory-symptoms-0.1.0.json"
 
 
 class PackageLoadError(RuntimeError):
