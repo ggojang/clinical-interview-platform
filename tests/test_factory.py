@@ -4,7 +4,7 @@ import copy
 import json
 import tempfile
 import unittest
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 from compiler.build_package import (
@@ -115,10 +115,10 @@ class CompilerTests(unittest.TestCase):
         self.assertTrue(all(node["provenance"]["review_status"] == "unreviewed" for node in generated))
 
     def test_refresh_scheduler_uses_source_specific_cadence(self):
-        daily = due_sources(date.fromisoformat("2026-07-14"))
+        daily = due_sources(date.fromisoformat("2026-07-16"))
         daily_ids = {item["source_id"] for item in daily["due"]}
         self.assertIn("source.ers.chronic-cough.2020", daily_ids)
-        self.assertIn("source.gina.summary.2025", daily_ids)
+        self.assertIn("source.gina.strategy.2026", daily_ids)
         self.assertNotIn("source.nice.ng120", daily_ids)
         weekly = due_sources(date.fromisoformat("2026-07-20"))
         weekly_ids = {item["source_id"] for item in weekly["due"]}
@@ -132,7 +132,7 @@ class CompilerTests(unittest.TestCase):
             date.fromisoformat("2026-07-15"), dyspnea_manifest
         )
         dyspnea_daily_ids = {item["source_id"] for item in dyspnea_daily["due"]}
-        self.assertIn("source.nice.ng158.vte", dyspnea_daily_ids)
+        self.assertNotIn("source.nice.ng158.vte", dyspnea_daily_ids)
         self.assertNotIn("source.nhs.shortness-of-breath", dyspnea_daily_ids)
         stom_manifest = (
             Path(__file__).resolve().parents[1]
@@ -146,6 +146,23 @@ class CompilerTests(unittest.TestCase):
             {"source.stom.fhir-r4-terminology-server"},
         )
         self.assertEqual(stom_monthly["due"][0]["monitor_interval_days"], 30)
+
+    def test_nice_sources_use_the_dedicated_weekly_monitor_profile(self):
+        root = Path(__file__).resolve().parents[1]
+        for path in (root / "sources/manifests").glob("*-research.json"):
+            manifest = json.loads(path.read_text(encoding="utf-8"))
+            for artifact in manifest.get("artifacts", []):
+                if artifact.get("publisher") != "NICE":
+                    continue
+                with self.subTest(path=path.name, source=artifact["id"]):
+                    self.assertEqual(artifact["monitor_profile"], "nice_guidance")
+                    self.assertEqual(artifact["monitor_interval_days"], 7)
+                    if artifact.get("last_monitored_at"):
+                        expected = (
+                            date.fromisoformat(artifact["last_monitored_at"])
+                            + timedelta(days=7)
+                        ).isoformat()
+                        self.assertEqual(artifact["next_monitor_at"], expected)
 
     def test_fever_package_is_deterministic_and_question_complete(self):
         first = compile_package(profile="fever")
@@ -847,6 +864,13 @@ class PackageRuntimeTests(unittest.TestCase):
         self.assertIsNone(state["selected_question"])
         self.assertIsNone(state["answer_clarification"])
 
+    def test_korean_modified_hemoptysis_phrase_triggers_urgent_path(self):
+        session = InterviewSession("korean-hemoptysis-modifier")
+        state = session.process("기침할 때 피가 조금 섞여 보여요.")
+        self.assertTrue(state["facts"]["symptom.hemoptysis"]["value"])
+        self.assertEqual(state["safety_status"]["level"], "urgent")
+        self.assertEqual(state["stop_reason"], "urgent_escalation")
+
     def test_runtime_exposes_package_and_trace(self):
         session = InterviewSession("package-runtime")
         state = session.process("I have had a cough for 4 days.")
@@ -868,7 +892,7 @@ class PackageRuntimeTests(unittest.TestCase):
     def test_package_simulation_evaluation_passes(self):
         report = run_evaluation(DEFAULT_PACKAGE)
         self.assertTrue(report["passed"])
-        self.assertEqual(report["case_count"], 14)
+        self.assertEqual(report["case_count"], 15)
         for result in report["results"]:
             self.assertIn(
                 result["stop_reason"],

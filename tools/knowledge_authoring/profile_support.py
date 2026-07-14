@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+from datetime import date, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -10,6 +11,34 @@ ROOT = Path(__file__).resolve().parents[2]
 VERSION = "0.1.0"
 CREATED_AT = "2026-07-14T00:00:00Z"
 QUESTION_MODES = ["chat", "face_to_face", "telephone", "video"]
+
+
+def normalize_source_monitoring(document: dict[str, Any]) -> dict[str, Any]:
+    """Apply the repository's publisher-specific monitoring cadence.
+
+    NICE is a dedicated weekly source profile even when an artifact is also a
+    clinical guideline. This distinction prevents daily clinical-guideline
+    monitoring from silently overriding the explicit NICE cadence.
+    """
+    if not str(document.get("id", "")).startswith("source-manifest."):
+        return document
+    profiles = json.loads(
+        (ROOT / "policies/knowledge-refresh.json").read_text(encoding="utf-8")
+    )["source_monitor_profiles"]
+    for artifact in document.get("artifacts", []):
+        if artifact.get("publisher") == "NICE":
+            artifact["monitor_profile"] = "nice_guidance"
+        profile = artifact.get("monitor_profile")
+        if profile not in profiles:
+            continue
+        interval = profiles[profile]["interval_days"]
+        artifact["monitor_interval_days"] = interval
+        last = artifact.get("last_monitored_at")
+        if last:
+            artifact["next_monitor_at"] = (
+                date.fromisoformat(last) + timedelta(days=interval)
+            ).isoformat()
+    return document
 
 
 def provenance(source_refs: list[str]) -> dict[str, Any]:
@@ -23,6 +52,7 @@ def provenance(source_refs: list[str]) -> dict[str, Any]:
 
 
 def write_json(path: str, document: dict[str, Any]) -> None:
+    document = normalize_source_monitoring(document)
     target = ROOT / path
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(

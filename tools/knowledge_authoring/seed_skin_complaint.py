@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from profile_support import normalize_source_monitoring
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -34,6 +35,7 @@ def provenance(source_refs: list[str] | None = None) -> dict:
 
 
 def write(path: str, document: dict) -> None:
+    document = normalize_source_monitoring(document)
     target = ROOT / path
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(

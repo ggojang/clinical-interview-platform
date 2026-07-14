@@ -79,7 +79,7 @@ def extract(text: str, turn: int, expected_fact: str | None = None) -> dict[str,
         "symptom.fever": ["fever", "feverish", "열이", "발열"],
         "symptom.dyspnea": [
             "short of breath", "trouble breathing", "hard to breathe",
-            "harder to breathe", "숨이 차", "숨쉬기 힘", "숨쉬기가",
+            "harder to breathe", "숨이 차", "숨도 차", "숨쉬기 힘", "숨쉬기가",
         ],
         "symptom.hemoptysis": ["coughing blood", "blood when", "피가 섞", "피를"],
         "symptom.chest_pain": ["chest pain", "가슴 통증", "가슴이 아"],
@@ -111,6 +111,12 @@ def extract(text: str, turn: int, expected_fact: str | None = None) -> dict[str,
             out[fact_id] = fact(False, text, turn, .95)
         elif any(cue in low or cue in text for cue in cues):
             out[fact_id] = fact(True, text, turn, .88)
+
+    # Preserve the semantic relation when a Korean modifier separates "blood"
+    # from "mixed" (for example, "피가 조금 섞여"). Requiring a nearby cough
+    # or sputum cue avoids treating unrelated bleeding as hemoptysis.
+    if re.search(r"(?:기침|가래).{0,20}피가\s*(?:조금|약간|살짝)?\s*(?:섞|나)", text):
+        out["symptom.hemoptysis"] = fact(True, text, turn, .93)
 
     if "symptom.dyspnea" in out and out["symptom.dyspnea"]["value"] is True:
         if any(cue in low for cue in ["very hard", "severe", "can't breathe", "cannot breathe"]) or "매우 힘" in text or "더 힘든" in text:

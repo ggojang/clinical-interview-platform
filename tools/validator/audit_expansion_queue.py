@@ -80,7 +80,7 @@ def audit_entry(
     research_manifests = package.get("research_source_manifests", [])
     artifacts = [artifact for manifest in research_manifests for artifact in manifest.get("artifacts", [])]
     check(bool(artifacts), "authoritative research source artifacts missing", failures)
-    check(any(artifact.get("monitor_profile") == "clinical_guideline" for artifact in artifacts), "clinical guideline source missing", failures)
+    check(any(artifact.get("monitor_profile") in {"clinical_guideline", "nice_guidance"} for artifact in artifacts), "clinical or NICE guideline source missing", failures)
     check(any(artifact.get("monitor_profile") == "terminology_server" for artifact in artifacts), "terminology source missing", failures)
     check(all(artifact.get("monitor_interval_days") in {1, 7, 30} for artifact in artifacts), "source refresh cadence is outside approved daily/weekly/monthly profiles", failures)
     check(all(artifact.get("next_monitor_at") for artifact in artifacts), "source next_monitor_at missing", failures)

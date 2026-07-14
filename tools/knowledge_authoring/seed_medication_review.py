@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from profile_support import normalize_source_monitoring
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -28,6 +29,7 @@ def prov(refs=None):
 
 
 def write(path, data):
+    data = normalize_source_monitoring(data)
     p = ROOT / path
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
