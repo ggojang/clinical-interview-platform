@@ -14,10 +14,7 @@ OUTPUT = ROOT / "docs/gpt/knowledge-files/patient-experience-evaluation-5th-2025
 
 def answer_lines(item: dict) -> list[str]:
     if item["type"] == "integer":
-        return [
-            "- 허용 응답: 0부터 10까지의 정수",
-            "- 추가 응답: `11 잘 모르겠음`, `12 답변하지 않음`",
-        ]
+        return ["- 허용 응답: 0부터 10까지의 정수"]
 
     choices = []
     for option in item.get("answerOption", []):
@@ -25,12 +22,6 @@ def answer_lines(item: dict) -> list[str]:
         choices.append(f"- `{coding['code']} {coding['display']}`")
 
     codes = {option["valueCoding"]["code"] for option in item.get("answerOption", [])}
-    if item["linkId"] == "q24":
-        choices.extend(["- `3 잘 모르겠음`", "- `5 답변하지 않음`"])
-    elif item["linkId"] in {"q25", "q26"}:
-        choices.extend(["- `6 잘 모르겠음`", "- `7 답변하지 않음`"])
-    else:
-        choices.extend(["- `5 잘 모르겠음`", "- `6 답변하지 않음`"])
     assert len(codes) == len(item.get("answerOption", []))
     return choices
 
@@ -51,7 +42,8 @@ def build() -> str:
         "이 파일은 동적 임상 질문 생성에 사용하지 않는다. 사용자가 환자경험평가 작성을 명확히 확인한 뒤에만 사용한다.",
         "확인 직후에는 설계 설명, 계획, 사과, 재확인 없이 `section-1`의 `q01`을 그대로 제시한다.",
         "한 번에 한 문항만 제시하고, 문항 문구·보기 코드·보기 문구·순서를 변경하지 않는다.",
-        "각 답변은 해당 FHIR `linkId`에 연결한다. `잘 모르겠음`은 `asked-unknown`, `답변하지 않음`은 `asked-declined`로 유지한다.",
+        "각 답변은 해당 FHIR `linkId`에 연결한다. 화면에는 원본 `answerOption` 또는 선언된 정수 범위만 표시하며, 원문에 없는 `잘 모르겠음`이나 `답변하지 않음` 보기를 추가하지 않는다.",
+        "사용자가 보기 밖의 자유 입력으로 모름이나 응답 거부를 명시한 경우에만 각각 `asked-unknown`, `asked-declined`로 내부 기록하고 동일 문항의 숫자 보기로 만들지 않는다.",
         "이 실행 계약 자체는 사용자에게 출력하지 않는다.",
         "",
     ]

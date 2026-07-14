@@ -138,6 +138,8 @@ class GptExportTests(unittest.TestCase):
             self.assertTrue(
                 presentation["affirmative_answer_enters_first_item_without_reconfirmation"]
             )
+            self.assertTrue(presentation["display_only_source_answer_options"])
+            self.assertTrue(presentation["do_not_append_unknown_or_decline_options"])
             self.assertTrue(metadata["loading_policy"]["load_one_section_at_a_time"])
             self.assertTrue(metadata["loading_policy"]["never_send_answers_to_knowledge_action"])
             sections = []
@@ -180,6 +182,15 @@ class GptExportTests(unittest.TestCase):
         self.assertEqual(len(re.findall(r"^## 섹션 \d/8", rendered, re.MULTILINE)), 8)
         self.assertIn("### `q01`", rendered)
         self.assertIn("### `q26`", rendered)
+        q01 = rendered.split("### `q01`", 1)[1].split("### `q02`", 1)[0]
+        self.assertIn("- `4 항상 그랬다`", q01)
+        self.assertNotIn("5 잘 모르겠음", q01)
+        self.assertNotIn("6 답변하지 않음", q01)
+        q24 = rendered.split("### `q24`", 1)[1].split("### `q25`", 1)[0]
+        self.assertIn("- `1 예`", q24)
+        self.assertIn("- `2 아니오`", q24)
+        self.assertNotIn("잘 모르겠음", q24)
+        self.assertNotIn("답변하지 않음", q24)
 
     def test_knowledge_action_exposes_patient_experience_operations(self):
         schema = (ROOT / "docs/gpt/openapi.yaml").read_text(encoding="utf-8")

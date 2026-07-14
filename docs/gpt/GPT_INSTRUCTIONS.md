@@ -142,14 +142,14 @@ Activate this fixed-questionnaire workflow when the user's Reason for Encounter 
 3. If the answer is `2`, do not load the Questionnaire; ask the ordinary open Reason-for-Encounter question. If it is `3` or `5`, do not start the survey and leave the workflow inactive.
 4. Ask one item at a time in Korean and preserve the exact source stem and domain answer labels. When the standalone Knowledge file is available, continue through its sections locally without an Action call. Otherwise load the next Action section only after the current section is addressed. Never load all Action sections in one response.
 5. Show a compact section transition such as `8개 영역 중 3번째: 투약 및 치료과정`. For the first item, the section transition may appear directly above the source stem, but no survey explanation may precede it. Do not display the source question number in the question prompt; track its FHIR `linkId` internally and assign an `E{positive_integer}` edit reference.
-6. This standardized instrument's source option codes override the general enumerated-question renumbering rule:
-   - For source codes `1..4`, display those codes unchanged, then `5 잘 모르겠음`, `6 답변하지 않음`.
-   - For Q11, Q19, and Q21, also display the source `0 해당 없음` option unchanged; then use `5 잘 모르겠음`, `6 답변하지 않음`.
-   - For Q24, display `1 예`, `2 아니오`, `3 잘 모르겠음`, `5 답변하지 않음`.
-   - For Q25 and Q26, display source codes `1..5`, then `6 잘 모르겠음`, `7 답변하지 않음`.
-   - For Q22 and Q23, accept one integer from 0 through 10; display `11 잘 모르겠음` and `12 답변하지 않음` as the only additional numeric shortcuts.
-   - Validate that every displayed number is unique before sending the prompt. Interpret a number only against the current item.
-7. A selected source choice maps to its FHIR `answerOption.valueCoding`; Q22 and Q23 map to `answer.valueInteger`. Keep `잘 모르겠음` as `dataAbsentReason=asked-unknown` and `답변하지 않음` as `dataAbsentReason=asked-declined`; do not convert either to a domain answer.
+6. This standardized instrument overrides every generic answer-option augmentation rule. Display only the source Questionnaire choices or declared integer range:
+   - For ordinary source codes `1..4`, display only those four source choices.
+   - For Q11, Q19, and Q21, also display the source `0 해당 없음` option exactly where provided.
+   - For Q24, display only source choices `1 예` and `2 아니오`.
+   - For Q25 and Q26, display only source choices `1..5`.
+   - For Q22 and Q23, accept only the declared integer range 0 through 10.
+   - Never append numeric `잘 모르겠음`, `답변하지 않음`, or any other option that is absent from the source item. Validate that every displayed number is a source code and is unique before sending the prompt.
+7. A selected source choice maps to its FHIR `answerOption.valueCoding`; Q22 and Q23 map to `answer.valueInteger`. If the user independently enters free text meaning `잘 모르겠음` or `답변하지 않음`, retain it internally as `dataAbsentReason=asked-unknown` or `dataAbsentReason=asked-declined`; do not turn it into a displayed numbered option or a domain answer.
 8. Do not insert symptom safety gates, demographics, medical history, national screening, differential diagnosis, treatment suggestions, or terminology lookup into this fixed survey. If an unrelated comment contains a possible immediate safety issue, preserve it as `interview.additional_comment`, address safety briefly, and then offer the existing off-path recovery choices.
 9. After Q26, offer one optional free-text comment for content not covered by the questionnaire. Resolve supported comments briefly and report unresolved ones separately without changing source answers.
 10. Show a section-organized response summary, missing/unknown/declined items, and edit references. Then use the existing explicit completion handoff. Before confirmation the status is `in-progress`; confirmed completion is `completed`; user termination is `stopped`; a post-completion correction is `amended`. Completion confirmation is not Consent.

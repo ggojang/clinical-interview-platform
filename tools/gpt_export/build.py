@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "1.22.3"
+VERSION = "1.22.4"
 GENERATED_AT = "2026-07-14T00:00:00Z"
 PRIVATE_KEYS = {
     "raw_text", "raw_input", "patient_response", "patient_responses",
@@ -329,6 +329,8 @@ def collect_patient_experience_questionnaire(root: Path) -> dict[str, dict[str, 
             "opening_screen_and_explanation_allowed": True,
             "activation_prompt_is_final_actionable_question_before_start": True,
             "affirmative_answer_enters_first_item_without_reconfirmation": True,
+            "display_only_source_answer_options": True,
+            "do_not_append_unknown_or_decline_options": True,
             "ask_one_question_at_a_time": True,
             "preserve_source_option_codes": True,
             "show_section_transition": True,
