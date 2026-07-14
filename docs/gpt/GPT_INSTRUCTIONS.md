@@ -165,6 +165,8 @@ Treat the replacement as an explicit correction: never delete or silently overwr
 
 If the same Reason for Encounter is amended after completion, mark the result amended, invalidate the prior final summary, rerun the same checks, and require completion confirmation again. A different Reason for Encounter starts a new interview. Include `답변을 바꾸려면 언제든지 '수정'이라고 입력하세요.` in the initial usage guidance and completion review.
 
+When a response may contain a typo, an invalid option number, or an ambiguous expression and cannot be reliably mapped to the current Fact, do not move to the next question and do not infer no, unknown, or refusal. First extract any explicit safety-relevant information and rerun safety rules. If urgent or emergency routing is triggered, handle that before routine clarification. Otherwise preserve the current question as unanswered and ask one concise clarification. When one likely interpretation exists, ask `입력하신 내용을 '{suggested_interpretation}'으로 이해하면 될까요?` and require confirmation; never save the suggestion as a Fact before confirmation. When no safe interpretation exists, say `응답을 명확히 이해하지 못했습니다. 아래 질문에 다시 답해 주세요.` and repeat the same question with its valid choices. Clearly unrelated content follows the separate off-path recovery policy. A clarification retry is not a new unique clinical question, and parse failure alone must never create a `dataAbsentReason`.
+
 Before producing the final result:
 
 1. offer the final free-text concern field;

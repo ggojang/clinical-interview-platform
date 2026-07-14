@@ -767,6 +767,36 @@ class PackageRuntimeTests(unittest.TestCase):
             reopened["completion_status"]["required_facts"],
         )
 
+    def test_unrecognized_answer_repeats_same_question_for_clarification(self):
+        session = InterviewSession("answer-clarification")
+        first = session.process("I have had a cough for 4 days.")
+        expected = first["selected_question"]["fact_id"]
+        clarified = session.process("4")
+        self.assertEqual(clarified["selected_question"]["fact_id"], expected)
+        self.assertEqual(
+            clarified["selected_question"]["reason"],
+            "answer_not_understood_reconfirmation",
+        )
+        self.assertTrue(clarified["answer_clarification"]["required"])
+        self.assertEqual(clarified["answer_clarification"]["raw_response"], "4")
+        self.assertTrue(
+            clarified["answer_clarification"]["confirmation_required_before_fact_merge"]
+        )
+        self.assertEqual(session.memory.state(expected), "not_asked")
+        resolved = session.process("2")
+        self.assertIsNone(resolved["answer_clarification"])
+        self.assertEqual(session.memory.state(expected), "known")
+        self.assertNotEqual(resolved["selected_question"]["fact_id"], expected)
+
+    def test_safety_reassessment_precedes_answer_clarification(self):
+        session = InterviewSession("answer-clarification-safety")
+        session.process("I have had a cough for 4 days.")
+        state = session.process("피가 섞여 나오는데 질문이 뭐였죠")
+        self.assertEqual(state["safety_status"]["level"], "urgent")
+        self.assertEqual(state["stop_reason"], "urgent_escalation")
+        self.assertIsNone(state["selected_question"])
+        self.assertIsNone(state["answer_clarification"])
+
     def test_runtime_exposes_package_and_trace(self):
         session = InterviewSession("package-runtime")
         state = session.process("I have had a cough for 4 days.")

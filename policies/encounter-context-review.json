@@ -1,6 +1,6 @@
 {
   "id": "policy.encounter-context-review",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "status": "research_only",
   "review_status": "unreviewed",
   "result_follow_up": {
@@ -141,6 +141,61 @@
     },
     "completion_hint_ko": "답변을 바꾸려면 언제든지 '수정'이라고 입력하세요.",
     "provenance_marker": "출처: [공동 작업 지식] 답변 수정 정책 · [AI 표현] 안내 문장"
+  },
+  "answer_understanding_clarification": {
+    "trigger_conditions": [
+      "possible_typographical_error",
+      "invalid_or_out_of_range_option_number",
+      "ambiguous_meaning",
+      "answer_cannot_be_reliably_mapped_to_current_fact"
+    ],
+    "decision_order": [
+      "extract_and_apply_any_explicit_safety_relevant_information",
+      "reassess_safety",
+      "determine_whether_response_answers_current_question",
+      "route_clearly_unrelated_content_to_off_path_recovery",
+      "request_targeted_clarification_when_current_answer_remains_uncertain"
+    ],
+    "preserve_current_question_as_unanswered": true,
+    "do_not_advance_to_next_question": true,
+    "do_not_infer_negative_unknown_or_refusal_from_parse_failure": true,
+    "do_not_store_suggested_interpretation_as_fact_before_confirmation": true,
+    "likely_typo_flow": {
+      "may_offer_one_concise_normalized_interpretation": true,
+      "confirmation_question_ko": "입력하신 내용을 '{suggested_interpretation}'으로 이해하면 될까요?",
+      "confirmation_options": [
+        {"number": 1, "code": "confirm", "display_ko": "예, 맞습니다"},
+        {"number": 2, "code": "reject_and_reenter", "display_ko": "아니오, 다시 입력"},
+        {"number": 3, "code": "unknown", "display_ko": "잘 모르겠음"},
+        {"number": 5, "code": "decline", "display_ko": "답변하지 않음"}
+      ],
+      "auto_accept_threshold": "never"
+    },
+    "ambiguous_flow": {
+      "ask_one_specific_clarifying_question_at_a_time": true,
+      "repeat_original_question_with_original_choices_when_no_safe_interpretation": true,
+      "message_ko": "응답을 명확히 이해하지 못했습니다. 아래 질문에 다시 답해 주세요.",
+      "allow_korean_or_english_free_text_when_fact_supports_free_text": true
+    },
+    "retry_policy": {
+      "clarification_does_not_count_as_a_new_unique_clinical_question": true,
+      "after_repeated_failure_offer_unknown_decline_or_free_text": true,
+      "never_force_data_absent_reason_without_explicit_user_choice": true
+    },
+    "safety": {
+      "urgent_or_emergency_routing_precedes_clarification": true,
+      "preserve_unanswered_question_when_safety_interrupts": true
+    },
+    "audit_fields": [
+      "question_id",
+      "fact_id",
+      "raw_response_in_conversation_only",
+      "clarification_reason",
+      "suggested_interpretation",
+      "confirmation_result",
+      "attempt_count"
+    ],
+    "provenance_marker": "출처: [공동 작업 지식] 응답 재확인 정책 · [AI 표현] 재질문"
   },
   "test_access_limit_notice": {
     "show_once_per_conversation": true,

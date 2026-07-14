@@ -348,6 +348,21 @@ class GptExportTests(unittest.TestCase):
             self.assertTrue(
                 revision["safety"]["new_urgent_or_emergency_result_interrupts_revision_flow"]
             )
+            clarification = manifest["answer_understanding_clarification_policy"]
+            self.assertTrue(clarification["preserve_current_question_as_unanswered"])
+            self.assertTrue(clarification["do_not_advance_to_next_question"])
+            self.assertTrue(
+                clarification["do_not_store_suggested_interpretation_as_fact_before_confirmation"]
+            )
+            self.assertEqual(
+                clarification["likely_typo_flow"]["auto_accept_threshold"], "never"
+            )
+            self.assertTrue(
+                clarification["safety"]["urgent_or_emergency_routing_precedes_clarification"]
+            )
+            self.assertTrue(
+                clarification["retry_policy"]["never_force_data_absent_reason_without_explicit_user_choice"]
+            )
             limit_notice = manifest["test_access_limit_notice_policy"]
             self.assertEqual(
                 limit_notice["timing"],

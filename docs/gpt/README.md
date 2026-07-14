@@ -28,6 +28,8 @@ Manifest policy also distinguishes institutional result checking from an interpr
 
 The answer-revision policy supports `수정` throughout collection and before confirmation. It uses nonnumeric `E1`, `E2` edit references, preserves prior evidence and `dataAbsentReason`, and reruns safety, conditional branching, and completion checks after every correction. Same-encounter post-completion corrections are recorded as amendments and require confirmation again.
 
+The answer-understanding policy keeps the current question open when a response appears mistyped, uses an invalid choice, or remains ambiguous. A likely interpretation is proposed for confirmation but is never committed automatically; safety-relevant content is evaluated before the retry.
+
 The common Fact resource and manifest jointly expose the first-encounter baseline: diagnoses, procedures, medication, allergies, family history, occupation, smoking, and alcohol, together with first-use and per-group last-confirmed state. A confirmed first encounter cannot complete until every due group has an explicit answer, current reusable value, unknown state, or refusal.
 
 The STOM Action is intentionally separate from the compiled Knowledge Action. It accepts only a short de-identified normalized term or terminology code and provides provisional SNOMED CT, LOINC, KCD-8, HIRA, and FHIR lookup results. It must never receive raw patient answers or control clinical rules.

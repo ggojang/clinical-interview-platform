@@ -165,6 +165,7 @@ class InterviewSession:
     pending_edit_fact: str | None = None
     edit_reference_map: dict[str, str] = field(default_factory=dict)
     amended_after_completion: bool = False
+    clarification_counts: dict[str, int] = field(default_factory=dict)
     package: dict[str, Any] = field(init=False)
     memory: ClinicalMemory = field(init=False)
     active_intents: list[str] = field(init=False, default_factory=list)
@@ -352,6 +353,14 @@ class InterviewSession:
                 "after_completion": was_complete,
             })
 
+        needs_clarification = bool(
+            expected_fact
+            and expected_fact not in merge_results
+            and not correction_target
+        )
+        if expected_fact and expected_fact in merge_results:
+            self.clarification_counts.pop(expected_fact, None)
+
         classification = duration_class(self.memory.value("symptom.duration"))
         self._update_patterns(classification)
         self._update_target_states(classification)
@@ -370,6 +379,29 @@ class InterviewSession:
             question = self._choose(
                 classification, safety["level"], set(completion["required_facts"])
             )
+        clarification = None
+        if (
+            needs_clarification
+            and expected_fact
+            and safety["level"] not in {"urgent", "emergency"}
+            and turn < self.max_turns
+        ):
+            self.clarification_counts[expected_fact] = (
+                self.clarification_counts.get(expected_fact, 0) + 1
+            )
+            question = self._question_for_fact(
+                expected_fact, "answer_not_understood_reconfirmation"
+            )
+            clarification = self._clarification_payload(
+                expected_fact, patient_text, self.clarification_counts[expected_fact]
+            )
+            self.memory.record_event("answer_clarification_requested", {
+                "actor": "runtime",
+                "turn": turn,
+                "fact_id": expected_fact,
+                "attempt": self.clarification_counts[expected_fact],
+                "reason": "answer_not_understood",
+            })
         resume_fact = self.last_question_fact if correction_target else None
         if (
             resume_fact
@@ -386,6 +418,8 @@ class InterviewSession:
         stop_reason = None
         if safety["level"] in {"urgent", "emergency"}:
             stop_reason = f"{safety['level']}_escalation"
+        elif clarification is not None:
+            stop_reason = None
         elif completion["complete"]:
             stop_reason = (
                 "required_targets_addressed_with_absent_data"
@@ -411,6 +445,7 @@ class InterviewSession:
             "safety": safety,
             "completion": completion,
             "selected_question": question,
+            "answer_clarification": clarification,
             "stop_reason": stop_reason,
             "package": {
                 "id": self.package["package_id"],
@@ -419,7 +454,34 @@ class InterviewSession:
             },
         }
         self.trace.append(trace_entry)
-        return self.snapshot(question, safety, classification, stop_reason, completion)
+        state = self.snapshot(question, safety, classification, stop_reason, completion)
+        state["answer_clarification"] = clarification
+        return state
+
+    def _clarification_payload(
+        self, fact_id: str, raw_response: str, attempt: int
+    ) -> dict[str, Any]:
+        node = next(
+            item for item in self.package["knowledge_graph"]["nodes"]
+            if item["type"] == "Fact" and item["id"] == fact_id
+        )
+        payload = {
+            "required": True,
+            "fact_id": fact_id,
+            "reason": "possible_typo_invalid_option_or_ambiguous_meaning",
+            "attempt": attempt,
+            "raw_response": raw_response,
+            "suggested_interpretation": None,
+            "confirmation_required_before_fact_merge": True,
+            "message_ko": "응답을 명확히 이해하지 못했습니다. 원래 질문에 다시 답해 주세요.",
+            "binary_numeric_codes": {
+                "1": "yes", "2": "no", "3": "asked-unknown", "5": "asked-declined"
+            },
+        }
+        if node.get("allowed_values"):
+            payload["allowed_values"] = list(node["allowed_values"])
+        payload["value_type"] = node.get("value_type")
+        return payload
 
     def _parse_edit_command(self, text: str) -> tuple[str, str | None, str | None] | None:
         stripped = text.strip()
