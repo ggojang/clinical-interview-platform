@@ -1,0 +1,151 @@
+openapi: 3.1.0
+info:
+  title: STOM Read-only Terminology Support
+  version: 0.1.0
+  description: >-
+    Read-only terminology lookup for the Clinical Interview Research Test.
+    Send only a short de-identified normalized term or a terminology code.
+    Never send a raw patient response, direct identifier, or clinical narrative.
+servers:
+  - url: https://stom.infoclinic.co
+paths:
+  /map/SNOMEDCT/search:
+    post:
+      operationId: searchSnomedMappingCandidates
+      summary: Find active SNOMED CT candidates for a normalized Korean or English clinical term
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SnomedMapSearchRequest'
+      responses:
+        '200':
+          description: Provisional SNOMED CT mapping candidates
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+  /fhir/CodeSystem/$lookup:
+    get:
+      operationId: lookupTerminologyCode
+      summary: Verify a code and obtain its display, active state, properties, and server version
+      parameters:
+        - name: system
+          in: query
+          required: true
+          schema: {type: string, maxLength: 200}
+        - name: code
+          in: query
+          required: true
+          schema: {type: string, maxLength: 40}
+        - name: version
+          in: query
+          required: false
+          schema: {type: string, maxLength: 200}
+        - name: _format
+          in: query
+          required: false
+          schema: {type: string, enum: [json, application/fhir+json], default: json}
+      responses:
+        '200':
+          description: FHIR R4 Parameters lookup result
+          content:
+            application/fhir+json:
+              schema:
+                type: object
+                additionalProperties: true
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+  /search/LOINC:
+    get:
+      operationId: searchLoinc
+      summary: Search LOINC for a form, section, panel, observation, or laboratory concept
+      parameters:
+        - $ref: '#/components/parameters/NormalizedQuery'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/SmallSize'
+      responses:
+        '200':
+          description: LOINC search candidates
+          content:
+            application/json:
+              schema: {type: object, additionalProperties: true}
+  /search/KCD8:
+    get:
+      operationId: searchKcd8
+      summary: Search KCD-8 candidates when a Korean diagnosis classification mapping is needed
+      parameters:
+        - $ref: '#/components/parameters/NormalizedQuery'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/SmallSize'
+      responses:
+        '200':
+          description: KCD-8 search candidates
+          content:
+            application/json:
+              schema: {type: object, additionalProperties: true}
+  /hira/%EC%95%BD%EC%A0%9C/search:
+    get:
+      operationId: searchHiraDrug
+      summary: Search HIRA drug products by a short normalized drug or ingredient name
+      parameters:
+        - $ref: '#/components/parameters/NormalizedQuery'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/SmallSize'
+      responses:
+        '200':
+          description: HIRA drug candidates
+          content:
+            application/json:
+              schema: {type: object, additionalProperties: true}
+components:
+  parameters:
+    NormalizedQuery:
+      name: q
+      in: query
+      required: true
+      description: Short de-identified normalized terminology query, not a raw patient sentence
+      schema: {type: string, minLength: 1, maxLength: 80}
+    Page:
+      name: page
+      in: query
+      required: false
+      schema: {type: integer, minimum: 1, default: 1}
+    SmallSize:
+      name: size
+      in: query
+      required: false
+      schema: {type: integer, minimum: 1, maximum: 10, default: 5}
+  schemas:
+    SnomedMapSearchRequest:
+      type: object
+      additionalProperties: false
+      required: [q, state, page, size]
+      properties:
+        q:
+          type: string
+          minLength: 1
+          maxLength: 80
+          description: Short de-identified normalized clinical term
+        semanticTags:
+          type: array
+          maxItems: 5
+          items:
+            type: string
+            enum: [finding, disorder, procedure, observable entity, situation with explicit context, medicinal product]
+        state:
+          type: string
+          enum: [ACTIVE]
+        page:
+          type: integer
+          minimum: 1
+          default: 1
+        size:
+          type: integer
+          minimum: 1
+          maximum: 10
+          default: 5

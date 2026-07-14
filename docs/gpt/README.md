@@ -14,7 +14,9 @@ This directory is a static, read-only knowledge API for a Custom GPT test chatbo
 - `question-groups.json`: question templates and screening groups
 - `safety-rules.json`: deterministic safety and routing rules
 - `screening-kr.json`: Korean national screening candidate rules
-- `openapi.yaml`: Custom GPT Action definition
+- `terminology-source.json`: STOM identity, observed versions, cadence, and limitations
+- `openapi.yaml`: compiled Knowledge Custom GPT Action definition
+- `stom-openapi.yaml`: separate read-only STOM terminology Action definition
 - `GPT_INSTRUCTIONS.md`: instructions to paste into GPT Builder
 - `privacy-policy.html`: public privacy notice required for a shared GPT Action
 
@@ -23,3 +25,11 @@ Run `python3 tools/gpt_export/build.py` after changing Knowledge or Facts. The g
 The GPT must start from Reason for Encounter, then load only the matching compact RFE resources. The large aggregate files remain available for offline inspection and backward compatibility but are intentionally absent from the Action schema.
 
 Manifest policy also distinguishes institutional result checking from an interpretation request, and carries recency rules for longitudinal conditions, medications, family history, alcohol, and smoking review.
+
+The STOM Action is intentionally separate from the compiled Knowledge Action. It accepts only a short de-identified normalized term or terminology code and provides provisional SNOMED CT, LOINC, KCD-8, HIRA, and FHIR lookup results. It must never receive raw patient answers or control clinical rules.
+
+Verify the approved live read operations with synthetic normalized terms:
+
+```bash
+python3 tools/terminology/probe_stom.py
+```

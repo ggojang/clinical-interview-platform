@@ -55,6 +55,7 @@ class GptExportTests(unittest.TestCase):
             names = {resource["name"] for resource in manifest["resources"]}
             self.assertTrue({
                 "common-facts", "reason-for-encounters", "screening-kr",
+                "terminology-source",
                 "rfe-cough-facts", "rfe-cough-questions", "rfe-cough-rules",
                 "rfe-dyspnea-facts", "rfe-dyspnea-questions", "rfe-dyspnea-rules",
                 "rfe-fever-facts", "rfe-fever-questions", "rfe-fever-rules",
@@ -88,6 +89,12 @@ class GptExportTests(unittest.TestCase):
                     self.assertEqual(document["reason_for_encounter"], f"rfe.{slug}")
                     self.assertGreater(document["count"], 0)
                     self.assertFalse(document["contains_patient_responses"])
+                    self.assertTrue(document["knowledge_sources"])
+                    self.assertTrue(
+                        document["knowledge_source_status"][
+                            "clinical_sources_are_compiled_not_queried_live"
+                        ]
+                    )
 
     def test_additional_comment_is_structured_and_upgrade_aware(self):
         with tempfile.TemporaryDirectory() as output:
@@ -169,6 +176,18 @@ class GptExportTests(unittest.TestCase):
             self.assertEqual(
                 limit_notice["rate_limit_interruption_status"], "in-progress"
             )
+            terminology = manifest["terminology_lookup_policy"]
+            self.assertEqual(
+                terminology["runtime_use"], "optional_semantic_alignment_only"
+            )
+            self.assertFalse(
+                terminology["clinical_rule_selection_from_live_terminology"]
+            )
+            self.assertFalse(terminology["send_raw_patient_response"])
+            self.assertTrue(
+                terminology["send_only_minimal_normalized_term_or_code"]
+            )
+            self.assertIn("stom-openapi.yaml", terminology["action_schema_url"])
             review_policy = manifest["longitudinal_context_review_policy"]
             self.assertEqual(
                 review_policy["unknown_last_confirmed_at"],
@@ -196,6 +215,19 @@ class GptExportTests(unittest.TestCase):
                     self.assertTrue(
                         question["fact_id"] is None or isinstance(question["fact_id"], str)
                     )
+
+    def test_stom_action_is_read_only_and_minimized(self):
+        schema = (ROOT / "docs" / "gpt" / "stom-openapi.yaml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("https://stom.infoclinic.co", schema)
+        self.assertIn("operationId: searchSnomedMappingCandidates", schema)
+        self.assertIn("operationId: lookupTerminologyCode", schema)
+        self.assertIn("operationId: searchLoinc", schema)
+        self.assertIn("operationId: searchHiraDrug", schema)
+        self.assertNotIn("\n    put:", schema.lower())
+        self.assertNotIn("\n    delete:", schema.lower())
+        self.assertIn("maxLength: 80", schema)
 
     def test_question_text_does_not_embed_display_sequence(self):
         with tempfile.TemporaryDirectory() as output:

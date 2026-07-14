@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "0.3.3"
+VERSION = "0.4.0"
 GENERATED_AT = "2026-07-14T00:00:00Z"
 PRIVATE_KEYS = {
     "raw_text", "raw_input", "patient_response", "patient_responses",
@@ -82,6 +82,23 @@ def compact(value: Any) -> Any:
     return value
 
 
+def package_knowledge_sources(package: dict[str, Any]) -> list[dict[str, Any]]:
+    """Expose compact source identity once per RFE resource without full provenance."""
+    keys = (
+        "id", "kind", "publisher", "title", "version", "url", "complete",
+        "license_status", "last_monitored_at", "monitor_interval_days",
+    )
+    selected: dict[str, dict[str, Any]] = {}
+    for manifest in package.get("research_source_manifests", []):
+        for artifact in manifest.get("artifacts", []):
+            source_id = artifact.get("id")
+            if source_id:
+                selected[source_id] = {
+                    key: artifact[key] for key in keys if key in artifact
+                }
+    return [selected[key] for key in sorted(selected)]
+
+
 def number_answer_options(
     labels: list[str], *, include_unknown: bool = True, include_decline: bool = True
 ) -> list[dict[str, Any]]:
@@ -129,6 +146,12 @@ def rfe_resource(
         "encounter_contexts": package.get("scope", {}).get("encounter_contexts", []),
         "package_id": package.get("package_id"),
         "package_version": package.get("package_version"),
+        "knowledge_sources": package_knowledge_sources(package),
+        "knowledge_source_status": {
+            "status": "research_only",
+            "review_status": "unreviewed",
+            "clinical_sources_are_compiled_not_queried_live": True,
+        },
         "count": len(items),
         "items": [compact(item) for item in items],
     }
@@ -164,6 +187,9 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
     questions: list[dict[str, Any]] = []
     rules: list[dict[str, Any]] = []
     screening: dict[str, Any] | None = None
+    terminology_source = sanitize(
+        load_json(root / "sources" / "manifests" / "stom-terminology.json")
+    )
 
     for path in sorted((root / "knowledge").rglob("*.json")):
         document = load_json(path)
@@ -255,6 +281,7 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
         "question-groups.json": aggregate_questions,
         "safety-rules.json": aggregate_rules,
         "screening-kr.json": screening,
+        "terminology-source.json": terminology_source,
     }
     resources.update(collect_rfe_resources(root))
     return resources
@@ -352,6 +379,28 @@ def build(root: Path, output: Path) -> dict[str, Any]:
         "test_access_limit_notice_policy": encounter_policy[
             "test_access_limit_notice"
         ],
+        "terminology_lookup_policy": {
+            "status": "research_only",
+            "review_status": "unreviewed",
+            "source_id": "source.stom.fhir-r4-terminology-server",
+            "action_schema_url": (
+                "https://ggojang.github.io/clinical-interview-platform/"
+                "gpt/stom-openapi.yaml"
+            ),
+            "runtime_use": "optional_semantic_alignment_only",
+            "clinical_rule_selection_from_live_terminology": False,
+            "send_raw_patient_response": False,
+            "send_direct_identifiers": False,
+            "send_only_minimal_normalized_term_or_code": True,
+            "mapping_flow": [
+                "normalize_korean_or_english_free_text_locally",
+                "search_up_to_five_active_candidates",
+                "select_or_ask_when_ambiguous",
+                "verify_selected_code_with_fhir_lookup",
+                "preserve_server_version_and_mapping_provenance",
+            ],
+            "fallback": "preserve_free_text_and_continue_with_compiled_knowledge",
+        },
         "longitudinal_context_review_policy": encounter_policy[
             "longitudinal_context_review"
         ],

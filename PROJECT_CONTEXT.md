@@ -298,6 +298,8 @@ Runtime never infers completion merely because no further question is selected. 
 
 The public ChatGPT test preserves Reason for Encounter as the first interview input, then gives a one-time notice before the first questionnaire item that Free-tier GPT use and file or image uploads may be rate-limited. It never promises a fixed quota or reset time, and interruption before explicit completion remains in progress rather than completed.
 
+The public test exposes compact source identity for each compiled RFE package and may use STOM through a separate read-only terminology Action. AI first converts Korean or English free text into a minimal de-identified normalized term, then retrieves and verifies provisional SNOMED CT, LOINC, KCD-8 or HIRA candidates. Live terminology never creates clinical rules or selects safety behavior, raw patient material is never sent, and failure falls back to preserved free text plus compiled knowledge.
+
 Longitudinal background information is reviewed on the first encounter and thereafter by recency. Research defaults are 90 days for current medication and 365 days for current conditions, family history, alcohol and smoking. Runtime asks only due or change-relevant groups and records each group's last confirmation date. When no persistent confirmation timestamp is available, Runtime asks one combined first-use/recency gating question before repeating the background inventory.
 
 ---

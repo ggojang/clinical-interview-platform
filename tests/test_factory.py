@@ -99,6 +99,18 @@ class CompilerTests(unittest.TestCase):
         dyspnea_daily_ids = {item["source_id"] for item in dyspnea_daily["due"]}
         self.assertIn("source.nice.ng158.vte", dyspnea_daily_ids)
         self.assertNotIn("source.nhs.shortness-of-breath", dyspnea_daily_ids)
+        stom_manifest = (
+            Path(__file__).resolve().parents[1]
+            / "sources/manifests/stom-terminology.json"
+        )
+        stom_monthly = due_sources(
+            date.fromisoformat("2026-08-13"), stom_manifest
+        )
+        self.assertEqual(
+            {item["source_id"] for item in stom_monthly["due"]},
+            {"source.stom.fhir-r4-terminology-server"},
+        )
+        self.assertEqual(stom_monthly["due"][0]["monitor_interval_days"], 30)
 
     def test_fever_package_is_deterministic_and_question_complete(self):
         first = compile_package(profile="fever")

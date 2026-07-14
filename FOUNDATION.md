@@ -174,7 +174,7 @@ Compile once.
 
 Execute many.
 
-Runtime MUST NOT query external medical sources.
+Runtime MUST NOT query external medical evidence sources or generate clinical rules from live external content.
 
 Examples include
 
@@ -192,7 +192,7 @@ Examples include
 
 These resources belong to Knowledge Acquisition.
 
-They never belong to Runtime.
+An approved terminology server is the only Runtime exception, and only for optional read-only semantic alignment of a minimal de-identified normalized term or code. It never determines Clinical Intent, Question selection, safety, diagnosis, or completion. Runtime remains functional when it is unavailable.
 
 ---
 
@@ -448,13 +448,15 @@ Neither controls Runtime.
 
 # 16. STOM
 
-STOM is a build-time terminology provider.
+STOM is the build-time terminology provider and an optional Runtime semantic-alignment service.
 
-Runtime never communicates with STOM.
+At Runtime, STOM receives only a minimal de-identified normalized term or code through approved read-only operations. Raw patient responses, identifiers, files, full narratives and combinations of clinical facts are prohibited.
 
-Knowledge Builder may communicate with STOM.
+STOM results are provisional coding candidates. Selected codes require active-state verification and retain server version, provenance and uncertainty.
 
-Compiled Runtime Packages never require STOM.
+Knowledge Builder may use the broader terminology API. Runtime may not use STOM to create clinical knowledge or rules.
+
+Compiled Runtime Packages never require STOM and remain functional when it is unavailable.
 
 ---
 
