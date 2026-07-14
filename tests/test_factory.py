@@ -18,7 +18,7 @@ from runtime.memory import ClinicalMemory
 from runtime.package import (
     ABDOMINAL_PAIN_PACKAGE, CHEST_PAIN_PACKAGE, DEFAULT_PACKAGE,
     DIZZINESS_SYNCOPE_PACKAGE, DYSPNEA_PACKAGE, FEVER_PACKAGE, HEADACHE_PACKAGE,
-    URINARY_SYMPTOMS_PACKAGE, VOMITING_DIARRHEA_PACKAGE,
+    FATIGUE_PACKAGE, URINARY_SYMPTOMS_PACKAGE, VOMITING_DIARRHEA_PACKAGE,
     PackageLoadError, load_package,
 )
 from runtime.session import InterviewSession
@@ -39,6 +39,7 @@ class CompilerTests(unittest.TestCase):
             "dizziness_syncope",
             "vomiting_diarrhea",
             "urinary_symptoms",
+            "fatigue",
         ):
             with self.subTest(profile=profile), self.assertRaises(CompilationError):
                 compile_package(production=True, profile=profile)
@@ -352,6 +353,31 @@ class CompilerTests(unittest.TestCase):
         self.assertEqual(mapping["validation"]["result"], "provisional_pass")
         self.assertFalse(mapping["validation"]["clinical_rule_authority"])
 
+    def test_fatigue_package_is_complete_and_deterministic(self):
+        first = compile_package(profile="fatigue")
+        second = compile_package(profile="fatigue")
+        self.assertEqual(first, second)
+        facts = {
+            node["id"] for node in first["knowledge_graph"]["nodes"]
+            if node["type"] == "Fact"
+        }
+        self.assertEqual(len(facts), 34)
+        self.assertEqual(facts, set(first["indexes"]["questions_by_fact"]))
+        self.assertEqual(first["coverage"]["total_safety_rules"], 7)
+        self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 7)
+        self.assertEqual(first["coverage"]["uncovered_safety_rules"], [])
+
+    def test_fatigue_mrcm_is_build_time_metadata_only(self):
+        mapping = json.loads(
+            (
+                Path(__file__).resolve().parents[1]
+                / "mappings/terminology/snomed-mrcm-fatigue.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(len(mapping["focus_concepts"]), 2)
+        self.assertEqual(mapping["validation"]["result"], "provisional_pass")
+        self.assertFalse(mapping["validation"]["clinical_rule_authority"])
+
 
 class ClinicalMemoryTests(unittest.TestCase):
     def setUp(self):
@@ -595,6 +621,22 @@ class PackageRuntimeTests(unittest.TestCase):
     def test_urinary_symptoms_research_package_is_rejected_in_production(self):
         with self.assertRaises(PackageLoadError):
             load_package(URINARY_SYMPTOMS_PACKAGE, execution_mode="production")
+
+    def test_fatigue_simulation_evaluation_passes(self):
+        report = run_evaluation(FATIGUE_PACKAGE)
+        self.assertTrue(report["passed"])
+        self.assertEqual(report["case_count"], 8)
+        self.assertLessEqual(max(item["turns"] for item in report["results"]), 35)
+
+    def test_fatigue_runtime_uses_fatigue_rfe(self):
+        session = InterviewSession("fatigue-runtime", package_path=FATIGUE_PACKAGE)
+        state = session.process("I feel tired all the time.")
+        self.assertIn("systemic.fatigue", state["active_patterns"])
+        self.assertEqual(state["package"]["id"], "package.primary-care-fatigue")
+
+    def test_fatigue_research_package_is_rejected_in_production(self):
+        with self.assertRaises(PackageLoadError):
+            load_package(FATIGUE_PACKAGE, execution_mode="production")
 
 
 if __name__ == "__main__":

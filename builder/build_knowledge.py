@@ -88,6 +88,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-urinary-symptoms.json",
         "version": "0.1.0",
     },
+    "fatigue": {
+        "base_graph": ROOT / "knowledge/base/primary-care-fatigue.json",
+        "base_rules": ROOT / "rules/base/primary-care-fatigue.json",
+        "fragment_root": ROOT / "knowledge/generated/systemic/fatigue",
+        "output_graph": ROOT / "knowledge/graph/primary-care-fatigue.json",
+        "output_rules": ROOT / "rules/primary-care-fatigue.json",
+        "version": "0.1.0",
+    },
 }
 
 

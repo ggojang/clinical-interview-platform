@@ -1,0 +1,1178 @@
+{
+  "contains_patient_responses": false,
+  "count": 76,
+  "encounter_contexts": [
+    "context.primary_care"
+  ],
+  "generated_at": "2026-07-14T00:00:00Z",
+  "items": [
+    {
+      "id": "rule.fatigue.safety.confusion",
+      "priority": 1000,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "symptom.confusion"
+      }
+    },
+    {
+      "id": "rule.fatigue.safety.severe-dyspnea",
+      "priority": 1000,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": "severe",
+        "fact": "symptom.dyspnea"
+      }
+    },
+    {
+      "id": "rule.fatigue.safety.suicide-intent",
+      "priority": 1000,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "mental_health.suicidal_intent_or_plan"
+      }
+    },
+    {
+      "id": "rule.fatigue.safety.unilateral-weakness",
+      "priority": 1000,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "symptom.new_unilateral_weakness"
+      }
+    },
+    {
+      "id": "rule.fatigue.safety.chest-pain-syncope",
+      "priority": 900,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.chest_pain"
+          },
+          {
+            "equals": true,
+            "fact": "symptom.syncope"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.fatigue.safety.fever-immunocompromised",
+      "priority": 900,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.fever"
+          },
+          {
+            "equals": true,
+            "fact": "patient.immunocompromised"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.fatigue.safety.gastrointestinal-bleeding",
+      "priority": 900,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "symptom.black_or_bloody_stool"
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.current",
+      "priority": 130,
+      "status": "research_only",
+      "then": {
+        "reason": "confirm_presentation",
+        "target": "target.fatigue.current"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fatigue.current": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.suicidal-ideation",
+      "priority": 128,
+      "status": "research_only",
+      "then": {
+        "reason": "mental_health_safety_gate",
+        "target": "target.fatigue.suicidal-ideation"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fatigue.suicidal-ideation": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.suicide-intent",
+      "priority": 127,
+      "status": "research_only",
+      "then": {
+        "reason": "mental_health_emergency_gate",
+        "target": "target.fatigue.suicide-intent"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fatigue.suicide-intent": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.confusion",
+      "priority": 126,
+      "status": "research_only",
+      "then": {
+        "reason": "emergency_gate",
+        "target": "target.fatigue.confusion"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fatigue.confusion": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.unilateral-weakness",
+      "priority": 125,
+      "status": "research_only",
+      "then": {
+        "reason": "neurological_emergency_gate",
+        "target": "target.fatigue.unilateral-weakness"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fatigue.unilateral-weakness": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.dyspnea",
+      "priority": 124,
+      "status": "research_only",
+      "then": {
+        "reason": "cardiorespiratory_safety_gate",
+        "target": "target.fatigue.dyspnea"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fatigue.dyspnea": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.chest-pain",
+      "priority": 123,
+      "status": "research_only",
+      "then": {
+        "reason": "cardiorespiratory_safety_gate",
+        "target": "target.fatigue.chest-pain"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fatigue.chest-pain": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.syncope",
+      "priority": 122,
+      "status": "research_only",
+      "then": {
+        "reason": "cardiovascular_safety_gate",
+        "target": "target.fatigue.syncope"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fatigue.syncope": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.gi-bleeding",
+      "priority": 121,
+      "status": "research_only",
+      "then": {
+        "reason": "bleeding_safety_gate",
+        "target": "target.fatigue.gi-bleeding"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fatigue.gi-bleeding": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.duration",
+      "priority": 110,
+      "status": "research_only",
+      "then": {
+        "reason": "characterize_duration",
+        "target": "target.fatigue.duration"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fatigue.duration": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.severity",
+      "priority": 109,
+      "status": "research_only",
+      "then": {
+        "reason": "symptom_burden",
+        "target": "target.fatigue.severity"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fatigue.severity": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.function",
+      "priority": 108,
+      "status": "research_only",
+      "then": {
+        "reason": "functional_impact",
+        "target": "target.fatigue.function"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fatigue.function": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.activate.fatigue",
+      "priority": 100,
+      "status": "research_only",
+      "then": {
+        "activate_intents": [
+          "intent.characterize_symptom",
+          "intent.screen_red_flags",
+          "intent.differentiate_common_causes",
+          "intent.risk_assessment"
+        ]
+      },
+      "type": "activation",
+      "when": {
+        "rfe": "rfe.fatigue"
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.fever",
+      "priority": 100,
+      "status": "research_only",
+      "then": {
+        "reason": "infection_or_systemic_context",
+        "target": "target.fatigue.fever"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fatigue.fever": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.immunocompromise",
+      "priority": 99,
+      "status": "research_only",
+      "then": {
+        "reason": "infection_safety_context",
+        "target": "target.fatigue.immunocompromise"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fatigue.immunocompromise": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.low-mood",
+      "priority": 98,
+      "status": "research_only",
+      "then": {
+        "reason": "mood_and_safety_context",
+        "target": "target.fatigue.low-mood"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fatigue.low-mood": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.anhedonia",
+      "priority": 97,
+      "status": "research_only",
+      "then": {
+        "reason": "mood_context",
+        "target": "target.fatigue.anhedonia"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fatigue.anhedonia": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.weight-loss",
+      "priority": 94,
+      "status": "research_only",
+      "then": {
+        "reason": "constitutional_warning_context",
+        "target": "target.fatigue.weight-loss"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fatigue.weight-loss": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.onset",
+      "priority": 90,
+      "status": "research_only",
+      "then": {
+        "reason": "characterize_onset",
+        "target": "target.fatigue.onset"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fatigue.onset": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.rest-relief",
+      "priority": 89,
+      "status": "research_only",
+      "then": {
+        "reason": "characterize_recovery",
+        "target": "target.fatigue.rest-relief"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fatigue.rest-relief": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.post-exertional",
+      "priority": 87,
+      "status": "research_only",
+      "then": {
+        "reason": "post_exertional_feature",
+        "target": "target.fatigue.post-exertional"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fatigue.post-exertional": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.post-exertional-recovery",
+      "priority": 86,
+      "status": "research_only",
+      "then": {
+        "reason": "post_exertional_feature",
+        "target": "target.fatigue.post-exertional-recovery"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fatigue.post-exertional-recovery": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.unrefreshing-sleep",
+      "priority": 85,
+      "status": "research_only",
+      "then": {
+        "reason": "sleep_feature",
+        "target": "target.fatigue.unrefreshing-sleep"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fatigue.unrefreshing-sleep": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.cognition",
+      "priority": 84,
+      "status": "research_only",
+      "then": {
+        "reason": "cognitive_feature",
+        "target": "target.fatigue.cognition"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fatigue.cognition": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.appetite",
+      "priority": 83,
+      "status": "research_only",
+      "then": {
+        "reason": "constitutional_warning_context",
+        "target": "target.fatigue.appetite"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fatigue.appetite": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.sleep-breathing",
+      "priority": 81,
+      "status": "research_only",
+      "then": {
+        "reason": "sleep_breathing_context",
+        "target": "target.fatigue.sleep-breathing"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fatigue.sleep-breathing": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.cough",
+      "priority": 80,
+      "status": "research_only",
+      "then": {
+        "reason": "respiratory_context",
+        "target": "target.fatigue.cough"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fatigue.cough": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.thirst-polyuria",
+      "priority": 79,
+      "status": "research_only",
+      "then": {
+        "reason": "metabolic_context",
+        "target": "target.fatigue.thirst-polyuria"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fatigue.thirst-polyuria": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.insomnia",
+      "priority": 78,
+      "status": "research_only",
+      "then": {
+        "reason": "sleep_context",
+        "target": "target.fatigue.insomnia"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fatigue.insomnia": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.recent-infection",
+      "priority": 75,
+      "status": "research_only",
+      "then": {
+        "reason": "post_infectious_context",
+        "target": "target.fatigue.recent-infection"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fatigue.recent-infection": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.sleep-hours",
+      "priority": 74,
+      "status": "research_only",
+      "then": {
+        "reason": "sleep_context",
+        "target": "target.fatigue.sleep-hours"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fatigue.sleep-hours": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.medication",
+      "priority": 73,
+      "status": "research_only",
+      "then": {
+        "reason": "medicine_context",
+        "target": "target.fatigue.medication"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fatigue.medication": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.age40",
+      "priority": 72,
+      "status": "research_only",
+      "then": {
+        "reason": "investigation_context",
+        "target": "target.fatigue.age40"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fatigue.age40": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.smoking",
+      "priority": 71,
+      "status": "research_only",
+      "then": {
+        "reason": "respiratory_investigation_context",
+        "target": "target.fatigue.smoking"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fatigue.smoking": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.asbestos",
+      "priority": 70,
+      "status": "research_only",
+      "then": {
+        "reason": "respiratory_investigation_context",
+        "target": "target.fatigue.asbestos"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fatigue.asbestos": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.complete.age40",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fatigue.age40"
+      }
+    },
+    {
+      "id": "rule.generated.complete.anhedonia",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fatigue.anhedonia"
+      }
+    },
+    {
+      "id": "rule.generated.complete.appetite",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fatigue.appetite"
+      }
+    },
+    {
+      "id": "rule.generated.complete.asbestos",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fatigue.asbestos"
+      }
+    },
+    {
+      "id": "rule.generated.complete.chest-pain",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fatigue.chest-pain"
+      }
+    },
+    {
+      "id": "rule.generated.complete.cognition",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fatigue.cognition"
+      }
+    },
+    {
+      "id": "rule.generated.complete.confusion",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fatigue.confusion"
+      }
+    },
+    {
+      "id": "rule.generated.complete.cough",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fatigue.cough"
+      }
+    },
+    {
+      "id": "rule.generated.complete.current",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fatigue.current"
+      }
+    },
+    {
+      "id": "rule.generated.complete.duration",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fatigue.duration"
+      }
+    },
+    {
+      "id": "rule.generated.complete.dyspnea",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fatigue.dyspnea"
+      }
+    },
+    {
+      "id": "rule.generated.complete.fever",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fatigue.fever"
+      }
+    },
+    {
+      "id": "rule.generated.complete.function",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fatigue.function"
+      }
+    },
+    {
+      "id": "rule.generated.complete.gi-bleeding",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fatigue.gi-bleeding"
+      }
+    },
+    {
+      "id": "rule.generated.complete.immunocompromise",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fatigue.immunocompromise"
+      }
+    },
+    {
+      "id": "rule.generated.complete.insomnia",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fatigue.insomnia"
+      }
+    },
+    {
+      "id": "rule.generated.complete.low-mood",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fatigue.low-mood"
+      }
+    },
+    {
+      "id": "rule.generated.complete.medication",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fatigue.medication"
+      }
+    },
+    {
+      "id": "rule.generated.complete.onset",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fatigue.onset"
+      }
+    },
+    {
+      "id": "rule.generated.complete.post-exertional",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fatigue.post-exertional"
+      }
+    },
+    {
+      "id": "rule.generated.complete.post-exertional-recovery",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fatigue.post-exertional-recovery"
+      }
+    },
+    {
+      "id": "rule.generated.complete.recent-infection",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fatigue.recent-infection"
+      }
+    },
+    {
+      "id": "rule.generated.complete.rest-relief",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fatigue.rest-relief"
+      }
+    },
+    {
+      "id": "rule.generated.complete.severity",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fatigue.severity"
+      }
+    },
+    {
+      "id": "rule.generated.complete.sleep-breathing",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fatigue.sleep-breathing"
+      }
+    },
+    {
+      "id": "rule.generated.complete.sleep-hours",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fatigue.sleep-hours"
+      }
+    },
+    {
+      "id": "rule.generated.complete.smoking",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fatigue.smoking"
+      }
+    },
+    {
+      "id": "rule.generated.complete.suicidal-ideation",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fatigue.suicidal-ideation"
+      }
+    },
+    {
+      "id": "rule.generated.complete.suicide-intent",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fatigue.suicide-intent"
+      }
+    },
+    {
+      "id": "rule.generated.complete.syncope",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fatigue.syncope"
+      }
+    },
+    {
+      "id": "rule.generated.complete.thirst-polyuria",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fatigue.thirst-polyuria"
+      }
+    },
+    {
+      "id": "rule.generated.complete.unilateral-weakness",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fatigue.unilateral-weakness"
+      }
+    },
+    {
+      "id": "rule.generated.complete.unrefreshing-sleep",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fatigue.unrefreshing-sleep"
+      }
+    },
+    {
+      "id": "rule.generated.complete.weight-loss",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fatigue.weight-loss"
+      }
+    }
+  ],
+  "knowledge_source_status": {
+    "clinical_sources_are_compiled_not_queried_live": true,
+    "review_status": "unreviewed",
+    "status": "research_only"
+  },
+  "knowledge_sources": [
+    {
+      "complete": false,
+      "id": "source.nhs.tiredness-fatigue.2023",
+      "kind": "public_health_guidance_metadata",
+      "last_monitored_at": "2026-07-14",
+      "license_status": "unknown",
+      "monitor_interval_days": 7,
+      "publisher": "NHS",
+      "title": "Tiredness and fatigue",
+      "url": "https://www.nhs.uk/symptoms/tiredness-and-fatigue/",
+      "version": "reviewed-2023-06-02"
+    },
+    {
+      "complete": false,
+      "id": "source.nice.ng12.fatigue.2026",
+      "kind": "clinical_guideline_metadata",
+      "last_monitored_at": "2026-07-14",
+      "license_status": "restricted",
+      "monitor_interval_days": 1,
+      "publisher": "NICE",
+      "title": "Suspected cancer: recognition and referral — fatigue",
+      "url": "https://www.nice.org.uk/guidance/ng12/chapter/Recommended-actions-organised-by-symptom-and-findings-of-primary-care-investigations",
+      "version": "NG12-updated-2026"
+    },
+    {
+      "complete": false,
+      "id": "source.nice.ng206.mecfs.2021",
+      "kind": "clinical_guideline_metadata",
+      "last_monitored_at": "2026-07-14",
+      "license_status": "restricted",
+      "monitor_interval_days": 1,
+      "publisher": "NICE",
+      "title": "ME/CFS: diagnosis and management",
+      "url": "https://www.nice.org.uk/guidance/ng206/chapter/recommendations",
+      "version": "NG206"
+    },
+    {
+      "complete": false,
+      "id": "source.nice.ng222.depression.2026",
+      "kind": "clinical_guideline_metadata",
+      "last_monitored_at": "2026-07-14",
+      "license_status": "restricted",
+      "monitor_interval_days": 1,
+      "publisher": "NICE",
+      "title": "Depression in adults: treatment and management",
+      "url": "https://www.nice.org.uk/guidance/ng222/chapter/recommendations",
+      "version": "NG222-reviewed-2026"
+    },
+    {
+      "complete": false,
+      "id": "source.stom.mrcm.fatigue.20260714",
+      "kind": "terminology_mrcm_query_summary",
+      "last_monitored_at": "2026-07-14",
+      "license_status": "restricted",
+      "monitor_interval_days": 30,
+      "publisher": "Infoclinic",
+      "title": "STOM SNOMED CT lookup and MRCM allowed attributes for fatigue",
+      "url": "https://stom.infoclinic.co/allow/attributes/SNOMEDCT/84229001",
+      "version": "SNOMEDCT-20260701"
+    }
+  ],
+  "package_id": "package.primary-care-fatigue",
+  "package_version": "0.1.0",
+  "reason_for_encounter": "rfe.fatigue",
+  "resource_type": "ReasonForEncounterRuleCollection",
+  "review_status": "unreviewed",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "version": "1.1.0"
+}

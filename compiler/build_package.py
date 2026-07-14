@@ -129,6 +129,18 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/genitourinary/urinary-symptoms",
         "research_manifests": [ROOT / "sources/manifests/primary-care-urinary-symptoms-research.json"],
     },
+    "fatigue": {
+        "graph": ROOT / "knowledge/graph/primary-care-fatigue.json",
+        "rules": ROOT / "rules/primary-care-fatigue.json",
+        "sources": ROOT / "sources/manifests/primary-care-fatigue.json",
+        "completion_policy": ROOT / "policies/primary-care-fatigue-completion.json",
+        "output": ROOT / "packages/generated/primary-care-fatigue-0.1.0.json",
+        "package_id": "package.primary-care-fatigue",
+        "package_version": "0.1.0",
+        "rfe": "rfe.fatigue",
+        "simulation_root": ROOT / "simulation/patients/systemic/fatigue",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-fatigue-research.json"],
+    },
 }
 
 ALLOWED_NODE_TYPES = {

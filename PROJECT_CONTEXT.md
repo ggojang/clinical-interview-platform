@@ -559,7 +559,7 @@ No patient state exists inside a package.
 
 Runtime binds a session to one exact package version.
 
-Planned Primary Care packages are implemented through the versioned queue in `knowledge/catalog/planned-package-work-queue.json`. Catalog promotion occurs only after deterministic compilation, complete Fact-to-Question coverage, safety-rule simulation coverage, privacy validation and public bundle generation. Abdominal pain, chest pain, headache, dizziness or syncope, vomiting or diarrhoea, and urinary symptoms are implemented as unreviewed research packages; the queue continues with fatigue, back pain, skin complaints and medication review.
+Planned Primary Care packages are implemented through the versioned queue in `knowledge/catalog/planned-package-work-queue.json`. Catalog promotion occurs only after deterministic compilation, complete Fact-to-Question coverage, safety-rule simulation coverage, privacy validation and public bundle generation. Abdominal pain, chest pain, headache, dizziness or syncope, vomiting or diarrhoea, urinary symptoms, and fatigue are implemented as unreviewed research packages; the queue continues with back pain, skin complaints and medication review.
 
 ---
 
@@ -658,9 +658,9 @@ A presentation may not exist for vaccination, health checks, medication review o
 
 # 25. Current Repository State
 
-The current implementation is an early multi-RFE executable Knowledge Factory with cough, fever, breathing-difficulty, abdominal-pain, chest-pain, headache, dizziness-or-syncope, vomiting-or-diarrhoea and urinary-symptom vertical slices.
+The current implementation is an early multi-RFE executable Knowledge Factory with cough, fever, breathing-difficulty, abdominal-pain, chest-pain, headache, dizziness-or-syncope, vomiting-or-diarrhoea, urinary-symptom and fatigue vertical slices.
 
-It includes a profile-driven deterministic Builder, a Primary Care Reason for Encounter catalog, 202 unique research Facts across nine independently compiled packages, complete Fact-to-Question linkage within every package, shared Fact identity, versioned Source Manifests, source-specific refresh scheduling, deterministic Compiler, integrity-checked draft Knowledge Packages, evidence-preserving Clinical Memory with coded `dataAbsentReason`, package-driven multi-turn Runtime, multi-domain warning-feature examples, limited English and Korean extraction, 108 synthetic JSON Simulations, Evaluation, computed Coverage, validation and tests.
+It includes a profile-driven deterministic Builder, a Primary Care Reason for Encounter catalog, 227 unique research Facts across ten independently compiled packages, complete Fact-to-Question linkage within every package, shared Fact identity, versioned Source Manifests, source-specific refresh scheduling, deterministic Compiler, integrity-checked draft Knowledge Packages, evidence-preserving Clinical Memory with coded `dataAbsentReason`, package-driven multi-turn Runtime, multi-domain warning-feature examples, limited English and Korean extraction, 116 synthetic JSON Simulations, Evaluation, computed Coverage, validation and tests.
 
 This implementation demonstrates parts of the intended architecture.
 
@@ -670,11 +670,11 @@ Known gaps include:
 
 - no live external Knowledge Acquisition connector or complete multi-domain Builder pipeline;
 - no persistent graph database or general-purpose graph authoring workflow;
-- Compiler and Knowledge Packages currently cover only cough, adult fever, breathing difficulty, abdominal pain, chest pain, headache, dizziness-or-syncope, vomiting-or-diarrhoea and urinary-symptom vertical slices;
+- Compiler and Knowledge Packages currently cover only cough, adult fever, breathing difficulty, abdominal pain, chest pain, headache, dizziness-or-syncope, vomiting-or-diarrhoea, urinary-symptom and fatigue vertical slices;
 - no signed or production-approved Knowledge Package;
 - Clinical Memory merge supports evidence and conflict but not the complete longitudinal policy;
 - Runtime provenance is present but not yet production-grade;
-- Simulation and Evaluation cover only the nine currently compiled vertical slices and not the full Primary Care scope;
+- Simulation and Evaluation cover only the ten currently compiled vertical slices and not the full Primary Care scope;
 - Coverage calculation is complete for the current Fact-to-Question package dimension but incomplete across Primary Care domains;
 - no governed production safety package;
 - no production privacy, security or deployment controls.

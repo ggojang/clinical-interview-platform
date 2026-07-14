@@ -381,6 +381,9 @@ class InterviewSession:
         if self.reason_for_encounter == "rfe.urinary_symptoms":
             self._update_urinary_symptom_patterns()
             return
+        if self.reason_for_encounter == "rfe.fatigue":
+            self._update_fatigue_patterns()
+            return
         active = ["respiratory.cough"]
         cold_support = sum(
             self.memory.value(fact_id) is True
@@ -555,6 +558,31 @@ class InterviewSession:
             active.append("urinary.voiding_or_retention_features")
         if self.memory.value("symptom.visible_hematuria") is True:
             active.append("urinary.haematuria_evaluation_features")
+        self.active_patterns = active
+
+    def _update_fatigue_patterns(self) -> None:
+        active = ["systemic.fatigue"]
+        if any(self.memory.value(item) is True for item in (
+            "symptom.post_exertional_malaise",
+            "symptom.post_exertional_delayed_or_prolonged",
+            "symptom.unrefreshing_sleep", "symptom.cognitive_difficulty",
+        )):
+            active.append("fatigue.post_exertional_features")
+        if any(self.memory.value(item) is True for item in (
+            "sleep.insomnia", "sleep.snoring_gasping_or_choking",
+        )):
+            active.append("fatigue.sleep_related_features")
+        if any(self.memory.value(item) is True for item in (
+            "mental_health.low_mood", "mental_health.anhedonia",
+            "mental_health.suicidal_ideation",
+        )):
+            active.append("fatigue.mood_related_features")
+        if any(self.memory.value(item) is True for item in (
+            "symptom.fever", "symptom.unintentional_weight_loss",
+            "symptom.appetite_loss", "symptom.cough",
+            "symptom.thirst_and_polyuria",
+        )):
+            active.append("fatigue.systemic_warning_features")
         self.active_patterns = active
 
     def _update_dyspnea_patterns(self) -> None:

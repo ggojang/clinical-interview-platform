@@ -1,6 +1,6 @@
 {
   "contains_patient_responses": false,
-  "count": 94,
+  "count": 101,
   "generated_at": "2026-07-14T00:00:00Z",
   "items": [
     {
@@ -904,6 +904,127 @@
       }
     },
     {
+      "id": "rule.fatigue.safety.chest-pain-syncope",
+      "priority": 900,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.chest_pain"
+          },
+          {
+            "equals": true,
+            "fact": "symptom.syncope"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.fatigue.safety.confusion",
+      "priority": 1000,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "symptom.confusion"
+      }
+    },
+    {
+      "id": "rule.fatigue.safety.fever-immunocompromised",
+      "priority": 900,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.fever"
+          },
+          {
+            "equals": true,
+            "fact": "patient.immunocompromised"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.fatigue.safety.gastrointestinal-bleeding",
+      "priority": 900,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "symptom.black_or_bloody_stool"
+      }
+    },
+    {
+      "id": "rule.fatigue.safety.severe-dyspnea",
+      "priority": 1000,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": "severe",
+        "fact": "symptom.dyspnea"
+      }
+    },
+    {
+      "id": "rule.fatigue.safety.suicide-intent",
+      "priority": 1000,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "mental_health.suicidal_intent_or_plan"
+      }
+    },
+    {
+      "id": "rule.fatigue.safety.unilateral-weakness",
+      "priority": 1000,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "symptom.new_unilateral_weakness"
+      }
+    },
+    {
       "id": "rule.fever.safety.confusion",
       "priority": 900,
       "status": "research_only",
@@ -1769,5 +1890,5 @@
     "research_test",
     "simulation"
   ],
-  "version": "1.0.0"
+  "version": "1.1.0"
 }
