@@ -660,9 +660,9 @@ A presentation may not exist for vaccination, health checks, medication review o
 
 # 25. Current Repository State
 
-The current implementation is an early multi-RFE executable Knowledge Factory with cough, fever, breathing-difficulty, abdominal-pain, chest-pain, headache, dizziness-or-syncope, vomiting-or-diarrhoea, urinary-symptom, fatigue, back-pain, skin-complaint, medication-review, grouped upper-respiratory-symptom, palpitations, bowel-symptom, focal-weakness-or-numbness, joint-or-limb and mental-health-or-sleep vertical slices.
+The current implementation is an early multi-RFE executable Knowledge Factory with cough, fever, breathing-difficulty, abdominal-pain, chest-pain, headache, dizziness-or-syncope, vomiting-or-diarrhoea, urinary-symptom, fatigue, back-pain, skin-complaint, medication-review, grouped upper-respiratory-symptom, palpitations, bowel-symptom, focal-weakness-or-numbness, joint-or-limb, mental-health-or-sleep and edema vertical slices.
 
-It includes a profile-driven deterministic Builder, a Primary Care Reason for Encounter catalog, 508 unique research Facts across nineteen independently compiled packages, complete Fact-to-Question linkage within every package, shared Fact identity, versioned Source Manifests, source-specific refresh scheduling, deterministic Compiler, integrity-checked draft Knowledge Packages, evidence-preserving Clinical Memory with coded `dataAbsentReason`, package-driven multi-turn Runtime, multi-domain warning-feature examples, limited English and Korean extraction, 218 synthetic JSON Simulations, Evaluation, computed Coverage, validation and tests.
+It includes a profile-driven deterministic Builder, a Primary Care Reason for Encounter catalog, 532 unique research Facts across twenty independently compiled packages, complete Fact-to-Question linkage within every package, shared Fact identity, versioned Source Manifests, source-specific refresh scheduling, deterministic Compiler, integrity-checked draft Knowledge Packages, evidence-preserving Clinical Memory with coded `dataAbsentReason`, package-driven multi-turn Runtime, multi-domain warning-feature examples, limited English and Korean extraction, 229 synthetic JSON Simulations, Evaluation, computed Coverage, validation and 120 automated tests.
 
 This implementation demonstrates parts of the intended architecture.
 
@@ -672,11 +672,11 @@ Known gaps include:
 
 - no live external Knowledge Acquisition connector or complete multi-domain Builder pipeline;
 - no persistent graph database or general-purpose graph authoring workflow;
-- Compiler and Knowledge Packages currently cover only cough, adult fever, breathing difficulty, abdominal pain, chest pain, headache, dizziness-or-syncope, vomiting-or-diarrhoea, urinary-symptom, fatigue, back-pain, skin-complaint, medication-review, grouped upper-respiratory-symptom, palpitations, bowel-symptom, focal-weakness-or-numbness, joint-or-limb and mental-health-or-sleep vertical slices;
+- Compiler and Knowledge Packages currently cover only cough, adult fever, breathing difficulty, abdominal pain, chest pain, headache, dizziness-or-syncope, vomiting-or-diarrhoea, urinary-symptom, fatigue, back-pain, skin-complaint, medication-review, grouped upper-respiratory-symptom, palpitations, bowel-symptom, focal-weakness-or-numbness, joint-or-limb, mental-health-or-sleep and edema vertical slices;
 - no signed or production-approved Knowledge Package;
 - Clinical Memory merge supports evidence and conflict but not the complete longitudinal policy;
 - Runtime provenance is present but not yet production-grade;
-- Simulation and Evaluation cover only the fourteen currently compiled vertical slices and not the full Primary Care scope;
+- Simulation and Evaluation cover only the twenty currently compiled vertical slices and not the full Primary Care scope;
 - Coverage calculation is complete for the current Fact-to-Question package dimension but incomplete across Primary Care domains;
 - no governed production safety package;
 - no production privacy, security or deployment controls.

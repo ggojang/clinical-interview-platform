@@ -22,6 +22,7 @@ python3 compiler/build_package.py --profile bowel_symptoms
 python3 compiler/build_package.py --profile focal_weakness_numbness
 python3 compiler/build_package.py --profile joint_limb_complaint
 python3 compiler/build_package.py --profile mental_health_sleep
+python3 compiler/build_package.py --profile edema
 ```
 
 Validate a generated package:

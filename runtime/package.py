@@ -28,6 +28,7 @@ BOWEL_SYMPTOMS_PACKAGE = ROOT / "packages/generated/primary-care-bowel-symptoms-
 FOCAL_WEAKNESS_NUMBNESS_PACKAGE = ROOT / "packages/generated/primary-care-focal-weakness-numbness-0.1.0.json"
 JOINT_LIMB_COMPLAINT_PACKAGE = ROOT / "packages/generated/primary-care-joint-limb-0.1.0.json"
 MENTAL_HEALTH_SLEEP_PACKAGE = ROOT / "packages/generated/primary-care-mental-health-sleep-0.1.0.json"
+EDEMA_PACKAGE = ROOT / "packages/generated/primary-care-edema-0.1.0.json"
 
 
 class PackageLoadError(RuntimeError):

@@ -1,6 +1,6 @@
 {
   "contains_patient_responses": false,
-  "count": 194,
+  "count": 204,
   "generated_at": "2026-07-14T00:00:00Z",
   "items": [
     {
@@ -1260,6 +1260,223 @@
       "when": {
         "equals": true,
         "fact": "symptom.syncope"
+      }
+    },
+    {
+      "id": "rule.edema.safety.allergic-swelling",
+      "priority": 1000,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "symptom.sudden_face_tongue_throat_swelling"
+      }
+    },
+    {
+      "id": "rule.edema.safety.chest-pain",
+      "priority": 1000,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.edema.current"
+          },
+          {
+            "equals": true,
+            "fact": "symptom.chest_pain"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.edema.safety.faint-clammy",
+      "priority": 1000,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.edema.current"
+          },
+          {
+            "equals": true,
+            "fact": "symptom.faint_confused_clammy"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.edema.safety.hemoptysis",
+      "priority": 1000,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.edema.current"
+          },
+          {
+            "equals": true,
+            "fact": "symptom.hemoptysis"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.edema.safety.pregnancy-warning",
+      "priority": 1000,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "all": [
+          {
+            "fact": "patient.pregnant_or_postpartum",
+            "in": [
+              "pregnant",
+              "postpartum_6_weeks"
+            ]
+          },
+          {
+            "equals": true,
+            "fact": "symptom.preeclampsia_warning_features"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.edema.safety.rapid-low-urine",
+      "priority": 900,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.edema.rapid_generalized_worsening"
+          },
+          {
+            "equals": true,
+            "fact": "symptom.markedly_reduced_urine"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.edema.safety.red-hot-fever",
+      "priority": 900,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.edema.red_or_hot"
+          },
+          {
+            "equals": true,
+            "fact": "symptom.fever"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.edema.safety.severe-dyspnea",
+      "priority": 1000,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.edema.current"
+          },
+          {
+            "equals": true,
+            "fact": "symptom.severe_dyspnea"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.edema.safety.sudden-severe",
+      "priority": 850,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.edema.sudden_onset"
+          },
+          {
+            "equals": "severe",
+            "fact": "symptom.edema.severity"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.edema.safety.unilateral-pain",
+      "priority": 900,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "symptom.unilateral_leg_pain_swelling"
       }
     },
     {
@@ -3577,5 +3794,5 @@
     "research_test",
     "simulation"
   ],
-  "version": "1.10.0"
+  "version": "1.11.0"
 }

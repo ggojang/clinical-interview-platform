@@ -166,6 +166,13 @@ PROFILES = {
         "output_graph": ROOT / "knowledge/graph/primary-care-mental-health-sleep.json",
         "output_rules": ROOT / "rules/primary-care-mental-health-sleep.json", "version": "0.1.0",
     },
+    "edema": {
+        "base_graph": ROOT / "knowledge/base/primary-care-edema.json",
+        "base_rules": ROOT / "rules/base/primary-care-edema.json",
+        "fragment_root": ROOT / "knowledge/generated/cardiovascular/edema",
+        "output_graph": ROOT / "knowledge/graph/primary-care-edema.json",
+        "output_rules": ROOT / "rules/primary-care-edema.json", "version": "0.1.0",
+    },
 }
 
 

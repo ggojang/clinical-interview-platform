@@ -411,6 +411,9 @@ class InterviewSession:
         if self.reason_for_encounter == "rfe.mental_health_sleep":
             self._update_mental_health_sleep_patterns()
             return
+        if self.reason_for_encounter == "rfe.edema":
+            self._update_edema_patterns()
+            return
         active = ["respiratory.cough"]
         cold_support = sum(
             self.memory.value(fact_id) is True
@@ -773,6 +776,16 @@ class InterviewSession:
             active.append("mental_health.psychosis_mania_features")
         if any(self.memory.value(x) not in (None, False, "", "none") for x in ("symptom.low_mood", "symptom.excessive_anxiety_or_worry", "sleep.main_problem")):
             active.append("mental_health.common_symptom_features")
+        self.active_patterns = active
+
+    def _update_edema_patterns(self) -> None:
+        active = ["cardiovascular.edema"]
+        if any(self.memory.value(x) is True for x in ("symptom.severe_dyspnea", "symptom.chest_pain", "symptom.hemoptysis", "symptom.faint_confused_clammy")):
+            active.append("edema.cardiopulmonary_warning_features")
+        if any(self.memory.value(x) is True for x in ("symptom.unilateral_leg_pain_swelling", "risk.recent_immobility_or_surgery", "history.venous_thromboembolism")):
+            active.append("edema.vte_features")
+        if any(self.memory.value(x) is True for x in ("symptom.dyspnea_on_exertion", "symptom.orthopnea", "symptom.paroxysmal_nocturnal_dyspnea", "symptom.rapid_weight_gain")):
+            active.append("edema.systemic_fluid_features")
         self.active_patterns = active
 
     def _update_dyspnea_patterns(self) -> None:

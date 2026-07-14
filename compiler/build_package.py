@@ -246,6 +246,16 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/mental-health/mental-health-sleep",
         "research_manifests": [ROOT / "sources/manifests/primary-care-mental-health-sleep-research.json"],
     },
+    "edema": {
+        "graph": ROOT / "knowledge/graph/primary-care-edema.json",
+        "rules": ROOT / "rules/primary-care-edema.json",
+        "sources": ROOT / "sources/manifests/primary-care-edema.json",
+        "completion_policy": ROOT / "policies/primary-care-edema-completion.json",
+        "output": ROOT / "packages/generated/primary-care-edema-0.1.0.json",
+        "package_id": "package.primary-care-edema", "package_version": "0.1.0",
+        "rfe": "rfe.edema", "simulation_root": ROOT / "simulation/patients/cardiovascular/edema",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-edema-research.json"],
+    },
 }
 
 ALLOWED_NODE_TYPES = {
