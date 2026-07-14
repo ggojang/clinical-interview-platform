@@ -188,6 +188,28 @@ class GptExportTests(unittest.TestCase):
                 terminology["send_only_minimal_normalized_term_or_code"]
             )
             self.assertIn("stom-openapi.yaml", terminology["action_schema_url"])
+            provenance_display = manifest["response_provenance_display_policy"]
+            self.assertTrue(
+                provenance_display["compact_marker_required_for_every_question"]
+            )
+            self.assertTrue(
+                provenance_display[
+                    "never_label_ai_generated_content_as_project_knowledge"
+                ]
+            )
+            self.assertTrue(provenance_display["never_hide_mixed_origin"])
+            self.assertEqual(
+                provenance_display["source_classes"]["project_knowledge"]["display_ko"],
+                "공동 작업 지식",
+            )
+            self.assertEqual(
+                provenance_display["source_classes"]["ai_generated"]["display_ko"],
+                "AI 자체 생성",
+            )
+            self.assertEqual(
+                provenance_display["final_report_section_ko"],
+                "출처 및 생성 구분",
+            )
             review_policy = manifest["longitudinal_context_review_policy"]
             self.assertEqual(
                 review_policy["unknown_last_confirmed_at"],

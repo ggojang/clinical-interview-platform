@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "0.4.0"
+VERSION = "0.4.1"
 GENERATED_AT = "2026-07-14T00:00:00Z"
 PRIVATE_KEYS = {
     "raw_text", "raw_input", "patient_response", "patient_responses",
@@ -378,6 +378,9 @@ def build(root: Path, output: Path) -> dict[str, Any]:
         "completion_handoff_policy": encounter_policy["completion_handoff"],
         "test_access_limit_notice_policy": encounter_policy[
             "test_access_limit_notice"
+        ],
+        "response_provenance_display_policy": encounter_policy[
+            "response_provenance_display"
         ],
         "terminology_lookup_policy": {
             "status": "research_only",

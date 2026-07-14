@@ -300,6 +300,8 @@ The public ChatGPT test preserves Reason for Encounter as the first interview in
 
 The public test exposes compact source identity for each compiled RFE package and may use STOM through a separate read-only terminology Action. AI first converts Korean or English free text into a minimal de-identified normalized term, then retrieves and verifies provisional SNOMED CT, LOINC, KCD-8 or HIRA candidates. Live terminology never creates clinical rules or selects safety behavior, raw patient material is never sent, and failure falls back to preserved free text plus compiled knowledge.
 
+Every test question and final report exposes its origin without conflating joint project work with model invention. Compiled project objects are marked as 공동 작업 지식, language-only adaptation as AI 표현, unsupported clarification or reasoning as AI 자체 생성, live coding as STOM 용어 조회, direct statements as 사용자 제공, and extracted file content as 첨부자료. Mixed origin remains visible and is retained for future FHIR Provenance projection.
+
 Longitudinal background information is reviewed on the first encounter and thereafter by recency. Research defaults are 90 days for current medication and 365 days for current conditions, family history, alcohol and smoking. Runtime asks only due or change-relevant groups and records each group's last confirmation date. When no persistent confirmation timestamp is available, Runtime asks one combined first-use/recency gating question before repeating the background inventory.
 
 ---
