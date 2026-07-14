@@ -125,6 +125,32 @@ class GptExportTests(unittest.TestCase):
             self.assertEqual(
                 set(numbering["binary_question_only_codes"]), {"1", "2", "3", "5"}
             )
+            alignment = manifest["question_choice_semantic_alignment_policy"]
+            self.assertTrue(alignment["pre_send_validation_required"])
+            self.assertTrue(alignment["exactly_one_presentation_pattern"])
+            binary = alignment["binary_single_proposition"]
+            self.assertEqual(
+                [option["code"] for option in binary["domain_options"]],
+                ["yes", "no"],
+            )
+            self.assertIn("다음 중", binary["forbidden_stem_phrases"])
+            self.assertTrue(binary["options_answer_the_whole_proposition"])
+            multiple = alignment["multiple_clinical_choices"]
+            self.assertTrue(
+                multiple["every_clinical_finding_must_be_a_displayed_domain_option"]
+            )
+            self.assertTrue(multiple["do_not_use_yes_or_no_as_domain_options"])
+            self.assertEqual(
+                multiple["append_order"],
+                ["none_of_the_above", "unknown", "decline"],
+            )
+            self.assertEqual(
+                multiple["exclusive_options"],
+                ["none_of_the_above", "unknown", "decline"],
+            )
+            self.assertTrue(
+                alignment["safety_gate"]["same_alignment_rules_apply"]
+            )
             result_policy = manifest["result_follow_up_policy"]
             self.assertFalse(
                 result_policy["institution_result_check"]["request_upload"]

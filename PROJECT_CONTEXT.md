@@ -304,6 +304,8 @@ Every test question and final report exposes its origin without conflating joint
 
 When a user asks a different question while an interview question is pending, Runtime preserves the pending Fact as unanswered, processes the detour as a separate additional comment, and reassesses safety. A topic detour is followed by an explicit recovery choice to resume the same question, begin the normal completion handoff with missing information preserved, or stop the interview. A new Reason for Encounter never silently merges into the active interview.
 
+Every numbered question must use one semantically consistent presentation pattern. A binary question asks one complete clinical proposition and offers yes, no, unknown and decline. A checklist explicitly permits multiple selections, exposes every clinical finding as a separate domain option, and only then appends none, unknown and decline with continuous numbering. Runtime rejects plural stems with a single clinical option, yes/no options attached to checklist stems, and trailing warning text that introduces findings the user was not able to select. The same validation applies to the initial safety gate.
+
 Longitudinal background information is reviewed on the first encounter and thereafter by recency. Research defaults are 90 days for current medication and 365 days for current conditions, family history, alcohol and smoking. Runtime asks only due or change-relevant groups and records each group's last confirmation date. When no persistent confirmation timestamp is available, Runtime asks one combined first-use/recency gating question before repeating the background inventory.
 
 ---

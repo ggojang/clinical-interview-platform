@@ -1,6 +1,6 @@
 {
   "id": "policy.encounter-context-review",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "status": "research_only",
   "review_status": "unreviewed",
   "result_follow_up": {
@@ -174,6 +174,56 @@
       "resume_or_completion_transition"
     ]
   },
+  "question_choice_semantic_alignment": {
+    "pre_send_validation_required": true,
+    "exactly_one_presentation_pattern": true,
+    "binary_single_proposition": {
+      "use_when": "one_clinical_proposition_is_being_asked",
+      "stem_rule": "ask_one_complete_yes_or_no_proposition",
+      "forbidden_stem_phrases": ["다음 중", "해당되는 항목", "모두 골라"],
+      "domain_options": [
+        {"number": 1, "code": "yes", "display_ko": "예"},
+        {"number": 2, "code": "no", "display_ko": "아니오"}
+      ],
+      "metadata_options": [
+        {"number": 3, "code": "unknown", "display_ko": "잘 모르겠음"},
+        {"number": 5, "code": "decline", "display_ko": "답변하지 않음"}
+      ],
+      "display_group_label_ko": "응답",
+      "options_answer_the_whole_proposition": true,
+      "example_stem_ko": "지금 갑자기 시작된 참기 어려울 정도의 심한 복통이 있나요?"
+    },
+    "multiple_clinical_choices": {
+      "use_when": "two_or_more_distinct_clinical_findings_are_being_offered",
+      "stem_must_state": ["multiple_choice", "select_all_that_apply"],
+      "every_clinical_finding_must_be_a_displayed_domain_option": true,
+      "do_not_use_yes_or_no_as_domain_options": true,
+      "append_order": ["none_of_the_above", "unknown", "decline"],
+      "display_group_labels_ko": {
+        "domain_options": "해당 증상 — 복수 선택 가능",
+        "response_state_options": "그 외 응답"
+      },
+      "exclusive_options": ["none_of_the_above", "unknown", "decline"],
+      "numbering": "continuous_after_all_clinical_domain_options",
+      "numeric_reply_accepts": "one_or_more_option_numbers",
+      "do_not_put_unoffered_clinical_findings_in_trailing_warning_text": true
+    },
+    "safety_gate": {
+      "same_alignment_rules_apply": true,
+      "prefer_single_binary_question_when_only_one_rule_is_activated": true,
+      "use_checklist_only_for_findings_supported_by_loaded_compiled_rules": true,
+      "map_each_selected_finding_to_its_own_fact_or_rule": true,
+      "none_unknown_and_decline_never_mean_a_clinical_finding": true
+    },
+    "invalid_combinations": [
+      "plural_or_select_from_stem_with_only_one_clinical_domain_option",
+      "checklist_stem_with_yes_or_no_options",
+      "binary_stem_with_multiple_unlabeled_clinical_findings",
+      "warning_paragraph_that_introduces_additional_unoffered_answer_candidates"
+    ],
+    "on_validation_failure": "rewrite_stem_and_complete_option_set_before_sending",
+    "provenance_marker": "출처: [공동 작업 지식] 질문-보기 정합성 정책 · [AI 표현] 문장"
+  },
   "longitudinal_context_review": {
     "review_all_on_first_encounter": true,
     "unknown_last_confirmed_at": "ask_single_recency_gate_then_due_if_still_unknown",
@@ -194,6 +244,6 @@
     "created_at": "2026-07-14T00:00:00Z",
     "source_refs": ["docs/context/002-encounter-context.md", "docs/context/017-clinical-memory.md"],
     "review_status": "unreviewed",
-    "version": "0.1.0"
+    "version": "0.2.0"
   }
 }

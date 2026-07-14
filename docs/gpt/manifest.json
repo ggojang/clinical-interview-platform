@@ -389,24 +389,105 @@
       "getReasonForEncounterFacts"
     ]
   },
+  "question_choice_semantic_alignment_policy": {
+    "binary_single_proposition": {
+      "display_group_label_ko": "응답",
+      "domain_options": [
+        {
+          "code": "yes",
+          "display_ko": "예",
+          "number": 1
+        },
+        {
+          "code": "no",
+          "display_ko": "아니오",
+          "number": 2
+        }
+      ],
+      "example_stem_ko": "지금 갑자기 시작된 참기 어려울 정도의 심한 복통이 있나요?",
+      "forbidden_stem_phrases": [
+        "다음 중",
+        "해당되는 항목",
+        "모두 골라"
+      ],
+      "metadata_options": [
+        {
+          "code": "unknown",
+          "display_ko": "잘 모르겠음",
+          "number": 3
+        },
+        {
+          "code": "decline",
+          "display_ko": "답변하지 않음",
+          "number": 5
+        }
+      ],
+      "options_answer_the_whole_proposition": true,
+      "stem_rule": "ask_one_complete_yes_or_no_proposition",
+      "use_when": "one_clinical_proposition_is_being_asked"
+    },
+    "exactly_one_presentation_pattern": true,
+    "invalid_combinations": [
+      "plural_or_select_from_stem_with_only_one_clinical_domain_option",
+      "checklist_stem_with_yes_or_no_options",
+      "binary_stem_with_multiple_unlabeled_clinical_findings",
+      "warning_paragraph_that_introduces_additional_unoffered_answer_candidates"
+    ],
+    "multiple_clinical_choices": {
+      "append_order": [
+        "none_of_the_above",
+        "unknown",
+        "decline"
+      ],
+      "display_group_labels_ko": {
+        "domain_options": "해당 증상 — 복수 선택 가능",
+        "response_state_options": "그 외 응답"
+      },
+      "do_not_put_unoffered_clinical_findings_in_trailing_warning_text": true,
+      "do_not_use_yes_or_no_as_domain_options": true,
+      "every_clinical_finding_must_be_a_displayed_domain_option": true,
+      "exclusive_options": [
+        "none_of_the_above",
+        "unknown",
+        "decline"
+      ],
+      "numbering": "continuous_after_all_clinical_domain_options",
+      "numeric_reply_accepts": "one_or_more_option_numbers",
+      "stem_must_state": [
+        "multiple_choice",
+        "select_all_that_apply"
+      ],
+      "use_when": "two_or_more_distinct_clinical_findings_are_being_offered"
+    },
+    "on_validation_failure": "rewrite_stem_and_complete_option_set_before_sending",
+    "pre_send_validation_required": true,
+    "provenance_marker": "출처: [공동 작업 지식] 질문-보기 정합성 정책 · [AI 표현] 문장",
+    "safety_gate": {
+      "map_each_selected_finding_to_its_own_fact_or_rule": true,
+      "none_unknown_and_decline_never_mean_a_clinical_finding": true,
+      "prefer_single_binary_question_when_only_one_rule_is_activated": true,
+      "same_alignment_rules_apply": true,
+      "use_checklist_only_for_findings_supported_by_loaded_compiled_rules": true
+    }
+  },
   "resources": [
     {
       "count": 15,
       "name": "common-facts",
       "path": "/gpt/common-facts.json",
-      "sha256": "bd1032320ec2218193d0c6571519fc8bfe7c0341eb824a676236f5c6ccc378bc"
+      "sha256": "1d60f025127ec755fe849c6c1cdd5f6010af3954401fa31ec836caabf204a85e"
     },
     {
       "count": 93,
       "name": "facts",
       "path": "/gpt/facts.json",
-      "sha256": "b6d1f31c2e9f1ef8126443ccd8084f3dab0d3e1083210114133cec50353c3138"
+      "sha256": "88f7d86acf605b6b7d5f7f04611a82fd1bb0ee255ba62c40064421cdd878ceab"
     },
     {
       "count": 88,
       "name": "question-groups",
       "path": "/gpt/question-groups.json",
-      "sha256": "71510405d140baa657e236adfccbba4e76b79199f358ccc0b58f80f0045dde2a"
+      "sha256": "55197aa7aa2d5d5975ceace40ca61e5b8d20026900c34fc9e18b6101e92f0aaf"
     },
     {
       "count": 15,
@@ -418,61 +499,61 @@
       "count": 35,
       "name": "rfe-cough-facts",
       "path": "/gpt/rfe/cough/facts.json",
-      "sha256": "476cb0890ff5614303e18295db32710e90720551dacc8d195ff24f20cd40bd93"
+      "sha256": "aceb177ebb1277f0e8caec305591f53621602f24f2510d0b120bfe4a9b88b213"
     },
     {
       "count": 35,
       "name": "rfe-cough-questions",
       "path": "/gpt/rfe/cough/questions.json",
-      "sha256": "638ed0b0f3b8ead26290859592663b22edd0126032fb6cd12bd6d134df020508"
+      "sha256": "28497a96455c650177451a3cd8613ae8f2d6a6a4a47a4c64da31458f95b08703"
     },
     {
       "count": 88,
       "name": "rfe-cough-rules",
       "path": "/gpt/rfe/cough/rules.json",
-      "sha256": "0cd938bb3f835ed93ba2c6c4558bcca42b584079bcdcd782e0f9c6eb5d736451"
+      "sha256": "7490a86c2208657af976ac78df5449c43ea274cbbb1c719a80cc634df2e6758b"
     },
     {
       "count": 24,
       "name": "rfe-dyspnea-facts",
       "path": "/gpt/rfe/dyspnea/facts.json",
-      "sha256": "e9a7204ce0fce8bb5f769833fc2aad0318790de6ca658225d8c056aefddfb630"
+      "sha256": "480607bdfd6d16650870ad7df78844c29c9f8ab4a4b1652f0c6da0dae14f41f5"
     },
     {
       "count": 24,
       "name": "rfe-dyspnea-questions",
       "path": "/gpt/rfe/dyspnea/questions.json",
-      "sha256": "3f73bd1ce5db2d5b3444ab8c0a24ae6f6cb1fe60f1be87f7151d558faa67ec83"
+      "sha256": "e6f39a6adc760512deef87a708add60635ce567a2b0f7abd83925450fae59619"
     },
     {
       "count": 57,
       "name": "rfe-dyspnea-rules",
       "path": "/gpt/rfe/dyspnea/rules.json",
-      "sha256": "c3d0a2566d0be2d238191a10116a4491c37bb0e93523f2ebf868056b6a542cf8"
+      "sha256": "97c259178d7fbfd48bb3f00ea63b084d1fab08f7e6bdfd2b30751e01722f8511"
     },
     {
       "count": 19,
       "name": "rfe-fever-facts",
       "path": "/gpt/rfe/fever/facts.json",
-      "sha256": "42ccbc9f7dc0a54aa0f0bf7a723f9ac023a503c8665d701e386c17862094eeec"
+      "sha256": "401d8b1d4b3e6d8ae201dca736de75882ddd9590af086404aa1424855cf228e0"
     },
     {
       "count": 19,
       "name": "rfe-fever-questions",
       "path": "/gpt/rfe/fever/questions.json",
-      "sha256": "b1d757aa09f74d35766e398613aec444780bf7eb6791750551961e6c2b5eceec"
+      "sha256": "2a886524bbe6e5b56bf8f47d059d1837ed63ebe841666e6721093f7d8d28bba0"
     },
     {
       "count": 45,
       "name": "rfe-fever-rules",
       "path": "/gpt/rfe/fever/rules.json",
-      "sha256": "8e4b9df192bb7a98f58e4a447414224a5bd15f81ea48f1309483d13b66f8d5d4"
+      "sha256": "c8ca5d86549ddd3ff794fb5486100e6a563d1f493cf405d60401889846e8402a"
     },
     {
       "count": 178,
       "name": "safety-rules",
       "path": "/gpt/safety-rules.json",
-      "sha256": "2de84f756c488c88419ba6360d0d885852c875e91abaaf197facaccb12ba8861"
+      "sha256": "1e0e7d96808134eec810baeeea091924ef08840c957016e1e649fe5e37caa033"
     },
     {
       "count": 10,
@@ -632,5 +713,5 @@
     ],
     "unreadable_material": "request_clearer_crop_or_text_once"
   },
-  "version": "0.4.2"
+  "version": "0.4.3"
 }
