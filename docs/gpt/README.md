@@ -6,6 +6,7 @@ This directory is a static, read-only knowledge API for a Custom GPT test chatbo
 
 - `manifest.json`: version, counts, and SHA-256 digests
 - `reason-for-encounters.json`: Korean/English Reason for Encounter catalog, aliases, and implementation status
+- `common-facts.json`: compact shared interview Facts, including structured additional-comment handling
 - `rfe/{cough|dyspnea|fever}/facts.json`: compact Facts for one implemented Reason for Encounter
 - `rfe/{cough|dyspnea|fever}/questions.json`: compact Questions for one implemented Reason for Encounter
 - `rfe/{cough|dyspnea|fever}/rules.json`: compact safety and routing rules for one implemented Reason for Encounter

@@ -53,7 +53,7 @@ class GptExportTests(unittest.TestCase):
             manifest = build(ROOT, output_path)
             names = {resource["name"] for resource in manifest["resources"]}
             self.assertTrue({
-                "reason-for-encounters", "screening-kr",
+                "common-facts", "reason-for-encounters", "screening-kr",
                 "rfe-cough-facts", "rfe-cough-questions", "rfe-cough-rules",
                 "rfe-dyspnea-facts", "rfe-dyspnea-questions", "rfe-dyspnea-rules",
                 "rfe-fever-facts", "rfe-fever-questions", "rfe-fever-rules",
@@ -92,7 +92,7 @@ class GptExportTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as output:
             output_path = Path(output)
             build(ROOT, output_path)
-            facts = json.loads((output_path / "facts.json").read_text(encoding="utf-8"))
+            facts = json.loads((output_path / "common-facts.json").read_text(encoding="utf-8"))
             comment = next(
                 item for item in facts["items"] if item["id"] == "interview.additional_comment"
             )

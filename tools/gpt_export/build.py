@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "0.1.0"
+VERSION = "0.2.0"
 GENERATED_AT = "2026-07-14T00:00:00Z"
 PRIVATE_KEYS = {
     "raw_text", "raw_input", "patient_response", "patient_responses",
@@ -196,7 +196,14 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
     catalog["review_status"] = "unreviewed"
     catalog["usage_modes"] = ["research_test", "simulation"]
     catalog["contains_patient_responses"] = False
+    shared_facts = load_json(root / "knowledge" / "shared" / "primary-care-facts.json")
+    common_facts = envelope(
+        "CommonInterviewFactCollection",
+        deduplicate(shared_facts.get("facts", [])),
+    )
+    common_facts["items"] = [compact(item) for item in common_facts["items"]]
     resources = {
+        "common-facts.json": common_facts,
         "reason-for-encounters.json": catalog,
         "facts.json": envelope("FactCollection", deduplicate(facts)),
         "question-groups.json": envelope("QuestionCollection", deduplicate(questions)),
