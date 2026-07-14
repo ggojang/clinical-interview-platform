@@ -19,7 +19,7 @@ from runtime.package import (
     ABDOMINAL_PAIN_PACKAGE, BACK_PAIN_PACKAGE, BOWEL_SYMPTOMS_PACKAGE, CHEST_PAIN_PACKAGE, DEFAULT_PACKAGE,
     DIZZINESS_SYNCOPE_PACKAGE, DYSPNEA_PACKAGE, FEVER_PACKAGE, HEADACHE_PACKAGE,
     EDEMA_PACKAGE, FATIGUE_PACKAGE, FOCAL_WEAKNESS_NUMBNESS_PACKAGE, HYPERTENSION_FOLLOW_UP_PACKAGE, JOINT_LIMB_COMPLAINT_PACKAGE, MEDICATION_REVIEW_PACKAGE, MENTAL_HEALTH_SLEEP_PACKAGE, PALPITATIONS_PACKAGE, SKIN_COMPLAINT_PACKAGE,
-    UPPER_RESPIRATORY_SYMPTOMS_PACKAGE, URINARY_SYMPTOMS_PACKAGE,
+    UPPER_RESPIRATORY_SYMPTOMS_PACKAGE, URINARY_SYMPTOMS_PACKAGE, WEIGHT_CONSTITUTIONAL_CHANGE_PACKAGE,
     VOMITING_DIARRHEA_PACKAGE,
     PackageLoadError, load_package,
 )
@@ -53,6 +53,7 @@ class CompilerTests(unittest.TestCase):
             "mental_health_sleep",
             "edema",
             "hypertension_follow_up",
+            "weight_constitutional_change",
         ):
             with self.subTest(profile=profile), self.assertRaises(CompilationError):
                 compile_package(production=True, profile=profile)
@@ -581,6 +582,22 @@ class CompilerTests(unittest.TestCase):
         self.assertEqual(mapping["validation"]["result"], "partial_provisional_pass")
         self.assertFalse(mapping["validation"]["clinical_rule_authority"])
 
+    def test_weight_constitutional_package_is_complete(self):
+        package = compile_package(profile="weight_constitutional_change")
+        facts = {n["id"] for n in package["knowledge_graph"]["nodes"] if n["type"] == "Fact"}
+        self.assertEqual(len(facts), 38)
+        self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
+        self.assertEqual(package["coverage"]["total_safety_rules"], 10)
+        self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 10)
+        self.assertEqual(package["coverage"]["uncovered_safety_rules"], [])
+
+    def test_weight_constitutional_mrcm_preserves_unsupported_weight_loss(self):
+        mapping = json.loads((Path(__file__).resolve().parents[1] / "mappings/terminology/snomed-mrcm-weight-constitutional-change.json").read_text(encoding="utf-8"))
+        self.assertEqual(len(mapping["focus_concepts"]), 4)
+        self.assertEqual(mapping["unsupported_checks"][0]["focus_code"], "89362005")
+        self.assertEqual(mapping["validation"]["result"], "partial_provisional_pass")
+        self.assertFalse(mapping["validation"]["clinical_rule_authority"])
+
 
 class ClinicalMemoryTests(unittest.TestCase):
     def setUp(self):
@@ -991,6 +1008,17 @@ class PackageRuntimeTests(unittest.TestCase):
         self.assertEqual(state["package"]["id"], "package.primary-care-hypertension-follow-up")
         with self.assertRaises(PackageLoadError):
             load_package(HYPERTENSION_FOLLOW_UP_PACKAGE, execution_mode="production")
+
+    def test_weight_constitutional_simulation_and_runtime(self):
+        report = run_evaluation(WEIGHT_CONSTITUTIONAL_CHANGE_PACKAGE)
+        self.assertTrue(report["passed"])
+        self.assertEqual(report["case_count"], 11)
+        session = InterviewSession("constitutional-runtime", package_path=WEIGHT_CONSTITUTIONAL_CHANGE_PACKAGE)
+        state = session.process("이유 없이 체중이 줄고 밤에 땀이 나요.")
+        self.assertIn("general.weight_constitutional_change", state["active_patterns"])
+        self.assertEqual(state["package"]["id"], "package.primary-care-weight-constitutional-change")
+        with self.assertRaises(PackageLoadError):
+            load_package(WEIGHT_CONSTITUTIONAL_CHANGE_PACKAGE, execution_mode="production")
 
 
 if __name__ == "__main__":

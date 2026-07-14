@@ -267,6 +267,17 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/cardiovascular/hypertension-follow-up",
         "research_manifests": [ROOT / "sources/manifests/primary-care-hypertension-follow-up-research.json"],
     },
+    "weight_constitutional_change": {
+        "graph": ROOT / "knowledge/graph/primary-care-weight-constitutional-change.json",
+        "rules": ROOT / "rules/primary-care-weight-constitutional-change.json",
+        "sources": ROOT / "sources/manifests/primary-care-weight-constitutional-change.json",
+        "completion_policy": ROOT / "policies/primary-care-weight-constitutional-change-completion.json",
+        "output": ROOT / "packages/generated/primary-care-weight-constitutional-change-0.1.0.json",
+        "package_id": "package.primary-care-weight-constitutional-change", "package_version": "0.1.0",
+        "rfe": "rfe.weight_constitutional_change",
+        "simulation_root": ROOT / "simulation/patients/general/weight-constitutional-change",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-weight-constitutional-change-research.json"],
+    },
 }
 
 ALLOWED_NODE_TYPES = {

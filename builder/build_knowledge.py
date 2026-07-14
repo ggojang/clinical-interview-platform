@@ -181,6 +181,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-hypertension-follow-up.json",
         "version": "0.1.0",
     },
+    "weight_constitutional_change": {
+        "base_graph": ROOT / "knowledge/base/primary-care-weight-constitutional-change.json",
+        "base_rules": ROOT / "rules/base/primary-care-weight-constitutional-change.json",
+        "fragment_root": ROOT / "knowledge/generated/general/weight-constitutional-change",
+        "output_graph": ROOT / "knowledge/graph/primary-care-weight-constitutional-change.json",
+        "output_rules": ROOT / "rules/primary-care-weight-constitutional-change.json",
+        "version": "0.1.0",
+    },
 }
 
 

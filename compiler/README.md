@@ -24,6 +24,7 @@ python3 compiler/build_package.py --profile joint_limb_complaint
 python3 compiler/build_package.py --profile mental_health_sleep
 python3 compiler/build_package.py --profile edema
 python3 compiler/build_package.py --profile hypertension_follow_up
+python3 compiler/build_package.py --profile weight_constitutional_change
 ```
 
 Validate a generated package:

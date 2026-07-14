@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "1.12.0"
+VERSION = "1.13.0"
 GENERATED_AT = "2026-07-14T00:00:00Z"
 PRIVATE_KEYS = {
     "raw_text", "raw_input", "patient_response", "patient_responses",
@@ -89,6 +89,15 @@ def compact_fact_index(item: dict[str, Any]) -> dict[str, Any]:
     if item.get("safety_relevant") is True:
         result["safety_relevant"] = True
     return result
+
+
+def compact_safety_rule_index(item: dict[str, Any]) -> dict[str, Any]:
+    """Keep executable safety essentials without repeated collection metadata."""
+    return {
+        key: compact(item[key])
+        for key in ("id", "priority", "when", "then")
+        if key in item
+    }
 
 
 def package_knowledge_sources(package: dict[str, Any]) -> list[dict[str, Any]]:
@@ -304,8 +313,12 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
     ]
     aggregate_facts["payload_role"] = "legacy_discovery_index"
     aggregate_facts["complete_fact_payloads"] = "/gpt/rfe/{rfe}/facts.json"
-    for document in (aggregate_questions, aggregate_rules):
-        document["items"] = [compact(item) for item in document["items"]]
+    aggregate_questions["items"] = [compact(item) for item in aggregate_questions["items"]]
+    aggregate_rules["items"] = [
+        compact_safety_rule_index(item) for item in aggregate_rules["items"]
+    ]
+    aggregate_rules["payload_role"] = "legacy_cross_rfe_safety_index"
+    aggregate_rules["complete_rule_payloads"] = "/gpt/rfe/{rfe}/rules.json"
     resources = {
         "common-facts.json": common_facts,
         "reason-for-encounters.json": catalog,

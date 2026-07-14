@@ -417,6 +417,9 @@ class InterviewSession:
         if self.reason_for_encounter == "rfe.hypertension_follow_up":
             self._update_hypertension_follow_up_patterns()
             return
+        if self.reason_for_encounter == "rfe.weight_constitutional_change":
+            self._update_weight_constitutional_patterns()
+            return
         active = ["respiratory.cough"]
         cold_support = sum(
             self.memory.value(fact_id) is True
@@ -804,6 +807,29 @@ class InterviewSession:
             active.append("hypertension.postural_features")
         if self.memory.value("patient.pregnant_or_postpartum") in ("pregnant", "postpartum_6_weeks"):
             active.append("hypertension.pregnancy_context")
+        self.active_patterns = active
+
+    def _update_weight_constitutional_patterns(self) -> None:
+        active = ["general.weight_constitutional_change"]
+        concern = self.memory.value("constitutional.primary_concern")
+        if concern:
+            active.append(f"constitutional.{concern}")
+        if any(self.memory.value(x) is True for x in (
+            "symptom.sudden_focal_weakness_or_speech_change",
+            "symptom.rapidly_progressive_symmetric_weakness",
+            "symptom.weakness_swallowing_or_voice_change",
+        )):
+            active.append("constitutional.neurological_warning_features")
+        if any(self.memory.value(x) is True for x in (
+            "symptom.night_sweats", "symptom.high_fever_or_systemically_very_unwell",
+            "symptom.unexplained_lymph_node_or_mass",
+        )):
+            active.append("constitutional.systemic_features")
+        if any(self.memory.value(x) is True for x in (
+            "nutrition.little_or_no_intake_over_five_days",
+            "nutrition.unable_to_keep_fluids_or_severe_dehydration",
+        )):
+            active.append("constitutional.nutrition_risk")
         self.active_patterns = active
 
     def _update_dyspnea_patterns(self) -> None:

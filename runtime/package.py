@@ -30,6 +30,7 @@ JOINT_LIMB_COMPLAINT_PACKAGE = ROOT / "packages/generated/primary-care-joint-lim
 MENTAL_HEALTH_SLEEP_PACKAGE = ROOT / "packages/generated/primary-care-mental-health-sleep-0.1.0.json"
 EDEMA_PACKAGE = ROOT / "packages/generated/primary-care-edema-0.1.0.json"
 HYPERTENSION_FOLLOW_UP_PACKAGE = ROOT / "packages/generated/primary-care-hypertension-follow-up-0.1.0.json"
+WEIGHT_CONSTITUTIONAL_CHANGE_PACKAGE = ROOT / "packages/generated/primary-care-weight-constitutional-change-0.1.0.json"
 
 
 class PackageLoadError(RuntimeError):

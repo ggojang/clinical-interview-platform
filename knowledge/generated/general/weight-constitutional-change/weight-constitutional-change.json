@@ -1,0 +1,1678 @@
+{
+  "id": "knowledge.generated.weight-constitutional-change",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-weight-constitutional-change-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-07-14",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-07-15",
+    "next_full_review_at": "2027-01-10",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.weight-constitutional.change-measurement",
+      "type": "ClinicalGroup",
+      "display": "change-measurement"
+    },
+    {
+      "id": "group.weight-constitutional.neurological-safety",
+      "type": "ClinicalGroup",
+      "display": "neurological-safety"
+    },
+    {
+      "id": "group.weight-constitutional.acute-systemic-safety",
+      "type": "ClinicalGroup",
+      "display": "acute-systemic-safety"
+    },
+    {
+      "id": "group.weight-constitutional.nutrition",
+      "type": "ClinicalGroup",
+      "display": "nutrition"
+    },
+    {
+      "id": "group.weight-constitutional.night-sweats",
+      "type": "ClinicalGroup",
+      "display": "night-sweats"
+    },
+    {
+      "id": "group.weight-constitutional.associated-symptoms",
+      "type": "ClinicalGroup",
+      "display": "associated-symptoms"
+    },
+    {
+      "id": "group.weight-constitutional.metabolic",
+      "type": "ClinicalGroup",
+      "display": "metabolic"
+    },
+    {
+      "id": "group.weight-constitutional.background",
+      "type": "ClinicalGroup",
+      "display": "background"
+    },
+    {
+      "id": "group.weight-constitutional.function",
+      "type": "ClinicalGroup",
+      "display": "function"
+    }
+  ],
+  "group_hypothesis_edges": [],
+  "safety_rules": [
+    {
+      "id": "rule.weight-constitutional-change.safety.sudden-focal-weakness",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.sudden_focal_weakness_or_speech_change",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.weight-constitutional-change.safety.progressive-symmetric-weakness",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.rapidly_progressive_symmetric_weakness",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.weight-constitutional-change.safety.weakness-bulbar",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.generalized_weakness",
+            "equals": true
+          },
+          {
+            "fact": "symptom.weakness_swallowing_or_voice_change",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.weight-constitutional-change.safety.weakness-rest-breathlessness",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.generalized_weakness",
+            "equals": true
+          },
+          {
+            "fact": "symptom.breathlessness_at_rest_or_lying",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.weight-constitutional-change.safety.confusion-collapse",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.new_confusion_or_collapse",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.weight-constitutional-change.safety.weakness-chest-pain",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.generalized_weakness",
+            "equals": true
+          },
+          {
+            "fact": "symptom.chest_pain",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.weight-constitutional-change.safety.rapid-gain-severe-dyspnea",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "weight.rapid_gain_with_edema",
+            "equals": true
+          },
+          {
+            "fact": "symptom.severe_dyspnea",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.weight-constitutional-change.safety.severe-dehydration",
+      "priority": 900,
+      "when": {
+        "fact": "nutrition.unable_to_keep_fluids_or_severe_dehydration",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.weight-constitutional-change.safety.low-intake-five-days",
+      "priority": 880,
+      "when": {
+        "fact": "nutrition.little_or_no_intake_over_five_days",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.weight-constitutional-change.safety.fever-blood-loss",
+      "priority": 870,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.high_fever_or_systemically_very_unwell",
+            "equals": true
+          },
+          {
+            "fact": "symptom.visible_or_suspected_blood_loss",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "constitutional.primary_concern",
+        "display": "Primary Weight or Constitutional Concern",
+        "value_type": "coded",
+        "allowed_values": [
+          "unintentional_weight_loss",
+          "intentional_weight_loss",
+          "weight_gain",
+          "night_sweats",
+          "generalized_weakness",
+          "multiple",
+          "other"
+        ],
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "focus_codes": [
+            "89362005",
+            "262286000",
+            "42984000",
+            "13791008"
+          ]
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.weight-constitutional-change",
+          "status": "partial_provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.primary-concern",
+        "display": "Primary Weight or Constitutional Concern",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.primary-concern",
+        "wording": "가장 주된 변화는 의도하지 않은 체중 감소, 의도한 체중 감소, 체중 증가, 야간 발한, 전신 쇠약 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "primary-concern"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.change-measurement"
+      ]
+    },
+    {
+      "fact": {
+        "id": "constitutional.change_duration",
+        "display": "Duration of Constitutional Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.duration",
+        "display": "Duration of Constitutional Change",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.duration",
+        "wording": "그 변화는 언제부터 시작됐나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 115,
+          "reason": "duration"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.change-measurement"
+      ]
+    },
+    {
+      "fact": {
+        "id": "weight.change_intentionality",
+        "display": "Weight Change Intentionality",
+        "value_type": "coded",
+        "allowed_values": [
+          "intentional",
+          "unintentional",
+          "mixed",
+          "uncertain"
+        ]
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.intentionality",
+        "display": "Weight Change Intentionality",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.intentionality",
+        "wording": "식사나 운동을 일부러 바꿔 생긴 변화인가요, 의도하지 않았나요, 확실하지 않나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 114,
+          "reason": "intentionality"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.change-measurement"
+      ]
+    },
+    {
+      "fact": {
+        "id": "weight.current_kg",
+        "display": "Current Weight in Kilograms",
+        "value_type": "integer"
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.current-weight",
+        "display": "Current Weight in Kilograms",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.current-weight",
+        "wording": "현재 체중은 몇 kg인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 113,
+          "reason": "current-weight"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.change-measurement",
+        "group.weight-constitutional.nutrition"
+      ]
+    },
+    {
+      "fact": {
+        "id": "weight.previous_kg_and_date",
+        "display": "Previous Weight and Date",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.previous-weight",
+        "display": "Previous Weight and Date",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.previous-weight",
+        "wording": "변화 전 체중과 그 체중을 확인한 시점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 112,
+          "reason": "previous-weight"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.change-measurement",
+        "group.weight-constitutional.nutrition"
+      ]
+    },
+    {
+      "fact": {
+        "id": "weight.change_amount_or_percent",
+        "display": "Weight Change Amount or Percentage",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.change-amount",
+        "display": "Weight Change Amount or Percentage",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.change-amount",
+        "wording": "총 몇 kg 또는 체중의 몇 퍼센트 정도 변했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 111,
+          "reason": "change-amount"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.change-measurement",
+        "group.weight-constitutional.nutrition"
+      ]
+    },
+    {
+      "fact": {
+        "id": "weight.change_trajectory",
+        "display": "Weight Change Trajectory",
+        "value_type": "coded",
+        "allowed_values": [
+          "progressing",
+          "stable",
+          "recovering",
+          "fluctuating",
+          "uncertain"
+        ]
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.trajectory",
+        "display": "Weight Change Trajectory",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.trajectory",
+        "wording": "변화는 계속 진행 중, 안정됨, 다시 회복 중, 오르내림 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 105,
+          "reason": "trajectory"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.change-measurement"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.generalized_weakness",
+        "display": "Generalized Weakness",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "13791008"
+        }
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.generalized-weakness",
+        "display": "Generalized Weakness",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.generalized-weakness",
+        "wording": "온몸에 힘이 빠지는 전신 쇠약이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "generalized-weakness"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.neurological-safety",
+        "group.weight-constitutional.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.sudden_focal_weakness_or_speech_change",
+        "display": "Sudden Focal Weakness or Speech Change",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.focal-weakness",
+        "display": "Sudden Focal Weakness or Speech Change",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.focal-weakness",
+        "wording": "갑자기 한쪽 얼굴·팔·다리에 힘이 빠지거나 말이 어눌하거나 이해하기 어려워졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "focal-weakness"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.neurological-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.rapidly_progressive_symmetric_weakness",
+        "display": "Rapidly Progressive Symmetric Weakness",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.progressive-symmetric",
+        "display": "Rapidly Progressive Symmetric Weakness",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.progressive-symmetric",
+        "wording": "수시간에서 수일 사이 양쪽 팔·다리 힘이 빠르게 약해지거나 위쪽으로 번지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 127,
+          "reason": "progressive-symmetric"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.neurological-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.weakness_swallowing_or_voice_change",
+        "display": "Weakness with Swallowing or Voice Change",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.bulbar",
+        "display": "Weakness with Swallowing or Voice Change",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.bulbar",
+        "wording": "힘 빠짐과 함께 삼키기 어렵거나 사레, 목소리 변화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 126,
+          "reason": "bulbar"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.neurological-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.breathlessness_at_rest_or_lying",
+        "display": "Breathlessness at Rest or Lying",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.rest-breathlessness",
+        "display": "Breathlessness at Rest or Lying",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.rest-breathlessness",
+        "wording": "가만히 있거나 누워 있을 때도 숨이 차나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 125,
+          "reason": "rest-breathlessness"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.neurological-safety",
+        "group.weight-constitutional.acute-systemic-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.new_confusion_or_collapse",
+        "display": "New Confusion or Collapse",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.confusion-collapse",
+        "display": "New Confusion or Collapse",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.confusion-collapse",
+        "wording": "새로 혼란하거나 깨우기 어렵거나 쓰러졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 124,
+          "reason": "confusion-collapse"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.acute-systemic-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.chest_pain",
+        "display": "Chest Pain",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.chest-pain",
+        "display": "Chest Pain",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.chest-pain",
+        "wording": "전신 쇠약이나 체중 변화와 함께 지금 가슴 통증이나 압박감이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 123,
+          "reason": "chest-pain"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.acute-systemic-safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.severe_dyspnea",
+        "display": "Severe Shortness of Breath",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.severe-dyspnea",
+        "display": "Severe Shortness of Breath",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.severe-dyspnea",
+        "wording": "숨이 매우 차서 말하거나 움직이기 어려운가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 122,
+          "reason": "severe-dyspnea"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.acute-systemic-safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "weight.rapid_gain_with_edema",
+        "display": "Rapid Weight Gain with Edema",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.rapid-gain-edema",
+        "display": "Rapid Weight Gain with Edema",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.rapid-gain-edema",
+        "wording": "며칠 사이 체중이 빠르게 늘면서 발·다리·배나 얼굴이 붓나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 121,
+          "reason": "rapid-gain-edema"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.acute-systemic-safety",
+        "group.weight-constitutional.change-measurement"
+      ]
+    },
+    {
+      "fact": {
+        "id": "nutrition.unable_to_keep_fluids_or_severe_dehydration",
+        "display": "Unable to Keep Fluids or Severe Dehydration",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.dehydration",
+        "display": "Unable to Keep Fluids or Severe Dehydration",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.dehydration",
+        "wording": "물을 마셔도 계속 토하거나 소변이 거의 없고 입이 매우 마르는 등 심한 탈수 징후가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 120,
+          "reason": "dehydration"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.acute-systemic-safety",
+        "group.weight-constitutional.nutrition"
+      ]
+    },
+    {
+      "fact": {
+        "id": "nutrition.little_or_no_intake_over_five_days",
+        "display": "Little or No Intake over Five Days",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.low-intake-five-days",
+        "display": "Little or No Intake over Five Days",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.low-intake-five-days",
+        "wording": "5일 넘게 거의 먹지 못했거나 앞으로도 먹기 어려울 것 같나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 119,
+          "reason": "low-intake-five-days"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.nutrition"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.high_fever_or_systemically_very_unwell",
+        "display": "High Fever or Systemically Very Unwell",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.high-fever-unwell",
+        "display": "High Fever or Systemically Very Unwell",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.high-fever-unwell",
+        "wording": "높은 열, 심한 오한 또는 매우 아픈 느낌이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 118,
+          "reason": "high-fever-unwell"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.acute-systemic-safety",
+        "group.weight-constitutional.night-sweats"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.night_sweats",
+        "display": "Night Sweats",
+        "value_type": "boolean",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "42984000"
+        }
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.night-sweats",
+        "display": "Night Sweats",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.night-sweats",
+        "wording": "잘 때 방이 덥지 않은데도 땀이 많이 나나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 110,
+          "reason": "night-sweats"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.night-sweats"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.drenching_night_sweats",
+        "display": "Drenching Night Sweats",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.drenching",
+        "display": "Drenching Night Sweats",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.drenching",
+        "wording": "잠옷이나 침구를 갈아야 할 정도로 흠뻑 젖나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 109,
+          "reason": "drenching"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.night-sweats"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.night_sweat_frequency",
+        "display": "Night Sweat Frequency",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.night-sweat-frequency",
+        "display": "Night Sweat Frequency",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.night-sweat-frequency",
+        "wording": "일주일에 몇 번이고, 잠을 깨우며, 얼마나 지속됐나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 108,
+          "reason": "night-sweat-frequency"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.night-sweats"
+      ]
+    },
+    {
+      "fact": {
+        "id": "environment.sleep_heat_or_bedding",
+        "display": "Sleep Heat or Bedding Context",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.sleep-environment",
+        "display": "Sleep Heat or Bedding Context",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.sleep-environment",
+        "wording": "방 온도, 두꺼운 이불이나 잠옷 때문에 더웠을 가능성이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 86,
+          "reason": "sleep-environment"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.night-sweats",
+        "group.weight-constitutional.background"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.appetite_change",
+        "display": "Appetite Change",
+        "value_type": "coded",
+        "allowed_values": [
+          "decreased",
+          "unchanged",
+          "increased",
+          "variable",
+          "uncertain"
+        ]
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.appetite",
+        "display": "Appetite Change",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.appetite",
+        "wording": "식욕은 감소, 변화 없음, 증가 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 104,
+          "reason": "appetite"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.nutrition",
+        "group.weight-constitutional.metabolic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.persistent_cough_or_breathlessness",
+        "display": "Persistent Cough or Breathlessness",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.cough-breathlessness",
+        "display": "Persistent Cough or Breathlessness",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.cough-breathlessness",
+        "wording": "3주 이상 지속되는 기침이나 평소보다 숨참이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 103,
+          "reason": "cough-breathlessness"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.associated-symptoms"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.unexplained_lymph_node_or_mass",
+        "display": "Unexplained Lymph Node or Mass",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.node-mass",
+        "display": "Unexplained Lymph Node or Mass",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.node-mass",
+        "wording": "목, 겨드랑이, 사타구니에 원인 없이 커진 멍울이나 다른 덩이가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 102,
+          "reason": "node-mass"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.associated-symptoms"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.persistent_diarrhea_or_bowel_change",
+        "display": "Persistent Diarrhea or Bowel Change",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.bowel-change",
+        "display": "Persistent Diarrhea or Bowel Change",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.bowel-change",
+        "wording": "지속되는 설사, 변비 또는 배변 습관 변화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 101,
+          "reason": "bowel-change"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.associated-symptoms",
+        "group.weight-constitutional.nutrition"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.visible_or_suspected_blood_loss",
+        "display": "Visible or Suspected Blood Loss",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.blood-loss",
+        "display": "Visible or Suspected Blood Loss",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.blood-loss",
+        "wording": "혈변·검은 변, 혈뇨, 비정상 출혈 또는 반복되는 출혈이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 117,
+          "reason": "blood-loss"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.acute-systemic-safety",
+        "group.weight-constitutional.associated-symptoms"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.persistent_or_localizing_pain",
+        "display": "Persistent or Localizing Pain",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.persistent-pain",
+        "display": "Persistent or Localizing Pain",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.persistent-pain",
+        "wording": "계속되거나 점점 심해지는 통증이 있다면 위치와 양상을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 100,
+          "reason": "persistent-pain"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.associated-symptoms"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.thirst_and_frequent_urination",
+        "display": "Thirst and Frequent Urination",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.thirst-polyuria",
+        "display": "Thirst and Frequent Urination",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.thirst-polyuria",
+        "wording": "갈증이 심하고 물을 많이 마시며 소변을 자주 보나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 99,
+          "reason": "thirst-polyuria"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.metabolic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.heat_intolerance_palpitations_or_tremor",
+        "display": "Heat Intolerance Palpitations or Tremor",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.thyroid-like",
+        "display": "Heat Intolerance Palpitations or Tremor",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.thyroid-like",
+        "wording": "더위를 못 견디거나 두근거림, 손떨림, 땀 증가가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 98,
+          "reason": "thyroid-like"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.metabolic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.cold_intolerance_constipation_or_dry_skin",
+        "display": "Cold Intolerance Constipation or Dry Skin",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.cold-pattern",
+        "display": "Cold Intolerance Constipation or Dry Skin",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.cold-pattern",
+        "wording": "추위를 유난히 타거나 변비, 피부 건조, 움직임 둔화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 97,
+          "reason": "cold-pattern"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.metabolic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "exposure.infection_contact_or_travel",
+        "display": "Infection Contact or Travel",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.infection-exposure",
+        "display": "Infection Contact or Travel",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.infection-exposure",
+        "wording": "최근 감염 환자 접촉, 결핵 노출, 해외여행 또는 동물 관련 노출이 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 96,
+          "reason": "infection-exposure"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.background",
+        "group.weight-constitutional.night-sweats"
+      ]
+    },
+    {
+      "fact": {
+        "id": "history.cancer_immunosuppression_or_chronic_disease",
+        "display": "Cancer Immunosuppression or Chronic Disease",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.medical-history",
+        "display": "Cancer Immunosuppression or Chronic Disease",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.medical-history",
+        "wording": "암, 면역저하, 당뇨, 갑상선, 심장·폐·신장·간·장 질환 병력이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 95,
+          "reason": "medical-history"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.background"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.substance_or_recent_change",
+        "display": "Medication Substance or Recent Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.medication-substance",
+        "display": "Medication Substance or Recent Change",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.medication-substance",
+        "wording": "최근 시작·중단·용량 변경한 약, 보충제, 술 또는 약물이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 94,
+          "reason": "medication-substance"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.background",
+        "group.weight-constitutional.night-sweats"
+      ]
+    },
+    {
+      "fact": {
+        "id": "mental_health.mood_stress_or_eating_concern",
+        "display": "Mood Stress or Eating Concern",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.mood-eating",
+        "display": "Mood Stress or Eating Concern",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.mood-eating",
+        "wording": "우울·불안·스트레스, 체중이나 체형에 대한 걱정, 일부러 식사를 제한하거나 폭식·구토한 일이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 93,
+          "reason": "mood-eating"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.background",
+        "group.weight-constitutional.nutrition"
+      ]
+    },
+    {
+      "fact": {
+        "id": "constitutional.functional_impact",
+        "display": "Constitutional Functional Impact",
+        "value_type": "coded",
+        "allowed_values": [
+          "none",
+          "mild",
+          "moderate",
+          "severe"
+        ]
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.functional-impact",
+        "display": "Constitutional Functional Impact",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.functional-impact",
+        "wording": "걷기, 일, 식사, 씻기 같은 일상 영향은 없음, 가벼움, 중간, 심함 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 92,
+          "reason": "functional-impact"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "constitutional.patient_priority_or_comment",
+        "display": "Patient Priority or Comment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.weight-constitutional-change.patient-priority",
+        "display": "Patient Priority or Comment",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.weight-constitutional-change.patient-priority",
+        "wording": "이 변화와 관련해 가장 걱정되거나 꼭 전달하고 싶은 내용은 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 85,
+          "reason": "patient-priority"
+        }
+      ],
+      "supports": [
+        "group.weight-constitutional.function",
+        "group.weight-constitutional.background"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nhs.unintentional-weight-loss.2025",
+      "source.nhs.night-sweats.2023",
+      "source.nice.ng12.constitutional.2026",
+      "source.nice.cg32.nutrition.2017",
+      "source.nice.ng127.weakness.2023"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}
