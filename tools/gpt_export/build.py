@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "1.22.0"
+VERSION = "1.22.1"
 GENERATED_AT = "2026-07-14T00:00:00Z"
 PRIVATE_KEYS = {
     "raw_text", "raw_input", "patient_response", "patient_responses",
@@ -292,6 +292,17 @@ def collect_patient_experience_questionnaire(root: Path) -> dict[str, dict[str, 
         },
         "presentation_policy": {
             "language": "ko",
+            "activation_behavior": "after_optional_explanation_ask_only_whether_user_wants_to_complete_then_start_first_item_immediately",
+            "activation_prompt_ko": "환자경험평가 설문을 작성하시겠습니까?",
+            "activation_options": {
+                "1": "예",
+                "2": "아니오",
+                "3": "잘 모르겠음",
+                "5": "답변하지 않음",
+            },
+            "opening_screen_and_explanation_allowed": True,
+            "activation_prompt_is_final_actionable_question_before_start": True,
+            "affirmative_answer_enters_first_item_without_reconfirmation": True,
             "ask_one_question_at_a_time": True,
             "preserve_source_option_codes": True,
             "show_section_transition": True,

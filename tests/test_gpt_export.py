@@ -112,6 +112,22 @@ class GptExportTests(unittest.TestCase):
             self.assertEqual(metadata["section_count"], 8)
             self.assertEqual(metadata["question_count"], 26)
             self.assertIn("환자경험평가", metadata["activation_aliases_ko"])
+            presentation = metadata["presentation_policy"]
+            self.assertEqual(
+                presentation["activation_prompt_ko"],
+                "환자경험평가 설문을 작성하시겠습니까?",
+            )
+            self.assertEqual(
+                presentation["activation_options"],
+                {"1": "예", "2": "아니오", "3": "잘 모르겠음", "5": "답변하지 않음"},
+            )
+            self.assertTrue(presentation["opening_screen_and_explanation_allowed"])
+            self.assertTrue(
+                presentation["activation_prompt_is_final_actionable_question_before_start"]
+            )
+            self.assertTrue(
+                presentation["affirmative_answer_enters_first_item_without_reconfirmation"]
+            )
             self.assertTrue(metadata["loading_policy"]["load_one_section_at_a_time"])
             self.assertTrue(metadata["loading_policy"]["never_send_answers_to_knowledge_action"])
             sections = []
@@ -131,6 +147,14 @@ class GptExportTests(unittest.TestCase):
                 manifest["preferred_loading"]["questionnaire_operations"],
                 ["getPatientExperienceQuestionnaire", "getPatientExperienceQuestionnaireSection"],
             )
+
+    def test_patient_experience_instructions_require_confirmation_then_direct_entry(self):
+        instructions = (ROOT / "docs/gpt/GPT_INSTRUCTIONS.md").read_text(encoding="utf-8")
+        self.assertIn("환자경험평가 설문을 작성하시겠습니까?", instructions)
+        self.assertIn("existing opening screen may remain visible", instructions)
+        self.assertIn("End that response with exactly one actionable question", instructions)
+        self.assertIn("present the first source item in the same response turn", instructions)
+        self.assertIn("or add an introductory sentence", instructions)
 
     def test_knowledge_action_exposes_patient_experience_operations(self):
         schema = (ROOT / "docs/gpt/openapi.yaml").read_text(encoding="utf-8")

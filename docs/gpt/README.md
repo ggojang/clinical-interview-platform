@@ -26,7 +26,7 @@ Run `python3 tools/gpt_export/build.py` after changing Knowledge or Facts. The g
 
 The GPT must start from Reason for Encounter, then load only the matching compact RFE resources. The large aggregate files remain available for offline inspection and backward compatibility but are intentionally absent from the Action schema.
 
-When the Reason for Encounter is patient-experience evaluation, the GPT loads the questionnaire metadata and then exactly one of the eight sections at a time. This avoids Action response-size failures while preserving all 26 FHIR-linked source questions.
+When an exact patient-experience activation alias is entered, the existing opening screen and a concise explanation may be shown, but the GPT's final actionable question before the survey asks only whether the user wants to complete it. An affirmative answer enters the first source item immediately without another explanation or confirmation. The GPT then loads the questionnaire metadata and exactly one of the eight sections at a time. This avoids Action response-size failures while preserving all 26 FHIR-linked source questions.
 
 Manifest policy also distinguishes institutional result checking from an interpretation request, and carries recency rules for all longitudinal baseline groups.
 
