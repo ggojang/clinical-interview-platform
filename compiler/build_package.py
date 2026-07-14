@@ -153,6 +153,18 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/musculoskeletal/back-pain",
         "research_manifests": [ROOT / "sources/manifests/primary-care-back-pain-research.json"],
     },
+    "skin_complaint": {
+        "graph": ROOT / "knowledge/graph/primary-care-skin-complaint.json",
+        "rules": ROOT / "rules/primary-care-skin-complaint.json",
+        "sources": ROOT / "sources/manifests/primary-care-skin-complaint.json",
+        "completion_policy": ROOT / "policies/primary-care-skin-complaint-completion.json",
+        "output": ROOT / "packages/generated/primary-care-skin-complaint-0.1.0.json",
+        "package_id": "package.primary-care-skin-complaint",
+        "package_version": "0.1.0",
+        "rfe": "rfe.skin_complaint",
+        "simulation_root": ROOT / "simulation/patients/dermatological/skin-complaint",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-skin-complaint-research.json"],
+    },
 }
 
 ALLOWED_NODE_TYPES = {

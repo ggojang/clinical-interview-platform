@@ -1,0 +1,1662 @@
+{
+  "id": "knowledge.generated.dermatological.skin-complaint",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-skin-complaint-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-07-14",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-07-15",
+    "next_full_review_at": "2027-01-10",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.skin.immediate-safety",
+      "type": "ClinicalGroup",
+      "display": "Immediate Safety"
+    },
+    {
+      "id": "group.skin.characterization",
+      "type": "ClinicalGroup",
+      "display": "Characterization"
+    },
+    {
+      "id": "group.skin.allergic-drug",
+      "type": "ClinicalGroup",
+      "display": "Allergic Drug"
+    },
+    {
+      "id": "group.skin.infection",
+      "type": "ClinicalGroup",
+      "display": "Infection"
+    },
+    {
+      "id": "group.skin.lesion-warning",
+      "type": "ClinicalGroup",
+      "display": "Lesion Warning"
+    },
+    {
+      "id": "group.skin.exposure-context",
+      "type": "ClinicalGroup",
+      "display": "Exposure Context"
+    },
+    {
+      "id": "hypothesis.skin.immediate-safety",
+      "type": "Hypothesis",
+      "display": "Immediate Skin Safety Warning Pattern"
+    },
+    {
+      "id": "hypothesis.skin.allergic-drug",
+      "type": "Hypothesis",
+      "display": "Allergic or Drug Reaction Pattern"
+    },
+    {
+      "id": "hypothesis.skin.infection",
+      "type": "Hypothesis",
+      "display": "Skin Infection Warning Pattern"
+    },
+    {
+      "id": "hypothesis.skin.lesion-warning",
+      "type": "Hypothesis",
+      "display": "Concerning Skin Lesion Pattern"
+    }
+  ],
+  "group_hypothesis_edges": [
+    [
+      "group.skin.immediate-safety",
+      "hypothesis.skin.immediate-safety"
+    ],
+    [
+      "group.skin.allergic-drug",
+      "hypothesis.skin.allergic-drug"
+    ],
+    [
+      "group.skin.infection",
+      "hypothesis.skin.infection"
+    ],
+    [
+      "group.skin.lesion-warning",
+      "hypothesis.skin.lesion-warning"
+    ]
+  ],
+  "safety_rules": [
+    {
+      "id": "rule.skin.safety.airway-swelling",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.throat_or_tongue_swelling",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.skin.safety.breathing",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.severe_breathing_difficulty",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.skin.safety.collapse",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.collapse_or_unresponsiveness",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.skin.safety.non-blanching-rapid",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.non_blanching_rash",
+            "equals": true
+          },
+          {
+            "fact": "symptom.skin_complaint.rapid_spread",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.skin.safety.non-blanching-systemic",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.non_blanching_rash",
+            "equals": true
+          },
+          {
+            "fact": "symptom.fever",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.skin.safety.blistering-mucosal",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.skin_blistering_or_peeling",
+            "equals": true
+          },
+          {
+            "fact": "symptom.mucosal_sores",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.skin.safety.confusion-systemic",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.confusion",
+            "equals": true
+          },
+          {
+            "fact": "symptom.systemically_unwell",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.skin.safety.cellulitis-systemic",
+      "priority": 900,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.skin_hot_painful_swollen",
+            "equals": true
+          },
+          {
+            "fact": "symptom.fever",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.skin.safety.rapid-severe-pain",
+      "priority": 900,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.skin_complaint.rapid_spread",
+            "equals": true
+          },
+          {
+            "fact": "symptom.skin_pain_out_of_proportion",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.skin.safety.fever-immunocompromised",
+      "priority": 900,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.fever",
+            "equals": true
+          },
+          {
+            "fact": "patient.immunocompromised",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "symptom.skin_complaint.current",
+        "display": "Current Skin Complaint",
+        "value_type": "boolean",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "95324001"
+        }
+      },
+      "target": {
+        "id": "target.skin.current",
+        "display": "Current Skin Complaint",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.current",
+        "wording": "지금도 피부 발진, 가려움, 반점, 물집, 상처 또는 피부 병변이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "confirm_presentation"
+        }
+      ],
+      "supports": [
+        "group.skin.characterization"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.skin_complaint.main_type",
+        "display": "Main Skin Complaint Type",
+        "value_type": "coded",
+        "allowed_values": [
+          "rash_spots",
+          "itch",
+          "pain_swelling",
+          "blister_peeling",
+          "wound_ulcer",
+          "mole_lump",
+          "other"
+        ]
+      },
+      "target": {
+        "id": "target.skin.main-type",
+        "display": "Main Skin Complaint Type",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.main-type",
+        "wording": "가장 주된 문제는 발진·반점, 가려움, 통증·부기, 물집·벗겨짐, 상처·궤양, 점·혹 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 105,
+          "reason": "characterize_type"
+        }
+      ],
+      "supports": [
+        "group.skin.characterization"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.duration",
+        "display": "Symptom Duration",
+        "value_type": "quantity"
+      },
+      "target": {
+        "id": "target.skin.duration",
+        "display": "Symptom Duration",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.duration",
+        "wording": "피부 문제는 언제부터 시작했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 104,
+          "reason": "characterize_duration"
+        }
+      ],
+      "supports": [
+        "group.skin.characterization"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.skin_complaint.onset",
+        "display": "Skin Complaint Onset",
+        "value_type": "coded",
+        "allowed_values": [
+          "sudden",
+          "gradual",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.skin.onset",
+        "display": "Skin Complaint Onset",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.onset",
+        "wording": "갑자기 시작했나요, 서서히 시작했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 103,
+          "reason": "characterize_onset"
+        }
+      ],
+      "supports": [
+        "group.skin.characterization"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.skin_complaint.location",
+        "display": "Skin Complaint Location",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "focus_code": "95324001",
+          "attribute_code": "363698007"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.skin-complaint",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.skin.location",
+        "display": "Skin Complaint Location",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.location",
+        "wording": "처음 생긴 곳과 지금 영향을 받은 신체 부위를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 102,
+          "reason": "characterize_location"
+        }
+      ],
+      "supports": [
+        "group.skin.characterization"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.skin_complaint.distribution",
+        "display": "Skin Complaint Distribution",
+        "value_type": "coded",
+        "allowed_values": [
+          "single",
+          "unilateral",
+          "bilateral_symmetric",
+          "multiple",
+          "generalized"
+        ]
+      },
+      "target": {
+        "id": "target.skin.distribution",
+        "display": "Skin Complaint Distribution",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.distribution",
+        "wording": "한 곳, 몸 한쪽, 양쪽 대칭, 여러 곳, 전신 중 어느 형태인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 101,
+          "reason": "characterize_distribution"
+        }
+      ],
+      "supports": [
+        "group.skin.characterization"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.skin_complaint.appearance",
+        "display": "Skin Complaint Appearance",
+        "value_type": "coded",
+        "allowed_values": [
+          "flat_patch",
+          "raised",
+          "oozing_crusted",
+          "pustular",
+          "blister",
+          "cracked_peeling",
+          "mole_lump",
+          "other"
+        ]
+      },
+      "target": {
+        "id": "target.skin.appearance",
+        "display": "Skin Complaint Appearance",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.appearance",
+        "wording": "편평한 반점, 솟은 발진, 진물·딱지, 고름, 물집, 갈라짐·벗겨짐, 점·혹 중 가장 가까운 모양은 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 100,
+          "reason": "characterize_appearance"
+        }
+      ],
+      "supports": [
+        "group.skin.characterization"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.skin_complaint.itch",
+        "display": "Itch",
+        "value_type": "coded",
+        "allowed_values": [
+          "none",
+          "mild",
+          "moderate",
+          "severe"
+        ],
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "418290006"
+        }
+      },
+      "target": {
+        "id": "target.skin.itch",
+        "display": "Itch",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.itch",
+        "wording": "가려움은 없음, 가벼움, 중간, 심함 중 어느 정도인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 94,
+          "reason": "characterize_itch"
+        }
+      ],
+      "supports": [
+        "group.skin.characterization"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.skin_complaint.pain",
+        "display": "Skin Pain",
+        "value_type": "coded",
+        "allowed_values": [
+          "none",
+          "mild",
+          "moderate",
+          "severe"
+        ]
+      },
+      "target": {
+        "id": "target.skin.pain",
+        "display": "Skin Pain",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.pain",
+        "wording": "피부 통증은 없음, 가벼움, 중간, 심함 중 어느 정도인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 99,
+          "reason": "characterize_pain"
+        }
+      ],
+      "supports": [
+        "group.skin.characterization",
+        "group.skin.infection"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.skin_complaint.rapid_spread",
+        "display": "Rapidly Spreading Skin Change",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.skin.rapid-spread",
+        "display": "Rapidly Spreading Skin Change",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.rapid-spread",
+        "wording": "발진이나 붉은 부위가 몇 시간에서 하루 사이 빠르게 퍼지고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 126,
+          "reason": "rapid_progression_gate"
+        }
+      ],
+      "supports": [
+        "group.skin.immediate-safety",
+        "group.skin.infection"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.non_blanching_rash",
+        "display": "Non-blanching Petechial or Purpuric Rash",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.skin.non-blanching",
+        "display": "Non-blanching Petechial or Purpuric Rash",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.non-blanching",
+        "wording": "붉거나 보라색인 점·반점을 투명한 컵으로 눌러도 색이 옅어지지 않나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "meningococcal_gate"
+        }
+      ],
+      "supports": [
+        "group.skin.immediate-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.throat_or_tongue_swelling",
+        "display": "Sudden Throat or Tongue Swelling",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.skin.airway-swelling",
+        "display": "Sudden Throat or Tongue Swelling",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.airway-swelling",
+        "wording": "입술, 입안, 혀 또는 목이 갑자기 붓거나 삼키기 어려운가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "anaphylaxis_gate"
+        }
+      ],
+      "supports": [
+        "group.skin.immediate-safety",
+        "group.skin.allergic-drug"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.severe_breathing_difficulty",
+        "display": "Severe Breathing Difficulty with Skin Complaint",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.skin.breathing",
+        "display": "Severe Breathing Difficulty with Skin Complaint",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.breathing",
+        "wording": "숨이 매우 차거나 쌕쌕거리고, 목이 조이거나 말하기 어려운가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "anaphylaxis_gate"
+        }
+      ],
+      "supports": [
+        "group.skin.immediate-safety",
+        "group.skin.allergic-drug"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.collapse_or_unresponsiveness",
+        "display": "Collapse or Unresponsiveness",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.skin.collapse",
+        "display": "Collapse or Unresponsiveness",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.collapse",
+        "wording": "갑자기 심하게 어지럽거나 쓰러졌거나, 깨우기 어렵거나 반응이 둔한가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 127,
+          "reason": "shock_gate"
+        }
+      ],
+      "supports": [
+        "group.skin.immediate-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.skin_blistering_or_peeling",
+        "display": "Widespread Blistering or Peeling",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.skin.blister-peeling",
+        "display": "Widespread Blistering or Peeling",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.blister-peeling",
+        "wording": "피부에 통증 있는 물집이 넓게 생기거나 피부가 벗겨지고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 125,
+          "reason": "severe_skin_reaction_gate"
+        }
+      ],
+      "supports": [
+        "group.skin.immediate-safety",
+        "group.skin.allergic-drug"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.mucosal_sores",
+        "display": "Mouth or Genital Mucosal Sores",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.skin.mucosal",
+        "display": "Mouth or Genital Mucosal Sores",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.mucosal",
+        "wording": "입술·입안·목 또는 성기 주변에 아픈 물집이나 헐은 곳이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 124,
+          "reason": "mucosal_gate"
+        }
+      ],
+      "supports": [
+        "group.skin.immediate-safety",
+        "group.skin.allergic-drug"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.eye_pain_or_vision_change",
+        "display": "Eye Pain or Vision Change",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.skin.eye",
+        "display": "Eye Pain or Vision Change",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.eye",
+        "wording": "눈이 아프거나 충혈되고, 빛이 아프거나 시야가 달라졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 123,
+          "reason": "ocular_gate"
+        }
+      ],
+      "supports": [
+        "group.skin.immediate-safety",
+        "group.skin.allergic-drug"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.fever",
+        "display": "Fever",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.skin.fever",
+        "display": "Fever",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.fever",
+        "wording": "열이 나거나 몸이 뜨겁고 춥고 떨리나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 122,
+          "reason": "infection_gate"
+        }
+      ],
+      "supports": [
+        "group.skin.immediate-safety",
+        "group.skin.infection"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.systemically_unwell",
+        "display": "Systemically Unwell",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.skin.unwell",
+        "display": "Systemically Unwell",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.unwell",
+        "wording": "평소와 달리 전신 상태가 나쁘고 몹시 기운이 없나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 121,
+          "reason": "infection_gate"
+        }
+      ],
+      "supports": [
+        "group.skin.immediate-safety",
+        "group.skin.infection"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.confusion",
+        "display": "New Confusion",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.skin.confusion",
+        "display": "New Confusion",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.confusion",
+        "wording": "새로 혼란스럽거나 평소와 다르게 횡설수설하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 120,
+          "reason": "sepsis_gate"
+        }
+      ],
+      "supports": [
+        "group.skin.immediate-safety",
+        "group.skin.infection"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.skin_hot_painful_swollen",
+        "display": "Hot Painful Swollen Skin",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.skin.hot-swollen",
+        "display": "Hot Painful Swollen Skin",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.hot-swollen",
+        "wording": "해당 피부가 뜨겁고 아프며 부어 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 119,
+          "reason": "cellulitis_gate"
+        }
+      ],
+      "supports": [
+        "group.skin.immediate-safety",
+        "group.skin.infection"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.skin_pain_out_of_proportion",
+        "display": "Severe Pain Out of Proportion",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.skin.severe-pain",
+        "display": "Severe Pain Out of Proportion",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.severe-pain",
+        "wording": "보이는 피부 변화에 비해 통증이 매우 심하거나 빠르게 악화하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 118,
+          "reason": "deep_infection_gate"
+        }
+      ],
+      "supports": [
+        "group.skin.immediate-safety",
+        "group.skin.infection"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.new_recent",
+        "display": "Recently Started Medicine",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.skin.new-medicine",
+        "display": "Recently Started Medicine",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.new-medicine",
+        "wording": "최근 8주 안에 새 약을 시작했거나 용량을 바꿨나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 117,
+          "reason": "drug_reaction_context"
+        }
+      ],
+      "supports": [
+        "group.skin.immediate-safety",
+        "group.skin.allergic-drug"
+      ]
+    },
+    {
+      "fact": {
+        "id": "exposure.new_food_sting_product",
+        "display": "New Food Sting or Product Exposure",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.skin.allergen-exposure",
+        "display": "New Food Sting or Product Exposure",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.allergen-exposure",
+        "wording": "직전에 먹은 음식, 벌레·벌 쏘임, 새 화장품·세제·염색약·장갑처럼 의심되는 노출이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 89,
+          "reason": "allergy_contact_context"
+        }
+      ],
+      "supports": [
+        "group.skin.allergic-drug",
+        "group.skin.exposure-context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "event.recent_infection",
+        "display": "Recent Infection",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.skin.recent-infection",
+        "display": "Recent Infection",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.recent-infection",
+        "wording": "피부 문제가 생기기 전 감기, 인후통, 설사 같은 감염 증상이 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 88,
+          "reason": "infection_context"
+        }
+      ],
+      "supports": [
+        "group.skin.allergic-drug",
+        "group.skin.infection"
+      ]
+    },
+    {
+      "fact": {
+        "id": "event.skin_break_bite_wound",
+        "display": "Skin Break Bite or Wound",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.skin.skin-break",
+        "display": "Skin Break Bite or Wound",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.skin-break",
+        "wording": "그 부위에 상처, 갈라짐, 벌레 물림, 수술 또는 주사가 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 87,
+          "reason": "infection_entry_context"
+        }
+      ],
+      "supports": [
+        "group.skin.infection",
+        "group.skin.exposure-context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "exposure.close_contact_similar_rash",
+        "display": "Close Contact with Similar Rash",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.skin.contact",
+        "display": "Close Contact with Similar Rash",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.contact",
+        "wording": "가족·동거인·직장·학교에서 비슷한 발진이나 가려움이 있는 사람이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 82,
+          "reason": "transmission_context"
+        }
+      ],
+      "supports": [
+        "group.skin.exposure-context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.skin_complaint.recurrent",
+        "display": "Recurrent Skin Complaint",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.skin.recurrent",
+        "display": "Recurrent Skin Complaint",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.recurrent",
+        "wording": "같은 피부 문제가 이전에도 반복됐나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 81,
+          "reason": "recurrence_context"
+        }
+      ],
+      "supports": [
+        "group.skin.exposure-context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "patient.immunocompromised",
+        "display": "Immunocompromised",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.skin.immunocompromise",
+        "display": "Immunocompromised",
+        "intents": [
+          "intent.risk_assessment",
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.skin.immunocompromise",
+        "wording": "면역을 낮추는 약을 사용하거나 면역이 약해지는 질환·치료를 받고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 116,
+          "reason": "infection_safety_context"
+        }
+      ],
+      "supports": [
+        "group.skin.immediate-safety",
+        "group.skin.infection"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "history.diabetes_or_poor_circulation",
+        "display": "Diabetes or Poor Circulation",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.skin.diabetes-circulation",
+        "display": "Diabetes or Poor Circulation",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.skin.diabetes-circulation",
+        "wording": "당뇨병, 다리 혈액순환 문제 또는 림프부종이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 80,
+          "reason": "infection_risk_context"
+        }
+      ],
+      "supports": [
+        "group.skin.infection"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.pigmented_lesion_change_size",
+        "display": "Pigmented Lesion Change in Size",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.skin.lesion-size-change",
+        "display": "Pigmented Lesion Change in Size",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.skin.lesion-size-change",
+        "wording": "점이나 색소 병변이 새로 생겼거나 크기가 변했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 93,
+          "reason": "melanoma_context"
+        }
+      ],
+      "supports": [
+        "group.skin.lesion-warning"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.pigmented_lesion_irregular_shape",
+        "display": "Pigmented Lesion Irregular Shape",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.skin.lesion-shape",
+        "display": "Pigmented Lesion Irregular Shape",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.skin.lesion-shape",
+        "wording": "점이나 병변의 모양 또는 경계가 불규칙한가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 92,
+          "reason": "melanoma_context"
+        }
+      ],
+      "supports": [
+        "group.skin.lesion-warning"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.pigmented_lesion_irregular_colour",
+        "display": "Pigmented Lesion Irregular Colour",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.skin.lesion-colour",
+        "display": "Pigmented Lesion Irregular Colour",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.skin.lesion-colour",
+        "wording": "한 병변 안에 색이 고르지 않거나 여러 색이 섞여 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 91,
+          "reason": "melanoma_context"
+        }
+      ],
+      "supports": [
+        "group.skin.lesion-warning"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.skin_lesion_diameter_7mm_or_more",
+        "display": "Skin Lesion Diameter 7 mm or More",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.skin.lesion-diameter",
+        "display": "Skin Lesion Diameter 7 mm or More",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.skin.lesion-diameter",
+        "wording": "병변의 가장 긴 지름이 약 7mm 이상인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 90,
+          "reason": "melanoma_context"
+        }
+      ],
+      "supports": [
+        "group.skin.lesion-warning"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.skin_lesion_oozing_bleeding_nonhealing",
+        "display": "Oozing Bleeding or Non-healing Lesion",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.skin.lesion-nonhealing",
+        "display": "Oozing Bleeding or Non-healing Lesion",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.skin.lesion-nonhealing",
+        "wording": "병변에서 진물·피가 나거나 헐어서 3주 이상 낫지 않나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 89,
+          "reason": "skin_cancer_context"
+        }
+      ],
+      "supports": [
+        "group.skin.lesion-warning"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.skin_complaint.functional_impact",
+        "display": "Skin Complaint Functional Impact",
+        "value_type": "coded",
+        "allowed_values": [
+          "none",
+          "mild",
+          "moderate",
+          "severe"
+        ]
+      },
+      "target": {
+        "id": "target.skin.function",
+        "display": "Skin Complaint Functional Impact",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.skin.function",
+        "wording": "피부 문제 때문에 잠, 일상 활동 또는 업무가 얼마나 방해되나요? 없음, 가벼움, 중간, 심함으로 답해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 78,
+          "reason": "functional_impact"
+        }
+      ],
+      "supports": [
+        "group.skin.characterization"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nhs.anaphylaxis.2026",
+      "source.nice.ng240.meningococcal-rash.2026",
+      "source.nhs.stevens-johnson.2026",
+      "source.nhs.cellulitis.2024",
+      "source.nice.ng12.skin-cancer.2026"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

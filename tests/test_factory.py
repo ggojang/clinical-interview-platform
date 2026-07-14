@@ -18,7 +18,8 @@ from runtime.memory import ClinicalMemory
 from runtime.package import (
     ABDOMINAL_PAIN_PACKAGE, BACK_PAIN_PACKAGE, CHEST_PAIN_PACKAGE, DEFAULT_PACKAGE,
     DIZZINESS_SYNCOPE_PACKAGE, DYSPNEA_PACKAGE, FEVER_PACKAGE, HEADACHE_PACKAGE,
-    FATIGUE_PACKAGE, URINARY_SYMPTOMS_PACKAGE, VOMITING_DIARRHEA_PACKAGE,
+    FATIGUE_PACKAGE, SKIN_COMPLAINT_PACKAGE, URINARY_SYMPTOMS_PACKAGE,
+    VOMITING_DIARRHEA_PACKAGE,
     PackageLoadError, load_package,
 )
 from runtime.session import InterviewSession
@@ -41,6 +42,7 @@ class CompilerTests(unittest.TestCase):
             "urinary_symptoms",
             "fatigue",
             "back_pain",
+            "skin_complaint",
         ):
             with self.subTest(profile=profile), self.assertRaises(CompilationError):
                 compile_package(production=True, profile=profile)
@@ -404,6 +406,31 @@ class CompilerTests(unittest.TestCase):
         self.assertEqual(mapping["validation"]["result"], "provisional_pass")
         self.assertFalse(mapping["validation"]["clinical_rule_authority"])
 
+    def test_skin_complaint_package_is_complete_and_deterministic(self):
+        first = compile_package(profile="skin_complaint")
+        second = compile_package(profile="skin_complaint")
+        self.assertEqual(first, second)
+        facts = {
+            node["id"] for node in first["knowledge_graph"]["nodes"]
+            if node["type"] == "Fact"
+        }
+        self.assertEqual(len(facts), 36)
+        self.assertEqual(facts, set(first["indexes"]["questions_by_fact"]))
+        self.assertEqual(first["coverage"]["total_safety_rules"], 10)
+        self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 10)
+        self.assertEqual(first["coverage"]["uncovered_safety_rules"], [])
+
+    def test_skin_complaint_mrcm_is_build_time_metadata_only(self):
+        mapping = json.loads(
+            (
+                Path(__file__).resolve().parents[1]
+                / "mappings/terminology/snomed-mrcm-skin-complaint.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(len(mapping["focus_concepts"]), 3)
+        self.assertEqual(mapping["validation"]["result"], "provisional_pass")
+        self.assertFalse(mapping["validation"]["clinical_rule_authority"])
+
 
 class ClinicalMemoryTests(unittest.TestCase):
     def setUp(self):
@@ -679,6 +706,22 @@ class PackageRuntimeTests(unittest.TestCase):
     def test_back_pain_research_package_is_rejected_in_production(self):
         with self.assertRaises(PackageLoadError):
             load_package(BACK_PAIN_PACKAGE, execution_mode="production")
+
+    def test_skin_complaint_simulation_evaluation_passes(self):
+        report = run_evaluation(SKIN_COMPLAINT_PACKAGE)
+        self.assertTrue(report["passed"])
+        self.assertEqual(report["case_count"], 11)
+        self.assertLessEqual(max(item["turns"] for item in report["results"]), 40)
+
+    def test_skin_complaint_runtime_uses_skin_rfe(self):
+        session = InterviewSession("skin-runtime", package_path=SKIN_COMPLAINT_PACKAGE)
+        state = session.process("피부에 발진이 생겼어요.")
+        self.assertIn("dermatological.skin_complaint", state["active_patterns"])
+        self.assertEqual(state["package"]["id"], "package.primary-care-skin-complaint")
+
+    def test_skin_complaint_research_package_is_rejected_in_production(self):
+        with self.assertRaises(PackageLoadError):
+            load_package(SKIN_COMPLAINT_PACKAGE, execution_mode="production")
 
 
 if __name__ == "__main__":

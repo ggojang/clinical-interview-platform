@@ -104,6 +104,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-back-pain.json",
         "version": "0.1.0",
     },
+    "skin_complaint": {
+        "base_graph": ROOT / "knowledge/base/primary-care-skin-complaint.json",
+        "base_rules": ROOT / "rules/base/primary-care-skin-complaint.json",
+        "fragment_root": ROOT / "knowledge/generated/dermatological/skin-complaint",
+        "output_graph": ROOT / "knowledge/graph/primary-care-skin-complaint.json",
+        "output_rules": ROOT / "rules/primary-care-skin-complaint.json",
+        "version": "0.1.0",
+    },
 }
 
 

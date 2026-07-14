@@ -387,6 +387,9 @@ class InterviewSession:
         if self.reason_for_encounter == "rfe.back_pain":
             self._update_back_pain_patterns()
             return
+        if self.reason_for_encounter == "rfe.skin_complaint":
+            self._update_skin_complaint_patterns()
+            return
         active = ["respiratory.cough"]
         cold_support = sum(
             self.memory.value(fact_id) is True
@@ -613,6 +616,33 @@ class InterviewSession:
             "symptom.inflammatory_back_features", "event.mechanical_trigger",
         )):
             active.append("back_pain.mechanical_or_inflammatory_context")
+        self.active_patterns = active
+
+    def _update_skin_complaint_patterns(self) -> None:
+        active = ["dermatological.skin_complaint"]
+        if any(self.memory.value(item) is True for item in (
+            "symptom.throat_or_tongue_swelling",
+            "symptom.severe_breathing_difficulty",
+            "symptom.collapse_or_unresponsiveness",
+        )):
+            active.append("skin.acute_allergic_warning_features")
+        if any(self.memory.value(item) is True for item in (
+            "symptom.skin_blistering_or_peeling", "symptom.mucosal_sores",
+            "symptom.eye_pain_or_vision_change", "medication.new_recent",
+        )):
+            active.append("skin.severe_cutaneous_reaction_warning_features")
+        if any(self.memory.value(item) is True for item in (
+            "symptom.skin_hot_painful_swollen", "symptom.fever",
+            "symptom.systemically_unwell", "symptom.skin_complaint.rapid_spread",
+        )):
+            active.append("skin.infection_warning_features")
+        if any(self.memory.value(item) is True for item in (
+            "symptom.pigmented_lesion_change_size",
+            "symptom.pigmented_lesion_irregular_shape",
+            "symptom.pigmented_lesion_irregular_colour",
+            "symptom.skin_lesion_oozing_bleeding_nonhealing",
+        )):
+            active.append("skin.concerning_lesion_features")
         self.active_patterns = active
 
     def _update_dyspnea_patterns(self) -> None:
