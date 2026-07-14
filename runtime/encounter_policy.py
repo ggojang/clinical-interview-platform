@@ -7,10 +7,20 @@ from typing import Any
 
 DEFAULT_REVIEW_INTERVAL_DAYS = {
     "history.conditions": 365,
+    "history.procedures": 365,
     "medication.current": 90,
+    "allergy.current": 365,
     "history.family": 365,
+    "occupation.current": 365,
     "social.alcohol": 365,
     "social.smoking": 365,
+}
+
+RESOLVED_CONTEXT_STATES = {
+    "answered",
+    "current_existing",
+    "unknown",
+    "declined",
 }
 
 
@@ -83,3 +93,24 @@ def context_review_due(
             ),
         }
     return due
+
+
+def context_review_completion(
+    *,
+    due_groups: dict[str, dict[str, Any]],
+    group_states: dict[str, str],
+) -> dict[str, Any]:
+    """Determine whether all due longitudinal groups have an explicit outcome."""
+    unresolved = [
+        group
+        for group, review in due_groups.items()
+        if review.get("due") and group_states.get(group) not in RESOLVED_CONTEXT_STATES
+    ]
+    deferred = [
+        group for group in unresolved if group_states.get(group) == "deferred_safety"
+    ]
+    return {
+        "complete": not unresolved,
+        "unresolved_groups": unresolved,
+        "safety_deferred_groups": deferred,
+    }

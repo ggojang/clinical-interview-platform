@@ -1,6 +1,6 @@
 {
   "id": "policy.encounter-context-review",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "status": "research_only",
   "review_status": "unreviewed",
   "result_follow_up": {
@@ -227,23 +227,54 @@
   "longitudinal_context_review": {
     "review_all_on_first_encounter": true,
     "unknown_last_confirmed_at": "ask_single_recency_gate_then_due_if_still_unknown",
-    "recency_gate_question_ko": "처음 작성하시는 건가요? 아니라면 과거력·복용약·가족력·음주·흡연 정보를 마지막으로 확인하거나 수정한 시기를 알려주세요.",
+    "new_chat_is_not_proof_of_first_encounter": true,
+    "recency_gate_question_ko": "이 서비스에서 기본 건강정보를 처음 작성하시나요? 아니라면 진단·수술·복용약·알레르기·가족력·직업·흡연·음주 정보를 마지막으로 확인하거나 수정한 시기를 알려주세요.",
     "do_not_ask_separate_recency_question_per_group": true,
+    "first_encounter_timing": "after_minimal_safety_and_immediately_relevant_high_priority_questions_before_completion",
+    "first_encounter_required_group_order": [
+      "history.conditions",
+      "history.procedures",
+      "medication.current",
+      "allergy.current",
+      "history.family",
+      "occupation.current",
+      "social.smoking",
+      "social.alcohol"
+    ],
     "groups": {
-      "history.conditions": {"interval_days": 365},
-      "medication.current": {"interval_days": 90},
-      "history.family": {"interval_days": 365},
-      "social.alcohol": {"interval_days": 365},
-      "social.smoking": {"interval_days": 365}
+      "history.conditions": {"interval_days": 365, "fact_ids": ["history.condition.current"], "question_ko": "현재 진단받았거나 과거에 치료받은 주요 질환이 있나요?"},
+      "history.procedures": {"interval_days": 365, "fact_ids": ["history.procedure.past"], "question_ko": "과거에 받은 수술이나 주요 시술이 있나요?"},
+      "medication.current": {"interval_days": 90, "fact_ids": ["medication.current"], "question_ko": "현재 복용 중인 처방약·일반약·건강기능식품이 있나요?"},
+      "allergy.current": {"interval_days": 365, "fact_ids": ["allergy.current"], "question_ko": "알고 있는 약물·음식·기타 알레르기가 있나요?"},
+      "history.family": {"interval_days": 365, "fact_ids": ["history.family"], "question_ko": "부모·형제자매 등 가까운 가족에게 주요 질환이 있었나요?"},
+      "occupation.current": {"interval_days": 365, "fact_ids": ["occupation.current"], "question_ko": "현재 또는 최근의 직업과 업무 중 주요 노출을 알려주세요."},
+      "social.smoking": {"interval_days": 365, "fact_ids": ["patient.smoking.status"], "question_ko": "현재 흡연, 과거 흡연, 비흡연 중 어디에 해당하나요?"},
+      "social.alcohol": {"interval_days": 365, "fact_ids": ["patient.alcohol.pattern"], "question_ko": "음주 여부와 빈도, 한 번에 마시는 양을 알려주세요."}
     },
     "review_only_due_groups": true,
-    "allow_user_reported_change_to_trigger_review": true
+    "allow_user_reported_change_to_trigger_review": true,
+    "reuse_explicit_current_conversation_or_uploaded_facts": true,
+    "symptom_irrelevance_is_not_valid_first_encounter_omission": true,
+    "allowed_group_resolution_states": ["answered", "current_existing", "unknown", "declined"],
+    "known_absence_is_answered_not_data_absent": true,
+    "data_absent_reason_by_state": {
+      "unknown": "asked-unknown",
+      "declined": "asked-declined",
+      "never_asked": "not-asked",
+      "deferred_safety": "not-asked",
+      "rate_limit_interruption_before_question": "not-asked"
+    },
+    "completion_requires_every_due_group_resolved": true,
+    "safety_deferred_groups_keep_interview_incomplete": true,
+    "user_stop_keeps_status_stopped_not_completed": true,
+    "rate_limit_interruption_keeps_status_in_progress": true,
+    "report_unresolved_groups_and_data_absent_reason": true
   },
   "provenance": {
     "created_by": {"type": "ai", "id": "codex-gpt5"},
     "created_at": "2026-07-14T00:00:00Z",
     "source_refs": ["docs/context/002-encounter-context.md", "docs/context/017-clinical-memory.md"],
     "review_status": "unreviewed",
-    "version": "0.2.0"
+    "version": "0.3.0"
   }
 }

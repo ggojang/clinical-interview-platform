@@ -276,28 +276,102 @@
   },
   "longitudinal_context_review_policy": {
     "allow_user_reported_change_to_trigger_review": true,
+    "allowed_group_resolution_states": [
+      "answered",
+      "current_existing",
+      "unknown",
+      "declined"
+    ],
+    "completion_requires_every_due_group_resolved": true,
+    "data_absent_reason_by_state": {
+      "declined": "asked-declined",
+      "deferred_safety": "not-asked",
+      "never_asked": "not-asked",
+      "rate_limit_interruption_before_question": "not-asked",
+      "unknown": "asked-unknown"
+    },
     "do_not_ask_separate_recency_question_per_group": true,
+    "first_encounter_required_group_order": [
+      "history.conditions",
+      "history.procedures",
+      "medication.current",
+      "allergy.current",
+      "history.family",
+      "occupation.current",
+      "social.smoking",
+      "social.alcohol"
+    ],
+    "first_encounter_timing": "after_minimal_safety_and_immediately_relevant_high_priority_questions_before_completion",
     "groups": {
+      "allergy.current": {
+        "fact_ids": [
+          "allergy.current"
+        ],
+        "interval_days": 365,
+        "question_ko": "알고 있는 약물·음식·기타 알레르기가 있나요?"
+      },
       "history.conditions": {
-        "interval_days": 365
+        "fact_ids": [
+          "history.condition.current"
+        ],
+        "interval_days": 365,
+        "question_ko": "현재 진단받았거나 과거에 치료받은 주요 질환이 있나요?"
       },
       "history.family": {
-        "interval_days": 365
+        "fact_ids": [
+          "history.family"
+        ],
+        "interval_days": 365,
+        "question_ko": "부모·형제자매 등 가까운 가족에게 주요 질환이 있었나요?"
+      },
+      "history.procedures": {
+        "fact_ids": [
+          "history.procedure.past"
+        ],
+        "interval_days": 365,
+        "question_ko": "과거에 받은 수술이나 주요 시술이 있나요?"
       },
       "medication.current": {
-        "interval_days": 90
+        "fact_ids": [
+          "medication.current"
+        ],
+        "interval_days": 90,
+        "question_ko": "현재 복용 중인 처방약·일반약·건강기능식품이 있나요?"
+      },
+      "occupation.current": {
+        "fact_ids": [
+          "occupation.current"
+        ],
+        "interval_days": 365,
+        "question_ko": "현재 또는 최근의 직업과 업무 중 주요 노출을 알려주세요."
       },
       "social.alcohol": {
-        "interval_days": 365
+        "fact_ids": [
+          "patient.alcohol.pattern"
+        ],
+        "interval_days": 365,
+        "question_ko": "음주 여부와 빈도, 한 번에 마시는 양을 알려주세요."
       },
       "social.smoking": {
-        "interval_days": 365
+        "fact_ids": [
+          "patient.smoking.status"
+        ],
+        "interval_days": 365,
+        "question_ko": "현재 흡연, 과거 흡연, 비흡연 중 어디에 해당하나요?"
       }
     },
-    "recency_gate_question_ko": "처음 작성하시는 건가요? 아니라면 과거력·복용약·가족력·음주·흡연 정보를 마지막으로 확인하거나 수정한 시기를 알려주세요.",
+    "known_absence_is_answered_not_data_absent": true,
+    "new_chat_is_not_proof_of_first_encounter": true,
+    "rate_limit_interruption_keeps_status_in_progress": true,
+    "recency_gate_question_ko": "이 서비스에서 기본 건강정보를 처음 작성하시나요? 아니라면 진단·수술·복용약·알레르기·가족력·직업·흡연·음주 정보를 마지막으로 확인하거나 수정한 시기를 알려주세요.",
+    "report_unresolved_groups_and_data_absent_reason": true,
+    "reuse_explicit_current_conversation_or_uploaded_facts": true,
     "review_all_on_first_encounter": true,
     "review_only_due_groups": true,
-    "unknown_last_confirmed_at": "ask_single_recency_gate_then_due_if_still_unknown"
+    "safety_deferred_groups_keep_interview_incomplete": true,
+    "symptom_irrelevance_is_not_valid_first_encounter_omission": true,
+    "unknown_last_confirmed_at": "ask_single_recency_gate_then_due_if_still_unknown",
+    "user_stop_keeps_status_stopped_not_completed": true
   },
   "numbering_policy": {
     "binary_question_only_codes": {
@@ -472,22 +546,22 @@
   },
   "resources": [
     {
-      "count": 15,
+      "count": 28,
       "name": "common-facts",
       "path": "/gpt/common-facts.json",
-      "sha256": "1d60f025127ec755fe849c6c1cdd5f6010af3954401fa31ec836caabf204a85e"
+      "sha256": "e52645c49b7e9887f7ce1d417eb5dc4437586eb903f30783ef4113e53a94f085"
     },
     {
-      "count": 93,
+      "count": 96,
       "name": "facts",
       "path": "/gpt/facts.json",
-      "sha256": "88f7d86acf605b6b7d5f7f04611a82fd1bb0ee255ba62c40064421cdd878ceab"
+      "sha256": "9ad6dfc63aa81806db0d9067bc7cbde95428c5689c7637d70c633139bb0fa737"
     },
     {
       "count": 88,
       "name": "question-groups",
       "path": "/gpt/question-groups.json",
-      "sha256": "55197aa7aa2d5d5975ceace40ca61e5b8d20026900c34fc9e18b6101e92f0aaf"
+      "sha256": "511933584e50e19a6f847c3fb747c0095ba6a00950a6c8983ec6bb0bd5a17420"
     },
     {
       "count": 15,
@@ -499,61 +573,61 @@
       "count": 35,
       "name": "rfe-cough-facts",
       "path": "/gpt/rfe/cough/facts.json",
-      "sha256": "aceb177ebb1277f0e8caec305591f53621602f24f2510d0b120bfe4a9b88b213"
+      "sha256": "c52129fb0b003b032ed4d0dee107456b5981642df4c565461a4e6b59ea04666d"
     },
     {
       "count": 35,
       "name": "rfe-cough-questions",
       "path": "/gpt/rfe/cough/questions.json",
-      "sha256": "28497a96455c650177451a3cd8613ae8f2d6a6a4a47a4c64da31458f95b08703"
+      "sha256": "a755b7ae5011d7428425e2084e73b67d82d8396627d295eda06845dfb24679f8"
     },
     {
       "count": 88,
       "name": "rfe-cough-rules",
       "path": "/gpt/rfe/cough/rules.json",
-      "sha256": "7490a86c2208657af976ac78df5449c43ea274cbbb1c719a80cc634df2e6758b"
+      "sha256": "c91d4f53746765daec53b927a6270d03ca759e76bad3b649a5301346dbd01daa"
     },
     {
       "count": 24,
       "name": "rfe-dyspnea-facts",
       "path": "/gpt/rfe/dyspnea/facts.json",
-      "sha256": "480607bdfd6d16650870ad7df78844c29c9f8ab4a4b1652f0c6da0dae14f41f5"
+      "sha256": "8349b79ce8b1b727bdbdc7009f11f7586a3ee05e8e9cdfa952edff3a61068a35"
     },
     {
       "count": 24,
       "name": "rfe-dyspnea-questions",
       "path": "/gpt/rfe/dyspnea/questions.json",
-      "sha256": "e6f39a6adc760512deef87a708add60635ce567a2b0f7abd83925450fae59619"
+      "sha256": "5cf2b1cd172366c7460a109c19866f26bc07285aeeb74d32f8eeb176a9e1a212"
     },
     {
       "count": 57,
       "name": "rfe-dyspnea-rules",
       "path": "/gpt/rfe/dyspnea/rules.json",
-      "sha256": "97c259178d7fbfd48bb3f00ea63b084d1fab08f7e6bdfd2b30751e01722f8511"
+      "sha256": "197616c6cdb3338755560cc8326a367e2ce51e06d5544bf98f0079d2b6fef5f8"
     },
     {
       "count": 19,
       "name": "rfe-fever-facts",
       "path": "/gpt/rfe/fever/facts.json",
-      "sha256": "401d8b1d4b3e6d8ae201dca736de75882ddd9590af086404aa1424855cf228e0"
+      "sha256": "aa4d6a26b7a49abef14129165432b16faf2ac0a3ef701f7731c8bb18f8af4aea"
     },
     {
       "count": 19,
       "name": "rfe-fever-questions",
       "path": "/gpt/rfe/fever/questions.json",
-      "sha256": "2a886524bbe6e5b56bf8f47d059d1837ed63ebe841666e6721093f7d8d28bba0"
+      "sha256": "daf3c8b96bcc9307e7de6dc2539dab7da40728dfc6737208df9c79e2b1b644d8"
     },
     {
       "count": 45,
       "name": "rfe-fever-rules",
       "path": "/gpt/rfe/fever/rules.json",
-      "sha256": "c8ca5d86549ddd3ff794fb5486100e6a563d1f493cf405d60401889846e8402a"
+      "sha256": "c79af721867bba2e1cf22aec379e92ff7f4eb151ba78f22cca138b685f5cb1f8"
     },
     {
       "count": 178,
       "name": "safety-rules",
       "path": "/gpt/safety-rules.json",
-      "sha256": "1e0e7d96808134eec810baeeea091924ef08840c957016e1e649fe5e37caa033"
+      "sha256": "c154655ec12149590d1b1ad153b242c7457a154ba286ab100bb1bb140cda38df"
     },
     {
       "count": 10,
@@ -713,5 +787,5 @@
     ],
     "unreadable_material": "request_clearer_crop_or_text_once"
   },
-  "version": "0.4.3"
+  "version": "0.4.4"
 }

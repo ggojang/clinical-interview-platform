@@ -24,7 +24,9 @@ Run `python3 tools/gpt_export/build.py` after changing Knowledge or Facts. The g
 
 The GPT must start from Reason for Encounter, then load only the matching compact RFE resources. The large aggregate files remain available for offline inspection and backward compatibility but are intentionally absent from the Action schema.
 
-Manifest policy also distinguishes institutional result checking from an interpretation request, and carries recency rules for longitudinal conditions, medications, family history, alcohol, and smoking review.
+Manifest policy also distinguishes institutional result checking from an interpretation request, and carries recency rules for all longitudinal baseline groups.
+
+The common Fact resource and manifest jointly expose the first-encounter baseline: diagnoses, procedures, medication, allergies, family history, occupation, smoking, and alcohol, together with first-use and per-group last-confirmed state. A confirmed first encounter cannot complete until every due group has an explicit answer, current reusable value, unknown state, or refusal.
 
 The STOM Action is intentionally separate from the compiled Knowledge Action. It accepts only a short de-identified normalized term or terminology code and provides provisional SNOMED CT, LOINC, KCD-8, HIRA, and FHIR lookup results. It must never receive raw patient answers or control clinical rules.
 

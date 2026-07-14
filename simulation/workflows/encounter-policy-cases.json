@@ -1,6 +1,6 @@
 {
   "id": "simulation.encounter-policy-cases",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "status": "synthetic",
   "contains_real_patient_data": false,
   "cases": [
@@ -25,6 +25,22 @@
       "result_content_requested": true,
       "expected_goal": "interpretation_request",
       "expected_action": "await_or_interpret_provided_result"
+    }
+  ],
+  "context_review_cases": [
+    {
+      "id": "FIRST-ENCOUNTER-ALL-CONTEXT-DUE-001",
+      "is_first_encounter": true,
+      "last_confirmed": {},
+      "expected_due": ["history.conditions", "history.procedures", "medication.current", "allergy.current", "history.family", "occupation.current", "social.alcohol", "social.smoking"]
+    },
+    {
+      "id": "FIRST-ENCOUNTER-INCOMPLETE-ALCOHOL-001",
+      "is_first_encounter": true,
+      "last_confirmed": {},
+      "group_states": {"history.conditions": "answered", "history.procedures": "answered", "medication.current": "answered", "allergy.current": "answered", "history.family": "answered", "occupation.current": "answered", "social.smoking": "answered"},
+      "expected_complete": false,
+      "expected_unresolved": ["social.alcohol"]
     }
   ]
 }

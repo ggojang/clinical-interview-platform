@@ -262,11 +262,64 @@ class GptExportTests(unittest.TestCase):
             self.assertTrue(
                 review_policy["do_not_ask_separate_recency_question_per_group"]
             )
+            self.assertTrue(review_policy["new_chat_is_not_proof_of_first_encounter"])
+            self.assertEqual(
+                review_policy["first_encounter_required_group_order"],
+                [
+                    "history.conditions",
+                    "history.procedures",
+                    "medication.current",
+                    "allergy.current",
+                    "history.family",
+                    "occupation.current",
+                    "social.smoking",
+                    "social.alcohol",
+                ],
+            )
+            self.assertTrue(
+                review_policy["completion_requires_every_due_group_resolved"]
+            )
+            self.assertTrue(
+                review_policy["symptom_irrelevance_is_not_valid_first_encounter_omission"]
+            )
             self.assertEqual(
                 review_policy["groups"]["medication.current"]["interval_days"], 90
             )
             self.assertEqual(
                 review_policy["groups"]["history.conditions"]["interval_days"], 365
+            )
+            self.assertEqual(
+                review_policy["groups"]["history.procedures"]["fact_ids"],
+                ["history.procedure.past"],
+            )
+            common = json.loads(
+                (output_path / "common-facts.json").read_text(encoding="utf-8")
+            )
+            common_ids = {item["id"] for item in common["items"]}
+            self.assertTrue(
+                {
+                    "history.condition.current",
+                    "history.procedure.past",
+                    "medication.current",
+                    "allergy.current",
+                    "history.family",
+                    "occupation.current",
+                    "patient.smoking.status",
+                    "patient.alcohol.pattern",
+                    "encounter.is_first",
+                    "context.last_confirmed_at",
+                }.issubset(common_ids)
+            )
+            self.assertEqual(
+                review_policy["data_absent_reason_by_state"]["unknown"],
+                "asked-unknown",
+            )
+            self.assertEqual(
+                review_policy["data_absent_reason_by_state"]["declined"],
+                "asked-declined",
+            )
+            self.assertTrue(
+                review_policy["known_absence_is_answered_not_data_absent"]
             )
             for name in ("facts.json", "question-groups.json", "safety-rules.json"):
                 self.assertLess((output_path / name).stat().st_size, 100_000, name)

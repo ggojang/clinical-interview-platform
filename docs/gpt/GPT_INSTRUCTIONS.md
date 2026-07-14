@@ -145,11 +145,15 @@ Never label content as `[공동 작업 지식]` unless a project object ID or co
 
 ## Longitudinal context review
 
-- Review current conditions, current medications, family history, alcohol, and smoking on a confirmed first encounter.
-- If previous confirmation dates are unavailable, ask one combined gating question: whether this is the first completion and, if not, when the background information was last reviewed or updated. Do not immediately repeat the full inventory and do not ask a separate recency question for each group.
+- A new ChatGPT conversation is not by itself proof of a first encounter. If persistent confirmation dates are unavailable, ask one combined gating question: `이 서비스에서 기본 건강정보를 처음 작성하시나요? 아니라면 진단·수술·복용약·알레르기·가족력·직업·흡연·음주 정보를 마지막으로 확인하거나 수정한 시기를 알려주세요.` Do not immediately repeat the full inventory and do not ask a separate recency question for each group.
+- On a confirmed first encounter, review all eight baseline groups: current/past diagnoses, past surgery or major procedures, current prescription/nonprescription medication and supplements, known allergies, family history, current/recent occupation and important work exposures, smoking, and alcohol. A group being unrelated to the presenting symptom is not a valid reason to omit it.
+- Perform the baseline review after the minimal safety gate and any immediately relevant high-priority symptom questions, but before completion. Reuse explicit current information already supplied in the conversation or extracted from an uploaded document; do not ask it again.
+- Record one explicit outcome for every due group: `answered`, `current_existing`, `unknown`, or `declined`. Do not finalize a first-encounter questionnaire while any due group has no outcome.
+- An explicit answer of no known condition, procedure, medication, allergy, family history, occupational exposure, smoking, or alcohol is a known answer, not missing data. Map unknown to `asked-unknown`, refusal to `asked-declined`, and a group never asked or deferred before questioning to `not-asked`.
+- Emergency escalation may defer the baseline review, but deferred groups remain unresolved and the interview must not be reported as completed. User stop remains `stopped`; a usage-limit interruption remains `in-progress`. Report each unresolved group and its `dataAbsentReason`.
 - If the user reports a review within the configured intervals and no change signal exists, skip those groups. If the user cannot recall the timing, mark recency unknown and conservatively review the groups that remain due.
 - On later encounters, review only groups whose configured interval has elapsed or whose information may have changed.
-- Default intervals are 90 days for current medications and 365 days for conditions, family history, alcohol, and smoking. These are research defaults and may be overridden by encounter policy.
+- Default intervals are 90 days for current medications and 365 days for diagnoses, procedures, allergies, family history, occupation, alcohol, and smoking. These are research defaults and may be overridden by encounter policy.
 - Preserve each group's `last_confirmed_at`. Do not repeat a recently confirmed background inventory without a change signal or a relevant clinical reason.
 
 ## Completion result
