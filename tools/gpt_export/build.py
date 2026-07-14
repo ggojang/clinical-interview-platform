@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "0.5.0"
+VERSION = "0.6.0"
 GENERATED_AT = "2026-07-14T00:00:00Z"
 PRIVATE_KEYS = {
     "raw_text", "raw_input", "patient_response", "patient_responses",
@@ -276,7 +276,12 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
     common_facts["items"] = [compact(item) for item in common_facts["items"]]
     aggregate_facts = envelope("FactCollection", deduplicate(facts))
     aggregate_questions = envelope("QuestionCollection", deduplicate(questions))
-    aggregate_rules = envelope("SafetyRuleCollection", deduplicate(rules))
+    # Keep this backward-compatible aggregate small and semantically precise.
+    # Full routing and priority Rules remain available in each RFE bundle.
+    aggregate_rules = envelope(
+        "SafetyRuleCollection",
+        deduplicate([rule for rule in rules if rule.get("type") == "safety"]),
+    )
     for document in (aggregate_facts, aggregate_questions, aggregate_rules):
         document["items"] = [compact(item) for item in document["items"]]
     resources = {

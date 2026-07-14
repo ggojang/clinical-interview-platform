@@ -69,6 +69,18 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/gastrointestinal/abdominal-pain",
         "research_manifests": [ROOT / "sources/manifests/primary-care-abdominal-pain-research.json"],
     },
+    "chest_pain": {
+        "graph": ROOT / "knowledge/graph/primary-care-chest-pain.json",
+        "rules": ROOT / "rules/primary-care-chest-pain.json",
+        "sources": ROOT / "sources/manifests/primary-care-chest-pain.json",
+        "completion_policy": ROOT / "policies/primary-care-chest-pain-completion.json",
+        "output": ROOT / "packages/generated/primary-care-chest-pain-0.1.0.json",
+        "package_id": "package.primary-care-chest-pain",
+        "package_version": "0.1.0",
+        "rfe": "rfe.chest_pain",
+        "simulation_root": ROOT / "simulation/patients/cardiovascular/chest-pain",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-chest-pain-research.json"],
+    },
 }
 
 ALLOWED_NODE_TYPES = {

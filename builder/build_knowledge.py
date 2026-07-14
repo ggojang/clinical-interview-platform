@@ -48,6 +48,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-abdominal-pain.json",
         "version": "0.1.0",
     },
+    "chest_pain": {
+        "base_graph": ROOT / "knowledge/base/primary-care-chest-pain.json",
+        "base_rules": ROOT / "rules/base/primary-care-chest-pain.json",
+        "fragment_root": ROOT / "knowledge/generated/cardiovascular/chest-pain",
+        "output_graph": ROOT / "knowledge/graph/primary-care-chest-pain.json",
+        "output_rules": ROOT / "rules/primary-care-chest-pain.json",
+        "version": "0.1.0",
+    },
 }
 
 

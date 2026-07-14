@@ -79,7 +79,7 @@ def extract(text: str, turn: int, expected_fact: str | None = None) -> dict[str,
         "symptom.fever": ["fever", "feverish", "열이", "발열"],
         "symptom.dyspnea": [
             "short of breath", "trouble breathing", "hard to breathe",
-            "harder to breathe", "숨이 차", "숨쉬기 힘",
+            "harder to breathe", "숨이 차", "숨쉬기 힘", "숨쉬기가",
         ],
         "symptom.hemoptysis": ["coughing blood", "blood when", "피가 섞", "피를"],
         "symptom.chest_pain": ["chest pain", "가슴 통증", "가슴이 아"],
@@ -239,6 +239,21 @@ class InterviewSession:
                     additions[self.last_question_fact] = fact(
                         normalized, patient_text, turn, .92
                     )
+                elif (
+                    node.get("value_type") == "string"
+                    and normalized
+                    and normalized not in {
+                        "i am not sure", "i'm not sure", "not sure",
+                        "모르겠어요", "잘 모르겠어요",
+                        "i prefer not to answer", "i'd rather not answer",
+                        "prefer not to say", "답하고 싶지 않아요",
+                        "말하고 싶지 않아요", "not applicable",
+                        "does not apply", "해당되지 않아요",
+                    }
+                ):
+                    additions[self.last_question_fact] = fact(
+                        patient_text.strip(), patient_text, turn, .85
+                    )
         if any(marker in patient_text.lower() for marker in ("i meant", "sorry, i meant")) or "정정" in patient_text or "아니, " in patient_text:
             for candidate in additions.values():
                 candidate["correction"] = True
@@ -345,6 +360,9 @@ class InterviewSession:
         if self.reason_for_encounter == "rfe.abdominal_pain":
             self._update_abdominal_pain_patterns()
             return
+        if self.reason_for_encounter == "rfe.chest_pain":
+            self._update_chest_pain_patterns()
+            return
         active = ["respiratory.cough"]
         cold_support = sum(
             self.memory.value(fact_id) is True
@@ -396,6 +414,33 @@ class InterviewSession:
             "symptom.early_satiety_or_appetite_loss",
         )):
             active.append("abdominal_pain.persistent_warning_features")
+        self.active_patterns = active
+
+    def _update_chest_pain_patterns(self) -> None:
+        active = ["cardiovascular.chest_pain"]
+        if any(self.memory.value(item) is True for item in (
+            "symptom.chest_pain.radiation", "symptom.chest_pain.exertional",
+            "symptom.marked_sweating", "symptom.nausea_or_vomiting",
+        )) or self.memory.value("symptom.chest_pain.quality") in {
+            "pressure", "tightness", "heaviness",
+        }:
+            active.append("chest_pain.coronary_warning_features")
+        if any(self.memory.value(item) is True for item in (
+            "symptom.chest_pain.pleuritic", "symptom.hemoptysis",
+            "symptom.unilateral_leg_pain_swelling", "history.previous_vte",
+            "history.recent_immobility_or_surgery",
+        )):
+            active.append("chest_pain.thromboembolic_warning_features")
+        if (
+            self.memory.value("symptom.chest_pain.onset") == "sudden"
+            and self.memory.value("symptom.chest_pain.severity") == "severe"
+        ) or self.memory.value("symptom.neurological_deficit") is True:
+            active.append("chest_pain.aortic_warning_features")
+        if any(self.memory.value(item) is True for item in (
+            "symptom.chest_pain.positional", "symptom.chest_pain.reproducible",
+            "symptom.fever", "symptom.palpitations",
+        )):
+            active.append("chest_pain.other_associated_features")
         self.active_patterns = active
 
     def _update_dyspnea_patterns(self) -> None:

@@ -61,6 +61,8 @@ class GptExportTests(unittest.TestCase):
                 "rfe-fever-facts", "rfe-fever-questions", "rfe-fever-rules",
                 "rfe-abdominal_pain-facts", "rfe-abdominal_pain-questions",
                 "rfe-abdominal_pain-rules",
+                "rfe-chest_pain-facts", "rfe-chest_pain-questions",
+                "rfe-chest_pain-rules",
             }.issubset(names))
             for resource in manifest["resources"]:
                 self.assertEqual(len(resource["sha256"]), 64)
@@ -81,7 +83,7 @@ class GptExportTests(unittest.TestCase):
                 and entry["id"] != "rfe.preventive_care"
             }
             self.assertEqual(
-                implemented, {"abdominal_pain", "cough", "dyspnea", "fever"}
+                implemented, {"abdominal_pain", "chest_pain", "cough", "dyspnea", "fever"}
             )
             abdominal = json.loads(
                 (output_path / "rfe/abdominal_pain/facts.json").read_text(
@@ -96,6 +98,12 @@ class GptExportTests(unittest.TestCase):
             self.assertEqual(
                 location["mrcm_validation"]["status"], "provisional_pass"
             )
+            chest = json.loads(
+                (output_path / "rfe/chest_pain/facts.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            self.assertEqual(chest["count"], 30)
             for slug in implemented:
                 for kind in ("facts", "questions", "rules"):
                     document = json.loads(

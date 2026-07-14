@@ -69,6 +69,24 @@ def probe() -> dict:
         if attribute_id not in mrcm_index:
             raise RuntimeError(f"expected MRCM attribute missing: {attribute_id}")
 
+    chest_lookup = request_json(
+        "/fhir/CodeSystem/$lookup",
+        query={
+            "system": "http://snomed.info/sct",
+            "code": "29857009",
+            "_format": "json",
+        },
+    )
+    if parameter_value(chest_lookup, "display") != "Chest pain (finding)":
+        raise RuntimeError("SNOMED CT chest-pain lookup did not return expected display")
+    chest_mrcm_attributes = request_json("/allow/attributes/SNOMEDCT/29857009")
+    if not isinstance(chest_mrcm_attributes, list):
+        raise RuntimeError("chest-pain MRCM attribute response is not a list")
+    chest_mrcm_index = {item.get("id"): item for item in chest_mrcm_attributes}
+    for attribute_id in ("363698007", "246112005"):
+        if attribute_id not in chest_mrcm_index:
+            raise RuntimeError(f"expected chest-pain MRCM attribute missing: {attribute_id}")
+
     lookup = request_json(
         "/fhir/CodeSystem/$lookup",
         query={
@@ -111,6 +129,14 @@ def probe() -> dict:
             "focus_code": "21522001",
             "verified_attribute_ids": ["246112005", "363698007"],
             "attribute_count_returned": len(mrcm_attributes),
+            "clinical_rule_authority": False,
+        },
+        "chest_pain_snomed_mrcm": {
+            "focus_code": "29857009",
+            "display": parameter_value(chest_lookup, "display"),
+            "version": parameter_value(chest_lookup, "version"),
+            "verified_attribute_ids": ["246112005", "363698007"],
+            "attribute_count_returned": len(chest_mrcm_attributes),
             "clinical_rule_authority": False,
         },
         "hira_drug_search": {

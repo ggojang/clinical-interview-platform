@@ -13,6 +13,7 @@ DEFAULT_PACKAGE = ROOT / "packages/generated/primary-care-cough-0.3.0.json"
 FEVER_PACKAGE = ROOT / "packages/generated/primary-care-fever-0.1.0.json"
 DYSPNEA_PACKAGE = ROOT / "packages/generated/primary-care-dyspnea-0.1.0.json"
 ABDOMINAL_PAIN_PACKAGE = ROOT / "packages/generated/primary-care-abdominal-pain-0.1.0.json"
+CHEST_PAIN_PACKAGE = ROOT / "packages/generated/primary-care-chest-pain-0.1.0.json"
 
 
 class PackageLoadError(RuntimeError):
