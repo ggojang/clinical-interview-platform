@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from tools.gpt_export.build import build
+from tools.gpt_export.build import build, number_answer_options
 from tools.privacy.check_repository import scan
 
 
@@ -116,7 +116,7 @@ class GptExportTests(unittest.TestCase):
             self.assertFalse(numbering["display_question_sequence"])
             self.assertTrue(numbering["option_numbers_must_be_unique_within_question"])
             self.assertEqual(
-                set(numbering["boolean_unknown_decline_codes"]), {"1", "2", "3", "5"}
+                set(numbering["binary_question_only_codes"]), {"1", "2", "3", "5"}
             )
             for name in ("facts.json", "question-groups.json", "safety-rules.json"):
                 self.assertLess((output_path / name).stat().st_size, 100_000, name)
@@ -145,6 +145,24 @@ class GptExportTests(unittest.TestCase):
                     text = question.get("text") or question.get("wording")
                     if isinstance(text, str):
                         self.assertIsNone(prefix.match(text), (path, question.get("id")))
+
+    def test_enumerated_option_numbering_never_collides(self):
+        options = number_answer_options([
+            "피곤하거나 잠을 잘 못 잤음",
+            "스트레스가 많았음",
+            "입안을 씹었거나 상처가 있었음",
+            "감기·몸살 같은 증상이 있었음",
+            "해당 없음",
+        ])
+        numbers = [option["number"] for option in options]
+        self.assertEqual(numbers, [1, 2, 3, 4, 5, 6, 7])
+        self.assertEqual(len(numbers), len(set(numbers)))
+        self.assertEqual(options[-2]["code"], "unknown")
+        self.assertEqual(options[-1]["code"], "decline")
+
+    def test_binary_shortcuts_remain_stable(self):
+        options = number_answer_options(["예", "아니오"])
+        self.assertEqual([option["number"] for option in options], [1, 2, 3, 5])
 
     def test_privacy_scanner_detects_direct_identifier(self):
         with tempfile.TemporaryDirectory() as directory:

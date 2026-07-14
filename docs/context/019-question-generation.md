@@ -211,6 +211,31 @@ The selected Question cites the chosen Template and Target.
 
 ---
 
+# Display Numbering
+
+Question sequence numbers are not displayed. Runtime tracks each Question by its stable identifier.
+
+Numeric input is reserved for answer options in the immediately preceding Question.
+
+For a binary Question, the fixed shortcuts are
+
+- `1` yes
+- `2` no
+- `3` unknown
+- `5` decline
+
+For an enumerated Question with N clinical choices
+
+- clinical choices use `1..N`;
+- unknown uses `N+1`;
+- decline uses `N+2`.
+
+`None of the above` is a clinical choice and consumes its own number.
+
+Runtime validates uniqueness before presenting the Question. Fixed binary codes must never be appended to an independently numbered enumerated list.
+
+---
+
 # Repetition
 
 Equivalent Questions belong to a repetition group.

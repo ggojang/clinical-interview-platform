@@ -82,6 +82,35 @@ def compact(value: Any) -> Any:
     return value
 
 
+def number_answer_options(
+    labels: list[str], *, include_unknown: bool = True, include_decline: bool = True
+) -> list[dict[str, Any]]:
+    """Assign unique display numbers within one question.
+
+    The fixed 1/2/3/5 shortcut is valid only for the exact
+    yes/no/unknown/decline set. Enumerated questions continue numbering after
+    their domain choices so unknown and decline cannot collide with them.
+    """
+    if labels == ["예", "아니오"] and include_unknown and include_decline:
+        return [
+            {"number": 1, "label": "예", "code": "yes"},
+            {"number": 2, "label": "아니오", "code": "no"},
+            {"number": 3, "label": "잘 모르겠음", "code": "unknown"},
+            {"number": 5, "label": "답변하지 않음", "code": "decline"},
+        ]
+    options = [
+        {"number": index, "label": label, "code": "domain_choice"}
+        for index, label in enumerate(labels, start=1)
+    ]
+    next_number = len(options) + 1
+    if include_unknown:
+        options.append({"number": next_number, "label": "잘 모르겠음", "code": "unknown"})
+        next_number += 1
+    if include_decline:
+        options.append({"number": next_number, "label": "답변하지 않음", "code": "decline"})
+    return options
+
+
 def rfe_resource(
     resource_type: str,
     rfe_id: str,
@@ -297,12 +326,20 @@ def build(root: Path, output: Path) -> dict[str, Any]:
             "option_numbers_must_be_unique_within_question": True,
             "do_not_combine_independently_numbered_lists": True,
             "numeric_reply_scope": "immediately_preceding_question",
-            "boolean_unknown_decline_codes": {
+            "binary_question_only_codes": {
                 "1": "yes",
                 "2": "no",
                 "3": "unknown",
                 "5": "decline",
             },
+            "enumerated_question_rule": {
+                "domain_choices": "number_sequentially_from_1",
+                "unknown": "next_number_after_last_domain_choice",
+                "decline": "next_number_after_unknown",
+                "none_of_the_above_is_domain_choice": True,
+                "never_append_fixed_3_or_5": True,
+            },
+            "pre_send_validation": "all_displayed_option_numbers_are_unique",
         },
         "preferred_loading": {
             "catalog_operation": "getReasonForEncounters",
