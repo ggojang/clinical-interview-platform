@@ -296,6 +296,8 @@ When a user voluntarily uploads a report, prescription, screening form, image or
 
 Runtime never infers completion merely because no further question is selected. After the final free-text concern and required safety follow-up, it presents a distinct completion handoff for user confirmation. Until confirmed, the response remains in progress. Confirmed completion, user stop, post-completion correction and administrative invalidation remain distinguishable for future FHIR R4 `QuestionnaireResponse.status` mapping, and completion confirmation never substitutes for Consent.
 
+The public ChatGPT test preserves Reason for Encounter as the first interview input, then gives a one-time notice before the first questionnaire item that Free-tier GPT use and file or image uploads may be rate-limited. It never promises a fixed quota or reset time, and interruption before explicit completion remains in progress rather than completed.
+
 Longitudinal background information is reviewed on the first encounter and thereafter by recency. Research defaults are 90 days for current medication and 365 days for current conditions, family history, alcohol and smoking. Runtime asks only due or change-relevant groups and records each group's last confirmation date. When no persistent confirmation timestamp is available, Runtime asks one combined first-use/recency gating question before repeating the background inventory.
 
 ---

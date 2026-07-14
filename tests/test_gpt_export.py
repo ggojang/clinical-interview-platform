@@ -157,6 +157,18 @@ class GptExportTests(unittest.TestCase):
             self.assertTrue(
                 completion_policy["completion_confirmation_is_not_consent"]
             )
+            limit_notice = manifest["test_access_limit_notice_policy"]
+            self.assertEqual(
+                limit_notice["timing"],
+                "after_reason_for_encounter_before_first_question",
+            )
+            self.assertTrue(
+                limit_notice["must_not_replace_reason_for_encounter_entry"]
+            )
+            self.assertTrue(limit_notice["do_not_claim_fixed_quota_or_reset_time"])
+            self.assertEqual(
+                limit_notice["rate_limit_interruption_status"], "in-progress"
+            )
             review_policy = manifest["longitudinal_context_review_policy"]
             self.assertEqual(
                 review_policy["unknown_last_confirmed_at"],
