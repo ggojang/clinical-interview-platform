@@ -366,12 +366,50 @@ def probe() -> dict:
     if non_lateralizable_member.get("totalElements") != 0:
         raise RuntimeError("midline body structure unexpectedly returned as lateralizable")
 
+    kcd8 = request_json(
+        "/search/KCD8", query={"q": "고혈압", "page": 1, "size": 3}
+    )
+    if not kcd8.get("content") or kcd8["content"][0].get("code") != "I10":
+        raise RuntimeError("KCD-8 hypertension probe did not return I10")
+    kcd9_lookup = request_json(
+        "/fhir/CodeSystem/$lookup",
+        query={
+            "system": "http://www.hl7korea.or.kr/CodeSystem/kostat-kcd-9",
+            "code": "I10",
+            "_format": "json",
+        },
+    )
+    if parameter_value(kcd9_lookup, "display") != "본태성(원발성) 고혈압":
+        raise RuntimeError("KCD-9 I10 lookup did not return expected display")
+
+    hira_procedure = request_json(
+        "/hira/행위/search", query={"q": "흉부", "page": 1, "size": 3}
+    )
+    if not hira_procedure.get("items"):
+        raise RuntimeError("HIRA procedure probe returned no candidates")
+    procedure_code = hira_procedure["items"][0]["code"]
+    procedure_detail = request_json(f"/hira/행위/{procedure_code}")
+    if procedure_detail.get("code") != procedure_code:
+        raise RuntimeError("HIRA procedure detail did not verify selected code")
+
     hira = request_json(
         "/hira/약제/search",
         query={"q": "암로디핀", "page": 1, "size": 3},
     )
     if not hira.get("items"):
         raise RuntimeError("HIRA amlodipine probe returned no candidates")
+    medication_code = hira["items"][0]["code"]
+    medication_detail = request_json(f"/hira/약제/{medication_code}")
+    if medication_detail.get("code") != medication_code:
+        raise RuntimeError("HIRA medication detail did not verify selected code")
+
+    hira_material = request_json(
+        "/hira/치료재료/search", query={"q": "스텐트", "page": 1, "size": 3}
+    )
+    if not hira_material.get("items"):
+        raise RuntimeError("HIRA therapeutic-material probe returned no candidates")
+    if not any(item.get("type") == "group" for item in hira_material["items"]):
+        raise RuntimeError("expected material group candidate changed; reassess selection policy")
 
     return {
         "id": "probe.stom.read-only",
@@ -492,6 +530,19 @@ def probe() -> dict:
         "hira_drug_search": {
             "query": "암로디핀",
             "candidate_count_returned": len(hira["items"]),
+            "detail_code_verified": medication_code,
+        },
+        "korean_claim_code_sources": {
+            "kcd8_search_code": kcd8["content"][0]["code"],
+            "kcd9_lookup_code": "I10",
+            "kcd9_lookup_display": parameter_value(kcd9_lookup, "display"),
+            "hira_procedure_candidate_count": len(hira_procedure["items"]),
+            "hira_procedure_detail_code_verified": procedure_code,
+            "hira_medication_candidate_count": len(hira["items"]),
+            "hira_medication_detail_code_verified": medication_code,
+            "hira_material_candidate_count": len(hira_material["items"]),
+            "hira_material_group_result_not_final_code": True,
+            "clinical_rule_authority": False,
         },
         "status": "research_only",
         "review_status": "unreviewed",

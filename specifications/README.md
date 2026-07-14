@@ -15,6 +15,7 @@ A valid JSON or YAML object may still violate a specification. Runtime code, tes
 - `safety-escalation.md`: urgent-information behavior
 - `common-cause-prioritization.md`: safety-gated common-cause ordering
 - `snomed-laterality.md`: refset-gated Finding-site laterality post-coordination
+- `korean-claim-codes.md`: KCD-8/9 and HIRA EDI binding boundaries
 
 ## Change policy
 

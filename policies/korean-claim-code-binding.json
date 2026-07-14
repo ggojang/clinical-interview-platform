@@ -1,0 +1,91 @@
+{
+  "id": "policy.korean-claim-code-binding",
+  "version": "0.1.0",
+  "status": "research_only",
+  "review_status": "unreviewed",
+  "purpose": "Bind clinical interview results to Korean diagnosis classification and HIRA reimbursement codes without replacing clinical semantics.",
+  "domains": {
+    "diagnosis": {
+      "classification_systems": [
+        {"name": "KCD-8", "system": "http://www.hl7korea.or.kr/CodeSystem/kostat-kcd-8"},
+        {"name": "KCD-9", "system": "http://www.hl7korea.or.kr/CodeSystem/kostat-kcd-9"}
+      ],
+      "kcd8_search_operation": "GET /search/KCD8?q={normalized_diagnosis_term}",
+      "kcd9_verification_operation": "FHIR CodeSystem $lookup with the KCD-9 system URI",
+      "kcd9_general_search_currently_exposed": false,
+      "kcd9_morphology_search_is_not_general_diagnosis_search": true,
+      "never_assume_kcd8_code_is_unchanged_in_kcd9": true,
+      "retain_snomed_ct_clinical_semantics_separately": true
+    },
+    "procedure": {
+      "name": "HIRA EDI Procedure",
+      "system": "http://www.hl7korea.or.kr/CodeSystem/hira-edi-procedure",
+      "search_operation": "GET /hira/행위/search?q={normalized_term}",
+      "detail_operation": "GET /hira/행위/{code}",
+      "fact_id": "claim.procedure.code"
+    },
+    "medication": {
+      "name": "HIRA EDI Medication",
+      "system": "http://www.hl7korea.or.kr/CodeSystem/hira-edi-medication",
+      "search_operation": "GET /hira/약제/search?q={normalized_drug_term}",
+      "detail_operation": "GET /hira/약제/{code}",
+      "fact_id": "claim.medication.code"
+    },
+    "material": {
+      "name": "HIRA EDI Material",
+      "system": "http://www.hl7korea.or.kr/CodeSystem/hira-edi-material",
+      "search_operation": "GET /hira/치료재료/search?q={normalized_material_term}",
+      "detail_operation": "GET /hira/치료재료/{code}",
+      "fact_id": "claim.material.code",
+      "group_result_is_not_final_item_code": true
+    }
+  },
+  "workflow": [
+    "identify_domain_before_lookup",
+    "normalize_short_deidentified_term",
+    "search_only_the_matching_code_system",
+    "retain_multiple_candidates_when_context_is_insufficient",
+    "verify_selected_code_with_detail_or_fhir_lookup",
+    "record_system_version_effective_date_and_lookup_time",
+    "preserve_source_clinical_fact_and_mapping_provenance"
+  ],
+  "selection_rules": {
+    "never_send_raw_patient_narrative_or_direct_identifier": true,
+    "never_auto_select_from_name_similarity_alone_when_multiple_billable_candidates_exist": true,
+    "procedure_requires_sufficient_method_site_and_context": true,
+    "medication_requires_sufficient_ingredient_strength_dose_form_and_product_context": true,
+    "material_requires_final_item_not_group_result": true,
+    "unknown_or_ambiguous_mapping_remains_unresolved": true
+  },
+  "clinical_boundary": {
+    "claim_code_does_not_establish_diagnosis": true,
+    "do_not_bind_possible_differential_as_final_claim_diagnosis": true,
+    "diagnosis_mapping_candidate_requires_explicit_diagnosis_context": true,
+    "claim_code_never_controls_interview_priority_safety_or_differential": true,
+    "reimbursement_price_or_coverage_is_not_clinical_fact": true,
+    "terminology_service_failure_does_not_block_interview": true
+  },
+  "fhir_r4_projection": {
+    "diagnosis": ["Condition.code.coding"],
+    "procedure": ["Procedure.code.coding", "ServiceRequest.code.coding"],
+    "medication": ["Medication.code.coding", "MedicationRequest.medicationCodeableConcept.coding"],
+    "material": ["Device.type.coding", "SupplyDelivery.suppliedItem.itemCodeableConcept.coding"],
+    "retain_multiple_codings_with_system_and_version": true,
+    "do_not_emit_unverified_candidate_as_user_selected_or_final": true
+  },
+  "refresh": {
+    "profile": "terminology_server",
+    "interval_days": 30,
+    "recheck_on_code_inactivation_or_claim_catalog_change": true
+  },
+  "provenance": {
+    "created_by": {"type": "ai", "id": "codex-gpt5"},
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.stom.fhir-r4-terminology-server",
+      "https://stom.infoclinic.co/v2/api-docs"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

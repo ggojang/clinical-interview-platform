@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "1.17.0"
+VERSION = "1.18.0"
 GENERATED_AT = "2026-07-14T00:00:00Z"
 PRIVATE_KEYS = {
     "raw_text", "raw_input", "patient_response", "patient_responses",
@@ -352,6 +352,9 @@ def build(root: Path, output: Path) -> dict[str, Any]:
     snomed_laterality_policy = sanitize(
         load_json(root / "policies" / "snomed-postcoordination-laterality.json")
     )
+    korean_claim_policy = sanitize(
+        load_json(root / "policies" / "korean-claim-code-binding.json")
+    )
     output.mkdir(parents=True, exist_ok=True)
     manifest_resources = []
     for name, document in sorted(resources.items()):
@@ -470,6 +473,7 @@ def build(root: Path, output: Path) -> dict[str, Any]:
             "fallback": "preserve_free_text_and_continue_with_compiled_knowledge",
         },
         "snomed_laterality_postcoordination_policy": snomed_laterality_policy,
+        "korean_claim_code_binding_policy": korean_claim_policy,
         "longitudinal_context_review_policy": encounter_policy[
             "longitudinal_context_review"
         ],

@@ -36,6 +36,8 @@ The STOM Action is intentionally separate from the compiled Knowledge Action. It
 
 For anatomical Finding sites, the STOM Action can check membership in `723264001 |Lateralizable body structure reference set|`. The manifest then governs nested Finding-site/Laterality post-coordination, including separate left and right role groups for bilateral findings.
 
+Korean reimbursement binding is domain-specific: diagnoses use KCD-8/9, while procedures, medications, and therapeutic materials use their separate HIRA EDI catalogs. The public policy preserves clinical coding separately, rejects cross-domain lookup, and treats every search result as provisional until verified.
+
 Verify the approved live read operations with synthetic normalized terms:
 
 ```bash

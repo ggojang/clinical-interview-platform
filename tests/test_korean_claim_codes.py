@@ -1,0 +1,53 @@
+import json
+import unittest
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+class KoreanClaimCodePolicyTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.policy = json.loads(
+            (ROOT / "policies/korean-claim-code-binding.json").read_text(encoding="utf-8")
+        )
+
+    def test_domains_use_distinct_code_systems(self):
+        domains = self.policy["domains"]
+        systems = {
+            domains["procedure"]["system"],
+            domains["medication"]["system"],
+            domains["material"]["system"],
+        }
+        self.assertEqual(len(systems), 3)
+        self.assertTrue(all("hira-edi-" in system for system in systems))
+        diagnosis_systems = {
+            item["system"] for item in domains["diagnosis"]["classification_systems"]
+        }
+        self.assertEqual(
+            diagnosis_systems,
+            {
+                "http://www.hl7korea.or.kr/CodeSystem/kostat-kcd-8",
+                "http://www.hl7korea.or.kr/CodeSystem/kostat-kcd-9",
+            },
+        )
+        self.assertTrue(diagnosis_systems.isdisjoint(systems))
+
+    def test_kcd9_and_material_limitations_are_explicit(self):
+        diagnosis = self.policy["domains"]["diagnosis"]
+        self.assertFalse(diagnosis["kcd9_general_search_currently_exposed"])
+        self.assertTrue(diagnosis["kcd9_morphology_search_is_not_general_diagnosis_search"])
+        self.assertTrue(diagnosis["never_assume_kcd8_code_is_unchanged_in_kcd9"])
+        self.assertTrue(self.policy["domains"]["material"]["group_result_is_not_final_item_code"])
+
+    def test_claim_codes_have_no_clinical_rule_authority(self):
+        boundary = self.policy["clinical_boundary"]
+        self.assertTrue(boundary["claim_code_does_not_establish_diagnosis"])
+        self.assertTrue(boundary["do_not_bind_possible_differential_as_final_claim_diagnosis"])
+        self.assertTrue(boundary["claim_code_never_controls_interview_priority_safety_or_differential"])
+        self.assertTrue(boundary["terminology_service_failure_does_not_block_interview"])
+
+
+if __name__ == "__main__":
+    unittest.main()

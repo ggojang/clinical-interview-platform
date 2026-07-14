@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: STOM Read-only Terminology Support
-  version: 0.1.0
+  version: 0.2.0
   description: >-
     Read-only terminology lookup for the Clinical Interview Research Test.
     Send only a short de-identified normalized term or a terminology code.
@@ -30,7 +30,7 @@ paths:
   /fhir/CodeSystem/$lookup:
     get:
       operationId: lookupTerminologyCode
-      summary: Verify a code and obtain its display, active state, properties, and server version
+      summary: Verify a terminology code, including a known KCD-9 diagnosis code
       parameters:
         - name: system
           in: query
@@ -122,6 +122,20 @@ paths:
           content:
             application/json:
               schema: {type: object, additionalProperties: true}
+  /hira/%ED%96%89%EC%9C%84/search:
+    get:
+      operationId: searchHiraProcedure
+      summary: Search HIRA EDI procedure candidates by a short normalized term
+      parameters:
+        - $ref: '#/components/parameters/NormalizedQuery'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/SmallSize'
+      responses:
+        '200':
+          description: HIRA EDI procedure candidates
+          content:
+            application/json:
+              schema: {type: object, additionalProperties: true}
   /hira/%EC%95%BD%EC%A0%9C/search:
     get:
       operationId: searchHiraDrug
@@ -133,6 +147,56 @@ paths:
       responses:
         '200':
           description: HIRA drug candidates
+          content:
+            application/json:
+              schema: {type: object, additionalProperties: true}
+  /hira/%EC%B9%98%EB%A3%8C%EC%9E%AC%EB%A3%8C/search:
+    get:
+      operationId: searchHiraTherapeuticMaterial
+      summary: Search HIRA EDI therapeutic-material candidates by a short normalized term
+      parameters:
+        - $ref: '#/components/parameters/NormalizedQuery'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/SmallSize'
+      responses:
+        '200':
+          description: HIRA therapeutic-material candidates; group results are not final item codes
+          content:
+            application/json:
+              schema: {type: object, additionalProperties: true}
+  /hira/%ED%96%89%EC%9C%84/{code}:
+    get:
+      operationId: getHiraProcedureByCode
+      summary: Verify one selected HIRA EDI procedure code
+      parameters:
+        - $ref: '#/components/parameters/ClaimCode'
+      responses:
+        '200':
+          description: HIRA EDI procedure detail
+          content:
+            application/json:
+              schema: {type: object, additionalProperties: true}
+  /hira/%EC%95%BD%EC%A0%9C/{code}:
+    get:
+      operationId: getHiraMedicationByCode
+      summary: Verify one selected HIRA EDI medication code
+      parameters:
+        - $ref: '#/components/parameters/ClaimCode'
+      responses:
+        '200':
+          description: HIRA EDI medication detail
+          content:
+            application/json:
+              schema: {type: object, additionalProperties: true}
+  /hira/%EC%B9%98%EB%A3%8C%EC%9E%AC%EB%A3%8C/{code}:
+    get:
+      operationId: getHiraTherapeuticMaterialByCode
+      summary: Verify one selected HIRA EDI therapeutic-material item code
+      parameters:
+        - $ref: '#/components/parameters/ClaimCode'
+      responses:
+        '200':
+          description: HIRA therapeutic-material detail
           content:
             application/json:
               schema: {type: object, additionalProperties: true}
@@ -154,6 +218,12 @@ components:
       in: query
       required: false
       schema: {type: integer, minimum: 1, maximum: 10, default: 5}
+    ClaimCode:
+      name: code
+      in: path
+      required: true
+      description: One code selected from the matching HIRA search domain
+      schema: {type: string, minLength: 1, maxLength: 40, pattern: '^[A-Za-z0-9._-]+$'}
   schemas:
     SnomedMapSearchRequest:
       type: object

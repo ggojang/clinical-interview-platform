@@ -407,6 +407,20 @@ class GptExportTests(unittest.TestCase):
             self.assertTrue(
                 laterality["normal_form_preconditions"]["reject_already_lateralized_anatomical_value"]
             )
+            claim = manifest["korean_claim_code_binding_policy"]
+            self.assertFalse(
+                claim["domains"]["diagnosis"]["kcd9_general_search_currently_exposed"]
+            )
+            self.assertTrue(
+                claim["domains"]["diagnosis"]["kcd9_morphology_search_is_not_general_diagnosis_search"]
+            )
+            self.assertEqual(
+                claim["domains"]["procedure"]["system"],
+                "http://www.hl7korea.or.kr/CodeSystem/hira-edi-procedure",
+            )
+            self.assertTrue(
+                claim["domains"]["material"]["group_result_is_not_final_item_code"]
+            )
             provenance_display = manifest["response_provenance_display_policy"]
             self.assertTrue(
                 provenance_display["compact_marker_required_for_every_question"]
@@ -500,6 +514,10 @@ class GptExportTests(unittest.TestCase):
                     "patient.smoking.status",
                     "patient.alcohol.pattern",
                     "finding.site_laterality",
+                    "claim.diagnosis.code",
+                    "claim.procedure.code",
+                    "claim.medication.code",
+                    "claim.material.code",
                     "encounter.is_first",
                     "context.last_confirmed_at",
                 }.issubset(common_ids)
@@ -540,6 +558,11 @@ class GptExportTests(unittest.TestCase):
         self.assertIn("723264001", schema)
         self.assertIn("operationId: searchLoinc", schema)
         self.assertIn("operationId: searchHiraDrug", schema)
+        self.assertIn("operationId: searchHiraProcedure", schema)
+        self.assertIn("operationId: searchHiraTherapeuticMaterial", schema)
+        self.assertIn("operationId: getHiraProcedureByCode", schema)
+        self.assertIn("operationId: getHiraMedicationByCode", schema)
+        self.assertIn("operationId: getHiraTherapeuticMaterialByCode", schema)
         self.assertNotIn("\n    put:", schema.lower())
         self.assertNotIn("\n    delete:", schema.lower())
         self.assertIn("maxLength: 80", schema)
