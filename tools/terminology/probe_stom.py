@@ -246,6 +246,19 @@ def probe() -> dict:
             "attribute_count_returned": len(attributes),
         }
 
+    medication_review_lookup = request_json(
+        "/fhir/CodeSystem/$lookup",
+        query={"system": "http://snomed.info/sct", "code": "182836005", "_format": "json"},
+    )
+    medication_review_display = parameter_value(medication_review_lookup, "display")
+    if medication_review_display != "Review of medication (procedure)":
+        raise RuntimeError(
+            f"SNOMED CT medication-review lookup changed: {medication_review_display!r}"
+        )
+    medication_review_mrcm = request_json("/allow/attributes/SNOMEDCT/182836005")
+    if not isinstance(medication_review_mrcm, list) or not medication_review_mrcm:
+        raise RuntimeError("medication-review MRCM response is empty or invalid")
+
     lookup = request_json(
         "/fhir/CodeSystem/$lookup",
         query={
@@ -345,6 +358,13 @@ def probe() -> dict:
         "skin_complaint_snomed_mrcm": {
             "concepts": skin_results,
             "verified_attribute_ids": ["246112005", "363698007"],
+            "clinical_rule_authority": False,
+        },
+        "medication_review_snomed_mrcm": {
+            "focus_code": "182836005",
+            "display": medication_review_display,
+            "version": parameter_value(medication_review_lookup, "version"),
+            "attribute_count_returned": len(medication_review_mrcm),
             "clinical_rule_authority": False,
         },
         "hira_drug_search": {

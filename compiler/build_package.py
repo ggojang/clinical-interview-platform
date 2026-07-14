@@ -165,6 +165,18 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/dermatological/skin-complaint",
         "research_manifests": [ROOT / "sources/manifests/primary-care-skin-complaint-research.json"],
     },
+    "medication_review": {
+        "graph": ROOT / "knowledge/graph/primary-care-medication-review.json",
+        "rules": ROOT / "rules/primary-care-medication-review.json",
+        "sources": ROOT / "sources/manifests/primary-care-medication-review.json",
+        "completion_policy": ROOT / "policies/primary-care-medication-review-completion.json",
+        "output": ROOT / "packages/generated/primary-care-medication-review-0.1.0.json",
+        "package_id": "package.primary-care-medication-review",
+        "package_version": "0.1.0",
+        "rfe": "rfe.medication_review",
+        "simulation_root": ROOT / "simulation/patients/medication/medication-review",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-medication-review-research.json"],
+    },
 }
 
 ALLOWED_NODE_TYPES = {

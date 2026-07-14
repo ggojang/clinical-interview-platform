@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "1.3.0"
+VERSION = "1.4.0"
 GENERATED_AT = "2026-07-14T00:00:00Z"
 PRIVATE_KEYS = {
     "raw_text", "raw_input", "patient_response", "patient_responses",
@@ -80,6 +80,12 @@ def compact(value: Any) -> Any:
     if isinstance(value, list):
         return [compact(item) for item in value]
     return value
+
+
+def compact_fact_index(item: dict[str, Any]) -> dict[str, Any]:
+    """Keep the legacy aggregate as discovery metadata, not a knowledge payload."""
+    keys = ("id", "display", "display_ko", "type", "value_type", "safety_relevant")
+    return {key: item[key] for key in keys if key in item}
 
 
 def package_knowledge_sources(package: dict[str, Any]) -> list[dict[str, Any]]:
@@ -290,7 +296,12 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
         "SafetyRuleCollection",
         deduplicate([rule for rule in rules if rule.get("type") == "safety"]),
     )
-    for document in (aggregate_facts, aggregate_questions, aggregate_rules):
+    aggregate_facts["items"] = [
+        compact_fact_index(item) for item in aggregate_facts["items"]
+    ]
+    aggregate_facts["payload_role"] = "legacy_discovery_index"
+    aggregate_facts["complete_fact_payloads"] = "/gpt/rfe/{rfe}/facts.json"
+    for document in (aggregate_questions, aggregate_rules):
         document["items"] = [compact(item) for item in document["items"]]
     resources = {
         "common-facts.json": common_facts,

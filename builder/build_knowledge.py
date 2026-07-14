@@ -112,6 +112,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-skin-complaint.json",
         "version": "0.1.0",
     },
+    "medication_review": {
+        "base_graph": ROOT / "knowledge/base/primary-care-medication-review.json",
+        "base_rules": ROOT / "rules/base/primary-care-medication-review.json",
+        "fragment_root": ROOT / "knowledge/generated/medication/medication-review",
+        "output_graph": ROOT / "knowledge/graph/primary-care-medication-review.json",
+        "output_rules": ROOT / "rules/primary-care-medication-review.json",
+        "version": "0.1.0",
+    },
 }
 
 

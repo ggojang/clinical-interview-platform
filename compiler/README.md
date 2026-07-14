@@ -15,6 +15,7 @@ python3 compiler/build_package.py --profile urinary_symptoms
 python3 compiler/build_package.py --profile fatigue
 python3 compiler/build_package.py --profile back_pain
 python3 compiler/build_package.py --profile skin_complaint
+python3 compiler/build_package.py --profile medication_review
 ```
 
 Validate a generated package:

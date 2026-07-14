@@ -390,6 +390,9 @@ class InterviewSession:
         if self.reason_for_encounter == "rfe.skin_complaint":
             self._update_skin_complaint_patterns()
             return
+        if self.reason_for_encounter == "rfe.medication_review":
+            self._update_medication_review_patterns()
+            return
         active = ["respiratory.cough"]
         cold_support = sum(
             self.memory.value(fact_id) is True
@@ -643,6 +646,25 @@ class InterviewSession:
             "symptom.skin_lesion_oozing_bleeding_nonhealing",
         )):
             active.append("skin.concerning_lesion_features")
+        self.active_patterns = active
+
+    def _update_medication_review_patterns(self) -> None:
+        active = ["medication.review"]
+        if any(self.memory.value(item) not in (None, False, "", "none") for item in (
+            "medication.actual_use_differs", "medication.duplicate_or_unknown_product",
+            "medication.recent_care_transition",
+        )):
+            active.append("medication.reconciliation_discrepancy")
+        if any(self.memory.value(item) not in (None, False, "", "none") for item in (
+            "medication.suspected_adverse_effects", "medication.monitoring_due_or_overdue",
+            "history.kidney_impairment", "history.liver_impairment",
+        )):
+            active.append("medication.benefit_harm_or_monitoring")
+        if any(self.memory.value(item) not in (None, False, "", "none") for item in (
+            "medication.intentional_nonadherence_reason",
+            "medication.administration_difficulty", "medication.access_or_cost_problem",
+        )):
+            active.append("medication.use_support_need")
         self.active_patterns = active
 
     def _update_dyspnea_patterns(self) -> None:
