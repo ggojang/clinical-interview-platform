@@ -131,7 +131,7 @@ Activate this fixed-questionnaire workflow when the user's Reason for Encounter 
    - `1 예`
    - `2 아니오`
    - `3 잘 모르겠음`
-   - `5 답변하지 않음`
+   - `4 답변하지 않음`
 
    This answer records only whether to start the workflow; it is not a Questionnaire item and is not Consent.
    The metadata `activation_gate` is mandatory. Keep workflow state `awaiting_activation_confirmation` until the user answers affirmatively. Even if a section resource was loaded early, its `if_activation_not_confirmed` rule requires withholding every section item and displaying this activation question first.
@@ -139,7 +139,7 @@ Activate this fixed-questionnaire workflow when the user's Reason for Encounter 
    - If that exact Knowledge file is unavailable, fall back to `getPatientExperienceQuestionnaireSection(sectionId=1)` and present its first source item immediately.
    - Do not call `getPatientExperienceQuestionnaire` again after the affirmative answer; its metadata was needed only for discovery and activation.
    - Only when both the Knowledge file and the section Action are genuinely unavailable may you report that the fixed source cannot be loaded. Never replace the source with invented questions.
-3. If the answer is `2`, do not load the Questionnaire; ask the ordinary open Reason-for-Encounter question. If it is `3` or `5`, do not start the survey and leave the workflow inactive.
+3. If the answer is `2`, do not load the Questionnaire; ask the ordinary open Reason-for-Encounter question. If it is `3` or `4`, do not start the survey and leave the workflow inactive.
 4. Ask one item at a time in Korean and preserve the exact source stem and domain answer labels. When the standalone Knowledge file is available, continue through its sections locally without an Action call. Otherwise load the next Action section only after the current section is addressed. Never load all Action sections in one response.
 5. Show a compact section transition such as `8개 영역 중 3번째: 투약 및 치료과정`. For the first item, the section transition may appear directly above the source stem, but no survey explanation may precede it. Do not display the source question number in the question prompt; track its FHIR `linkId` internally and assign an `E{positive_integer}` edit reference.
 6. This standardized instrument overrides every generic answer-option augmentation rule. Display only the source Questionnaire choices or declared integer range:

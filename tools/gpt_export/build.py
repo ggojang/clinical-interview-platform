@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "1.22.4"
+VERSION = "1.22.5"
 GENERATED_AT = "2026-07-14T00:00:00Z"
 PRIVATE_KEYS = {
     "raw_text", "raw_input", "patient_response", "patient_responses",
@@ -257,7 +257,7 @@ def collect_patient_experience_questionnaire(root: Path) -> dict[str, dict[str, 
                     "1": "예",
                     "2": "아니오",
                     "3": "잘 모르겠음",
-                    "5": "답변하지 않음",
+                    "4": "답변하지 않음",
                 },
             },
             "questionnaire": questionnaire["url"],
@@ -291,7 +291,7 @@ def collect_patient_experience_questionnaire(root: Path) -> dict[str, dict[str, 
                 "1": "예",
                 "2": "아니오",
                 "3": "잘 모르겠음",
-                "5": "답변하지 않음",
+                "4": "답변하지 않음",
             },
             "section_loading_precondition": "affirmative_activation_answer",
             "on_affirmative": "retrieve_uploaded_knowledge_file_and_present_section_1_q01_immediately_without_reconfirmation",
@@ -324,7 +324,7 @@ def collect_patient_experience_questionnaire(root: Path) -> dict[str, dict[str, 
                 "1": "예",
                 "2": "아니오",
                 "3": "잘 모르겠음",
-                "5": "답변하지 않음",
+                "4": "답변하지 않음",
             },
             "opening_screen_and_explanation_allowed": True,
             "activation_prompt_is_final_actionable_question_before_start": True,

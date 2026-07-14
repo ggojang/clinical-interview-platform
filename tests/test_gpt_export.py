@@ -122,6 +122,7 @@ class GptExportTests(unittest.TestCase):
                 gate["section_loading_precondition"],
                 "affirmative_activation_answer",
             )
+            self.assertEqual(list(gate["required_options"]), ["1", "2", "3", "4"])
             presentation = metadata["presentation_policy"]
             self.assertEqual(
                 presentation["activation_prompt_ko"],
@@ -129,7 +130,7 @@ class GptExportTests(unittest.TestCase):
             )
             self.assertEqual(
                 presentation["activation_options"],
-                {"1": "예", "2": "아니오", "3": "잘 모르겠음", "5": "답변하지 않음"},
+                {"1": "예", "2": "아니오", "3": "잘 모르겠음", "4": "답변하지 않음"},
             )
             self.assertTrue(presentation["opening_screen_and_explanation_allowed"])
             self.assertTrue(
@@ -152,6 +153,10 @@ class GptExportTests(unittest.TestCase):
                 self.assertEqual(section["required_workflow_state"], "activation_confirmed")
                 self.assertTrue(
                     section["if_activation_not_confirmed"]["do_not_present_section_items"]
+                )
+                self.assertEqual(
+                    list(section["if_activation_not_confirmed"]["required_options"]),
+                    ["1", "2", "3", "4"],
                 )
                 sections.append(section)
             self.assertEqual(sum(item["question_count"] for item in sections), 26)
