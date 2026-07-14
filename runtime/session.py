@@ -372,6 +372,9 @@ class InterviewSession:
         if self.reason_for_encounter == "rfe.headache":
             self._update_headache_patterns()
             return
+        if self.reason_for_encounter == "rfe.dizziness_syncope":
+            self._update_dizziness_syncope_patterns()
+            return
         active = ["respiratory.cough"]
         cold_support = sum(
             self.memory.value(fact_id) is True
@@ -475,6 +478,35 @@ class InterviewSession:
             "history.malignancy", "symptom.unexplained_vomiting",
         )):
             active.append("headache.secondary_warning_features")
+        self.active_patterns = active
+
+    def _update_dizziness_syncope_patterns(self) -> None:
+        active = ["neurological.dizziness_or_syncope"]
+        if any(self.memory.value(item) is True for item in (
+            "symptom.neurological_deficit", "symptom.new_gait_unsteadiness",
+            "symptom.new_hearing_loss", "symptom.nausea_or_vomiting",
+        )) and self.memory.value("symptom.dizziness.sudden_onset") is True:
+            active.append("dizziness.neurological_warning_features")
+        if self.memory.value("symptom.syncope.occurred") is True:
+            active.append("syncope.transient_loss_of_consciousness")
+            if any(self.memory.value(item) is True for item in (
+                "symptom.chest_pain", "symptom.palpitations",
+                "event.syncope.during_exertion", "history.heart_failure",
+                "history.cardiac_disease",
+                "family_history.sudden_cardiac_death_under_40",
+            )):
+                active.append("syncope.cardiovascular_warning_features")
+            if any(self.memory.value(item) is True for item in (
+                "event.syncope.limb_jerking", "event.syncope.lateral_tongue_bite",
+                "event.syncope.post_event_confusion",
+            )):
+                active.append("syncope.seizure_associated_features")
+        if any(self.memory.value(item) is True for item in (
+            "event.syncope.reflex_prodrome", "event.syncope.reflex_trigger",
+            "symptom.dizziness.postural_trigger",
+            "symptom.dizziness.head_movement_trigger",
+        )):
+            active.append("dizziness_syncope.reflex_or_postural_features")
         self.active_patterns = active
 
     def _update_dyspnea_patterns(self) -> None:

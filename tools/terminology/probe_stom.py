@@ -105,6 +105,27 @@ def probe() -> dict:
         if attribute_id not in headache_mrcm_index:
             raise RuntimeError(f"expected headache MRCM attribute missing: {attribute_id}")
 
+    dizziness_lookup = request_json(
+        "/fhir/CodeSystem/$lookup",
+        query={"system": "http://snomed.info/sct", "code": "404640003", "_format": "json"},
+    )
+    syncope_lookup = request_json(
+        "/fhir/CodeSystem/$lookup",
+        query={"system": "http://snomed.info/sct", "code": "271594007", "_format": "json"},
+    )
+    if parameter_value(dizziness_lookup, "display") != "Dizziness (finding)":
+        raise RuntimeError("SNOMED CT dizziness lookup did not return expected display")
+    if parameter_value(syncope_lookup, "display") != "Syncope (finding)":
+        raise RuntimeError("SNOMED CT syncope lookup did not return expected display")
+    dizziness_mrcm = request_json("/allow/attributes/SNOMEDCT/404640003")
+    syncope_mrcm = request_json("/allow/attributes/SNOMEDCT/271594007")
+    dizziness_mrcm_index = {item.get("id"): item for item in dizziness_mrcm}
+    for attribute_id in ("363698007", "246112005"):
+        if attribute_id not in dizziness_mrcm_index:
+            raise RuntimeError(f"expected dizziness MRCM attribute missing: {attribute_id}")
+    if syncope_mrcm != []:
+        raise RuntimeError("expected empty Syncope MRCM result changed; reassess mapping")
+
     lookup = request_json(
         "/fhir/CodeSystem/$lookup",
         query={
@@ -163,6 +184,15 @@ def probe() -> dict:
             "version": parameter_value(headache_lookup, "version"),
             "verified_attribute_ids": ["246112005", "363698007"],
             "attribute_count_returned": len(headache_mrcm_attributes),
+            "clinical_rule_authority": False,
+        },
+        "dizziness_syncope_snomed_mrcm": {
+            "dizziness_focus_code": "404640003",
+            "syncope_focus_code": "271594007",
+            "dizziness_verified_attribute_ids": ["246112005", "363698007"],
+            "dizziness_attribute_count_returned": len(dizziness_mrcm),
+            "syncope_attribute_count_returned": len(syncope_mrcm),
+            "syncope_postcoordination_asserted": False,
             "clinical_rule_authority": False,
         },
         "hira_drug_search": {

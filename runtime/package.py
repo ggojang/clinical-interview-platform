@@ -15,6 +15,7 @@ DYSPNEA_PACKAGE = ROOT / "packages/generated/primary-care-dyspnea-0.1.0.json"
 ABDOMINAL_PAIN_PACKAGE = ROOT / "packages/generated/primary-care-abdominal-pain-0.1.0.json"
 CHEST_PAIN_PACKAGE = ROOT / "packages/generated/primary-care-chest-pain-0.1.0.json"
 HEADACHE_PACKAGE = ROOT / "packages/generated/primary-care-headache-0.1.0.json"
+DIZZINESS_SYNCOPE_PACKAGE = ROOT / "packages/generated/primary-care-dizziness-syncope-0.1.0.json"
 
 
 class PackageLoadError(RuntimeError):

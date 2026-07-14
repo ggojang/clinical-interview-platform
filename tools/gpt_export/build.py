@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "0.7.0"
+VERSION = "0.8.0"
 GENERATED_AT = "2026-07-14T00:00:00Z"
 PRIVATE_KEYS = {
     "raw_text", "raw_input", "patient_response", "patient_responses",
@@ -275,7 +275,15 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
     )
     common_facts["items"] = [compact(item) for item in common_facts["items"]]
     aggregate_facts = envelope("FactCollection", deduplicate(facts))
-    aggregate_questions = envelope("QuestionCollection", deduplicate(questions))
+    # Keep the legacy aggregate as a compact group index. Complete
+    # QuestionTemplates are served from Reason-for-Encounter resources.
+    aggregate_questions = envelope(
+        "QuestionGroupCollection",
+        deduplicate([
+            question for question in questions
+            if question.get("type") == "QuestionGroup"
+        ]),
+    )
     # Keep this backward-compatible aggregate small and semantically precise.
     # Full routing and priority Rules remain available in each RFE bundle.
     aggregate_rules = envelope(

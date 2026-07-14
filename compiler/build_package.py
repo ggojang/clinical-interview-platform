@@ -93,6 +93,18 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/neurological/headache",
         "research_manifests": [ROOT / "sources/manifests/primary-care-headache-research.json"],
     },
+    "dizziness_syncope": {
+        "graph": ROOT / "knowledge/graph/primary-care-dizziness-syncope.json",
+        "rules": ROOT / "rules/primary-care-dizziness-syncope.json",
+        "sources": ROOT / "sources/manifests/primary-care-dizziness-syncope.json",
+        "completion_policy": ROOT / "policies/primary-care-dizziness-syncope-completion.json",
+        "output": ROOT / "packages/generated/primary-care-dizziness-syncope-0.1.0.json",
+        "package_id": "package.primary-care-dizziness-syncope",
+        "package_version": "0.1.0",
+        "rfe": "rfe.dizziness_syncope",
+        "simulation_root": ROOT / "simulation/patients/neurological/dizziness-syncope",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-dizziness-syncope-research.json"],
+    },
 }
 
 ALLOWED_NODE_TYPES = {

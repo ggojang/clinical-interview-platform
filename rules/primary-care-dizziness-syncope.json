@@ -1,0 +1,3544 @@
+{
+  "id": "rules.primary-care-dizziness-syncope",
+  "provenance": {
+    "created_at": "2026-07-14T00:00:00Z",
+    "created_by": {
+      "id": "codex-gpt5",
+      "type": "ai"
+    },
+    "review_status": "unreviewed",
+    "source_refs": [
+      "specifications/reasoning-loop.md"
+    ],
+    "version": "0.1.0"
+  },
+  "rules": [
+    {
+      "id": "rule.activate.dizziness-syncope",
+      "priority": 100,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "specifications/reasoning-loop.md"
+        ],
+        "version": "0.1.0"
+      },
+      "status": "research_only",
+      "then": {
+        "activate_intents": [
+          "intent.characterize_symptom",
+          "intent.screen_red_flags",
+          "intent.differentiate_common_causes",
+          "intent.risk_assessment"
+        ]
+      },
+      "type": "activation",
+      "version": "0.1.0",
+      "when": {
+        "rfe": "rfe.dizziness_syncope"
+      }
+    },
+    {
+      "id": "rule.dizziness-syncope.safety.acute-vestibular-syndrome",
+      "priority": 1000,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.dizziness.sudden_onset"
+          },
+          {
+            "equals": true,
+            "fact": "symptom.new_gait_unsteadiness"
+          },
+          {
+            "equals": true,
+            "fact": "symptom.nausea_or_vomiting"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.dizziness-syncope.safety.incomplete-recovery",
+      "priority": 1000,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.syncope.occurred"
+          },
+          {
+            "equals": false,
+            "fact": "symptom.syncope.full_recovery"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.dizziness-syncope.safety.seizure-associated-features",
+      "priority": 900,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.syncope.occurred"
+          },
+          {
+            "equals": true,
+            "fact": "event.syncope.lateral_tongue_bite"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.dizziness-syncope.safety.sudden-neurological-deficit",
+      "priority": 1000,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.dizziness.sudden_onset"
+          },
+          {
+            "equals": true,
+            "fact": "symptom.neurological_deficit"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.dizziness-syncope.safety.sudden-new-deafness",
+      "priority": 1000,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.dizziness.sudden_onset"
+          },
+          {
+            "equals": true,
+            "fact": "symptom.new_hearing_loss"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.dizziness-syncope.safety.sudden-new-unsteadiness",
+      "priority": 1000,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.dizziness.sudden_onset"
+          },
+          {
+            "equals": true,
+            "fact": "symptom.new_gait_unsteadiness"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.dizziness-syncope.safety.syncope-breathlessness",
+      "priority": 900,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.syncope.occurred"
+          },
+          {
+            "fact": "symptom.dyspnea",
+            "in": [
+              "moderate",
+              "severe"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.dizziness-syncope.safety.syncope-chest-pain",
+      "priority": 1000,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.syncope.occurred"
+          },
+          {
+            "equals": true,
+            "fact": "symptom.chest_pain"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.dizziness-syncope.safety.syncope-exertion",
+      "priority": 900,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.syncope.occurred"
+          },
+          {
+            "equals": true,
+            "fact": "event.syncope.during_exertion"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.dizziness-syncope.safety.syncope-family-sudden-death",
+      "priority": 900,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.syncope.occurred"
+          },
+          {
+            "equals": true,
+            "fact": "family_history.sudden_cardiac_death_under_40"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.dizziness-syncope.safety.syncope-heart-failure",
+      "priority": 900,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.syncope.occurred"
+          },
+          {
+            "equals": true,
+            "fact": "history.heart_failure"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.dizziness-syncope.safety.syncope-injury",
+      "priority": 900,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.syncope.occurred"
+          },
+          {
+            "equals": true,
+            "fact": "event.syncope.injury"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.dizziness-syncope.safety.syncope-palpitations",
+      "priority": 900,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.syncope.occurred"
+          },
+          {
+            "equals": true,
+            "fact": "symptom.palpitations"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine-cardiac-history",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dizziness-syncope.determine-cardiac-history"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine-chest-pain",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dizziness-syncope.determine-chest-pain"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine-current",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dizziness-syncope.determine-current"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine-diabetes",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dizziness-syncope.determine-diabetes"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine-duration",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dizziness-syncope.determine-duration"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine-dyspnea",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dizziness-syncope.determine-dyspnea"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine-exertion",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dizziness-syncope.determine-exertion"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine-family-sudden-death",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dizziness-syncope.determine-family-sudden-death"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine-head-movement",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dizziness-syncope.determine-head-movement"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine-hearing-loss",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dizziness-syncope.determine-hearing-loss"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine-hearing-symptoms",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dizziness-syncope.determine-hearing-symptoms"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine-heart-failure",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dizziness-syncope.determine-heart-failure"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine-injury",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dizziness-syncope.determine-injury"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine-jerking",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dizziness-syncope.determine-jerking"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine-medication",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dizziness-syncope.determine-medication"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine-neurological-deficit",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dizziness-syncope.determine-neurological-deficit"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine-palpitations",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dizziness-syncope.determine-palpitations"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine-post-confusion",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dizziness-syncope.determine-post-confusion"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine-postural-trigger",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dizziness-syncope.determine-postural-trigger"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine-presentation",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dizziness-syncope.determine-presentation"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine-prodrome-absence",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dizziness-syncope.determine-prodrome-absence"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine-recovery",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dizziness-syncope.determine-recovery"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine-reflex-prodrome",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dizziness-syncope.determine-reflex-prodrome"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine-reflex-trigger",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dizziness-syncope.determine-reflex-trigger"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine-severity",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dizziness-syncope.determine-severity"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine-sudden-onset",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dizziness-syncope.determine-sudden-onset"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine-supine",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dizziness-syncope.determine-supine"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine-syncope",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dizziness-syncope.determine-syncope"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine-tongue-bite",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dizziness-syncope.determine-tongue-bite"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine-unsteadiness",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dizziness-syncope.determine-unsteadiness"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine-vomiting",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dizziness-syncope.determine-vomiting"
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine-cardiac-history",
+      "priority": 90,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "cardiovascular_context",
+        "target": "target.dizziness-syncope.determine-cardiac-history"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.dizziness-syncope.determine-cardiac-history": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine-chest-pain",
+      "priority": 121,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "cardiovascular_safety_gate",
+        "target": "target.dizziness-syncope.determine-chest-pain"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.dizziness-syncope.determine-chest-pain": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine-current",
+      "priority": 110,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "current_state",
+        "target": "target.dizziness-syncope.determine-current"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.dizziness-syncope.determine-current": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine-diabetes",
+      "priority": 78,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "hypoglycaemia_context",
+        "target": "target.dizziness-syncope.determine-diabetes"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.dizziness-syncope.determine-diabetes": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine-duration",
+      "priority": 100,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "characterize_duration",
+        "target": "target.dizziness-syncope.determine-duration"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.dizziness-syncope.determine-duration": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine-dyspnea",
+      "priority": 120,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "cardiovascular_safety_gate",
+        "target": "target.dizziness-syncope.determine-dyspnea"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.dizziness-syncope.determine-dyspnea": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine-exertion",
+      "priority": 118,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "cardiovascular_safety_gate",
+        "target": "target.dizziness-syncope.determine-exertion"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.dizziness-syncope.determine-exertion": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine-family-sudden-death",
+      "priority": 116,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "cardiovascular_safety_context",
+        "target": "target.dizziness-syncope.determine-family-sudden-death"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.dizziness-syncope.determine-family-sudden-death": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine-head-movement",
+      "priority": 83,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "positional_vertigo_pattern",
+        "target": "target.dizziness-syncope.determine-head-movement"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.dizziness-syncope.determine-head-movement": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine-hearing-loss",
+      "priority": 123,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "neurological_safety_gate",
+        "target": "target.dizziness-syncope.determine-hearing-loss"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.dizziness-syncope.determine-hearing-loss": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine-hearing-symptoms",
+      "priority": 80,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "vestibular_context",
+        "target": "target.dizziness-syncope.determine-hearing-symptoms"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.dizziness-syncope.determine-hearing-symptoms": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine-heart-failure",
+      "priority": 117,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "cardiovascular_safety_context",
+        "target": "target.dizziness-syncope.determine-heart-failure"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.dizziness-syncope.determine-heart-failure": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine-injury",
+      "priority": 126,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "injury_safety_gate",
+        "target": "target.dizziness-syncope.determine-injury"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.dizziness-syncope.determine-injury": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine-jerking",
+      "priority": 89,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "seizure_associated_feature",
+        "target": "target.dizziness-syncope.determine-jerking"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.dizziness-syncope.determine-jerking": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine-medication",
+      "priority": 79,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "medication_context",
+        "target": "target.dizziness-syncope.determine-medication"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.dizziness-syncope.determine-medication": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine-neurological-deficit",
+      "priority": 125,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "neurological_safety_gate",
+        "target": "target.dizziness-syncope.determine-neurological-deficit"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.dizziness-syncope.determine-neurological-deficit": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine-palpitations",
+      "priority": 119,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "cardiovascular_safety_gate",
+        "target": "target.dizziness-syncope.determine-palpitations"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.dizziness-syncope.determine-palpitations": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine-post-confusion",
+      "priority": 88,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "seizure_associated_feature",
+        "target": "target.dizziness-syncope.determine-post-confusion"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.dizziness-syncope.determine-post-confusion": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine-postural-trigger",
+      "priority": 84,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "postural_pattern",
+        "target": "target.dizziness-syncope.determine-postural-trigger"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.dizziness-syncope.determine-postural-trigger": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine-presentation",
+      "priority": 130,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "route_dizziness_or_syncope",
+        "target": "target.dizziness-syncope.determine-presentation"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.dizziness-syncope.determine-presentation": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine-prodrome-absence",
+      "priority": 94,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "event_context",
+        "target": "target.dizziness-syncope.determine-prodrome-absence"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.dizziness-syncope.determine-prodrome-absence": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine-recovery",
+      "priority": 127,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "immediate_recovery_gate",
+        "target": "target.dizziness-syncope.determine-recovery"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.dizziness-syncope.determine-recovery": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine-reflex-prodrome",
+      "priority": 82,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "reflex_pattern",
+        "target": "target.dizziness-syncope.determine-reflex-prodrome"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.dizziness-syncope.determine-reflex-prodrome": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine-reflex-trigger",
+      "priority": 81,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "reflex_pattern",
+        "target": "target.dizziness-syncope.determine-reflex-trigger"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.dizziness-syncope.determine-reflex-trigger": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine-severity",
+      "priority": 105,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "characterize_severity",
+        "target": "target.dizziness-syncope.determine-severity"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.dizziness-syncope.determine-severity": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine-sudden-onset",
+      "priority": 129,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "neurological_safety_gate",
+        "target": "target.dizziness-syncope.determine-sudden-onset"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.dizziness-syncope.determine-sudden-onset": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine-supine",
+      "priority": 95,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "event_context",
+        "target": "target.dizziness-syncope.determine-supine"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.dizziness-syncope.determine-supine": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine-syncope",
+      "priority": 128,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "syncope_safety_gate",
+        "target": "target.dizziness-syncope.determine-syncope"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.dizziness-syncope.determine-syncope": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine-tongue-bite",
+      "priority": 115,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "neurological_referral_gate",
+        "target": "target.dizziness-syncope.determine-tongue-bite"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.dizziness-syncope.determine-tongue-bite": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine-unsteadiness",
+      "priority": 124,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "neurological_safety_gate",
+        "target": "target.dizziness-syncope.determine-unsteadiness"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.dizziness-syncope.determine-unsteadiness": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine-vomiting",
+      "priority": 122,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng127.dizziness.2023",
+          "source.nice.cg109.tloc.2023",
+          "source.stom.mrcm.dizziness-syncope.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "acute_vestibular_gate",
+        "target": "target.dizziness-syncope.determine-vomiting"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.dizziness-syncope.determine-vomiting": "active"
+        }
+      }
+    }
+  ],
+  "version": "0.1.0"
+}

@@ -7,11 +7,11 @@ This directory is a static, read-only knowledge API for a Custom GPT test chatbo
 - `manifest.json`: version, counts, and SHA-256 digests
 - `reason-for-encounters.json`: Korean/English Reason for Encounter catalog, aliases, and implementation status
 - `common-facts.json`: compact shared interview Facts, including structured additional-comment handling
-- `rfe/{abdominal_pain|chest_pain|cough|dyspnea|fever|headache}/facts.json`: compact Facts for one implemented Reason for Encounter
-- `rfe/{abdominal_pain|chest_pain|cough|dyspnea|fever|headache}/questions.json`: compact Questions for one implemented Reason for Encounter
-- `rfe/{abdominal_pain|chest_pain|cough|dyspnea|fever|headache}/rules.json`: compact safety and routing rules for one implemented Reason for Encounter
+- `rfe/{abdominal_pain|chest_pain|cough|dizziness_syncope|dyspnea|fever|headache}/facts.json`: compact Facts for one implemented Reason for Encounter
+- `rfe/{abdominal_pain|chest_pain|cough|dizziness_syncope|dyspnea|fever|headache}/questions.json`: compact Questions for one implemented Reason for Encounter
+- `rfe/{abdominal_pain|chest_pain|cough|dizziness_syncope|dyspnea|fever|headache}/rules.json`: compact safety and routing rules for one implemented Reason for Encounter
 - `facts.json`: reusable Fact definitions
-- `question-groups.json`: question templates and screening groups
+- `question-groups.json`: compact common QuestionGroup index; complete QuestionTemplates are provided in each RFE question resource
 - `safety-rules.json`: compact cross-RFE safety rules; complete routing and priority rules are provided in each `rfe/{slug}/rules.json`
 - `screening-kr.json`: Korean national screening candidate rules
 - `terminology-source.json`: STOM identity, observed versions, cadence, and limitations

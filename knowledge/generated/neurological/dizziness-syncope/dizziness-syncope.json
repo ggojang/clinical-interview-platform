@@ -1,0 +1,1537 @@
+{
+  "id": "knowledge.generated.neurological.dizziness-syncope",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-dizziness-syncope-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-07-14",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-07-15",
+    "next_full_review_at": "2027-01-10",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.dizziness-syncope.immediate-safety",
+      "type": "ClinicalGroup",
+      "display": "Immediate Dizziness and Syncope Safety"
+    },
+    {
+      "id": "group.dizziness-syncope.characterization",
+      "type": "ClinicalGroup",
+      "display": "Dizziness and Syncope Characterization"
+    },
+    {
+      "id": "group.dizziness-syncope.neurological",
+      "type": "ClinicalGroup",
+      "display": "Neurological Warning Features"
+    },
+    {
+      "id": "group.dizziness-syncope.cardiovascular",
+      "type": "ClinicalGroup",
+      "display": "Cardiovascular Syncope Features"
+    },
+    {
+      "id": "group.dizziness-syncope.seizure-associated",
+      "type": "ClinicalGroup",
+      "display": "Seizure-associated Features"
+    },
+    {
+      "id": "group.dizziness-syncope.reflex-postural",
+      "type": "ClinicalGroup",
+      "display": "Reflex and Postural Features"
+    },
+    {
+      "id": "hypothesis.dizziness-syncope.immediate-safety",
+      "type": "Hypothesis",
+      "display": "Immediate Assessment Warning Features"
+    },
+    {
+      "id": "hypothesis.dizziness-syncope.neurological",
+      "type": "Hypothesis",
+      "display": "Possible Neurological Warning Pattern"
+    },
+    {
+      "id": "hypothesis.dizziness-syncope.cardiovascular",
+      "type": "Hypothesis",
+      "display": "Possible Cardiovascular Syncope Pattern"
+    },
+    {
+      "id": "hypothesis.dizziness-syncope.reflex-postural",
+      "type": "Hypothesis",
+      "display": "Possible Reflex or Postural Pattern"
+    }
+  ],
+  "group_hypothesis_edges": [
+    [
+      "group.dizziness-syncope.immediate-safety",
+      "hypothesis.dizziness-syncope.immediate-safety"
+    ],
+    [
+      "group.dizziness-syncope.neurological",
+      "hypothesis.dizziness-syncope.neurological"
+    ],
+    [
+      "group.dizziness-syncope.cardiovascular",
+      "hypothesis.dizziness-syncope.cardiovascular"
+    ],
+    [
+      "group.dizziness-syncope.reflex-postural",
+      "hypothesis.dizziness-syncope.reflex-postural"
+    ]
+  ],
+  "safety_rules": [
+    {
+      "id": "rule.dizziness-syncope.safety.sudden-neurological-deficit",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.dizziness.sudden_onset",
+            "equals": true
+          },
+          {
+            "fact": "symptom.neurological_deficit",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.dizziness-syncope.safety.sudden-new-unsteadiness",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.dizziness.sudden_onset",
+            "equals": true
+          },
+          {
+            "fact": "symptom.new_gait_unsteadiness",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.dizziness-syncope.safety.sudden-new-deafness",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.dizziness.sudden_onset",
+            "equals": true
+          },
+          {
+            "fact": "symptom.new_hearing_loss",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.dizziness-syncope.safety.acute-vestibular-syndrome",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.dizziness.sudden_onset",
+            "equals": true
+          },
+          {
+            "fact": "symptom.new_gait_unsteadiness",
+            "equals": true
+          },
+          {
+            "fact": "symptom.nausea_or_vomiting",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.dizziness-syncope.safety.incomplete-recovery",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.syncope.occurred",
+            "equals": true
+          },
+          {
+            "fact": "symptom.syncope.full_recovery",
+            "equals": false
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.dizziness-syncope.safety.syncope-chest-pain",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.syncope.occurred",
+            "equals": true
+          },
+          {
+            "fact": "symptom.chest_pain",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.dizziness-syncope.safety.syncope-injury",
+      "priority": 900,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.syncope.occurred",
+            "equals": true
+          },
+          {
+            "fact": "event.syncope.injury",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.dizziness-syncope.safety.syncope-exertion",
+      "priority": 900,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.syncope.occurred",
+            "equals": true
+          },
+          {
+            "fact": "event.syncope.during_exertion",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.dizziness-syncope.safety.syncope-breathlessness",
+      "priority": 900,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.syncope.occurred",
+            "equals": true
+          },
+          {
+            "fact": "symptom.dyspnea",
+            "in": [
+              "moderate",
+              "severe"
+            ]
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.dizziness-syncope.safety.syncope-palpitations",
+      "priority": 900,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.syncope.occurred",
+            "equals": true
+          },
+          {
+            "fact": "symptom.palpitations",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.dizziness-syncope.safety.syncope-heart-failure",
+      "priority": 900,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.syncope.occurred",
+            "equals": true
+          },
+          {
+            "fact": "history.heart_failure",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.dizziness-syncope.safety.syncope-family-sudden-death",
+      "priority": 900,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.syncope.occurred",
+            "equals": true
+          },
+          {
+            "fact": "family_history.sudden_cardiac_death_under_40",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.dizziness-syncope.safety.seizure-associated-features",
+      "priority": 900,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.syncope.occurred",
+            "equals": true
+          },
+          {
+            "fact": "event.syncope.lateral_tongue_bite",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "symptom.dizziness.presentation",
+        "display": "Dizziness Presentation",
+        "value_type": "coded",
+        "allowed_values": [
+          "spinning",
+          "lightheaded",
+          "unsteady",
+          "blackout",
+          "mixed"
+        ]
+      },
+      "target": {
+        "id": "target.dizziness-syncope.determine-presentation",
+        "display": "Determine Presentation",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dizziness-syncope.presentation",
+        "wording": "어지럼은 빙빙 도는 느낌, 쓰러질 듯한 느낌, 중심을 못 잡는 느낌, 실제 의식소실 중 무엇에 가깝나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "route_dizziness_or_syncope"
+        }
+      ],
+      "supports": [
+        "group.dizziness-syncope.characterization"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.dizziness.current",
+        "display": "Dizziness Present Now",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.dizziness-syncope.determine-current",
+        "display": "Determine Current Dizziness",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.dizziness-syncope.current",
+        "wording": "지금도 어지럽거나 중심 잡기 어렵나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 110,
+          "reason": "current_state"
+        }
+      ],
+      "supports": [
+        "group.dizziness-syncope.characterization"
+      ]
+    },
+    {
+      "reuse_existing": true,
+      "fact": {
+        "id": "symptom.duration",
+        "display": "Dizziness Duration",
+        "value_type": "quantity"
+      },
+      "target": {
+        "id": "target.dizziness-syncope.determine-duration",
+        "display": "Determine Duration",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.dizziness-syncope.duration",
+        "wording": "이 증상은 언제부터 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 100,
+          "reason": "characterize_duration"
+        }
+      ],
+      "supports": [
+        "group.dizziness-syncope.characterization"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.dizziness.sudden_onset",
+        "display": "Sudden-onset Dizziness",
+        "value_type": "boolean",
+        "extraction_cues": ["sudden dizziness", "갑자기 어지"],
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.dizziness-syncope.determine-sudden-onset",
+        "display": "Determine Sudden Onset",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.dizziness-syncope.sudden-onset",
+        "wording": "어지럼이나 균형 이상이 갑자기 시작했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "neurological_safety_gate"
+        }
+      ],
+      "supports": [
+        "group.dizziness-syncope.immediate-safety",
+        "group.dizziness-syncope.neurological"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.dizziness.severity",
+        "display": "Dizziness Severity",
+        "value_type": "coded",
+        "allowed_values": [
+          "mild",
+          "moderate",
+          "severe"
+        ],
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "focus_code": "404640003",
+          "attribute_code": "246112005"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.dizziness-syncope",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.dizziness-syncope.determine-severity",
+        "display": "Determine Severity",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.dizziness-syncope.severity",
+        "wording": "현재 증상은 가벼움, 중간, 서거나 걷기 어려울 정도 중 어디에 가깝나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 105,
+          "reason": "characterize_severity"
+        }
+      ],
+      "supports": [
+        "group.dizziness-syncope.characterization"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.syncope.occurred",
+        "display": "Transient Loss of Consciousness Occurred",
+        "value_type": "boolean",
+        "extraction_cues": ["fainted", "passed out", "실신", "기절"],
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "271594007"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.dizziness-syncope",
+          "status": "precoordinated_only"
+        }
+      },
+      "target": {
+        "id": "target.dizziness-syncope.determine-syncope",
+        "display": "Determine Syncope",
+        "intents": [
+          "intent.screen_red_flags",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dizziness-syncope.syncope",
+        "wording": "잠깐이라도 실제로 의식을 잃고 쓰러졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "syncope_safety_gate"
+        }
+      ],
+      "supports": [
+        "group.dizziness-syncope.immediate-safety",
+        "group.dizziness-syncope.cardiovascular"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.syncope.full_recovery",
+        "display": "Full Recovery after Loss of Consciousness",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.dizziness-syncope.determine-recovery",
+        "display": "Determine Recovery",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.dizziness-syncope.recovery",
+        "wording": "의식을 잃었다면 지금은 평소처럼 완전히 회복되었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 127,
+          "reason": "immediate_recovery_gate"
+        }
+      ],
+      "supports": [
+        "group.dizziness-syncope.immediate-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "event.syncope.injury",
+        "display": "Injury During Syncope",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.dizziness-syncope.determine-injury",
+        "display": "Determine Injury",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.dizziness-syncope.injury",
+        "wording": "쓰러지면서 머리나 몸을 다쳤나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 126,
+          "reason": "injury_safety_gate"
+        }
+      ],
+      "supports": [
+        "group.dizziness-syncope.immediate-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.neurological_deficit",
+        "display": "New Focal Neurological Deficit",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.dizziness-syncope.determine-neurological-deficit",
+        "display": "Determine Neurological Deficit",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.dizziness-syncope.neurological-deficit",
+        "wording": "갑자기 한쪽 힘이 빠짐, 얼굴 비대칭, 말하기 어려움, 겹쳐 보임 또는 새 감각 이상이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 125,
+          "reason": "neurological_safety_gate"
+        }
+      ],
+      "supports": [
+        "group.dizziness-syncope.immediate-safety",
+        "group.dizziness-syncope.neurological"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.new_gait_unsteadiness",
+        "display": "New Gait Unsteadiness",
+        "value_type": "boolean",
+        "extraction_cues": ["new unsteadiness", "cannot walk straight", "갑자기 걷기 어렵"],
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.dizziness-syncope.determine-unsteadiness",
+        "display": "Determine New Unsteadiness",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.dizziness-syncope.unsteadiness",
+        "wording": "갑자기 새로 똑바로 서거나 걷기 어려워졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 124,
+          "reason": "neurological_safety_gate"
+        }
+      ],
+      "supports": [
+        "group.dizziness-syncope.immediate-safety",
+        "group.dizziness-syncope.neurological"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.new_hearing_loss",
+        "display": "New Hearing Loss",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.dizziness-syncope.determine-hearing-loss",
+        "display": "Determine New Hearing Loss",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.dizziness-syncope.hearing-loss",
+        "wording": "어지럼과 함께 갑자기 청력이 떨어졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 123,
+          "reason": "neurological_safety_gate"
+        }
+      ],
+      "supports": [
+        "group.dizziness-syncope.immediate-safety",
+        "group.dizziness-syncope.neurological"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.nausea_or_vomiting",
+        "display": "Nausea or Vomiting",
+        "value_type": "boolean",
+        "extraction_cues": ["vomiting", "vomited", "구토", "토했"],
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.dizziness-syncope.determine-vomiting",
+        "display": "Determine Nausea or Vomiting",
+        "intents": [
+          "intent.screen_red_flags",
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.dizziness-syncope.vomiting",
+        "wording": "어지럼과 함께 메스껍거나 토했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 122,
+          "reason": "acute_vestibular_gate"
+        }
+      ],
+      "supports": [
+        "group.dizziness-syncope.neurological"
+      ]
+    },
+    {
+      "reuse_existing": true,
+      "fact": {
+        "id": "symptom.chest_pain",
+        "display": "Chest Pain",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.dizziness-syncope.determine-chest-pain",
+        "display": "Determine Chest Pain",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.dizziness-syncope.chest-pain",
+        "wording": "쓰러지거나 어지러운 전후에 가슴 통증이나 압박감이 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 121,
+          "reason": "cardiovascular_safety_gate"
+        }
+      ],
+      "supports": [
+        "group.dizziness-syncope.immediate-safety",
+        "group.dizziness-syncope.cardiovascular"
+      ]
+    },
+    {
+      "reuse_existing": true,
+      "fact": {
+        "id": "symptom.dyspnea",
+        "display": "Breathing Difficulty",
+        "value_type": "severity",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.dizziness-syncope.determine-dyspnea",
+        "display": "Determine Breathlessness",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.dizziness-syncope.dyspnea",
+        "wording": "새로 숨이 차거나 숨쉬기 어렵나요? 가벼움, 중간, 심함으로 답해도 됩니다.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 120,
+          "reason": "cardiovascular_safety_gate"
+        }
+      ],
+      "supports": [
+        "group.dizziness-syncope.cardiovascular"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.palpitations",
+        "display": "Palpitations",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.dizziness-syncope.determine-palpitations",
+        "display": "Determine Palpitations",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.dizziness-syncope.palpitations",
+        "wording": "증상 전후에 심장이 매우 빠르거나 불규칙하게 뛰는 느낌이 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 119,
+          "reason": "cardiovascular_safety_gate"
+        }
+      ],
+      "supports": [
+        "group.dizziness-syncope.cardiovascular"
+      ]
+    },
+    {
+      "fact": {
+        "id": "event.syncope.during_exertion",
+        "display": "Syncope During Exertion",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.dizziness-syncope.determine-exertion",
+        "display": "Determine Exertional Syncope",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.dizziness-syncope.exertion",
+        "wording": "운동이나 격한 활동을 하는 도중에 의식을 잃었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 118,
+          "reason": "cardiovascular_safety_gate"
+        }
+      ],
+      "supports": [
+        "group.dizziness-syncope.cardiovascular"
+      ]
+    },
+    {
+      "fact": {
+        "id": "event.syncope.while_supine",
+        "display": "Syncope While Supine",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.dizziness-syncope.determine-supine",
+        "display": "Determine Supine Syncope",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dizziness-syncope.supine",
+        "wording": "누워 있는 상태에서 의식을 잃었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 95,
+          "reason": "event_context"
+        }
+      ],
+      "supports": [
+        "group.dizziness-syncope.cardiovascular"
+      ]
+    },
+    {
+      "fact": {
+        "id": "event.syncope.no_prodrome",
+        "display": "Syncope Without Prodrome",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.dizziness-syncope.determine-prodrome-absence",
+        "display": "Determine Prodrome Absence",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dizziness-syncope.no-prodrome",
+        "wording": "식은땀, 메스꺼움, 더운 느낌, 눈앞이 캄캄함 같은 전조 없이 갑자기 의식을 잃었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 94,
+          "reason": "event_context"
+        }
+      ],
+      "supports": [
+        "group.dizziness-syncope.cardiovascular"
+      ]
+    },
+    {
+      "fact": {
+        "id": "history.heart_failure",
+        "display": "Heart Failure History",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.dizziness-syncope.determine-heart-failure",
+        "display": "Determine Heart Failure",
+        "intents": [
+          "intent.screen_red_flags",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dizziness-syncope.heart-failure",
+        "wording": "심부전을 진단받은 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 117,
+          "reason": "cardiovascular_safety_context"
+        }
+      ],
+      "supports": [
+        "group.dizziness-syncope.cardiovascular"
+      ]
+    },
+    {
+      "fact": {
+        "id": "history.cardiac_disease",
+        "display": "Cardiac Disease History",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.dizziness-syncope.determine-cardiac-history",
+        "display": "Determine Cardiac History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dizziness-syncope.cardiac-history",
+        "wording": "부정맥, 심장판막질환, 심근병증, 심근경색 또는 심장 시술 병력이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 90,
+          "reason": "cardiovascular_context"
+        }
+      ],
+      "supports": [
+        "group.dizziness-syncope.cardiovascular"
+      ]
+    },
+    {
+      "fact": {
+        "id": "family_history.sudden_cardiac_death_under_40",
+        "display": "Family Sudden Cardiac Death Under 40",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.dizziness-syncope.determine-family-sudden-death",
+        "display": "Determine Family Sudden Death",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.dizziness-syncope.family-sudden-death",
+        "wording": "가까운 가족이 40세 이전에 갑자기 심장 문제로 사망했거나 유전성 심장질환이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 116,
+          "reason": "cardiovascular_safety_context"
+        }
+      ],
+      "supports": [
+        "group.dizziness-syncope.cardiovascular"
+      ]
+    },
+    {
+      "fact": {
+        "id": "event.syncope.limb_jerking",
+        "display": "Limb Jerking During Event",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.dizziness-syncope.determine-jerking",
+        "display": "Determine Limb Jerking",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dizziness-syncope.jerking",
+        "wording": "의식을 잃은 동안 팔다리가 반복적으로 떨리거나 경직되었다는 말을 들었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 89,
+          "reason": "seizure_associated_feature"
+        }
+      ],
+      "supports": [
+        "group.dizziness-syncope.seizure-associated"
+      ]
+    },
+    {
+      "fact": {
+        "id": "event.syncope.lateral_tongue_bite",
+        "display": "Lateral Tongue Bite",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.dizziness-syncope.determine-tongue-bite",
+        "display": "Determine Tongue Bite",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.dizziness-syncope.tongue-bite",
+        "wording": "의식을 잃은 뒤 혀 옆부분을 깨문 상처가 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 115,
+          "reason": "neurological_referral_gate"
+        }
+      ],
+      "supports": [
+        "group.dizziness-syncope.seizure-associated"
+      ]
+    },
+    {
+      "fact": {
+        "id": "event.syncope.post_event_confusion",
+        "display": "Post-event Confusion",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.dizziness-syncope.determine-post-confusion",
+        "display": "Determine Post-event Confusion",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dizziness-syncope.post-confusion",
+        "wording": "깨어난 뒤 한동안 혼란스럽거나 평소 상태로 돌아오는 데 오래 걸렸나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 88,
+          "reason": "seizure_associated_feature"
+        }
+      ],
+      "supports": [
+        "group.dizziness-syncope.seizure-associated"
+      ]
+    },
+    {
+      "fact": {
+        "id": "event.syncope.reflex_prodrome",
+        "display": "Warmth Sweating or Nausea Prodrome",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.dizziness-syncope.determine-reflex-prodrome",
+        "display": "Determine Reflex Prodrome",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.dizziness-syncope.reflex-prodrome",
+        "wording": "쓰러지기 전에 식은땀, 더운 느낌, 메스꺼움 또는 눈앞이 캄캄한 증상이 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 82,
+          "reason": "reflex_pattern"
+        }
+      ],
+      "supports": [
+        "group.dizziness-syncope.reflex-postural"
+      ]
+    },
+    {
+      "fact": {
+        "id": "event.syncope.reflex_trigger",
+        "display": "Prolonged Standing Pain or Procedure Trigger",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.dizziness-syncope.determine-reflex-trigger",
+        "display": "Determine Reflex Trigger",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.dizziness-syncope.reflex-trigger",
+        "wording": "오래 서 있기, 통증, 공포, 채혈이나 의료 시술 직후에 증상이 생겼나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 81,
+          "reason": "reflex_pattern"
+        }
+      ],
+      "supports": [
+        "group.dizziness-syncope.reflex-postural"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.dizziness.postural_trigger",
+        "display": "Dizziness Triggered by Standing",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.dizziness-syncope.determine-postural-trigger",
+        "display": "Determine Postural Trigger",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.dizziness-syncope.postural-trigger",
+        "wording": "누워 있거나 앉아 있다가 일어설 때 증상이 생기거나 심해지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 84,
+          "reason": "postural_pattern"
+        }
+      ],
+      "supports": [
+        "group.dizziness-syncope.reflex-postural"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.dizziness.head_movement_trigger",
+        "display": "Vertigo Triggered by Head Movement",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.dizziness-syncope.determine-head-movement",
+        "display": "Determine Head Movement Trigger",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.dizziness-syncope.head-movement",
+        "wording": "고개를 돌리거나 눕고 일어날 때 짧게 빙빙 도는 증상이 생기나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 83,
+          "reason": "positional_vertigo_pattern"
+        }
+      ],
+      "supports": [
+        "group.dizziness-syncope.reflex-postural"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.hearing_change_or_tinnitus",
+        "display": "Hearing Change or Tinnitus",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.dizziness-syncope.determine-hearing-symptoms",
+        "display": "Determine Hearing Symptoms",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.dizziness-syncope.hearing-symptoms",
+        "wording": "청력이 달라지거나 귀가 먹먹하거나 이명이 함께 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 80,
+          "reason": "vestibular_context"
+        }
+      ],
+      "supports": [
+        "group.dizziness-syncope.characterization"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.current",
+        "display": "Current Medication",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dizziness-syncope.determine-medication",
+        "display": "Determine Current Medication",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dizziness-syncope.medication",
+        "wording": "현재 복용 중인 약이 있나요? 특히 혈압약, 이뇨제, 심장약을 포함해 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 79,
+          "reason": "medication_context"
+        }
+      ],
+      "supports": [
+        "group.dizziness-syncope.reflex-postural"
+      ]
+    },
+    {
+      "fact": {
+        "id": "history.diabetes",
+        "display": "Diabetes History",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.dizziness-syncope.determine-diabetes",
+        "display": "Determine Diabetes",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dizziness-syncope.diabetes",
+        "wording": "당뇨병이 있거나 혈당을 낮추는 약을 사용하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 78,
+          "reason": "hypoglycaemia_context"
+        }
+      ],
+      "supports": [
+        "group.dizziness-syncope.characterization"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nice.ng127.dizziness.2023",
+      "source.nice.cg109.tloc.2023",
+      "source.stom.mrcm.dizziness-syncope.20260714"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

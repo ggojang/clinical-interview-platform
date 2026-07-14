@@ -64,6 +64,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-headache.json",
         "version": "0.1.0",
     },
+    "dizziness_syncope": {
+        "base_graph": ROOT / "knowledge/base/primary-care-dizziness-syncope.json",
+        "base_rules": ROOT / "rules/base/primary-care-dizziness-syncope.json",
+        "fragment_root": ROOT / "knowledge/generated/neurological/dizziness-syncope",
+        "output_graph": ROOT / "knowledge/graph/primary-care-dizziness-syncope.json",
+        "output_rules": ROOT / "rules/primary-care-dizziness-syncope.json",
+        "version": "0.1.0",
+    },
 }
 
 
