@@ -144,6 +144,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-bowel-symptoms.json",
         "version": "0.1.0",
     },
+    "focal_weakness_numbness": {
+        "base_graph": ROOT / "knowledge/base/primary-care-focal-weakness-numbness.json",
+        "base_rules": ROOT / "rules/base/primary-care-focal-weakness-numbness.json",
+        "fragment_root": ROOT / "knowledge/generated/neurological/focal-weakness-numbness",
+        "output_graph": ROOT / "knowledge/graph/primary-care-focal-weakness-numbness.json",
+        "output_rules": ROOT / "rules/primary-care-focal-weakness-numbness.json",
+        "version": "0.1.0",
+    },
 }
 
 

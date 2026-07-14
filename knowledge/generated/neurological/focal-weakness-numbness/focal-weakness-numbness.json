@@ -1,0 +1,1465 @@
+{
+  "id": "knowledge.generated.focal-neurology",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-focal-weakness-numbness-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-07-14",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-07-15",
+    "next_full_review_at": "2027-01-10",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.focal-neurology.stroke-safety",
+      "type": "ClinicalGroup",
+      "display": "stroke-safety"
+    },
+    {
+      "id": "group.focal-neurology.spinal-safety",
+      "type": "ClinicalGroup",
+      "display": "spinal-safety"
+    },
+    {
+      "id": "group.focal-neurology.distribution",
+      "type": "ClinicalGroup",
+      "display": "distribution"
+    },
+    {
+      "id": "group.focal-neurology.motor",
+      "type": "ClinicalGroup",
+      "display": "motor"
+    },
+    {
+      "id": "group.focal-neurology.sensory",
+      "type": "ClinicalGroup",
+      "display": "sensory"
+    },
+    {
+      "id": "group.focal-neurology.context",
+      "type": "ClinicalGroup",
+      "display": "context"
+    }
+  ],
+  "group_hypothesis_edges": [],
+  "safety_rules": [
+    {
+      "id": "rule.focal-neurology.safety.sudden-unilateral",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.focal_neurology.sudden_onset",
+            "equals": true
+          },
+          {
+            "fact": "symptom.focal_neurology.one_sided",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.focal-neurology.safety.fast-face",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.face_droop",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.focal-neurology.safety.fast-arm",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.arm_drift_or_cannot_raise",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.focal-neurology.safety.fast-speech",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.speech_or_language_disturbance",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.focal-neurology.safety.resolved-24h",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.focal_neurology.resolved_within_24h",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.focal-neurology.safety.sudden-vision",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.focal_neurology.sudden_onset",
+            "equals": true
+          },
+          {
+            "fact": "symptom.sudden_visual_loss_or_field_defect",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.focal-neurology.safety.progressive-breathing",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.symmetric_progressive_weakness",
+            "equals": true
+          },
+          {
+            "fact": "symptom.dyspnea_at_rest_or_supine",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.focal-neurology.safety.progressive-swallowing",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.symmetric_progressive_weakness",
+            "equals": true
+          },
+          {
+            "fact": "symptom.new_swallowing_impairment",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.focal-neurology.safety.cauda-bladder",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.severe_back_pain_radiating_leg",
+            "equals": true
+          },
+          {
+            "fact": "symptom.new_bladder_bowel_or_sexual_dysfunction",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.focal-neurology.safety.cauda-saddle",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.severe_back_pain_radiating_leg",
+            "equals": true
+          },
+          {
+            "fact": "symptom.perineal_or_saddle_numbness",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.focal-neurology.safety.single-progression",
+      "priority": 900,
+      "when": {
+        "fact": "symptom.single_limb_rapid_progression",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "symptom.focal_neurology.current",
+        "display": "Current Weakness or Sensory Change",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.focal-neurology.current",
+        "display": "Current Weakness or Sensory Change",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.focal-neurology.current",
+        "wording": "지금도 힘 빠짐, 감각 둔함 또는 저림이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "current"
+        }
+      ],
+      "supports": [
+        "group.focal-neurology.stroke-safety",
+        "group.focal-neurology.distribution"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.focal_neurology.main_type",
+        "display": "Main Focal Neurologic Symptom",
+        "value_type": "coded",
+        "allowed_values": [
+          "weakness",
+          "numbness",
+          "tingling",
+          "pain_limited",
+          "mixed",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.focal-neurology.main-type",
+        "display": "Main Focal Neurologic Symptom",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.focal-neurology.main-type",
+        "wording": "주된 증상은 실제 힘 빠짐, 감각 둔함, 찌릿한 저림, 통증 때문에 못 움직임 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 110,
+          "reason": "main-type"
+        }
+      ],
+      "supports": [
+        "group.focal-neurology.motor",
+        "group.focal-neurology.sensory"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.duration",
+        "display": "Symptom Duration",
+        "value_type": "quantity"
+      },
+      "target": {
+        "id": "target.focal-neurology.duration",
+        "display": "Symptom Duration",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.focal-neurology.duration",
+        "wording": "처음 증상이 시작된 시각이나 날짜는 언제인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 109,
+          "reason": "duration"
+        }
+      ],
+      "supports": [
+        "group.focal-neurology.stroke-safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.focal_neurology.sudden_onset",
+        "display": "Sudden Onset",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.focal-neurology.sudden",
+        "display": "Sudden Onset",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.focal-neurology.sudden",
+        "wording": "증상이 수초에서 수분 사이 갑자기 시작했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "sudden"
+        }
+      ],
+      "supports": [
+        "group.focal-neurology.stroke-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.focal_neurology.one_sided",
+        "display": "One-sided Symptom",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.focal-neurology.one-sided",
+        "display": "One-sided Symptom",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.focal-neurology.one-sided",
+        "wording": "얼굴이나 몸의 한쪽에만 증상이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "one-sided"
+        }
+      ],
+      "supports": [
+        "group.focal-neurology.stroke-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.face_droop",
+        "display": "Face Droop",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.focal-neurology.face-droop",
+        "display": "Face Droop",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.focal-neurology.face-droop",
+        "wording": "웃을 때 한쪽 얼굴이나 입꼬리가 처지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 127,
+          "reason": "face-droop"
+        }
+      ],
+      "supports": [
+        "group.focal-neurology.stroke-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.arm_drift_or_cannot_raise",
+        "display": "Arm Drift",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.focal-neurology.arm-drift",
+        "display": "Arm Drift",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.focal-neurology.arm-drift",
+        "wording": "두 팔을 들 때 한쪽 팔이 내려가거나 들 수 없나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 126,
+          "reason": "arm-drift"
+        }
+      ],
+      "supports": [
+        "group.focal-neurology.stroke-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.speech_or_language_disturbance",
+        "display": "Speech Disturbance",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.focal-neurology.speech",
+        "display": "Speech Disturbance",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.focal-neurology.speech",
+        "wording": "말이 어눌하거나 단어가 나오지 않거나 말을 이해하기 어렵나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 125,
+          "reason": "speech"
+        }
+      ],
+      "supports": [
+        "group.focal-neurology.stroke-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.sudden_visual_loss_or_field_defect",
+        "display": "Sudden Visual Loss",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.focal-neurology.vision",
+        "display": "Sudden Visual Loss",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.focal-neurology.vision",
+        "wording": "시야가 갑자기 흐려지거나 보이지 않는 부분이 생겼나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 124,
+          "reason": "vision"
+        }
+      ],
+      "supports": [
+        "group.focal-neurology.stroke-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.sudden_gait_unsteadiness",
+        "display": "Sudden Gait Unsteadiness",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.focal-neurology.gait",
+        "display": "Sudden Gait Unsteadiness",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.focal-neurology.gait",
+        "wording": "갑자기 걷기 어렵거나 한쪽으로 넘어지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 123,
+          "reason": "gait"
+        }
+      ],
+      "supports": [
+        "group.focal-neurology.stroke-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.focal_neurology.resolved_within_24h",
+        "display": "Resolved Within 24 Hours",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.focal-neurology.resolved",
+        "display": "Resolved Within 24 Hours",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.focal-neurology.resolved",
+        "wording": "지난 24시간 안에 갑자기 생겼다가 사라진 증상인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 122,
+          "reason": "resolved"
+        }
+      ],
+      "supports": [
+        "group.focal-neurology.stroke-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.symmetric_progressive_weakness",
+        "display": "Symmetric Progressive Weakness",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.focal-neurology.symmetric-progressive",
+        "display": "Symmetric Progressive Weakness",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.focal-neurology.symmetric-progressive",
+        "wording": "양쪽 팔다리 힘이 며칠에서 4주 사이 빠르게 약해지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 121,
+          "reason": "symmetric-progressive"
+        }
+      ],
+      "supports": [
+        "group.focal-neurology.spinal-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.dyspnea_at_rest_or_supine",
+        "display": "Breathlessness at Rest or Supine",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.focal-neurology.breathing",
+        "display": "Breathlessness at Rest or Supine",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.focal-neurology.breathing",
+        "wording": "가만히 있거나 누우면 숨이 차나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 120,
+          "reason": "breathing"
+        }
+      ],
+      "supports": [
+        "group.focal-neurology.spinal-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.new_swallowing_impairment",
+        "display": "New Swallowing Impairment",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.focal-neurology.swallowing",
+        "display": "New Swallowing Impairment",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.focal-neurology.swallowing",
+        "wording": "새로 삼키기 어렵거나 자주 사레가 드나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 119,
+          "reason": "swallowing"
+        }
+      ],
+      "supports": [
+        "group.focal-neurology.spinal-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.severe_back_pain_radiating_leg",
+        "display": "Severe Back Pain Radiating to Leg",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.focal-neurology.back-leg-pain",
+        "display": "Severe Back Pain Radiating to Leg",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.focal-neurology.back-leg-pain",
+        "wording": "심한 허리 통증이 다리로 뻗치나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 118,
+          "reason": "back-leg-pain"
+        }
+      ],
+      "supports": [
+        "group.focal-neurology.spinal-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.new_bladder_bowel_or_sexual_dysfunction",
+        "display": "New Bladder Bowel or Sexual Dysfunction",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.focal-neurology.bladder-bowel",
+        "display": "New Bladder Bowel or Sexual Dysfunction",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.focal-neurology.bladder-bowel",
+        "wording": "새로 배뇨·배변 조절 또는 성기능이 달라졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 117,
+          "reason": "bladder-bowel"
+        }
+      ],
+      "supports": [
+        "group.focal-neurology.spinal-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.perineal_or_saddle_numbness",
+        "display": "Saddle Numbness",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.focal-neurology.saddle",
+        "display": "Saddle Numbness",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.focal-neurology.saddle",
+        "wording": "회음부나 항문 주위 감각이 새로 둔해졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 116,
+          "reason": "saddle"
+        }
+      ],
+      "supports": [
+        "group.focal-neurology.spinal-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.single_limb_rapid_progression",
+        "display": "Rapid Single-limb Progression",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.focal-neurology.single-progressive",
+        "display": "Rapid Single-limb Progression",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.focal-neurology.single-progressive",
+        "wording": "한쪽 팔다리 힘이 몇 시간에서 며칠 사이 빠르게 약해지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 115,
+          "reason": "single-progressive"
+        }
+      ],
+      "supports": [
+        "group.focal-neurology.motor"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.focal_neurology.side",
+        "display": "Affected Side",
+        "value_type": "coded",
+        "allowed_values": [
+          "left",
+          "right",
+          "bilateral",
+          "variable",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.focal-neurology.side",
+        "display": "Affected Side",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.focal-neurology.side",
+        "wording": "왼쪽, 오른쪽, 양쪽 중 어디인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 106,
+          "reason": "side"
+        }
+      ],
+      "supports": [
+        "group.focal-neurology.distribution"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.focal_neurology.region",
+        "display": "Affected Region",
+        "value_type": "coded",
+        "allowed_values": [
+          "face",
+          "arm_hand",
+          "leg_foot",
+          "trunk",
+          "perineum",
+          "multiple",
+          "unclear"
+        ],
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "focus_code": "44077006"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.focal-weakness-numbness",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.focal-neurology.region",
+        "display": "Affected Region",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.focal-neurology.region",
+        "wording": "얼굴, 팔·손, 다리·발, 몸통, 회음부 중 어디인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 105,
+          "reason": "region"
+        }
+      ],
+      "supports": [
+        "group.focal-neurology.distribution"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.focal_neurology.progression",
+        "display": "Progression",
+        "value_type": "coded",
+        "allowed_values": [
+          "improving",
+          "stable",
+          "slow_worsening",
+          "rapid_worsening",
+          "recurrent",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.focal-neurology.progression",
+        "display": "Progression",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.focal-neurology.progression",
+        "wording": "호전, 그대로, 서서히 악화, 빠르게 악화, 반복 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 104,
+          "reason": "progression"
+        }
+      ],
+      "supports": [
+        "group.focal-neurology.distribution"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.objective_motor_task_loss",
+        "display": "Motor Task Loss",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "26544005"
+        }
+      },
+      "target": {
+        "id": "target.focal-neurology.motor-task",
+        "display": "Motor Task Loss",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.focal-neurology.motor-task",
+        "wording": "물건 잡기, 계단 오르기 등 실제로 못 하게 된 동작이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 103,
+          "reason": "motor-task"
+        }
+      ],
+      "supports": [
+        "group.focal-neurology.motor"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.sensory_quality",
+        "display": "Sensory Quality",
+        "value_type": "coded",
+        "allowed_values": [
+          "numb",
+          "pins_needles",
+          "burning",
+          "electric",
+          "mixed",
+          "unclear"
+        ],
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "91019004"
+        }
+      },
+      "target": {
+        "id": "target.focal-neurology.sensory-quality",
+        "display": "Sensory Quality",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.focal-neurology.sensory-quality",
+        "wording": "무감각, 바늘로 찌름, 화끈거림, 전기 느낌 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 102,
+          "reason": "sensory-quality"
+        }
+      ],
+      "supports": [
+        "group.focal-neurology.sensory"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.neck_or_back_pain",
+        "display": "Neck or Back Pain",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.focal-neurology.neck-back",
+        "display": "Neck or Back Pain",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.focal-neurology.neck-back",
+        "wording": "목이나 허리 통증이 함께 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 94,
+          "reason": "neck-back"
+        }
+      ],
+      "supports": [
+        "group.focal-neurology.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.radicular_pain",
+        "display": "Radiating Limb Pain",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.focal-neurology.radicular",
+        "display": "Radiating Limb Pain",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.focal-neurology.radicular",
+        "wording": "목이나 허리에서 팔다리로 뻗치는 통증이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 93,
+          "reason": "radicular"
+        }
+      ],
+      "supports": [
+        "group.focal-neurology.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.position_or_repetition_trigger",
+        "display": "Position Trigger",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.focal-neurology.position",
+        "display": "Position Trigger",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.focal-neurology.position",
+        "wording": "특정 자세나 반복 동작에서 생기고 자세를 바꾸면 나아지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 92,
+          "reason": "position"
+        }
+      ],
+      "supports": [
+        "group.focal-neurology.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "event.recent_injury_or_procedure",
+        "display": "Recent Injury or Procedure",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.focal-neurology.injury",
+        "display": "Recent Injury or Procedure",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.focal-neurology.injury",
+        "wording": "최근 머리·척추·팔다리 외상이나 시술이 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 91,
+          "reason": "injury"
+        }
+      ],
+      "supports": [
+        "group.focal-neurology.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "event.recent_infection_or_vaccination",
+        "display": "Recent Infection or Vaccination",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.focal-neurology.infection",
+        "display": "Recent Infection or Vaccination",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.focal-neurology.infection",
+        "wording": "증상 전 수주 안에 감염이나 예방접종이 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 90,
+          "reason": "infection"
+        }
+      ],
+      "supports": [
+        "group.focal-neurology.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "history.diabetes_or_neuropathy",
+        "display": "Diabetes or Neuropathy",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.focal-neurology.diabetes",
+        "display": "Diabetes or Neuropathy",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.focal-neurology.diabetes",
+        "wording": "당뇨병이나 말초신경병증 병력이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 89,
+          "reason": "diabetes"
+        }
+      ],
+      "supports": [
+        "group.focal-neurology.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "history.stroke_tia_or_neurologic_disease",
+        "display": "Neurologic History",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.focal-neurology.history",
+        "display": "Neurologic History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.focal-neurology.history",
+        "wording": "뇌졸중·TIA 또는 다른 신경질환 병력이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 88,
+          "reason": "history"
+        }
+      ],
+      "supports": [
+        "group.focal-neurology.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.neurologic_relevant",
+        "display": "Relevant Medication or Substance",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.focal-neurology.medication",
+        "display": "Relevant Medication or Substance",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.focal-neurology.medication",
+        "wording": "최근 바뀐 약, 항암제, 진정제 또는 과음·약물 사용이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 87,
+          "reason": "medication"
+        }
+      ],
+      "supports": [
+        "group.focal-neurology.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.focal_neurology.functional_impact",
+        "display": "Functional Impact",
+        "value_type": "coded",
+        "allowed_values": [
+          "none",
+          "mild",
+          "moderate",
+          "severe"
+        ]
+      },
+      "target": {
+        "id": "target.focal-neurology.impact",
+        "display": "Functional Impact",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.focal-neurology.impact",
+        "wording": "일상 영향은 없음, 가벼움, 중간, 심함 중 어느 정도인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 86,
+          "reason": "impact"
+        }
+      ],
+      "supports": [
+        "group.focal-neurology.motor"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nhs.stroke.2024",
+      "source.nice.ng127.2023"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

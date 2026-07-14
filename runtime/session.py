@@ -402,6 +402,9 @@ class InterviewSession:
         if self.reason_for_encounter == "rfe.bowel_symptoms":
             self._update_bowel_patterns()
             return
+        if self.reason_for_encounter == "rfe.focal_weakness_numbness":
+            self._update_focal_neurology_patterns()
+            return
         active = ["respiratory.cough"]
         cold_support = sum(
             self.memory.value(fact_id) is True
@@ -736,6 +739,14 @@ class InterviewSession:
             "symptom.repeated_vomiting",
         )):
             active.append("bowel.obstruction_warning_features")
+        self.active_patterns = active
+
+    def _update_focal_neurology_patterns(self) -> None:
+        active = ["neurological.focal_weakness_numbness"]
+        if any(self.memory.value(x) is True for x in ("symptom.face_droop", "symptom.arm_drift_or_cannot_raise", "symptom.speech_or_language_disturbance", "symptom.sudden_visual_loss_or_field_defect")):
+            active.append("focal_neurology.stroke_warning_features")
+        if any(self.memory.value(x) is True for x in ("symptom.severe_back_pain_radiating_leg", "symptom.new_bladder_bowel_or_sexual_dysfunction", "symptom.perineal_or_saddle_numbness")):
+            active.append("focal_neurology.spinal_warning_features")
         self.active_patterns = active
 
     def _update_dyspnea_patterns(self) -> None:

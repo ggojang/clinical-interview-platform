@@ -213,6 +213,17 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/gastrointestinal/bowel-symptoms",
         "research_manifests": [ROOT / "sources/manifests/primary-care-bowel-symptoms-research.json"],
     },
+    "focal_weakness_numbness": {
+        "graph": ROOT / "knowledge/graph/primary-care-focal-weakness-numbness.json",
+        "rules": ROOT / "rules/primary-care-focal-weakness-numbness.json",
+        "sources": ROOT / "sources/manifests/primary-care-focal-weakness-numbness.json",
+        "completion_policy": ROOT / "policies/primary-care-focal-weakness-numbness-completion.json",
+        "output": ROOT / "packages/generated/primary-care-focal-weakness-numbness-0.1.0.json",
+        "package_id": "package.primary-care-focal-weakness-numbness", "package_version": "0.1.0",
+        "rfe": "rfe.focal_weakness_numbness",
+        "simulation_root": ROOT / "simulation/patients/neurological/focal-weakness-numbness",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-focal-weakness-numbness-research.json"],
+    },
 }
 
 ALLOWED_NODE_TYPES = {
