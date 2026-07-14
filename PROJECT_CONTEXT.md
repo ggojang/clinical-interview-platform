@@ -549,9 +549,11 @@ De-identified or governed feedback returns to the Knowledge Factory.
 
 Feedback may identify unsupported Reason for Encounter, missing Target, missing Fact, misunderstood Question, repeated Question, safety near miss, false escalation, mapping failure or Coverage gap.
 
-Feedback is not automatically knowledge.
+Feedback is not automatically knowledge and never mutates the active Runtime package.
 
-It must pass acquisition, transformation, Simulation, Evaluation, review and compilation.
+Resolution includes service improvement, not only a conversational answer. The AI Knowledge Factory may generalize de-identified feedback, reproduce the gap, update Questions, routing, Facts, Knowledge, Rules, tests, API resources or GPT configuration, and deploy a new `unreviewed/research_only` version after privacy, validation, Simulation, Evaluation and compilation gates pass.
+
+Human participation is optional for research-only upgrades but remains required for promotion to reviewed or Production knowledge. Applied upgrades are reported by result. Items blocked by evidence, safety, authority, licensing, permissions or required clinical judgment are reported as unresolved with the required human action.
 
 ---
 

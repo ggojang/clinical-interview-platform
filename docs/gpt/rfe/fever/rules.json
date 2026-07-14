@@ -1,0 +1,672 @@
+{
+  "contains_patient_responses": false,
+  "count": 45,
+  "encounter_contexts": [
+    "context.primary_care"
+  ],
+  "generated_at": "2026-07-14T00:00:00Z",
+  "items": [
+    {
+      "id": "rule.fever.safety.meningitis_red_flag_combination",
+      "priority": 1000,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.headache"
+          },
+          {
+            "equals": true,
+            "fact": "symptom.neck_stiffness"
+          },
+          {
+            "equals": true,
+            "fact": "symptom.confusion"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.fever.safety.non_blanching_rash",
+      "priority": 1000,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "symptom.non_blanching_rash"
+      }
+    },
+    {
+      "id": "rule.fever.safety.severe_breathing_difficulty",
+      "priority": 1000,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": "severe",
+        "fact": "symptom.dyspnea"
+      }
+    },
+    {
+      "id": "rule.fever.safety.confusion",
+      "priority": 900,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "symptom.confusion"
+      }
+    },
+    {
+      "id": "rule.fever.safety.immunocompromised",
+      "priority": 620,
+      "status": "research_only",
+      "then": {
+        "action": "continue_targeted_assessment",
+        "safety_level": "clarify",
+        "suppress_routine": false
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "patient.immunocompromised"
+      }
+    },
+    {
+      "id": "rule.fever.safety.systemically_unwell",
+      "priority": 610,
+      "status": "research_only",
+      "then": {
+        "action": "continue_targeted_assessment",
+        "safety_level": "clarify",
+        "suppress_routine": false
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "symptom.systemic_unwellness"
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_duration",
+      "priority": 120,
+      "status": "research_only",
+      "then": {
+        "reason": "characterize_course",
+        "target": "target.fever.determine_duration"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.determine_duration": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_temperature",
+      "priority": 118,
+      "status": "research_only",
+      "then": {
+        "reason": "objective_characterization",
+        "target": "target.fever.determine_temperature"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.determine_temperature": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_systemic_unwellness",
+      "priority": 116,
+      "status": "research_only",
+      "then": {
+        "reason": "systemic_safety_gate",
+        "target": "target.fever.determine_systemic_unwellness"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.determine_systemic_unwellness": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_confusion",
+      "priority": 115,
+      "status": "research_only",
+      "then": {
+        "reason": "neurological_safety_gate",
+        "target": "target.fever.determine_confusion"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.determine_confusion": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_dyspnea",
+      "priority": 114,
+      "status": "research_only",
+      "then": {
+        "reason": "respiratory_safety_gate",
+        "target": "target.fever.determine_dyspnea"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.determine_dyspnea": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_headache",
+      "priority": 108,
+      "status": "research_only",
+      "then": {
+        "reason": "neurological_warning_feature",
+        "target": "target.fever.determine_headache"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.determine_headache": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_neck_stiffness",
+      "priority": 107,
+      "status": "research_only",
+      "then": {
+        "reason": "neurological_warning_feature",
+        "target": "target.fever.determine_neck_stiffness"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.determine_neck_stiffness": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_non_blanching_rash",
+      "priority": 106,
+      "status": "research_only",
+      "then": {
+        "reason": "rash_safety_gate",
+        "target": "target.fever.determine_non_blanching_rash"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.determine_non_blanching_rash": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_severe_pain",
+      "priority": 104,
+      "status": "research_only",
+      "then": {
+        "reason": "systemic_warning_feature",
+        "target": "target.fever.determine_severe_pain"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.determine_severe_pain": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_immunocompromised",
+      "priority": 102,
+      "status": "research_only",
+      "then": {
+        "reason": "host_vulnerability",
+        "target": "target.fever.determine_immunocompromised"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.determine_immunocompromised": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.activate.fever",
+      "priority": 100,
+      "status": "research_only",
+      "then": {
+        "activate_intents": [
+          "intent.characterize_symptom",
+          "intent.screen_red_flags",
+          "intent.differentiate_common_causes",
+          "intent.risk_assessment"
+        ]
+      },
+      "type": "activation",
+      "when": {
+        "rfe": "rfe.fever"
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_cough",
+      "priority": 90,
+      "status": "research_only",
+      "then": {
+        "reason": "respiratory_source_localization",
+        "target": "target.fever.determine_cough"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.determine_cough": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_sore_throat",
+      "priority": 88,
+      "status": "research_only",
+      "then": {
+        "reason": "upper_respiratory_source_localization",
+        "target": "target.fever.determine_sore_throat"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.determine_sore_throat": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_urinary_symptoms",
+      "priority": 86,
+      "status": "research_only",
+      "then": {
+        "reason": "urinary_source_localization",
+        "target": "target.fever.determine_urinary_symptoms"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.determine_urinary_symptoms": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_abdominal_pain",
+      "priority": 84,
+      "status": "research_only",
+      "then": {
+        "reason": "gastrointestinal_source_localization",
+        "target": "target.fever.determine_abdominal_pain"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.determine_abdominal_pain": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_skin_features",
+      "priority": 82,
+      "status": "research_only",
+      "then": {
+        "reason": "skin_source_localization",
+        "target": "target.fever.determine_skin_features"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.determine_skin_features": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_chills",
+      "priority": 78,
+      "status": "research_only",
+      "then": {
+        "reason": "fever_characterization",
+        "target": "target.fever.determine_chills"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.determine_chills": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_vomiting",
+      "priority": 76,
+      "status": "research_only",
+      "then": {
+        "reason": "gastrointestinal_source_localization",
+        "target": "target.fever.determine_vomiting"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.determine_vomiting": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_diarrhea",
+      "priority": 74,
+      "status": "research_only",
+      "then": {
+        "reason": "gastrointestinal_source_localization",
+        "target": "target.fever.determine_diarrhea"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.determine_diarrhea": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_sick_contact",
+      "priority": 70,
+      "status": "research_only",
+      "then": {
+        "reason": "exposure_context",
+        "target": "target.fever.determine_sick_contact"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.determine_sick_contact": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_abdominal_pain",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_abdominal_pain"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_chills",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_chills"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_confusion",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_confusion"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_cough",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_cough"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_diarrhea",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_diarrhea"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_duration",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_duration"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_dyspnea",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_dyspnea"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_headache",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_headache"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_immunocompromised",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_immunocompromised"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_neck_stiffness",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_neck_stiffness"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_non_blanching_rash",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_non_blanching_rash"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_severe_pain",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_severe_pain"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_sick_contact",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_sick_contact"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_skin_features",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_skin_features"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_sore_throat",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_sore_throat"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_systemic_unwellness",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_systemic_unwellness"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_temperature",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_temperature"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_urinary_symptoms",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_urinary_symptoms"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_vomiting",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_vomiting"
+      }
+    }
+  ],
+  "package_id": "package.primary-care-fever",
+  "package_version": "0.1.0",
+  "reason_for_encounter": "rfe.fever",
+  "resource_type": "ReasonForEncounterRuleCollection",
+  "review_status": "unreviewed",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "version": "0.1.0"
+}

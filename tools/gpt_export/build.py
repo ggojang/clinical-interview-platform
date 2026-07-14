@@ -16,6 +16,9 @@ PRIVATE_KEYS = {
     "raw_text", "raw_input", "patient_response", "patient_responses",
     "questionnaire_response", "conversation", "transcript", "evidence",
 }
+COMPACT_DROP_KEYS = {
+    "provenance", "refresh", "source_manifest", "usage_modes", "version",
+}
 
 
 def load_json(path: Path) -> Any:
@@ -64,6 +67,67 @@ def envelope(resource_type: str, items: list[dict[str, Any]]) -> dict[str, Any]:
         "count": len(items),
         "items": items,
     }
+
+
+def compact(value: Any) -> Any:
+    """Remove repeated build metadata while preserving runtime semantics."""
+    if isinstance(value, dict):
+        return {
+            key: compact(item)
+            for key, item in sorted(value.items())
+            if key not in COMPACT_DROP_KEYS and key.lower() not in PRIVATE_KEYS
+        }
+    if isinstance(value, list):
+        return [compact(item) for item in value]
+    return value
+
+
+def rfe_resource(
+    resource_type: str,
+    rfe_id: str,
+    package: dict[str, Any],
+    items: list[dict[str, Any]],
+) -> dict[str, Any]:
+    return {
+        "resource_type": resource_type,
+        "version": VERSION,
+        "status": "research_only",
+        "review_status": "unreviewed",
+        "usage_modes": ["research_test", "simulation"],
+        "contains_patient_responses": False,
+        "generated_at": GENERATED_AT,
+        "reason_for_encounter": rfe_id,
+        "encounter_contexts": package.get("scope", {}).get("encounter_contexts", []),
+        "package_id": package.get("package_id"),
+        "package_version": package.get("package_version"),
+        "count": len(items),
+        "items": [compact(item) for item in items],
+    }
+
+
+def collect_rfe_resources(root: Path) -> dict[str, dict[str, Any]]:
+    resources: dict[str, dict[str, Any]] = {}
+    for path in sorted((root / "packages" / "generated").glob("*.json")):
+        package = load_json(path)
+        reasons = package.get("scope", {}).get("reasons_for_encounter", [])
+        if len(reasons) != 1:
+            continue
+        rfe_id = reasons[0]
+        slug = rfe_id.removeprefix("rfe.")
+        nodes = package.get("knowledge_graph", {}).get("nodes", [])
+        facts = [node for node in nodes if node.get("type") == "Fact"]
+        questions = [node for node in nodes if node.get("type") == "QuestionTemplate"]
+        rules = package.get("rule_graph", {}).get("rules", [])
+        resources[f"rfe/{slug}/facts.json"] = rfe_resource(
+            "ReasonForEncounterFactCollection", rfe_id, package, facts
+        )
+        resources[f"rfe/{slug}/questions.json"] = rfe_resource(
+            "ReasonForEncounterQuestionCollection", rfe_id, package, questions
+        )
+        resources[f"rfe/{slug}/rules.json"] = rfe_resource(
+            "ReasonForEncounterRuleCollection", rfe_id, package, rules
+        )
+    return resources
 
 
 def collect(root: Path) -> dict[str, dict[str, Any]]:
@@ -127,12 +191,20 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
         raise RuntimeError("Screening knowledge must remain research_only/unreviewed")
 
     screening["contains_patient_responses"] = False
-    return {
+    catalog = sanitize(load_json(root / "knowledge" / "catalog" / "primary-care-rfe.json"))
+    catalog["resource_type"] = "ReasonForEncounterCatalog"
+    catalog["review_status"] = "unreviewed"
+    catalog["usage_modes"] = ["research_test", "simulation"]
+    catalog["contains_patient_responses"] = False
+    resources = {
+        "reason-for-encounters.json": catalog,
         "facts.json": envelope("FactCollection", deduplicate(facts)),
         "question-groups.json": envelope("QuestionCollection", deduplicate(questions)),
         "safety-rules.json": envelope("SafetyRuleCollection", deduplicate(rules)),
         "screening-kr.json": screening,
     }
+    resources.update(collect_rfe_resources(root))
+    return resources
 
 
 def encoded(document: dict[str, Any]) -> bytes:
@@ -145,12 +217,17 @@ def build(root: Path, output: Path) -> dict[str, Any]:
     manifest_resources = []
     for name, document in sorted(resources.items()):
         payload = encoded(document)
-        (output / name).write_bytes(payload)
+        destination = output / name
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(payload)
         manifest_resources.append({
-            "name": name.removesuffix(".json"),
+            "name": name.removesuffix(".json").replace("/", "-"),
             "path": f"/gpt/{name}",
             "sha256": hashlib.sha256(payload).hexdigest(),
-            "count": document.get("count", len(document.get("question_groups", []))),
+            "count": document.get(
+                "count",
+                len(document.get("entries", document.get("question_groups", []))),
+            ),
         })
     manifest = {
         "id": "clinical-interview-platform.gpt-manifest",

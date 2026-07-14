@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Clinical Interview Research Knowledge
-  version: 0.1.0
+  version: 0.2.0
   description: Read-only, research-only Knowledge and Fact resources. No patient data is accepted.
 servers:
   - url: https://ggojang.github.io/clinical-interview-platform
@@ -16,40 +16,56 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/JsonDocument'}
-  /gpt/facts.json:
+  /gpt/reason-for-encounters.json:
     get:
-      operationId: getFacts
-      summary: Get reusable clinical Fact definitions
+      operationId: getReasonForEncounters
+      summary: Get the Reason for Encounter catalog, aliases, and implementation status
       responses:
         '200':
-          description: Fact collection
+          description: Reason for Encounter catalog
           content:
             application/json:
               schema: {$ref: '#/components/schemas/JsonDocument'}
-  /gpt/question-groups.json:
+  /gpt/rfe/{rfeId}/facts.json:
     get:
-      operationId: getQuestionGroups
-      summary: Get interview questions and questionnaire groups
+      operationId: getReasonForEncounterFacts
+      summary: Get compact Facts for one implemented Reason for Encounter
+      parameters:
+        - $ref: '#/components/parameters/RfeId'
       responses:
         '200':
-          description: Question collection
+          description: Reason for Encounter Fact collection
           content:
             application/json:
               schema: {$ref: '#/components/schemas/JsonDocument'}
-  /gpt/safety-rules.json:
+  /gpt/rfe/{rfeId}/questions.json:
     get:
-      operationId: getSafetyRules
-      summary: Get deterministic interview safety and routing rules
+      operationId: getReasonForEncounterQuestions
+      summary: Get compact questions for one implemented Reason for Encounter
+      parameters:
+        - $ref: '#/components/parameters/RfeId'
       responses:
         '200':
-          description: Safety rule collection
+          description: Reason for Encounter question collection
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/JsonDocument'}
+  /gpt/rfe/{rfeId}/rules.json:
+    get:
+      operationId: getReasonForEncounterRules
+      summary: Get compact safety and routing rules for one implemented Reason for Encounter
+      parameters:
+        - $ref: '#/components/parameters/RfeId'
+      responses:
+        '200':
+          description: Reason for Encounter rule collection
           content:
             application/json:
               schema: {$ref: '#/components/schemas/JsonDocument'}
   /gpt/screening-kr.json:
     get:
       operationId: getScreeningKnowledge
-      summary: Get Korean national screening candidate rules and question groups
+      summary: Get Korean screening knowledge only after preventive care is the Reason for Encounter
       responses:
         '200':
           description: Korean screening knowledge
@@ -57,6 +73,15 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/JsonDocument'}
 components:
+  parameters:
+    RfeId:
+      name: rfeId
+      in: path
+      required: true
+      description: Implemented Reason for Encounter package identifier without the rfe prefix
+      schema:
+        type: string
+        enum: [cough, dyspnea, fever]
   schemas:
     JsonDocument:
       type: object

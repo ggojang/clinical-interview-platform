@@ -1,0 +1,838 @@
+{
+  "contains_patient_responses": false,
+  "count": 57,
+  "encounter_contexts": [
+    "context.primary_care"
+  ],
+  "generated_at": "2026-07-14T00:00:00Z",
+  "items": [
+    {
+      "id": "rule.dyspnea.safety.confusion",
+      "priority": 1000,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "symptom.confusion"
+      }
+    },
+    {
+      "id": "rule.dyspnea.safety.cyanosis",
+      "priority": 1000,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "symptom.cyanosis"
+      }
+    },
+    {
+      "id": "rule.dyspnea.safety.severe_breathing_difficulty",
+      "priority": 1000,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": "severe",
+        "fact": "symptom.dyspnea"
+      }
+    },
+    {
+      "id": "rule.dyspnea.safety.stridor",
+      "priority": 1000,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "symptom.stridor"
+      }
+    },
+    {
+      "id": "rule.dyspnea.safety.sudden_with_unilateral_leg_features",
+      "priority": 920,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "all": [
+          {
+            "equals": "sudden",
+            "fact": "symptom.dyspnea_onset"
+          },
+          {
+            "equals": true,
+            "fact": "symptom.unilateral_leg_pain_swelling"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.dyspnea.safety.chest_pain",
+      "priority": 900,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "symptom.chest_pain"
+      }
+    },
+    {
+      "id": "rule.dyspnea.safety.hemoptysis",
+      "priority": 900,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "symptom.hemoptysis"
+      }
+    },
+    {
+      "id": "rule.dyspnea.safety.syncope",
+      "priority": 900,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "symptom.syncope"
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_severity",
+      "priority": 130,
+      "status": "research_only",
+      "then": {
+        "reason": "immediate_respiration_safety_gate",
+        "target": "target.dyspnea.determine_severity"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.dyspnea.determine_severity": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_duration",
+      "priority": 125,
+      "status": "research_only",
+      "then": {
+        "reason": "characterize_course",
+        "target": "target.dyspnea.determine_duration"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.dyspnea.determine_duration": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_onset",
+      "priority": 124,
+      "status": "research_only",
+      "then": {
+        "reason": "onset_safety_characterization",
+        "target": "target.dyspnea.determine_onset"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.dyspnea.determine_onset": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_at_rest",
+      "priority": 122,
+      "status": "research_only",
+      "then": {
+        "reason": "functional_severity",
+        "target": "target.dyspnea.determine_at_rest"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.dyspnea.determine_at_rest": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_exertional",
+      "priority": 118,
+      "status": "research_only",
+      "then": {
+        "reason": "functional_characterization",
+        "target": "target.dyspnea.determine_exertional"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.dyspnea.determine_exertional": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_cyanosis",
+      "priority": 117,
+      "status": "research_only",
+      "then": {
+        "reason": "immediate_safety_gate",
+        "target": "target.dyspnea.determine_cyanosis"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.dyspnea.determine_cyanosis": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_confusion",
+      "priority": 116,
+      "status": "research_only",
+      "then": {
+        "reason": "immediate_safety_gate",
+        "target": "target.dyspnea.determine_confusion"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.dyspnea.determine_confusion": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_stridor",
+      "priority": 115,
+      "status": "research_only",
+      "then": {
+        "reason": "upper_airway_safety_gate",
+        "target": "target.dyspnea.determine_stridor"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.dyspnea.determine_stridor": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_syncope",
+      "priority": 114,
+      "status": "research_only",
+      "then": {
+        "reason": "circulatory_safety_gate",
+        "target": "target.dyspnea.determine_syncope"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.dyspnea.determine_syncope": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_chest_pain",
+      "priority": 113,
+      "status": "research_only",
+      "then": {
+        "reason": "chest_safety_gate",
+        "target": "target.dyspnea.determine_chest_pain"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.dyspnea.determine_chest_pain": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_hemoptysis",
+      "priority": 112,
+      "status": "research_only",
+      "then": {
+        "reason": "thromboembolic_warning_feature",
+        "target": "target.dyspnea.determine_hemoptysis"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.dyspnea.determine_hemoptysis": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_unilateral_leg_features",
+      "priority": 111,
+      "status": "research_only",
+      "then": {
+        "reason": "thromboembolic_warning_feature",
+        "target": "target.dyspnea.determine_unilateral_leg_features"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.dyspnea.determine_unilateral_leg_features": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_pleuritic_pain",
+      "priority": 108,
+      "status": "research_only",
+      "then": {
+        "reason": "thromboembolic_warning_feature",
+        "target": "target.dyspnea.determine_pleuritic_pain"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.dyspnea.determine_pleuritic_pain": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_immobility_surgery",
+      "priority": 104,
+      "status": "research_only",
+      "then": {
+        "reason": "thromboembolic_risk_context",
+        "target": "target.dyspnea.determine_immobility_surgery"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.dyspnea.determine_immobility_surgery": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_vte_history",
+      "priority": 103,
+      "status": "research_only",
+      "then": {
+        "reason": "thromboembolic_risk_context",
+        "target": "target.dyspnea.determine_vte_history"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.dyspnea.determine_vte_history": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.activate.dyspnea",
+      "priority": 100,
+      "status": "research_only",
+      "then": {
+        "activate_intents": [
+          "intent.characterize_symptom",
+          "intent.screen_red_flags",
+          "intent.differentiate_common_causes",
+          "intent.risk_assessment"
+        ]
+      },
+      "type": "activation",
+      "when": {
+        "rfe": "rfe.dyspnea"
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_palpitations",
+      "priority": 98,
+      "status": "research_only",
+      "then": {
+        "reason": "cardiac_feature_localization",
+        "target": "target.dyspnea.determine_palpitations"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.dyspnea.determine_palpitations": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_orthopnea",
+      "priority": 97,
+      "status": "research_only",
+      "then": {
+        "reason": "congestion_feature_localization",
+        "target": "target.dyspnea.determine_orthopnea"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.dyspnea.determine_orthopnea": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_nocturnal",
+      "priority": 96,
+      "status": "research_only",
+      "then": {
+        "reason": "nocturnal_feature_localization",
+        "target": "target.dyspnea.determine_nocturnal"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.dyspnea.determine_nocturnal": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_ankle_swelling",
+      "priority": 95,
+      "status": "research_only",
+      "then": {
+        "reason": "congestion_feature_localization",
+        "target": "target.dyspnea.determine_ankle_swelling"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.dyspnea.determine_ankle_swelling": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_wheeze",
+      "priority": 92,
+      "status": "research_only",
+      "then": {
+        "reason": "airway_feature_localization",
+        "target": "target.dyspnea.determine_wheeze"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.dyspnea.determine_wheeze": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_cough",
+      "priority": 90,
+      "status": "research_only",
+      "then": {
+        "reason": "respiratory_feature_localization",
+        "target": "target.dyspnea.determine_cough"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.dyspnea.determine_cough": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_sputum",
+      "priority": 88,
+      "status": "research_only",
+      "then": {
+        "reason": "respiratory_feature_localization",
+        "target": "target.dyspnea.determine_sputum"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.dyspnea.determine_sputum": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_fever",
+      "priority": 86,
+      "status": "research_only",
+      "then": {
+        "reason": "infectious_feature_localization",
+        "target": "target.dyspnea.determine_fever"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.dyspnea.determine_fever": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_smoking",
+      "priority": 78,
+      "status": "research_only",
+      "then": {
+        "reason": "respiratory_risk_context",
+        "target": "target.dyspnea.determine_smoking"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.dyspnea.determine_smoking": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_ankle_swelling",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dyspnea.determine_ankle_swelling"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_at_rest",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dyspnea.determine_at_rest"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_chest_pain",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dyspnea.determine_chest_pain"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_confusion",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dyspnea.determine_confusion"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_cough",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dyspnea.determine_cough"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_cyanosis",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dyspnea.determine_cyanosis"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_duration",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dyspnea.determine_duration"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_exertional",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dyspnea.determine_exertional"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_fever",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dyspnea.determine_fever"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_hemoptysis",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dyspnea.determine_hemoptysis"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_immobility_surgery",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dyspnea.determine_immobility_surgery"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_nocturnal",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dyspnea.determine_nocturnal"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_onset",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dyspnea.determine_onset"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_orthopnea",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dyspnea.determine_orthopnea"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_palpitations",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dyspnea.determine_palpitations"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_pleuritic_pain",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dyspnea.determine_pleuritic_pain"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_severity",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dyspnea.determine_severity"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_smoking",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dyspnea.determine_smoking"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_sputum",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dyspnea.determine_sputum"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_stridor",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dyspnea.determine_stridor"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_syncope",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dyspnea.determine_syncope"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_unilateral_leg_features",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dyspnea.determine_unilateral_leg_features"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_vte_history",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dyspnea.determine_vte_history"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_wheeze",
+      "priority": 50,
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.dyspnea.determine_wheeze"
+      }
+    }
+  ],
+  "package_id": "package.primary-care-dyspnea",
+  "package_version": "0.1.0",
+  "reason_for_encounter": "rfe.dyspnea",
+  "resource_type": "ReasonForEncounterRuleCollection",
+  "review_status": "unreviewed",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "version": "0.1.0"
+}

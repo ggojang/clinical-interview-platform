@@ -175,6 +175,57 @@ Feedback must never
 - bypass Compilation
 - bypass Simulation
 
+This boundary does not prohibit a later Build-Time service upgrade.
+
+---
+
+# AI-Managed Research Service Upgrade
+
+Resolution is not limited to answering the reporter.
+
+When de-identified feedback exposes a reproducible defect or reusable gap, the AI Knowledge Factory should improve the service when it can do so safely and within scope.
+
+An upgrade may change
+
+- Question wording
+- interview routing
+- Fact definitions
+- Knowledge Graph content
+- Rule Graph content
+- safety behavior
+- reporting
+- tests and Simulations
+- the read-only GPT Knowledge API
+- Custom GPT instructions or configuration
+
+The automated research path is
+
+```text
+Additional Comment or Feedback
+        ↓
+Privacy-safe Generalization
+        ↓
+Reproduction Test
+        ↓
+Build-Time Change
+        ↓
+Regression + Privacy + Validation Gates
+        ↓
+New research_only/unreviewed Version
+        ↓
+Research Test Deployment
+        ↓
+Applied Upgrade Report
+```
+
+Human participation is optional for this research-only path.
+
+Human review remains required before promotion to reviewed or Production knowledge.
+
+The AI must report only the result for successfully applied upgrades. If it cannot upgrade because of missing evidence, unsafe ambiguity, external authority, licensing, permissions or a required clinical decision, it reports the unresolved item, reason and required human action.
+
+Raw patient responses and direct identifiers never enter the repository. Regression fixtures derived from feedback must be synthetic and generalized.
+
 ---
 
 # Knowledge Deprecation
@@ -249,4 +300,8 @@ Evolution metrics include
 
 Feedback is routed back to the Knowledge Factory.
 
-Only reviewed, simulated and compiled knowledge returns to Runtime.
+Only validated, simulated and compiled knowledge returns to Runtime.
+
+Research Runtime may receive a new `unreviewed/research_only` package after automated gates pass.
+
+Production Runtime may receive only appropriately reviewed knowledge.
