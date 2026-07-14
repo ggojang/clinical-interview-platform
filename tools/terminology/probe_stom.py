@@ -87,6 +87,24 @@ def probe() -> dict:
         if attribute_id not in chest_mrcm_index:
             raise RuntimeError(f"expected chest-pain MRCM attribute missing: {attribute_id}")
 
+    headache_lookup = request_json(
+        "/fhir/CodeSystem/$lookup",
+        query={
+            "system": "http://snomed.info/sct",
+            "code": "25064002",
+            "_format": "json",
+        },
+    )
+    if parameter_value(headache_lookup, "display") != "Headache (finding)":
+        raise RuntimeError("SNOMED CT headache lookup did not return expected display")
+    headache_mrcm_attributes = request_json("/allow/attributes/SNOMEDCT/25064002")
+    if not isinstance(headache_mrcm_attributes, list):
+        raise RuntimeError("headache MRCM attribute response is not a list")
+    headache_mrcm_index = {item.get("id"): item for item in headache_mrcm_attributes}
+    for attribute_id in ("363698007", "246112005"):
+        if attribute_id not in headache_mrcm_index:
+            raise RuntimeError(f"expected headache MRCM attribute missing: {attribute_id}")
+
     lookup = request_json(
         "/fhir/CodeSystem/$lookup",
         query={
@@ -137,6 +155,14 @@ def probe() -> dict:
             "version": parameter_value(chest_lookup, "version"),
             "verified_attribute_ids": ["246112005", "363698007"],
             "attribute_count_returned": len(chest_mrcm_attributes),
+            "clinical_rule_authority": False,
+        },
+        "headache_snomed_mrcm": {
+            "focus_code": "25064002",
+            "display": parameter_value(headache_lookup, "display"),
+            "version": parameter_value(headache_lookup, "version"),
+            "verified_attribute_ids": ["246112005", "363698007"],
+            "attribute_count_returned": len(headache_mrcm_attributes),
             "clinical_rule_authority": False,
         },
         "hira_drug_search": {

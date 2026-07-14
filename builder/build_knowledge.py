@@ -56,6 +56,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-chest-pain.json",
         "version": "0.1.0",
     },
+    "headache": {
+        "base_graph": ROOT / "knowledge/base/primary-care-headache.json",
+        "base_rules": ROOT / "rules/base/primary-care-headache.json",
+        "fragment_root": ROOT / "knowledge/generated/neurological/headache",
+        "output_graph": ROOT / "knowledge/graph/primary-care-headache.json",
+        "output_rules": ROOT / "rules/primary-care-headache.json",
+        "version": "0.1.0",
+    },
 }
 
 

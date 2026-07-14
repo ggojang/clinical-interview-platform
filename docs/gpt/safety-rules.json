@@ -1,6 +1,6 @@
 {
   "contains_patient_responses": false,
-  "count": 48,
+  "count": 58,
   "generated_at": "2026-07-14T00:00:00Z",
   "items": [
     {
@@ -805,6 +805,208 @@
       }
     },
     {
+      "id": "rule.headache.safety.altered-consciousness",
+      "priority": 1000,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "symptom.altered_consciousness_or_cognition"
+      }
+    },
+    {
+      "id": "rule.headache.safety.meningitis-combination",
+      "priority": 1000,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.fever"
+          },
+          {
+            "equals": true,
+            "fact": "symptom.neck_stiffness"
+          },
+          {
+            "equals": true,
+            "fact": "symptom.altered_consciousness_or_cognition"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.headache.safety.neurological-deficit",
+      "priority": 1000,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "symptom.neurological_deficit"
+      }
+    },
+    {
+      "id": "rule.headache.safety.new-immunocompromised",
+      "priority": 900,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.headache.new_onset"
+          },
+          {
+            "equals": true,
+            "fact": "patient.immunocompromised"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.headache.safety.new-malignancy-history",
+      "priority": 900,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.headache.new_onset"
+          },
+          {
+            "equals": true,
+            "fact": "history.malignancy"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.headache.safety.new-unexplained-vomiting",
+      "priority": 900,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.headache.new_onset"
+          },
+          {
+            "equals": true,
+            "fact": "symptom.unexplained_vomiting"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.headache.safety.painful-red-eye-vision",
+      "priority": 900,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.painful_red_eye"
+          },
+          {
+            "equals": true,
+            "fact": "symptom.visual_disturbance"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.headache.safety.recent-head-trauma",
+      "priority": 900,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "history.recent_head_trauma"
+      }
+    },
+    {
+      "id": "rule.headache.safety.sudden-peak",
+      "priority": 1000,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "symptom.headache.maximum_within_5_minutes"
+      }
+    },
+    {
+      "id": "rule.headache.safety.worsening-fever",
+      "priority": 900,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.headache.worsening"
+          },
+          {
+            "equals": true,
+            "fact": "symptom.fever"
+          }
+        ]
+      }
+    },
+    {
       "id": "rule.safety.chest_pain_with_dyspnea",
       "priority": 900,
       "status": "research_only",
@@ -868,5 +1070,5 @@
     "research_test",
     "simulation"
   ],
-  "version": "0.6.0"
+  "version": "0.7.0"
 }

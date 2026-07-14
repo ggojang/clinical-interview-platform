@@ -17,7 +17,7 @@ from evaluation.run_evaluation import run as run_evaluation
 from runtime.memory import ClinicalMemory
 from runtime.package import (
     ABDOMINAL_PAIN_PACKAGE, CHEST_PAIN_PACKAGE, DEFAULT_PACKAGE,
-    DYSPNEA_PACKAGE, FEVER_PACKAGE,
+    DYSPNEA_PACKAGE, FEVER_PACKAGE, HEADACHE_PACKAGE,
     PackageLoadError, load_package,
 )
 from runtime.session import InterviewSession
@@ -32,7 +32,10 @@ class CompilerTests(unittest.TestCase):
         self.assertEqual(first, second)
 
     def test_production_rejects_unreviewed_safety(self):
-        for profile in ("cough", "fever", "dyspnea", "abdominal_pain", "chest_pain"):
+        for profile in (
+            "cough", "fever", "dyspnea", "abdominal_pain", "chest_pain",
+            "headache",
+        ):
             with self.subTest(profile=profile), self.assertRaises(CompilationError):
                 compile_package(production=True, profile=profile)
 
@@ -239,6 +242,38 @@ class CompilerTests(unittest.TestCase):
         self.assertFalse(mapping["validation"]["clinical_rule_authority"])
         self.assertFalse(mapping["validation"]["raw_response_cached"])
 
+    def test_headache_package_is_deterministic_and_question_complete(self):
+        first = compile_package(profile="headache")
+        second = compile_package(profile="headache")
+        self.assertEqual(first, second)
+        facts = {
+            node["id"] for node in first["knowledge_graph"]["nodes"]
+            if node["type"] == "Fact"
+        }
+        self.assertEqual(len(facts), 30)
+        self.assertEqual(facts, set(first["indexes"]["questions_by_fact"]))
+        self.assertEqual(first["coverage"]["total_safety_rules"], 10)
+        self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 10)
+        self.assertEqual(first["coverage"]["uncovered_safety_rules"], [])
+
+    def test_headache_mrcm_is_build_time_metadata_only(self):
+        package = compile_package(profile="headache")
+        facts = {
+            node["id"]: node for node in package["knowledge_graph"]["nodes"]
+            if node["type"] == "Fact"
+        }
+        self.assertEqual(
+            facts["symptom.headache.location"]["terminology_binding"]["focus_code"],
+            "25064002",
+        )
+        mapping = json.loads(
+            (
+                Path(__file__).resolve().parents[1]
+                / "mappings/terminology/snomed-mrcm-headache.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertFalse(mapping["validation"]["clinical_rule_authority"])
+
 
 class ClinicalMemoryTests(unittest.TestCase):
     def setUp(self):
@@ -406,6 +441,22 @@ class PackageRuntimeTests(unittest.TestCase):
     def test_chest_pain_research_package_is_rejected_in_production(self):
         with self.assertRaises(PackageLoadError):
             load_package(CHEST_PAIN_PACKAGE, execution_mode="production")
+
+    def test_headache_package_simulation_evaluation_passes(self):
+        report = run_evaluation(HEADACHE_PACKAGE)
+        self.assertTrue(report["passed"])
+        self.assertEqual(report["case_count"], 11)
+        self.assertLessEqual(max(item["turns"] for item in report["results"]), 31)
+
+    def test_headache_runtime_uses_headache_rfe(self):
+        session = InterviewSession("headache-runtime", package_path=HEADACHE_PACKAGE)
+        state = session.process("I have a headache.")
+        self.assertIn("neurological.headache", state["active_patterns"])
+        self.assertEqual(state["package"]["id"], "package.primary-care-headache")
+
+    def test_headache_research_package_is_rejected_in_production(self):
+        with self.assertRaises(PackageLoadError):
+            load_package(HEADACHE_PACKAGE, execution_mode="production")
 
 
 if __name__ == "__main__":

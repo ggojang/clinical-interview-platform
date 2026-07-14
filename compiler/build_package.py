@@ -81,6 +81,18 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/cardiovascular/chest-pain",
         "research_manifests": [ROOT / "sources/manifests/primary-care-chest-pain-research.json"],
     },
+    "headache": {
+        "graph": ROOT / "knowledge/graph/primary-care-headache.json",
+        "rules": ROOT / "rules/primary-care-headache.json",
+        "sources": ROOT / "sources/manifests/primary-care-headache.json",
+        "completion_policy": ROOT / "policies/primary-care-headache-completion.json",
+        "output": ROOT / "packages/generated/primary-care-headache-0.1.0.json",
+        "package_id": "package.primary-care-headache",
+        "package_version": "0.1.0",
+        "rfe": "rfe.headache",
+        "simulation_root": ROOT / "simulation/patients/neurological/headache",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-headache-research.json"],
+    },
 }
 
 ALLOWED_NODE_TYPES = {

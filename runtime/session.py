@@ -239,6 +239,12 @@ class InterviewSession:
                     additions[self.last_question_fact] = fact(
                         normalized, patient_text, turn, .92
                     )
+                elif node.get("value_type") == "integer" and re.fullmatch(
+                    r"\d+", normalized
+                ):
+                    additions[self.last_question_fact] = fact(
+                        int(normalized), patient_text, turn, .95
+                    )
                 elif (
                     node.get("value_type") == "string"
                     and normalized
@@ -363,6 +369,9 @@ class InterviewSession:
         if self.reason_for_encounter == "rfe.chest_pain":
             self._update_chest_pain_patterns()
             return
+        if self.reason_for_encounter == "rfe.headache":
+            self._update_headache_patterns()
+            return
         active = ["respiratory.cough"]
         cold_support = sum(
             self.memory.value(fact_id) is True
@@ -441,6 +450,31 @@ class InterviewSession:
             "symptom.fever", "symptom.palpitations",
         )):
             active.append("chest_pain.other_associated_features")
+        self.active_patterns = active
+
+    def _update_headache_patterns(self) -> None:
+        active = ["neurological.headache"]
+        if any(self.memory.value(item) is True for item in (
+            "symptom.nausea_or_vomiting", "symptom.light_sensitivity",
+            "symptom.sound_sensitivity", "symptom.aura_visual",
+            "symptom.aura_sensory", "symptom.aura_speech",
+        )) or self.memory.value("symptom.headache.quality") == "pulsating":
+            active.append("headache.migraine_associated_features")
+        if any(self.memory.value(item) is True for item in (
+            "symptom.fever", "symptom.neck_stiffness",
+            "symptom.altered_consciousness_or_cognition",
+        )):
+            active.append("headache.meningeal_warning_features")
+        if any(self.memory.value(item) is True for item in (
+            "symptom.headache.maximum_within_5_minutes",
+            "symptom.neurological_deficit", "history.recent_head_trauma",
+            "symptom.headache.cough_or_valsalva_trigger",
+            "symptom.headache.exercise_trigger", "symptom.headache.postural",
+            "symptom.headache.worsening", "symptom.painful_red_eye",
+            "symptom.visual_disturbance", "patient.immunocompromised",
+            "history.malignancy", "symptom.unexplained_vomiting",
+        )):
+            active.append("headache.secondary_warning_features")
         self.active_patterns = active
 
     def _update_dyspnea_patterns(self) -> None:
