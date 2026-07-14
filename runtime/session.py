@@ -659,6 +659,9 @@ class InterviewSession:
         if self.reason_for_encounter == "rfe.eye_symptoms":
             self._update_eye_patterns()
             return
+        if self.reason_for_encounter == "rfe.ear_hearing_symptoms":
+            self._update_ear_hearing_patterns()
+            return
         active = ["respiratory.cough"]
         cold_support = sum(
             self.memory.value(fact_id) is True
@@ -1110,6 +1113,26 @@ class InterviewSession:
             "eye.periorbital_swelling_with_fever_or_unwell",
         )):
             active.append("eye.orbital_warning_features")
+        self.active_patterns = active
+
+    def _update_ear_hearing_patterns(self) -> None:
+        active = ["otologic.ear_hearing_symptoms"]
+        branch = self.memory.value("ear.primary_symptom_group")
+        if branch:
+            active.append(f"ear.branch.{branch}")
+        if any(self.memory.value(x) is True for x in (
+            "ear.sudden_hearing_loss_within_72h",
+            "ear.rapidly_worsening_hearing_4_to_90_days",
+        )):
+            active.append("ear.time_sensitive_hearing_loss")
+        if any(self.memory.value(x) is True for x in (
+            "ear.head_injury_or_penetrating_trauma",
+            "ear.clear_or_bloody_discharge_after_head_injury",
+            "ear.button_battery_or_sharp_foreign_body",
+        )):
+            active.append("ear.trauma_or_foreign_body_warning")
+        if self.memory.value("ear.postauricular_redness_swelling_tenderness_or_protrusion") is True:
+            active.append("ear.mastoid_warning_features")
         self.active_patterns = active
 
     def _update_dyspnea_patterns(self) -> None:

@@ -93,6 +93,7 @@ class GptExportTests(unittest.TestCase):
                 "rfe-weight_constitutional_change-facts", "rfe-weight_constitutional_change-questions", "rfe-weight_constitutional_change-rules",
                 "rfe-reproductive_genital_symptoms-facts", "rfe-reproductive_genital_symptoms-questions", "rfe-reproductive_genital_symptoms-rules",
                 "rfe-eye_symptoms-facts", "rfe-eye_symptoms-questions", "rfe-eye_symptoms-rules",
+                "rfe-ear_hearing_symptoms-facts", "rfe-ear_hearing_symptoms-questions", "rfe-ear_hearing_symptoms-rules",
                 "questionnaires-patient-experience-5th-2025-metadata",
                 "questionnaires-patient-experience-5th-2025-sections-1",
                 "questionnaires-patient-experience-5th-2025-sections-8",
@@ -205,6 +206,7 @@ class GptExportTests(unittest.TestCase):
         self.assertIn("only after affirmative activation confirmation", schema)
         self.assertIn("enum: [1, 2, 3, 4, 5, 6, 7, 8]", schema)
         self.assertIn("eye_symptoms", schema)
+        self.assertIn("ear_hearing_symptoms", schema)
 
     def test_rfe_catalog_and_bundles_are_consistent(self):
         with tempfile.TemporaryDirectory() as output:
@@ -223,7 +225,7 @@ class GptExportTests(unittest.TestCase):
                 implemented,
                 {
                     "abdominal_pain", "back_pain", "bowel_symptoms", "chest_pain", "cough", "dizziness_syncope",
-                    "dyspnea", "edema", "eye_symptoms", "fatigue", "fever", "focal_weakness_numbness", "headache", "hypertension_follow_up", "joint_limb_complaint", "medication_review", "mental_health_sleep",
+                    "dyspnea", "ear_hearing_symptoms", "edema", "eye_symptoms", "fatigue", "fever", "focal_weakness_numbness", "headache", "hypertension_follow_up", "joint_limb_complaint", "medication_review", "mental_health_sleep",
                     "palpitations", "reproductive_genital_symptoms", "skin_complaint", "upper_respiratory_symptoms", "urinary_symptoms",
                     "vomiting_diarrhea", "weight_constitutional_change",
                 },
@@ -319,6 +321,8 @@ class GptExportTests(unittest.TestCase):
             self.assertEqual(genital["count"], 49)
             eye = json.loads((output_path / "rfe/eye_symptoms/facts.json").read_text(encoding="utf-8"))
             self.assertEqual(eye["count"], 43)
+            ear = json.loads((output_path / "rfe/ear_hearing_symptoms/facts.json").read_text(encoding="utf-8"))
+            self.assertEqual(ear["count"], 44)
             for slug in implemented:
                 for kind in ("facts", "questions", "rules"):
                     document = json.loads(

@@ -1,0 +1,1914 @@
+{
+  "id": "knowledge.generated.ear-hearing-symptoms",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-ear-hearing-symptoms-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-07-14",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-07-15",
+    "next_full_review_at": "2027-01-10",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.ear.routing",
+      "type": "ClinicalGroup",
+      "display": "routing"
+    },
+    {
+      "id": "group.ear.shared-safety",
+      "type": "ClinicalGroup",
+      "display": "shared-safety"
+    },
+    {
+      "id": "group.ear.common",
+      "type": "ClinicalGroup",
+      "display": "common"
+    },
+    {
+      "id": "group.ear.pain-infection",
+      "type": "ClinicalGroup",
+      "display": "pain-infection"
+    },
+    {
+      "id": "group.ear.hearing-change",
+      "type": "ClinicalGroup",
+      "display": "hearing-change"
+    },
+    {
+      "id": "group.ear.discharge-trauma",
+      "type": "ClinicalGroup",
+      "display": "discharge-trauma"
+    },
+    {
+      "id": "group.ear.tinnitus",
+      "type": "ClinicalGroup",
+      "display": "tinnitus"
+    }
+  ],
+  "group_hypothesis_edges": [],
+  "safety_rules": [
+    {
+      "id": "rule.ear-hearing-symptoms.safety.sudden-hearing-loss",
+      "priority": 980,
+      "when": {
+        "fact": "ear.sudden_hearing_loss_within_72h",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.ear-hearing-symptoms.safety.rapid-hearing-decline",
+      "priority": 930,
+      "when": {
+        "fact": "ear.rapidly_worsening_hearing_4_to_90_days",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.ear-hearing-symptoms.safety.neurological-deficit",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.new_focal_neurological_deficit",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.ear-hearing-symptoms.safety.uncontrolled-vertigo",
+      "priority": 1000,
+      "when": {
+        "fact": "ear.acute_uncontrolled_vertigo_or_inability_to_stand",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.ear-hearing-symptoms.safety.mastoid-warning",
+      "priority": 950,
+      "when": {
+        "fact": "ear.postauricular_redness_swelling_tenderness_or_protrusion",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.ear-hearing-symptoms.safety.systemic-illness",
+      "priority": 930,
+      "when": {
+        "fact": "ear.severe_systemic_illness_or_high_fever",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.ear-hearing-symptoms.safety.high-risk-host",
+      "priority": 940,
+      "when": {
+        "fact": "ear.diabetes_or_immunosuppression_with_severe_pain_or_discharge",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.ear-hearing-symptoms.safety.major-trauma",
+      "priority": 1000,
+      "when": {
+        "fact": "ear.head_injury_or_penetrating_trauma",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.ear-hearing-symptoms.safety.post-trauma-discharge",
+      "priority": 1000,
+      "when": {
+        "fact": "ear.clear_or_bloody_discharge_after_head_injury",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.ear-hearing-symptoms.safety.dangerous-foreign-body",
+      "priority": 1000,
+      "when": {
+        "fact": "ear.button_battery_or_sharp_foreign_body",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.ear-hearing-symptoms.safety.tinnitus-self-harm",
+      "priority": 1000,
+      "when": {
+        "fact": "ear.tinnitus_with_immediate_self_harm_risk",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.ear-hearing-symptoms.safety.pulsatile-neuro",
+      "priority": 950,
+      "when": {
+        "fact": "ear.pulsatile_tinnitus_with_neurological_or_visual_symptoms",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "ear.primary_symptom_group",
+        "display": "Primary Ear or Hearing Symptom Group",
+        "value_type": "coded",
+        "allowed_values": [
+          "ear_pain_infection",
+          "hearing_change",
+          "discharge_trauma",
+          "tinnitus",
+          "other_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.primary-group",
+        "display": "Primary Ear or Hearing Symptom Group",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.primary-group",
+        "wording": "가장 불편한 증상은 귀 통증·감염 증상, 청력 변화, 귀 분비물·외상, 이명 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "primary-group"
+        }
+      ],
+      "supports": [
+        "group.ear.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.sudden_hearing_loss_within_72h",
+        "display": "Sudden Hearing Loss within 72 Hours",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "79471008"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.ear-hearing-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.sudden-hearing-loss",
+        "display": "Sudden Hearing Loss within 72 Hours",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.sudden-hearing-loss",
+        "wording": "청력이 3일 이내에 갑자기 떨어졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "sudden-hearing-loss"
+        }
+      ],
+      "supports": [
+        "group.ear.shared-safety",
+        "group.ear.hearing-change"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.rapidly_worsening_hearing_4_to_90_days",
+        "display": "Rapidly Worsening Hearing over 4 to 90 Days",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.rapid-hearing-decline",
+        "display": "Rapidly Worsening Hearing over 4 to 90 Days",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.rapid-hearing-decline",
+        "wording": "청력이 4일에서 3개월 사이에 빠르게 나빠지고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "rapid-hearing-decline"
+        }
+      ],
+      "supports": [
+        "group.ear.shared-safety",
+        "group.ear.hearing-change"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.new_focal_neurological_deficit",
+        "display": "New Focal Neurological Deficit",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.neurological-deficit",
+        "display": "New Focal Neurological Deficit",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.neurological-deficit",
+        "wording": "얼굴 처짐, 한쪽 힘 빠짐·감각 저하, 말이 어눌함 같은 증상이 새로 생겼나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 127,
+          "reason": "neurological-deficit"
+        }
+      ],
+      "supports": [
+        "group.ear.shared-safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "ear.acute_uncontrolled_vertigo_or_inability_to_stand",
+        "display": "Acute Uncontrolled Vertigo or Inability to Stand",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.uncontrolled-vertigo",
+        "display": "Acute Uncontrolled Vertigo or Inability to Stand",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.uncontrolled-vertigo",
+        "wording": "심한 회전성 어지럼 때문에 서거나 걷기 어렵거나 계속 토하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 126,
+          "reason": "uncontrolled-vertigo"
+        }
+      ],
+      "supports": [
+        "group.ear.shared-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.postauricular_redness_swelling_tenderness_or_protrusion",
+        "display": "Postauricular Mastoid Warning Features",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.mastoid-warning",
+        "display": "Postauricular Mastoid Warning Features",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.mastoid-warning",
+        "wording": "귀 뒤가 붉고 붓거나 심하게 아프고, 귀가 바깥으로 밀려나 보이나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 125,
+          "reason": "mastoid-warning"
+        }
+      ],
+      "supports": [
+        "group.ear.shared-safety",
+        "group.ear.pain-infection"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.severe_systemic_illness_or_high_fever",
+        "display": "Severe Systemic Illness or High Fever",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.systemic-illness",
+        "display": "Severe Systemic Illness or High Fever",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.systemic-illness",
+        "wording": "고열이 있거나 오한·처짐 등으로 전신 상태가 매우 나쁜가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 124,
+          "reason": "systemic-illness"
+        }
+      ],
+      "supports": [
+        "group.ear.shared-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.diabetes_or_immunosuppression_with_severe_pain_or_discharge",
+        "display": "High-risk Host with Severe Ear Pain or Discharge",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.high-risk-host",
+        "display": "High-risk Host with Severe Ear Pain or Discharge",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.high-risk-host",
+        "wording": "당뇨나 면역저하가 있으면서 귀 통증이 심하거나 분비물이 나오나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 123,
+          "reason": "high-risk-host"
+        }
+      ],
+      "supports": [
+        "group.ear.shared-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.head_injury_or_penetrating_trauma",
+        "display": "Head Injury or Penetrating Ear Trauma",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.major-trauma",
+        "display": "Head Injury or Penetrating Ear Trauma",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.major-trauma",
+        "wording": "머리를 다쳤거나 날카로운 물체가 귀 안을 찌른 뒤 증상이 생겼나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 122,
+          "reason": "major-trauma"
+        }
+      ],
+      "supports": [
+        "group.ear.shared-safety",
+        "group.ear.discharge-trauma"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.clear_or_bloody_discharge_after_head_injury",
+        "display": "Clear or Bloody Ear Discharge after Head Injury",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.post-trauma-discharge",
+        "display": "Clear or Bloody Ear Discharge after Head Injury",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.post-trauma-discharge",
+        "wording": "머리를 다친 뒤 귀에서 맑은 물이나 피가 나오나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 121,
+          "reason": "post-trauma-discharge"
+        }
+      ],
+      "supports": [
+        "group.ear.shared-safety",
+        "group.ear.discharge-trauma"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.button_battery_or_sharp_foreign_body",
+        "display": "Button Battery or Sharp Ear Foreign Body",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.dangerous-foreign-body",
+        "display": "Button Battery or Sharp Ear Foreign Body",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.dangerous-foreign-body",
+        "wording": "단추형 건전지나 날카로운 물체가 귀 안에 들어갔거나 들어간 것으로 의심되나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 120,
+          "reason": "dangerous-foreign-body"
+        }
+      ],
+      "supports": [
+        "group.ear.shared-safety",
+        "group.ear.discharge-trauma"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.tinnitus_with_immediate_self_harm_risk",
+        "display": "Tinnitus with Immediate Self-harm Risk",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.tinnitus-self-harm",
+        "display": "Tinnitus with Immediate Self-harm Risk",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.tinnitus-self-harm",
+        "wording": "이명 때문에 지금 자신을 해칠 생각이나 안전을 지키기 어렵다는 느낌이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 119,
+          "reason": "tinnitus-self-harm"
+        }
+      ],
+      "supports": [
+        "group.ear.shared-safety",
+        "group.ear.tinnitus"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.pulsatile_tinnitus_with_neurological_or_visual_symptoms",
+        "display": "Pulsatile Tinnitus with Neurological or Visual Symptoms",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.pulsatile-neuro",
+        "display": "Pulsatile Tinnitus with Neurological or Visual Symptoms",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.pulsatile-neuro",
+        "wording": "맥박에 맞춰 들리는 소리와 함께 새 신경 증상이나 시야 변화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 118,
+          "reason": "pulsatile-neuro"
+        }
+      ],
+      "supports": [
+        "group.ear.shared-safety",
+        "group.ear.tinnitus"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.symptom_duration",
+        "display": "Ear Symptom Duration",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.duration",
+        "display": "Ear Symptom Duration",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.duration",
+        "wording": "증상은 언제 시작됐고 계속되는지 반복되는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 112,
+          "reason": "duration"
+        }
+      ],
+      "supports": [
+        "group.ear.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.onset_and_progression",
+        "display": "Ear Symptom Onset and Progression",
+        "value_type": "coded",
+        "allowed_values": [
+          "sudden_improving",
+          "sudden_same",
+          "sudden_worsening",
+          "gradual_improving",
+          "gradual_same",
+          "gradual_worsening",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.onset-progression",
+        "display": "Ear Symptom Onset and Progression",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.onset-progression",
+        "wording": "갑자기 또는 서서히 시작했고, 좋아짐·같음·악화 중 어느 쪽인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 111,
+          "reason": "onset-progression"
+        }
+      ],
+      "supports": [
+        "group.ear.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.laterality",
+        "display": "Ear Laterality",
+        "value_type": "coded",
+        "allowed_values": [
+          "left",
+          "right",
+          "bilateral",
+          "unclear"
+        ],
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.ear-hearing-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.laterality",
+        "display": "Ear Laterality",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.laterality",
+        "wording": "왼쪽 귀, 오른쪽 귀, 양쪽 귀 중 어디인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 110,
+          "reason": "laterality"
+        }
+      ],
+      "supports": [
+        "group.ear.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.pain_severity",
+        "display": "Ear Pain Severity",
+        "value_type": "coded",
+        "allowed_values": [
+          "none",
+          "mild",
+          "moderate",
+          "severe"
+        ],
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "301354004"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.ear-hearing-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.pain-severity",
+        "display": "Ear Pain Severity",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.pain-severity",
+        "wording": "귀 통증은 없음, 가벼움, 중간, 심함 중 어느 정도인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 109,
+          "reason": "pain-severity"
+        }
+      ],
+      "supports": [
+        "group.ear.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.hearing_function_impact",
+        "display": "Hearing Function Impact",
+        "value_type": "coded",
+        "allowed_values": [
+          "none",
+          "mild",
+          "major",
+          "near_complete",
+          "unclear"
+        ],
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "15188001"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.ear-hearing-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.hearing-impact",
+        "display": "Hearing Function Impact",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.hearing-impact",
+        "wording": "대화나 전화·TV 소리를 듣는 데 영향이 없음, 약간, 많이, 거의 못 들음 중 어느 정도인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 108,
+          "reason": "hearing-impact"
+        }
+      ],
+      "supports": [
+        "group.ear.common",
+        "group.ear.hearing-change"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.fever_or_systemic_symptoms",
+        "display": "Fever or Systemic Symptoms",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.fever-systemic",
+        "display": "Fever or Systemic Symptoms",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.fever-systemic",
+        "wording": "열, 오한, 몸살, 구토 또는 전신 쇠약이 함께 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 103,
+          "reason": "fever-systemic"
+        }
+      ],
+      "supports": [
+        "group.ear.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.prior_disease_surgery_or_recurrent_episode",
+        "display": "Prior Ear Disease Surgery or Recurrence",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.prior-history",
+        "display": "Prior Ear Disease Surgery or Recurrence",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.prior-history",
+        "wording": "중이염·고막천공·난청·메니에르병, 귀 수술 또는 비슷한 증상 병력이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 99,
+          "reason": "prior-history"
+        }
+      ],
+      "supports": [
+        "group.ear.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.current_treatment_device_or_hearing_aid",
+        "display": "Current Ear Treatment or Hearing Device",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.treatment-device",
+        "display": "Current Ear Treatment or Hearing Device",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.treatment-device",
+        "wording": "사용 중인 귀약·항생제·보청기·인공와우와 최근 변화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 98,
+          "reason": "treatment-device"
+        }
+      ],
+      "supports": [
+        "group.ear.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.recent_uri_water_flight_noise_or_medication",
+        "display": "Recent Ear-related Exposures",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.recent-context",
+        "display": "Recent Ear-related Exposures",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.recent-context",
+        "wording": "최근 감기, 수영·물놀이, 비행·잠수, 큰 소음, 새 약 복용이 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 97,
+          "reason": "recent-context"
+        }
+      ],
+      "supports": [
+        "group.ear.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.other_detail_or_patient_priority",
+        "display": "Other Ear Detail or Patient Priority",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.other-detail",
+        "display": "Other Ear Detail or Patient Priority",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.other-detail",
+        "wording": "질문에 없지만 꼭 전달하고 싶은 증상이나 가장 걱정되는 점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 80,
+          "reason": "other-detail"
+        }
+      ],
+      "supports": [
+        "group.ear.routing",
+        "group.ear.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.pain_location",
+        "display": "Ear Pain Location",
+        "value_type": "coded",
+        "allowed_values": [
+          "deep_inside",
+          "canal_entrance",
+          "pinna",
+          "behind_ear",
+          "referred_or_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.pain-location",
+        "display": "Ear Pain Location",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.pain-location",
+        "wording": "통증은 귓속, 귓구멍 입구, 귓바퀴, 귀 뒤 중 어디가 가장 심한가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 107,
+          "reason": "pain-location"
+        }
+      ],
+      "supports": [
+        "group.ear.pain-infection"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.pinna_movement_or_tragus_tenderness",
+        "display": "Pinna Movement or Tragus Tenderness",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.tragus-tenderness",
+        "display": "Pinna Movement or Tragus Tenderness",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.tragus-tenderness",
+        "wording": "귓바퀴를 당기거나 귓구멍 앞 돌기를 누르면 더 아픈가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 106,
+          "reason": "tragus-tenderness"
+        }
+      ],
+      "supports": [
+        "group.ear.pain-infection"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.itching_or_canal_skin_change",
+        "display": "Ear Itching or Canal Skin Change",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.itching-skin",
+        "display": "Ear Itching or Canal Skin Change",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.itching-skin",
+        "wording": "귀가 가렵거나 귓구멍 피부가 붓고 벗겨지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 105,
+          "reason": "itching-skin"
+        }
+      ],
+      "supports": [
+        "group.ear.pain-infection"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.pressure_fullness_or_popping",
+        "display": "Ear Pressure Fullness or Popping",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.pressure-fullness",
+        "display": "Ear Pressure Fullness or Popping",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.pressure-fullness",
+        "wording": "귀가 먹먹하거나 꽉 찬 느낌, 딸깍거림이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 104,
+          "reason": "pressure-fullness"
+        }
+      ],
+      "supports": [
+        "group.ear.pain-infection"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.uri_sore_throat_dental_or_jaw_pain",
+        "display": "URI Throat Dental or Jaw Symptoms",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.referred-pain-context",
+        "display": "URI Throat Dental or Jaw Symptoms",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.referred-pain-context",
+        "wording": "콧물·코막힘·목 통증, 치통 또는 씹을 때 턱 통증이 함께 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 96,
+          "reason": "referred-pain-context"
+        }
+      ],
+      "supports": [
+        "group.ear.pain-infection"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.rash_or_vesicles_around_ear",
+        "display": "Rash or Vesicles around Ear",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.rash-vesicles",
+        "display": "Rash or Vesicles around Ear",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.rash-vesicles",
+        "wording": "귀나 얼굴 주변에 발진이나 물집이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 95,
+          "reason": "rash-vesicles"
+        }
+      ],
+      "supports": [
+        "group.ear.pain-infection"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.hearing_change_pattern",
+        "display": "Hearing Change Pattern",
+        "value_type": "coded",
+        "allowed_values": [
+          "sudden_loss",
+          "rapid_decline",
+          "gradual_decline",
+          "fluctuating",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.hearing-pattern",
+        "display": "Hearing Change Pattern",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.hearing-pattern",
+        "wording": "청력 변화는 갑작스러운 소실, 빠른 악화, 서서히 악화, 들쭉날쭉함 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 107,
+          "reason": "hearing-pattern"
+        }
+      ],
+      "supports": [
+        "group.ear.hearing-change"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.asymmetric_hearing_change",
+        "display": "Asymmetric Hearing Change",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.asymmetric-hearing",
+        "display": "Asymmetric Hearing Change",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.asymmetric-hearing",
+        "wording": "한쪽 귀가 다른 쪽보다 확실히 덜 들리나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 106,
+          "reason": "asymmetric-hearing"
+        }
+      ],
+      "supports": [
+        "group.ear.hearing-change"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.associated_tinnitus_vertigo_or_fullness",
+        "display": "Hearing Loss with Tinnitus Vertigo or Fullness",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.hearing-associated",
+        "display": "Hearing Loss with Tinnitus Vertigo or Fullness",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.hearing-associated",
+        "wording": "청력 변화와 함께 이명, 회전성 어지럼 또는 귀 먹먹함이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 105,
+          "reason": "hearing-associated"
+        }
+      ],
+      "supports": [
+        "group.ear.hearing-change"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.noise_exposure_or_acoustic_trauma",
+        "display": "Noise Exposure or Acoustic Trauma",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.noise-exposure",
+        "display": "Noise Exposure or Acoustic Trauma",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.noise-exposure",
+        "wording": "최근 폭발음·공연·기계음 또는 장기간 큰 소음에 노출됐나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 104,
+          "reason": "noise-exposure"
+        }
+      ],
+      "supports": [
+        "group.ear.hearing-change"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.possible_ototoxic_medication",
+        "display": "Possible Ototoxic Medication Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.ototoxic-medication",
+        "display": "Possible Ototoxic Medication Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.ototoxic-medication",
+        "wording": "최근 시작·증량한 약이나 항암제·주사 항생제 등 청력에 영향을 줄 수 있는 치료가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 94,
+          "reason": "ototoxic-medication"
+        }
+      ],
+      "supports": [
+        "group.ear.hearing-change"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.discharge_character",
+        "display": "Ear Discharge Character",
+        "value_type": "coded",
+        "allowed_values": [
+          "clear_watery",
+          "purulent_sticky",
+          "bloody",
+          "wax_like",
+          "other_unclear"
+        ],
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "300132001"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.ear-hearing-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.discharge-character",
+        "display": "Ear Discharge Character",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.discharge-character",
+        "wording": "분비물은 맑은 물, 고름·끈적한 액, 피, 귀지 같은 물질 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 107,
+          "reason": "discharge-character"
+        }
+      ],
+      "supports": [
+        "group.ear.discharge-trauma"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.discharge_amount_odor_and_duration",
+        "display": "Ear Discharge Amount Odor and Duration",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.discharge-detail",
+        "display": "Ear Discharge Amount Odor and Duration",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.discharge-detail",
+        "wording": "분비물의 양·냄새와 언제부터 얼마나 자주 나오는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 106,
+          "reason": "discharge-detail"
+        }
+      ],
+      "supports": [
+        "group.ear.discharge-trauma"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.instrument_cotton_bud_or_foreign_body",
+        "display": "Ear Instrument or Foreign Body",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.instrument-foreign-body",
+        "display": "Ear Instrument or Foreign Body",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.instrument-foreign-body",
+        "wording": "면봉·귀이개·이어폰 등으로 귀를 건드렸거나 다른 물체가 들어갔나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 105,
+          "reason": "instrument-foreign-body"
+        }
+      ],
+      "supports": [
+        "group.ear.discharge-trauma"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.water_pressure_or_barotrauma_exposure",
+        "display": "Water Pressure or Barotrauma Exposure",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.water-pressure",
+        "display": "Water Pressure or Barotrauma Exposure",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.water-pressure",
+        "wording": "수영·잠수·비행 또는 큰 압력 변화 뒤 증상이 시작됐나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 104,
+          "reason": "water-pressure"
+        }
+      ],
+      "supports": [
+        "group.ear.discharge-trauma"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.suspected_perforation_or_sudden_pain_relief",
+        "display": "Suspected Tympanic Membrane Perforation",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.perforation-clue",
+        "display": "Suspected Tympanic Membrane Perforation",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.perforation-clue",
+        "wording": "갑자기 심하게 아픈 뒤 통증이 줄면서 분비물이나 청력 저하가 생겼나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 103,
+          "reason": "perforation-clue"
+        }
+      ],
+      "supports": [
+        "group.ear.discharge-trauma"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.tinnitus_sound_character",
+        "display": "Tinnitus Sound Character",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "60862001"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.ear-hearing-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.tinnitus-sound",
+        "display": "Tinnitus Sound Character",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.tinnitus-sound",
+        "wording": "삐-, 윙-, 쉭- 또는 박동음처럼 어떤 소리가 들리는지 표현해주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 107,
+          "reason": "tinnitus-sound"
+        }
+      ],
+      "supports": [
+        "group.ear.tinnitus"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.tinnitus_pulse_synchronous",
+        "display": "Pulse-synchronous Tinnitus",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.pulse-synchronous",
+        "display": "Pulse-synchronous Tinnitus",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.pulse-synchronous",
+        "wording": "소리가 심장 박동과 같은 리듬으로 들리나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 106,
+          "reason": "pulse-synchronous"
+        }
+      ],
+      "supports": [
+        "group.ear.tinnitus"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.tinnitus_constant_or_intermittent",
+        "display": "Constant or Intermittent Tinnitus",
+        "value_type": "coded",
+        "allowed_values": [
+          "constant",
+          "intermittent",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.tinnitus-timing",
+        "display": "Constant or Intermittent Tinnitus",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.tinnitus-timing",
+        "wording": "이명은 계속 들리나요, 간헐적으로 들리나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 105,
+          "reason": "tinnitus-timing"
+        }
+      ],
+      "supports": [
+        "group.ear.tinnitus"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.tinnitus_distress_sleep_or_function",
+        "display": "Tinnitus Distress Sleep or Functional Impact",
+        "value_type": "coded",
+        "allowed_values": [
+          "none",
+          "mild",
+          "major",
+          "intolerable",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.tinnitus-impact",
+        "display": "Tinnitus Distress Sleep or Functional Impact",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.tinnitus-impact",
+        "wording": "이명이 수면·집중·일상이나 정서에 미치는 영향은 없음, 약간, 큼, 견디기 어려움 중 어느 정도인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 104,
+          "reason": "tinnitus-impact"
+        }
+      ],
+      "supports": [
+        "group.ear.tinnitus"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.tinnitus_with_hearing_change_or_vertigo",
+        "display": "Tinnitus with Hearing Change or Vertigo",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.tinnitus-associated",
+        "display": "Tinnitus with Hearing Change or Vertigo",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.tinnitus-associated",
+        "wording": "이명과 함께 청력 저하, 귀 먹먹함 또는 회전성 어지럼이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 103,
+          "reason": "tinnitus-associated"
+        }
+      ],
+      "supports": [
+        "group.ear.tinnitus"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nice.hearing-loss-ng98",
+      "source.nice.tinnitus-ng155",
+      "source.nhs.ear-infections.2025",
+      "source.nhs.hearing-loss.2025",
+      "source.nhs.mastoiditis.2025",
+      "source.uhsussex.sudden-hearing-change.2025",
+      "source.stom.ear-hearing.20260714"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

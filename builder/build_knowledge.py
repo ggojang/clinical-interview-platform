@@ -205,6 +205,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-eye-symptoms.json",
         "version": "0.1.0",
     },
+    "ear_hearing_symptoms": {
+        "base_graph": ROOT / "knowledge/base/primary-care-ear-hearing-symptoms.json",
+        "base_rules": ROOT / "rules/base/primary-care-ear-hearing-symptoms.json",
+        "fragment_root": ROOT / "knowledge/generated/otologic/ear-hearing-symptoms",
+        "output_graph": ROOT / "knowledge/graph/primary-care-ear-hearing-symptoms.json",
+        "output_rules": ROOT / "rules/primary-care-ear-hearing-symptoms.json",
+        "version": "0.1.0",
+    },
 }
 
 

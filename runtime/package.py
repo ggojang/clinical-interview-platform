@@ -33,6 +33,7 @@ HYPERTENSION_FOLLOW_UP_PACKAGE = ROOT / "packages/generated/primary-care-hyperte
 WEIGHT_CONSTITUTIONAL_CHANGE_PACKAGE = ROOT / "packages/generated/primary-care-weight-constitutional-change-0.1.0.json"
 REPRODUCTIVE_GENITAL_SYMPTOMS_PACKAGE = ROOT / "packages/generated/primary-care-reproductive-genital-symptoms-0.1.0.json"
 EYE_SYMPTOMS_PACKAGE = ROOT / "packages/generated/primary-care-eye-symptoms-0.1.0.json"
+EAR_HEARING_SYMPTOMS_PACKAGE = ROOT / "packages/generated/primary-care-ear-hearing-symptoms-0.1.0.json"
 
 
 class PackageLoadError(RuntimeError):

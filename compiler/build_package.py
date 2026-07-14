@@ -300,6 +300,17 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/ophthalmic/eye-symptoms",
         "research_manifests": [ROOT / "sources/manifests/primary-care-eye-symptoms-research.json"],
     },
+    "ear_hearing_symptoms": {
+        "graph": ROOT / "knowledge/graph/primary-care-ear-hearing-symptoms.json",
+        "rules": ROOT / "rules/primary-care-ear-hearing-symptoms.json",
+        "sources": ROOT / "sources/manifests/primary-care-ear-hearing-symptoms.json",
+        "completion_policy": ROOT / "policies/primary-care-ear-hearing-symptoms-completion.json",
+        "output": ROOT / "packages/generated/primary-care-ear-hearing-symptoms-0.1.0.json",
+        "package_id": "package.primary-care-ear-hearing-symptoms", "package_version": "0.1.0",
+        "rfe": "rfe.ear_hearing_symptoms",
+        "simulation_root": ROOT / "simulation/patients/otologic/ear-hearing-symptoms",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-ear-hearing-symptoms-research.json"],
+    },
 }
 
 ALLOWED_NODE_TYPES = {
