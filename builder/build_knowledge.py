@@ -152,6 +152,13 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-focal-weakness-numbness.json",
         "version": "0.1.0",
     },
+    "joint_limb_complaint": {
+        "base_graph": ROOT / "knowledge/base/primary-care-joint-limb.json",
+        "base_rules": ROOT / "rules/base/primary-care-joint-limb.json",
+        "fragment_root": ROOT / "knowledge/generated/musculoskeletal/joint-limb",
+        "output_graph": ROOT / "knowledge/graph/primary-care-joint-limb.json",
+        "output_rules": ROOT / "rules/primary-care-joint-limb.json", "version": "0.1.0",
+    },
 }
 
 

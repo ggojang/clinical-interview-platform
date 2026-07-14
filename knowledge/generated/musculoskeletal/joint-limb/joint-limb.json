@@ -1,0 +1,1682 @@
+{
+  "id": "knowledge.generated.joint-limb",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-joint-limb-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-07-14",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-07-15",
+    "next_full_review_at": "2027-01-10",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.joint-limb.trauma-safety",
+      "type": "ClinicalGroup",
+      "display": "trauma-safety"
+    },
+    {
+      "id": "group.joint-limb.infection-safety",
+      "type": "ClinicalGroup",
+      "display": "infection-safety"
+    },
+    {
+      "id": "group.joint-limb.neurovascular-safety",
+      "type": "ClinicalGroup",
+      "display": "neurovascular-safety"
+    },
+    {
+      "id": "group.joint-limb.pain-function",
+      "type": "ClinicalGroup",
+      "display": "pain-function"
+    },
+    {
+      "id": "group.joint-limb.inflammatory",
+      "type": "ClinicalGroup",
+      "display": "inflammatory"
+    },
+    {
+      "id": "group.joint-limb.context",
+      "type": "ClinicalGroup",
+      "display": "context"
+    }
+  ],
+  "group_hypothesis_edges": [],
+  "safety_rules": [
+    {
+      "id": "rule.joint-limb.safety.deformity",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.joint_limb.visible_deformity",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.joint-limb.safety.open-wound",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.joint_limb.open_wound_or_exposed_bone",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.joint-limb.safety.cannot-use",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "event.joint_limb.recent_injury",
+            "equals": true
+          },
+          {
+            "fact": "symptom.joint_limb.unable_weight_bear_or_use",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.joint-limb.safety.postinjury-numbness",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "event.joint_limb.recent_injury",
+            "equals": true
+          },
+          {
+            "fact": "symptom.joint_limb.postinjury_numbness",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.joint-limb.safety.vascular",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.joint_limb.cold_pale_blue_distal",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.joint-limb.safety.compartment",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.joint_limb.severe_escalating_pain_tight_swelling",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.joint-limb.safety.spinal-neurology",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.neck_pain_with_bilateral_weakness_or_clumsiness",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.joint-limb.safety.spinal-bladder",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.new_bladder_bowel_dysfunction_with_neck_back_pain",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.joint-limb.safety.cardiopulmonary",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.chest_pain",
+            "equals": true
+          },
+          {
+            "fact": "symptom.severe_dyspnea",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.joint-limb.safety.hot-joint-fever",
+      "priority": 900,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.hot_swollen_joint",
+            "equals": true
+          },
+          {
+            "fact": "symptom.fever",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.joint-limb.safety.hot-joint-unwell",
+      "priority": 900,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.hot_swollen_joint",
+            "equals": true
+          },
+          {
+            "fact": "symptom.systemically_unwell",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.joint-limb.safety.sudden-monoarthritis",
+      "priority": 850,
+      "when": {
+        "fact": "symptom.sudden_severe_single_joint",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "symptom.joint_limb.current",
+        "display": "Current Joint or Limb Complaint",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.joint-limb.current",
+        "display": "Current Joint or Limb Complaint",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.current",
+        "wording": "지금도 관절·팔다리·목·어깨 통증, 붓기 또는 손상 증상이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "current"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.pain-function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.joint_limb.main_type",
+        "display": "Main Joint or Limb Complaint",
+        "value_type": "coded",
+        "allowed_values": [
+          "pain",
+          "swelling",
+          "stiffness",
+          "injury",
+          "restricted_motion",
+          "instability",
+          "mixed",
+          "other"
+        ]
+      },
+      "target": {
+        "id": "target.joint-limb.main-type",
+        "display": "Main Joint or Limb Complaint",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.main-type",
+        "wording": "주된 문제는 통증, 붓기, 뻣뻣함, 외상, 움직임 제한, 불안정함 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 110,
+          "reason": "main-type"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.pain-function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.duration",
+        "display": "Symptom Duration",
+        "value_type": "quantity"
+      },
+      "target": {
+        "id": "target.joint-limb.duration",
+        "display": "Symptom Duration",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.duration",
+        "wording": "증상은 언제부터 시작했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 109,
+          "reason": "duration"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.pain-function"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.joint_limb.location",
+        "display": "Joint or Limb Location",
+        "value_type": "coded",
+        "allowed_values": [
+          "neck",
+          "shoulder",
+          "elbow",
+          "wrist_hand",
+          "hip",
+          "knee",
+          "ankle_foot",
+          "other",
+          "multiple"
+        ],
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "focus_code": "57676002"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.joint-limb",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.joint-limb.location",
+        "display": "Joint or Limb Location",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.location",
+        "wording": "목, 어깨, 팔꿈치, 손목·손, 엉덩이, 무릎, 발목·발 중 어디인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 108,
+          "reason": "location"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.pain-function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.joint_limb.side",
+        "display": "Affected Side",
+        "value_type": "coded",
+        "allowed_values": [
+          "left",
+          "right",
+          "bilateral",
+          "midline",
+          "multiple",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.joint-limb.side",
+        "display": "Affected Side",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.side",
+        "wording": "왼쪽, 오른쪽, 양쪽 중 어디인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 107,
+          "reason": "side"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.pain-function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "event.joint_limb.recent_injury",
+        "display": "Recent Joint or Limb Injury",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.joint-limb.recent-injury",
+        "display": "Recent Joint or Limb Injury",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.recent-injury",
+        "wording": "넘어짐, 충돌, 비틀림 또는 직접 충격 뒤 시작했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 106,
+          "reason": "recent-injury"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.trauma-safety",
+        "group.joint-limb.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.joint_limb.visible_deformity",
+        "display": "Visible Deformity",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.joint-limb.deformity",
+        "display": "Visible Deformity",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.deformity",
+        "wording": "다친 부위가 휘거나 관절이 제자리에서 벗어난 것처럼 보이나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "deformity"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.trauma-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.joint_limb.open_wound_or_exposed_bone",
+        "display": "Open Wound or Exposed Bone",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.joint-limb.open-wound",
+        "display": "Open Wound or Exposed Bone",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.open-wound",
+        "wording": "다친 부위에 깊은 상처가 있거나 뼈가 보이나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "open-wound"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.trauma-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.joint_limb.unable_weight_bear_or_use",
+        "display": "Unable to Bear Weight or Use Limb",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.joint-limb.cannot-use",
+        "display": "Unable to Bear Weight or Use Limb",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.cannot-use",
+        "wording": "다친 뒤 걷거나 체중을 싣지 못하거나 팔을 전혀 사용할 수 없나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 127,
+          "reason": "cannot-use"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.trauma-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.joint_limb.postinjury_numbness",
+        "display": "Post-injury Numbness",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.joint-limb.postinjury-numbness",
+        "display": "Post-injury Numbness",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.postinjury-numbness",
+        "wording": "다친 부위 아래쪽이 저리거나 감각이 없나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 126,
+          "reason": "postinjury-numbness"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.neurovascular-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.joint_limb.cold_pale_blue_distal",
+        "display": "Cold Pale or Blue Distal Limb",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.joint-limb.cold-blue",
+        "display": "Cold Pale or Blue Distal Limb",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.cold-blue",
+        "wording": "손가락이나 발가락이 반대쪽보다 차갑고 창백하거나 파랗게 변했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 125,
+          "reason": "cold-blue"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.neurovascular-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.joint_limb.severe_escalating_pain_tight_swelling",
+        "display": "Escalating Pain with Tight Swelling",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.joint-limb.compartment",
+        "display": "Escalating Pain with Tight Swelling",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.compartment",
+        "wording": "진통에도 통증이 빠르게 심해지고 팔다리가 단단하게 붓나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 124,
+          "reason": "compartment"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.neurovascular-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.hot_swollen_joint",
+        "display": "Hot Swollen Joint",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "271771009"
+        }
+      },
+      "target": {
+        "id": "target.joint-limb.hot-swollen",
+        "display": "Hot Swollen Joint",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.hot-swollen",
+        "wording": "관절이 붓고 뜨겁거나 붉게 보이나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 123,
+          "reason": "hot-swollen"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.infection-safety",
+        "group.joint-limb.inflammatory"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.fever",
+        "display": "Fever",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.joint-limb.fever",
+        "display": "Fever",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.fever",
+        "wording": "열이 나거나 춥고 떨리나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 122,
+          "reason": "fever"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.infection-safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.systemically_unwell",
+        "display": "Systemically Unwell",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.joint-limb.unwell",
+        "display": "Systemically Unwell",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.unwell",
+        "wording": "전신 상태가 몹시 나쁘거나 기운이 없나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 121,
+          "reason": "unwell"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.infection-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.sudden_severe_single_joint",
+        "display": "Sudden Severe Single-joint Pain",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.joint-limb.severe-mono",
+        "display": "Sudden Severe Single-joint Pain",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.severe-mono",
+        "wording": "한 관절에 갑자기 매우 심한 통증과 붓기가 생겼나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 120,
+          "reason": "severe-mono"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.infection-safety",
+        "group.joint-limb.inflammatory"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.neck_pain_with_bilateral_weakness_or_clumsiness",
+        "display": "Neck Pain with Bilateral Weakness or Clumsiness",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.joint-limb.neck-neuro",
+        "display": "Neck Pain with Bilateral Weakness or Clumsiness",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.neck-neuro",
+        "wording": "목 통증과 함께 양쪽 팔다리 힘이 빠지거나 손이 서툴고 걷기가 달라졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 119,
+          "reason": "neck-neuro"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.neurovascular-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.new_bladder_bowel_dysfunction_with_neck_back_pain",
+        "display": "Bladder or Bowel Dysfunction with Spinal Pain",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.joint-limb.spinal-bladder",
+        "display": "Bladder or Bowel Dysfunction with Spinal Pain",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.spinal-bladder",
+        "wording": "목·허리 통증과 함께 새로 배뇨·배변 조절이 달라졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 118,
+          "reason": "spinal-bladder"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.neurovascular-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.chest_pain",
+        "display": "Chest Pain",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.joint-limb.chest-pain",
+        "display": "Chest Pain",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.chest-pain",
+        "wording": "어깨·팔 통증과 함께 가슴 통증이나 압박감이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 117,
+          "reason": "chest-pain"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.neurovascular-safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.severe_dyspnea",
+        "display": "Severe Shortness of Breath",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.joint-limb.dyspnea",
+        "display": "Severe Shortness of Breath",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.dyspnea",
+        "wording": "어깨·팔 통증과 함께 심한 호흡곤란이나 식은땀이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 116,
+          "reason": "dyspnea"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.neurovascular-safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.joint_limb.onset",
+        "display": "Joint or Limb Symptom Onset",
+        "value_type": "coded",
+        "allowed_values": [
+          "sudden",
+          "gradual",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.joint-limb.onset",
+        "display": "Joint or Limb Symptom Onset",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.onset",
+        "wording": "갑자기 시작했나요, 서서히 시작했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 105,
+          "reason": "onset"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.pain-function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.joint_limb.pain_severity",
+        "display": "Pain Severity",
+        "value_type": "coded",
+        "allowed_values": [
+          "none",
+          "mild",
+          "moderate",
+          "severe"
+        ]
+      },
+      "target": {
+        "id": "target.joint-limb.severity",
+        "display": "Pain Severity",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.severity",
+        "wording": "통증은 없음, 가벼움, 중간, 심함 중 어느 정도인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 104,
+          "reason": "severity"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.pain-function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.joint_limb.number_of_joints",
+        "display": "Number of Joints",
+        "value_type": "coded",
+        "allowed_values": [
+          "one",
+          "two_to_four",
+          "five_or_more",
+          "not_joint",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.joint-limb.joint-count",
+        "display": "Number of Joints",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.joint-count",
+        "wording": "한 관절, 2~4개, 5개 이상 중 어디에 해당하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 103,
+          "reason": "joint-count"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.inflammatory"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.joint_limb.range_of_motion",
+        "display": "Range of Motion",
+        "value_type": "coded",
+        "allowed_values": [
+          "normal",
+          "partly_limited",
+          "nearly_impossible",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.joint-limb.motion",
+        "display": "Range of Motion",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.motion",
+        "wording": "움직임은 정상, 일부 제한, 거의 불가능 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 102,
+          "reason": "motion"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.pain-function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.joint_limb.morning_stiffness",
+        "display": "Morning Stiffness Duration",
+        "value_type": "coded",
+        "allowed_values": [
+          "none",
+          "up_to_30_minutes",
+          "over_30_minutes",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.joint-limb.morning-stiffness",
+        "display": "Morning Stiffness Duration",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.morning-stiffness",
+        "wording": "아침에 뻣뻣함이 없다, 30분 이하, 30분 초과 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 101,
+          "reason": "morning-stiffness"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.inflammatory"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.joint_limb.activity_relation",
+        "display": "Activity Relation",
+        "value_type": "coded",
+        "allowed_values": [
+          "worse_with_activity",
+          "worse_after_rest",
+          "both",
+          "no_relation",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.joint-limb.activity-relation",
+        "display": "Activity Relation",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.activity-relation",
+        "wording": "움직일 때 악화, 쉬면 악화, 둘 다, 관련 없음 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 100,
+          "reason": "activity-relation"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.pain-function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.joint_limb.night_or_rest_pain",
+        "display": "Night or Rest Pain",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.joint-limb.night-pain",
+        "display": "Night or Rest Pain",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.night-pain",
+        "wording": "밤에 깨거나 쉬고 있어도 계속 아픈가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 99,
+          "reason": "night-pain"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.pain-function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.joint_limb.locking_or_giving_way",
+        "display": "Locking or Giving Way",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.joint-limb.locking",
+        "display": "Locking or Giving Way",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.locking",
+        "wording": "관절이 잠기거나 갑자기 힘이 풀리나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 98,
+          "reason": "locking"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.pain-function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.joint_limb.rapid_worsening_or_deformity",
+        "display": "Rapid Worsening or Progressive Deformity",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.joint-limb.rapid-worsening",
+        "display": "Rapid Worsening or Progressive Deformity",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.rapid-worsening",
+        "wording": "최근 빠르게 악화하거나 관절 모양이 변하고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 97,
+          "reason": "rapid-worsening"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.inflammatory"
+      ]
+    },
+    {
+      "fact": {
+        "id": "event.joint_limb.injury_mechanism",
+        "display": "Injury Mechanism",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.joint-limb.mechanism",
+        "display": "Injury Mechanism",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.mechanism",
+        "wording": "다쳤다면 어떻게 다쳤고 어느 방향으로 힘이 가해졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 96,
+          "reason": "mechanism"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.trauma-safety",
+        "group.joint-limb.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "history.inflammatory_arthritis_gout_or_psoriasis",
+        "display": "Inflammatory Arthritis Gout or Psoriasis History",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.joint-limb.arthritis-history",
+        "display": "Inflammatory Arthritis Gout or Psoriasis History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.arthritis-history",
+        "wording": "류마티스관절염, 통풍, 건선 또는 다른 염증성 관절질환 병력이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 90,
+          "reason": "arthritis-history"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.inflammatory",
+        "group.joint-limb.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "risk.joint_infection_recent_procedure_or_infection",
+        "display": "Recent Joint Procedure or Infection",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.joint-limb.infection-risk",
+        "display": "Recent Joint Procedure or Infection",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.infection-risk",
+        "wording": "최근 관절 주사·수술, 피부 상처 또는 다른 감염이 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 89,
+          "reason": "infection-risk"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.infection-safety",
+        "group.joint-limb.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "patient.immunocompromised",
+        "display": "Immunocompromised",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.joint-limb.immunocompromised",
+        "display": "Immunocompromised",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.immunocompromised",
+        "wording": "면역을 낮추는 약이나 치료를 받고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 88,
+          "reason": "immunocompromised"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.infection-safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "medication.anticoagulant_or_steroid",
+        "display": "Anticoagulant or Steroid Use",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.joint-limb.medication",
+        "display": "Anticoagulant or Steroid Use",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.medication",
+        "wording": "항응고제, 스테로이드 또는 관련 약을 복용하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 87,
+          "reason": "medication"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "exposure.repetitive_work_sport_or_new_load",
+        "display": "Repetitive Work Sport or New Load",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.joint-limb.load",
+        "display": "Repetitive Work Sport or New Load",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.load",
+        "wording": "반복 작업, 운동 또는 갑작스러운 활동량 증가와 관련 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 86,
+          "reason": "load"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "treatment.joint_limb_response",
+        "display": "Self-care or Treatment Response",
+        "value_type": "coded",
+        "allowed_values": [
+          "not_tried",
+          "improved",
+          "unchanged",
+          "worsened"
+        ]
+      },
+      "target": {
+        "id": "target.joint-limb.response",
+        "display": "Self-care or Treatment Response",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.response",
+        "wording": "휴식·냉찜질·진통제 등을 했다면 호전, 변화 없음, 악화 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 85,
+          "reason": "response"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.joint_limb.functional_impact",
+        "display": "Functional Impact",
+        "value_type": "coded",
+        "allowed_values": [
+          "none",
+          "mild",
+          "moderate",
+          "severe"
+        ]
+      },
+      "target": {
+        "id": "target.joint-limb.impact",
+        "display": "Functional Impact",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.joint-limb.impact",
+        "wording": "걷기, 옷 입기, 일·수면 영향은 없음, 가벼움, 중간, 심함 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 84,
+          "reason": "impact"
+        }
+      ],
+      "supports": [
+        "group.joint-limb.pain-function"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nhs.joint-pain.2026",
+      "source.nhs.septic-arthritis.2023",
+      "source.nice.ng38.fracture.2025",
+      "source.nice.ng226.osteoarthritis.2022"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

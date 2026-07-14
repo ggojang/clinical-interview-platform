@@ -18,7 +18,7 @@ from runtime.memory import ClinicalMemory
 from runtime.package import (
     ABDOMINAL_PAIN_PACKAGE, BACK_PAIN_PACKAGE, BOWEL_SYMPTOMS_PACKAGE, CHEST_PAIN_PACKAGE, DEFAULT_PACKAGE,
     DIZZINESS_SYNCOPE_PACKAGE, DYSPNEA_PACKAGE, FEVER_PACKAGE, HEADACHE_PACKAGE,
-    FATIGUE_PACKAGE, FOCAL_WEAKNESS_NUMBNESS_PACKAGE, MEDICATION_REVIEW_PACKAGE, PALPITATIONS_PACKAGE, SKIN_COMPLAINT_PACKAGE,
+    FATIGUE_PACKAGE, FOCAL_WEAKNESS_NUMBNESS_PACKAGE, JOINT_LIMB_COMPLAINT_PACKAGE, MEDICATION_REVIEW_PACKAGE, PALPITATIONS_PACKAGE, SKIN_COMPLAINT_PACKAGE,
     UPPER_RESPIRATORY_SYMPTOMS_PACKAGE, URINARY_SYMPTOMS_PACKAGE,
     VOMITING_DIARRHEA_PACKAGE,
     PackageLoadError, load_package,
@@ -49,6 +49,7 @@ class CompilerTests(unittest.TestCase):
             "palpitations",
             "bowel_symptoms",
             "focal_weakness_numbness",
+            "joint_limb_complaint",
         ):
             with self.subTest(profile=profile), self.assertRaises(CompilationError):
                 compile_package(production=True, profile=profile)
@@ -531,6 +532,14 @@ class CompilerTests(unittest.TestCase):
         self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 11)
         self.assertEqual(package["coverage"]["uncovered_safety_rules"], [])
 
+    def test_joint_limb_package_is_complete(self):
+        package = compile_package(profile="joint_limb_complaint")
+        facts = {n["id"] for n in package["knowledge_graph"]["nodes"] if n["type"] == "Fact"}
+        self.assertEqual(len(facts), 37); self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
+        self.assertEqual(package["coverage"]["total_safety_rules"], 12)
+        self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 12)
+        self.assertEqual(package["coverage"]["uncovered_safety_rules"], [])
+
 
 class ClinicalMemoryTests(unittest.TestCase):
     def setUp(self):
@@ -903,6 +912,14 @@ class PackageRuntimeTests(unittest.TestCase):
         state = session.process("한쪽 팔이 저리고 힘이 빠져요.")
         self.assertIn("neurological.focal_weakness_numbness", state["active_patterns"])
         with self.assertRaises(PackageLoadError): load_package(FOCAL_WEAKNESS_NUMBNESS_PACKAGE, execution_mode="production")
+
+    def test_joint_limb_simulation_and_runtime(self):
+        report = run_evaluation(JOINT_LIMB_COMPLAINT_PACKAGE)
+        self.assertTrue(report["passed"]); self.assertEqual(report["case_count"], 13)
+        session = InterviewSession("joint-runtime", package_path=JOINT_LIMB_COMPLAINT_PACKAGE)
+        state = session.process("무릎이 붓고 아파요.")
+        self.assertIn("musculoskeletal.joint_limb_complaint", state["active_patterns"])
+        with self.assertRaises(PackageLoadError): load_package(JOINT_LIMB_COMPLAINT_PACKAGE, execution_mode="production")
 
 
 if __name__ == "__main__":

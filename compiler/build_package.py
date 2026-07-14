@@ -224,6 +224,17 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/neurological/focal-weakness-numbness",
         "research_manifests": [ROOT / "sources/manifests/primary-care-focal-weakness-numbness-research.json"],
     },
+    "joint_limb_complaint": {
+        "graph": ROOT / "knowledge/graph/primary-care-joint-limb.json",
+        "rules": ROOT / "rules/primary-care-joint-limb.json",
+        "sources": ROOT / "sources/manifests/primary-care-joint-limb.json",
+        "completion_policy": ROOT / "policies/primary-care-joint-limb-completion.json",
+        "output": ROOT / "packages/generated/primary-care-joint-limb-0.1.0.json",
+        "package_id": "package.primary-care-joint-limb", "package_version": "0.1.0",
+        "rfe": "rfe.joint_limb_complaint",
+        "simulation_root": ROOT / "simulation/patients/musculoskeletal/joint-limb",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-joint-limb-research.json"],
+    },
 }
 
 ALLOWED_NODE_TYPES = {

@@ -405,6 +405,9 @@ class InterviewSession:
         if self.reason_for_encounter == "rfe.focal_weakness_numbness":
             self._update_focal_neurology_patterns()
             return
+        if self.reason_for_encounter == "rfe.joint_limb_complaint":
+            self._update_joint_limb_patterns()
+            return
         active = ["respiratory.cough"]
         cold_support = sum(
             self.memory.value(fact_id) is True
@@ -747,6 +750,16 @@ class InterviewSession:
             active.append("focal_neurology.stroke_warning_features")
         if any(self.memory.value(x) is True for x in ("symptom.severe_back_pain_radiating_leg", "symptom.new_bladder_bowel_or_sexual_dysfunction", "symptom.perineal_or_saddle_numbness")):
             active.append("focal_neurology.spinal_warning_features")
+        self.active_patterns = active
+
+    def _update_joint_limb_patterns(self) -> None:
+        active = ["musculoskeletal.joint_limb_complaint"]
+        if any(self.memory.value(x) is True for x in ("event.joint_limb.recent_injury", "symptom.joint_limb.visible_deformity", "symptom.joint_limb.open_wound_or_exposed_bone")):
+            active.append("joint_limb.trauma_features")
+        if any(self.memory.value(x) is True for x in ("symptom.hot_swollen_joint", "symptom.fever", "symptom.systemically_unwell")):
+            active.append("joint_limb.infection_inflammation_features")
+        if any(self.memory.value(x) is True for x in ("symptom.joint_limb.postinjury_numbness", "symptom.joint_limb.cold_pale_blue_distal", "symptom.neck_pain_with_bilateral_weakness_or_clumsiness")):
+            active.append("joint_limb.neurovascular_warning_features")
         self.active_patterns = active
 
     def _update_dyspnea_patterns(self) -> None:

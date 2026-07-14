@@ -26,6 +26,7 @@ UPPER_RESPIRATORY_SYMPTOMS_PACKAGE = ROOT / "packages/generated/primary-care-upp
 PALPITATIONS_PACKAGE = ROOT / "packages/generated/primary-care-palpitations-0.1.0.json"
 BOWEL_SYMPTOMS_PACKAGE = ROOT / "packages/generated/primary-care-bowel-symptoms-0.1.0.json"
 FOCAL_WEAKNESS_NUMBNESS_PACKAGE = ROOT / "packages/generated/primary-care-focal-weakness-numbness-0.1.0.json"
+JOINT_LIMB_COMPLAINT_PACKAGE = ROOT / "packages/generated/primary-care-joint-limb-0.1.0.json"
 
 
 class PackageLoadError(RuntimeError):
