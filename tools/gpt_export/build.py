@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "1.9.0"
+VERSION = "1.10.0"
 GENERATED_AT = "2026-07-14T00:00:00Z"
 PRIVATE_KEYS = {
     "raw_text", "raw_input", "patient_response", "patient_responses",
@@ -84,8 +84,11 @@ def compact(value: Any) -> Any:
 
 def compact_fact_index(item: dict[str, Any]) -> dict[str, Any]:
     """Keep the legacy aggregate as discovery metadata, not a knowledge payload."""
-    keys = ("id", "display", "display_ko", "type", "value_type", "safety_relevant")
-    return {key: item[key] for key in keys if key in item}
+    keys = ("id", "display", "display_ko", "value_type")
+    result = {key: item[key] for key in keys if key in item}
+    if item.get("safety_relevant") is True:
+        result["safety_relevant"] = True
+    return result
 
 
 def package_knowledge_sources(package: dict[str, Any]) -> list[dict[str, Any]]:

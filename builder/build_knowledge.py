@@ -159,6 +159,13 @@ PROFILES = {
         "output_graph": ROOT / "knowledge/graph/primary-care-joint-limb.json",
         "output_rules": ROOT / "rules/primary-care-joint-limb.json", "version": "0.1.0",
     },
+    "mental_health_sleep": {
+        "base_graph": ROOT / "knowledge/base/primary-care-mental-health-sleep.json",
+        "base_rules": ROOT / "rules/base/primary-care-mental-health-sleep.json",
+        "fragment_root": ROOT / "knowledge/generated/mental-health/mental-health-sleep",
+        "output_graph": ROOT / "knowledge/graph/primary-care-mental-health-sleep.json",
+        "output_rules": ROOT / "rules/primary-care-mental-health-sleep.json", "version": "0.1.0",
+    },
 }
 
 

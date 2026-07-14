@@ -1,0 +1,1722 @@
+{
+  "id": "knowledge.generated.mental-health-sleep",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-mental-health-sleep-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-07-14",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-07-15",
+    "next_full_review_at": "2027-01-10",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.mental-health-sleep.immediate-safety",
+      "type": "ClinicalGroup",
+      "display": "immediate-safety"
+    },
+    {
+      "id": "group.mental-health-sleep.mood",
+      "type": "ClinicalGroup",
+      "display": "mood"
+    },
+    {
+      "id": "group.mental-health-sleep.anxiety-panic",
+      "type": "ClinicalGroup",
+      "display": "anxiety-panic"
+    },
+    {
+      "id": "group.mental-health-sleep.sleep",
+      "type": "ClinicalGroup",
+      "display": "sleep"
+    },
+    {
+      "id": "group.mental-health-sleep.mania-psychosis",
+      "type": "ClinicalGroup",
+      "display": "mania-psychosis"
+    },
+    {
+      "id": "group.mental-health-sleep.context-function",
+      "type": "ClinicalGroup",
+      "display": "context-function"
+    }
+  ],
+  "group_hypothesis_edges": [],
+  "safety_rules": [
+    {
+      "id": "rule.mental-health-sleep.safety.suicide-plan",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "risk.suicidal_thoughts_current",
+            "equals": true
+          },
+          {
+            "fact": "risk.suicide_plan_or_intent",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.mental-health-sleep.safety.suicide-means",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "risk.suicidal_thoughts_current",
+            "equals": true
+          },
+          {
+            "fact": "risk.access_to_lethal_means",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.mental-health-sleep.safety.unable-safe",
+      "priority": 1000,
+      "when": {
+        "fact": "risk.unable_to_stay_safe",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.mental-health-sleep.safety.recent-attempt",
+      "priority": 1000,
+      "when": {
+        "fact": "event.recent_self_harm_or_suicide_attempt",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.mental-health-sleep.safety.harm-others",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "risk.harm_to_others_thoughts",
+            "equals": true
+          },
+          {
+            "fact": "risk.harm_to_others_plan_or_means",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.mental-health-sleep.safety.command-hallucination",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.command_hallucination_to_harm",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.mental-health-sleep.safety.severe-agitation",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.severe_agitation_confusion_or_disorganization",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.mental-health-sleep.safety.current-violence",
+      "priority": 1000,
+      "when": {
+        "fact": "risk.safeguarding_or_domestic_violence_current",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.mental-health-sleep.safety.first-psychosis",
+      "priority": 900,
+      "when": {
+        "fact": "symptom.first_onset_hallucination_or_delusion",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.mental-health-sleep.safety.mania-risk",
+      "priority": 900,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.markedly_reduced_sleep_with_high_energy",
+            "equals": true
+          },
+          {
+            "fact": "symptom.manic_risky_or_disinhibited_behavior",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.mental-health-sleep.safety.self-neglect",
+      "priority": 900,
+      "when": {
+        "fact": "risk.severe_self_neglect",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "symptom.mental_health_sleep.current",
+        "display": "Current Mental Health or Sleep Concern",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.current",
+        "display": "Current Mental Health or Sleep Concern",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.current",
+        "wording": "지금도 기분, 불안, 스트레스 또는 수면 문제가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "current"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.mood",
+        "group.mental-health-sleep.sleep"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.mental_health_sleep.main_type",
+        "display": "Main Mental Health or Sleep Concern",
+        "value_type": "coded",
+        "allowed_values": [
+          "low_mood",
+          "anxiety_worry",
+          "panic",
+          "stress",
+          "insomnia",
+          "excessive_sleepiness",
+          "mixed",
+          "other"
+        ]
+      },
+      "target": {
+        "id": "target.mental-health-sleep.main-type",
+        "display": "Main Mental Health or Sleep Concern",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.main-type",
+        "wording": "가장 힘든 것은 우울감, 불안·걱정, 공황, 스트레스, 불면, 과도한 졸림 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 110,
+          "reason": "main-type"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.mood",
+        "group.mental-health-sleep.anxiety-panic",
+        "group.mental-health-sleep.sleep"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.duration",
+        "display": "Symptom Duration",
+        "value_type": "quantity"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.duration",
+        "display": "Symptom Duration",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.duration",
+        "wording": "이 문제는 언제부터 계속되거나 반복되었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 109,
+          "reason": "duration"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.context-function"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "risk.suicidal_thoughts_current",
+        "display": "Current Suicidal Thoughts",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "6471006"
+        }
+      },
+      "target": {
+        "id": "target.mental-health-sleep.suicidal-thoughts",
+        "display": "Current Suicidal Thoughts",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.suicidal-thoughts",
+        "wording": "현재 죽고 싶거나 스스로 목숨을 끊고 싶다는 생각이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "suicidal-thoughts"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.immediate-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "risk.suicide_plan_or_intent",
+        "display": "Suicide Plan or Intent",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.mental-health-sleep.suicide-plan",
+        "display": "Suicide Plan or Intent",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.suicide-plan",
+        "wording": "그 생각을 실행할 구체적인 계획이나 실행할 의도가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "suicide-plan"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.immediate-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "risk.access_to_lethal_means",
+        "display": "Access to Lethal Means",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.mental-health-sleep.lethal-means",
+        "display": "Access to Lethal Means",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.lethal-means",
+        "wording": "계획에 사용할 약, 무기 또는 다른 수단을 지금 가지고 있거나 쉽게 구할 수 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 127,
+          "reason": "lethal-means"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.immediate-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "risk.unable_to_stay_safe",
+        "display": "Unable to Stay Safe",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.mental-health-sleep.cannot-stay-safe",
+        "display": "Unable to Stay Safe",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.cannot-stay-safe",
+        "wording": "지금 혼자 있으면 스스로를 안전하게 지키기 어렵다고 느끼나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 126,
+          "reason": "cannot-stay-safe"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.immediate-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "event.recent_self_harm_or_suicide_attempt",
+        "display": "Recent Self-harm or Suicide Attempt",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.mental-health-sleep.recent-attempt",
+        "display": "Recent Self-harm or Suicide Attempt",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.recent-attempt",
+        "wording": "최근 스스로 다치게 했거나 약을 과다 복용하는 등 목숨을 끊으려 한 일이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 125,
+          "reason": "recent-attempt"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.immediate-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "risk.harm_to_others_thoughts",
+        "display": "Thoughts of Harming Others",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.mental-health-sleep.harm-others",
+        "display": "Thoughts of Harming Others",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.harm-others",
+        "wording": "현재 다른 사람을 해치고 싶다는 생각이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 124,
+          "reason": "harm-others"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.immediate-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "risk.harm_to_others_plan_or_means",
+        "display": "Plan or Means to Harm Others",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.mental-health-sleep.harm-plan",
+        "display": "Plan or Means to Harm Others",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.harm-plan",
+        "wording": "특정 대상, 구체적 계획 또는 사용할 수단이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 123,
+          "reason": "harm-plan"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.immediate-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.command_hallucination_to_harm",
+        "display": "Command Hallucination to Harm",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.mental-health-sleep.command-hallucination",
+        "display": "Command Hallucination to Harm",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.command-hallucination",
+        "wording": "자신이나 다른 사람을 해치라고 명령하는 목소리가 들리나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 122,
+          "reason": "command-hallucination"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.immediate-safety",
+        "group.mental-health-sleep.mania-psychosis"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.severe_agitation_confusion_or_disorganization",
+        "display": "Severe Agitation Confusion or Disorganization",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.mental-health-sleep.agitation-confusion",
+        "display": "Severe Agitation Confusion or Disorganization",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.agitation-confusion",
+        "wording": "매우 흥분해 통제하기 어렵거나 혼란스럽고 말과 행동이 심하게 뒤섞였나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 121,
+          "reason": "agitation-confusion"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.immediate-safety",
+        "group.mental-health-sleep.mania-psychosis"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.first_onset_hallucination_or_delusion",
+        "display": "First-onset Hallucination or Delusion",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "7011001"
+        }
+      },
+      "target": {
+        "id": "target.mental-health-sleep.first-psychosis",
+        "display": "First-onset Hallucination or Delusion",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.first-psychosis",
+        "wording": "처음으로 다른 사람에게 없는 소리·모습을 느끼거나 누군가 해치려 한다는 확신이 생겼나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 120,
+          "reason": "first-psychosis"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.mania-psychosis"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.markedly_reduced_sleep_with_high_energy",
+        "display": "Reduced Sleep with High Energy",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.mental-health-sleep.reduced-sleep-energy",
+        "display": "Reduced Sleep with High Energy",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.reduced-sleep-energy",
+        "wording": "며칠간 거의 자지 않아도 피곤하지 않고 에너지가 비정상적으로 많나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 119,
+          "reason": "reduced-sleep-energy"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.mania-psychosis",
+        "group.mental-health-sleep.sleep"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.manic_risky_or_disinhibited_behavior",
+        "display": "Risky or Disinhibited Behaviour",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.mental-health-sleep.risky-behavior",
+        "display": "Risky or Disinhibited Behaviour",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.risky-behavior",
+        "wording": "평소와 달리 과소비, 위험한 투자·운전·성행동 또는 통제하기 어려운 행동을 하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 118,
+          "reason": "risky-behavior"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.mania-psychosis"
+      ]
+    },
+    {
+      "fact": {
+        "id": "risk.severe_self_neglect",
+        "display": "Severe Self-neglect",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.mental-health-sleep.self-neglect",
+        "display": "Severe Self-neglect",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.self-neglect",
+        "wording": "먹고 마시기, 위생, 필수 약 복용 같은 기본적인 돌봄을 거의 하지 못하고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 117,
+          "reason": "self-neglect"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.immediate-safety",
+        "group.mental-health-sleep.context-function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "risk.safeguarding_or_domestic_violence_current",
+        "display": "Current Safeguarding or Domestic Violence Risk",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.mental-health-sleep.safeguarding",
+        "display": "Current Safeguarding or Domestic Violence Risk",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.safeguarding",
+        "wording": "현재 집이나 관계에서 폭력, 위협, 강요 때문에 안전하지 않나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 116,
+          "reason": "safeguarding"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.immediate-safety",
+        "group.mental-health-sleep.context-function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.low_mood",
+        "display": "Low Mood",
+        "value_type": "coded",
+        "allowed_values": [
+          "none",
+          "some_days",
+          "often",
+          "nearly_every_day"
+        ],
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "366979004"
+        }
+      },
+      "target": {
+        "id": "target.mental-health-sleep.low-mood",
+        "display": "Low Mood",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.low-mood",
+        "wording": "최근 기분 저하는 없음, 가끔, 자주, 거의 매일 중 어느 정도인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 105,
+          "reason": "low-mood"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.mood"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.loss_of_interest_or_pleasure",
+        "display": "Loss of Interest or Pleasure",
+        "value_type": "coded",
+        "allowed_values": [
+          "none",
+          "some_days",
+          "often",
+          "nearly_every_day"
+        ]
+      },
+      "target": {
+        "id": "target.mental-health-sleep.anhedonia",
+        "display": "Loss of Interest or Pleasure",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.anhedonia",
+        "wording": "평소 즐기던 일의 흥미나 즐거움 감소는 없음, 가끔, 자주, 거의 매일 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 104,
+          "reason": "anhedonia"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.mood"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.hopelessness_or_worthlessness",
+        "display": "Hopelessness or Worthlessness",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.hopelessness",
+        "display": "Hopelessness or Worthlessness",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.hopelessness",
+        "wording": "희망이 없거나 자신이 쓸모없고 짐이 된다고 느끼나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 103,
+          "reason": "hopelessness"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.mood"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.energy_or_psychomotor_change",
+        "display": "Energy or Psychomotor Change",
+        "value_type": "coded",
+        "allowed_values": [
+          "reduced",
+          "unchanged",
+          "agitated_or_increased",
+          "variable"
+        ]
+      },
+      "target": {
+        "id": "target.mental-health-sleep.energy",
+        "display": "Energy or Psychomotor Change",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.energy",
+        "wording": "기운이나 움직임은 감소, 변화 없음, 초조·증가 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 92,
+          "reason": "energy"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.mood"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.appetite_or_weight_change",
+        "display": "Appetite or Weight Change",
+        "value_type": "coded",
+        "allowed_values": [
+          "decreased",
+          "unchanged",
+          "increased",
+          "variable"
+        ]
+      },
+      "target": {
+        "id": "target.mental-health-sleep.appetite",
+        "display": "Appetite or Weight Change",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.appetite",
+        "wording": "식욕이나 체중은 감소, 변화 없음, 증가 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 91,
+          "reason": "appetite"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.mood"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.concentration_difficulty",
+        "display": "Concentration Difficulty",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.concentration",
+        "display": "Concentration Difficulty",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.concentration",
+        "wording": "집중하거나 결정하기 어려운가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 90,
+          "reason": "concentration"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.mood",
+        "group.mental-health-sleep.context-function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.excessive_anxiety_or_worry",
+        "display": "Excessive Anxiety or Worry",
+        "value_type": "coded",
+        "allowed_values": [
+          "none",
+          "some_days",
+          "often",
+          "nearly_every_day"
+        ],
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "48694002"
+        }
+      },
+      "target": {
+        "id": "target.mental-health-sleep.anxiety",
+        "display": "Excessive Anxiety or Worry",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.anxiety",
+        "wording": "불안이나 걱정은 없음, 가끔, 자주, 거의 매일 중 어느 정도인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 102,
+          "reason": "anxiety"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.anxiety-panic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.difficulty_controlling_worry",
+        "display": "Difficulty Controlling Worry",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.worry-control",
+        "display": "Difficulty Controlling Worry",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.worry-control",
+        "wording": "걱정을 멈추거나 조절하기 어렵나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 101,
+          "reason": "worry-control"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.anxiety-panic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.panic_attack_features",
+        "display": "Panic Attack Features",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.panic",
+        "display": "Panic Attack Features",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.panic",
+        "wording": "갑자기 극심한 공포와 함께 두근거림, 숨참, 떨림 또는 죽을 것 같은 느낌이 몰려오나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 100,
+          "reason": "panic"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.anxiety-panic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.anxiety_avoidance",
+        "display": "Anxiety-related Avoidance",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.avoidance",
+        "display": "Anxiety-related Avoidance",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.avoidance",
+        "wording": "불안 때문에 장소, 사람, 이동 또는 일상 활동을 피하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 89,
+          "reason": "avoidance"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.anxiety-panic",
+        "group.mental-health-sleep.context-function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "sleep.main_problem",
+        "display": "Main Sleep Problem",
+        "value_type": "coded",
+        "allowed_values": [
+          "sleep_onset",
+          "sleep_maintenance",
+          "early_waking",
+          "nonrestorative",
+          "excessive_sleepiness",
+          "mixed"
+        ],
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "193462001"
+        }
+      },
+      "target": {
+        "id": "target.mental-health-sleep.sleep-type",
+        "display": "Main Sleep Problem",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.sleep-type",
+        "wording": "잠들기 어려움, 자주 깸, 너무 일찍 깸, 개운하지 않음, 과도한 졸림 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 99,
+          "reason": "sleep-type"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.sleep"
+      ]
+    },
+    {
+      "fact": {
+        "id": "sleep.schedule_and_hours",
+        "display": "Sleep Schedule and Hours",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.sleep-hours",
+        "display": "Sleep Schedule and Hours",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.sleep-hours",
+        "wording": "평소 잠드는 시각, 일어나는 시각과 실제 수면 시간은 어떻게 되나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 98,
+          "reason": "sleep-hours"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.sleep"
+      ]
+    },
+    {
+      "fact": {
+        "id": "sleep.frequency_per_week",
+        "display": "Sleep Problem Frequency",
+        "value_type": "coded",
+        "allowed_values": [
+          "weekly_or_less",
+          "two_to_three",
+          "four_or_more",
+          "daily"
+        ]
+      },
+      "target": {
+        "id": "target.mental-health-sleep.sleep-frequency",
+        "display": "Sleep Problem Frequency",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.sleep-frequency",
+        "wording": "수면 문제는 주 1회 이하, 2~3회, 4회 이상, 매일 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 97,
+          "reason": "sleep-frequency"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.sleep"
+      ]
+    },
+    {
+      "fact": {
+        "id": "sleep.snoring_apnea_or_choking",
+        "display": "Snoring Apnoea or Choking",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.apnea",
+        "display": "Snoring Apnoea or Choking",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.apnea",
+        "wording": "심한 코골이, 숨 멎음 목격 또는 자다가 숨 막혀 깨는 일이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 88,
+          "reason": "apnea"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.sleep"
+      ]
+    },
+    {
+      "fact": {
+        "id": "sleep.restless_legs_features",
+        "display": "Restless Legs Features",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.restless-legs",
+        "display": "Restless Legs Features",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.restless-legs",
+        "wording": "밤에 다리가 불편해 움직이고 싶고 움직이면 잠시 나아지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 87,
+          "reason": "restless-legs"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.sleep"
+      ]
+    },
+    {
+      "fact": {
+        "id": "sleep.shift_work_or_irregular_schedule",
+        "display": "Shift Work or Irregular Schedule",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.shift-work",
+        "display": "Shift Work or Irregular Schedule",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.shift-work",
+        "wording": "교대근무, 야간근무 또는 불규칙한 수면 일정인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 86,
+          "reason": "shift-work"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.sleep",
+        "group.mental-health-sleep.context-function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "exposure.caffeine_alcohol_nicotine_sleep",
+        "display": "Caffeine Alcohol or Nicotine Relevant to Sleep",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.substances",
+        "display": "Caffeine Alcohol or Nicotine Relevant to Sleep",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.substances",
+        "wording": "카페인, 술, 니코틴 또는 기타 물질을 언제 얼마나 사용하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 85,
+          "reason": "substances"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.sleep",
+        "group.mental-health-sleep.context-function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "event.recent_stressor_trauma_or_loss",
+        "display": "Recent Stressor Trauma or Loss",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.stressor",
+        "display": "Recent Stressor Trauma or Loss",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.stressor",
+        "wording": "최근 상실, 갈등, 경제·직장 문제, 돌봄 부담 또는 충격적인 일이 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 84,
+          "reason": "stressor"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.context-function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "history.mental_health_diagnosis_or_treatment",
+        "display": "Mental Health Diagnosis or Treatment History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.history",
+        "display": "Mental Health Diagnosis or Treatment History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.history",
+        "wording": "과거 정신건강 진단, 상담, 입원 또는 치료 경험이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 83,
+          "reason": "history"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.context-function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.mental_health_sleep_current_or_changed",
+        "display": "Mental Health or Sleep Medication",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.medication",
+        "display": "Mental Health or Sleep Medication",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.medication",
+        "wording": "현재 복용 중이거나 최근 시작·중단·변경한 정신건강·수면 관련 약이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 82,
+          "reason": "medication"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.context-function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "support.trusted_person_available",
+        "display": "Trusted Support Person Available",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.support",
+        "display": "Trusted Support Person Available",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.support",
+        "wording": "필요할 때 연락하고 곁에 있어 줄 믿을 만한 사람이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 81,
+          "reason": "support"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.immediate-safety",
+        "group.mental-health-sleep.context-function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.mental_health_sleep.functional_impact",
+        "display": "Functional Impact",
+        "value_type": "coded",
+        "allowed_values": [
+          "none",
+          "mild",
+          "moderate",
+          "severe"
+        ]
+      },
+      "target": {
+        "id": "target.mental-health-sleep.impact",
+        "display": "Functional Impact",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.impact",
+        "wording": "일, 학업, 관계, 자기관리 영향은 없음, 가벼움, 중간, 심함 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 80,
+          "reason": "impact"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.context-function"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nice.ng222.depression.2022",
+      "source.nice.cg113.anxiety.2020",
+      "source.nhs.urgent-mental-support.2026"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

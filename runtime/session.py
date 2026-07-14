@@ -408,6 +408,9 @@ class InterviewSession:
         if self.reason_for_encounter == "rfe.joint_limb_complaint":
             self._update_joint_limb_patterns()
             return
+        if self.reason_for_encounter == "rfe.mental_health_sleep":
+            self._update_mental_health_sleep_patterns()
+            return
         active = ["respiratory.cough"]
         cold_support = sum(
             self.memory.value(fact_id) is True
@@ -760,6 +763,16 @@ class InterviewSession:
             active.append("joint_limb.infection_inflammation_features")
         if any(self.memory.value(x) is True for x in ("symptom.joint_limb.postinjury_numbness", "symptom.joint_limb.cold_pale_blue_distal", "symptom.neck_pain_with_bilateral_weakness_or_clumsiness")):
             active.append("joint_limb.neurovascular_warning_features")
+        self.active_patterns = active
+
+    def _update_mental_health_sleep_patterns(self) -> None:
+        active = ["mental_health.sleep_concern"]
+        if any(self.memory.value(x) is True for x in ("risk.suicidal_thoughts_current", "risk.suicide_plan_or_intent", "risk.unable_to_stay_safe", "event.recent_self_harm_or_suicide_attempt")):
+            active.append("mental_health.self_harm_warning_features")
+        if any(self.memory.value(x) is True for x in ("symptom.command_hallucination_to_harm", "symptom.first_onset_hallucination_or_delusion", "symptom.markedly_reduced_sleep_with_high_energy")):
+            active.append("mental_health.psychosis_mania_features")
+        if any(self.memory.value(x) not in (None, False, "", "none") for x in ("symptom.low_mood", "symptom.excessive_anxiety_or_worry", "sleep.main_problem")):
+            active.append("mental_health.common_symptom_features")
         self.active_patterns = active
 
     def _update_dyspnea_patterns(self) -> None:

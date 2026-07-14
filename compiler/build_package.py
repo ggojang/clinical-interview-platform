@@ -235,6 +235,17 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/musculoskeletal/joint-limb",
         "research_manifests": [ROOT / "sources/manifests/primary-care-joint-limb-research.json"],
     },
+    "mental_health_sleep": {
+        "graph": ROOT / "knowledge/graph/primary-care-mental-health-sleep.json",
+        "rules": ROOT / "rules/primary-care-mental-health-sleep.json",
+        "sources": ROOT / "sources/manifests/primary-care-mental-health-sleep.json",
+        "completion_policy": ROOT / "policies/primary-care-mental-health-sleep-completion.json",
+        "output": ROOT / "packages/generated/primary-care-mental-health-sleep-0.1.0.json",
+        "package_id": "package.primary-care-mental-health-sleep", "package_version": "0.1.0",
+        "rfe": "rfe.mental_health_sleep",
+        "simulation_root": ROOT / "simulation/patients/mental-health/mental-health-sleep",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-mental-health-sleep-research.json"],
+    },
 }
 
 ALLOWED_NODE_TYPES = {
