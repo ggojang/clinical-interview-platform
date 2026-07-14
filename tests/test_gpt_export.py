@@ -89,6 +89,7 @@ class GptExportTests(unittest.TestCase):
                 "rfe-joint_limb_complaint-facts", "rfe-joint_limb_complaint-questions", "rfe-joint_limb_complaint-rules",
                 "rfe-mental_health_sleep-facts", "rfe-mental_health_sleep-questions", "rfe-mental_health_sleep-rules",
                 "rfe-edema-facts", "rfe-edema-questions", "rfe-edema-rules",
+                "rfe-hypertension_follow_up-facts", "rfe-hypertension_follow_up-questions", "rfe-hypertension_follow_up-rules",
             }.issubset(names))
             for resource in manifest["resources"]:
                 self.assertEqual(len(resource["sha256"]), 64)
@@ -112,7 +113,7 @@ class GptExportTests(unittest.TestCase):
                 implemented,
                 {
                     "abdominal_pain", "back_pain", "bowel_symptoms", "chest_pain", "cough", "dizziness_syncope",
-                    "dyspnea", "edema", "fatigue", "fever", "focal_weakness_numbness", "headache", "joint_limb_complaint", "medication_review", "mental_health_sleep",
+                    "dyspnea", "edema", "fatigue", "fever", "focal_weakness_numbness", "headache", "hypertension_follow_up", "joint_limb_complaint", "medication_review", "mental_health_sleep",
                     "palpitations", "skin_complaint", "upper_respiratory_symptoms", "urinary_symptoms",
                     "vomiting_diarrhea",
                 },
@@ -200,6 +201,8 @@ class GptExportTests(unittest.TestCase):
             self.assertEqual(mental["count"], 39)
             edema = json.loads((output_path / "rfe/edema/facts.json").read_text(encoding="utf-8"))
             self.assertEqual(edema["count"], 35)
+            hypertension = json.loads((output_path / "rfe/hypertension_follow_up/facts.json").read_text(encoding="utf-8"))
+            self.assertEqual(hypertension["count"], 38)
             for slug in implemented:
                 for kind in ("facts", "questions", "rules"):
                     document = json.loads(

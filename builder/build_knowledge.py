@@ -173,6 +173,14 @@ PROFILES = {
         "output_graph": ROOT / "knowledge/graph/primary-care-edema.json",
         "output_rules": ROOT / "rules/primary-care-edema.json", "version": "0.1.0",
     },
+    "hypertension_follow_up": {
+        "base_graph": ROOT / "knowledge/base/primary-care-hypertension-follow-up.json",
+        "base_rules": ROOT / "rules/base/primary-care-hypertension-follow-up.json",
+        "fragment_root": ROOT / "knowledge/generated/cardiovascular/hypertension-follow-up",
+        "output_graph": ROOT / "knowledge/graph/primary-care-hypertension-follow-up.json",
+        "output_rules": ROOT / "rules/primary-care-hypertension-follow-up.json",
+        "version": "0.1.0",
+    },
 }
 
 

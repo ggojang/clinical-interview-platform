@@ -1,6 +1,6 @@
 {
   "contains_patient_responses": false,
-  "count": 204,
+  "count": 213,
   "generated_at": "2026-07-14T00:00:00Z",
   "items": [
     {
@@ -2223,6 +2223,203 @@
       }
     },
     {
+      "id": "rule.hypertension-follow-up.safety.current-syncope",
+      "priority": 900,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "symptom.current_syncope"
+      }
+    },
+    {
+      "id": "rule.hypertension-follow-up.safety.paroxysmal-cluster",
+      "priority": 880,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "symptom.paroxysmal_headache_palpitations_sweating"
+      }
+    },
+    {
+      "id": "rule.hypertension-follow-up.safety.pregnancy-severe-bp",
+      "priority": 950,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "all": [
+          {
+            "fact": "patient.pregnant_or_postpartum",
+            "in": [
+              "pregnant",
+              "postpartum_6_weeks"
+            ]
+          },
+          {
+            "equals": true,
+            "fact": "blood_pressure.pregnancy_160_110_or_higher"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.hypertension-follow-up.safety.pregnancy-warning",
+      "priority": 950,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "all": [
+          {
+            "fact": "patient.pregnant_or_postpartum",
+            "in": [
+              "pregnant",
+              "postpartum_6_weeks"
+            ]
+          },
+          {
+            "equals": true,
+            "fact": "symptom.preeclampsia_warning_features"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.hypertension-follow-up.safety.severe-bp-chest-pain",
+      "priority": 1000,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "blood_pressure.repeated_180_120_or_higher"
+          },
+          {
+            "equals": true,
+            "fact": "symptom.chest_pain"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.hypertension-follow-up.safety.severe-bp-confusion",
+      "priority": 1000,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "blood_pressure.repeated_180_120_or_higher"
+          },
+          {
+            "equals": true,
+            "fact": "symptom.new_confusion"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.hypertension-follow-up.safety.severe-bp-dyspnea",
+      "priority": 1000,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "blood_pressure.repeated_180_120_or_higher"
+          },
+          {
+            "equals": true,
+            "fact": "symptom.severe_dyspnea"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.hypertension-follow-up.safety.severe-bp-focal-deficit",
+      "priority": 1000,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "blood_pressure.repeated_180_120_or_higher"
+          },
+          {
+            "equals": true,
+            "fact": "symptom.new_focal_neurological_deficit"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.hypertension-follow-up.safety.severe-bp-low-urine",
+      "priority": 900,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "blood_pressure.repeated_180_120_or_higher"
+          },
+          {
+            "equals": true,
+            "fact": "symptom.markedly_reduced_urine"
+          }
+        ]
+      }
+    },
+    {
       "id": "rule.joint-limb.safety.cannot-use",
       "priority": 1000,
       "status": "research_only",
@@ -3794,5 +3991,5 @@
     "research_test",
     "simulation"
   ],
-  "version": "1.11.0"
+  "version": "1.12.0"
 }

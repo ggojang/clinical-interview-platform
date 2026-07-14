@@ -414,6 +414,9 @@ class InterviewSession:
         if self.reason_for_encounter == "rfe.edema":
             self._update_edema_patterns()
             return
+        if self.reason_for_encounter == "rfe.hypertension_follow_up":
+            self._update_hypertension_follow_up_patterns()
+            return
         active = ["respiratory.cough"]
         cold_support = sum(
             self.memory.value(fact_id) is True
@@ -786,6 +789,21 @@ class InterviewSession:
             active.append("edema.vte_features")
         if any(self.memory.value(x) is True for x in ("symptom.dyspnea_on_exertion", "symptom.orthopnea", "symptom.paroxysmal_nocturnal_dyspnea", "symptom.rapid_weight_gain")):
             active.append("edema.systemic_fluid_features")
+        self.active_patterns = active
+
+    def _update_hypertension_follow_up_patterns(self) -> None:
+        active = ["cardiovascular.hypertension_follow_up"]
+        if self.memory.value("blood_pressure.repeated_180_120_or_higher") is True:
+            active.append("hypertension.severe_reading")
+        if any(self.memory.value(x) not in (None, False, "", "none") for x in (
+            "medication.missed_dose_frequency", "medication.suspected_adverse_effects",
+            "medication.recent_start_stop_dose_change",
+        )):
+            active.append("hypertension.medication_follow_up")
+        if any(self.memory.value(x) is True for x in ("symptom.postural_dizziness", "event.recent_fall", "symptom.current_syncope")):
+            active.append("hypertension.postural_features")
+        if self.memory.value("patient.pregnant_or_postpartum") in ("pregnant", "postpartum_6_weeks"):
+            active.append("hypertension.pregnancy_context")
         self.active_patterns = active
 
     def _update_dyspnea_patterns(self) -> None:

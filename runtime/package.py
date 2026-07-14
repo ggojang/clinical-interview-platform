@@ -29,6 +29,7 @@ FOCAL_WEAKNESS_NUMBNESS_PACKAGE = ROOT / "packages/generated/primary-care-focal-
 JOINT_LIMB_COMPLAINT_PACKAGE = ROOT / "packages/generated/primary-care-joint-limb-0.1.0.json"
 MENTAL_HEALTH_SLEEP_PACKAGE = ROOT / "packages/generated/primary-care-mental-health-sleep-0.1.0.json"
 EDEMA_PACKAGE = ROOT / "packages/generated/primary-care-edema-0.1.0.json"
+HYPERTENSION_FOLLOW_UP_PACKAGE = ROOT / "packages/generated/primary-care-hypertension-follow-up-0.1.0.json"
 
 
 class PackageLoadError(RuntimeError):

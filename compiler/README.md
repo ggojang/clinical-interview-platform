@@ -23,6 +23,7 @@ python3 compiler/build_package.py --profile focal_weakness_numbness
 python3 compiler/build_package.py --profile joint_limb_complaint
 python3 compiler/build_package.py --profile mental_health_sleep
 python3 compiler/build_package.py --profile edema
+python3 compiler/build_package.py --profile hypertension_follow_up
 ```
 
 Validate a generated package:
