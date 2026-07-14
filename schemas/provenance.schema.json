@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/schemas/provenance.schema.json",
+  "title": "Provenance",
+  "type": "object",
+  "required": [
+    "created_by",
+    "created_at",
+    "review_status",
+    "version"
+  ],
+  "properties": {
+    "created_by": {
+      "type": "object",
+      "required": [
+        "type",
+        "id"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "human",
+            "ai",
+            "importer",
+            "runtime",
+            "builder",
+            "compiler",
+            "evaluator"
+          ]
+        },
+        "id": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "source_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "review_status": {
+      "enum": [
+        "unreviewed",
+        "in_review",
+        "reviewed",
+        "rejected",
+        "deprecated"
+      ]
+    },
+    "version": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

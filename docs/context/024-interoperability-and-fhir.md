@@ -1,0 +1,270 @@
+# Interoperability and FHIR
+
+Version: 0.1 (Draft)
+
+---
+
+# Purpose
+
+This document defines interoperability boundaries.
+
+FHIR, SNOMED CT, LOINC and ICPC-2 support exchange, terminology alignment and indexing.
+
+They do not define internal interview semantics.
+
+---
+
+# Core Principle
+
+Internal semantics first.
+
+External mappings second.
+
+Runtime behavior is never controlled by an interoperability format.
+
+---
+
+# Layering
+
+```text
+Repository Fact
+        ↓
+Semantic Mapping
+        ↓
+Compiled Mapping Package
+        ↓
+Clinical Memory
+        ↓
+FHIR Projection
+```
+
+FHIR Export is a projection of Clinical Memory.
+
+---
+
+# SNOMED CT
+
+SNOMED CT may provide
+
+- terminology identity
+- hierarchy
+- synonyms
+- concept relationships
+- semantic constraints
+- reference sets
+
+SNOMED CT does not determine
+
+- Clinical Intent
+- Question priority
+- Runtime safety behavior
+- completion
+
+Terminology version and licensing are recorded.
+
+---
+
+# MRCM
+
+MRCM supports semantic alignment and permissible attribute modeling.
+
+MRCM is a Build-Time source.
+
+Runtime never queries MRCM.
+
+MRCM constraints do not replace repository validation.
+
+---
+
+# LOINC
+
+LOINC may align observable Facts and structured measurements.
+
+LOINC mapping includes
+
+- code
+- system
+- version
+- property
+- scale
+- method when applicable
+- confidence
+- provenance
+
+---
+
+# ICPC-2
+
+ICPC-2 is a pragmatic Primary Care classification and indexing system.
+
+It may classify
+
+- Reason for Encounter
+- Problem
+- process of care
+- coverage domains
+
+ICPC-2 does not define internal Fact or Intent semantics.
+
+---
+
+# FHIR
+
+FHIR provides exchange structure.
+
+Potential resources include
+
+- Questionnaire
+- QuestionnaireResponse
+- Observation
+- Condition
+- MedicationStatement
+- AllergyIntolerance
+- FamilyMemberHistory
+- Encounter
+- Provenance
+- Bundle
+
+Resource selection depends on mapping policy.
+
+---
+
+# FHIR Baseline
+
+Every mapping package declares
+
+- FHIR version
+- profiles
+- extensions
+- ValueSets
+- CodeSystems
+- ConceptMaps
+- validation tooling
+- jurisdiction
+
+The baseline is immutable within a package release.
+
+---
+
+# Mapping Object
+
+Every mapping contains
+
+- internal object identifier
+- external system
+- external identifier or path
+- mapping relation
+- confidence
+- conditions
+- version
+- review status
+- provenance
+
+Mapping relations distinguish
+
+- equivalent
+- narrower
+- broader
+- related
+- no map
+
+---
+
+# Export Rules
+
+Export must
+
+- preserve internal identifier
+- preserve evidence linkage
+- preserve assertion and uncertainty
+- preserve encounter identity
+- identify mapping version
+- identify package version
+- include provenance where supported
+- validate against declared profile
+
+Export must not
+
+- convert a Hypothesis to confirmed Condition
+- omit clinically relevant uncertainty
+- infer absent data
+- overwrite internal Clinical Memory
+- silently drop mapping failures
+
+When an expected value is missing, export preserves Clinical Memory's
+`dataAbsentReason` using the FHIR DataAbsentReason code system. A coded absent
+reason and a populated value are mutually exclusive. `asked-unknown` and
+`asked-declined` must never be converted into `false`.
+
+---
+
+# Import Rules
+
+Imported FHIR data is source evidence.
+
+It is not automatically accepted as current patient truth.
+
+Import records
+
+- Resource identity
+- source system
+- authored time
+- encounter
+- status
+- coding
+- mapping result
+- provenance
+
+Applicability and freshness are evaluated.
+
+---
+
+# STOM
+
+STOM is a Build-Time terminology provider.
+
+Runtime never communicates with STOM.
+
+Acquired terminology content is cached, versioned and licensed before use.
+
+---
+
+# Validation
+
+Interoperability validation includes
+
+- identifier resolution
+- code validity
+- ValueSet binding
+- profile validation
+- mapping relation
+- version compatibility
+- round-trip semantic checks
+- provenance completeness
+
+Structural FHIR validity is not clinical validation.
+
+---
+
+# Mapping Evolution
+
+A mapping change may occur without changing internal Fact identity.
+
+Mapping changes create
+
+- new mapping version
+- new package version
+- migration note
+- regression result
+
+Internal semantics change only through the normal Knowledge Graph process.
+
+---
+
+# Final Principle
+
+FHIR is an interoperability representation.
+
+Terminologies are alignment sources.
+
+The Knowledge Graph remains the canonical internal representation.

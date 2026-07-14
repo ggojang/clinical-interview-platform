@@ -1,0 +1,103 @@
+{
+  "id": "policy.knowledge-refresh",
+  "version": "0.2.0",
+  "effective_from": "2026-07-13",
+  "source_monitor_profiles": {
+    "terminology_server": {
+      "interval_days": 30,
+      "mode": "automated_version_and_digest_check",
+      "rationale": "Terminology servers publish versioned content; monthly baseline monitoring balances stability and acquisition cost."
+    },
+    "nice_guidance": {
+      "interval_days": 7,
+      "mode": "automated_metadata_and_revision_check",
+      "rationale": "NICE guidance is versioned and may be amended; weekly monitoring detects changes without implying weekly clinical re-review."
+    },
+    "clinical_guideline": {
+      "interval_days": 1,
+      "mode": "automated_metadata_and_digest_check",
+      "rationale": "Daily automated monitoring provides early detection for high-impact guideline changes; full review occurs only when change is detected or the review date is reached."
+    },
+    "public_health_guidance": {
+      "interval_days": 7,
+      "mode": "automated_metadata_and_revision_check",
+      "rationale": "Public-health pages can change between formal releases; weekly monitoring is appropriate for the research package."
+    }
+  },
+  "classes": {
+    "safety_critical": {
+      "monitor_interval_days": 30,
+      "full_review_interval_days": 90,
+      "overdue_behavior": {
+        "production": "exclude",
+        "research_test": "allow_with_warning"
+      },
+      "rationale": "Safety behavior and escalation knowledge require frequent monitoring."
+    },
+    "guideline_behavior": {
+      "monitor_interval_days": 90,
+      "full_review_interval_days": 180,
+      "overdue_behavior": {
+        "production": "exclude",
+        "research_test": "allow_with_warning"
+      },
+      "rationale": "Interview behavior derived from guidelines may change with recommendations."
+    },
+    "terminology_mapping": {
+      "monitor_interval_days": 90,
+      "full_review_interval_days": 180,
+      "overdue_behavior": {
+        "production": "exclude_mapping",
+        "research_test": "allow_with_warning"
+      },
+      "rationale": "Terminology and interoperability baselines have independent releases."
+    },
+    "stable_semantic": {
+      "monitor_interval_days": 180,
+      "full_review_interval_days": 365,
+      "overdue_behavior": {
+        "production": "require_review",
+        "research_test": "allow_with_warning"
+      },
+      "rationale": "Atomic patient-reportable concepts are relatively stable but still require periodic review."
+    },
+    "local_jurisdiction": {
+      "monitor_interval_days": 30,
+      "full_review_interval_days": 90,
+      "overdue_behavior": {
+        "production": "exclude",
+        "research_test": "allow_with_warning"
+      },
+      "rationale": "Local pathways and administrative rules may change quickly."
+    }
+  },
+  "immediate_review_triggers": [
+    "upstream_source_version_changed",
+    "source_withdrawn_or_corrected",
+    "new_safety_signal",
+    "conflicting_reviewed_source",
+    "terminology_baseline_changed",
+    "production_incident",
+    "jurisdiction_policy_changed"
+  ],
+  "calculation": {
+    "anchor_date": "2026-07-13",
+    "method": "risk_and_volatility_classification",
+    "previous_session_values_available": false,
+    "cadence_reconstructed_from_user_recollection": true,
+    "source_monitoring_is_separate_from_full_clinical_review": true
+  },
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-13T00:00:00Z",
+    "source_refs": [
+      "docs/context/025-feedback-and-evolution.md",
+      "docs/context/026-governance-and-review.md"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.2.0"
+  }
+}

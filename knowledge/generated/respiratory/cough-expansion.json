@@ -1,0 +1,1360 @@
+{
+  "id": "knowledge.generated.respiratory.cough-expansion",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.respiratory-cough-research",
+  "extra_nodes": [
+    {
+      "id": "intent.risk_assessment",
+      "type": "ClinicalIntent",
+      "display": "Risk Assessment"
+    },
+    {
+      "id": "group.medication_related",
+      "type": "ClinicalGroup",
+      "display": "Medication Related"
+    },
+    {
+      "id": "group.environmental_exposure",
+      "type": "ClinicalGroup",
+      "display": "Environmental Exposure"
+    },
+    {
+      "id": "group.systemic_warning_features",
+      "type": "ClinicalGroup",
+      "display": "Systemic Warning Features"
+    },
+    {
+      "id": "group.suppurative_airway",
+      "type": "ClinicalGroup",
+      "display": "Suppurative Airway Features"
+    },
+    {
+      "id": "group.sudden_onset_features",
+      "type": "ClinicalGroup",
+      "display": "Sudden Onset Features"
+    },
+    {
+      "id": "group.pertussis_features",
+      "type": "ClinicalGroup",
+      "display": "Pertussis-like Features"
+    },
+    {
+      "id": "hypothesis.ace_inhibitor_related_cough",
+      "type": "Hypothesis",
+      "display": "ACE Inhibitor-related Cough"
+    },
+    {
+      "id": "hypothesis.environment_related_cough",
+      "type": "Hypothesis",
+      "display": "Environment-related Cough"
+    },
+    {
+      "id": "hypothesis.tuberculosis",
+      "type": "Hypothesis",
+      "display": "Tuberculosis"
+    },
+    {
+      "id": "hypothesis.malignancy",
+      "type": "Hypothesis",
+      "display": "Malignancy"
+    },
+    {
+      "id": "hypothesis.bronchiectasis",
+      "type": "Hypothesis",
+      "display": "Bronchiectasis"
+    },
+    {
+      "id": "hypothesis.foreign_body",
+      "type": "Hypothesis",
+      "display": "Inhaled Foreign Body"
+    },
+    {
+      "id": "hypothesis.pertussis",
+      "type": "Hypothesis",
+      "display": "Pertussis"
+    }
+  ],
+  "group_hypothesis_edges": [
+    [
+      "group.medication_related",
+      "hypothesis.ace_inhibitor_related_cough"
+    ],
+    [
+      "group.environmental_exposure",
+      "hypothesis.environment_related_cough"
+    ],
+    [
+      "group.systemic_warning_features",
+      "hypothesis.tuberculosis"
+    ],
+    [
+      "group.systemic_warning_features",
+      "hypothesis.malignancy"
+    ],
+    [
+      "group.suppurative_airway",
+      "hypothesis.bronchiectasis"
+    ],
+    [
+      "group.sudden_onset_features",
+      "hypothesis.foreign_body"
+    ],
+    [
+      "group.pertussis_features",
+      "hypothesis.pertussis"
+    ]
+  ],
+  "safety_rules": [
+    {
+      "id": "rule.generated.safety.unintentional_weight_loss",
+      "priority": 610,
+      "when": {
+        "fact": "symptom.unintentional_weight_loss",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "clarify",
+        "action": "continue_targeted_assessment",
+        "suppress_routine": false
+      }
+    },
+    {
+      "id": "rule.generated.safety.night_sweats",
+      "priority": 610,
+      "when": {
+        "fact": "symptom.night_sweats",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "clarify",
+        "action": "continue_targeted_assessment",
+        "suppress_routine": false
+      }
+    },
+    {
+      "id": "rule.generated.safety.immunocompromised",
+      "priority": 620,
+      "when": {
+        "fact": "patient.immunocompromised",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "clarify",
+        "action": "continue_targeted_assessment",
+        "suppress_routine": false
+      }
+    },
+    {
+      "id": "rule.generated.safety.sudden_onset",
+      "priority": 620,
+      "when": {
+        "fact": "symptom.cough_sudden_onset",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "clarify",
+        "action": "continue_targeted_assessment",
+        "suppress_routine": false
+      }
+    },
+    {
+      "id": "rule.generated.safety.dysphagia",
+      "priority": 610,
+      "when": {
+        "fact": "symptom.dysphagia",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "clarify",
+        "action": "continue_targeted_assessment",
+        "suppress_routine": false
+      }
+    },
+    {
+      "id": "rule.generated.safety.persistent_dysphonia",
+      "priority": 610,
+      "when": {
+        "fact": "symptom.dysphonia_persistent",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "clarify",
+        "action": "continue_targeted_assessment",
+        "suppress_routine": false
+      }
+    },
+    {
+      "id": "rule.generated.safety.tuberculosis_exposure",
+      "priority": 620,
+      "when": {
+        "fact": "exposure.tuberculosis_risk",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "clarify",
+        "action": "continue_targeted_assessment",
+        "suppress_routine": false
+      }
+    }
+  ],
+  "entries": [
+    {
+      "reuse_existing": true,
+      "fact": {
+        "id": "symptom.onset",
+        "display": "Cough Onset",
+        "value_type": "time",
+        "description": "Determine Cough Onset",
+        "extraction_cues": [],
+        "safety_relevant": false,
+        "refresh": {
+          "class": "stable_semantic",
+          "last_assessed_at": "2026-07-13",
+          "monitor_interval_days": 180,
+          "full_review_interval_days": 365,
+          "next_monitor_at": "2027-01-09",
+          "next_full_review_at": "2027-07-13",
+          "policy_id": "policy.knowledge-refresh",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          }
+        }
+      },
+      "target": {
+        "id": "target.determine_onset",
+        "display": "Determine Cough Onset",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.symptom_onset",
+        "wording": "When did the cough first start?",
+        "language": "en",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 58,
+          "reason": "characterization"
+        }
+      ],
+      "supports": []
+    },
+    {
+      "reuse_existing": true,
+      "fact": {
+        "id": "symptom.sputum",
+        "display": "Sputum",
+        "value_type": "boolean",
+        "description": "Determine Sputum",
+        "extraction_cues": [],
+        "safety_relevant": false,
+        "refresh": {
+          "class": "stable_semantic",
+          "last_assessed_at": "2026-07-13",
+          "monitor_interval_days": 180,
+          "full_review_interval_days": 365,
+          "next_monitor_at": "2027-01-09",
+          "next_full_review_at": "2027-07-13",
+          "policy_id": "policy.knowledge-refresh",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          }
+        }
+      },
+      "target": {
+        "id": "target.determine_sputum",
+        "display": "Determine Sputum",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.symptom_sputum",
+        "wording": "Are you bringing up any phlegm or mucus when you cough?",
+        "language": "en",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "acute",
+          "score": 74,
+          "reason": "lower_airway_characterization"
+        },
+        {
+          "branch": "persistent",
+          "score": 67,
+          "reason": "productive_cough_characterization"
+        }
+      ],
+      "supports": [
+        "group.suppurative_airway"
+      ]
+    },
+    {
+      "reuse_existing": true,
+      "fact": {
+        "id": "patient.smoking.status",
+        "display": "Smoking Status",
+        "value_type": "coded",
+        "description": "Determine Smoking Status",
+        "allowed_values": [
+          "current",
+          "former",
+          "never",
+          "unknown"
+        ],
+        "extraction_cues": [],
+        "safety_relevant": false,
+        "refresh": {
+          "class": "stable_semantic",
+          "last_assessed_at": "2026-07-13",
+          "monitor_interval_days": 180,
+          "full_review_interval_days": 365,
+          "next_monitor_at": "2027-01-09",
+          "next_full_review_at": "2027-07-13",
+          "policy_id": "policy.knowledge-refresh",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          }
+        }
+      },
+      "target": {
+        "id": "target.determine_smoking_status",
+        "display": "Determine Smoking Status",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.patient_smoking_status",
+        "wording": "Do you currently smoke, did you smoke in the past, or have you never smoked?",
+        "language": "en",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "persistent",
+          "score": 66,
+          "reason": "exposure_risk"
+        }
+      ],
+      "supports": [
+        "group.environmental_exposure"
+      ]
+    },
+    {
+      "reuse_existing": false,
+      "fact": {
+        "id": "symptom.cough_trajectory",
+        "display": "Cough Trajectory",
+        "value_type": "coded",
+        "description": "Determine Cough Trajectory",
+        "allowed_values": [
+          "improving",
+          "stable",
+          "worsening",
+          "fluctuating",
+          "unknown"
+        ],
+        "extraction_cues": [
+          "improving",
+          "getting better",
+          "same",
+          "worsening",
+          "getting worse"
+        ],
+        "safety_relevant": false,
+        "refresh": {
+          "class": "guideline_behavior",
+          "last_assessed_at": "2026-07-13",
+          "monitor_interval_days": 90,
+          "full_review_interval_days": 180,
+          "next_monitor_at": "2026-10-11",
+          "next_full_review_at": "2027-01-09",
+          "policy_id": "policy.knowledge-refresh",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          }
+        }
+      },
+      "target": {
+        "id": "target.determine_cough_trajectory",
+        "display": "Determine Cough Trajectory",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.symptom_cough_trajectory",
+        "wording": "Overall, is the cough improving, staying about the same, or getting worse?",
+        "language": "en",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "acute",
+          "score": 84,
+          "reason": "acute_course"
+        },
+        {
+          "branch": "persistent",
+          "score": 63,
+          "reason": "course_characterization"
+        }
+      ],
+      "supports": []
+    },
+    {
+      "reuse_existing": false,
+      "fact": {
+        "id": "symptom.cough_nocturnal",
+        "display": "Cough at Night",
+        "value_type": "boolean",
+        "description": "Determine Nocturnal Cough",
+        "extraction_cues": [
+          "wakes me at night",
+          "worse at night",
+          "night cough"
+        ],
+        "safety_relevant": false,
+        "refresh": {
+          "class": "guideline_behavior",
+          "last_assessed_at": "2026-07-13",
+          "monitor_interval_days": 90,
+          "full_review_interval_days": 180,
+          "next_monitor_at": "2026-10-11",
+          "next_full_review_at": "2027-01-09",
+          "policy_id": "policy.knowledge-refresh",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          }
+        }
+      },
+      "target": {
+        "id": "target.determine_cough_nocturnal",
+        "display": "Determine Nocturnal Cough",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.symptom_cough_nocturnal",
+        "wording": "Does the cough wake you at night or tend to be worse overnight?",
+        "language": "en",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "persistent",
+          "score": 87,
+          "reason": "asthma_feature"
+        }
+      ],
+      "supports": [
+        "group.asthma_features"
+      ]
+    },
+    {
+      "reuse_existing": false,
+      "fact": {
+        "id": "symptom.cough_exercise_trigger",
+        "display": "Exercise-triggered Cough",
+        "value_type": "boolean",
+        "description": "Determine Exercise Trigger",
+        "extraction_cues": [
+          "with exercise",
+          "when running",
+          "physical activity"
+        ],
+        "safety_relevant": false,
+        "refresh": {
+          "class": "guideline_behavior",
+          "last_assessed_at": "2026-07-13",
+          "monitor_interval_days": 90,
+          "full_review_interval_days": 180,
+          "next_monitor_at": "2026-10-11",
+          "next_full_review_at": "2027-01-09",
+          "policy_id": "policy.knowledge-refresh",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          }
+        }
+      },
+      "target": {
+        "id": "target.determine_cough_exercise_trigger",
+        "display": "Determine Exercise Trigger",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.symptom_cough_exercise_trigger",
+        "wording": "Does exercise or physical activity trigger or worsen the cough?",
+        "language": "en",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "persistent",
+          "score": 86,
+          "reason": "asthma_feature"
+        }
+      ],
+      "supports": [
+        "group.asthma_features"
+      ]
+    },
+    {
+      "reuse_existing": false,
+      "fact": {
+        "id": "symptom.cough_cold_air_trigger",
+        "display": "Cold-air-triggered Cough",
+        "value_type": "boolean",
+        "description": "Determine Cold Air Trigger",
+        "extraction_cues": [
+          "cold air",
+          "cold weather"
+        ],
+        "safety_relevant": false,
+        "refresh": {
+          "class": "guideline_behavior",
+          "last_assessed_at": "2026-07-13",
+          "monitor_interval_days": 90,
+          "full_review_interval_days": 180,
+          "next_monitor_at": "2026-10-11",
+          "next_full_review_at": "2027-01-09",
+          "policy_id": "policy.knowledge-refresh",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          }
+        }
+      },
+      "target": {
+        "id": "target.determine_cough_cold_air_trigger",
+        "display": "Determine Cold Air Trigger",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.symptom_cough_cold_air_trigger",
+        "wording": "Does cold air trigger or worsen the cough?",
+        "language": "en",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "persistent",
+          "score": 75,
+          "reason": "airway_trigger"
+        }
+      ],
+      "supports": [
+        "group.asthma_features"
+      ]
+    },
+    {
+      "reuse_existing": false,
+      "fact": {
+        "id": "medication.ace_inhibitor_exposure",
+        "display": "ACE Inhibitor Exposure",
+        "value_type": "boolean",
+        "description": "Determine whether current medication includes an ACE inhibitor without assigning causation.",
+        "extraction_cues": [
+          "ACE inhibitor",
+          "lisinopril",
+          "enalapril",
+          "ramipril",
+          "perindopril"
+        ],
+        "safety_relevant": false,
+        "refresh": {
+          "class": "guideline_behavior",
+          "last_assessed_at": "2026-07-13",
+          "monitor_interval_days": 90,
+          "full_review_interval_days": 180,
+          "next_monitor_at": "2026-10-11",
+          "next_full_review_at": "2027-01-09",
+          "policy_id": "policy.knowledge-refresh",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          }
+        }
+      },
+      "target": {
+        "id": "target.determine_ace_inhibitor_exposure",
+        "display": "Determine ACE Inhibitor Exposure",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.medication_ace_inhibitor_exposure",
+        "wording": "Are you taking a blood pressure or heart medicine called an ACE inhibitor?",
+        "language": "en",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "persistent",
+          "score": 96,
+          "reason": "common_medication_exposure"
+        }
+      ],
+      "supports": [
+        "group.medication_related"
+      ]
+    },
+    {
+      "reuse_existing": false,
+      "fact": {
+        "id": "exposure.occupational_irritant",
+        "display": "Occupational Irritant Exposure",
+        "value_type": "boolean",
+        "description": "Determine Occupational Irritant Exposure",
+        "extraction_cues": [
+          "dust at work",
+          "fumes",
+          "chemical exposure",
+          "workplace smoke"
+        ],
+        "safety_relevant": false,
+        "refresh": {
+          "class": "guideline_behavior",
+          "last_assessed_at": "2026-07-13",
+          "monitor_interval_days": 90,
+          "full_review_interval_days": 180,
+          "next_monitor_at": "2026-10-11",
+          "next_full_review_at": "2027-01-09",
+          "policy_id": "policy.knowledge-refresh",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          }
+        }
+      },
+      "target": {
+        "id": "target.determine_occupational_irritant",
+        "display": "Determine Occupational Irritant Exposure",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.exposure_occupational_irritant",
+        "wording": "At work, are you exposed to dust, fumes, smoke, chemicals, or other things that irritate your breathing?",
+        "language": "en",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "persistent",
+          "score": 72,
+          "reason": "environmental_exposure"
+        }
+      ],
+      "supports": [
+        "group.environmental_exposure"
+      ]
+    },
+    {
+      "reuse_existing": false,
+      "fact": {
+        "id": "symptom.unintentional_weight_loss",
+        "display": "Unintentional Weight Loss",
+        "value_type": "boolean",
+        "description": "Determine Unintentional Weight Loss",
+        "extraction_cues": [
+          "lost weight without trying",
+          "unintentional weight loss"
+        ],
+        "safety_relevant": true,
+        "refresh": {
+          "class": "safety_critical",
+          "last_assessed_at": "2026-07-13",
+          "monitor_interval_days": 30,
+          "full_review_interval_days": 90,
+          "next_monitor_at": "2026-08-12",
+          "next_full_review_at": "2026-10-11",
+          "policy_id": "policy.knowledge-refresh",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          }
+        }
+      },
+      "target": {
+        "id": "target.determine_unintentional_weight_loss",
+        "display": "Determine Unintentional Weight Loss",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.symptom_unintentional_weight_loss",
+        "wording": "Have you lost weight without trying?",
+        "language": "en",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "persistent",
+          "score": 73,
+          "reason": "systemic_warning_feature"
+        }
+      ],
+      "supports": [
+        "group.systemic_warning_features"
+      ]
+    },
+    {
+      "reuse_existing": false,
+      "fact": {
+        "id": "symptom.night_sweats",
+        "display": "Night Sweats",
+        "value_type": "boolean",
+        "description": "Determine Night Sweats",
+        "extraction_cues": [
+          "night sweats",
+          "sweating at night"
+        ],
+        "safety_relevant": true,
+        "refresh": {
+          "class": "safety_critical",
+          "last_assessed_at": "2026-07-13",
+          "monitor_interval_days": 30,
+          "full_review_interval_days": 90,
+          "next_monitor_at": "2026-08-12",
+          "next_full_review_at": "2026-10-11",
+          "policy_id": "policy.knowledge-refresh",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          }
+        }
+      },
+      "target": {
+        "id": "target.determine_night_sweats",
+        "display": "Determine Night Sweats",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.symptom_night_sweats",
+        "wording": "Have you been having drenching or unusual night sweats?",
+        "language": "en",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "persistent",
+          "score": 71,
+          "reason": "systemic_warning_feature"
+        }
+      ],
+      "supports": [
+        "group.systemic_warning_features"
+      ]
+    },
+    {
+      "reuse_existing": false,
+      "fact": {
+        "id": "patient.immunocompromised",
+        "display": "Immunocompromised State",
+        "value_type": "boolean",
+        "description": "Determine Immunocompromised State",
+        "extraction_cues": [
+          "immunosuppressed",
+          "chemotherapy",
+          "transplant medicine",
+          "weakened immune system"
+        ],
+        "safety_relevant": true,
+        "refresh": {
+          "class": "safety_critical",
+          "last_assessed_at": "2026-07-13",
+          "monitor_interval_days": 30,
+          "full_review_interval_days": 90,
+          "next_monitor_at": "2026-08-12",
+          "next_full_review_at": "2026-10-11",
+          "policy_id": "policy.knowledge-refresh",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          }
+        }
+      },
+      "target": {
+        "id": "target.determine_immunocompromised",
+        "display": "Determine Immunocompromised State",
+        "intents": [
+          "intent.screen_red_flags",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.patient_immunocompromised",
+        "wording": "Do you have a condition or take a treatment that weakens your immune system?",
+        "language": "en",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 65,
+          "reason": "complication_risk"
+        }
+      ],
+      "supports": [
+        "group.systemic_warning_features"
+      ]
+    },
+    {
+      "reuse_existing": false,
+      "fact": {
+        "id": "history.recurrent_respiratory_infections",
+        "display": "Recurrent Respiratory Infections",
+        "value_type": "boolean",
+        "description": "Determine Recurrent Respiratory Infections",
+        "extraction_cues": [
+          "repeated chest infections",
+          "recurrent pneumonia",
+          "frequent sinus infections"
+        ],
+        "safety_relevant": false,
+        "refresh": {
+          "class": "guideline_behavior",
+          "last_assessed_at": "2026-07-13",
+          "monitor_interval_days": 90,
+          "full_review_interval_days": 180,
+          "next_monitor_at": "2026-10-11",
+          "next_full_review_at": "2027-01-09",
+          "policy_id": "policy.knowledge-refresh",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          }
+        }
+      },
+      "target": {
+        "id": "target.determine_recurrent_respiratory_infections",
+        "display": "Determine Recurrent Respiratory Infections",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.history_recurrent_respiratory_infections",
+        "wording": "Have you had repeated chest or sinus infections?",
+        "language": "en",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "persistent",
+          "score": 69,
+          "reason": "recurrent_infection_feature"
+        }
+      ],
+      "supports": [
+        "group.suppurative_airway"
+      ]
+    },
+    {
+      "reuse_existing": false,
+      "fact": {
+        "id": "symptom.cough_sudden_onset",
+        "display": "Sudden Cough Onset",
+        "value_type": "boolean",
+        "description": "Determine Sudden Onset",
+        "extraction_cues": [
+          "started suddenly",
+          "while eating",
+          "choked"
+        ],
+        "safety_relevant": true,
+        "refresh": {
+          "class": "safety_critical",
+          "last_assessed_at": "2026-07-13",
+          "monitor_interval_days": 30,
+          "full_review_interval_days": 90,
+          "next_monitor_at": "2026-08-12",
+          "next_full_review_at": "2026-10-11",
+          "policy_id": "policy.knowledge-refresh",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          }
+        }
+      },
+      "target": {
+        "id": "target.determine_cough_sudden_onset",
+        "display": "Determine Sudden Onset",
+        "intents": [
+          "intent.screen_red_flags",
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.symptom_cough_sudden_onset",
+        "wording": "Did the cough begin very suddenly, for example during eating or after something went down the wrong way?",
+        "language": "en",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "acute",
+          "score": 76,
+          "reason": "sudden_onset_clarification"
+        }
+      ],
+      "supports": [
+        "group.sudden_onset_features"
+      ]
+    },
+    {
+      "reuse_existing": false,
+      "fact": {
+        "id": "symptom.systemic_unwellness",
+        "display": "Systemic Unwellness",
+        "value_type": "severity",
+        "description": "Determine Systemic Unwellness",
+        "allowed_values": [
+          "none",
+          "mild",
+          "moderate",
+          "severe",
+          "unknown"
+        ],
+        "extraction_cues": [
+          "very unwell",
+          "extremely ill",
+          "generally unwell"
+        ],
+        "safety_relevant": true,
+        "refresh": {
+          "class": "safety_critical",
+          "last_assessed_at": "2026-07-13",
+          "monitor_interval_days": 30,
+          "full_review_interval_days": 90,
+          "next_monitor_at": "2026-08-12",
+          "next_full_review_at": "2026-10-11",
+          "policy_id": "policy.knowledge-refresh",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          }
+        }
+      },
+      "target": {
+        "id": "target.determine_systemic_unwellness",
+        "display": "Determine Systemic Unwellness",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.symptom_systemic_unwellness",
+        "wording": "Apart from the cough, how unwell do you feel overall?",
+        "language": "en",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "acute",
+          "score": 93,
+          "reason": "acute_systemic_severity"
+        }
+      ],
+      "supports": [
+        "group.systemic_warning_features"
+      ]
+    },
+    {
+      "reuse_existing": false,
+      "fact": {
+        "id": "symptom.dysphagia",
+        "display": "Difficulty Swallowing",
+        "value_type": "boolean",
+        "description": "Determine Difficulty Swallowing",
+        "extraction_cues": [
+          "difficulty swallowing",
+          "food gets stuck",
+          "progressive dysphagia"
+        ],
+        "safety_relevant": true,
+        "refresh": {
+          "class": "safety_critical",
+          "last_assessed_at": "2026-07-13",
+          "monitor_interval_days": 30,
+          "full_review_interval_days": 90,
+          "next_monitor_at": "2026-08-12",
+          "next_full_review_at": "2026-10-11",
+          "policy_id": "policy.knowledge-refresh",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          }
+        }
+      },
+      "target": {
+        "id": "target.determine_dysphagia",
+        "display": "Determine Difficulty Swallowing",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.symptom_dysphagia",
+        "wording": "Have you had persistent or worsening difficulty swallowing?",
+        "language": "en",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "persistent",
+          "score": 62,
+          "reason": "upper_aerodigestive_warning_feature"
+        }
+      ],
+      "supports": [
+        "group.systemic_warning_features"
+      ]
+    },
+    {
+      "reuse_existing": false,
+      "fact": {
+        "id": "symptom.dysphonia_persistent",
+        "display": "Persistent Voice Change",
+        "value_type": "boolean",
+        "description": "Determine Persistent Voice Change",
+        "extraction_cues": [
+          "persistent hoarseness",
+          "voice change"
+        ],
+        "safety_relevant": true,
+        "refresh": {
+          "class": "safety_critical",
+          "last_assessed_at": "2026-07-13",
+          "monitor_interval_days": 30,
+          "full_review_interval_days": 90,
+          "next_monitor_at": "2026-08-12",
+          "next_full_review_at": "2026-10-11",
+          "policy_id": "policy.knowledge-refresh",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          }
+        }
+      },
+      "target": {
+        "id": "target.determine_persistent_dysphonia",
+        "display": "Determine Persistent Voice Change",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.symptom_dysphonia_persistent",
+        "wording": "Has your voice been persistently hoarse or changed when you speak?",
+        "language": "en",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "persistent",
+          "score": 61,
+          "reason": "upper_aerodigestive_warning_feature"
+        }
+      ],
+      "supports": [
+        "group.systemic_warning_features"
+      ]
+    },
+    {
+      "reuse_existing": false,
+      "fact": {
+        "id": "exposure.tuberculosis_risk",
+        "display": "Tuberculosis Exposure Risk",
+        "value_type": "boolean",
+        "description": "Determine Tuberculosis Exposure Risk",
+        "extraction_cues": [
+          "TB contact",
+          "tuberculosis exposure"
+        ],
+        "safety_relevant": true,
+        "refresh": {
+          "class": "safety_critical",
+          "last_assessed_at": "2026-07-13",
+          "monitor_interval_days": 30,
+          "full_review_interval_days": 90,
+          "next_monitor_at": "2026-08-12",
+          "next_full_review_at": "2026-10-11",
+          "policy_id": "policy.knowledge-refresh",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          }
+        }
+      },
+      "target": {
+        "id": "target.determine_tuberculosis_exposure_risk",
+        "display": "Determine Tuberculosis Exposure Risk",
+        "intents": [
+          "intent.screen_red_flags",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.exposure_tuberculosis_risk",
+        "wording": "Have you had close contact with tuberculosis or another reason you may have been exposed to TB?",
+        "language": "en",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "persistent",
+          "score": 70,
+          "reason": "infection_exposure_risk"
+        }
+      ],
+      "supports": [
+        "group.systemic_warning_features"
+      ]
+    },
+    {
+      "reuse_existing": false,
+      "fact": {
+        "id": "symptom.cough_paroxysmal",
+        "display": "Paroxysmal Cough",
+        "value_type": "boolean",
+        "description": "Determine Coughing Fits",
+        "extraction_cues": [
+          "coughing fits",
+          "paroxysms",
+          "can't stop coughing"
+        ],
+        "safety_relevant": false,
+        "refresh": {
+          "class": "guideline_behavior",
+          "last_assessed_at": "2026-07-13",
+          "monitor_interval_days": 90,
+          "full_review_interval_days": 180,
+          "next_monitor_at": "2026-10-11",
+          "next_full_review_at": "2027-01-09",
+          "policy_id": "policy.knowledge-refresh",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          }
+        }
+      },
+      "target": {
+        "id": "target.determine_paroxysmal_cough",
+        "display": "Determine Coughing Fits",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.symptom_cough_paroxysmal",
+        "wording": "Do you get prolonged or repeated fits of coughing?",
+        "language": "en",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "persistent",
+          "score": 64,
+          "reason": "cough_pattern"
+        }
+      ],
+      "supports": [
+        "group.pertussis_features"
+      ]
+    },
+    {
+      "reuse_existing": false,
+      "fact": {
+        "id": "symptom.cough_whoop",
+        "display": "Whoop after Cough",
+        "value_type": "boolean",
+        "description": "Determine Whoop",
+        "extraction_cues": [
+          "whooping sound",
+          "whoop after coughing"
+        ],
+        "safety_relevant": false,
+        "refresh": {
+          "class": "guideline_behavior",
+          "last_assessed_at": "2026-07-13",
+          "monitor_interval_days": 90,
+          "full_review_interval_days": 180,
+          "next_monitor_at": "2026-10-11",
+          "next_full_review_at": "2027-01-09",
+          "policy_id": "policy.knowledge-refresh",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          }
+        }
+      },
+      "target": {
+        "id": "target.determine_cough_whoop",
+        "display": "Determine Whoop",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.symptom_cough_whoop",
+        "wording": "After a coughing fit, do you make a whooping sound when breathing in?",
+        "language": "en",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "persistent",
+          "score": 59,
+          "reason": "cough_pattern"
+        }
+      ],
+      "supports": [
+        "group.pertussis_features"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-13T00:00:00Z",
+    "source_refs": [
+      "source.cdc.common-cold.2026",
+      "source.nice.ng120",
+      "source.ers.chronic-cough.2020",
+      "source.gina.summary.2025",
+      "source.bts.chronic-cough.2023"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

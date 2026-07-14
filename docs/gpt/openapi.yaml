@@ -1,0 +1,63 @@
+openapi: 3.1.0
+info:
+  title: Clinical Interview Research Knowledge
+  version: 0.1.0
+  description: Read-only, research-only Knowledge and Fact resources. No patient data is accepted.
+servers:
+  - url: https://ggojang.github.io/clinical-interview-platform
+paths:
+  /gpt/manifest.json:
+    get:
+      operationId: getManifest
+      summary: Get the current knowledge manifest and resource digests
+      responses:
+        '200':
+          description: Knowledge manifest
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/JsonDocument'}
+  /gpt/facts.json:
+    get:
+      operationId: getFacts
+      summary: Get reusable clinical Fact definitions
+      responses:
+        '200':
+          description: Fact collection
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/JsonDocument'}
+  /gpt/question-groups.json:
+    get:
+      operationId: getQuestionGroups
+      summary: Get interview questions and questionnaire groups
+      responses:
+        '200':
+          description: Question collection
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/JsonDocument'}
+  /gpt/safety-rules.json:
+    get:
+      operationId: getSafetyRules
+      summary: Get deterministic interview safety and routing rules
+      responses:
+        '200':
+          description: Safety rule collection
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/JsonDocument'}
+  /gpt/screening-kr.json:
+    get:
+      operationId: getScreeningKnowledge
+      summary: Get Korean national screening candidate rules and question groups
+      responses:
+        '200':
+          description: Korean screening knowledge
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/JsonDocument'}
+components:
+  schemas:
+    JsonDocument:
+      type: object
+      additionalProperties: true

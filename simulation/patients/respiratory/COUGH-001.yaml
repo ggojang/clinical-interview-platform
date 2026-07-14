@@ -1,0 +1,65 @@
+id: COUGH-001
+persona:
+  age: 62
+  communication_style: concise
+  health_literacy: moderate
+  anxiety_level: low
+initial_statement:
+  en: I have had a cough for about five days and I am bringing up some phlegm.
+  ko: 닷새 정도 전부터 기침이 나고 가래도 조금 있어요.
+hidden_state:
+  symptom.duration:
+    value:
+      amount: 5
+      unit: day
+    disclose_when:
+      - open_narrative
+      - asked_directly
+  symptom.sputum:
+    value: true
+    disclose_when:
+      - open_narrative
+      - asked_directly
+  symptom.dyspnea:
+    value: mild
+    disclose_when:
+      - asked_directly
+  symptom.fever:
+    value: false
+    disclose_when:
+      - asked_directly
+  symptom.hemoptysis:
+    value: false
+    disclose_when:
+      - asked_directly
+  symptom.chest_pain:
+    value: false
+    disclose_when:
+      - asked_directly
+  patient.smoking.status:
+    value: former
+    disclose_when:
+      - asked_directly
+response_behavior:
+  vague_question: brief
+  leading_question:
+    bias_probability: 0.1
+expected:
+  required_facts:
+    - symptom.duration
+    - symptom.fever
+    - symptom.dyspnea
+    - symptom.hemoptysis
+    - symptom.chest_pain
+  preferred_first_missing_fact: symptom.dyspnea
+  forbidden_assertions:
+    - diagnosis.pneumonia
+    - diagnosis.copd_exacerbation
+provenance:
+  created_by:
+    type: ai
+    id: GPT-5.6-Thinking
+  created_at: 2026-07-13T00:00:00Z
+  source_refs: []
+  review_status: unreviewed
+  version: 0.1.0

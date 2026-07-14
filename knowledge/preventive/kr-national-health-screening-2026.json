@@ -1,0 +1,167 @@
+{
+  "id": "knowledge.kr-national-health-screening.2026",
+  "version": "0.1.0",
+  "jurisdiction": "KR",
+  "status": "research_only",
+  "review_status": "unreviewed",
+  "official_entitlement_rule": "Computed eligibility is advisory. Confirm the current person's official examination items with NHIS before claiming coverage or submitting an official form.",
+  "source_refs": [
+    "source.kr.mohw.health-screening-standard.2026",
+    "source.kr.mohw.cancer-screening-standard.2025",
+    "source.kr.ncc.national-cancer-screening"
+  ],
+  "facts": [
+    {"id": "screening.current_symptom", "value_type": "string", "report_field": "common.current_symptom"},
+    {"id": "screening.unintentional_weight_loss_6m", "value_type": "quantity", "report_field": "cancer_common.weight_loss_6m"},
+    {"id": "history.cancer.family", "value_type": "string", "report_field": "cancer_common.family_history"},
+    {"id": "history.condition.current", "value_type": "string", "report_field": "general.medical_history"},
+    {"id": "medication.current", "value_type": "string", "report_field": "general.medication"},
+    {"id": "allergy.current", "value_type": "string", "report_field": "general.allergy"},
+    {"id": "patient.smoking.status", "value_type": "coded", "report_field": "general.smoking_status", "primary_binding": {"system": "http://loinc.org", "code": "72166-2", "display": "Tobacco smoking status", "validation_status": "candidate"}},
+    {"id": "patient.smoking.cigarettes_per_day", "value_type": "quantity", "report_field": "general.cigarettes_per_day"},
+    {"id": "patient.smoking.years", "value_type": "quantity", "report_field": "general.smoking_years"},
+    {"id": "patient.smoking.pack_years", "value_type": "quantity", "report_field": "lung.pack_years"},
+    {"id": "patient.alcohol.pattern", "value_type": "string", "report_field": "general.alcohol"},
+    {"id": "patient.physical_activity", "value_type": "string", "report_field": "general.physical_activity"},
+    {"id": "screening.gastric.last_test", "value_type": "time", "report_field": "gastric.last_test"},
+    {"id": "screening.gastric.last_result", "value_type": "string", "report_field": "gastric.last_result"},
+    {"id": "screening.colorectal.last_test", "value_type": "time", "report_field": "colorectal.last_test"},
+    {"id": "screening.colorectal.last_result", "value_type": "string", "report_field": "colorectal.last_result"},
+    {"id": "risk.liver.hbv", "value_type": "coded", "report_field": "liver.hbv"},
+    {"id": "risk.liver.hcv", "value_type": "coded", "report_field": "liver.hcv"},
+    {"id": "risk.liver.cirrhosis", "value_type": "boolean", "report_field": "liver.cirrhosis"},
+    {"id": "screening.breast.last_mammography", "value_type": "time", "report_field": "breast.last_mammography"},
+    {"id": "screening.cervical.last_cytology", "value_type": "time", "report_field": "cervical.last_cytology"},
+    {"id": "screening.cognition.concern", "value_type": "boolean", "report_field": "age66.cognition"},
+    {"id": "screening.fall.last_year", "value_type": "boolean", "report_field": "age66.fall"},
+    {"id": "screening.oral.symptom", "value_type": "string", "report_field": "oral.symptom"},
+    {"id": "screening.additional_concern", "value_type": "string", "report_field": "common.additional_concern"}
+  ],
+  "question_groups": [
+    {
+      "id": "kr.nhis.general.common",
+      "title": {"ko": "국가 일반건강검진 공통 문진", "en": "Korean general health screening questionnaire"},
+      "eligibility": {"fact": "age", "minimum": 20},
+      "offer_explanation": {"ko": "만 20세 이상 국가 일반건강검진 후보에 해당하여 공통 건강문진을 안내합니다. 실제 대상 항목은 국민건강보험공단에서 확인해야 합니다.", "en": "You match the age criterion for the general screening questionnaire; official NHIS entitlement requires confirmation."},
+      "source_refs": ["source.kr.mohw.health-screening-standard.2026"],
+      "questions": [
+        {"id": "kr.nhis.general.common.current_symptom", "fact_id": "screening.current_symptom", "answer_type": "string", "text": {"ko": "현재 불편한 증상이 있나요?", "en": "Do you currently have any symptoms?"}, "shortcuts": {"1": "yes", "2": "no", "3": "asked-unknown", "5": "asked-declined"}, "accept_free_text": true},
+        {"id": "kr.nhis.general.common.medical_history", "fact_id": "history.condition.current", "answer_type": "string", "text": {"ko": "현재 또는 과거의 주요 질환을 알려주세요.", "en": "Please describe major current or past conditions."}, "accept_free_text": true},
+        {"id": "kr.nhis.general.common.medication", "fact_id": "medication.current", "answer_type": "string", "text": {"ko": "현재 복용 중인 약을 알려주세요.", "en": "Please list current medication."}, "accept_free_text": true},
+        {"id": "kr.nhis.general.common.smoking_status", "fact_id": "patient.smoking.status", "answer_type": "choice", "text": {"ko": "흡연 상태는 어떻게 되나요?", "en": "What is your smoking status?"}, "shortcuts": {"1": "current", "2": "former", "3": "never", "4": "asked-unknown", "5": "asked-declined"}, "accept_free_text": true},
+        {"id": "kr.nhis.general.common.alcohol", "fact_id": "patient.alcohol.pattern", "answer_type": "string", "text": {"ko": "음주 빈도와 한 번에 마시는 양을 알려주세요.", "en": "Describe alcohol frequency and amount per occasion."}, "accept_free_text": true},
+        {"id": "kr.nhis.general.common.activity", "fact_id": "patient.physical_activity", "answer_type": "string", "text": {"ko": "일주일 신체활동 일수와 시간을 알려주세요.", "en": "Describe weekly physical activity."}, "accept_free_text": true},
+        {"id": "kr.nhis.general.common.additional_concern", "fact_id": "screening.additional_concern", "answer_type": "string", "text": {"ko": "질문에 없었던 걱정이나 전달할 내용이 있나요?", "en": "Any additional concerns not covered?"}, "shortcuts": {"1": "yes", "2": "no", "3": "asked-unknown", "5": "asked-declined"}, "accept_free_text": true}
+      ]
+    },
+    {
+      "id": "kr.nhis.general.age66.additional",
+      "title": {"ko": "만 66세 추가 문진", "en": "Age 66 additional screening questionnaire"},
+      "eligibility": {"fact": "age", "equals": 66},
+      "offer_explanation": {"ko": "만 66세에 적용되는 생애전환기 추가 문진 후보입니다.", "en": "You match the age criterion for the age-66 additional questionnaire."},
+      "source_refs": ["source.kr.mohw.health-screening-standard.2026"],
+      "questions": [
+        {"id": "kr.nhis.general.age66.additional.cognition", "fact_id": "screening.cognition.concern", "answer_type": "boolean", "text": {"ko": "최근 기억력이나 인지기능이 떨어졌다고 느끼나요?", "en": "Have you noticed decline in memory or cognition?"}, "shortcuts": {"1": true, "2": false, "3": "asked-unknown", "5": "asked-declined"}, "accept_free_text": true},
+        {"id": "kr.nhis.general.age66.additional.fall", "fact_id": "screening.fall.last_year", "answer_type": "boolean", "text": {"ko": "지난 1년 동안 넘어진 적이 있나요?", "en": "Have you fallen during the past year?"}, "shortcuts": {"1": true, "2": false, "3": "asked-unknown", "5": "asked-declined"}, "accept_free_text": true}
+      ]
+    },
+    {
+      "id": "kr.nhis.oral.general",
+      "title": {"ko": "일반 구강검진 문진", "en": "General oral health questionnaire"},
+      "eligibility": {"fact": "age", "minimum": 20},
+      "offer_explanation": {"ko": "일반건강검진 대상자는 구강검진 문진 후보가 될 수 있습니다. 실제 대상 여부를 확인한 뒤 진행합니다.", "en": "General screening participants may be candidates for oral screening; confirm entitlement first."},
+      "source_refs": ["source.kr.mohw.health-screening-standard.2026"],
+      "questions": [
+        {"id": "kr.nhis.oral.general.symptom", "fact_id": "screening.oral.symptom", "answer_type": "string", "text": {"ko": "치아·잇몸·씹기와 관련한 불편이 있나요?", "en": "Any tooth, gum, or chewing problems?"}, "shortcuts": {"1": "yes", "2": "no", "3": "asked-unknown", "5": "asked-declined"}, "accept_free_text": true}
+      ]
+    },
+    {
+      "id": "kr.nhis.cancer.common",
+      "title": {"ko": "국가 암검진 공통 문진", "en": "Korean national cancer screening common questionnaire"},
+      "eligibility": {"any_group_eligible": ["kr.nhis.cancer.gastric", "kr.nhis.cancer.colorectal", "kr.nhis.cancer.liver", "kr.nhis.cancer.lung", "kr.nhis.cancer.breast", "kr.nhis.cancer.cervical"]},
+      "offer_explanation": {"ko": "연령·성별·위험조건상 하나 이상의 국가 암검진 후보가 있어 암검진 공통 문진을 안내합니다.", "en": "At least one cancer-screening eligibility rule matched, so the common cancer questionnaire is offered."},
+      "source_refs": ["source.kr.mohw.cancer-screening-standard.2025"],
+      "questions": [
+        {"id": "kr.nhis.cancer.common.current_symptom", "fact_id": "screening.current_symptom", "answer_type": "string", "text": {"ko": "현재 신체 어느 부위에든 불편한 증상이 있나요?", "en": "Do you currently have discomfort anywhere?"}, "shortcuts": {"1": "yes", "2": "no", "3": "asked-unknown", "5": "asked-declined"}, "accept_free_text": true},
+        {"id": "kr.nhis.cancer.common.weight_loss", "fact_id": "screening.unintentional_weight_loss_6m", "answer_type": "quantity", "text": {"ko": "최근 6개월 동안 특별한 이유 없이 체중이 줄었나요?", "en": "Any unexplained weight loss in the past six months?"}, "shortcuts": {"1": "yes", "2": "no", "3": "asked-unknown", "5": "asked-declined"}, "accept_free_text": true},
+        {"id": "kr.nhis.cancer.common.family_history", "fact_id": "history.cancer.family", "answer_type": "string", "text": {"ko": "본인이나 가족의 암 병력을 알려주세요.", "en": "Describe personal or family cancer history."}, "accept_free_text": true}
+      ]
+    },
+    {
+      "id": "kr.nhis.cancer.gastric",
+      "title": {"ko": "위암검진 문진", "en": "Gastric cancer screening questionnaire"},
+      "eligibility": {"fact": "age", "minimum": 40},
+      "offer_explanation": {"ko": "만 40세 이상은 국가 위암검진 연령 후보입니다. 최근 검진 시기와 결과를 확인할 수 있습니다.", "en": "Adults 40 or older match the national gastric-screening age criterion."},
+      "source_refs": ["source.kr.ncc.national-cancer-screening"],
+      "questions": [
+        {"id": "kr.nhis.cancer.gastric.last_test", "fact_id": "screening.gastric.last_test", "answer_type": "time", "text": {"ko": "마지막 위내시경 또는 위장조영검사는 언제였나요?", "en": "When was your last gastroscopy or upper GI series?"}, "accept_free_text": true},
+        {"id": "kr.nhis.cancer.gastric.last_result", "fact_id": "screening.gastric.last_result", "answer_type": "string", "text": {"ko": "검사 결과와 추적 권고를 알려주세요.", "en": "What was the result and follow-up recommendation?"}, "accept_free_text": true}
+      ]
+    },
+    {
+      "id": "kr.nhis.cancer.colorectal",
+      "title": {"ko": "대장암검진 문진", "en": "Colorectal cancer screening questionnaire"},
+      "eligibility": {"fact": "age", "minimum": 50},
+      "offer_explanation": {"ko": "만 50세 이상은 국가 대장암검진 연령 후보입니다. 최근 분변잠혈검사나 대장내시경 이력을 확인할 수 있습니다.", "en": "Adults 50 or older match the national colorectal-screening age criterion."},
+      "source_refs": ["source.kr.ncc.national-cancer-screening"],
+      "questions": [
+        {"id": "kr.nhis.cancer.colorectal.last_test", "fact_id": "screening.colorectal.last_test", "answer_type": "time", "text": {"ko": "마지막 분변잠혈검사 또는 대장내시경은 언제였나요?", "en": "When was your last FOBT or colonoscopy?"}, "accept_free_text": true},
+        {"id": "kr.nhis.cancer.colorectal.last_result", "fact_id": "screening.colorectal.last_result", "answer_type": "string", "text": {"ko": "검사 결과와 추적 권고를 알려주세요.", "en": "What was the result and follow-up recommendation?"}, "accept_free_text": true}
+      ]
+    },
+    {
+      "id": "kr.nhis.cancer.liver",
+      "title": {"ko": "간암검진 위험 확인 문진", "en": "Liver cancer screening risk questionnaire"},
+      "eligibility": {"all": [{"fact": "age", "minimum": 40}, {"any": [{"fact": "liver_risk.hbv", "equals": true}, {"fact": "liver_risk.hcv", "equals": true}, {"fact": "liver_risk.cirrhosis", "equals": true}]}]},
+      "offer_explanation": {"ko": "만 40세 이상이며 입력된 간질환 위험요인이 있어 간암검진 관련 문진 후보입니다.", "en": "Age and a recorded liver-risk condition matched the liver-screening rule."},
+      "source_refs": ["source.kr.ncc.national-cancer-screening"],
+      "questions": [
+        {"id": "kr.nhis.cancer.liver.hbv", "fact_id": "risk.liver.hbv", "answer_type": "choice", "text": {"ko": "B형간염 검사 또는 진단 상태를 알고 있나요?", "en": "Do you know your hepatitis B status?"}, "accept_free_text": true},
+        {"id": "kr.nhis.cancer.liver.hcv", "fact_id": "risk.liver.hcv", "answer_type": "choice", "text": {"ko": "C형간염 검사 또는 진단 상태를 알고 있나요?", "en": "Do you know your hepatitis C status?"}, "accept_free_text": true}
+      ]
+    },
+    {
+      "id": "kr.nhis.cancer.lung",
+      "title": {"ko": "폐암검진 흡연력 문진", "en": "Lung cancer screening smoking-history questionnaire"},
+      "eligibility": {"all": [{"fact": "age", "minimum": 54}, {"fact": "age", "maximum": 74}, {"fact": "smoking.pack_years", "minimum": 30}, {"fact": "smoking.status", "equals": "current"}]},
+      "offer_explanation": {"ko": "연령과 입력된 흡연력이 국가 폐암검진 고위험 후보 조건에 해당합니다. 공식 대상 여부는 공단 확인이 필요합니다.", "en": "Age and smoking history match the high-risk candidate rule; confirm official NHIS eligibility."},
+      "source_refs": ["source.kr.ncc.national-cancer-screening"],
+      "questions": [
+        {"id": "kr.nhis.cancer.lung.pack_years", "fact_id": "patient.smoking.pack_years", "answer_type": "quantity", "text": {"ko": "하루 흡연량과 총 흡연기간을 확인해 주세요.", "en": "Confirm cigarettes per day and total smoking years."}, "accept_free_text": true}
+      ]
+    },
+    {
+      "id": "kr.nhis.cancer.breast",
+      "title": {"ko": "유방암검진 문진", "en": "Breast cancer screening questionnaire"},
+      "eligibility": {"all": [{"fact": "age", "minimum": 40}, {"fact": "sex_at_birth", "equals": "female"}]},
+      "offer_explanation": {"ko": "연령과 성별 정보상 국가 유방암검진 후보입니다. 개인의 장기·수술 상태에 따라 추가 확인이 필요할 수 있습니다.", "en": "Age and sex information match the breast-screening candidate rule; anatomy or surgery may require clarification."},
+      "source_refs": ["source.kr.ncc.national-cancer-screening"],
+      "questions": [
+        {"id": "kr.nhis.cancer.breast.last_mammography", "fact_id": "screening.breast.last_mammography", "answer_type": "time", "text": {"ko": "마지막 유방촬영술은 언제였나요?", "en": "When was your last mammogram?"}, "accept_free_text": true}
+      ]
+    },
+    {
+      "id": "kr.nhis.cancer.cervical",
+      "title": {"ko": "자궁경부암검진 문진", "en": "Cervical cancer screening questionnaire"},
+      "eligibility": {"all": [{"fact": "age", "minimum": 20}, {"fact": "sex_at_birth", "equals": "female"}]},
+      "offer_explanation": {"ko": "연령과 성별 정보상 국가 자궁경부암검진 후보입니다. 자궁경부 보유 여부 등 개인 상태에 따라 추가 확인할 수 있습니다.", "en": "Age and sex information match the cervical-screening candidate rule; anatomy may require clarification."},
+      "source_refs": ["source.kr.ncc.national-cancer-screening"],
+      "questions": [
+        {"id": "kr.nhis.cancer.cervical.last_cytology", "fact_id": "screening.cervical.last_cytology", "answer_type": "time", "text": {"ko": "마지막 자궁경부세포검사는 언제였나요?", "en": "When was your last cervical cytology test?"}, "accept_free_text": true}
+      ]
+    }
+  ],
+  "composition": {
+    "source_of_truth": "internal-semantic-response",
+    "report_targets": ["KR-NHIS-2026-research"],
+    "api_target": "national_health_screening.response.v1-research",
+    "fhir_targets": ["Patient", "QuestionnaireResponse", "Consent", "Observation", "Condition", "MedicationStatement", "Procedure", "FamilyMemberHistory"],
+    "fhir_baseline": "4.0.1"
+  },
+  "provenance": {
+    "created_by": {"type": "ai", "id": "codex-gpt5"},
+    "created_at": "2026-07-14T00:00:00Z",
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

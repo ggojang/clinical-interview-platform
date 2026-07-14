@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Knowledge Refresh Policy",
+  "type": "object",
+  "required": [
+    "id",
+    "version",
+    "source_monitor_profiles",
+    "classes",
+    "immediate_review_triggers",
+    "calculation",
+    "provenance"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "source_monitor_profiles": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "interval_days",
+          "mode",
+          "rationale"
+        ],
+        "properties": {
+          "interval_days": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "mode": {
+            "type": "string"
+          },
+          "rationale": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "classes": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "monitor_interval_days",
+          "full_review_interval_days",
+          "overdue_behavior",
+          "rationale"
+        ],
+        "properties": {
+          "monitor_interval_days": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "full_review_interval_days": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "overdue_behavior": {
+            "type": "object"
+          },
+          "rationale": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "immediate_review_triggers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "calculation": {
+      "type": "object"
+    },
+    "provenance": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}

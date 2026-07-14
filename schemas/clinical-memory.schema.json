@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Clinical Memory",
+  "type": "object",
+  "$defs": {
+    "dataAbsentReason": {
+      "type": "object",
+      "required": ["system", "code"],
+      "properties": {
+        "system": {
+          "const": "http://terminology.hl7.org/CodeSystem/data-absent-reason"
+        },
+        "code": {
+          "enum": [
+            "unknown",
+            "asked-unknown",
+            "temp-unknown",
+            "not-asked",
+            "asked-declined",
+            "masked",
+            "not-applicable",
+            "unsupported",
+            "as-text",
+            "error",
+            "not-a-number",
+            "negative-infinity",
+            "positive-infinity",
+            "not-performed"
+          ]
+        },
+        "display": {"type": "string"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "session_id",
+    "turn",
+    "facts",
+    "active_patterns",
+    "contradictions",
+    "safety_status"
+  ],
+  "properties": {
+    "session_id": {
+      "type": "string"
+    },
+    "turn": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "patient_context": {
+      "type": "object"
+    },
+    "facts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "enum": [
+              "known",
+              "unknown",
+              "not_asked",
+              "conflicted",
+              "not_applicable"
+            ]
+          },
+          "value": {},
+          "dataAbsentReason": {
+            "$ref": "#/$defs/dataAbsentReason"
+          },
+          "raw_text": {
+            "type": "string"
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "status": {"enum": ["unknown", "not_applicable"]}
+              },
+              "required": ["status"]
+            },
+            "then": {"required": ["dataAbsentReason"]}
+          },
+          {
+            "if": {
+              "properties": {"status": {"const": "known"}},
+              "required": ["status"]
+            },
+            "then": {
+              "not": {"required": ["dataAbsentReason"]}
+            }
+          }
+        ],
+        "additionalProperties": true
+      }
+    },
+    "data_absent_facts": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/dataAbsentReason"}
+    },
+    "active_patterns": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "contradictions": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "safety_status": {
+      "type": "object",
+      "required": [
+        "level"
+      ],
+      "properties": {
+        "level": {
+          "enum": [
+            "routine",
+            "clarify",
+            "urgent",
+            "emergency"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "trace": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  },
+  "additionalProperties": true
+}

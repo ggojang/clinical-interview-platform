@@ -1,0 +1,34 @@
+{
+  "id": "simulation.kr-national-health-screening",
+  "version": "0.1.0",
+  "status": "research_only",
+  "review_status": "unreviewed",
+  "cases": [
+    {
+      "id": "kr-healthcheck-male-54-current-smoker-15py",
+      "patient_context": {"age": 54, "sex_at_birth": "male", "smoking": {"status": "current", "pack_years": 15}},
+      "expected_groups": ["kr.nhis.general.common", "kr.nhis.oral.general", "kr.nhis.cancer.common", "kr.nhis.cancer.gastric", "kr.nhis.cancer.colorectal"],
+      "unmodeled_observations": [
+        {"candidate_fact_id": "eligibility.nhis.confirmed_items", "label": "Official NHIS confirmed examination items", "reason": "Age-derived eligibility cannot prove current funded entitlement."},
+        {"candidate_fact_id": "screening.colorectal.colonoscopy_within_5y", "label": "Colonoscopy performed within five years", "reason": "Current NHIS guidance may defer the primary colorectal item."}
+      ]
+    },
+    {
+      "id": "kr-healthcheck-female-66-liver-risk",
+      "patient_context": {"age": 66, "sex_at_birth": "female", "smoking": {"status": "never", "pack_years": 0}, "liver_risk": {"hbv": true, "hcv": false, "cirrhosis": false}},
+      "expected_groups": ["kr.nhis.general.common", "kr.nhis.general.age66.additional", "kr.nhis.oral.general", "kr.nhis.cancer.common", "kr.nhis.cancer.gastric", "kr.nhis.cancer.colorectal", "kr.nhis.cancer.liver", "kr.nhis.cancer.breast", "kr.nhis.cancer.cervical"],
+      "unmodeled_observations": [
+        {"candidate_fact_id": "patient.anatomy.cervix_present", "label": "Cervix present", "reason": "Sex is insufficient after total hysterectomy."},
+        {"candidate_fact_id": "patient.anatomy.breast_screening_applicable", "label": "Breast screening anatomy applicability", "reason": "Surgery or anatomy may alter questionnaire applicability."}
+      ]
+    },
+    {
+      "id": "kr-healthcheck-male-60-current-smoker-35py",
+      "patient_context": {"age": 60, "sex_at_birth": "male", "smoking": {"status": "current", "pack_years": 35}},
+      "expected_groups": ["kr.nhis.general.common", "kr.nhis.oral.general", "kr.nhis.cancer.common", "kr.nhis.cancer.gastric", "kr.nhis.cancer.colorectal", "kr.nhis.cancer.lung"],
+      "unmodeled_observations": [
+        {"candidate_fact_id": "patient.smoking.years_since_quit", "label": "Years since quitting", "reason": "Needed for non-current-smoker guideline variants and future policy changes."}
+      ]
+    }
+  ]
+}

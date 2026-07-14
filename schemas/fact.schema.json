@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Fact Knowledge Item",
+  "type": "object",
+  "required": [
+    "id",
+    "label",
+    "value_type",
+    "question_prompts",
+    "provenance"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(\\.[a-z0-9_-]+)+$"
+    },
+    "label": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "value_type": {
+      "enum": [
+        "boolean",
+        "coded",
+        "quantity",
+        "string",
+        "time",
+        "severity"
+      ]
+    },
+    "allowed_values": {
+      "type": "array",
+      "items": {
+        "type": [
+          "string",
+          "number",
+          "boolean"
+        ]
+      }
+    },
+    "extraction_cues": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "question_prompts": {
+      "type": "object",
+      "required": [
+        "neutral"
+      ],
+      "properties": {
+        "neutral": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "applicability": {
+      "type": "object"
+    },
+    "relevance": {
+      "type": "object"
+    },
+    "provenance": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Interview Completion Policy",
+  "type": "object",
+  "required": [
+    "id",
+    "version",
+    "status",
+    "required_facts",
+    "clarification_facts_by_rule",
+    "question_budget",
+    "provenance"
+  ],
+  "properties": {
+    "id": {"type": "string"},
+    "version": {"type": "string"},
+    "status": {"enum": ["research_only", "reviewed"]},
+    "required_facts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {"type": "string"},
+        "uniqueItems": true
+      }
+    },
+    "clarification_facts_by_rule": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {"type": "string"},
+        "uniqueItems": true
+      }
+    },
+    "question_budget": {
+      "type": "object",
+      "additionalProperties": {"type": "integer", "minimum": 1}
+    },
+    "provenance": {"type": "object"}
+  },
+  "additionalProperties": true
+}

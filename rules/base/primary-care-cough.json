@@ -1,0 +1,1247 @@
+{
+  "id": "rules.primary-care-cough",
+  "version": "0.1.0",
+  "rules": [
+    {
+      "id": "rule.activate.cough",
+      "type": "activation",
+      "priority": 100,
+      "when": {
+        "rfe": "rfe.cough"
+      },
+      "then": {
+        "activate_intents": [
+          "intent.characterize_symptom",
+          "intent.screen_red_flags",
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.safety.severe_breathing_difficulty",
+      "type": "safety",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.dyspnea",
+        "equals": "severe"
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.safety.hemoptysis",
+      "type": "safety",
+      "priority": 900,
+      "when": {
+        "fact": "symptom.hemoptysis",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.safety.chest_pain_with_dyspnea",
+      "type": "safety",
+      "priority": 900,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.chest_pain",
+            "equals": true
+          },
+          {
+            "fact": "symptom.dyspnea",
+            "in": [
+              "moderate",
+              "severe"
+            ]
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.priority.duration",
+      "type": "priority",
+      "priority": 120,
+      "when": {
+        "fact_state": {
+          "symptom.duration": "not_asked"
+        }
+      },
+      "then": {
+        "target": "target.determine_duration",
+        "reason": "branch_selection"
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.priority.minimal_safety_gate",
+      "type": "priority",
+      "priority": 115,
+      "when": {
+        "fact_state": {
+          "symptom.dyspnea": "not_asked"
+        }
+      },
+      "then": {
+        "target": "target.determine_dyspnea",
+        "reason": "minimal_safety_gate"
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.priority.acute.determine_rhinorrhea",
+      "type": "priority",
+      "priority": 100,
+      "when": {
+        "duration_class": "acute",
+        "target_state": {
+          "target.determine_rhinorrhea": "active"
+        }
+      },
+      "then": {
+        "target": "target.determine_rhinorrhea",
+        "reason": "common_upper_respiratory_discriminator"
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.priority.acute.determine_sore_throat",
+      "type": "priority",
+      "priority": 98,
+      "when": {
+        "duration_class": "acute",
+        "target_state": {
+          "target.determine_sore_throat": "active"
+        }
+      },
+      "then": {
+        "target": "target.determine_sore_throat",
+        "reason": "common_upper_respiratory_discriminator"
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.priority.acute.determine_fever",
+      "type": "priority",
+      "priority": 95,
+      "when": {
+        "duration_class": "acute",
+        "target_state": {
+          "target.determine_fever": "active"
+        }
+      },
+      "then": {
+        "target": "target.determine_fever",
+        "reason": "common_upper_respiratory_discriminator"
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.priority.acute.determine_sneezing",
+      "type": "priority",
+      "priority": 82,
+      "when": {
+        "duration_class": "acute",
+        "target_state": {
+          "target.determine_sneezing": "active"
+        }
+      },
+      "then": {
+        "target": "target.determine_sneezing",
+        "reason": "common_upper_respiratory_support"
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.priority.acute.determine_sick_contact",
+      "type": "priority",
+      "priority": 75,
+      "when": {
+        "duration_class": "acute",
+        "target_state": {
+          "target.determine_sick_contact": "active"
+        }
+      },
+      "then": {
+        "target": "target.determine_sick_contact",
+        "reason": "common_upper_respiratory_support"
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.priority.acute.determine_hemoptysis",
+      "type": "priority",
+      "priority": 70,
+      "when": {
+        "duration_class": "acute",
+        "target_state": {
+          "target.determine_hemoptysis": "active"
+        }
+      },
+      "then": {
+        "target": "target.determine_hemoptysis",
+        "reason": "remaining_safety"
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.priority.acute.determine_chest_pain",
+      "type": "priority",
+      "priority": 68,
+      "when": {
+        "duration_class": "acute",
+        "target_state": {
+          "target.determine_chest_pain": "active"
+        }
+      },
+      "then": {
+        "target": "target.determine_chest_pain",
+        "reason": "remaining_safety"
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.priority.persistent.determine_postnasal_drip",
+      "type": "priority",
+      "priority": 100,
+      "when": {
+        "duration_class": {
+          "in": [
+            "subacute",
+            "chronic",
+            "unknown"
+          ]
+        },
+        "target_state": {
+          "target.determine_postnasal_drip": "active"
+        }
+      },
+      "then": {
+        "target": "target.determine_postnasal_drip",
+        "reason": "upper_airway_discriminator"
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.priority.persistent.determine_wheeze",
+      "type": "priority",
+      "priority": 98,
+      "when": {
+        "duration_class": {
+          "in": [
+            "subacute",
+            "chronic",
+            "unknown"
+          ]
+        },
+        "target_state": {
+          "target.determine_wheeze": "active"
+        }
+      },
+      "then": {
+        "target": "target.determine_wheeze",
+        "reason": "asthma_feature_discriminator"
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.priority.persistent.determine_heartburn",
+      "type": "priority",
+      "priority": 94,
+      "when": {
+        "duration_class": {
+          "in": [
+            "subacute",
+            "chronic",
+            "unknown"
+          ]
+        },
+        "target_state": {
+          "target.determine_heartburn": "active"
+        }
+      },
+      "then": {
+        "target": "target.determine_heartburn",
+        "reason": "reflux_discriminator"
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.priority.persistent.determine_regurgitation",
+      "type": "priority",
+      "priority": 92,
+      "when": {
+        "duration_class": {
+          "in": [
+            "subacute",
+            "chronic",
+            "unknown"
+          ]
+        },
+        "target_state": {
+          "target.determine_regurgitation": "active"
+        }
+      },
+      "then": {
+        "target": "target.determine_regurgitation",
+        "reason": "reflux_discriminator"
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.priority.persistent.determine_rhinorrhea",
+      "type": "priority",
+      "priority": 88,
+      "when": {
+        "duration_class": {
+          "in": [
+            "subacute",
+            "chronic",
+            "unknown"
+          ]
+        },
+        "target_state": {
+          "target.determine_rhinorrhea": "active"
+        }
+      },
+      "then": {
+        "target": "target.determine_rhinorrhea",
+        "reason": "upper_airway_discriminator"
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.priority.persistent.determine_cough_lying_down",
+      "type": "priority",
+      "priority": 78,
+      "when": {
+        "duration_class": {
+          "in": [
+            "subacute",
+            "chronic",
+            "unknown"
+          ]
+        },
+        "target_state": {
+          "target.determine_cough_lying_down": "active"
+        }
+      },
+      "then": {
+        "target": "target.determine_cough_lying_down",
+        "reason": "reflux_support"
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.priority.persistent.determine_cough_after_meals",
+      "type": "priority",
+      "priority": 76,
+      "when": {
+        "duration_class": {
+          "in": [
+            "subacute",
+            "chronic",
+            "unknown"
+          ]
+        },
+        "target_state": {
+          "target.determine_cough_after_meals": "active"
+        }
+      },
+      "then": {
+        "target": "target.determine_cough_after_meals",
+        "reason": "reflux_support"
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.priority.persistent.determine_hemoptysis",
+      "type": "priority",
+      "priority": 70,
+      "when": {
+        "duration_class": {
+          "in": [
+            "subacute",
+            "chronic",
+            "unknown"
+          ]
+        },
+        "target_state": {
+          "target.determine_hemoptysis": "active"
+        }
+      },
+      "then": {
+        "target": "target.determine_hemoptysis",
+        "reason": "remaining_safety"
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.priority.persistent.determine_chest_pain",
+      "type": "priority",
+      "priority": 68,
+      "when": {
+        "duration_class": {
+          "in": [
+            "subacute",
+            "chronic",
+            "unknown"
+          ]
+        },
+        "target_state": {
+          "target.determine_chest_pain": "active"
+        }
+      },
+      "then": {
+        "target": "target.determine_chest_pain",
+        "reason": "remaining_safety"
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.priority.persistent.determine_fever",
+      "type": "priority",
+      "priority": 60,
+      "when": {
+        "duration_class": {
+          "in": [
+            "subacute",
+            "chronic",
+            "unknown"
+          ]
+        },
+        "target_state": {
+          "target.determine_fever": "active"
+        }
+      },
+      "then": {
+        "target": "target.determine_fever",
+        "reason": "general_discriminator"
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.complete.determine_duration",
+      "type": "completion",
+      "priority": 50,
+      "when": {
+        "target": "target.determine_duration",
+        "facts_resolved": "all_required"
+      },
+      "then": {
+        "target_state": "satisfied"
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.complete.determine_dyspnea",
+      "type": "completion",
+      "priority": 50,
+      "when": {
+        "target": "target.determine_dyspnea",
+        "facts_resolved": "all_required"
+      },
+      "then": {
+        "target_state": "satisfied"
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.complete.determine_hemoptysis",
+      "type": "completion",
+      "priority": 50,
+      "when": {
+        "target": "target.determine_hemoptysis",
+        "facts_resolved": "all_required"
+      },
+      "then": {
+        "target_state": "satisfied"
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.complete.determine_chest_pain",
+      "type": "completion",
+      "priority": 50,
+      "when": {
+        "target": "target.determine_chest_pain",
+        "facts_resolved": "all_required"
+      },
+      "then": {
+        "target_state": "satisfied"
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.complete.determine_fever",
+      "type": "completion",
+      "priority": 50,
+      "when": {
+        "target": "target.determine_fever",
+        "facts_resolved": "all_required"
+      },
+      "then": {
+        "target_state": "satisfied"
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.complete.determine_rhinorrhea",
+      "type": "completion",
+      "priority": 50,
+      "when": {
+        "target": "target.determine_rhinorrhea",
+        "facts_resolved": "all_required"
+      },
+      "then": {
+        "target_state": "satisfied"
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.complete.determine_sore_throat",
+      "type": "completion",
+      "priority": 50,
+      "when": {
+        "target": "target.determine_sore_throat",
+        "facts_resolved": "all_required"
+      },
+      "then": {
+        "target_state": "satisfied"
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.complete.determine_sneezing",
+      "type": "completion",
+      "priority": 50,
+      "when": {
+        "target": "target.determine_sneezing",
+        "facts_resolved": "all_required"
+      },
+      "then": {
+        "target_state": "satisfied"
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.complete.determine_sick_contact",
+      "type": "completion",
+      "priority": 50,
+      "when": {
+        "target": "target.determine_sick_contact",
+        "facts_resolved": "all_required"
+      },
+      "then": {
+        "target_state": "satisfied"
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.complete.determine_postnasal_drip",
+      "type": "completion",
+      "priority": 50,
+      "when": {
+        "target": "target.determine_postnasal_drip",
+        "facts_resolved": "all_required"
+      },
+      "then": {
+        "target_state": "satisfied"
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.complete.determine_wheeze",
+      "type": "completion",
+      "priority": 50,
+      "when": {
+        "target": "target.determine_wheeze",
+        "facts_resolved": "all_required"
+      },
+      "then": {
+        "target_state": "satisfied"
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.complete.determine_heartburn",
+      "type": "completion",
+      "priority": 50,
+      "when": {
+        "target": "target.determine_heartburn",
+        "facts_resolved": "all_required"
+      },
+      "then": {
+        "target_state": "satisfied"
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.complete.determine_regurgitation",
+      "type": "completion",
+      "priority": 50,
+      "when": {
+        "target": "target.determine_regurgitation",
+        "facts_resolved": "all_required"
+      },
+      "then": {
+        "target_state": "satisfied"
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.complete.determine_cough_lying_down",
+      "type": "completion",
+      "priority": 50,
+      "when": {
+        "target": "target.determine_cough_lying_down",
+        "facts_resolved": "all_required"
+      },
+      "then": {
+        "target_state": "satisfied"
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.complete.determine_cough_after_meals",
+      "type": "completion",
+      "priority": 50,
+      "when": {
+        "target": "target.determine_cough_after_meals",
+        "facts_resolved": "all_required"
+      },
+      "then": {
+        "target_state": "satisfied"
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "id": "rule.stop.emergency",
+      "type": "stop",
+      "priority": 1000,
+      "when": {
+        "safety_level": "emergency"
+      },
+      "then": {
+        "stop_reason": "emergency_escalation",
+        "action": "human_handoff"
+      },
+      "version": "0.1.0",
+      "status": "research_only",
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-07-13T00:00:00Z",
+        "source_refs": [
+          "specifications/reasoning-loop.md",
+          "specifications/common-cause-prioritization.md",
+          "knowledge/semantic/red-flags/respiratory.yaml"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      }
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-13T00:00:00Z",
+    "source_refs": [
+      "specifications/reasoning-loop.md",
+      "specifications/common-cause-prioritization.md",
+      "knowledge/semantic/red-flags/respiratory.yaml"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

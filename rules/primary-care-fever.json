@@ -1,0 +1,2054 @@
+{
+  "id": "rules.primary-care-fever",
+  "provenance": {
+    "created_at": "2026-07-14T00:00:00Z",
+    "created_by": {
+      "id": "codex-gpt5",
+      "type": "ai"
+    },
+    "review_status": "unreviewed",
+    "source_refs": [
+      "specifications/reasoning-loop.md"
+    ],
+    "version": "0.1.0"
+  },
+  "rules": [
+    {
+      "id": "rule.activate.fever",
+      "priority": 100,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "specifications/reasoning-loop.md"
+        ],
+        "version": "0.1.0"
+      },
+      "status": "research_only",
+      "then": {
+        "activate_intents": [
+          "intent.characterize_symptom",
+          "intent.screen_red_flags",
+          "intent.differentiate_common_causes",
+          "intent.risk_assessment"
+        ]
+      },
+      "type": "activation",
+      "version": "0.1.0",
+      "when": {
+        "rfe": "rfe.fever"
+      }
+    },
+    {
+      "id": "rule.fever.safety.confusion",
+      "priority": 900,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "equals": true,
+        "fact": "symptom.confusion"
+      }
+    },
+    {
+      "id": "rule.fever.safety.immunocompromised",
+      "priority": 620,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "continue_targeted_assessment",
+        "safety_level": "clarify",
+        "suppress_routine": false
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "equals": true,
+        "fact": "patient.immunocompromised"
+      }
+    },
+    {
+      "id": "rule.fever.safety.meningitis_red_flag_combination",
+      "priority": 1000,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.headache"
+          },
+          {
+            "equals": true,
+            "fact": "symptom.neck_stiffness"
+          },
+          {
+            "equals": true,
+            "fact": "symptom.confusion"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.fever.safety.non_blanching_rash",
+      "priority": 1000,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "equals": true,
+        "fact": "symptom.non_blanching_rash"
+      }
+    },
+    {
+      "id": "rule.fever.safety.severe_breathing_difficulty",
+      "priority": 1000,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "equals": "severe",
+        "fact": "symptom.dyspnea"
+      }
+    },
+    {
+      "id": "rule.fever.safety.systemically_unwell",
+      "priority": 610,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "continue_targeted_assessment",
+        "safety_level": "clarify",
+        "suppress_routine": false
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "equals": true,
+        "fact": "symptom.systemic_unwellness"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_abdominal_pain",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_abdominal_pain"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_chills",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_chills"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_confusion",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_confusion"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_cough",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_cough"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_diarrhea",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_diarrhea"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_duration",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_duration"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_dyspnea",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_dyspnea"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_headache",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_headache"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_immunocompromised",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_immunocompromised"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_neck_stiffness",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_neck_stiffness"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_non_blanching_rash",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_non_blanching_rash"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_severe_pain",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_severe_pain"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_sick_contact",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_sick_contact"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_skin_features",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_skin_features"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_sore_throat",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_sore_throat"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_systemic_unwellness",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_systemic_unwellness"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_temperature",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_temperature"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_urinary_symptoms",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_urinary_symptoms"
+      }
+    },
+    {
+      "id": "rule.generated.complete.determine_vomiting",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.determine_vomiting"
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_abdominal_pain",
+      "priority": 84,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "gastrointestinal_source_localization",
+        "target": "target.fever.determine_abdominal_pain"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.fever.determine_abdominal_pain": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_chills",
+      "priority": 78,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "fever_characterization",
+        "target": "target.fever.determine_chills"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.fever.determine_chills": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_confusion",
+      "priority": 115,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "neurological_safety_gate",
+        "target": "target.fever.determine_confusion"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.fever.determine_confusion": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_cough",
+      "priority": 90,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "respiratory_source_localization",
+        "target": "target.fever.determine_cough"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.fever.determine_cough": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_diarrhea",
+      "priority": 74,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "gastrointestinal_source_localization",
+        "target": "target.fever.determine_diarrhea"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.fever.determine_diarrhea": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_duration",
+      "priority": 120,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "characterize_course",
+        "target": "target.fever.determine_duration"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.fever.determine_duration": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_dyspnea",
+      "priority": 114,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "respiratory_safety_gate",
+        "target": "target.fever.determine_dyspnea"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.fever.determine_dyspnea": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_headache",
+      "priority": 108,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "neurological_warning_feature",
+        "target": "target.fever.determine_headache"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.fever.determine_headache": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_immunocompromised",
+      "priority": 102,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "host_vulnerability",
+        "target": "target.fever.determine_immunocompromised"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.fever.determine_immunocompromised": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_neck_stiffness",
+      "priority": 107,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "neurological_warning_feature",
+        "target": "target.fever.determine_neck_stiffness"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.fever.determine_neck_stiffness": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_non_blanching_rash",
+      "priority": 106,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "rash_safety_gate",
+        "target": "target.fever.determine_non_blanching_rash"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.fever.determine_non_blanching_rash": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_severe_pain",
+      "priority": 104,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "systemic_warning_feature",
+        "target": "target.fever.determine_severe_pain"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.fever.determine_severe_pain": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_sick_contact",
+      "priority": 70,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "exposure_context",
+        "target": "target.fever.determine_sick_contact"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.fever.determine_sick_contact": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_skin_features",
+      "priority": 82,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "skin_source_localization",
+        "target": "target.fever.determine_skin_features"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.fever.determine_skin_features": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_sore_throat",
+      "priority": 88,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "upper_respiratory_source_localization",
+        "target": "target.fever.determine_sore_throat"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.fever.determine_sore_throat": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_systemic_unwellness",
+      "priority": 116,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "systemic_safety_gate",
+        "target": "target.fever.determine_systemic_unwellness"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.fever.determine_systemic_unwellness": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_temperature",
+      "priority": 118,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "objective_characterization",
+        "target": "target.fever.determine_temperature"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.fever.determine_temperature": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_urinary_symptoms",
+      "priority": 86,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "urinary_source_localization",
+        "target": "target.fever.determine_urinary_symptoms"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.fever.determine_urinary_symptoms": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.determine_vomiting",
+      "priority": 76,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng253.sepsis-adults",
+          "source.nice.ng240.meningitis",
+          "source.cdc.sepsis.2026"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "guideline_behavior",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "gastrointestinal_source_localization",
+        "target": "target.fever.determine_vomiting"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.fever.determine_vomiting": "active"
+        }
+      }
+    }
+  ],
+  "version": "0.1.0"
+}
