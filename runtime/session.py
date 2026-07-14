@@ -317,7 +317,7 @@ class InterviewSession:
                 )
                 merge_results[expected_fact] = "corrected" if correction_target else "asked-unknown"
             elif low_normalized in {
-                "5",
+                "4",
                 "i prefer not to answer", "i'd rather not answer",
                 "prefer not to say", "답하고 싶지 않아요", "말하고 싶지 않아요",
             }:
@@ -340,7 +340,7 @@ class InterviewSession:
             return self._edit_prompt_state(
                 turn,
                 correction_target,
-                error="새 답변을 해석하지 못했습니다. 값 또는 1 예, 2 아니오, 3 잘 모르겠음, 5 답변하지 않음을 입력해 주세요.",
+                error="새 답변을 해석하지 못했습니다. 값 또는 1 예, 2 아니오, 3 잘 모르겠음, 4 답변하지 않음을 입력해 주세요.",
             )
         if correction_target:
             self.pending_edit_fact = None
@@ -475,7 +475,7 @@ class InterviewSession:
             "confirmation_required_before_fact_merge": True,
             "message_ko": "응답을 명확히 이해하지 못했습니다. 원래 질문에 다시 답해 주세요.",
             "binary_numeric_codes": {
-                "1": "yes", "2": "no", "3": "asked-unknown", "5": "asked-declined"
+                "1": "yes", "2": "no", "3": "asked-unknown", "4": "asked-declined"
             },
         }
         if node.get("allowed_values"):
@@ -559,7 +559,7 @@ class InterviewSession:
             "current_status": record.get("status"),
             "current_value": record.get("value"),
             "dataAbsentReason": record.get("dataAbsentReason"),
-            "instruction_ko": "새 답변을 입력해 주세요. 가능한 경우 1 예, 2 아니오, 3 잘 모르겠음, 5 답변하지 않음을 사용할 수 있습니다.",
+            "instruction_ko": "새 답변을 입력해 주세요. 가능한 경우 1 예, 2 아니오, 3 잘 모르겠음, 4 답변하지 않음을 사용할 수 있습니다.",
             "error": error,
         }
         return state

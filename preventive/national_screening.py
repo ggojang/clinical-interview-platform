@@ -66,9 +66,9 @@ def _consent_value(answer: str | int) -> tuple[str, str]:
         return "declined", normalized
     if normalized in {"3", "unknown", "모름", "잘 모르겠음"}:
         return "unknown", normalized
-    if normalized in {"5", "asked-declined", "답변 거부", "답변하고 싶지 않음"}:
+    if normalized in {"4", "asked-declined", "답변 거부", "답변하고 싶지 않음"}:
         return "asked-declined", normalized
-    raise ValueError("consent answer must be yes/no/unknown/declined or 1/2/3/5")
+    raise ValueError("consent answer must be yes/no/unknown/declined or 1/2/3/4")
 
 
 @dataclass
@@ -127,7 +127,7 @@ class NationalScreeningSession:
                 "official_entitlement_confirmation": "required",
                 "official_confirmation_authority": "NHIS",
                 "consent_required": True,
-                "consent_shortcuts": {"1": "accept", "2": "decline", "3": "unknown", "5": "asked-declined"},
+                "consent_shortcuts": {"1": "accept", "2": "decline", "3": "unknown", "4": "asked-declined"},
                 "source_refs": deepcopy(group["source_refs"]),
             })
         return offers

@@ -371,7 +371,7 @@ class GptExportTests(unittest.TestCase):
             self.assertFalse(numbering["display_question_sequence"])
             self.assertTrue(numbering["option_numbers_must_be_unique_within_question"])
             self.assertEqual(
-                set(numbering["binary_question_only_codes"]), {"1", "2", "3", "5"}
+                set(numbering["binary_question_only_codes"]), {"1", "2", "3", "4"}
             )
             alignment = manifest["question_choice_semantic_alignment_policy"]
             self.assertTrue(alignment["pre_send_validation_required"])
@@ -723,7 +723,7 @@ class GptExportTests(unittest.TestCase):
 
     def test_binary_shortcuts_remain_stable(self):
         options = number_answer_options(["예", "아니오"])
-        self.assertEqual([option["number"] for option in options], [1, 2, 3, 5])
+        self.assertEqual([option["number"] for option in options], [1, 2, 3, 4])
 
     def test_privacy_scanner_detects_direct_identifier(self):
         with tempfile.TemporaryDirectory() as directory:

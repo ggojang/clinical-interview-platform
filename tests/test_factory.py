@@ -786,14 +786,14 @@ class PackageRuntimeTests(unittest.TestCase):
         session = InterviewSession("answer-clarification")
         first = session.process("I have had a cough for 4 days.")
         expected = first["selected_question"]["fact_id"]
-        clarified = session.process("4")
+        clarified = session.process("9")
         self.assertEqual(clarified["selected_question"]["fact_id"], expected)
         self.assertEqual(
             clarified["selected_question"]["reason"],
             "answer_not_understood_reconfirmation",
         )
         self.assertTrue(clarified["answer_clarification"]["required"])
-        self.assertEqual(clarified["answer_clarification"]["raw_response"], "4")
+        self.assertEqual(clarified["answer_clarification"]["raw_response"], "9")
         self.assertTrue(
             clarified["answer_clarification"]["confirmation_required_before_fact_merge"]
         )

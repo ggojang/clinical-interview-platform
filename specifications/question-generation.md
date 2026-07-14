@@ -39,6 +39,6 @@ Recommended weights:
 - Offer examples only when the patient appears not to understand.
 - Do not display Question sequence numbers; track Questions by stable identifier.
 - Reserve numeric input for answer options in the immediately preceding Question.
-- Use fixed `1=yes, 2=no, 3=unknown, 5=decline` only for binary yes/no Questions.
+- Use sequential `1=yes, 2=no, 3=unknown, 4=decline` only for binary yes/no Questions.
 - For N enumerated domain choices, use `1..N`, followed by `N+1=unknown` and `N+2=decline`.
 - Validate option-number uniqueness before display.

@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "1.22.5"
+VERSION = "1.22.6"
 GENERATED_AT = "2026-07-14T00:00:00Z"
 PRIVATE_KEYS = {
     "raw_text", "raw_input", "patient_response", "patient_responses",
@@ -124,7 +124,7 @@ def number_answer_options(
 ) -> list[dict[str, Any]]:
     """Assign unique display numbers within one question.
 
-    The fixed 1/2/3/5 shortcut is valid only for the exact
+    The sequential 1/2/3/4 shortcut is valid only for the exact
     yes/no/unknown/decline set. Enumerated questions continue numbering after
     their domain choices so unknown and decline cannot collide with them.
     """
@@ -133,7 +133,7 @@ def number_answer_options(
             {"number": 1, "label": "예", "code": "yes"},
             {"number": 2, "label": "아니오", "code": "no"},
             {"number": 3, "label": "잘 모르겠음", "code": "unknown"},
-            {"number": 5, "label": "답변하지 않음", "code": "decline"},
+            {"number": 4, "label": "답변하지 않음", "code": "decline"},
         ]
     options = [
         {"number": index, "label": label, "code": "domain_choice"}
@@ -575,14 +575,14 @@ def build(root: Path, output: Path) -> dict[str, Any]:
                 "1": "yes",
                 "2": "no",
                 "3": "unknown",
-                "5": "decline",
+                "4": "decline",
             },
             "enumerated_question_rule": {
                 "domain_choices": "number_sequentially_from_1",
                 "unknown": "next_number_after_last_domain_choice",
                 "decline": "next_number_after_unknown",
                 "none_of_the_above_is_domain_choice": True,
-                "never_append_fixed_3_or_5": True,
+                "never_append_nonsequential_fixed_codes": True,
             },
             "pre_send_validation": "all_displayed_option_numbers_are_unique",
         },
