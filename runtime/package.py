@@ -19,6 +19,7 @@ DIZZINESS_SYNCOPE_PACKAGE = ROOT / "packages/generated/primary-care-dizziness-sy
 VOMITING_DIARRHEA_PACKAGE = ROOT / "packages/generated/primary-care-vomiting-diarrhea-0.1.0.json"
 URINARY_SYMPTOMS_PACKAGE = ROOT / "packages/generated/primary-care-urinary-symptoms-0.1.0.json"
 FATIGUE_PACKAGE = ROOT / "packages/generated/primary-care-fatigue-0.1.0.json"
+BACK_PAIN_PACKAGE = ROOT / "packages/generated/primary-care-back-pain-0.1.0.json"
 
 
 class PackageLoadError(RuntimeError):

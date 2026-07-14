@@ -13,6 +13,7 @@ python3 compiler/build_package.py --profile dizziness_syncope
 python3 compiler/build_package.py --profile vomiting_diarrhea
 python3 compiler/build_package.py --profile urinary_symptoms
 python3 compiler/build_package.py --profile fatigue
+python3 compiler/build_package.py --profile back_pain
 ```
 
 Validate a generated package:
@@ -28,6 +29,7 @@ python3 compiler/build_package.py --validate packages/generated/primary-care-diz
 python3 compiler/build_package.py --validate packages/generated/primary-care-vomiting-diarrhea-0.1.0.json
 python3 compiler/build_package.py --validate packages/generated/primary-care-urinary-symptoms-0.1.0.json
 python3 compiler/build_package.py --validate packages/generated/primary-care-fatigue-0.1.0.json
+python3 compiler/build_package.py --validate packages/generated/primary-care-back-pain-0.1.0.json
 ```
 
 Production compilation fails closed until source completeness, licensing, and

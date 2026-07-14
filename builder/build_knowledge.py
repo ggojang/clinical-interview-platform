@@ -96,6 +96,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-fatigue.json",
         "version": "0.1.0",
     },
+    "back_pain": {
+        "base_graph": ROOT / "knowledge/base/primary-care-back-pain.json",
+        "base_rules": ROOT / "rules/base/primary-care-back-pain.json",
+        "fragment_root": ROOT / "knowledge/generated/musculoskeletal/back-pain",
+        "output_graph": ROOT / "knowledge/graph/primary-care-back-pain.json",
+        "output_rules": ROOT / "rules/primary-care-back-pain.json",
+        "version": "0.1.0",
+    },
 }
 
 

@@ -72,6 +72,8 @@ class GptExportTests(unittest.TestCase):
                 "rfe-urinary_symptoms-facts", "rfe-urinary_symptoms-questions",
                 "rfe-urinary_symptoms-rules",
                 "rfe-fatigue-facts", "rfe-fatigue-questions", "rfe-fatigue-rules",
+                "rfe-back_pain-facts", "rfe-back_pain-questions",
+                "rfe-back_pain-rules",
             }.issubset(names))
             for resource in manifest["resources"]:
                 self.assertEqual(len(resource["sha256"]), 64)
@@ -94,7 +96,7 @@ class GptExportTests(unittest.TestCase):
             self.assertEqual(
                 implemented,
                 {
-                    "abdominal_pain", "chest_pain", "cough", "dizziness_syncope",
+                    "abdominal_pain", "back_pain", "chest_pain", "cough", "dizziness_syncope",
                     "dyspnea", "fatigue", "fever", "headache", "urinary_symptoms",
                     "vomiting_diarrhea",
                 },
@@ -146,6 +148,10 @@ class GptExportTests(unittest.TestCase):
                 (output_path / "rfe/fatigue/facts.json").read_text(encoding="utf-8")
             )
             self.assertEqual(fatigue["count"], 34)
+            back_pain = json.loads(
+                (output_path / "rfe/back_pain/facts.json").read_text(encoding="utf-8")
+            )
+            self.assertEqual(back_pain["count"], 34)
             for slug in implemented:
                 for kind in ("facts", "questions", "rules"):
                     document = json.loads(

@@ -384,6 +384,9 @@ class InterviewSession:
         if self.reason_for_encounter == "rfe.fatigue":
             self._update_fatigue_patterns()
             return
+        if self.reason_for_encounter == "rfe.back_pain":
+            self._update_back_pain_patterns()
+            return
         active = ["respiratory.cough"]
         cold_support = sum(
             self.memory.value(fact_id) is True
@@ -583,6 +586,33 @@ class InterviewSession:
             "symptom.thirst_and_polyuria",
         )):
             active.append("fatigue.systemic_warning_features")
+        self.active_patterns = active
+
+    def _update_back_pain_patterns(self) -> None:
+        active = ["musculoskeletal.back_pain"]
+        if any(self.memory.value(item) is True for item in (
+            "symptom.radicular_leg_pain", "symptom.unilateral_leg_numbness",
+            "symptom.unilateral_leg_weakness",
+        )):
+            active.append("back_pain.radicular_features")
+        if any(self.memory.value(item) is True for item in (
+            "symptom.bilateral_leg_neurological_symptoms",
+            "symptom.saddle_sensory_loss", "symptom.new_bladder_dysfunction",
+            "symptom.new_bowel_control_change",
+            "symptom.new_sexual_sensory_or_function_change",
+            "symptom.progressive_leg_weakness",
+        )):
+            active.append("back_pain.cauda_equina_warning_features")
+        if any(self.memory.value(item) is True for item in (
+            "symptom.fever", "symptom.back_pain.night_or_rest_pain",
+            "symptom.unintentional_weight_loss", "history.malignancy",
+            "patient.immunocompromised",
+        )):
+            active.append("back_pain.systemic_warning_features")
+        if any(self.memory.value(item) is True for item in (
+            "symptom.inflammatory_back_features", "event.mechanical_trigger",
+        )):
+            active.append("back_pain.mechanical_or_inflammatory_context")
         self.active_patterns = active
 
     def _update_dyspnea_patterns(self) -> None:

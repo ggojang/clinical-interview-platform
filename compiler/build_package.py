@@ -141,6 +141,18 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/systemic/fatigue",
         "research_manifests": [ROOT / "sources/manifests/primary-care-fatigue-research.json"],
     },
+    "back_pain": {
+        "graph": ROOT / "knowledge/graph/primary-care-back-pain.json",
+        "rules": ROOT / "rules/primary-care-back-pain.json",
+        "sources": ROOT / "sources/manifests/primary-care-back-pain.json",
+        "completion_policy": ROOT / "policies/primary-care-back-pain-completion.json",
+        "output": ROOT / "packages/generated/primary-care-back-pain-0.1.0.json",
+        "package_id": "package.primary-care-back-pain",
+        "package_version": "0.1.0",
+        "rfe": "rfe.back_pain",
+        "simulation_root": ROOT / "simulation/patients/musculoskeletal/back-pain",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-back-pain-research.json"],
+    },
 }
 
 ALLOWED_NODE_TYPES = {
