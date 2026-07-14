@@ -10,6 +10,7 @@ python3 compiler/build_package.py --profile abdominal_pain
 python3 compiler/build_package.py --profile chest_pain
 python3 compiler/build_package.py --profile headache
 python3 compiler/build_package.py --profile dizziness_syncope
+python3 compiler/build_package.py --profile vomiting_diarrhea
 ```
 
 Validate a generated package:
@@ -22,6 +23,7 @@ python3 compiler/build_package.py --validate packages/generated/primary-care-abd
 python3 compiler/build_package.py --validate packages/generated/primary-care-chest-pain-0.1.0.json
 python3 compiler/build_package.py --validate packages/generated/primary-care-headache-0.1.0.json
 python3 compiler/build_package.py --validate packages/generated/primary-care-dizziness-syncope-0.1.0.json
+python3 compiler/build_package.py --validate packages/generated/primary-care-vomiting-diarrhea-0.1.0.json
 ```
 
 Production compilation fails closed until source completeness, licensing, and

@@ -18,7 +18,7 @@ from runtime.memory import ClinicalMemory
 from runtime.package import (
     ABDOMINAL_PAIN_PACKAGE, CHEST_PAIN_PACKAGE, DEFAULT_PACKAGE,
     DIZZINESS_SYNCOPE_PACKAGE, DYSPNEA_PACKAGE, FEVER_PACKAGE, HEADACHE_PACKAGE,
-    PackageLoadError, load_package,
+    VOMITING_DIARRHEA_PACKAGE, PackageLoadError, load_package,
 )
 from runtime.session import InterviewSession
 from sources.check_refresh import due_sources
@@ -36,6 +36,7 @@ class CompilerTests(unittest.TestCase):
             "cough", "fever", "dyspnea", "abdominal_pain", "chest_pain",
             "headache",
             "dizziness_syncope",
+            "vomiting_diarrhea",
         ):
             with self.subTest(profile=profile), self.assertRaises(CompilationError):
                 compile_package(production=True, profile=profile)
@@ -300,6 +301,30 @@ class CompilerTests(unittest.TestCase):
         self.assertEqual(mapping["unsupported_checks"][0]["focus_code"], "271594007")
         self.assertFalse(mapping["validation"]["clinical_rule_authority"])
 
+    def test_vomiting_diarrhea_package_is_complete_and_deterministic(self):
+        first = compile_package(profile="vomiting_diarrhea")
+        second = compile_package(profile="vomiting_diarrhea")
+        self.assertEqual(first, second)
+        facts = {
+            node["id"] for node in first["knowledge_graph"]["nodes"]
+            if node["type"] == "Fact"
+        }
+        self.assertEqual(len(facts), 30)
+        self.assertEqual(facts, set(first["indexes"]["questions_by_fact"]))
+        self.assertEqual(first["coverage"]["total_safety_rules"], 12)
+        self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 12)
+        self.assertEqual(first["coverage"]["uncovered_safety_rules"], [])
+
+    def test_vomiting_diarrhea_mrcm_is_build_time_metadata_only(self):
+        mapping = json.loads(
+            (
+                Path(__file__).resolve().parents[1]
+                / "mappings/terminology/snomed-mrcm-vomiting-diarrhea.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(mapping["validation"]["result"], "provisional_pass")
+        self.assertFalse(mapping["validation"]["clinical_rule_authority"])
+
 
 class ClinicalMemoryTests(unittest.TestCase):
     def setUp(self):
@@ -503,6 +528,26 @@ class PackageRuntimeTests(unittest.TestCase):
     def test_dizziness_syncope_research_package_is_rejected_in_production(self):
         with self.assertRaises(PackageLoadError):
             load_package(DIZZINESS_SYNCOPE_PACKAGE, execution_mode="production")
+
+    def test_vomiting_diarrhea_simulation_evaluation_passes(self):
+        report = run_evaluation(VOMITING_DIARRHEA_PACKAGE)
+        self.assertTrue(report["passed"])
+        self.assertEqual(report["case_count"], 13)
+        self.assertLessEqual(max(item["turns"] for item in report["results"]), 31)
+
+    def test_vomiting_diarrhea_runtime_uses_combined_rfe(self):
+        session = InterviewSession(
+            "vomiting-diarrhea-runtime", package_path=VOMITING_DIARRHEA_PACKAGE
+        )
+        state = session.process("I have vomiting and diarrhea.")
+        self.assertIn("gastrointestinal.vomiting_or_diarrhea", state["active_patterns"])
+        self.assertEqual(
+            state["package"]["id"], "package.primary-care-vomiting-diarrhea"
+        )
+
+    def test_vomiting_diarrhea_research_package_is_rejected_in_production(self):
+        with self.assertRaises(PackageLoadError):
+            load_package(VOMITING_DIARRHEA_PACKAGE, execution_mode="production")
 
 
 if __name__ == "__main__":

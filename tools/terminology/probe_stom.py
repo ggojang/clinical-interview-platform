@@ -126,6 +126,28 @@ def probe() -> dict:
     if syncope_mrcm != []:
         raise RuntimeError("expected empty Syncope MRCM result changed; reassess mapping")
 
+    vomiting_lookup = request_json(
+        "/fhir/CodeSystem/$lookup",
+        query={"system": "http://snomed.info/sct", "code": "422400008", "_format": "json"},
+    )
+    diarrhea_lookup = request_json(
+        "/fhir/CodeSystem/$lookup",
+        query={"system": "http://snomed.info/sct", "code": "62315008", "_format": "json"},
+    )
+    if parameter_value(vomiting_lookup, "display") != "Vomiting (disorder)":
+        raise RuntimeError("SNOMED CT vomiting lookup did not return expected display")
+    if parameter_value(diarrhea_lookup, "display") != "Diarrhea (finding)":
+        raise RuntimeError("SNOMED CT diarrhea lookup did not return expected display")
+    vomiting_mrcm = request_json("/allow/attributes/SNOMEDCT/422400008")
+    diarrhea_mrcm = request_json("/allow/attributes/SNOMEDCT/62315008")
+    for label, attributes in (("vomiting", vomiting_mrcm), ("diarrhea", diarrhea_mrcm)):
+        if not isinstance(attributes, list):
+            raise RuntimeError(f"{label} MRCM attribute response is not a list")
+        attribute_index = {item.get("id"): item for item in attributes}
+        for attribute_id in ("363698007", "246112005"):
+            if attribute_id not in attribute_index:
+                raise RuntimeError(f"expected {label} MRCM attribute missing: {attribute_id}")
+
     lookup = request_json(
         "/fhir/CodeSystem/$lookup",
         query={
@@ -193,6 +215,18 @@ def probe() -> dict:
             "dizziness_attribute_count_returned": len(dizziness_mrcm),
             "syncope_attribute_count_returned": len(syncope_mrcm),
             "syncope_postcoordination_asserted": False,
+            "clinical_rule_authority": False,
+        },
+        "vomiting_diarrhea_snomed_mrcm": {
+            "vomiting_focus_code": "422400008",
+            "vomiting_display": parameter_value(vomiting_lookup, "display"),
+            "vomiting_version": parameter_value(vomiting_lookup, "version"),
+            "vomiting_attribute_count_returned": len(vomiting_mrcm),
+            "diarrhea_focus_code": "62315008",
+            "diarrhea_display": parameter_value(diarrhea_lookup, "display"),
+            "diarrhea_version": parameter_value(diarrhea_lookup, "version"),
+            "diarrhea_attribute_count_returned": len(diarrhea_mrcm),
+            "verified_attribute_ids": ["246112005", "363698007"],
             "clinical_rule_authority": False,
         },
         "hira_drug_search": {

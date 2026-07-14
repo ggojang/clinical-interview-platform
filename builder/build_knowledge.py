@@ -72,6 +72,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-dizziness-syncope.json",
         "version": "0.1.0",
     },
+    "vomiting_diarrhea": {
+        "base_graph": ROOT / "knowledge/base/primary-care-vomiting-diarrhea.json",
+        "base_rules": ROOT / "rules/base/primary-care-vomiting-diarrhea.json",
+        "fragment_root": ROOT / "knowledge/generated/gastrointestinal/vomiting-diarrhea",
+        "output_graph": ROOT / "knowledge/graph/primary-care-vomiting-diarrhea.json",
+        "output_rules": ROOT / "rules/primary-care-vomiting-diarrhea.json",
+        "version": "0.1.0",
+    },
 }
 
 

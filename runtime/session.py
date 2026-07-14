@@ -375,6 +375,9 @@ class InterviewSession:
         if self.reason_for_encounter == "rfe.dizziness_syncope":
             self._update_dizziness_syncope_patterns()
             return
+        if self.reason_for_encounter == "rfe.vomiting_diarrhea":
+            self._update_vomiting_diarrhea_patterns()
+            return
         active = ["respiratory.cough"]
         cold_support = sum(
             self.memory.value(fact_id) is True
@@ -507,6 +510,27 @@ class InterviewSession:
             "symptom.dizziness.head_movement_trigger",
         )):
             active.append("dizziness_syncope.reflex_or_postural_features")
+        self.active_patterns = active
+
+    def _update_vomiting_diarrhea_patterns(self) -> None:
+        active = ["gastrointestinal.vomiting_or_diarrhea"]
+        if any(self.memory.value(item) is True for item in (
+            "symptom.unable_to_keep_fluids", "symptom.dehydration_signs",
+            "symptom.reduced_urine_output",
+        )):
+            active.append("vomiting_diarrhea.dehydration_warning_features")
+        if any(self.memory.value(item) is True for item in (
+            "exposure.sick_contact_gastrointestinal",
+            "exposure.suspect_food_or_water",
+            "exposure.recent_international_travel",
+        )):
+            active.append("vomiting_diarrhea.infectious_exposure_features")
+        if any(self.memory.value(item) is True for item in (
+            "symptom.vomiting_over_two_days", "symptom.diarrhea_over_seven_days",
+            "symptom.unintentional_weight_loss",
+            "symptom.persistent_abdominal_or_back_pain",
+        )):
+            active.append("vomiting_diarrhea.persistent_warning_features")
         self.active_patterns = active
 
     def _update_dyspnea_patterns(self) -> None:

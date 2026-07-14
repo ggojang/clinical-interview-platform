@@ -105,6 +105,18 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/neurological/dizziness-syncope",
         "research_manifests": [ROOT / "sources/manifests/primary-care-dizziness-syncope-research.json"],
     },
+    "vomiting_diarrhea": {
+        "graph": ROOT / "knowledge/graph/primary-care-vomiting-diarrhea.json",
+        "rules": ROOT / "rules/primary-care-vomiting-diarrhea.json",
+        "sources": ROOT / "sources/manifests/primary-care-vomiting-diarrhea.json",
+        "completion_policy": ROOT / "policies/primary-care-vomiting-diarrhea-completion.json",
+        "output": ROOT / "packages/generated/primary-care-vomiting-diarrhea-0.1.0.json",
+        "package_id": "package.primary-care-vomiting-diarrhea",
+        "package_version": "0.1.0",
+        "rfe": "rfe.vomiting_diarrhea",
+        "simulation_root": ROOT / "simulation/patients/gastrointestinal/vomiting-diarrhea",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-vomiting-diarrhea-research.json"],
+    },
 }
 
 ALLOWED_NODE_TYPES = {
