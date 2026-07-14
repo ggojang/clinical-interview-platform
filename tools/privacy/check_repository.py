@@ -18,7 +18,9 @@ FORBIDDEN_PATH_PARTS = {
     "questionnaire_responses",
 }
 PATTERNS = {
-    "Korean resident registration number": re.compile(r"(?<!\d)\d{6}[- ]?[1-8]\d{6}(?!\d)"),
+    "Korean resident registration number": re.compile(
+        r"(?<![A-Za-z0-9])\d{6}[- ]?[1-8]\d{6}(?![A-Za-z0-9])"
+    ),
     "PEM private key": re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"),
     "OpenAI API key": re.compile(r"\bsk-(?:proj-|svcacct-)?[A-Za-z0-9_-]{20,}\b"),
     "GitHub token": re.compile(r"\b(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]{20,}\b"),

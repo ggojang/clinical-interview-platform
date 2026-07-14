@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "0.3.0"
+VERSION = "0.3.1"
 GENERATED_AT = "2026-07-14T00:00:00Z"
 PRIVATE_KEYS = {
     "raw_text", "raw_input", "patient_response", "patient_responses",
@@ -345,6 +345,9 @@ def build(root: Path, output: Path) -> dict[str, Any]:
             "pre_send_validation": "all_displayed_option_numbers_are_unique",
         },
         "result_follow_up_policy": encounter_policy["result_follow_up"],
+        "uploaded_clinical_material_policy": encounter_policy[
+            "uploaded_clinical_material"
+        ],
         "longitudinal_context_review_policy": encounter_policy[
             "longitudinal_context_review"
         ],

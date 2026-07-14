@@ -292,6 +292,8 @@ Diagnosis is never the direct source of Questions.
 
 For a test-result follow-up Reason for Encounter, Runtime distinguishes institutional result checking from a request for interpretation. Result content is requested only for interpretation and only once. A routine institutional result-check encounter with no abnormal notice, new symptom or additional request may complete without collecting the report.
 
+When a user voluntarily uploads a report, prescription, screening form, image or scanned document, Runtime may extract explicit interview Facts into conversation state with document provenance, date and uncertainty. It reuses current explicit Facts to avoid duplicate questions, preserves conflicts with patient-reported information for clarification, never treats unreadable or absent document content as negative, and does not persist or publish the material in the public test version.
+
 Longitudinal background information is reviewed on the first encounter and thereafter by recency. Research defaults are 90 days for current medication and 365 days for current conditions, family history, alcohol and smoking. Runtime asks only due or change-relevant groups and records each group's last confirmation date. When no persistent confirmation timestamp is available, Runtime asks one combined first-use/recency gating question before repeating the background inventory.
 
 ---

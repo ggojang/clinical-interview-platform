@@ -125,6 +125,16 @@ class GptExportTests(unittest.TestCase):
             self.assertTrue(
                 result_policy["interpretation_request"]["request_upload_once"]
             )
+            upload_policy = manifest["uploaded_clinical_material_policy"]
+            self.assertTrue(upload_policy["extract_only_explicit_information"])
+            self.assertTrue(
+                upload_policy["reuse_explicit_current_facts_to_avoid_duplicate_questions"]
+            )
+            self.assertEqual(
+                upload_policy["conflict_handling"],
+                "preserve_both_sources_and_ask_targeted_clarification",
+            )
+            self.assertTrue(upload_policy["do_not_send_patient_material_to_actions"])
             review_policy = manifest["longitudinal_context_review_policy"]
             self.assertEqual(
                 review_policy["unknown_last_confirmed_at"],
@@ -192,6 +202,15 @@ class GptExportTests(unittest.TestCase):
             (root / "bad.md").write_text(f"identifier {synthetic_identifier}", encoding="utf-8")
             findings = scan(root)
             self.assertTrue(any("resident registration" in finding for finding in findings))
+
+    def test_privacy_scanner_does_not_treat_sha256_as_identifier(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "manifest.json").write_text(
+                '{"sha256":"c8570274866163bc0b79b24a3b170ee7356a48cfecf22bbca18564227eb6ca2c"}',
+                encoding="utf-8",
+            )
+            self.assertEqual(scan(root), [])
 
 
 if __name__ == "__main__":
