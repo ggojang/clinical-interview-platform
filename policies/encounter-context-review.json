@@ -136,6 +136,44 @@
     "final_report_section_ko": "출처 및 생성 구분",
     "future_fhir_provenance_ready": true
   },
+  "off_path_recovery": {
+    "preserve_current_question_as_unanswered": true,
+    "store_detour_as_additional_comment": true,
+    "safety_reassessment_precedes_detour_response": true,
+    "related_non_answer": "resolve_briefly_then_repeat_current_question_once",
+    "topic_detour": "resolve_or_report_then_offer_recovery_menu",
+    "new_reason_for_encounter": "offer_to_close_current_interview_before_starting_new_encounter",
+    "explicit_finish_or_stop_request": "skip_reprompt_and_enter_completion_or_stop_flow",
+    "recovery_question_ko": "현재 설문에서 벗어난 다른 주제로 전환되었습니다. 설문을 어떻게 진행할까요?",
+    "options": [
+      {"number": 1, "code": "return_to_questionnaire", "display_ko": "현재 설문 질문으로 돌아가기"},
+      {"number": 2, "code": "begin_completion", "display_ko": "지금까지 내용으로 설문 종료 절차 진행"},
+      {"number": 3, "code": "stop_interview", "display_ko": "현재 설문 중단"},
+      {"number": 4, "code": "unknown", "display_ko": "잘 모르겠음"},
+      {"number": 5, "code": "decline", "display_ko": "답변하지 않음"}
+    ],
+    "route": {
+      "return_to_questionnaire": "repeat_same_unanswered_question_without_losing_detour_result",
+      "begin_completion": "summarize_missing_facts_then_use_completion_handoff",
+      "stop_interview": "set_user_stopped",
+      "unknown": "keep_in_progress_and_explain_choices_once",
+      "decline": "keep_in_progress_without_forcing_current_answer"
+    },
+    "data_absent_on_completion_after_detour": {
+      "current_question_explicitly_left_unanswered": "asked-declined",
+      "remaining_never_asked_facts": "not-asked"
+    },
+    "do_not_repeat_unrelated_question_answer": true,
+    "numeric_reply_scope": "immediately_preceding_recovery_question",
+    "provenance_marker": "출처: [공동 작업 지식] 경로 복구 정책 · [AI 표현] 안내 문장",
+    "record_fields": [
+      "detour_type",
+      "additional_comment_resolution",
+      "recovery_choice",
+      "unanswered_question_id",
+      "resume_or_completion_transition"
+    ]
+  },
   "longitudinal_context_review": {
     "review_all_on_first_encounter": true,
     "unknown_last_confirmed_at": "ask_single_recency_gate_then_due_if_still_unknown",

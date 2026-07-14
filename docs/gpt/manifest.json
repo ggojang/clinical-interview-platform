@@ -321,6 +321,64 @@
     "pre_send_validation": "all_displayed_option_numbers_are_unique",
     "question_tracking": "stable_question_id"
   },
+  "off_path_recovery_policy": {
+    "data_absent_on_completion_after_detour": {
+      "current_question_explicitly_left_unanswered": "asked-declined",
+      "remaining_never_asked_facts": "not-asked"
+    },
+    "do_not_repeat_unrelated_question_answer": true,
+    "explicit_finish_or_stop_request": "skip_reprompt_and_enter_completion_or_stop_flow",
+    "new_reason_for_encounter": "offer_to_close_current_interview_before_starting_new_encounter",
+    "numeric_reply_scope": "immediately_preceding_recovery_question",
+    "options": [
+      {
+        "code": "return_to_questionnaire",
+        "display_ko": "현재 설문 질문으로 돌아가기",
+        "number": 1
+      },
+      {
+        "code": "begin_completion",
+        "display_ko": "지금까지 내용으로 설문 종료 절차 진행",
+        "number": 2
+      },
+      {
+        "code": "stop_interview",
+        "display_ko": "현재 설문 중단",
+        "number": 3
+      },
+      {
+        "code": "unknown",
+        "display_ko": "잘 모르겠음",
+        "number": 4
+      },
+      {
+        "code": "decline",
+        "display_ko": "답변하지 않음",
+        "number": 5
+      }
+    ],
+    "preserve_current_question_as_unanswered": true,
+    "provenance_marker": "출처: [공동 작업 지식] 경로 복구 정책 · [AI 표현] 안내 문장",
+    "record_fields": [
+      "detour_type",
+      "additional_comment_resolution",
+      "recovery_choice",
+      "unanswered_question_id",
+      "resume_or_completion_transition"
+    ],
+    "recovery_question_ko": "현재 설문에서 벗어난 다른 주제로 전환되었습니다. 설문을 어떻게 진행할까요?",
+    "related_non_answer": "resolve_briefly_then_repeat_current_question_once",
+    "route": {
+      "begin_completion": "summarize_missing_facts_then_use_completion_handoff",
+      "decline": "keep_in_progress_without_forcing_current_answer",
+      "return_to_questionnaire": "repeat_same_unanswered_question_without_losing_detour_result",
+      "stop_interview": "set_user_stopped",
+      "unknown": "keep_in_progress_and_explain_choices_once"
+    },
+    "safety_reassessment_precedes_detour_response": true,
+    "store_detour_as_additional_comment": true,
+    "topic_detour": "resolve_or_report_then_offer_recovery_menu"
+  },
   "preferred_loading": {
     "aggregate_resources_are_backward_compatible": true,
     "catalog_operation": "getReasonForEncounters",
@@ -336,19 +394,19 @@
       "count": 15,
       "name": "common-facts",
       "path": "/gpt/common-facts.json",
-      "sha256": "f7389ad0ae1d86900a8988a61e96bd8d833bef16ad84d9ee90095a7f346728df"
+      "sha256": "bd1032320ec2218193d0c6571519fc8bfe7c0341eb824a676236f5c6ccc378bc"
     },
     {
       "count": 93,
       "name": "facts",
       "path": "/gpt/facts.json",
-      "sha256": "9f71a78cac9bd435d74cda9f753b5bdbb7ad49897a6f4fdddeb67994a96e1abe"
+      "sha256": "b6d1f31c2e9f1ef8126443ccd8084f3dab0d3e1083210114133cec50353c3138"
     },
     {
       "count": 88,
       "name": "question-groups",
       "path": "/gpt/question-groups.json",
-      "sha256": "33bbdcb0c5c2b29001c1cebe383b8e9f63c40a9a3b866b98959bb42412a0b3ed"
+      "sha256": "71510405d140baa657e236adfccbba4e76b79199f358ccc0b58f80f0045dde2a"
     },
     {
       "count": 15,
@@ -360,61 +418,61 @@
       "count": 35,
       "name": "rfe-cough-facts",
       "path": "/gpt/rfe/cough/facts.json",
-      "sha256": "98d0530e2609b1c5504d293c7dd90eb3c3ed8e6a61d781a727a2e5606c2e2dc1"
+      "sha256": "476cb0890ff5614303e18295db32710e90720551dacc8d195ff24f20cd40bd93"
     },
     {
       "count": 35,
       "name": "rfe-cough-questions",
       "path": "/gpt/rfe/cough/questions.json",
-      "sha256": "1d70ba45f3d93f1c4f9a61fa60a6d711a20977be6337c8b9854ae55ac42070b2"
+      "sha256": "638ed0b0f3b8ead26290859592663b22edd0126032fb6cd12bd6d134df020508"
     },
     {
       "count": 88,
       "name": "rfe-cough-rules",
       "path": "/gpt/rfe/cough/rules.json",
-      "sha256": "06bcfd68d0f7474e394d49d13cc0e4032181881b96eac7a75f0bce756868b1ba"
+      "sha256": "0cd938bb3f835ed93ba2c6c4558bcca42b584079bcdcd782e0f9c6eb5d736451"
     },
     {
       "count": 24,
       "name": "rfe-dyspnea-facts",
       "path": "/gpt/rfe/dyspnea/facts.json",
-      "sha256": "424408c35cd437a9bf2d5feb1d97137946c598c721cf2776bee004fe8a4a5a97"
+      "sha256": "e9a7204ce0fce8bb5f769833fc2aad0318790de6ca658225d8c056aefddfb630"
     },
     {
       "count": 24,
       "name": "rfe-dyspnea-questions",
       "path": "/gpt/rfe/dyspnea/questions.json",
-      "sha256": "d7353cb750095cd5518a7c459f344f54d80c85b18101b3bf1e101a732e181e84"
+      "sha256": "3f73bd1ce5db2d5b3444ab8c0a24ae6f6cb1fe60f1be87f7151d558faa67ec83"
     },
     {
       "count": 57,
       "name": "rfe-dyspnea-rules",
       "path": "/gpt/rfe/dyspnea/rules.json",
-      "sha256": "f26afe397e14ad5d08461a71f65a6d2bcf28bb1da3592e5c21779eb90d128a1f"
+      "sha256": "c3d0a2566d0be2d238191a10116a4491c37bb0e93523f2ebf868056b6a542cf8"
     },
     {
       "count": 19,
       "name": "rfe-fever-facts",
       "path": "/gpt/rfe/fever/facts.json",
-      "sha256": "25953e49bee05e993a23a73cfd666c0fa1955eb839a095ca610a7c010022abbe"
+      "sha256": "42ccbc9f7dc0a54aa0f0bf7a723f9ac023a503c8665d701e386c17862094eeec"
     },
     {
       "count": 19,
       "name": "rfe-fever-questions",
       "path": "/gpt/rfe/fever/questions.json",
-      "sha256": "c6e194e254d1f45bd0031590224496c8dec6797f1a1913b5c9713a637c015fb7"
+      "sha256": "b1d757aa09f74d35766e398613aec444780bf7eb6791750551961e6c2b5eceec"
     },
     {
       "count": 45,
       "name": "rfe-fever-rules",
       "path": "/gpt/rfe/fever/rules.json",
-      "sha256": "9216022997aa375f52d8e3e1e5f59b6c77434042db0574d0e9dca29a23ca3b61"
+      "sha256": "8e4b9df192bb7a98f58e4a447414224a5bd15f81ea48f1309483d13b66f8d5d4"
     },
     {
       "count": 178,
       "name": "safety-rules",
       "path": "/gpt/safety-rules.json",
-      "sha256": "1fb9884296bbdb5f3508bb7007578db7bdbd97e7c799a29fdee267dd59cea4a6"
+      "sha256": "2de84f756c488c88419ba6360d0d885852c875e91abaaf197facaccb12ba8861"
     },
     {
       "count": 10,
@@ -574,5 +632,5 @@
     ],
     "unreadable_material": "request_clearer_crop_or_text_once"
   },
-  "version": "0.4.1"
+  "version": "0.4.2"
 }

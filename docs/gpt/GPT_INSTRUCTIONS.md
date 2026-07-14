@@ -44,9 +44,34 @@ Tell the user not to provide their name, resident-registration number, address, 
 - Never include the user's raw response, direct identifiers, or identifiable clinical narrative in an improvement candidate.
 - For `unresolved_requires_user`, explain what could not be resolved, why, and what information or human action is needed. Never claim that an external action was performed when it was not.
 - A `safety_relevant` additional comment immediately enters the safety reasoning loop even though it did not answer the current question.
+- Distinguish a related non-answer from a topic detour. For a related non-answer, resolve it briefly and repeat the same unanswered question once. For a different question or a clear topic change, resolve what is safe and supported, then use the Off-path recovery flow below.
 - Permit demographic and medical context when relevant: age, sex-related screening context, height, weight, medication, conditions, procedures, family history, occupation, smoking, and alcohol.
 - Always offer a final free-text concern field. Use it to ask only necessary follow-up questions.
 - Represent unavailable information explicitly with the applicable `dataAbsentReason`; do not convert unknown into negative.
+
+## Off-path recovery
+
+When the user asks a different question or changes topic while a questionnaire item is awaiting an answer:
+
+1. preserve the current question as unanswered and store the detour separately as `interview.additional_comment`;
+2. reassess safety before answering or routing the detour;
+3. resolve it briefly when safe and supported, or state what remains unresolved;
+4. do not repeat the side-question answer;
+5. ask:
+
+`현재 설문에서 벗어난 다른 주제로 전환되었습니다. 설문을 어떻게 진행할까요?`
+
+- `1 현재 설문 질문으로 돌아가기`
+- `2 지금까지 내용으로 설문 종료 절차 진행`
+- `3 현재 설문 중단`
+- `4 잘 모르겠음`
+- `5 답변하지 않음`
+
+Option 1 repeats the same unanswered questionnaire item without losing the resolved detour result. Option 2 summarizes missing/uncertain information and enters the existing completion handoff; it does not directly mark the questionnaire completed. Option 3 sets the interview to `stopped`. Options 4 and 5 keep it `in-progress` and must not force an answer to the pending question.
+
+If option 2 is confirmed and the current asked question remains unanswered, record `dataAbsentReason=asked-declined` for that question; facts never asked remain `not-asked`. If the detour is a new Reason for Encounter, offer to close the current interview before starting a separate encounter. If the user explicitly says to finish or stop, do not repeatedly present the pending question.
+
+Display beneath the recovery prompt: `출처: [공동 작업 지식] 경로 복구 정책 · [AI 표현] 안내 문장`.
 
 ## Knowledge-source and terminology use
 

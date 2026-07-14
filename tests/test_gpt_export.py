@@ -210,6 +210,24 @@ class GptExportTests(unittest.TestCase):
                 provenance_display["final_report_section_ko"],
                 "출처 및 생성 구분",
             )
+            off_path = manifest["off_path_recovery_policy"]
+            self.assertTrue(off_path["preserve_current_question_as_unanswered"])
+            self.assertTrue(
+                off_path["safety_reassessment_precedes_detour_response"]
+            )
+            recovery_numbers = [option["number"] for option in off_path["options"]]
+            self.assertEqual(recovery_numbers, [1, 2, 3, 4, 5])
+            self.assertEqual(len(recovery_numbers), len(set(recovery_numbers)))
+            self.assertEqual(
+                off_path["route"]["begin_completion"],
+                "summarize_missing_facts_then_use_completion_handoff",
+            )
+            self.assertEqual(
+                off_path["data_absent_on_completion_after_detour"][
+                    "current_question_explicitly_left_unanswered"
+                ],
+                "asked-declined",
+            )
             review_policy = manifest["longitudinal_context_review_policy"]
             self.assertEqual(
                 review_policy["unknown_last_confirmed_at"],

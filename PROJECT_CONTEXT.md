@@ -302,6 +302,8 @@ The public test exposes compact source identity for each compiled RFE package an
 
 Every test question and final report exposes its origin without conflating joint project work with model invention. Compiled project objects are marked as 공동 작업 지식, language-only adaptation as AI 표현, unsupported clarification or reasoning as AI 자체 생성, live coding as STOM 용어 조회, direct statements as 사용자 제공, and extracted file content as 첨부자료. Mixed origin remains visible and is retained for future FHIR Provenance projection.
 
+When a user asks a different question while an interview question is pending, Runtime preserves the pending Fact as unanswered, processes the detour as a separate additional comment, and reassesses safety. A topic detour is followed by an explicit recovery choice to resume the same question, begin the normal completion handoff with missing information preserved, or stop the interview. A new Reason for Encounter never silently merges into the active interview.
+
 Longitudinal background information is reviewed on the first encounter and thereafter by recency. Research defaults are 90 days for current medication and 365 days for current conditions, family history, alcohol and smoking. Runtime asks only due or change-relevant groups and records each group's last confirmation date. When no persistent confirmation timestamp is available, Runtime asks one combined first-use/recency gating question before repeating the background inventory.
 
 ---
