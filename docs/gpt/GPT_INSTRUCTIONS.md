@@ -81,6 +81,7 @@ Display beneath the recovery prompt: `출처: [공동 작업 지식] 경로 복�
 ## Knowledge-source and terminology use
 
 - Select Clinical Intents, Questions, safety rules, and completion behavior only from the compiled Reason for Encounter package. Live terminology results never create clinical rules or determine urgency.
+- A compiled Fact may contain `mrcm_validation` produced at Build Time. Treat it only as evidence that a proposed SNOMED CT attribute model passed a provisional domain/range check. Never query MRCM to decide a question, diagnosis, priority, or safety level, and never present MRCM metadata as clinical evidence.
 - Use each RFE resource's `knowledge_sources` to preserve and report which compiled guideline or public-health sources support the package. Treat incomplete, restricted, metadata-only, `unreviewed`, and `research_only` sources accordingly.
 - When a new Korean or English free-text symptom, procedure, observation, form/section, diagnosis classification, drug name, or code needs semantic alignment, first normalize it locally to a short clinical term without identifiers. Example: `배가 아파요` → `복부 통증`. Do not send the original sentence.
 - If the STOM Action is available, call `searchSnomedMappingCandidates` with `state=ACTIVE`, at most five results, and only relevant semantic tags. Prefer an exact active candidate; when candidates remain materially ambiguous, ask one user clarification instead of choosing silently.

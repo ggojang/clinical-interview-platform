@@ -16,7 +16,8 @@ from compiler.build_package import (
 from evaluation.run_evaluation import run as run_evaluation
 from runtime.memory import ClinicalMemory
 from runtime.package import (
-    DEFAULT_PACKAGE, DYSPNEA_PACKAGE, FEVER_PACKAGE, PackageLoadError, load_package,
+    ABDOMINAL_PAIN_PACKAGE, DEFAULT_PACKAGE, DYSPNEA_PACKAGE, FEVER_PACKAGE,
+    PackageLoadError, load_package,
 )
 from runtime.session import InterviewSession
 from sources.check_refresh import due_sources
@@ -30,7 +31,7 @@ class CompilerTests(unittest.TestCase):
         self.assertEqual(first, second)
 
     def test_production_rejects_unreviewed_safety(self):
-        for profile in ("cough", "fever", "dyspnea"):
+        for profile in ("cough", "fever", "dyspnea", "abdominal_pain"):
             with self.subTest(profile=profile), self.assertRaises(CompilationError):
                 compile_package(production=True, profile=profile)
 
@@ -168,6 +169,42 @@ class CompilerTests(unittest.TestCase):
         self.assertTrue({"symptom.duration", "symptom.dyspnea"} <= set.intersection(*fact_sets))
         self.assertTrue({"symptom.chest_pain", "symptom.hemoptysis", "symptom.wheeze"} <= fact_sets[0] & fact_sets[2])
 
+    def test_abdominal_pain_package_is_deterministic_and_question_complete(self):
+        first = compile_package(profile="abdominal_pain")
+        second = compile_package(profile="abdominal_pain")
+        self.assertEqual(first, second)
+        facts = {
+            node["id"] for node in first["knowledge_graph"]["nodes"]
+            if node["type"] == "Fact"
+        }
+        self.assertEqual(len(facts), 28)
+        self.assertEqual(facts, set(first["indexes"]["questions_by_fact"]))
+        self.assertEqual(first["coverage"]["total_safety_rules"], 12)
+        self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 12)
+        self.assertEqual(first["coverage"]["uncovered_safety_rules"], [])
+
+    def test_abdominal_pain_mrcm_is_build_time_metadata_only(self):
+        package = compile_package(profile="abdominal_pain")
+        facts = {
+            node["id"]: node for node in package["knowledge_graph"]["nodes"]
+            if node["type"] == "Fact"
+        }
+        location = facts["symptom.abdominal_pain.location"]
+        self.assertEqual(
+            location["terminology_binding"]["attribute_code"], "363698007"
+        )
+        self.assertEqual(
+            location["mrcm_validation"]["status"], "provisional_pass"
+        )
+        mapping = json.loads(
+            (
+                Path(__file__).resolve().parents[1]
+                / "mappings/terminology/snomed-mrcm-abdominal-pain.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertFalse(mapping["validation"]["clinical_rule_authority"])
+        self.assertFalse(mapping["validation"]["raw_response_cached"])
+
 
 class ClinicalMemoryTests(unittest.TestCase):
     def setUp(self):
@@ -299,6 +336,26 @@ class PackageRuntimeTests(unittest.TestCase):
     def test_dyspnea_research_package_is_rejected_in_production(self):
         with self.assertRaises(PackageLoadError):
             load_package(DYSPNEA_PACKAGE, execution_mode="production")
+
+    def test_abdominal_pain_package_simulation_evaluation_passes(self):
+        report = run_evaluation(ABDOMINAL_PAIN_PACKAGE)
+        self.assertTrue(report["passed"])
+        self.assertEqual(report["case_count"], 13)
+        self.assertLessEqual(max(item["turns"] for item in report["results"]), 29)
+
+    def test_abdominal_pain_runtime_uses_abdominal_rfe(self):
+        session = InterviewSession(
+            "abdominal-runtime", package_path=ABDOMINAL_PAIN_PACKAGE
+        )
+        state = session.process("I have had abdominal pain for 2 days.")
+        self.assertIn("gastrointestinal.abdominal_pain", state["active_patterns"])
+        self.assertEqual(
+            state["package"]["id"], "package.primary-care-abdominal-pain"
+        )
+
+    def test_abdominal_pain_research_package_is_rejected_in_production(self):
+        with self.assertRaises(PackageLoadError):
+            load_package(ABDOMINAL_PAIN_PACKAGE, execution_mode="production")
 
 
 if __name__ == "__main__":

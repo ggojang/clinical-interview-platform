@@ -523,6 +523,8 @@ ICPC-2 supports pragmatic Primary Care classification and indexing.
 
 SNOMED CT supports terminology alignment.
 
+MRCM is acquired and summarized only at Build Time. A Fact may retain a versioned provisional MRCM validation reference for permitted SNOMED CT attributes, domains, ranges and cardinality. Runtime never executes MRCM, and an MRCM result never creates a clinical Rule or determines question priority, diagnosis or safety. The abdominal-pain research package is the first package to retain such a validation reference for Finding site and Severity.
+
 LOINC supports observable alignment.
 
 FHIR supports exchange.
@@ -556,6 +558,8 @@ A package contains:
 No patient state exists inside a package.
 
 Runtime binds a session to one exact package version.
+
+Planned Primary Care packages are implemented through the versioned queue in `knowledge/catalog/planned-package-work-queue.json`. Catalog promotion occurs only after deterministic compilation, complete Fact-to-Question coverage, safety-rule simulation coverage, privacy validation and public bundle generation. The current expansion order starts with abdominal pain and continues with chest pain, headache, dizziness or syncope, vomiting or diarrhoea, urinary symptoms, fatigue, back pain, skin complaints and medication review.
 
 ---
 

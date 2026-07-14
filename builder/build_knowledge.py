@@ -40,6 +40,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-dyspnea.json",
         "version": "0.1.0",
     },
+    "abdominal_pain": {
+        "base_graph": ROOT / "knowledge/base/primary-care-abdominal-pain.json",
+        "base_rules": ROOT / "rules/base/primary-care-abdominal-pain.json",
+        "fragment_root": ROOT / "knowledge/generated/gastrointestinal/abdominal-pain",
+        "output_graph": ROOT / "knowledge/graph/primary-care-abdominal-pain.json",
+        "output_rules": ROOT / "rules/primary-care-abdominal-pain.json",
+        "version": "0.1.0",
+    },
 }
 
 
@@ -204,6 +212,9 @@ def merge_fragment(
         }
         if fact.get("allowed_values") is not None:
             fact_node["allowed_values"] = fact["allowed_values"]
+        for key in ("terminology_binding", "mrcm_validation"):
+            if fact.get(key) is not None:
+                fact_node[key] = deepcopy(fact[key])
         if (
             entry.get("reuse_existing")
             and fact["id"] not in nodes

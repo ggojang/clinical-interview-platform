@@ -342,6 +342,9 @@ class InterviewSession:
         if self.reason_for_encounter == "rfe.dyspnea":
             self._update_dyspnea_patterns()
             return
+        if self.reason_for_encounter == "rfe.abdominal_pain":
+            self._update_abdominal_pain_patterns()
+            return
         active = ["respiratory.cough"]
         cold_support = sum(
             self.memory.value(fact_id) is True
@@ -367,6 +370,32 @@ class InterviewSession:
                 "symptom.cough_lying_down", "symptom.cough_after_meals",
             )):
                 active.append("gastrointestinal.gerd_cough")
+        self.active_patterns = active
+
+    def _update_abdominal_pain_patterns(self) -> None:
+        active = ["gastrointestinal.abdominal_pain"]
+        if any(self.memory.value(item) is True for item in (
+            "symptom.vomiting", "symptom.diarrhea", "symptom.constipation",
+            "symptom.bloody_or_black_stool", "symptom.hematemesis",
+            "symptom.unable_to_pass_stool_or_gas",
+        )):
+            active.append("abdominal_pain.gastrointestinal_features")
+        if any(self.memory.value(item) is True for item in (
+            "symptom.urinary_symptoms", "symptom.unable_to_urinate",
+        )):
+            active.append("abdominal_pain.urinary_features")
+        if self.memory.value("pregnancy.possible") == "possible" or any(
+            self.memory.value(item) is True for item in (
+                "symptom.missed_period", "symptom.vaginal_bleeding_or_discharge",
+                "symptom.shoulder_tip_pain",
+            )
+        ):
+            active.append("abdominal_pain.pregnancy_related_features")
+        if any(self.memory.value(item) is True for item in (
+            "symptom.unintentional_weight_loss", "symptom.persistent_bloating",
+            "symptom.early_satiety_or_appetite_loss",
+        )):
+            active.append("abdominal_pain.persistent_warning_features")
         self.active_patterns = active
 
     def _update_dyspnea_patterns(self) -> None:

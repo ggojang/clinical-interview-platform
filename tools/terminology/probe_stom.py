@@ -61,6 +61,14 @@ def probe() -> dict:
     if not abdominal_pain or not abdominal_pain.get("conceptActive"):
         raise RuntimeError("active SNOMED CT abdominal-pain candidate not returned")
 
+    mrcm_attributes = request_json("/allow/attributes/SNOMEDCT/21522001")
+    if not isinstance(mrcm_attributes, list):
+        raise RuntimeError("SNOMED CT MRCM attribute response is not a list")
+    mrcm_index = {item.get("id"): item for item in mrcm_attributes}
+    for attribute_id in ("363698007", "246112005"):
+        if attribute_id not in mrcm_index:
+            raise RuntimeError(f"expected MRCM attribute missing: {attribute_id}")
+
     lookup = request_json(
         "/fhir/CodeSystem/$lookup",
         query={
@@ -98,6 +106,12 @@ def probe() -> dict:
             "code": "49727002",
             "display": parameter_value(lookup, "display"),
             "version": parameter_value(lookup, "version"),
+        },
+        "snomed_mrcm": {
+            "focus_code": "21522001",
+            "verified_attribute_ids": ["246112005", "363698007"],
+            "attribute_count_returned": len(mrcm_attributes),
+            "clinical_rule_authority": False,
         },
         "hira_drug_search": {
             "query": "암로디핀",
