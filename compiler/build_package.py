@@ -117,6 +117,18 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/gastrointestinal/vomiting-diarrhea",
         "research_manifests": [ROOT / "sources/manifests/primary-care-vomiting-diarrhea-research.json"],
     },
+    "urinary_symptoms": {
+        "graph": ROOT / "knowledge/graph/primary-care-urinary-symptoms.json",
+        "rules": ROOT / "rules/primary-care-urinary-symptoms.json",
+        "sources": ROOT / "sources/manifests/primary-care-urinary-symptoms.json",
+        "completion_policy": ROOT / "policies/primary-care-urinary-symptoms-completion.json",
+        "output": ROOT / "packages/generated/primary-care-urinary-symptoms-0.1.0.json",
+        "package_id": "package.primary-care-urinary-symptoms",
+        "package_version": "0.1.0",
+        "rfe": "rfe.urinary_symptoms",
+        "simulation_root": ROOT / "simulation/patients/genitourinary/urinary-symptoms",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-urinary-symptoms-research.json"],
+    },
 }
 
 ALLOWED_NODE_TYPES = {

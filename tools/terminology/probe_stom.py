@@ -148,6 +148,33 @@ def probe() -> dict:
             if attribute_id not in attribute_index:
                 raise RuntimeError(f"expected {label} MRCM attribute missing: {attribute_id}")
 
+    urinary_concepts = {
+        "49650001": "Dysuria (finding)",
+        "162116003": "Increased frequency of urination (finding)",
+        "75088002": "Urgent desire to urinate (finding)",
+        "267064002": "Retention of urine (disorder)",
+        "197927001": "Recurrent urinary tract infection (disorder)",
+    }
+    urinary_results = {}
+    for code, expected_display in urinary_concepts.items():
+        concept_lookup = request_json(
+            "/fhir/CodeSystem/$lookup",
+            query={"system": "http://snomed.info/sct", "code": code, "_format": "json"},
+        )
+        display = parameter_value(concept_lookup, "display")
+        if display != expected_display:
+            raise RuntimeError(f"SNOMED CT urinary lookup changed for {code}: {display!r}")
+        attributes = request_json(f"/allow/attributes/SNOMEDCT/{code}")
+        attribute_index = {item.get("id"): item for item in attributes}
+        for attribute_id in ("363698007", "246112005"):
+            if attribute_id not in attribute_index:
+                raise RuntimeError(f"expected urinary MRCM attribute missing for {code}: {attribute_id}")
+        urinary_results[code] = {
+            "display": display,
+            "version": parameter_value(concept_lookup, "version"),
+            "attribute_count_returned": len(attributes),
+        }
+
     lookup = request_json(
         "/fhir/CodeSystem/$lookup",
         query={
@@ -226,6 +253,11 @@ def probe() -> dict:
             "diarrhea_display": parameter_value(diarrhea_lookup, "display"),
             "diarrhea_version": parameter_value(diarrhea_lookup, "version"),
             "diarrhea_attribute_count_returned": len(diarrhea_mrcm),
+            "verified_attribute_ids": ["246112005", "363698007"],
+            "clinical_rule_authority": False,
+        },
+        "urinary_symptoms_snomed_mrcm": {
+            "concepts": urinary_results,
             "verified_attribute_ids": ["246112005", "363698007"],
             "clinical_rule_authority": False,
         },

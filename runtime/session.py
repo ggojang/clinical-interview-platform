@@ -378,6 +378,9 @@ class InterviewSession:
         if self.reason_for_encounter == "rfe.vomiting_diarrhea":
             self._update_vomiting_diarrhea_patterns()
             return
+        if self.reason_for_encounter == "rfe.urinary_symptoms":
+            self._update_urinary_symptom_patterns()
+            return
         active = ["respiratory.cough"]
         cold_support = sum(
             self.memory.value(fact_id) is True
@@ -531,6 +534,27 @@ class InterviewSession:
             "symptom.persistent_abdominal_or_back_pain",
         )):
             active.append("vomiting_diarrhea.persistent_warning_features")
+        self.active_patterns = active
+
+    def _update_urinary_symptom_patterns(self) -> None:
+        active = ["genitourinary.urinary_symptoms"]
+        if any(self.memory.value(item) is True for item in (
+            "symptom.dysuria", "symptom.urinary_frequency",
+            "symptom.urinary_urgency", "symptom.cloudy_urine",
+        )):
+            active.append("urinary.lower_tract_infection_features")
+        if any(self.memory.value(item) is True for item in (
+            "symptom.flank_pain", "symptom.fever", "symptom.rigors",
+            "symptom.systemically_unwell",
+        )):
+            active.append("urinary.upper_tract_warning_features")
+        if any(self.memory.value(item) is True for item in (
+            "symptom.urinary_hesitancy", "symptom.weak_urine_stream",
+            "symptom.incomplete_bladder_emptying", "symptom.unable_to_urinate",
+        )):
+            active.append("urinary.voiding_or_retention_features")
+        if self.memory.value("symptom.visible_hematuria") is True:
+            active.append("urinary.haematuria_evaluation_features")
         self.active_patterns = active
 
     def _update_dyspnea_patterns(self) -> None:

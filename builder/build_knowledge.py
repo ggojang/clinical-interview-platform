@@ -80,6 +80,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-vomiting-diarrhea.json",
         "version": "0.1.0",
     },
+    "urinary_symptoms": {
+        "base_graph": ROOT / "knowledge/base/primary-care-urinary-symptoms.json",
+        "base_rules": ROOT / "rules/base/primary-care-urinary-symptoms.json",
+        "fragment_root": ROOT / "knowledge/generated/genitourinary/urinary-symptoms",
+        "output_graph": ROOT / "knowledge/graph/primary-care-urinary-symptoms.json",
+        "output_rules": ROOT / "rules/primary-care-urinary-symptoms.json",
+        "version": "0.1.0",
+    },
 }
 
 

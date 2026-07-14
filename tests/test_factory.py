@@ -18,7 +18,8 @@ from runtime.memory import ClinicalMemory
 from runtime.package import (
     ABDOMINAL_PAIN_PACKAGE, CHEST_PAIN_PACKAGE, DEFAULT_PACKAGE,
     DIZZINESS_SYNCOPE_PACKAGE, DYSPNEA_PACKAGE, FEVER_PACKAGE, HEADACHE_PACKAGE,
-    VOMITING_DIARRHEA_PACKAGE, PackageLoadError, load_package,
+    URINARY_SYMPTOMS_PACKAGE, VOMITING_DIARRHEA_PACKAGE,
+    PackageLoadError, load_package,
 )
 from runtime.session import InterviewSession
 from sources.check_refresh import due_sources
@@ -37,6 +38,7 @@ class CompilerTests(unittest.TestCase):
             "headache",
             "dizziness_syncope",
             "vomiting_diarrhea",
+            "urinary_symptoms",
         ):
             with self.subTest(profile=profile), self.assertRaises(CompilationError):
                 compile_package(production=True, profile=profile)
@@ -325,6 +327,31 @@ class CompilerTests(unittest.TestCase):
         self.assertEqual(mapping["validation"]["result"], "provisional_pass")
         self.assertFalse(mapping["validation"]["clinical_rule_authority"])
 
+    def test_urinary_symptoms_package_is_complete_and_deterministic(self):
+        first = compile_package(profile="urinary_symptoms")
+        second = compile_package(profile="urinary_symptoms")
+        self.assertEqual(first, second)
+        facts = {
+            node["id"] for node in first["knowledge_graph"]["nodes"]
+            if node["type"] == "Fact"
+        }
+        self.assertEqual(len(facts), 37)
+        self.assertEqual(facts, set(first["indexes"]["questions_by_fact"]))
+        self.assertEqual(first["coverage"]["total_safety_rules"], 11)
+        self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 11)
+        self.assertEqual(first["coverage"]["uncovered_safety_rules"], [])
+
+    def test_urinary_symptoms_mrcm_is_build_time_metadata_only(self):
+        mapping = json.loads(
+            (
+                Path(__file__).resolve().parents[1]
+                / "mappings/terminology/snomed-mrcm-urinary-symptoms.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(len(mapping["focus_concepts"]), 5)
+        self.assertEqual(mapping["validation"]["result"], "provisional_pass")
+        self.assertFalse(mapping["validation"]["clinical_rule_authority"])
+
 
 class ClinicalMemoryTests(unittest.TestCase):
     def setUp(self):
@@ -548,6 +575,26 @@ class PackageRuntimeTests(unittest.TestCase):
     def test_vomiting_diarrhea_research_package_is_rejected_in_production(self):
         with self.assertRaises(PackageLoadError):
             load_package(VOMITING_DIARRHEA_PACKAGE, execution_mode="production")
+
+    def test_urinary_symptoms_simulation_evaluation_passes(self):
+        report = run_evaluation(URINARY_SYMPTOMS_PACKAGE)
+        self.assertTrue(report["passed"])
+        self.assertEqual(report["case_count"], 12)
+        self.assertLessEqual(max(item["turns"] for item in report["results"]), 38)
+
+    def test_urinary_symptoms_runtime_uses_urinary_rfe(self):
+        session = InterviewSession(
+            "urinary-runtime", package_path=URINARY_SYMPTOMS_PACKAGE
+        )
+        state = session.process("I have urinary symptoms.")
+        self.assertIn("genitourinary.urinary_symptoms", state["active_patterns"])
+        self.assertEqual(
+            state["package"]["id"], "package.primary-care-urinary-symptoms"
+        )
+
+    def test_urinary_symptoms_research_package_is_rejected_in_production(self):
+        with self.assertRaises(PackageLoadError):
+            load_package(URINARY_SYMPTOMS_PACKAGE, execution_mode="production")
 
 
 if __name__ == "__main__":
