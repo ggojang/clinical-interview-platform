@@ -1,4 +1,5 @@
 import json
+import re
 import tempfile
 import unittest
 from pathlib import Path
@@ -111,6 +112,12 @@ class GptExportTests(unittest.TestCase):
                     "resolution_includes_service_improvement"
                 ]
             )
+            numbering = manifest["numbering_policy"]
+            self.assertFalse(numbering["display_question_sequence"])
+            self.assertTrue(numbering["option_numbers_must_be_unique_within_question"])
+            self.assertEqual(
+                set(numbering["boolean_unknown_decline_codes"]), {"1", "2", "3", "5"}
+            )
             for name in ("facts.json", "question-groups.json", "safety-rules.json"):
                 self.assertLess((output_path / name).stat().st_size, 100_000, name)
             questions = json.loads(
@@ -124,6 +131,20 @@ class GptExportTests(unittest.TestCase):
                     self.assertTrue(
                         question["fact_id"] is None or isinstance(question["fact_id"], str)
                     )
+
+    def test_question_text_does_not_embed_display_sequence(self):
+        with tempfile.TemporaryDirectory() as output:
+            output_path = Path(output)
+            build(ROOT, output_path)
+            paths = [output_path / "question-groups.json"]
+            paths.extend((output_path / "rfe").glob("*/questions.json"))
+            prefix = re.compile(r"^\s*(?:질문\s*)?\d+\s*(?:번|[.)：:])")
+            for path in paths:
+                document = json.loads(path.read_text(encoding="utf-8"))
+                for question in document["items"]:
+                    text = question.get("text") or question.get("wording")
+                    if isinstance(text, str):
+                        self.assertIsNone(prefix.match(text), (path, question.get("id")))
 
     def test_privacy_scanner_detects_direct_identifier(self):
         with tempfile.TemporaryDirectory() as directory:

@@ -290,6 +290,20 @@ def build(root: Path, output: Path) -> dict[str, Any]:
             "report_resolved_and_unresolved_separately": True,
             "never_publish_raw_response": True,
         },
+        "numbering_policy": {
+            "display_question_sequence": False,
+            "question_tracking": "stable_question_id",
+            "numeric_input_reserved_for": "current_question_answer_options",
+            "option_numbers_must_be_unique_within_question": True,
+            "do_not_combine_independently_numbered_lists": True,
+            "numeric_reply_scope": "immediately_preceding_question",
+            "boolean_unknown_decline_codes": {
+                "1": "yes",
+                "2": "no",
+                "3": "unknown",
+                "5": "decline",
+            },
+        },
         "preferred_loading": {
             "catalog_operation": "getReasonForEncounters",
             "common_operation": "getCommonInterviewFacts",
