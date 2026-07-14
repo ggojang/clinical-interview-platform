@@ -100,6 +100,31 @@ class GptExportTests(unittest.TestCase):
             self.assertTrue(comment["handling"]["never_publish_raw_response"])
             self.assertIn("improvement_status", comment["fields"])
 
+    def test_backward_compatible_action_payloads_stay_below_limit(self):
+        with tempfile.TemporaryDirectory() as output:
+            output_path = Path(output)
+            manifest = build(ROOT, output_path)
+            self.assertEqual(manifest["interview_entry"]["type"], "reason_for_encounter")
+            self.assertEqual(len(manifest["interview_entry"]["catalog"]), 14)
+            self.assertTrue(
+                manifest["additional_comment_policy"][
+                    "resolution_includes_service_improvement"
+                ]
+            )
+            for name in ("facts.json", "question-groups.json", "safety-rules.json"):
+                self.assertLess((output_path / name).stat().st_size, 100_000, name)
+            questions = json.loads(
+                (output_path / "question-groups.json").read_text(encoding="utf-8")
+            )
+            for question in questions["items"]:
+                if question.get("type") != "QuestionTemplate":
+                    continue
+                self.assertIsInstance(question.get("text") or question.get("wording"), str)
+                if "fact_id" in question:
+                    self.assertTrue(
+                        question["fact_id"] is None or isinstance(question["fact_id"], str)
+                    )
+
     def test_privacy_scanner_detects_direct_identifier(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

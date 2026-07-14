@@ -158,12 +158,24 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
         for entry in document.get("entries", []):
             if not isinstance(entry, dict) or not entry.get("question"):
                 continue
+            fact = entry.get("fact")
+            target = entry.get("target")
+            question = entry.get("question")
+            fact_id = fact.get("id") if isinstance(fact, dict) else fact
+            target_id = target.get("id") if isinstance(target, dict) else target
+            if isinstance(question, dict):
+                text = question.get("wording") or question.get("display")
+                question_id = question.get("id")
+            else:
+                text = question
+                question_id = None
+            generated_id = question_id or f"generated.question.{target_id or fact_id or 'unknown'}"
             questions.append({
-                "id": f"generated.question.{entry.get('target', entry.get('fact', 'unknown'))}",
+                "id": generated_id,
                 "type": "QuestionTemplate",
-                "fact_id": entry.get("fact"),
-                "target_id": entry.get("target"),
-                "text": entry.get("question"),
+                "fact_id": fact_id,
+                "target_id": target_id,
+                "text": text,
                 "priority": entry.get("priority"),
                 "supports": entry.get("supports", []),
                 "status": document.get("status", "research_only"),
@@ -202,12 +214,17 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
         deduplicate(shared_facts.get("facts", [])),
     )
     common_facts["items"] = [compact(item) for item in common_facts["items"]]
+    aggregate_facts = envelope("FactCollection", deduplicate(facts))
+    aggregate_questions = envelope("QuestionCollection", deduplicate(questions))
+    aggregate_rules = envelope("SafetyRuleCollection", deduplicate(rules))
+    for document in (aggregate_facts, aggregate_questions, aggregate_rules):
+        document["items"] = [compact(item) for item in document["items"]]
     resources = {
         "common-facts.json": common_facts,
         "reason-for-encounters.json": catalog,
-        "facts.json": envelope("FactCollection", deduplicate(facts)),
-        "question-groups.json": envelope("QuestionCollection", deduplicate(questions)),
-        "safety-rules.json": envelope("SafetyRuleCollection", deduplicate(rules)),
+        "facts.json": aggregate_facts,
+        "question-groups.json": aggregate_questions,
+        "safety-rules.json": aggregate_rules,
         "screening-kr.json": screening,
     }
     resources.update(collect_rfe_resources(root))
@@ -243,6 +260,46 @@ def build(root: Path, output: Path) -> dict[str, Any]:
         "status": "research_only",
         "review_status": "unreviewed",
         "contains_patient_responses": False,
+        "interview_entry": {
+            "type": "reason_for_encounter",
+            "required_before": [
+                "demographics", "medical_history", "health_screening", "routine_questions"
+            ],
+            "first_question_ko": "오늘 어떤 이유로 오셨나요? 불편한 증상이나 상담받고 싶은 내용을 자유롭게 말씀해 주세요.",
+            "use_first_message_when_present": True,
+            "confirm_only_when_ambiguous": True,
+            "catalog": [
+                {
+                    key: entry[key]
+                    for key in (
+                        "id", "display", "display_ko", "aliases",
+                        "implementation_status", "package_id",
+                    )
+                    if key in entry
+                }
+                for entry in resources["reason-for-encounters.json"]["entries"]
+            ],
+        },
+        "additional_comment_policy": {
+            "fact_id": "interview.additional_comment",
+            "do_not_force_map_to_current_question": True,
+            "current_question_remains_unanswered": True,
+            "reassess_safety": True,
+            "resolve_when_safe_and_within_scope": True,
+            "resolution_includes_service_improvement": True,
+            "report_resolved_and_unresolved_separately": True,
+            "never_publish_raw_response": True,
+        },
+        "preferred_loading": {
+            "catalog_operation": "getReasonForEncounters",
+            "common_operation": "getCommonInterviewFacts",
+            "rfe_operations": [
+                "getReasonForEncounterRules",
+                "getReasonForEncounterQuestions",
+                "getReasonForEncounterFacts",
+            ],
+            "aggregate_resources_are_backward_compatible": True,
+        },
         "resources": manifest_resources,
     }
     (output / "manifest.json").write_bytes(encoded(manifest))
