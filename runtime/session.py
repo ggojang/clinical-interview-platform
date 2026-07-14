@@ -399,6 +399,9 @@ class InterviewSession:
         if self.reason_for_encounter == "rfe.palpitations":
             self._update_palpitations_patterns()
             return
+        if self.reason_for_encounter == "rfe.bowel_symptoms":
+            self._update_bowel_patterns()
+            return
         active = ["respiratory.cough"]
         cold_support = sum(
             self.memory.value(fact_id) is True
@@ -714,6 +717,25 @@ class InterviewSession:
             "medication.recent_change_palpitations",
         )):
             active.append("palpitations.trigger_features")
+        self.active_patterns = active
+
+    def _update_bowel_patterns(self) -> None:
+        active = ["gastrointestinal.bowel_symptoms"]
+        if any(self.memory.value(item) not in (None, False, "", "none") for item in (
+            "symptom.bowel.frequency", "symptom.stool_form", "symptom.straining",
+            "symptom.incomplete_evacuations", "symptom.narrow_stool",
+        )):
+            active.append("bowel.changed_habit_features")
+        if any(self.memory.value(item) not in (None, False, "", "none") for item in (
+            "symptom.blood_appearance", "symptom.rectal_bleeding.recurrent_or_persistent",
+            "symptom.black_tarry_stool", "symptom.bloody_diarrhea",
+        )):
+            active.append("bowel.bleeding_features")
+        if any(self.memory.value(item) is True for item in (
+            "symptom.unable_to_pass_stool_or_flatus", "symptom.abdominal_distension",
+            "symptom.repeated_vomiting",
+        )):
+            active.append("bowel.obstruction_warning_features")
         self.active_patterns = active
 
     def _update_dyspnea_patterns(self) -> None:

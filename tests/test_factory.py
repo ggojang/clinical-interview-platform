@@ -16,7 +16,7 @@ from compiler.build_package import (
 from evaluation.run_evaluation import run as run_evaluation
 from runtime.memory import ClinicalMemory
 from runtime.package import (
-    ABDOMINAL_PAIN_PACKAGE, BACK_PAIN_PACKAGE, CHEST_PAIN_PACKAGE, DEFAULT_PACKAGE,
+    ABDOMINAL_PAIN_PACKAGE, BACK_PAIN_PACKAGE, BOWEL_SYMPTOMS_PACKAGE, CHEST_PAIN_PACKAGE, DEFAULT_PACKAGE,
     DIZZINESS_SYNCOPE_PACKAGE, DYSPNEA_PACKAGE, FEVER_PACKAGE, HEADACHE_PACKAGE,
     FATIGUE_PACKAGE, MEDICATION_REVIEW_PACKAGE, PALPITATIONS_PACKAGE, SKIN_COMPLAINT_PACKAGE,
     UPPER_RESPIRATORY_SYMPTOMS_PACKAGE, URINARY_SYMPTOMS_PACKAGE,
@@ -47,6 +47,7 @@ class CompilerTests(unittest.TestCase):
             "medication_review",
             "upper_respiratory_symptoms",
             "palpitations",
+            "bowel_symptoms",
         ):
             with self.subTest(profile=profile), self.assertRaises(CompilationError):
                 compile_package(production=True, profile=profile)
@@ -504,6 +505,23 @@ class CompilerTests(unittest.TestCase):
         self.assertEqual(mapping["validation"]["result"], "provisional_pass")
         self.assertFalse(mapping["validation"]["clinical_rule_authority"])
 
+    def test_bowel_symptoms_package_is_complete_and_deterministic(self):
+        first = compile_package(profile="bowel_symptoms"); second = compile_package(profile="bowel_symptoms")
+        self.assertEqual(first, second)
+        facts = {node["id"] for node in first["knowledge_graph"]["nodes"] if node["type"] == "Fact"}
+        self.assertEqual(len(facts), 35)
+        self.assertEqual(facts, set(first["indexes"]["questions_by_fact"]))
+        self.assertEqual(first["coverage"]["total_safety_rules"], 9)
+        self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 9)
+        self.assertEqual(first["coverage"]["uncovered_safety_rules"], [])
+
+    def test_bowel_symptoms_mrcm_preserves_unsupported_constipation(self):
+        mapping = json.loads((Path(__file__).resolve().parents[1] / "mappings/terminology/snomed-mrcm-bowel-symptoms.json").read_text(encoding="utf-8"))
+        self.assertEqual(len(mapping["focus_concepts"]), 4)
+        self.assertEqual(mapping["validation"]["result"], "partial_provisional_pass")
+        self.assertEqual(mapping["unsupported_checks"][0]["focus_code"], "14760008")
+        self.assertFalse(mapping["validation"]["clinical_rule_authority"])
+
 
 class ClinicalMemoryTests(unittest.TestCase):
     def setUp(self):
@@ -853,6 +871,21 @@ class PackageRuntimeTests(unittest.TestCase):
     def test_palpitations_research_package_is_rejected_in_production(self):
         with self.assertRaises(PackageLoadError):
             load_package(PALPITATIONS_PACKAGE, execution_mode="production")
+
+    def test_bowel_symptoms_simulation_evaluation_passes(self):
+        report = run_evaluation(BOWEL_SYMPTOMS_PACKAGE)
+        self.assertTrue(report["passed"]); self.assertEqual(report["case_count"], 10)
+        self.assertLessEqual(max(item["turns"] for item in report["results"]), 37)
+
+    def test_bowel_symptoms_runtime_uses_grouped_rfe(self):
+        session = InterviewSession("bowel-runtime", package_path=BOWEL_SYMPTOMS_PACKAGE)
+        state = session.process("변비가 생기고 피가 보여요.")
+        self.assertIn("gastrointestinal.bowel_symptoms", state["active_patterns"])
+        self.assertEqual(state["package"]["id"], "package.primary-care-bowel-symptoms")
+
+    def test_bowel_symptoms_research_package_is_rejected_in_production(self):
+        with self.assertRaises(PackageLoadError):
+            load_package(BOWEL_SYMPTOMS_PACKAGE, execution_mode="production")
 
 
 if __name__ == "__main__":

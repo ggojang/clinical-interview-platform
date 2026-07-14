@@ -24,6 +24,7 @@ SKIN_COMPLAINT_PACKAGE = ROOT / "packages/generated/primary-care-skin-complaint-
 MEDICATION_REVIEW_PACKAGE = ROOT / "packages/generated/primary-care-medication-review-0.1.0.json"
 UPPER_RESPIRATORY_SYMPTOMS_PACKAGE = ROOT / "packages/generated/primary-care-upper-respiratory-symptoms-0.1.0.json"
 PALPITATIONS_PACKAGE = ROOT / "packages/generated/primary-care-palpitations-0.1.0.json"
+BOWEL_SYMPTOMS_PACKAGE = ROOT / "packages/generated/primary-care-bowel-symptoms-0.1.0.json"
 
 
 class PackageLoadError(RuntimeError):

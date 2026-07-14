@@ -201,6 +201,18 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/cardiovascular/palpitations",
         "research_manifests": [ROOT / "sources/manifests/primary-care-palpitations-research.json"],
     },
+    "bowel_symptoms": {
+        "graph": ROOT / "knowledge/graph/primary-care-bowel-symptoms.json",
+        "rules": ROOT / "rules/primary-care-bowel-symptoms.json",
+        "sources": ROOT / "sources/manifests/primary-care-bowel-symptoms.json",
+        "completion_policy": ROOT / "policies/primary-care-bowel-symptoms-completion.json",
+        "output": ROOT / "packages/generated/primary-care-bowel-symptoms-0.1.0.json",
+        "package_id": "package.primary-care-bowel-symptoms",
+        "package_version": "0.1.0",
+        "rfe": "rfe.bowel_symptoms",
+        "simulation_root": ROOT / "simulation/patients/gastrointestinal/bowel-symptoms",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-bowel-symptoms-research.json"],
+    },
 }
 
 ALLOWED_NODE_TYPES = {

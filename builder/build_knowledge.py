@@ -136,6 +136,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-palpitations.json",
         "version": "0.1.0",
     },
+    "bowel_symptoms": {
+        "base_graph": ROOT / "knowledge/base/primary-care-bowel-symptoms.json",
+        "base_rules": ROOT / "rules/base/primary-care-bowel-symptoms.json",
+        "fragment_root": ROOT / "knowledge/generated/gastrointestinal/bowel-symptoms",
+        "output_graph": ROOT / "knowledge/graph/primary-care-bowel-symptoms.json",
+        "output_rules": ROOT / "rules/primary-care-bowel-symptoms.json",
+        "version": "0.1.0",
+    },
 }
 
 

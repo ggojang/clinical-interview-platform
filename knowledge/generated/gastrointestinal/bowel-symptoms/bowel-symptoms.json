@@ -1,0 +1,1555 @@
+{
+  "id": "knowledge.generated.bowel-symptoms",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-bowel-symptoms-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-07-14",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-07-15",
+    "next_full_review_at": "2027-01-10",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.bowel.immediate-safety",
+      "type": "ClinicalGroup",
+      "display": "Immediate Safety"
+    },
+    {
+      "id": "group.bowel.habit-stool",
+      "type": "ClinicalGroup",
+      "display": "Habit Stool"
+    },
+    {
+      "id": "group.bowel.bleeding",
+      "type": "ClinicalGroup",
+      "display": "Bleeding"
+    },
+    {
+      "id": "group.bowel.obstruction",
+      "type": "ClinicalGroup",
+      "display": "Obstruction"
+    },
+    {
+      "id": "group.bowel.persistence-risk",
+      "type": "ClinicalGroup",
+      "display": "Persistence Risk"
+    },
+    {
+      "id": "group.bowel.context",
+      "type": "ClinicalGroup",
+      "display": "Context"
+    },
+    {
+      "id": "hypothesis.bowel.immediate-safety",
+      "type": "Hypothesis",
+      "display": "Immediate Bowel Safety Pattern"
+    },
+    {
+      "id": "hypothesis.bowel.habit",
+      "type": "Hypothesis",
+      "display": "Changed Bowel Habit Pattern"
+    },
+    {
+      "id": "hypothesis.bowel.bleeding-risk",
+      "type": "Hypothesis",
+      "display": "Bowel Bleeding and Persistence Pattern"
+    }
+  ],
+  "group_hypothesis_edges": [
+    [
+      "group.bowel.immediate-safety",
+      "hypothesis.bowel.immediate-safety"
+    ],
+    [
+      "group.bowel.habit-stool",
+      "hypothesis.bowel.habit"
+    ],
+    [
+      "group.bowel.bleeding",
+      "hypothesis.bowel.bleeding-risk"
+    ]
+  ],
+  "safety_rules": [
+    {
+      "id": "rule.bowel-symptoms.safety.nonstop-bleeding",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.rectal_bleeding_nonstop",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.bowel-symptoms.safety.large-bleeding",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.rectal_bleeding_large_volume_or_clots",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.bowel-symptoms.safety.bleeding-collapse",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.collapse_or_severe_faintness",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.bowel-symptoms.safety.acute-abdomen",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.sudden_severe_abdominal_pain",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.bowel-symptoms.safety.obstruction",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.unable_to_pass_stool_or_flatus",
+            "equals": true
+          },
+          {
+            "fact": "symptom.abdominal_distension",
+            "equals": true
+          },
+          {
+            "fact": "symptom.repeated_vomiting",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.bowel-symptoms.safety.black-tarry-stool",
+      "priority": 900,
+      "when": {
+        "fact": "symptom.black_tarry_stool",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.bowel-symptoms.safety.bloody-diarrhea",
+      "priority": 900,
+      "when": {
+        "fact": "symptom.bloody_diarrhea",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.bowel-symptoms.safety.systemic-inflammation",
+      "priority": 900,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.fever",
+            "equals": true
+          },
+          {
+            "fact": "symptom.systemically_unwell",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.bowel-symptoms.safety.persistent-bleeding-weight-loss",
+      "priority": 850,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.rectal_bleeding.recurrent_or_persistent",
+            "equals": true
+          },
+          {
+            "fact": "symptom.unintentional_weight_loss",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "symptom.bowel.current",
+        "display": "Current Bowel Symptom",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.current",
+        "display": "Current Bowel Symptom",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.current",
+        "wording": "지금도 변비, 배변 습관 변화, 항문 출혈 또는 혈변이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "confirm_presentation"
+        }
+      ],
+      "supports": [
+        "group.bowel.habit-stool",
+        "group.bowel.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.bowel.main_type",
+        "display": "Main Bowel Symptom",
+        "value_type": "coded",
+        "allowed_values": [
+          "constipation",
+          "loose_frequent",
+          "narrow_stool",
+          "incomplete_emptying",
+          "rectal_bleeding",
+          "blood_mixed_stool",
+          "other"
+        ]
+      },
+      "target": {
+        "id": "target.bowel-symptoms.main-type",
+        "display": "Main Bowel Symptom",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.main-type",
+        "wording": "가장 불편한 것은 변비, 묽거나 잦은 변, 가는 변, 잔변감, 항문 출혈, 혈변 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 111,
+          "reason": "group_branch"
+        }
+      ],
+      "supports": [
+        "group.bowel.habit-stool",
+        "group.bowel.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.duration",
+        "display": "Symptom Duration",
+        "value_type": "quantity"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.duration",
+        "display": "Symptom Duration",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.duration",
+        "wording": "이 변화는 언제부터 시작했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 110,
+          "reason": "duration"
+        }
+      ],
+      "supports": [
+        "group.bowel.habit-stool"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.bowel.sudden_or_gradual",
+        "display": "Bowel Symptom Onset",
+        "value_type": "coded",
+        "allowed_values": [
+          "sudden",
+          "gradual",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.bowel-symptoms.onset",
+        "display": "Bowel Symptom Onset",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.onset",
+        "wording": "갑자기 시작했나요, 서서히 시작했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 109,
+          "reason": "onset"
+        }
+      ],
+      "supports": [
+        "group.bowel.habit-stool"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.rectal_bleeding_nonstop",
+        "display": "Non-stop Rectal Bleeding",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.bowel-symptoms.bleeding-nonstop",
+        "display": "Non-stop Rectal Bleeding",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.bleeding-nonstop",
+        "wording": "지금 항문 출혈이 멈추지 않고 계속되나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "hemorrhage_gate"
+        }
+      ],
+      "supports": [
+        "group.bowel.immediate-safety",
+        "group.bowel.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.rectal_bleeding_large_volume_or_clots",
+        "display": "Large-volume Rectal Bleeding or Clots",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.bowel-symptoms.large-bleeding",
+        "display": "Large-volume Rectal Bleeding or Clots",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.large-bleeding",
+        "wording": "변기 물이 붉어질 만큼 피가 많거나 큰 피떡이 나오나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "hemorrhage_gate"
+        }
+      ],
+      "supports": [
+        "group.bowel.immediate-safety",
+        "group.bowel.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.collapse_or_severe_faintness",
+        "display": "Collapse or Severe Faintness",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.bowel-symptoms.collapse",
+        "display": "Collapse or Severe Faintness",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.collapse",
+        "wording": "출혈과 함께 쓰러졌거나 식은땀, 심한 어지럼, 거의 실신할 느낌이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 127,
+          "reason": "shock_gate"
+        }
+      ],
+      "supports": [
+        "group.bowel.immediate-safety",
+        "group.bowel.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.sudden_severe_abdominal_pain",
+        "display": "Sudden Severe Abdominal Pain",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.bowel-symptoms.severe-pain",
+        "display": "Sudden Severe Abdominal Pain",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.severe-pain",
+        "wording": "배가 갑자기 매우 심하게 아프거나 만지기 힘들 만큼 아픈가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 126,
+          "reason": "acute_abdomen_gate"
+        }
+      ],
+      "supports": [
+        "group.bowel.immediate-safety",
+        "group.bowel.obstruction"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.unable_to_pass_stool_or_flatus",
+        "display": "Unable to Pass Stool or Flatus",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.bowel-symptoms.obstipation",
+        "display": "Unable to Pass Stool or Flatus",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.obstipation",
+        "wording": "대변뿐 아니라 방귀도 전혀 나오지 않나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 125,
+          "reason": "obstruction_gate"
+        }
+      ],
+      "supports": [
+        "group.bowel.immediate-safety",
+        "group.bowel.obstruction"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.abdominal_distension",
+        "display": "Abdominal Distension",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.bowel-symptoms.distension",
+        "display": "Abdominal Distension",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.distension",
+        "wording": "배가 평소보다 많이 붓고 팽팽해졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 124,
+          "reason": "obstruction_gate"
+        }
+      ],
+      "supports": [
+        "group.bowel.immediate-safety",
+        "group.bowel.obstruction"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.repeated_vomiting",
+        "display": "Repeated Vomiting",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.bowel-symptoms.vomiting",
+        "display": "Repeated Vomiting",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.vomiting",
+        "wording": "계속 토하거나 물도 마시기 어려운가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 123,
+          "reason": "obstruction_gate"
+        }
+      ],
+      "supports": [
+        "group.bowel.immediate-safety",
+        "group.bowel.obstruction"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.black_tarry_stool",
+        "display": "Black Tarry Stool",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.bowel-symptoms.black-stool",
+        "display": "Black Tarry Stool",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.black-stool",
+        "wording": "변이 검고 끈적하며 타르처럼 보이나요? 철분제나 검은 음식 때문인지 확실하지 않아도 예로 답해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 122,
+          "reason": "gi_bleeding_gate"
+        }
+      ],
+      "supports": [
+        "group.bowel.immediate-safety",
+        "group.bowel.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.bloody_diarrhea",
+        "display": "Bloody Diarrhoea",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.bowel-symptoms.bloody-diarrhea",
+        "display": "Bloody Diarrhoea",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.bloody-diarrhea",
+        "wording": "묽은 변이나 설사에 피가 섞여 나오나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 121,
+          "reason": "urgent_bleeding_gate"
+        }
+      ],
+      "supports": [
+        "group.bowel.immediate-safety",
+        "group.bowel.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.fever",
+        "display": "Fever",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.bowel-symptoms.fever",
+        "display": "Fever",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.fever",
+        "wording": "열이 나거나 춥고 떨리나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 120,
+          "reason": "infection_context"
+        }
+      ],
+      "supports": [
+        "group.bowel.immediate-safety",
+        "group.bowel.context"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.systemically_unwell",
+        "display": "Systemically Unwell",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.bowel-symptoms.systemically-unwell",
+        "display": "Systemically Unwell",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.systemically-unwell",
+        "wording": "전신 상태가 몹시 나쁘거나 혼란스럽고 기운이 없나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 119,
+          "reason": "systemic_gate"
+        }
+      ],
+      "supports": [
+        "group.bowel.immediate-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.bowel.frequency",
+        "display": "Bowel Movement Frequency",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.frequency",
+        "display": "Bowel Movement Frequency",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.frequency",
+        "wording": "평소와 지금은 각각 며칠에 몇 번 배변하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 105,
+          "reason": "habit_characterization"
+        }
+      ],
+      "supports": [
+        "group.bowel.habit-stool"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.stool_form",
+        "display": "Stool Form",
+        "value_type": "coded",
+        "allowed_values": [
+          "hard_pellets",
+          "hard_lumpy",
+          "formed",
+          "loose",
+          "watery",
+          "variable",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.bowel-symptoms.stool-form",
+        "display": "Stool Form",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.stool-form",
+        "wording": "변 모양은 딱딱한 알갱이, 단단한 덩어리, 보통, 무른 변, 물 같은 변 중 무엇에 가깝나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 104,
+          "reason": "stool_characterization"
+        }
+      ],
+      "supports": [
+        "group.bowel.habit-stool"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.straining",
+        "display": "Straining",
+        "value_type": "boolean",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "14760008"
+        }
+      },
+      "target": {
+        "id": "target.bowel-symptoms.straining",
+        "display": "Straining",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.straining",
+        "wording": "배변할 때 평소보다 심하게 힘을 줘야 하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 98,
+          "reason": "constipation_context"
+        }
+      ],
+      "supports": [
+        "group.bowel.habit-stool"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.incomplete_evacuations",
+        "display": "Incomplete Evacuation",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.incomplete",
+        "display": "Incomplete Evacuation",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.incomplete",
+        "wording": "배변 후에도 변이 남은 느낌이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 97,
+          "reason": "constipation_context"
+        }
+      ],
+      "supports": [
+        "group.bowel.habit-stool"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.manual_maneuver_for_defecation",
+        "display": "Manual Manoeuvre for Defecation",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.manual-maneuver",
+        "display": "Manual Manoeuvre for Defecation",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.manual-maneuver",
+        "wording": "대변을 보기 위해 손으로 눌러 돕거나 직접 꺼내야 한 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 86,
+          "reason": "constipation_severity"
+        }
+      ],
+      "supports": [
+        "group.bowel.habit-stool"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.narrow_stool",
+        "display": "Narrow Stool",
+        "value_type": "boolean",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "88111009"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.bowel-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.bowel-symptoms.narrow-stool",
+        "display": "Narrow Stool",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.narrow-stool",
+        "wording": "변이 전보다 계속 가늘어졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 96,
+          "reason": "change_context"
+        }
+      ],
+      "supports": [
+        "group.bowel.habit-stool",
+        "group.bowel.persistence-risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.mucus_in_stool",
+        "display": "Mucus in Stool",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.mucus",
+        "display": "Mucus in Stool",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.mucus",
+        "wording": "변에 점액이나 끈적한 것이 섞이나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 85,
+          "reason": "inflammatory_context"
+        }
+      ],
+      "supports": [
+        "group.bowel.habit-stool",
+        "group.bowel.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.abdominal_pain",
+        "display": "Abdominal Pain",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.abdominal-pain",
+        "display": "Abdominal Pain",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.abdominal-pain",
+        "wording": "복통이나 반복되는 배 경련이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 95,
+          "reason": "associated_context"
+        }
+      ],
+      "supports": [
+        "group.bowel.habit-stool",
+        "group.bowel.persistence-risk"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.bloating",
+        "display": "Bloating",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.bloating",
+        "display": "Bloating",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.bloating",
+        "wording": "배가 더부룩하거나 가스가 많이 차나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 84,
+          "reason": "associated_context"
+        }
+      ],
+      "supports": [
+        "group.bowel.habit-stool"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.rectal_pain_or_itch",
+        "display": "Rectal Pain or Itch",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.rectal-pain",
+        "display": "Rectal Pain or Itch",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.rectal-pain",
+        "wording": "배변할 때 항문이 아프거나 평소 가렵고 불편한가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 94,
+          "reason": "bleeding_source_context"
+        }
+      ],
+      "supports": [
+        "group.bowel.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.blood_appearance",
+        "display": "Blood Appearance",
+        "value_type": "coded",
+        "allowed_values": [
+          "paper_only",
+          "bright_surface",
+          "mixed_red",
+          "dark_red",
+          "unclear"
+        ],
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "12063002"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.bowel-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.bowel-symptoms.blood-appearance",
+        "display": "Blood Appearance",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.blood-appearance",
+        "wording": "피는 휴지에 묻음, 변 겉에 선홍색, 변에 섞인 붉은 피, 검붉은 피 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 103,
+          "reason": "bleeding_characterization"
+        }
+      ],
+      "supports": [
+        "group.bowel.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.rectal_bleeding.recurrent_or_persistent",
+        "display": "Recurrent or Persistent Rectal Bleeding",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.persistent-bleeding",
+        "display": "Recurrent or Persistent Rectal Bleeding",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.persistent-bleeding",
+        "wording": "출혈이 반복되거나 3주 이상 지속되나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 102,
+          "reason": "persistence_risk"
+        }
+      ],
+      "supports": [
+        "group.bowel.bleeding",
+        "group.bowel.persistence-risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.unintentional_weight_loss",
+        "display": "Unintentional Weight Loss",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.weight-loss",
+        "display": "Unintentional Weight Loss",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.weight-loss",
+        "wording": "최근 일부러 빼지 않았는데 체중이 줄었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 101,
+          "reason": "colorectal_risk"
+        }
+      ],
+      "supports": [
+        "group.bowel.persistence-risk"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.anemia_or_fatigue_features",
+        "display": "Anaemia or Fatigue Features",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.anemia",
+        "display": "Anaemia or Fatigue Features",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.anemia",
+        "wording": "평소보다 많이 피곤하거나 숨이 차고 창백하다는 말을 듣나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 100,
+          "reason": "colorectal_risk"
+        }
+      ],
+      "supports": [
+        "group.bowel.persistence-risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "observation.abdominal_or_rectal_mass_known",
+        "display": "Known Abdominal or Rectal Mass",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.mass",
+        "display": "Known Abdominal or Rectal Mass",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.mass",
+        "wording": "배나 항문 안쪽에 덩이가 만져지거나 의료진에게 덩이가 있다고 들었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 99,
+          "reason": "colorectal_risk"
+        }
+      ],
+      "supports": [
+        "group.bowel.persistence-risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "family.colorectal_cancer_or_polyps",
+        "display": "Family Colorectal Cancer or Polyps",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.family-history",
+        "display": "Family Colorectal Cancer or Polyps",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.family-history",
+        "wording": "부모·형제자매·자녀 중 대장암이나 진행성 대장용종을 진단받은 사람이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 83,
+          "reason": "risk_context"
+        }
+      ],
+      "supports": [
+        "group.bowel.persistence-risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "history.inflammatory_bowel_disease",
+        "display": "Inflammatory Bowel Disease History",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.ibd",
+        "display": "Inflammatory Bowel Disease History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.ibd",
+        "wording": "궤양성 대장염이나 크론병을 진단받은 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 82,
+          "reason": "risk_context"
+        }
+      ],
+      "supports": [
+        "group.bowel.persistence-risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.bowel_relevant",
+        "display": "Bowel-relevant Medication",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.medication",
+        "display": "Bowel-relevant Medication",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.medication",
+        "wording": "철분제, 진통제·마약성 진통제, 항콜린제, 완하제, 항응고제·아스피린 등 관련 약을 복용하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 81,
+          "reason": "medication_context"
+        }
+      ],
+      "supports": [
+        "group.bowel.context",
+        "group.bowel.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lifestyle.fibre_fluid_activity_change",
+        "display": "Fibre Fluid or Activity Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.lifestyle",
+        "display": "Fibre Fluid or Activity Change",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.lifestyle",
+        "wording": "최근 식이섬유, 수분 섭취, 활동량 또는 생활환경이 달라졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 80,
+          "reason": "common_context"
+        }
+      ],
+      "supports": [
+        "group.bowel.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "history.abdominal_or_bowel_surgery",
+        "display": "Abdominal or Bowel Surgery History",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.surgery",
+        "display": "Abdominal or Bowel Surgery History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.surgery",
+        "wording": "복부나 장 수술을 받은 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 79,
+          "reason": "obstruction_risk"
+        }
+      ],
+      "supports": [
+        "group.bowel.context",
+        "group.bowel.obstruction"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nhs.rectal-bleeding.2023",
+      "source.nhs.stomach-ache.2023",
+      "source.nice.ng12.colorectal.2026"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}
