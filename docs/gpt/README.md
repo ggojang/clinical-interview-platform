@@ -16,6 +16,7 @@ This directory is a static, read-only knowledge API for a Custom GPT test chatbo
 - `screening-kr.json`: Korean national screening candidate rules
 - `questionnaires/patient-experience-5th-2025/metadata.json`: activation, section index, answer semantics, and completion policy for the 2025 fifth inpatient patient-experience questionnaire
 - `questionnaires/patient-experience-5th-2025/sections/{1..8}.json`: one compact source-preserving Questionnaire section per Action response
+- `knowledge-files/patient-experience-evaluation-5th-2025-chatbot.md`: standalone 8-section, 26-item fixed survey file for upload to Custom GPT Knowledge; preferred at runtime after activation confirmation
 - `terminology-source.json`: STOM identity, observed versions, cadence, and limitations
 - `openapi.yaml`: compiled Knowledge Custom GPT Action definition
 - `stom-openapi.yaml`: separate read-only STOM terminology Action definition
@@ -26,7 +27,7 @@ Run `python3 tools/gpt_export/build.py` after changing Knowledge or Facts. The g
 
 The GPT must start from Reason for Encounter, then load only the matching compact RFE resources. The large aggregate files remain available for offline inspection and backward compatibility but are intentionally absent from the Action schema.
 
-When an exact patient-experience activation alias is entered, the existing opening screen and a concise explanation may be shown, but the GPT's final actionable question before the survey asks only whether the user wants to complete it. An affirmative answer enters the first source item immediately without another explanation or confirmation. The GPT then loads the questionnaire metadata and exactly one of the eight sections at a time. This avoids Action response-size failures while preserving all 26 FHIR-linked source questions.
+When an exact patient-experience activation alias is entered, the existing opening screen and a concise explanation may be shown, but the GPT's final actionable question before the survey asks only whether the user wants to complete it. An affirmative answer retrieves the uploaded standalone Knowledge file and enters its first source item immediately without another explanation or confirmation. The split Action sections remain a fallback when that file is unavailable. This preserves all 26 FHIR-linked source questions while avoiding Action availability and response-size failures.
 
 Manifest policy also distinguishes institutional result checking from an interpretation request, and carries recency rules for all longitudinal baseline groups.
 

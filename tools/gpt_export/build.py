@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "1.22.2"
+VERSION = "1.22.3"
 GENERATED_AT = "2026-07-14T00:00:00Z"
 PRIVATE_KEYS = {
     "raw_text", "raw_input", "patient_response", "patient_responses",
@@ -294,7 +294,9 @@ def collect_patient_experience_questionnaire(root: Path) -> dict[str, dict[str, 
                 "5": "답변하지 않음",
             },
             "section_loading_precondition": "affirmative_activation_answer",
-            "on_affirmative": "load_section_1_and_present_first_source_item_immediately_without_reconfirmation",
+            "on_affirmative": "retrieve_uploaded_knowledge_file_and_present_section_1_q01_immediately_without_reconfirmation",
+            "preferred_runtime_source": "patient-experience-evaluation-5th-2025-chatbot.md",
+            "fallback_runtime_operation": "getPatientExperienceQuestionnaireSection(sectionId=1)",
         },
         "questionnaire": {
             "id": questionnaire["id"],

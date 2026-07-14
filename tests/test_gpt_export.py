@@ -167,8 +167,19 @@ class GptExportTests(unittest.TestCase):
         self.assertIn("환자경험평가 설문을 작성하시겠습니까?", instructions)
         self.assertIn("existing opening screen may remain visible", instructions)
         self.assertIn("End that response with exactly one actionable question", instructions)
-        self.assertIn("present the first source item in the same response turn", instructions)
+        self.assertIn("Present `section-1` item `q01` immediately", instructions)
         self.assertIn("or add an introductory sentence", instructions)
+
+    def test_patient_experience_standalone_knowledge_file_is_complete(self):
+        from tools.gpt_export.build_patient_experience_knowledge_file import build
+
+        rendered = build()
+        path = ROOT / "docs/gpt/knowledge-files/patient-experience-evaluation-5th-2025-chatbot.md"
+        self.assertEqual(path.read_text(encoding="utf-8"), rendered)
+        self.assertEqual(len(re.findall(r"^### `q\d{2}`$", rendered, re.MULTILINE)), 26)
+        self.assertEqual(len(re.findall(r"^## 섹션 \d/8", rendered, re.MULTILINE)), 8)
+        self.assertIn("### `q01`", rendered)
+        self.assertIn("### `q26`", rendered)
 
     def test_knowledge_action_exposes_patient_experience_operations(self):
         schema = (ROOT / "docs/gpt/openapi.yaml").read_text(encoding="utf-8")
