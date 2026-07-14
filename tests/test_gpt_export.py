@@ -112,6 +112,16 @@ class GptExportTests(unittest.TestCase):
             self.assertEqual(metadata["section_count"], 8)
             self.assertEqual(metadata["question_count"], 26)
             self.assertIn("환자경험평가", metadata["activation_aliases_ko"])
+            gate = metadata["activation_gate"]
+            self.assertEqual(gate["workflow_state"], "awaiting_activation_confirmation")
+            self.assertEqual(
+                gate["required_next_question_ko"],
+                "환자경험평가 설문을 작성하시겠습니까?",
+            )
+            self.assertEqual(
+                gate["section_loading_precondition"],
+                "affirmative_activation_answer",
+            )
             presentation = metadata["presentation_policy"]
             self.assertEqual(
                 presentation["activation_prompt_ko"],
@@ -137,6 +147,10 @@ class GptExportTests(unittest.TestCase):
                 section = json.loads(path.read_text(encoding="utf-8"))
                 self.assertEqual(section["section_number"], number)
                 self.assertFalse(section["contains_patient_responses"])
+                self.assertEqual(section["required_workflow_state"], "activation_confirmed")
+                self.assertTrue(
+                    section["if_activation_not_confirmed"]["do_not_present_section_items"]
+                )
                 sections.append(section)
             self.assertEqual(sum(item["question_count"] for item in sections), 26)
             self.assertEqual(
@@ -160,6 +174,8 @@ class GptExportTests(unittest.TestCase):
         schema = (ROOT / "docs/gpt/openapi.yaml").read_text(encoding="utf-8")
         self.assertIn("operationId: getPatientExperienceQuestionnaire", schema)
         self.assertIn("operationId: getPatientExperienceQuestionnaireSection", schema)
+        self.assertIn("ask its required confirmation question", schema)
+        self.assertIn("only after affirmative activation confirmation", schema)
         self.assertIn("enum: [1, 2, 3, 4, 5, 6, 7, 8]", schema)
         self.assertIn("eye_symptoms", schema)
 

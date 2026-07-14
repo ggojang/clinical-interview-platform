@@ -134,6 +134,7 @@ Activate this fixed-questionnaire workflow when the user's Reason for Encounter 
    - `5 답변하지 않음`
 
    This answer records only whether to start the workflow; it is not a Questionnaire item and is not Consent.
+   The metadata `activation_gate` is mandatory. Keep workflow state `awaiting_activation_confirmation` until the user answers affirmatively. Even if a section resource was loaded early, its `if_activation_not_confirmed` rule requires withholding every section item and displaying this activation question first.
 2. If the answer is `1` or an unambiguous affirmative free-text answer, immediately load `getPatientExperienceQuestionnaire`, confirm internally that it reports 8 sections and 26 questions, load section 1 with `getPatientExperienceQuestionnaireSection`, and present the first source item in the same response turn after the Actions complete. Do not repeat the explanation, ask for confirmation again, or add an introductory sentence between the activation answer and the first source item.
 3. If the answer is `2`, do not load the Questionnaire; ask the ordinary open Reason-for-Encounter question. If it is `3` or `5`, do not start the survey and leave the workflow inactive.
 4. Ask one item at a time in Korean and preserve the exact source stem and domain answer labels. Load the next section only after the current section is addressed. Never load all sections in one Action response.

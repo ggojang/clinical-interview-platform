@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Clinical Interview Research Knowledge
-  version: 1.15.0
+  version: 1.15.1
   description: Read-only, research-only Knowledge and Fact resources. No patient data is accepted.
 servers:
   - url: https://ggojang.github.io/clinical-interview-platform
@@ -85,17 +85,17 @@ paths:
   /gpt/questionnaires/patient-experience-5th-2025/metadata.json:
     get:
       operationId: getPatientExperienceQuestionnaire
-      summary: Load the 8-section 26-question inpatient patient-experience workflow after that survey is the Reason for Encounter
+      summary: Load the patient-experience activation gate; ask its required confirmation question before loading any section
       responses:
         '200':
-          description: Patient-experience Questionnaire metadata and chatbot workflow
+          description: Metadata whose activation_gate requires asking whether the user wants to complete the survey; do not load a section until the user answers affirmatively
           content:
             application/json:
               schema: {$ref: '#/components/schemas/JsonDocument'}
   /gpt/questionnaires/patient-experience-5th-2025/sections/{sectionId}.json:
     get:
       operationId: getPatientExperienceQuestionnaireSection
-      summary: Load one patient-experience Questionnaire section at a time
+      summary: Load one patient-experience Questionnaire section only after affirmative activation confirmation
       parameters:
         - name: sectionId
           in: path
@@ -106,7 +106,7 @@ paths:
             enum: [1, 2, 3, 4, 5, 6, 7, 8]
       responses:
         '200':
-          description: One compact Questionnaire section without patient responses
+          description: One compact Questionnaire section without patient responses; if activation is not confirmed, do not present its items and ask the required activation question
           content:
             application/json:
               schema: {$ref: '#/components/schemas/JsonDocument'}

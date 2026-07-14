@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "1.22.1"
+VERSION = "1.22.2"
 GENERATED_AT = "2026-07-14T00:00:00Z"
 PRIVATE_KEYS = {
     "raw_text", "raw_input", "patient_response", "patient_responses",
@@ -249,6 +249,17 @@ def collect_patient_experience_questionnaire(root: Path) -> dict[str, dict[str, 
             "review_status": "unreviewed",
             "contains_patient_responses": False,
             "reason_for_encounter": "rfe.patient_experience_evaluation",
+            "required_workflow_state": "activation_confirmed",
+            "if_activation_not_confirmed": {
+                "do_not_present_section_items": True,
+                "required_question_ko": "환자경험평가 설문을 작성하시겠습니까?",
+                "required_options": {
+                    "1": "예",
+                    "2": "아니오",
+                    "3": "잘 모르겠음",
+                    "5": "답변하지 않음",
+                },
+            },
             "questionnaire": questionnaire["url"],
             "questionnaire_version": questionnaire.get("version"),
             "section_number": number,
@@ -272,6 +283,19 @@ def collect_patient_experience_questionnaire(root: Path) -> dict[str, dict[str, 
             "환자경험평가", "환자 경험 평가", "입원 경험 설문",
             "입원 환자경험 설문", "5차 환자경험평가", "환자경험 설문",
         ],
+        "activation_gate": {
+            "workflow_state": "awaiting_activation_confirmation",
+            "assistant_directive_ko": "설명 다음에는 아래 시작 확인 질문만 제시하십시오. 사용자가 예라고 답하기 전에는 섹션 문항을 제시하지 마십시오.",
+            "required_next_question_ko": "환자경험평가 설문을 작성하시겠습니까?",
+            "required_options": {
+                "1": "예",
+                "2": "아니오",
+                "3": "잘 모르겠음",
+                "5": "답변하지 않음",
+            },
+            "section_loading_precondition": "affirmative_activation_answer",
+            "on_affirmative": "load_section_1_and_present_first_source_item_immediately_without_reconfirmation",
+        },
         "questionnaire": {
             "id": questionnaire["id"],
             "url": questionnaire["url"],
@@ -516,6 +540,7 @@ def build(root: Path, output: Path) -> dict[str, Any]:
                     for key in (
                         "id", "display", "display_ko", "aliases",
                         "implementation_status", "package_id", "questionnaire_id",
+                        "activation_mode", "activation_prompt_ko",
                     )
                     if key in entry
                 }
