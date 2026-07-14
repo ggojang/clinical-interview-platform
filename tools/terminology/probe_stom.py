@@ -294,6 +294,29 @@ def probe() -> dict:
             "attribute_count_returned": len(attributes),
         }
 
+    palpitations_results = {}
+    for code, expected_display in {
+        "80313002": "Palpitations (finding)",
+        "3424008": "Tachycardia (finding)",
+    }.items():
+        concept_lookup = request_json(
+            "/fhir/CodeSystem/$lookup",
+            query={"system": "http://snomed.info/sct", "code": code, "_format": "json"},
+        )
+        display = parameter_value(concept_lookup, "display")
+        if display != expected_display:
+            raise RuntimeError(f"SNOMED CT palpitations lookup changed for {code}: {display!r}")
+        attributes = request_json(f"/allow/attributes/SNOMEDCT/{code}")
+        attribute_index = {item.get("id"): item for item in attributes}
+        for attribute_id in ("363698007", "246112005"):
+            if attribute_id not in attribute_index:
+                raise RuntimeError(f"expected palpitations MRCM attribute missing for {code}: {attribute_id}")
+        palpitations_results[code] = {
+            "display": display,
+            "version": parameter_value(concept_lookup, "version"),
+            "attribute_count_returned": len(attributes),
+        }
+
     lookup = request_json(
         "/fhir/CodeSystem/$lookup",
         query={
@@ -406,6 +429,11 @@ def probe() -> dict:
             "concepts": upper_respiratory_results,
             "verified_attribute_ids_for_supported_concepts": ["246112005", "363698007"],
             "unsupported_focus_codes": ["64531003"],
+            "clinical_rule_authority": False,
+        },
+        "palpitations_snomed_mrcm": {
+            "concepts": palpitations_results,
+            "verified_attribute_ids": ["246112005", "363698007"],
             "clinical_rule_authority": False,
         },
         "hira_drug_search": {

@@ -1,0 +1,1615 @@
+{
+  "id": "knowledge.generated.palpitations",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-palpitations-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-07-14",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-07-15",
+    "next_full_review_at": "2027-01-10",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.palpitations.immediate-safety",
+      "type": "ClinicalGroup",
+      "display": "Immediate Safety"
+    },
+    {
+      "id": "group.palpitations.rhythm-characterization",
+      "type": "ClinicalGroup",
+      "display": "Rhythm Characterization"
+    },
+    {
+      "id": "group.palpitations.associated-symptoms",
+      "type": "ClinicalGroup",
+      "display": "Associated Symptoms"
+    },
+    {
+      "id": "group.palpitations.triggers-context",
+      "type": "ClinicalGroup",
+      "display": "Triggers Context"
+    },
+    {
+      "id": "group.palpitations.cardiac-risk",
+      "type": "ClinicalGroup",
+      "display": "Cardiac Risk"
+    },
+    {
+      "id": "hypothesis.palpitations.immediate-safety",
+      "type": "Hypothesis",
+      "display": "Immediate Cardiac Safety Warning Pattern"
+    },
+    {
+      "id": "hypothesis.palpitations.arrhythmia",
+      "type": "Hypothesis",
+      "display": "Possible Rhythm Disturbance Pattern"
+    },
+    {
+      "id": "hypothesis.palpitations.reversible-trigger",
+      "type": "Hypothesis",
+      "display": "Possible Reversible Trigger Pattern"
+    }
+  ],
+  "group_hypothesis_edges": [
+    [
+      "group.palpitations.immediate-safety",
+      "hypothesis.palpitations.immediate-safety"
+    ],
+    [
+      "group.palpitations.rhythm-characterization",
+      "hypothesis.palpitations.arrhythmia"
+    ],
+    [
+      "group.palpitations.triggers-context",
+      "hypothesis.palpitations.reversible-trigger"
+    ]
+  ],
+  "safety_rules": [
+    {
+      "id": "rule.palpitations.safety.current-chest-pain",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.palpitations.current",
+            "equals": true
+          },
+          {
+            "fact": "symptom.chest_pain",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.palpitations.safety.current-severe-dyspnea",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.palpitations.current",
+            "equals": true
+          },
+          {
+            "fact": "symptom.severe_dyspnea",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.palpitations.safety.current-syncope-presyncope",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.palpitations.current",
+            "equals": true
+          },
+          {
+            "fact": "symptom.presyncope",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.palpitations.safety.palpitations-syncope",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.syncope",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.palpitations.safety.current-not-settling",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.palpitations.current",
+            "equals": true
+          },
+          {
+            "fact": "symptom.palpitations.persistent_not_settling",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.palpitations.safety.neurologic-deficit",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.new_focal_neurologic_deficit",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.palpitations.safety.exertional-syncope",
+      "priority": 900,
+      "when": {
+        "fact": "symptom.syncope_during_exertion",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.palpitations.safety.heart-disease-worsening",
+      "priority": 900,
+      "when": {
+        "all": [
+          {
+            "fact": "history.known_heart_disease",
+            "equals": true
+          },
+          {
+            "fact": "symptom.palpitations.worsening_or_frequent",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.palpitations.safety.family-sudden-death",
+      "priority": 900,
+      "when": {
+        "fact": "family.sudden_cardiac_death_under_40",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "symptom.palpitations.current",
+        "display": "Current Palpitations",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "80313002"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.palpitations",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.palpitations.current",
+        "display": "Current Palpitations",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.current",
+        "wording": "지금도 가슴이 두근거리거나 심장이 빠르거나 불규칙하게 뛰는 느낌이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "confirm_current_state"
+        }
+      ],
+      "supports": [
+        "group.palpitations.immediate-safety",
+        "group.palpitations.rhythm-characterization"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.chest_pain",
+        "display": "Chest Pain",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.palpitations.chest-pain",
+        "display": "Chest Pain",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.chest-pain",
+        "wording": "두근거림과 함께 가슴 통증이나 압박감이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "emergency_gate"
+        }
+      ],
+      "supports": [
+        "group.palpitations.immediate-safety",
+        "group.palpitations.associated-symptoms"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.severe_dyspnea",
+        "display": "Severe Shortness of Breath",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.palpitations.severe-dyspnea",
+        "display": "Severe Shortness of Breath",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.severe-dyspnea",
+        "wording": "숨이 매우 차서 문장을 말하기 어렵거나 가만히 있어도 숨쉬기 힘든가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "emergency_gate"
+        }
+      ],
+      "supports": [
+        "group.palpitations.immediate-safety",
+        "group.palpitations.associated-symptoms"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.syncope",
+        "display": "Syncope",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.palpitations.syncope",
+        "display": "Syncope",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.syncope",
+        "wording": "두근거리는 동안 쓰러지거나 의식을 잃은 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 127,
+          "reason": "emergency_gate"
+        }
+      ],
+      "supports": [
+        "group.palpitations.immediate-safety",
+        "group.palpitations.associated-symptoms"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.presyncope",
+        "display": "Presyncope",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.palpitations.presyncope",
+        "display": "Presyncope",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.presyncope",
+        "wording": "두근거릴 때 쓰러질 것 같거나 눈앞이 캄캄하고 심하게 어지러운가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 126,
+          "reason": "emergency_gate"
+        }
+      ],
+      "supports": [
+        "group.palpitations.immediate-safety",
+        "group.palpitations.associated-symptoms"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.palpitations.persistent_not_settling",
+        "display": "Persistent Palpitations Not Settling",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.palpitations.not-settling",
+        "display": "Persistent Palpitations Not Settling",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.not-settling",
+        "wording": "현재 두근거림이 몇 분 이상 계속되며 가라앉지 않나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 125,
+          "reason": "persistent_episode_gate"
+        }
+      ],
+      "supports": [
+        "group.palpitations.immediate-safety",
+        "group.palpitations.rhythm-characterization"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.new_focal_neurologic_deficit",
+        "display": "New Focal Neurologic Deficit",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.palpitations.neurologic-deficit",
+        "display": "New Focal Neurologic Deficit",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.neurologic-deficit",
+        "wording": "새로 한쪽 얼굴·팔·다리에 힘이 빠지거나 말이 어눌해졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 124,
+          "reason": "stroke_gate"
+        }
+      ],
+      "supports": [
+        "group.palpitations.immediate-safety",
+        "group.palpitations.associated-symptoms"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.syncope_during_exertion",
+        "display": "Syncope During Exertion",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.palpitations.exertional-syncope",
+        "display": "Syncope During Exertion",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.exertional-syncope",
+        "wording": "운동하는 도중 두근거림과 함께 의식을 잃었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 123,
+          "reason": "urgent_cardiac_gate"
+        }
+      ],
+      "supports": [
+        "group.palpitations.immediate-safety",
+        "group.palpitations.cardiac-risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "history.known_heart_disease",
+        "display": "Known Heart Disease",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.palpitations.heart-disease",
+        "display": "Known Heart Disease",
+        "intents": [
+          "intent.screen_red_flags",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.heart-disease",
+        "wording": "부정맥, 심부전, 심근경색, 심장판막질환 또는 선천성 심장질환을 진단받은 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 122,
+          "reason": "cardiac_risk"
+        }
+      ],
+      "supports": [
+        "group.palpitations.immediate-safety",
+        "group.palpitations.cardiac-risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.palpitations.worsening_or_frequent",
+        "display": "Worsening or Frequent Palpitations",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.palpitations.worsening-frequent",
+        "display": "Worsening or Frequent Palpitations",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.worsening-frequent",
+        "wording": "두근거림이 최근 더 자주 생기거나 더 오래 지속되거나 심해졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 116,
+          "reason": "urgent_review_context"
+        }
+      ],
+      "supports": [
+        "group.palpitations.immediate-safety",
+        "group.palpitations.rhythm-characterization"
+      ]
+    },
+    {
+      "fact": {
+        "id": "family.sudden_cardiac_death_under_40",
+        "display": "Family Sudden Cardiac Death Under 40",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.palpitations.family-sudden-death",
+        "display": "Family Sudden Cardiac Death Under 40",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.family-sudden-death",
+        "wording": "가족 중 40세 전에 원인 모르게 갑자기 사망했거나 유전성 심장질환을 진단받은 사람이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 115,
+          "reason": "inherited_risk"
+        }
+      ],
+      "supports": [
+        "group.palpitations.immediate-safety",
+        "group.palpitations.cardiac-risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.duration",
+        "display": "Symptom Duration",
+        "value_type": "quantity"
+      },
+      "target": {
+        "id": "target.palpitations.duration",
+        "display": "Symptom Duration",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.duration",
+        "wording": "처음 두근거림을 느낀 것은 언제부터인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 110,
+          "reason": "characterize_duration"
+        }
+      ],
+      "supports": [
+        "group.palpitations.rhythm-characterization"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.palpitations.episode_duration",
+        "display": "Palpitation Episode Duration",
+        "value_type": "coded",
+        "allowed_values": [
+          "seconds",
+          "under_5_minutes",
+          "5_to_30_minutes",
+          "30_minutes_to_24_hours",
+          "over_24_hours",
+          "continuous",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.palpitations.episode-duration",
+        "display": "Palpitation Episode Duration",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.episode-duration",
+        "wording": "한 번 시작하면 보통 얼마나 지속되나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 109,
+          "reason": "monitoring_context"
+        }
+      ],
+      "supports": [
+        "group.palpitations.rhythm-characterization"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.palpitations.frequency",
+        "display": "Palpitation Frequency",
+        "value_type": "coded",
+        "allowed_values": [
+          "single_episode",
+          "less_than_weekly",
+          "weekly",
+          "daily",
+          "multiple_daily",
+          "continuous",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.palpitations.frequency",
+        "display": "Palpitation Frequency",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.frequency",
+        "wording": "두근거림은 얼마나 자주 생기나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 108,
+          "reason": "monitoring_context"
+        }
+      ],
+      "supports": [
+        "group.palpitations.rhythm-characterization"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.palpitations.onset_offset",
+        "display": "Palpitation Onset and Offset",
+        "value_type": "coded",
+        "allowed_values": [
+          "sudden_both",
+          "sudden_onset",
+          "gradual",
+          "variable",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.palpitations.onset-offset",
+        "display": "Palpitation Onset and Offset",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.onset-offset",
+        "wording": "두근거림이 갑자기 시작하고 갑자기 끝나나요, 서서히 변하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 107,
+          "reason": "rhythm_characterization"
+        }
+      ],
+      "supports": [
+        "group.palpitations.rhythm-characterization"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.palpitations.sensation",
+        "display": "Palpitation Sensation",
+        "value_type": "coded",
+        "allowed_values": [
+          "rapid",
+          "irregular",
+          "skipped_extra",
+          "pounding",
+          "mixed",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.palpitations.sensation",
+        "display": "Palpitation Sensation",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.sensation",
+        "wording": "느낌은 매우 빠름, 불규칙함, 건너뜀·툭 떨어짐, 세게 뜀 중 무엇에 가깝나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 106,
+          "reason": "rhythm_characterization"
+        }
+      ],
+      "supports": [
+        "group.palpitations.rhythm-characterization"
+      ]
+    },
+    {
+      "fact": {
+        "id": "observation.pulse_rate_during_episode",
+        "display": "Pulse Rate During Episode",
+        "value_type": "quantity",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "focus_code": "3424008"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.palpitations",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.palpitations.pulse-rate",
+        "display": "Pulse Rate During Episode",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.pulse-rate",
+        "wording": "증상 중 맥박이나 기기 심박수를 측정했다면 분당 몇 회였나요? 측정하지 않았다면 모름으로 답해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 105,
+          "reason": "objective_context"
+        }
+      ],
+      "supports": [
+        "group.palpitations.rhythm-characterization"
+      ]
+    },
+    {
+      "fact": {
+        "id": "observation.pulse_regular_during_episode",
+        "display": "Pulse Regularity During Episode",
+        "value_type": "coded",
+        "allowed_values": [
+          "regular",
+          "irregular",
+          "not_checked",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.palpitations.pulse-regularity",
+        "display": "Pulse Regularity During Episode",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.pulse-regularity",
+        "wording": "증상 중 맥박은 규칙적, 불규칙, 확인 못함 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 104,
+          "reason": "af_detection_context"
+        }
+      ],
+      "supports": [
+        "group.palpitations.rhythm-characterization"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.dyspnea",
+        "display": "Shortness of Breath",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.palpitations.dyspnea",
+        "display": "Shortness of Breath",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.dyspnea",
+        "wording": "두근거릴 때 숨이 차나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 103,
+          "reason": "associated_symptom"
+        }
+      ],
+      "supports": [
+        "group.palpitations.associated-symptoms"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.dizziness",
+        "display": "Dizziness",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.palpitations.dizziness",
+        "display": "Dizziness",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.dizziness",
+        "wording": "두근거릴 때 어지럽거나 휘청거리나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 102,
+          "reason": "associated_symptom"
+        }
+      ],
+      "supports": [
+        "group.palpitations.associated-symptoms"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.fatigue",
+        "display": "Fatigue",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.palpitations.fatigue",
+        "display": "Fatigue",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.fatigue",
+        "wording": "평소보다 쉽게 피곤하거나 운동 능력이 줄었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 91,
+          "reason": "associated_context"
+        }
+      ],
+      "supports": [
+        "group.palpitations.associated-symptoms"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.sweating_or_tremor",
+        "display": "Sweating or Tremor",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.palpitations.sweating-tremor",
+        "display": "Sweating or Tremor",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.sweating-tremor",
+        "wording": "두근거릴 때 식은땀이나 손 떨림이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 90,
+          "reason": "associated_context"
+        }
+      ],
+      "supports": [
+        "group.palpitations.associated-symptoms"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.fever",
+        "display": "Fever",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.palpitations.fever",
+        "display": "Fever",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.fever",
+        "wording": "열이 나거나 최근 감염 증상이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 89,
+          "reason": "reversible_context"
+        }
+      ],
+      "supports": [
+        "group.palpitations.associated-symptoms",
+        "group.palpitations.triggers-context"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.weight_loss_heat_intolerance",
+        "display": "Weight Loss or Heat Intolerance",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.palpitations.thyroid-features",
+        "display": "Weight Loss or Heat Intolerance",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.thyroid-features",
+        "wording": "이유 없는 체중 감소, 더위를 못 견딤, 땀 증가가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 88,
+          "reason": "thyroid_context"
+        }
+      ],
+      "supports": [
+        "group.palpitations.associated-symptoms"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.bleeding_or_anemia_features",
+        "display": "Bleeding or Anaemia Features",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.palpitations.anemia-features",
+        "display": "Bleeding or Anaemia Features",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.anemia-features",
+        "wording": "최근 출혈, 검은 변·혈변, 생리량 증가, 창백함 또는 심한 피로가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 87,
+          "reason": "anemia_context"
+        }
+      ],
+      "supports": [
+        "group.palpitations.associated-symptoms"
+      ]
+    },
+    {
+      "fact": {
+        "id": "trigger.palpitations.exertion",
+        "display": "Exertional Trigger",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.palpitations.exertion-trigger",
+        "display": "Exertional Trigger",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.exertion-trigger",
+        "wording": "운동하거나 계단을 오를 때 주로 생기나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 99,
+          "reason": "trigger_characterization"
+        }
+      ],
+      "supports": [
+        "group.palpitations.triggers-context",
+        "group.palpitations.cardiac-risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "trigger.palpitations.postural",
+        "display": "Postural Trigger",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.palpitations.postural-trigger",
+        "display": "Postural Trigger",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.postural-trigger",
+        "wording": "앉거나 누웠다가 일어설 때 주로 생기나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 86,
+          "reason": "trigger_characterization"
+        }
+      ],
+      "supports": [
+        "group.palpitations.triggers-context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "trigger.palpitations.stress_or_panic",
+        "display": "Stress or Panic Trigger",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.palpitations.stress-trigger",
+        "display": "Stress or Panic Trigger",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.stress-trigger",
+        "wording": "불안, 스트레스 또는 공포감이 심할 때 주로 생기나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 85,
+          "reason": "trigger_characterization"
+        }
+      ],
+      "supports": [
+        "group.palpitations.triggers-context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "exposure.caffeine_or_energy_drinks",
+        "display": "Caffeine or Energy Drink Exposure",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.palpitations.caffeine",
+        "display": "Caffeine or Energy Drink Exposure",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.caffeine",
+        "wording": "커피, 차, 에너지음료를 하루에 얼마나 마시나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 84,
+          "reason": "trigger_context"
+        }
+      ],
+      "supports": [
+        "group.palpitations.triggers-context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "exposure.alcohol_nicotine_recreational_stimulant",
+        "display": "Alcohol Nicotine or Stimulant Exposure",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.palpitations.stimulants",
+        "display": "Alcohol Nicotine or Stimulant Exposure",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.stimulants",
+        "wording": "최근 음주, 흡연·전자담배, 코카인·암페타민 같은 각성제 사용과 관련이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 83,
+          "reason": "trigger_context"
+        }
+      ],
+      "supports": [
+        "group.palpitations.triggers-context",
+        "group.palpitations.cardiac-risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.recent_change_palpitations",
+        "display": "Recent Medication Change Relevant to Palpitations",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.palpitations.medication-change",
+        "display": "Recent Medication Change Relevant to Palpitations",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.medication-change",
+        "wording": "최근 시작하거나 용량이 바뀐 처방약, 감기약·비충혈제거제, 흡입제, 갑상선약 또는 보충제가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 82,
+          "reason": "medication_context"
+        }
+      ],
+      "supports": [
+        "group.palpitations.triggers-context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "history.thyroid_disease",
+        "display": "Thyroid Disease History",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.palpitations.thyroid-history",
+        "display": "Thyroid Disease History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.thyroid-history",
+        "wording": "갑상선 질환을 진단받은 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 81,
+          "reason": "medical_context"
+        }
+      ],
+      "supports": [
+        "group.palpitations.cardiac-risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "history.anemia",
+        "display": "Anaemia History",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.palpitations.anemia-history",
+        "display": "Anaemia History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.anemia-history",
+        "wording": "빈혈을 진단받은 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 80,
+          "reason": "medical_context"
+        }
+      ],
+      "supports": [
+        "group.palpitations.cardiac-risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "patient.pregnant_or_postpartum",
+        "display": "Pregnant or Postpartum",
+        "value_type": "coded",
+        "allowed_values": [
+          "pregnant",
+          "postpartum_6_weeks",
+          "not_applicable",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.palpitations.pregnancy",
+        "display": "Pregnant or Postpartum",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.pregnancy",
+        "wording": "현재 임신 중이거나 출산 후 6주 이내인가요? 해당되지 않으면 해당 없음으로 답해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 79,
+          "reason": "physiologic_context"
+        }
+      ],
+      "supports": [
+        "group.palpitations.cardiac-risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "investigation.ecg_or_device_record_available",
+        "display": "ECG or Device Record Available",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.palpitations.record-available",
+        "display": "ECG or Device Record Available",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.record-available",
+        "wording": "증상 중 기록된 심전도, 스마트워치 리듬 또는 맥박 기록이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 78,
+          "reason": "diagnostic_context"
+        }
+      ],
+      "supports": [
+        "group.palpitations.rhythm-characterization"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.palpitations.functional_impact",
+        "display": "Functional Impact of Palpitations",
+        "value_type": "coded",
+        "allowed_values": [
+          "none",
+          "mild",
+          "moderate",
+          "severe"
+        ]
+      },
+      "target": {
+        "id": "target.palpitations.impact",
+        "display": "Functional Impact of Palpitations",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.impact",
+        "wording": "두근거림이 일상이나 수면에 미치는 영향은 없음, 가벼움, 중간, 심함 중 어느 정도인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 77,
+          "reason": "impact_context"
+        }
+      ],
+      "supports": [
+        "group.palpitations.rhythm-characterization"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nhs.heart-palpitations.2026",
+      "source.nice.ng196.atrial-fibrillation.2021",
+      "source.nice.cg109.blackouts.2023"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

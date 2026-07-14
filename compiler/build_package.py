@@ -189,6 +189,18 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/upper-respiratory",
         "research_manifests": [ROOT / "sources/manifests/primary-care-upper-respiratory-symptoms-research.json"],
     },
+    "palpitations": {
+        "graph": ROOT / "knowledge/graph/primary-care-palpitations.json",
+        "rules": ROOT / "rules/primary-care-palpitations.json",
+        "sources": ROOT / "sources/manifests/primary-care-palpitations.json",
+        "completion_policy": ROOT / "policies/primary-care-palpitations-completion.json",
+        "output": ROOT / "packages/generated/primary-care-palpitations-0.1.0.json",
+        "package_id": "package.primary-care-palpitations",
+        "package_version": "0.1.0",
+        "rfe": "rfe.palpitations",
+        "simulation_root": ROOT / "simulation/patients/cardiovascular/palpitations",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-palpitations-research.json"],
+    },
 }
 
 ALLOWED_NODE_TYPES = {

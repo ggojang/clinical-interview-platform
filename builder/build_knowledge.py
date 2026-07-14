@@ -128,6 +128,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-upper-respiratory-symptoms.json",
         "version": "0.1.0",
     },
+    "palpitations": {
+        "base_graph": ROOT / "knowledge/base/primary-care-palpitations.json",
+        "base_rules": ROOT / "rules/base/primary-care-palpitations.json",
+        "fragment_root": ROOT / "knowledge/generated/cardiovascular/palpitations",
+        "output_graph": ROOT / "knowledge/graph/primary-care-palpitations.json",
+        "output_rules": ROOT / "rules/primary-care-palpitations.json",
+        "version": "0.1.0",
+    },
 }
 
 

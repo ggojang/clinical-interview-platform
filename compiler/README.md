@@ -17,6 +17,7 @@ python3 compiler/build_package.py --profile back_pain
 python3 compiler/build_package.py --profile skin_complaint
 python3 compiler/build_package.py --profile medication_review
 python3 compiler/build_package.py --profile upper_respiratory_symptoms
+python3 compiler/build_package.py --profile palpitations
 ```
 
 Validate a generated package:

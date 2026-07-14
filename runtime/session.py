@@ -396,6 +396,9 @@ class InterviewSession:
         if self.reason_for_encounter == "rfe.upper_respiratory_symptoms":
             self._update_upper_respiratory_patterns()
             return
+        if self.reason_for_encounter == "rfe.palpitations":
+            self._update_palpitations_patterns()
+            return
         active = ["respiratory.cough"]
         cold_support = sum(
             self.memory.value(fact_id) is True
@@ -691,6 +694,26 @@ class InterviewSession:
             "symptom.persistent_mouth_ulcer_or_neck_lump",
         )):
             active.append("upper_respiratory.persistent_warning_features")
+        self.active_patterns = active
+
+    def _update_palpitations_patterns(self) -> None:
+        active = ["cardiovascular.palpitations"]
+        if any(self.memory.value(item) not in (None, False, "", "none") for item in (
+            "symptom.palpitations.sensation", "observation.pulse_rate_during_episode",
+            "observation.pulse_regular_during_episode",
+        )):
+            active.append("palpitations.rhythm_features")
+        if any(self.memory.value(item) is True for item in (
+            "symptom.chest_pain", "symptom.severe_dyspnea", "symptom.syncope",
+            "symptom.presyncope", "symptom.new_focal_neurologic_deficit",
+        )):
+            active.append("palpitations.immediate_safety_features")
+        if any(self.memory.value(item) not in (None, False, "", "none") for item in (
+            "trigger.palpitations.exertion", "trigger.palpitations.postural",
+            "trigger.palpitations.stress_or_panic", "exposure.caffeine_or_energy_drinks",
+            "medication.recent_change_palpitations",
+        )):
+            active.append("palpitations.trigger_features")
         self.active_patterns = active
 
     def _update_dyspnea_patterns(self) -> None:
