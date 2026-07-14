@@ -898,7 +898,7 @@ class PackageRuntimeTests(unittest.TestCase):
 
     def test_focal_neurology_simulation_and_runtime(self):
         report = run_evaluation(FOCAL_WEAKNESS_NUMBNESS_PACKAGE)
-        self.assertTrue(report["passed"]); self.assertEqual(report["case_count"], 11)
+        self.assertTrue(report["passed"]); self.assertEqual(report["case_count"], 12)
         session = InterviewSession("focal-runtime", package_path=FOCAL_WEAKNESS_NUMBNESS_PACKAGE)
         state = session.process("한쪽 팔이 저리고 힘이 빠져요.")
         self.assertIn("neurological.focal_weakness_numbness", state["active_patterns"])
