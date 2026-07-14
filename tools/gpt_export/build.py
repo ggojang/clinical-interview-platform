@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "1.21.0"
+VERSION = "1.22.0"
 GENERATED_AT = "2026-07-14T00:00:00Z"
 PRIVATE_KEYS = {
     "raw_text", "raw_input", "patient_response", "patient_responses",
@@ -210,6 +210,113 @@ def collect_rfe_resources(root: Path) -> dict[str, dict[str, Any]]:
     return resources
 
 
+def collect_patient_experience_questionnaire(root: Path) -> dict[str, dict[str, Any]]:
+    """Split the FHIR Questionnaire into Action-safe workflow and section payloads."""
+    path = (
+        root / "fhir/r4/questionnaires/"
+        "kr-patient-experience-evaluation-5th-2025.json"
+    )
+    questionnaire = load_json(path)
+    if questionnaire.get("resourceType") != "Questionnaire":
+        raise RuntimeError("patient-experience source is not a FHIR Questionnaire")
+    sections = questionnaire.get("item", [])
+    if len(sections) != 8:
+        raise RuntimeError("patient-experience Questionnaire must contain 8 sections")
+    resources: dict[str, dict[str, Any]] = {}
+    section_index = []
+    total_questions = 0
+    for number, section in enumerate(sections, 1):
+        question_count = sum(
+            item.get("type") not in {"display", "group"}
+            for item in section.get("item", [])
+        )
+        total_questions += question_count
+        section_path = (
+            "questionnaires/patient-experience-5th-2025/"
+            f"sections/{number}.json"
+        )
+        section_index.append({
+            "number": number,
+            "linkId": section["linkId"],
+            "title": section.get("text"),
+            "question_count": question_count,
+            "path": f"/gpt/{section_path}",
+        })
+        resources[section_path] = {
+            "resource_type": "QuestionnaireSection",
+            "version": VERSION,
+            "status": "research_only",
+            "review_status": "unreviewed",
+            "contains_patient_responses": False,
+            "reason_for_encounter": "rfe.patient_experience_evaluation",
+            "questionnaire": questionnaire["url"],
+            "questionnaire_version": questionnaire.get("version"),
+            "section_number": number,
+            "section_count": len(sections),
+            "question_count": question_count,
+            "item": compact(section),
+        }
+    if total_questions != 26:
+        raise RuntimeError(
+            f"patient-experience Questionnaire must contain 26 questions, got {total_questions}"
+        )
+    metadata_path = "questionnaires/patient-experience-5th-2025/metadata.json"
+    resources[metadata_path] = {
+        "resource_type": "QuestionnaireChatbotWorkflow",
+        "version": VERSION,
+        "status": "research_only",
+        "review_status": "unreviewed",
+        "contains_patient_responses": False,
+        "reason_for_encounter": "rfe.patient_experience_evaluation",
+        "activation_aliases_ko": [
+            "환자경험평가", "환자 경험 평가", "입원 경험 설문",
+            "입원 환자경험 설문", "5차 환자경험평가", "환자경험 설문",
+        ],
+        "questionnaire": {
+            "id": questionnaire["id"],
+            "url": questionnaire["url"],
+            "version": questionnaire.get("version"),
+            "title": questionnaire.get("title"),
+            "language": questionnaire.get("language"),
+            "fhir_version": "4.0.1",
+            "source_status": questionnaire.get("status"),
+            "experimental": questionnaire.get("experimental"),
+        },
+        "section_count": len(sections),
+        "question_count": total_questions,
+        "sections": section_index,
+        "loading_policy": {
+            "load_metadata_after_rfe_mapping": True,
+            "load_one_section_at_a_time": True,
+            "never_send_answers_to_knowledge_action": True,
+        },
+        "presentation_policy": {
+            "language": "ko",
+            "ask_one_question_at_a_time": True,
+            "preserve_source_option_codes": True,
+            "show_section_transition": True,
+            "do_not_inject_clinical_history_or_screening_questions": True,
+            "accept_free_text_for_additional_comments": True,
+        },
+        "answer_policy": {
+            "choice": "store QuestionnaireResponse answer.valueCoding from selected source option",
+            "integer": "store QuestionnaireResponse answer.valueInteger within declared minValue and maxValue",
+            "unknown": "retain unanswered state with dataAbsentReason=asked-unknown",
+            "decline": "retain unanswered state with dataAbsentReason=asked-declined",
+            "edit_reference": "E{positive_integer}",
+        },
+        "completion_policy": {
+            "after_last_question": "show section summary and explicit completion handoff",
+            "before_confirmation_status": "in-progress",
+            "confirmed_status": "completed",
+            "stopped_status": "stopped",
+            "corrected_after_completion_status": "amended",
+            "completion_confirmation_is_not_consent": True,
+        },
+    }
+    return resources
+
+
 def collect(root: Path) -> dict[str, dict[str, Any]]:
     facts: list[dict[str, Any]] = []
     questions: list[dict[str, Any]] = []
@@ -339,6 +446,7 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
         "terminology-source.json": terminology_source,
     }
     resources.update(collect_rfe_resources(root))
+    resources.update(collect_patient_experience_questionnaire(root))
     return resources
 
 
@@ -370,7 +478,10 @@ def build(root: Path, output: Path) -> dict[str, Any]:
             "sha256": hashlib.sha256(payload).hexdigest(),
             "count": document.get(
                 "count",
-                len(document.get("entries", document.get("question_groups", []))),
+                document.get(
+                    "question_count",
+                    len(document.get("entries", document.get("question_groups", []))),
+                ),
             ),
         })
     manifest = {
@@ -393,7 +504,7 @@ def build(root: Path, output: Path) -> dict[str, Any]:
                     key: entry[key]
                     for key in (
                         "id", "display", "display_ko", "aliases",
-                        "implementation_status", "package_id",
+                        "implementation_status", "package_id", "questionnaire_id",
                     )
                     if key in entry
                 }
@@ -410,6 +521,9 @@ def build(root: Path, output: Path) -> dict[str, Any]:
             "report_resolved_and_unresolved_separately": True,
             "never_publish_raw_response": True,
         },
+        "patient_experience_questionnaire_policy": resources[
+            "questionnaires/patient-experience-5th-2025/metadata.json"
+        ],
         "numbering_policy": {
             "display_question_sequence": False,
             "question_tracking": "stable_question_id",
@@ -486,6 +600,10 @@ def build(root: Path, output: Path) -> dict[str, Any]:
                 "getReasonForEncounterRules",
                 "getReasonForEncounterQuestions",
                 "getReasonForEncounterFacts",
+            ],
+            "questionnaire_operations": [
+                "getPatientExperienceQuestionnaire",
+                "getPatientExperienceQuestionnaireSection",
             ],
             "aggregate_resources_are_backward_compatible": True,
         },

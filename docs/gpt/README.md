@@ -14,6 +14,8 @@ This directory is a static, read-only knowledge API for a Custom GPT test chatbo
 - `question-groups.json`: compact common QuestionGroup index; complete QuestionTemplates are provided in each RFE question resource
 - `safety-rules.json`: compact cross-RFE safety rules; complete routing and priority rules are provided in each `rfe/{slug}/rules.json`
 - `screening-kr.json`: Korean national screening candidate rules
+- `questionnaires/patient-experience-5th-2025/metadata.json`: activation, section index, answer semantics, and completion policy for the 2025 fifth inpatient patient-experience questionnaire
+- `questionnaires/patient-experience-5th-2025/sections/{1..8}.json`: one compact source-preserving Questionnaire section per Action response
 - `terminology-source.json`: STOM identity, observed versions, cadence, and limitations
 - `openapi.yaml`: compiled Knowledge Custom GPT Action definition
 - `stom-openapi.yaml`: separate read-only STOM terminology Action definition
@@ -23,6 +25,8 @@ This directory is a static, read-only knowledge API for a Custom GPT test chatbo
 Run `python3 tools/gpt_export/build.py` after changing Knowledge or Facts. The generated resources are deterministic and contain no simulation or response data.
 
 The GPT must start from Reason for Encounter, then load only the matching compact RFE resources. The large aggregate files remain available for offline inspection and backward compatibility but are intentionally absent from the Action schema.
+
+When the Reason for Encounter is patient-experience evaluation, the GPT loads the questionnaire metadata and then exactly one of the eight sections at a time. This avoids Action response-size failures while preserving all 26 FHIR-linked source questions.
 
 Manifest policy also distinguishes institutional result checking from an interpretation request, and carries recency rules for all longitudinal baseline groups.
 

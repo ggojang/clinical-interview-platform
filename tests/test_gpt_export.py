@@ -93,11 +93,51 @@ class GptExportTests(unittest.TestCase):
                 "rfe-weight_constitutional_change-facts", "rfe-weight_constitutional_change-questions", "rfe-weight_constitutional_change-rules",
                 "rfe-reproductive_genital_symptoms-facts", "rfe-reproductive_genital_symptoms-questions", "rfe-reproductive_genital_symptoms-rules",
                 "rfe-eye_symptoms-facts", "rfe-eye_symptoms-questions", "rfe-eye_symptoms-rules",
+                "questionnaires-patient-experience-5th-2025-metadata",
+                "questionnaires-patient-experience-5th-2025-sections-1",
+                "questionnaires-patient-experience-5th-2025-sections-8",
             }.issubset(names))
             for resource in manifest["resources"]:
                 self.assertEqual(len(resource["sha256"]), 64)
             for path in (output_path / "rfe").rglob("*.json"):
                 self.assertLess(path.stat().st_size, 50_000, path)
+
+    def test_patient_experience_questionnaire_is_split_and_chatbot_ready(self):
+        with tempfile.TemporaryDirectory() as output:
+            output_path = Path(output)
+            manifest = build(ROOT, output_path)
+            base = output_path / "questionnaires/patient-experience-5th-2025"
+            metadata = json.loads((base / "metadata.json").read_text(encoding="utf-8"))
+            self.assertEqual(metadata["reason_for_encounter"], "rfe.patient_experience_evaluation")
+            self.assertEqual(metadata["section_count"], 8)
+            self.assertEqual(metadata["question_count"], 26)
+            self.assertIn("환자경험평가", metadata["activation_aliases_ko"])
+            self.assertTrue(metadata["loading_policy"]["load_one_section_at_a_time"])
+            self.assertTrue(metadata["loading_policy"]["never_send_answers_to_knowledge_action"])
+            sections = []
+            for number in range(1, 9):
+                path = base / "sections" / f"{number}.json"
+                self.assertLess(path.stat().st_size, 12_000, path)
+                section = json.loads(path.read_text(encoding="utf-8"))
+                self.assertEqual(section["section_number"], number)
+                self.assertFalse(section["contains_patient_responses"])
+                sections.append(section)
+            self.assertEqual(sum(item["question_count"] for item in sections), 26)
+            self.assertEqual(
+                manifest["patient_experience_questionnaire_policy"]["question_count"],
+                26,
+            )
+            self.assertEqual(
+                manifest["preferred_loading"]["questionnaire_operations"],
+                ["getPatientExperienceQuestionnaire", "getPatientExperienceQuestionnaireSection"],
+            )
+
+    def test_knowledge_action_exposes_patient_experience_operations(self):
+        schema = (ROOT / "docs/gpt/openapi.yaml").read_text(encoding="utf-8")
+        self.assertIn("operationId: getPatientExperienceQuestionnaire", schema)
+        self.assertIn("operationId: getPatientExperienceQuestionnaireSection", schema)
+        self.assertIn("enum: [1, 2, 3, 4, 5, 6, 7, 8]", schema)
+        self.assertIn("eye_symptoms", schema)
 
     def test_rfe_catalog_and_bundles_are_consistent(self):
         with tempfile.TemporaryDirectory() as output:

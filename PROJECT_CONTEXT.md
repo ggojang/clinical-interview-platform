@@ -571,6 +571,8 @@ The grouped expansion governed by `knowledge/catalog/planned-package-work-queue-
 
 The next expansion queue, `knowledge/catalog/planned-package-work-queue-v0.3.json`, is active. Its first materialized slice is grouped eye symptoms: red eye or ocular-surface discomfort, vision change, eyelid or periorbital symptoms, and trauma or foreign body. It contains explicit sight-threatening safety Facts, conditional branch completion, and laterality support based on STOM verification that `371398005 |Eye region structure|` belongs to `723264001 |Lateralizable body structure reference set|`. All content remains `unreviewed/research_only`; MRCM and reference-set results constrain terminology representation only and never create clinical safety rules.
 
+The fixed 2025 fifth inpatient patient-experience instrument is represented as a FHIR R4 `Questionnaire` with eight sections and twenty-six questions. The chatbot maps patient-experience aliases to `rfe.patient_experience_evaluation`, then loads compact metadata and one section at a time from the public Knowledge Action. Source response codes, not-applicable choices, 0–10 integer ranges, edit references, absent-answer states, and explicit completion status are preserved. Patient answers remain in the conversation and are never sent to the read-only Knowledge Action.
+
 ---
 
 # 21. Feedback and Evolution
