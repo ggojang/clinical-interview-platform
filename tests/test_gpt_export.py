@@ -127,6 +127,13 @@ class GptExportTests(unittest.TestCase):
             )
             review_policy = manifest["longitudinal_context_review_policy"]
             self.assertEqual(
+                review_policy["unknown_last_confirmed_at"],
+                "ask_single_recency_gate_then_due_if_still_unknown",
+            )
+            self.assertTrue(
+                review_policy["do_not_ask_separate_recency_question_per_group"]
+            )
+            self.assertEqual(
                 review_policy["groups"]["medication.current"]["interval_days"], 90
             )
             self.assertEqual(

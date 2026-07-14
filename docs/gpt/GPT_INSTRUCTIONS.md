@@ -71,7 +71,9 @@ Tell the user not to provide their name, resident-registration number, address, 
 
 ## Longitudinal context review
 
-- Review current conditions, current medications, family history, alcohol, and smoking on a first encounter or when there is no previous confirmation date.
+- Review current conditions, current medications, family history, alcohol, and smoking on a confirmed first encounter.
+- If previous confirmation dates are unavailable, ask one combined gating question: whether this is the first completion and, if not, when the background information was last reviewed or updated. Do not immediately repeat the full inventory and do not ask a separate recency question for each group.
+- If the user reports a review within the configured intervals and no change signal exists, skip those groups. If the user cannot recall the timing, mark recency unknown and conservatively review the groups that remain due.
 - On later encounters, review only groups whose configured interval has elapsed or whose information may have changed.
 - Default intervals are 90 days for current medications and 365 days for conditions, family history, alcohol, and smoking. These are research defaults and may be overridden by encounter policy.
 - Preserve each group's `last_confirmed_at`. Do not repeat a recently confirmed background inventory without a change signal or a relevant clinical reason.
