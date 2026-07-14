@@ -162,6 +162,9 @@ class InterviewSession:
     active_patterns: list[str] = field(default_factory=list)
     trace: list[dict[str, Any]] = field(default_factory=list)
     last_question_fact: str | None = None
+    pending_edit_fact: str | None = None
+    edit_reference_map: dict[str, str] = field(default_factory=dict)
+    amended_after_completion: bool = False
     package: dict[str, Any] = field(init=False)
     memory: ClinicalMemory = field(init=False)
     active_intents: list[str] = field(init=False, default_factory=list)
@@ -211,8 +214,22 @@ class InterviewSession:
     def process(self, patient_text: str) -> dict[str, Any]:
         turn = self.memory.next_turn()
         self.memory.observe(patient_text)
-        additions = extract(patient_text, turn, self.last_question_fact)
-        low = patient_text.lower().strip()
+        edit_action = self._parse_edit_command(patient_text)
+        if edit_action and edit_action[0] == "menu":
+            return self._edit_menu_state(turn)
+        if edit_action and edit_action[0] == "select" and edit_action[2] is None:
+            return self._edit_prompt_state(turn, edit_action[1])
+
+        correction_target = self.pending_edit_fact
+        answer_text = patient_text
+        if edit_action and edit_action[0] == "select":
+            correction_target = self._resolve_edit_target(edit_action[1])
+            if correction_target is None:
+                return self._edit_menu_state(turn, "수정할 수 있는 항목을 찾지 못했습니다.")
+            answer_text = edit_action[2] or ""
+        expected_fact = correction_target or self.last_question_fact
+        additions = extract(answer_text, turn, expected_fact)
+        low = answer_text.lower().strip()
         low_normalized = low.rstrip(".!?")
         for node in self.package["knowledge_graph"]["nodes"]:
             if node["type"] != "Fact" or node["id"] in additions:
@@ -222,28 +239,36 @@ class InterviewSession:
                 cue.lower() in low and f"no {cue.lower()}" not in low
                 for cue in cues
             ):
-                additions[node["id"]] = fact(True, patient_text, turn, .78)
+                additions[node["id"]] = fact(True, answer_text, turn, .78)
 
-        if self.last_question_fact and self.last_question_fact not in additions:
+        if expected_fact and expected_fact not in additions:
             node = next(
                 (
                     item for item in self.package["knowledge_graph"]["nodes"]
-                    if item["id"] == self.last_question_fact
+                    if item["id"] == expected_fact
                 ),
                 None,
             )
             if node:
                 allowed = node.get("allowed_values", [])
                 normalized = low_normalized
-                if normalized in allowed:
-                    additions[self.last_question_fact] = fact(
-                        normalized, patient_text, turn, .92
+                if expected_fact == "symptom.dyspnea" and normalized in {"1", "2"}:
+                    additions[expected_fact] = fact(
+                        "mild" if normalized == "1" else "none", answer_text, turn, .95
+                    )
+                elif node.get("value_type") == "boolean" and normalized in {"1", "2"}:
+                    additions[expected_fact] = fact(
+                        normalized == "1", answer_text, turn, .95
+                    )
+                elif normalized in allowed:
+                    additions[expected_fact] = fact(
+                        normalized, answer_text, turn, .92
                     )
                 elif node.get("value_type") == "integer" and re.fullmatch(
                     r"\d+", normalized
                 ):
-                    additions[self.last_question_fact] = fact(
-                        int(normalized), patient_text, turn, .95
+                    additions[expected_fact] = fact(
+                        int(normalized), answer_text, turn, .95
                     )
                 elif (
                     node.get("value_type") == "string"
@@ -257,10 +282,18 @@ class InterviewSession:
                         "does not apply", "해당되지 않아요",
                     }
                 ):
-                    additions[self.last_question_fact] = fact(
-                        patient_text.strip(), patient_text, turn, .85
+                    additions[expected_fact] = fact(
+                        answer_text.strip(), answer_text, turn, .85
                     )
-        if any(marker in patient_text.lower() for marker in ("i meant", "sorry, i meant")) or "정정" in patient_text or "아니, " in patient_text:
+        if correction_target:
+            additions = {
+                fact_id: candidate for fact_id, candidate in additions.items()
+                if fact_id == correction_target
+            }
+        if correction_target:
+            for candidate in additions.values():
+                candidate["correction"] = True
+        elif any(marker in patient_text.lower() for marker in ("i meant", "sorry, i meant")) or "정정" in patient_text or "아니, " in patient_text:
             for candidate in additions.values():
                 candidate["correction"] = True
         merge_results: dict[str, str] = {}
@@ -271,30 +304,53 @@ class InterviewSession:
         for fact_id, candidate in additions.items():
             if fact_id in allowed_facts:
                 merge_results[fact_id] = self.memory.merge(fact_id, candidate)
-        if self.last_question_fact and self.last_question_fact not in additions:
+        if expected_fact and expected_fact not in additions:
             if low_normalized in {
+                "3",
                 "i am not sure", "i'm not sure", "not sure",
                 "모르겠어요", "잘 모르겠어요",
             }:
                 self.memory.mark_absent(
-                    self.last_question_fact, patient_text, "asked-unknown"
+                    expected_fact, answer_text, "asked-unknown",
+                    correction=bool(correction_target),
                 )
-                merge_results[self.last_question_fact] = "asked-unknown"
+                merge_results[expected_fact] = "corrected" if correction_target else "asked-unknown"
             elif low_normalized in {
+                "5",
                 "i prefer not to answer", "i'd rather not answer",
                 "prefer not to say", "답하고 싶지 않아요", "말하고 싶지 않아요",
             }:
                 self.memory.mark_absent(
-                    self.last_question_fact, patient_text, "asked-declined"
+                    expected_fact, answer_text, "asked-declined",
+                    correction=bool(correction_target),
                 )
-                merge_results[self.last_question_fact] = "asked-declined"
+                merge_results[expected_fact] = "corrected" if correction_target else "asked-declined"
             elif low_normalized in {
                 "not applicable", "does not apply", "해당되지 않아요",
             }:
                 self.memory.mark_absent(
-                    self.last_question_fact, patient_text, "not-applicable"
+                    expected_fact, answer_text, "not-applicable",
+                    correction=bool(correction_target),
                 )
-                merge_results[self.last_question_fact] = "not-applicable"
+                merge_results[expected_fact] = "corrected" if correction_target else "not-applicable"
+
+        was_complete = bool(self.trace and self.trace[-1]["completion"]["complete"])
+        if correction_target and correction_target not in merge_results:
+            return self._edit_prompt_state(
+                turn,
+                correction_target,
+                error="새 답변을 해석하지 못했습니다. 값 또는 1 예, 2 아니오, 3 잘 모르겠음, 5 답변하지 않음을 입력해 주세요.",
+            )
+        if correction_target:
+            self.pending_edit_fact = None
+            self.amended_after_completion = self.amended_after_completion or was_complete
+            self.memory.record_event("answer_revised", {
+                "actor": "patient",
+                "turn": turn,
+                "fact_id": correction_target,
+                "outcome": merge_results.get(correction_target),
+                "after_completion": was_complete,
+            })
 
         classification = duration_class(self.memory.value("symptom.duration"))
         self._update_patterns(classification)
@@ -314,9 +370,18 @@ class InterviewSession:
             question = self._choose(
                 classification, safety["level"], set(completion["required_facts"])
             )
+        resume_fact = self.last_question_fact if correction_target else None
+        if (
+            resume_fact
+            and self.memory.state(resume_fact) == "not_asked"
+            and safety["level"] not in {"urgent", "emergency"}
+            and not completion["complete"]
+        ):
+            question = self._question_for_fact(resume_fact, "resume_after_correction")
         self.last_question_fact = question["fact_id"] if question else None
         if self.last_question_fact:
-            self.asked.append(self.last_question_fact)
+            if self.last_question_fact not in self.asked:
+                self.asked.append(self.last_question_fact)
 
         stop_reason = None
         if safety["level"] in {"urgent", "emergency"}:
@@ -355,6 +420,112 @@ class InterviewSession:
         }
         self.trace.append(trace_entry)
         return self.snapshot(question, safety, classification, stop_reason, completion)
+
+    def _parse_edit_command(self, text: str) -> tuple[str, str | None, str | None] | None:
+        stripped = text.strip()
+        if stripped.lower() in {"수정", "답변 수정", "edit", "edit answer", "change answer"}:
+            return ("menu", None, None)
+        match = re.fullmatch(
+            r"(?:수정|edit)\s+([Ee]\d+|[A-Za-z][A-Za-z0-9_.-]*)(?:\s*[:=]\s*(.+))?",
+            stripped,
+            re.IGNORECASE,
+        )
+        if match:
+            return ("select", match.group(1), match.group(2))
+        return None
+
+    def _editable_answers(self) -> list[dict[str, Any]]:
+        ordered = list(dict.fromkeys(self.asked + list(self.memory.facts)))
+        editable = [
+            fact_id for fact_id in ordered
+            if self.memory.state(fact_id) in {"known", "unknown", "not_applicable", "conflicted"}
+        ]
+        self.edit_reference_map = {
+            f"E{index}": fact_id for index, fact_id in enumerate(editable, 1)
+        }
+        questions = self.package["indexes"]["questions_by_fact"]
+        items = []
+        for edit_ref, fact_id in self.edit_reference_map.items():
+            record = self.memory.facts[fact_id]
+            items.append({
+                "edit_ref": edit_ref,
+                "fact_id": fact_id,
+                "label": questions.get(fact_id, {}).get("wording", fact_id),
+                "status": record.get("status"),
+                "current_value": record.get("value"),
+                "dataAbsentReason": record.get("dataAbsentReason"),
+            })
+        return items
+
+    def _resolve_edit_target(self, reference: str | None) -> str | None:
+        if reference is None:
+            return None
+        if not self.edit_reference_map:
+            self._editable_answers()
+        normalized = reference.upper() if re.fullmatch(r"[Ee]\d+", reference) else reference
+        target = self.edit_reference_map.get(normalized, normalized)
+        return target if target in self.memory.facts else None
+
+    def _edit_menu_state(self, turn: int, error: str | None = None) -> dict[str, Any]:
+        self.pending_edit_fact = None
+        items = self._editable_answers()
+        self.memory.record_event("answer_revision_menu_opened", {
+            "actor": "patient",
+            "turn": turn,
+            "editable_fact_ids": [item["fact_id"] for item in items],
+        })
+        state = self._current_state()
+        state["edit_menu"] = {
+            "instruction_ko": "수정할 항목의 E번호를 '수정 E2'처럼 입력해 주세요.",
+            "items": items,
+            "error": error,
+        }
+        return state
+
+    def _edit_prompt_state(
+        self, turn: int, reference: str | None, error: str | None = None
+    ) -> dict[str, Any]:
+        target = self._resolve_edit_target(reference)
+        if target is None:
+            return self._edit_menu_state(turn, "수정할 수 있는 항목을 찾지 못했습니다.")
+        self.pending_edit_fact = target
+        record = self.memory.facts[target]
+        state = self._current_state()
+        state["edit_prompt"] = {
+            "fact_id": target,
+            "label": self.package["indexes"]["questions_by_fact"].get(target, {}).get("wording", target),
+            "current_status": record.get("status"),
+            "current_value": record.get("value"),
+            "dataAbsentReason": record.get("dataAbsentReason"),
+            "instruction_ko": "새 답변을 입력해 주세요. 가능한 경우 1 예, 2 아니오, 3 잘 모르겠음, 5 답변하지 않음을 사용할 수 있습니다.",
+            "error": error,
+        }
+        return state
+
+    def _question_for_fact(self, fact_id: str, reason: str) -> dict[str, Any] | None:
+        template = self.package["indexes"]["questions_by_fact"].get(fact_id)
+        if not template:
+            return None
+        return {
+            "target_id": self._target_for_fact(fact_id),
+            "fact_id": fact_id,
+            "template_id": template["template_id"],
+            "text": template["wording"],
+            "score": 1000,
+            "reason": reason,
+        }
+
+    def _current_state(self) -> dict[str, Any]:
+        classification = duration_class(self.memory.value("symptom.duration"))
+        self._update_patterns(classification)
+        self._update_target_states(classification)
+        safety = self._safety()
+        completion = self._completion(classification, safety)
+        question = (
+            self._question_for_fact(self.last_question_fact, "preserved_during_correction")
+            if self.last_question_fact else None
+        )
+        return self.snapshot(question, safety, classification, None, completion)
 
     def _update_patterns(self, classification: str | None) -> None:
         if self.reason_for_encounter == "rfe.fever":
@@ -1116,6 +1287,11 @@ class InterviewSession:
             "selected_question": question,
             "stop_reason": stop_reason,
             "completion_status": completion,
+            "revision_status": {
+                "pending_fact_id": self.pending_edit_fact,
+                "amended_after_completion": self.amended_after_completion,
+                "command_hint_ko": "답변을 바꾸려면 '수정'이라고 입력하세요.",
+            },
             "events": memory["events"],
             "trace": list(self.trace),
             "package": memory["package"],

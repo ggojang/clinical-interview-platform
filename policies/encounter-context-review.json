@@ -1,6 +1,6 @@
 {
   "id": "policy.encounter-context-review",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "status": "research_only",
   "review_status": "unreviewed",
   "result_follow_up": {
@@ -75,6 +75,72 @@
       "administratively_invalidated": "entered-in-error"
     },
     "post_completion_input": "classify_as_amendment_or_new_reason_for_encounter_before_collecting"
+  },
+  "answer_revision": {
+    "available_states": [
+      "in_progress",
+      "awaiting_user_confirmation",
+      "completed"
+    ],
+    "entry_commands": ["수정", "답변 수정", "edit answer"],
+    "menu_instruction_ko": "수정할 항목의 E번호를 '수정 E2'처럼 입력해 주세요.",
+    "edit_reference_format": "E{positive_integer}",
+    "never_use_bare_question_option_number_as_edit_reference": true,
+    "menu_item_fields": [
+      "edit_reference",
+      "question_or_item_label",
+      "current_value_or_response_state",
+      "fact_id"
+    ],
+    "workflow": [
+      "preserve_current_unanswered_question",
+      "show_only_answers_available_for_revision",
+      "select_one_item_by_edit_reference",
+      "show_current_answer_and_request_replacement",
+      "record_replacement_as_explicit_correction",
+      "recompute_safety_rules",
+      "recompute_conditional_question_branch",
+      "recompute_missing_conflicting_and_data_absent_facts",
+      "recompute_completion_eligibility",
+      "confirm_changed_item_and_resume_or_reopen_questionnaire"
+    ],
+    "value_entry": {
+      "reuse_original_question_choices_when_available": true,
+      "binary_numeric_codes": {
+        "1": "yes",
+        "2": "no",
+        "3": "asked-unknown",
+        "5": "asked-declined"
+      },
+      "free_text_allowed_when_original_fact_accepts_free_text": true,
+      "do_not_apply_replacement_to_any_other_fact": true
+    },
+    "audit": {
+      "never_delete_or_silently_overwrite_prior_answer": true,
+      "preserve_prior_value_response_state_evidence_and_timestamp": true,
+      "record_correction_actor_time_reason_and_source": true,
+      "data_absent_reason_may_be_replaced_but_remains_in_history": true,
+      "future_fhir_provenance_ready": true
+    },
+    "conditional_branch_change": {
+      "new_branch_facts_become_required_when_applicable": true,
+      "prior_branch_answers_are_preserved_in_history": true,
+      "prior_branch_answers_do_not_satisfy_new_branch": true,
+      "do_not_delete_answers_from_inactive_branch": true
+    },
+    "after_completion": {
+      "classify_as_amendment_not_new_encounter_when_same_reason_for_encounter": true,
+      "questionnaire_response_status": "amended",
+      "invalidate_prior_final_summary": true,
+      "require_completion_reconfirmation_after_recalculation": true
+    },
+    "safety": {
+      "reassessment_precedes_routine_resume": true,
+      "new_urgent_or_emergency_result_interrupts_revision_flow": true,
+      "explain_why_escalation_is_recommended": true
+    },
+    "completion_hint_ko": "답변을 바꾸려면 언제든지 '수정'이라고 입력하세요.",
+    "provenance_marker": "출처: [공동 작업 지식] 답변 수정 정책 · [AI 표현] 안내 문장"
   },
   "test_access_limit_notice": {
     "show_once_per_conversation": true,

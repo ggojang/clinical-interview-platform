@@ -73,6 +73,10 @@ class ClinicalMemory:
             "text": text,
         })
 
+    def record_event(self, event_type: str, payload: dict[str, Any]) -> dict[str, Any]:
+        """Record a non-clinical workflow event in the session audit trail."""
+        return self._event(event_type, payload)
+
     def merge(self, fact_id: str, candidate: dict[str, Any]) -> str:
         """Merge one supported candidate without overwriting prior evidence."""
         evidence = deepcopy(candidate.get("evidence", []))
@@ -93,7 +97,7 @@ class ClinicalMemory:
         }
         current = self.facts.get(fact_id)
 
-        if current is None or current.get("status") in {"unknown", "not_asked", "not_applicable"}:
+        if current is None:
             prior_history = deepcopy(current.get("history", [])) if current else []
             self.facts[fact_id] = {
                 "status": "known",
@@ -122,6 +126,17 @@ class ClinicalMemory:
                     conflict["resolution_value"] = incoming_value
                     break
             outcome = "corrected"
+        elif current.get("status") in {"unknown", "not_asked", "not_applicable"}:
+            prior_history = deepcopy(current.get("history", []))
+            self.facts[fact_id] = {
+                "status": "known",
+                "value": incoming_value,
+                "raw_text": incoming["raw_text"],
+                "confidence": incoming["confidence"],
+                "evidence": deepcopy(current.get("evidence", [])) + evidence,
+                "history": prior_history + [incoming],
+            }
+            outcome = "added"
         elif current.get("status") == "known" and current.get("value") == incoming_value:
             current.setdefault("evidence", []).extend(evidence)
             current.setdefault("history", []).append(incoming)
@@ -169,7 +184,14 @@ class ClinicalMemory:
         })
         return outcome
 
-    def mark_absent(self, fact_id: str, raw_text: str, reason_code: str) -> None:
+    def mark_absent(
+        self,
+        fact_id: str,
+        raw_text: str,
+        reason_code: str,
+        *,
+        correction: bool = False,
+    ) -> str:
         evidence = [{
             "speaker": "patient",
             "turn": self.turn,
@@ -186,9 +208,9 @@ class ClinicalMemory:
             "confidence": 1.0,
             "evidence": evidence,
             "turn": self.turn,
-            "correction": False,
+            "correction": correction,
         }
-        self.facts[fact_id] = {
+        record = {
             "status": status,
             "value": None,
             "dataAbsentReason": reason,
@@ -197,13 +219,29 @@ class ClinicalMemory:
             "evidence": evidence,
             "history": prior_history + [history_entry],
         }
+        if correction and current:
+            record["corrected_from"] = {
+                "status": current.get("status"),
+                "value": deepcopy(current.get("value")),
+                "dataAbsentReason": deepcopy(current.get("dataAbsentReason")),
+            }
+            record["evidence"] = deepcopy(current.get("evidence", [])) + evidence
+            for conflict in reversed(self.contradictions):
+                if conflict["fact_id"] == fact_id and conflict["status"] == "unresolved":
+                    conflict["status"] = "resolved"
+                    conflict["resolution_turn"] = self.turn
+                    conflict["resolution_dataAbsentReason"] = deepcopy(reason)
+                    break
+        self.facts[fact_id] = record
         self._event("fact_marked_data_absent", {
             "actor": "runtime",
             "turn": self.turn,
             "fact_id": fact_id,
             "raw_text": raw_text,
             "dataAbsentReason": reason,
+            "correction": correction,
         })
+        return "corrected" if correction and current else reason_code
 
     def mark_unknown(self, fact_id: str, raw_text: str) -> None:
         self.mark_absent(fact_id, raw_text, "asked-unknown")

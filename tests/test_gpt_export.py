@@ -328,6 +328,26 @@ class GptExportTests(unittest.TestCase):
             self.assertTrue(
                 completion_policy["completion_confirmation_is_not_consent"]
             )
+            revision = manifest["answer_revision_policy"]
+            self.assertEqual(revision["edit_reference_format"], "E{positive_integer}")
+            self.assertTrue(
+                revision["never_use_bare_question_option_number_as_edit_reference"]
+            )
+            self.assertTrue(
+                revision["audit"]["never_delete_or_silently_overwrite_prior_answer"]
+            )
+            self.assertTrue(
+                revision["value_entry"]["do_not_apply_replacement_to_any_other_fact"]
+            )
+            self.assertTrue(
+                revision["conditional_branch_change"]["new_branch_facts_become_required_when_applicable"]
+            )
+            self.assertTrue(
+                revision["after_completion"]["require_completion_reconfirmation_after_recalculation"]
+            )
+            self.assertTrue(
+                revision["safety"]["new_urgent_or_emergency_result_interrupts_revision_flow"]
+            )
             limit_notice = manifest["test_access_limit_notice_policy"]
             self.assertEqual(
                 limit_notice["timing"],

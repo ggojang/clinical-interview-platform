@@ -676,8 +676,97 @@ class ClinicalMemoryTests(unittest.TestCase):
         )
         self.assertEqual(record["dataAbsentReason"]["code"], "asked-unknown")
 
+    def test_data_absent_correction_preserves_prior_value(self):
+        self.memory.merge("symptom.fever", self.candidate(True, "Yes"))
+        self.memory.next_turn()
+        outcome = self.memory.mark_absent(
+            "symptom.fever", "잘 모르겠어요", "asked-unknown", correction=True
+        )
+        record = self.memory.facts["symptom.fever"]
+        self.assertEqual(outcome, "corrected")
+        self.assertEqual(record["status"], "unknown")
+        self.assertEqual(record["dataAbsentReason"]["code"], "asked-unknown")
+        self.assertEqual(record["corrected_from"]["value"], True)
+        self.assertEqual(len(record["history"]), 2)
+
 
 class PackageRuntimeTests(unittest.TestCase):
+    def test_answer_revision_menu_preserves_unanswered_question_and_history(self):
+        session = InterviewSession("answer-revision")
+        first = session.process("I have had a cough for 4 days and no blood.")
+        current_fact = first["selected_question"]["fact_id"]
+        menu = session.process("수정")
+        hemoptysis = next(
+            item for item in menu["edit_menu"]["items"]
+            if item["fact_id"] == "symptom.hemoptysis"
+        )
+        self.assertEqual(menu["selected_question"]["fact_id"], current_fact)
+        prompt = session.process(f"수정 {hemoptysis['edit_ref']}")
+        self.assertEqual(prompt["edit_prompt"]["fact_id"], "symptom.hemoptysis")
+        amended = session.process("1")
+        record = amended["facts"]["symptom.hemoptysis"]
+        self.assertTrue(record["value"])
+        self.assertEqual(record["corrected_from"], False)
+        self.assertEqual(len(record["history"]), 2)
+        self.assertEqual(amended["safety_status"]["level"], "urgent")
+        self.assertEqual(amended["stop_reason"], "urgent_escalation")
+        self.assertTrue(any(event["type"] == "answer_revised" for event in amended["events"]))
+
+    def test_answer_revision_can_replace_data_absent_reason(self):
+        session = InterviewSession("answer-revision-absent")
+        session.process("I have had a cough for 4 days.")
+        session.process("3")
+        menu = session.process("수정")
+        dyspnea = next(
+            item for item in menu["edit_menu"]["items"]
+            if item["fact_id"] == "symptom.dyspnea"
+        )
+        self.assertEqual(dyspnea["dataAbsentReason"]["code"], "asked-unknown")
+        amended = session.process(f"수정 {dyspnea['edit_ref']}: 2")
+        record = amended["facts"]["symptom.dyspnea"]
+        self.assertEqual(record["status"], "known")
+        self.assertEqual(record["value"], "none")
+        self.assertEqual(record["corrected_from"], None)
+
+    def test_post_completion_revision_reopens_new_conditional_branch(self):
+        session = InterviewSession(
+            "answer-revision-complete",
+            package_path=REPRODUCTIVE_GENITAL_SYMPTOMS_PACKAGE,
+        )
+        session.memory.next_turn()
+        session.memory.merge(
+            "genital.primary_symptom_group",
+            {
+                "value": "vaginal_vulvar_pelvic",
+                "raw_text": "vaginal symptoms",
+                "confidence": .9,
+            },
+        )
+        initial_required = session._required_facts(None, session._safety())
+        for fact_id in initial_required:
+            if fact_id != "genital.primary_symptom_group":
+                session.memory.mark_absent(fact_id, "not known", "asked-unknown")
+        complete = session.process("검토 완료")
+        self.assertTrue(complete["completion_status"]["complete"])
+        menu = session.process("수정")
+        selector = next(
+            item for item in menu["edit_menu"]["items"]
+            if item["fact_id"] == "genital.primary_symptom_group"
+        )
+        reopened = session.process(
+            f"수정 {selector['edit_ref']}: testicular_scrotal"
+        )
+        self.assertFalse(reopened["completion_status"]["complete"])
+        self.assertTrue(reopened["revision_status"]["amended_after_completion"])
+        self.assertIn(
+            "testicular.sudden_severe_unilateral_pain",
+            reopened["completion_status"]["required_facts"],
+        )
+        self.assertNotIn(
+            "vaginal.discharge_changed",
+            reopened["completion_status"]["required_facts"],
+        )
+
     def test_runtime_exposes_package_and_trace(self):
         session = InterviewSession("package-runtime")
         state = session.process("I have had a cough for 4 days.")

@@ -159,6 +159,12 @@ Never label content as `[공동 작업 지식]` unless a project object ID or co
 
 ## Completion result
 
+At any point while the questionnaire is in progress or awaiting completion confirmation, the user may enter `수정`. Show only already answered or explicitly unresolved items using edit references `E1`, `E2`, and so on. Each row must show the item label and current value or response state. Never use a bare numeric answer-option number as an edit reference. Accept `수정 E2`, show that item's current answer, and request its replacement using the original response choices when available. Preserve the currently unanswered questionnaire item and return to it after the correction unless safety or routing changes.
+
+Treat the replacement as an explicit correction: never delete or silently overwrite the prior answer. Preserve the previous value, evidence, response state, and `dataAbsentReason` in revision history. Recompute safety, conditional branches, missing/conflicting information, and completion eligibility before resuming. A newly urgent or emergency result interrupts routine questioning and includes the reason for escalation. If a branch selector changes, preserve inactive-branch answers but do not use them to satisfy the newly active branch.
+
+If the same Reason for Encounter is amended after completion, mark the result amended, invalidate the prior final summary, rerun the same checks, and require completion confirmation again. A different Reason for Encounter starts a new interview. Include `답변을 바꾸려면 언제든지 '수정'이라고 입력하세요.` in the initial usage guidance and completion review.
+
 Before producing the final result:
 
 1. offer the final free-text concern field;
