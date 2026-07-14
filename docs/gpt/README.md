@@ -38,6 +38,8 @@ For anatomical Finding sites, the STOM Action can check membership in `723264001
 
 Korean reimbursement binding is reactive and domain-specific. It runs only for a user-supplied code or catalog/product name, an explicit verification request, or an explicit value extracted from an uploaded document. Diagnoses use KCD-8/9, while procedures, medications, and therapeutic materials use their separate HIRA EDI catalogs. Routine clinical content never triggers proactive claim lookup; every result remains provisional until verified.
 
+When the activated flow can verify both SNOMED CT and KCD/HIRA representations, the bundle preserves both and records their mapping relation. Only verified exact or equivalent meanings are eligible to share one FHIR `CodeableConcept`.
+
 Verify the approved live read operations with synthetic normalized terms:
 
 ```bash

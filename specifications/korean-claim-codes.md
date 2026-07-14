@@ -22,3 +22,7 @@ HIRA procedure, medication, and material catalogs have separate search and detai
 Claim codes never establish a diagnosis and never control interview priority, safety, differential diagnosis, or escalation. If terminology lookup or exact selection fails, the clinical interview continues and the claim mapping remains unresolved.
 
 A possible differential generated at questionnaire completion must not be emitted as a final claim diagnosis. Diagnosis-code binding requires an explicit diagnosis context and remains a candidate until the appropriate clinical or billing workflow confirms it.
+
+When an allowed claim-information trigger is present and both a SNOMED CT concept and a KCD/HIRA code can be verified for the same information, both codings are retained. Neither coding replaces the other. The binding records whether their meanings are exact, equivalent, broader, narrower, related, or unresolved, together with versions, sources and verification provenance. Name similarity alone cannot establish exact or equivalent meaning.
+
+FHIR may place both codings in one `CodeableConcept` only for a verified exact or equivalent meaning. Broader, narrower, or merely related codings remain linked in the internal binding but are not collapsed into a single equivalent-coding assertion.

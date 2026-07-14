@@ -429,6 +429,13 @@ class GptExportTests(unittest.TestCase):
             self.assertTrue(
                 claim["domains"]["material"]["group_result_is_not_final_item_code"]
             )
+            self.assertEqual(
+                claim["semantic_claim_multi_coding"]["when_snomed_and_claim_code_are_both_known"],
+                "preserve_both_as_information",
+            )
+            self.assertTrue(
+                claim["fhir_r4_projection"]["same_codeable_concept_only_for_verified_exact_or_equivalent_meaning"]
+            )
             provenance_display = manifest["response_provenance_display_policy"]
             self.assertTrue(
                 provenance_display["compact_marker_required_for_every_question"]
@@ -526,6 +533,7 @@ class GptExportTests(unittest.TestCase):
                     "claim.procedure.code",
                     "claim.medication.code",
                     "claim.material.code",
+                    "terminology.semantic_claim_binding",
                     "encounter.is_first",
                     "context.last_confirmed_at",
                 }.issubset(common_ids)

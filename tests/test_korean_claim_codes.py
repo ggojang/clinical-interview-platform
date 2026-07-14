@@ -61,6 +61,17 @@ class KoreanClaimCodePolicyTests(unittest.TestCase):
         self.assertTrue(boundary["claim_code_never_controls_interview_priority_safety_or_differential"])
         self.assertTrue(boundary["terminology_service_failure_does_not_block_interview"])
 
+    def test_verified_snomed_and_claim_codings_are_both_retained(self):
+        multi = self.policy["semantic_claim_multi_coding"]
+        self.assertEqual(
+            multi["when_snomed_and_claim_code_are_both_known"],
+            "preserve_both_as_information",
+        )
+        self.assertTrue(multi["never_replace_snomed_with_claim_code"])
+        self.assertTrue(multi["never_replace_claim_code_with_snomed"])
+        self.assertTrue(multi["name_similarity_alone_cannot_establish_equivalence"])
+        self.assertEqual(multi["reusable_fact_id"], "terminology.semantic_claim_binding")
+
 
 if __name__ == "__main__":
     unittest.main()
