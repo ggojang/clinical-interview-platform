@@ -529,7 +529,7 @@ When a clinical finding has an anatomical Finding site, laterality is collected 
 
 LOINC supports observable alignment.
 
-Korean claim-code alignment is a separate interoperability projection. Diagnosis candidates bind to a versioned KCD-8 or KCD-9 classification while retaining the original SNOMED CT and Clinical Memory semantics. Procedures, medications and therapeutic materials bind only to their matching HIRA EDI code systems. A claim code never establishes a diagnosis or controls question priority, safety, differential diagnosis or escalation. Ambiguous search results remain unresolved, and group-level therapeutic-material results are not treated as final item codes.
+Korean claim-code alignment is a separate, reactive interoperability projection. It is activated only when a user supplies a claim code, claim-catalog name or medication product name, requests verification, or provides a document or scan containing an explicit code or name. Routine symptoms, Clinical Facts, AI-generated differentials, and suggested tests or treatments never trigger proactive claim lookup. Diagnosis candidates bind to a versioned KCD-8 or KCD-9 classification while retaining the original SNOMED CT and Clinical Memory semantics. Procedures, medications and therapeutic materials bind only to their matching HIRA EDI code systems. A claim code never establishes a diagnosis or controls question priority, safety, differential diagnosis or escalation. Ambiguous search results remain unresolved, and group-level therapeutic-material results are not treated as final item codes.
 
 FHIR supports exchange.
 

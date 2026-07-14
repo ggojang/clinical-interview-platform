@@ -408,6 +408,14 @@ class GptExportTests(unittest.TestCase):
                 laterality["normal_form_preconditions"]["reject_already_lateralized_anatomical_value"]
             )
             claim = manifest["korean_claim_code_binding_policy"]
+            self.assertFalse(claim["activation"]["proactive_claim_lookup"])
+            self.assertTrue(
+                claim["activation"]["lookup_only_when_supplied_input_or_explicit_user_goal_exists"]
+            )
+            self.assertIn(
+                "uploaded_document_contains_explicit_claim_code_or_name",
+                claim["activation"]["allowed_triggers"],
+            )
             self.assertFalse(
                 claim["domains"]["diagnosis"]["kcd9_general_search_currently_exposed"]
             )

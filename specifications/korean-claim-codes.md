@@ -4,6 +4,10 @@ Version: 0.1.0 (Research Draft)
 
 Clinical meaning and reimbursement classification are separate layers. SNOMED CT and the original Clinical Memory Fact retain the clinical meaning. A KCD or HIRA EDI code is an additional, versioned mapping with independent provenance.
 
+Claim-code lookup is reactive, not a routine enrichment step. It is activated only when the user supplies an exact code, a claim-catalog name, a medication product name, asks for claim-code verification, or provides a document or scan containing an explicit code or name. Symptoms, ordinary clinical Facts, AI-generated differentials, and suggested tests or treatments do not activate claim lookup. The questionnaire must not proactively ask the patient for a claim code.
+
+For an uploaded document, extraction occurs in the conversation context. Only the minimal extracted code or short catalog name may be sent to STOM; the file, image, surrounding narrative, and direct identifiers must not be transmitted. The document location and OCR uncertainty remain attached to the local evidence. An uncertain OCR result is confirmed or left unresolved before code selection.
+
 The binding domain must be selected before lookup:
 
 - diagnosis: KCD-8 or KCD-9;

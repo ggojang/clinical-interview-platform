@@ -1,9 +1,40 @@
 {
   "id": "policy.korean-claim-code-binding",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "status": "research_only",
   "review_status": "unreviewed",
-  "purpose": "Bind clinical interview results to Korean diagnosis classification and HIRA reimbursement codes without replacing clinical semantics.",
+  "purpose": "Verify or map a claim code or claim-catalog name explicitly supplied by the user or extracted from user-provided material, without replacing clinical semantics.",
+  "activation": {
+    "allowed_triggers": [
+      "user_provided_exact_claim_code",
+      "user_provided_claim_catalog_name",
+      "user_requested_claim_code_verification",
+      "uploaded_document_contains_explicit_claim_code_or_name",
+      "user_provided_medication_product_name"
+    ],
+    "forbidden_triggers": [
+      "routine_clinical_fact_collection",
+      "symptom_or_reason_for_encounter_alone",
+      "ai_generated_differential_diagnosis",
+      "ai_generated_test_or_treatment_suggestion",
+      "automatic_enrichment_of_every_clinical_fact"
+    ],
+    "proactive_claim_lookup": false,
+    "do_not_ask_for_claim_code_during_routine_questionnaire": true,
+    "lookup_only_when_supplied_input_or_explicit_user_goal_exists": true
+  },
+  "input_handling": {
+    "exact_code": "verify_in_the_matching_domain_without_name_search_when_domain_is_known",
+    "catalog_name": "search_the_matching_domain_and_keep_candidates_until_verified",
+    "medication_product_name": "search_hira_medication_not_ingredient_only_semantic_mapping",
+    "uploaded_scan_or_document": [
+      "extract_code_or_catalog_name_locally",
+      "preserve_document_source_page_or_region_and_ocr_uncertainty",
+      "send_only_the_minimal_extracted_code_or_short_name_to_stom",
+      "never_send_the_file_image_or_surrounding_patient_narrative_to_stom"
+    ],
+    "uncertain_ocr_code": "request_confirmation_or_keep_unresolved_before_lookup_selection"
+  },
   "domains": {
     "diagnosis": {
       "classification_systems": [
@@ -41,6 +72,8 @@
     }
   },
   "workflow": [
+    "confirm_allowed_activation_trigger",
+    "preserve_user_or_document_supplied_value_and_source",
     "identify_domain_before_lookup",
     "normalize_short_deidentified_term",
     "search_only_the_matching_code_system",
@@ -86,6 +119,6 @@
       "https://stom.infoclinic.co/v2/api-docs"
     ],
     "review_status": "unreviewed",
-    "version": "0.1.0"
+    "version": "0.2.0"
   }
 }

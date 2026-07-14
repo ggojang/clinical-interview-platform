@@ -41,6 +41,19 @@ class KoreanClaimCodePolicyTests(unittest.TestCase):
         self.assertTrue(diagnosis["never_assume_kcd8_code_is_unchanged_in_kcd9"])
         self.assertTrue(self.policy["domains"]["material"]["group_result_is_not_final_item_code"])
 
+    def test_lookup_is_reactive_to_user_or_document_supplied_content(self):
+        activation = self.policy["activation"]
+        self.assertFalse(activation["proactive_claim_lookup"])
+        self.assertTrue(activation["do_not_ask_for_claim_code_during_routine_questionnaire"])
+        self.assertIn("uploaded_document_contains_explicit_claim_code_or_name", activation["allowed_triggers"])
+        self.assertIn("user_provided_medication_product_name", activation["allowed_triggers"])
+        self.assertIn("ai_generated_differential_diagnosis", activation["forbidden_triggers"])
+        self.assertIn("automatic_enrichment_of_every_clinical_fact", activation["forbidden_triggers"])
+        self.assertIn(
+            "never_send_the_file_image_or_surrounding_patient_narrative_to_stom",
+            self.policy["input_handling"]["uploaded_scan_or_document"],
+        )
+
     def test_claim_codes_have_no_clinical_rule_authority(self):
         boundary = self.policy["clinical_boundary"]
         self.assertTrue(boundary["claim_code_does_not_establish_diagnosis"])
