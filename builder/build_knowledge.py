@@ -213,6 +213,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-ear-hearing-symptoms.json",
         "version": "0.1.0",
     },
+    "diabetes_follow_up": {
+        "base_graph": ROOT / "knowledge/base/primary-care-diabetes-follow-up.json",
+        "base_rules": ROOT / "rules/base/primary-care-diabetes-follow-up.json",
+        "fragment_root": ROOT / "knowledge/generated/endocrine/diabetes-follow-up",
+        "output_graph": ROOT / "knowledge/graph/primary-care-diabetes-follow-up.json",
+        "output_rules": ROOT / "rules/primary-care-diabetes-follow-up.json",
+        "version": "0.1.0",
+    },
 }
 
 

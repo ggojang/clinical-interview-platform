@@ -662,6 +662,9 @@ class InterviewSession:
         if self.reason_for_encounter == "rfe.ear_hearing_symptoms":
             self._update_ear_hearing_patterns()
             return
+        if self.reason_for_encounter == "rfe.diabetes_follow_up":
+            self._update_diabetes_follow_up_patterns()
+            return
         active = ["respiratory.cough"]
         cold_support = sum(
             self.memory.value(fact_id) is True
@@ -1133,6 +1136,32 @@ class InterviewSession:
             active.append("ear.trauma_or_foreign_body_warning")
         if self.memory.value("ear.postauricular_redness_swelling_tenderness_or_protrusion") is True:
             active.append("ear.mastoid_warning_features")
+        self.active_patterns = active
+
+    def _update_diabetes_follow_up_patterns(self) -> None:
+        active = ["endocrine.diabetes_follow_up"]
+        diabetes_type = self.memory.value("diabetes.type_or_context")
+        focus = self.memory.value("diabetes.primary_follow_up_focus")
+        if diabetes_type:
+            active.append(f"diabetes.type.{diabetes_type}")
+        if focus:
+            active.append(f"diabetes.focus.{focus}")
+        if any(self.memory.value(x) is True for x in (
+            "diabetes.dka_symptom_cluster", "diabetes.moderate_large_ketones_or_high_ketone",
+            "diabetes.marked_hyperglycemia_with_confusion_or_dehydration",
+            "diabetes.sglt2_use_with_dka_symptoms",
+        )):
+            active.append("diabetes.hyperglycemic_crisis_warning")
+        if any(self.memory.value(x) is True for x in (
+            "diabetes.current_severe_hypoglycemia", "diabetes.current_glucose_below_54_or_persistent_below_70",
+            "diabetes.severe_hypoglycemia_needing_assistance_history",
+        )):
+            active.append("diabetes.hypoglycemia_risk")
+        if any(self.memory.value(x) is True for x in (
+            "diabetes.foot_ulcer_with_sepsis_ischaemia_deep_infection_or_gangrene",
+            "diabetes.active_foot_ulcer_infection_or_unexplained_hot_swollen_foot",
+        )):
+            active.append("diabetes.active_foot_warning")
         self.active_patterns = active
 
     def _update_dyspnea_patterns(self) -> None:

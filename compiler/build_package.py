@@ -311,6 +311,17 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/otologic/ear-hearing-symptoms",
         "research_manifests": [ROOT / "sources/manifests/primary-care-ear-hearing-symptoms-research.json"],
     },
+    "diabetes_follow_up": {
+        "graph": ROOT / "knowledge/graph/primary-care-diabetes-follow-up.json",
+        "rules": ROOT / "rules/primary-care-diabetes-follow-up.json",
+        "sources": ROOT / "sources/manifests/primary-care-diabetes-follow-up.json",
+        "completion_policy": ROOT / "policies/primary-care-diabetes-follow-up-completion.json",
+        "output": ROOT / "packages/generated/primary-care-diabetes-follow-up-0.1.0.json",
+        "package_id": "package.primary-care-diabetes-follow-up", "package_version": "0.1.0",
+        "rfe": "rfe.diabetes_follow_up",
+        "simulation_root": ROOT / "simulation/patients/endocrine/diabetes-follow-up",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-diabetes-follow-up-research.json"],
+    },
 }
 
 ALLOWED_NODE_TYPES = {

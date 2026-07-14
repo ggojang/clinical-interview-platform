@@ -1,0 +1,2268 @@
+{
+  "id": "knowledge.generated.diabetes-follow-up",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-diabetes-follow-up-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-07-14",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-07-15",
+    "next_full_review_at": "2027-01-10",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.diabetes-follow-up.routing",
+      "type": "ClinicalGroup",
+      "display": "routing"
+    },
+    {
+      "id": "group.diabetes-follow-up.acute-safety",
+      "type": "ClinicalGroup",
+      "display": "acute-safety"
+    },
+    {
+      "id": "group.diabetes-follow-up.glycemic-review",
+      "type": "ClinicalGroup",
+      "display": "glycemic-review"
+    },
+    {
+      "id": "group.diabetes-follow-up.medication-hypoglycemia",
+      "type": "ClinicalGroup",
+      "display": "medication-hypoglycemia"
+    },
+    {
+      "id": "group.diabetes-follow-up.kidney-eye-foot",
+      "type": "ClinicalGroup",
+      "display": "kidney-eye-foot"
+    },
+    {
+      "id": "group.diabetes-follow-up.cardiovascular",
+      "type": "ClinicalGroup",
+      "display": "cardiovascular"
+    },
+    {
+      "id": "group.diabetes-follow-up.self-management",
+      "type": "ClinicalGroup",
+      "display": "self-management"
+    },
+    {
+      "id": "group.diabetes-follow-up.type1-insulin",
+      "type": "ClinicalGroup",
+      "display": "type1-insulin"
+    }
+  ],
+  "group_hypothesis_edges": [],
+  "safety_rules": [
+    {
+      "id": "rule.diabetes-follow-up.safety.current-severe-hypoglycemia",
+      "priority": 1000,
+      "when": {
+        "fact": "diabetes.current_severe_hypoglycemia",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.diabetes-follow-up.safety.persistent-current-hypoglycemia",
+      "priority": 960,
+      "when": {
+        "fact": "diabetes.current_glucose_below_54_or_persistent_below_70",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.diabetes-follow-up.safety.dka-symptoms-ketones",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "diabetes.dka_symptom_cluster",
+            "equals": true
+          },
+          {
+            "fact": "diabetes.moderate_large_ketones_or_high_ketone",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.diabetes-follow-up.safety.dka-symptoms-vomiting",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "diabetes.dka_symptom_cluster",
+            "equals": true
+          },
+          {
+            "fact": "diabetes.repeated_vomiting_or_cannot_keep_fluids",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.diabetes-follow-up.safety.hyperglycemic-crisis",
+      "priority": 1000,
+      "when": {
+        "fact": "diabetes.marked_hyperglycemia_with_confusion_or_dehydration",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.diabetes-follow-up.safety.insulin-interruption-dka",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "diabetes.suspected_insulin_delivery_interruption",
+            "equals": true
+          },
+          {
+            "fact": "diabetes.dka_symptom_cluster",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.diabetes-follow-up.safety.sglt2-dka",
+      "priority": 1000,
+      "when": {
+        "fact": "diabetes.sglt2_use_with_dka_symptoms",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.diabetes-follow-up.safety.limb-threatening-foot",
+      "priority": 1000,
+      "when": {
+        "fact": "diabetes.foot_ulcer_with_sepsis_ischaemia_deep_infection_or_gangrene",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.diabetes-follow-up.safety.active-foot-problem",
+      "priority": 940,
+      "when": {
+        "fact": "diabetes.active_foot_ulcer_infection_or_unexplained_hot_swollen_foot",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.diabetes-follow-up.safety.recent-severe-hypoglycemia",
+      "priority": 900,
+      "when": {
+        "fact": "diabetes.severe_hypoglycemia_needing_assistance_history",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.diabetes-follow-up.safety.new-vision-change",
+      "priority": 900,
+      "when": {
+        "fact": "diabetes.new_vision_change",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "diabetes.follow_up.requested",
+        "display": "Diabetes Follow-up Requested",
+        "value_type": "boolean",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "73211009"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.diabetes-follow-up",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.requested",
+        "display": "Diabetes Follow-up Requested",
+        "intents": [
+          "intent.characterize_follow_up"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.requested",
+        "wording": "당뇨병 또는 혈당 관리 추적을 위해 방문한 것이 맞나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "requested"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.type_or_context",
+        "display": "Diabetes Type or Context",
+        "value_type": "coded",
+        "allowed_values": [
+          "type1",
+          "type2",
+          "gestational_or_pregnancy",
+          "other",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.type-context",
+        "display": "Diabetes Type or Context",
+        "intents": [
+          "intent.characterize_follow_up"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.type-context",
+        "wording": "알고 있는 당뇨병 유형은 1형, 2형, 임신성, 기타·불확실 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "type-context"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.primary_follow_up_focus",
+        "display": "Primary Diabetes Follow-up Focus",
+        "value_type": "coded",
+        "allowed_values": [
+          "glycemic_control",
+          "medication_hypoglycemia",
+          "complication_screening",
+          "device_education",
+          "other_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.primary-focus",
+        "display": "Primary Diabetes Follow-up Focus",
+        "intents": [
+          "intent.characterize_follow_up"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.primary-focus",
+        "wording": "이번 방문의 주된 목적은 혈당 조절 확인, 약물·저혈당, 합병증 점검, 기기·교육, 기타 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "primary-focus"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.current_severe_hypoglycemia",
+        "display": "Current Severe Hypoglycemia",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "302866003"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.diabetes-follow-up",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.current-severe-hypoglycemia",
+        "display": "Current Severe Hypoglycemia",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.current-severe-hypoglycemia",
+        "wording": "지금 저혈당이 의심되면서 의식이 흐리거나 경련, 삼키기 어려움, 다른 사람 도움 없이는 회복하기 어려운 상태인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 127,
+          "reason": "current-severe-hypoglycemia"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.acute-safety",
+        "group.diabetes-follow-up.medication-hypoglycemia"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.current_glucose_below_54_or_persistent_below_70",
+        "display": "Current Clinically Important Hypoglycemia",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.current-low-glucose",
+        "display": "Current Clinically Important Hypoglycemia",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.current-low-glucose",
+        "wording": "현재 혈당이 54 mg/dL 미만이거나, 70 mg/dL 미만이면서 당 섭취 후에도 계속 낮나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 126,
+          "reason": "current-low-glucose"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.acute-safety",
+        "group.diabetes-follow-up.medication-hypoglycemia"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.dka_symptom_cluster",
+        "display": "Diabetic Ketoacidosis Symptom Cluster",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "111556005"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.diabetes-follow-up",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.dka-symptoms",
+        "display": "Diabetic Ketoacidosis Symptom Cluster",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.dka-symptoms",
+        "wording": "심한 갈증·잦은 소변과 함께 메스꺼움·구토, 복통, 깊거나 빠른 호흡, 과일 냄새 같은 숨, 심한 졸림·혼란이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 125,
+          "reason": "dka-symptoms"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.acute-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.moderate_large_ketones_or_high_ketone",
+        "display": "Moderate or Large Ketones",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.high-ketones",
+        "display": "Moderate or Large Ketones",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.high-ketones",
+        "wording": "혈액 케톤이 높다고 나오거나 소변 케톤이 중등도·대량으로 나왔나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 124,
+          "reason": "high-ketones"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.acute-safety",
+        "group.diabetes-follow-up.type1-insulin"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.repeated_vomiting_or_cannot_keep_fluids",
+        "display": "Repeated Vomiting or Unable to Keep Fluids",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.vomiting-dehydration",
+        "display": "Repeated Vomiting or Unable to Keep Fluids",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.vomiting-dehydration",
+        "wording": "반복해서 토하거나 물을 마셔도 유지할 수 없나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 123,
+          "reason": "vomiting-dehydration"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.acute-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.marked_hyperglycemia_with_confusion_or_dehydration",
+        "display": "Marked Hyperglycemia with Confusion or Dehydration",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "80394007"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.diabetes-follow-up",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.hyperglycemic-crisis",
+        "display": "Marked Hyperglycemia with Confusion or Dehydration",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.hyperglycemic-crisis",
+        "wording": "혈당이 매우 높으면서 심한 탈수, 기운 없음, 졸림·혼란 또는 의식 변화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 122,
+          "reason": "hyperglycemic-crisis"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.acute-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.suspected_insulin_delivery_interruption",
+        "display": "Suspected Insulin Delivery Interruption",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.insulin-interruption",
+        "display": "Suspected Insulin Delivery Interruption",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.insulin-interruption",
+        "wording": "인슐린 주사를 여러 번 거르거나 펌프·주입세트 이상으로 인슐린 공급이 중단됐나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 121,
+          "reason": "insulin-interruption"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.acute-safety",
+        "group.diabetes-follow-up.type1-insulin"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.sglt2_use_with_dka_symptoms",
+        "display": "SGLT2 Inhibitor Use with DKA Symptoms",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.sglt2-dka",
+        "display": "SGLT2 Inhibitor Use with DKA Symptoms",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.sglt2-dka",
+        "wording": "SGLT2 억제제 계열 당뇨약을 복용하면서 혈당 수치와 상관없이 케톤산증 의심 증상이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 120,
+          "reason": "sglt2-dka"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.acute-safety",
+        "group.diabetes-follow-up.medication-hypoglycemia"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.foot_ulcer_with_sepsis_ischaemia_deep_infection_or_gangrene",
+        "display": "Limb-threatening Diabetic Foot Features",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "371087003"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.diabetes-follow-up",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.limb-threatening-foot",
+        "display": "Limb-threatening Diabetic Foot Features",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.limb-threatening-foot",
+        "wording": "발 상처·궤양과 함께 고열·패혈증 의심, 발이 창백하거나 검게 변함, 깊은 감염·뼈 노출 또는 괴저가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 119,
+          "reason": "limb-threatening-foot"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.acute-safety",
+        "group.diabetes-follow-up.kidney-eye-foot"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.active_foot_ulcer_infection_or_unexplained_hot_swollen_foot",
+        "display": "Active Diabetic Foot Problem",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.active-foot-problem",
+        "display": "Active Diabetic Foot Problem",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.active-foot-problem",
+        "wording": "새 발 궤양·물집·감염, 이유 없이 붉고 뜨겁고 부은 발 또는 낫지 않는 상처가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 118,
+          "reason": "active-foot-problem"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.acute-safety",
+        "group.diabetes-follow-up.kidney-eye-foot"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.pregnant_or_planning_pregnancy",
+        "display": "Pregnancy or Pregnancy Planning",
+        "value_type": "coded",
+        "allowed_values": [
+          "pregnant",
+          "planning",
+          "not_applicable",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.pregnancy-context",
+        "display": "Pregnancy or Pregnancy Planning",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.pregnancy-context",
+        "wording": "현재 임신 중이거나 임신을 계획하고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 117,
+          "reason": "pregnancy-context"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.acute-safety",
+        "group.diabetes-follow-up.self-management"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.latest_hba1c_value",
+        "display": "Latest HbA1c Value",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.latest-hba1c",
+        "display": "Latest HbA1c Value",
+        "intents": [
+          "intent.characterize_follow_up"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.latest-hba1c",
+        "wording": "가장 최근 당화혈색소(HbA1c) 수치와 단위를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 116,
+          "reason": "latest-hba1c"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.glycemic-review"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.latest_hba1c_date",
+        "display": "Latest HbA1c Date",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.hba1c-date",
+        "display": "Latest HbA1c Date",
+        "intents": [
+          "intent.characterize_follow_up"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.hba1c-date",
+        "wording": "그 당화혈색소 검사는 언제 했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 115,
+          "reason": "hba1c-date"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.glycemic-review"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.individualized_glycemic_goal_known",
+        "display": "Individualized Glycemic Goal",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.glycemic-goal",
+        "display": "Individualized Glycemic Goal",
+        "intents": [
+          "intent.follow_up_support"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.glycemic-goal",
+        "wording": "의료진과 합의한 개인별 당화혈색소 또는 혈당 목표가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 108,
+          "reason": "glycemic-goal"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.glycemic-review"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.home_glucose_or_cgm_summary",
+        "display": "Home Glucose or CGM Summary",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.glucose-summary",
+        "display": "Home Glucose or CGM Summary",
+        "intents": [
+          "intent.characterize_follow_up"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.glucose-summary",
+        "wording": "최근 공복·식후 혈당 범위나 연속혈당측정기의 평균·목표범위시간을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 114,
+          "reason": "glucose-summary"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.glycemic-review"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.glucose_pattern_high_low_or_variable",
+        "display": "Glucose Pattern",
+        "value_type": "coded",
+        "allowed_values": [
+          "mostly_high",
+          "mostly_low",
+          "high_variability",
+          "mostly_in_target",
+          "no_data",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.glucose-pattern",
+        "display": "Glucose Pattern",
+        "intents": [
+          "intent.characterize_follow_up"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.glucose-pattern",
+        "wording": "최근 혈당 양상은 대체로 높음, 낮음, 변동이 큼, 목표 범위, 자료 없음 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 113,
+          "reason": "glucose-pattern"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.glycemic-review"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.hyperglycemia_symptoms",
+        "display": "Hyperglycemia Symptoms",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.hyperglycemia-symptoms",
+        "display": "Hyperglycemia Symptoms",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.hyperglycemia-symptoms",
+        "wording": "최근 갈증, 소변 증가, 흐린 시야, 피로 또는 설명되지 않는 체중 감소가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 112,
+          "reason": "hyperglycemia-symptoms"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.glycemic-review"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.recent_illness_steroid_or_major_routine_change",
+        "display": "Factors Affecting Recent Glucose",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.recent-glucose-context",
+        "display": "Factors Affecting Recent Glucose",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.recent-glucose-context",
+        "wording": "최근 감염·질병, 스테로이드 사용, 식사·활동·체중 변화처럼 혈당에 영향을 줄 일이 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 107,
+          "reason": "recent-glucose-context"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.glycemic-review",
+        "group.diabetes-follow-up.self-management"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.monitoring_method_and_frequency",
+        "display": "Glucose Monitoring Method and Frequency",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.monitoring-method",
+        "display": "Glucose Monitoring Method and Frequency",
+        "intents": [
+          "intent.follow_up_support"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.monitoring-method",
+        "wording": "자가혈당계·연속혈당측정기 사용 여부와 실제 측정 빈도를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 106,
+          "reason": "monitoring-method"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.glycemic-review",
+        "group.diabetes-follow-up.type1-insulin"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.monitoring_supply_or_device_problem",
+        "display": "Monitoring Supply or Device Problem",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.device-problem",
+        "display": "Monitoring Supply or Device Problem",
+        "intents": [
+          "intent.follow_up_support"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.device-problem",
+        "wording": "시험지·센서 비용이나 공급, 기기 정확도·알람·피부 문제 등 사용 장벽이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 92,
+          "reason": "device-problem"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.glycemic-review",
+        "group.diabetes-follow-up.type1-insulin"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.diabetes_current_list",
+        "display": "Current Diabetes Medicines",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.medicine-list",
+        "display": "Current Diabetes Medicines",
+        "intents": [
+          "intent.follow_up_support"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.medicine-list",
+        "wording": "현재 당뇨약·인슐린 이름, 용량, 하루 횟수와 실제 사용 방법을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 111,
+          "reason": "medicine-list"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.medication-hypoglycemia"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.missed_dose_frequency",
+        "display": "Missed Dose Frequency",
+        "value_type": "coded",
+        "allowed_values": [
+          "none",
+          "rare",
+          "weekly_or_more",
+          "almost_daily"
+        ]
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.missed-doses",
+        "display": "Missed Dose Frequency",
+        "intents": [
+          "intent.follow_up_support"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.missed-doses",
+        "wording": "최근 한 달 동안 당뇨약이나 인슐린을 빼먹은 정도는 없음, 드물게, 주 1회 이상, 거의 매일 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 110,
+          "reason": "missed-doses"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.medication-hypoglycemia"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "medication.recent_start_stop_dose_change",
+        "display": "Recent Diabetes Medicine Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.recent-change",
+        "display": "Recent Diabetes Medicine Change",
+        "intents": [
+          "intent.follow_up_support"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.recent-change",
+        "wording": "최근 당뇨약·인슐린을 시작·중단·증량·감량한 내용과 시점이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 105,
+          "reason": "recent-change"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.medication-hypoglycemia"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "medication.suspected_adverse_effects",
+        "display": "Suspected Diabetes Medicine Adverse Effects",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.adverse-effects",
+        "display": "Suspected Diabetes Medicine Adverse Effects",
+        "intents": [
+          "intent.follow_up_support"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.adverse-effects",
+        "wording": "메스꺼움·설사, 탈수, 생식기 감염, 부종, 체중 변화 등 약과 관련 있다고 생각하는 불편이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 104,
+          "reason": "adverse-effects"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.medication-hypoglycemia"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "diabetes.hypoglycemia_frequency_and_timing",
+        "display": "Hypoglycemia Frequency and Timing",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.hypoglycemia-frequency",
+        "display": "Hypoglycemia Frequency and Timing",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.hypoglycemia-frequency",
+        "wording": "최근 저혈당 또는 70 mg/dL 미만이 얼마나 자주, 주로 언제 발생했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 109,
+          "reason": "hypoglycemia-frequency"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.medication-hypoglycemia"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.severe_hypoglycemia_needing_assistance_history",
+        "display": "Severe Hypoglycemia Requiring Assistance",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.severe-hypoglycemia-history",
+        "display": "Severe Hypoglycemia Requiring Assistance",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.severe-hypoglycemia-history",
+        "wording": "최근 다른 사람의 도움, 글루카곤, 응급진료가 필요했던 심한 저혈당이 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 108,
+          "reason": "severe-hypoglycemia-history"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.medication-hypoglycemia"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.impaired_hypoglycemia_awareness",
+        "display": "Impaired Hypoglycemia Awareness",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.hypoglycemia-awareness",
+        "display": "Impaired Hypoglycemia Awareness",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.hypoglycemia-awareness",
+        "wording": "혈당이 많이 낮아질 때까지 떨림·식은땀·허기 같은 경고 증상을 잘 느끼지 못하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 107,
+          "reason": "hypoglycemia-awareness"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.medication-hypoglycemia"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.hypoglycemia_treatment_and_glucagon_access",
+        "display": "Hypoglycemia Treatment and Glucagon Access",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.hypoglycemia-preparedness",
+        "display": "Hypoglycemia Treatment and Glucagon Access",
+        "intents": [
+          "intent.follow_up_support"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.hypoglycemia-preparedness",
+        "wording": "빠른 당 섭취 방법을 알고 준비해 두었는지, 필요하면 글루카곤과 사용 가능한 보호자가 있는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 96,
+          "reason": "hypoglycemia-preparedness"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.medication-hypoglycemia",
+        "group.diabetes-follow-up.self-management"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.insulin_regimen_delivery_site_and_technique",
+        "display": "Insulin Regimen Delivery Site and Technique",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.insulin-technique",
+        "display": "Insulin Regimen Delivery Site and Technique",
+        "intents": [
+          "intent.follow_up_support"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.insulin-technique",
+        "wording": "인슐린 사용 중이면 주사·펌프 방식, 주입 부위 교대와 피부 멍울·누출 문제가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 103,
+          "reason": "insulin-technique"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.type1-insulin",
+        "group.diabetes-follow-up.medication-hypoglycemia"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.sick_day_and_ketone_plan_known",
+        "display": "Sick-day and Ketone Plan",
+        "value_type": "coded",
+        "allowed_values": [
+          "known_and_available",
+          "partly_known",
+          "not_known",
+          "not_applicable",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.sick-day-plan",
+        "display": "Sick-day and Ketone Plan",
+        "intents": [
+          "intent.follow_up_support"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.sick-day-plan",
+        "wording": "아플 때 약·인슐린, 수분, 혈당·케톤 확인과 연락 기준을 적은 계획을 알고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 102,
+          "reason": "sick-day-plan"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.type1-insulin",
+        "group.diabetes-follow-up.self-management"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.latest_egfr_creatinine_and_date",
+        "display": "Latest Kidney Function",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.kidney-function",
+        "display": "Latest Kidney Function",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.kidney-function",
+        "wording": "최근 크레아티닌·eGFR 결과와 검사 날짜를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 101,
+          "reason": "kidney-function"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.kidney-eye-foot"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.latest_uacr_albuminuria_and_date",
+        "display": "Latest Urine Albumin Assessment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.albuminuria",
+        "display": "Latest Urine Albumin Assessment",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.albuminuria",
+        "wording": "최근 소변 알부민/크레아티닌비(UACR) 또는 단백뇨 결과와 검사 날짜를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 100,
+          "reason": "albuminuria"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.kidney-eye-foot"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.rapid_kidney_decline_or_increasing_albuminuria_known",
+        "display": "Rapid Kidney Decline or Rising Albuminuria",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.kidney-progression",
+        "display": "Rapid Kidney Decline or Rising Albuminuria",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.kidney-progression",
+        "wording": "신장기능이 빠르게 떨어지거나 소변 단백이 계속 증가한다는 말을 들었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 99,
+          "reason": "kidney-progression"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.kidney-eye-foot"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.retinal_screening_date_and_result",
+        "display": "Retinal Screening Date and Result",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.retinal-screening",
+        "display": "Retinal Screening Date and Result",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.retinal-screening",
+        "wording": "최근 당뇨망막검사·안저검사 날짜와 결과, 다음 일정이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 100,
+          "reason": "retinal-screening"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.kidney-eye-foot"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.new_vision_change",
+        "display": "New Vision Change",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.vision-change",
+        "display": "New Vision Change",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.vision-change",
+        "wording": "최근 갑작스럽거나 새로 생긴 시력 저하·시야 변화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 105,
+          "reason": "vision-change"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.kidney-eye-foot"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.foot_numbness_burning_pain_or_sensation_loss",
+        "display": "Foot Neuropathy Symptoms",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.foot-neuropathy",
+        "display": "Foot Neuropathy Symptoms",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.foot-neuropathy",
+        "wording": "발의 저림·화끈거림·통증, 감각 둔화 또는 상처를 잘 못 느끼는 증상이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 99,
+          "reason": "foot-neuropathy"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.kidney-eye-foot"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.foot_exam_date_and_risk_result",
+        "display": "Foot Examination and Risk Result",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.foot-exam",
+        "display": "Foot Examination and Risk Result",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.foot-exam",
+        "wording": "최근 발 피부·변형·감각·맥박 검사를 언제 받았고 위험도 결과는 어땠나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 98,
+          "reason": "foot-exam"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.kidney-eye-foot"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.prior_foot_ulcer_amputation_or_charcot",
+        "display": "Prior Foot Ulcer Amputation or Charcot Foot",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.foot-history",
+        "display": "Prior Foot Ulcer Amputation or Charcot Foot",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.foot-history",
+        "wording": "과거 발 궤양, 절단, 샤르코 발 또는 발 혈관 시술 병력이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 97,
+          "reason": "foot-history"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.kidney-eye-foot"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.daily_foot_check_and_footwear",
+        "display": "Daily Foot Check and Footwear",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.foot-self-care",
+        "display": "Daily Foot Check and Footwear",
+        "intents": [
+          "intent.follow_up_support"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.foot-self-care",
+        "wording": "매일 발을 확인하는지, 맞지 않는 신발·맨발 보행·굳은살 자가 제거 같은 위험이 있는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 91,
+          "reason": "foot-self-care"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.kidney-eye-foot",
+        "group.diabetes-follow-up.self-management"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.dental_periodontal_or_recurrent_infection",
+        "display": "Dental or Recurrent Infection Concern",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.infection-screen",
+        "display": "Dental or Recurrent Infection Concern",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.infection-screen",
+        "wording": "잇몸 출혈·치주질환, 반복되는 피부·요로·생식기 감염 같은 문제가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 87,
+          "reason": "infection-screen"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.kidney-eye-foot"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.blood_pressure_recent",
+        "display": "Recent Blood Pressure",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.blood-pressure",
+        "display": "Recent Blood Pressure",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.blood-pressure",
+        "wording": "최근 혈압 또는 가정혈압 범위를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 95,
+          "reason": "blood-pressure"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.cardiovascular"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.lipid_result_and_statin_use",
+        "display": "Lipid Result and Statin Use",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.lipid-statin",
+        "display": "Lipid Result and Statin Use",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.lipid-statin",
+        "wording": "최근 콜레스테롤 검사 결과와 스타틴 등 지질약 복용 여부를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 94,
+          "reason": "lipid-statin"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.cardiovascular"
+      ]
+    },
+    {
+      "fact": {
+        "id": "history.cardiovascular_or_cerebrovascular_disease",
+        "display": "Cardiovascular or Cerebrovascular Disease",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.cvd-history",
+        "display": "Cardiovascular or Cerebrovascular Disease",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.cvd-history",
+        "wording": "심근경색·협심증·심부전·뇌졸중 또는 말초혈관질환 병력이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 93,
+          "reason": "cvd-history"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.cardiovascular"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "lifestyle.tobacco_current",
+        "display": "Current Tobacco Use",
+        "value_type": "coded",
+        "allowed_values": [
+          "never",
+          "former",
+          "current",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.tobacco",
+        "display": "Current Tobacco Use",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.tobacco",
+        "wording": "현재 담배나 전자담배를 사용하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 92,
+          "reason": "tobacco"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.cardiovascular",
+        "group.diabetes-follow-up.self-management"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "diabetes.weight_bmi_and_recent_change",
+        "display": "Weight BMI and Recent Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.weight-bmi",
+        "display": "Weight BMI and Recent Change",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.weight-bmi",
+        "wording": "현재 키·체중 또는 BMI와 최근 체중 변화를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 90,
+          "reason": "weight-bmi"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.cardiovascular",
+        "group.diabetes-follow-up.self-management"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.food_pattern_and_carbohydrate_management",
+        "display": "Food Pattern and Carbohydrate Management",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.food-pattern",
+        "display": "Food Pattern and Carbohydrate Management",
+        "intents": [
+          "intent.follow_up_support"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.food-pattern",
+        "wording": "평소 식사 시간·양, 탄수화물·단 음료 섭취와 조절하기 어려운 점이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 89,
+          "reason": "food-pattern"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.self-management"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lifestyle.physical_activity",
+        "display": "Physical Activity",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.activity",
+        "display": "Physical Activity",
+        "intents": [
+          "intent.follow_up_support"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.activity",
+        "wording": "최근 일주일의 걷기·유산소·근력운동 횟수와 시간을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 88,
+          "reason": "activity"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.self-management"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "diabetes.alcohol_and_hypoglycemia_context",
+        "display": "Alcohol and Hypoglycemia Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.alcohol",
+        "display": "Alcohol and Hypoglycemia Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.alcohol",
+        "wording": "술은 일주일에 며칠, 한 번에 얼마나 마시며 음주 후 저혈당 경험이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 86,
+          "reason": "alcohol"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.self-management"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.education_health_literacy_or_cost_barrier",
+        "display": "Education or Access Barrier",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.access-barrier",
+        "display": "Education or Access Barrier",
+        "intents": [
+          "intent.follow_up_support"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.access-barrier",
+        "wording": "약·검사·기기 비용, 교육 이해, 식품·주거·돌봄·진료 접근 문제로 관리가 어려운 점이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 85,
+          "reason": "access-barrier"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.self-management"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.vaccination_and_preventive_care_review",
+        "display": "Vaccination and Preventive Care Review",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.preventive-review",
+        "display": "Vaccination and Preventive Care Review",
+        "intents": [
+          "intent.follow_up_support"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.preventive-review",
+        "wording": "예방접종과 연령·성별에 맞는 일반 건강검진을 최근에 확인했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 84,
+          "reason": "preventive-review"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.self-management"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.patient_goal_or_question",
+        "display": "Patient Goal or Question",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.patient-goal",
+        "display": "Patient Goal or Question",
+        "intents": [
+          "intent.follow_up_support"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.patient-goal",
+        "wording": "이번 추적관리에서 가장 확인하거나 개선하고 싶은 점은 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 83,
+          "reason": "patient-goal"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.routing",
+        "group.diabetes-follow-up.self-management"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.ada.soc2026.glycemic-goals",
+      "source.ada.soc2026.ckd",
+      "source.ada.soc2026.retina-neuropathy-foot",
+      "source.nice.ng28.diabetes-type2.2026",
+      "source.nice.ng17.diabetes-type1",
+      "source.nice.ng19.diabetic-foot.2025",
+      "source.nhs.dka.2026",
+      "source.nhs.hypoglycaemia.2026",
+      "source.stom.diabetes.20260714"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

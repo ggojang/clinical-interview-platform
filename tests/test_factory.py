@@ -18,7 +18,7 @@ from runtime.memory import ClinicalMemory
 from runtime.package import (
     ABDOMINAL_PAIN_PACKAGE, BACK_PAIN_PACKAGE, BOWEL_SYMPTOMS_PACKAGE, CHEST_PAIN_PACKAGE, DEFAULT_PACKAGE,
     DIZZINESS_SYNCOPE_PACKAGE, DYSPNEA_PACKAGE, FEVER_PACKAGE, HEADACHE_PACKAGE,
-    EAR_HEARING_SYMPTOMS_PACKAGE, EDEMA_PACKAGE, EYE_SYMPTOMS_PACKAGE, FATIGUE_PACKAGE, FOCAL_WEAKNESS_NUMBNESS_PACKAGE, HYPERTENSION_FOLLOW_UP_PACKAGE, JOINT_LIMB_COMPLAINT_PACKAGE, MEDICATION_REVIEW_PACKAGE, MENTAL_HEALTH_SLEEP_PACKAGE, PALPITATIONS_PACKAGE, REPRODUCTIVE_GENITAL_SYMPTOMS_PACKAGE, SKIN_COMPLAINT_PACKAGE,
+    DIABETES_FOLLOW_UP_PACKAGE, EAR_HEARING_SYMPTOMS_PACKAGE, EDEMA_PACKAGE, EYE_SYMPTOMS_PACKAGE, FATIGUE_PACKAGE, FOCAL_WEAKNESS_NUMBNESS_PACKAGE, HYPERTENSION_FOLLOW_UP_PACKAGE, JOINT_LIMB_COMPLAINT_PACKAGE, MEDICATION_REVIEW_PACKAGE, MENTAL_HEALTH_SLEEP_PACKAGE, PALPITATIONS_PACKAGE, REPRODUCTIVE_GENITAL_SYMPTOMS_PACKAGE, SKIN_COMPLAINT_PACKAGE,
     UPPER_RESPIRATORY_SYMPTOMS_PACKAGE, URINARY_SYMPTOMS_PACKAGE, WEIGHT_CONSTITUTIONAL_CHANGE_PACKAGE,
     VOMITING_DIARRHEA_PACKAGE,
     PackageLoadError, load_package,
@@ -64,6 +64,7 @@ class CompilerTests(unittest.TestCase):
             "reproductive_genital_symptoms",
             "eye_symptoms",
             "ear_hearing_symptoms",
+            "diabetes_follow_up",
         ):
             with self.subTest(profile=profile), self.assertRaises(CompilationError):
                 compile_package(production=True, profile=profile)
@@ -653,6 +654,24 @@ class CompilerTests(unittest.TestCase):
         self.assertEqual(conditional["selector_fact"], "ear.primary_symptom_group")
         self.assertEqual(set(conditional["cases"]), {"ear_pain_infection", "hearing_change", "discharge_trauma", "tinnitus", "other_unclear"})
         mapping = json.loads((Path(__file__).resolve().parents[1] / "mappings/terminology/snomed-mrcm-ear-hearing-symptoms.json").read_text(encoding="utf-8"))
+        self.assertFalse(mapping["validation"]["clinical_rule_authority"])
+
+    def test_diabetes_follow_up_package_is_complete(self):
+        package = compile_package(profile="diabetes_follow_up")
+        facts = {n["id"] for n in package["knowledge_graph"]["nodes"] if n["type"] == "Fact"}
+        self.assertEqual(len(facts), 54)
+        self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
+        self.assertEqual(package["coverage"]["total_safety_rules"], 11)
+        self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 11)
+        self.assertEqual(package["coverage"]["uncovered_safety_rules"], [])
+        self.assertEqual(package["coverage"]["data_absent_reason_simulations"], 1)
+        type_conditional, focus_conditional = package["interview_completion_policy"]["conditional_required_facts"]
+        self.assertEqual(type_conditional["selector_fact"], "diabetes.type_or_context")
+        self.assertEqual(set(type_conditional["cases"]), {"type1", "type2", "gestational_or_pregnancy", "other", "unclear"})
+        self.assertEqual(focus_conditional["selector_fact"], "diabetes.primary_follow_up_focus")
+        self.assertEqual(set(focus_conditional["cases"]), {"glycemic_control", "medication_hypoglycemia", "complication_screening", "device_education", "other_unclear"})
+        mapping = json.loads((Path(__file__).resolve().parents[1] / "mappings/terminology/snomed-mrcm-diabetes-follow-up.json").read_text(encoding="utf-8"))
+        self.assertEqual(len(mapping["focus_concepts"]), 7)
         self.assertFalse(mapping["validation"]["clinical_rule_authority"])
 
 

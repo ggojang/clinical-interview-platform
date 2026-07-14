@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "1.23.0"
+VERSION = "1.24.0"
 GENERATED_AT = "2026-07-14T00:00:00Z"
 PRIVATE_KEYS = {
     "raw_text", "raw_input", "patient_response", "patient_responses",
@@ -94,12 +94,19 @@ def compact_fact_index(item: dict[str, Any]) -> dict[str, Any]:
 
 
 def compact_safety_rule_index(item: dict[str, Any]) -> dict[str, Any]:
-    """Keep executable safety essentials without repeated collection metadata."""
-    return {
+    """Keep cross-RFE discovery essentials; full executable rules live per RFE."""
+    result = {
         key: compact(item[key])
-        for key in ("id", "when", "then")
+        for key in ("id", "when")
         if key in item
     }
+    then = item.get("then", {})
+    result["then"] = {
+        key: then[key]
+        for key in ("safety_level", "action")
+        if key in then
+    }
+    return result
 
 
 def package_knowledge_sources(package: dict[str, Any]) -> list[dict[str, Any]]:

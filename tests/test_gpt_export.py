@@ -94,6 +94,7 @@ class GptExportTests(unittest.TestCase):
                 "rfe-reproductive_genital_symptoms-facts", "rfe-reproductive_genital_symptoms-questions", "rfe-reproductive_genital_symptoms-rules",
                 "rfe-eye_symptoms-facts", "rfe-eye_symptoms-questions", "rfe-eye_symptoms-rules",
                 "rfe-ear_hearing_symptoms-facts", "rfe-ear_hearing_symptoms-questions", "rfe-ear_hearing_symptoms-rules",
+                "rfe-diabetes_follow_up-facts", "rfe-diabetes_follow_up-questions", "rfe-diabetes_follow_up-rules",
                 "questionnaires-patient-experience-5th-2025-metadata",
                 "questionnaires-patient-experience-5th-2025-sections-1",
                 "questionnaires-patient-experience-5th-2025-sections-8",
@@ -207,6 +208,7 @@ class GptExportTests(unittest.TestCase):
         self.assertIn("enum: [1, 2, 3, 4, 5, 6, 7, 8]", schema)
         self.assertIn("eye_symptoms", schema)
         self.assertIn("ear_hearing_symptoms", schema)
+        self.assertIn("diabetes_follow_up", schema)
 
     def test_rfe_catalog_and_bundles_are_consistent(self):
         with tempfile.TemporaryDirectory() as output:
@@ -224,7 +226,7 @@ class GptExportTests(unittest.TestCase):
             self.assertEqual(
                 implemented,
                 {
-                    "abdominal_pain", "back_pain", "bowel_symptoms", "chest_pain", "cough", "dizziness_syncope",
+                    "abdominal_pain", "back_pain", "bowel_symptoms", "chest_pain", "cough", "diabetes_follow_up", "dizziness_syncope",
                     "dyspnea", "ear_hearing_symptoms", "edema", "eye_symptoms", "fatigue", "fever", "focal_weakness_numbness", "headache", "hypertension_follow_up", "joint_limb_complaint", "medication_review", "mental_health_sleep",
                     "palpitations", "reproductive_genital_symptoms", "skin_complaint", "upper_respiratory_symptoms", "urinary_symptoms",
                     "vomiting_diarrhea", "weight_constitutional_change",
@@ -323,6 +325,8 @@ class GptExportTests(unittest.TestCase):
             self.assertEqual(eye["count"], 43)
             ear = json.loads((output_path / "rfe/ear_hearing_symptoms/facts.json").read_text(encoding="utf-8"))
             self.assertEqual(ear["count"], 44)
+            diabetes = json.loads((output_path / "rfe/diabetes_follow_up/facts.json").read_text(encoding="utf-8"))
+            self.assertEqual(diabetes["count"], 54)
             for slug in implemented:
                 for kind in ("facts", "questions", "rules"):
                     document = json.loads(

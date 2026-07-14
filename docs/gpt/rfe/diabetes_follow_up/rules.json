@@ -1,0 +1,1734 @@
+{
+  "contains_patient_responses": false,
+  "count": 120,
+  "encounter_contexts": [
+    "context.primary_care"
+  ],
+  "generated_at": "2026-07-14T00:00:00Z",
+  "items": [
+    {
+      "id": "rule.diabetes-follow-up.safety.current-severe-hypoglycemia",
+      "priority": 1000,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "diabetes.current_severe_hypoglycemia"
+      }
+    },
+    {
+      "id": "rule.diabetes-follow-up.safety.dka-symptoms-ketones",
+      "priority": 1000,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "diabetes.dka_symptom_cluster"
+          },
+          {
+            "equals": true,
+            "fact": "diabetes.moderate_large_ketones_or_high_ketone"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.diabetes-follow-up.safety.dka-symptoms-vomiting",
+      "priority": 1000,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "diabetes.dka_symptom_cluster"
+          },
+          {
+            "equals": true,
+            "fact": "diabetes.repeated_vomiting_or_cannot_keep_fluids"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.diabetes-follow-up.safety.hyperglycemic-crisis",
+      "priority": 1000,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "diabetes.marked_hyperglycemia_with_confusion_or_dehydration"
+      }
+    },
+    {
+      "id": "rule.diabetes-follow-up.safety.insulin-interruption-dka",
+      "priority": 1000,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "diabetes.suspected_insulin_delivery_interruption"
+          },
+          {
+            "equals": true,
+            "fact": "diabetes.dka_symptom_cluster"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.diabetes-follow-up.safety.limb-threatening-foot",
+      "priority": 1000,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "diabetes.foot_ulcer_with_sepsis_ischaemia_deep_infection_or_gangrene"
+      }
+    },
+    {
+      "id": "rule.diabetes-follow-up.safety.sglt2-dka",
+      "priority": 1000,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "diabetes.sglt2_use_with_dka_symptoms"
+      }
+    },
+    {
+      "id": "rule.diabetes-follow-up.safety.persistent-current-hypoglycemia",
+      "priority": 960,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "diabetes.current_glucose_below_54_or_persistent_below_70"
+      }
+    },
+    {
+      "id": "rule.diabetes-follow-up.safety.active-foot-problem",
+      "priority": 940,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "diabetes.active_foot_ulcer_infection_or_unexplained_hot_swollen_foot"
+      }
+    },
+    {
+      "id": "rule.diabetes-follow-up.safety.new-vision-change",
+      "priority": 900,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "diabetes.new_vision_change"
+      }
+    },
+    {
+      "id": "rule.diabetes-follow-up.safety.recent-severe-hypoglycemia",
+      "priority": 900,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "diabetes.severe_hypoglycemia_needing_assistance_history"
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.requested",
+      "priority": 130,
+      "then": {
+        "reason": "requested",
+        "target": "target.diabetes-follow-up.requested"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.requested": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.type-context",
+      "priority": 129,
+      "then": {
+        "reason": "type-context",
+        "target": "target.diabetes-follow-up.type-context"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.type-context": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.primary-focus",
+      "priority": 128,
+      "then": {
+        "reason": "primary-focus",
+        "target": "target.diabetes-follow-up.primary-focus"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.primary-focus": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.current-severe-hypoglycemia",
+      "priority": 127,
+      "then": {
+        "reason": "current-severe-hypoglycemia",
+        "target": "target.diabetes-follow-up.current-severe-hypoglycemia"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.current-severe-hypoglycemia": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.current-low-glucose",
+      "priority": 126,
+      "then": {
+        "reason": "current-low-glucose",
+        "target": "target.diabetes-follow-up.current-low-glucose"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.current-low-glucose": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.dka-symptoms",
+      "priority": 125,
+      "then": {
+        "reason": "dka-symptoms",
+        "target": "target.diabetes-follow-up.dka-symptoms"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.dka-symptoms": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.high-ketones",
+      "priority": 124,
+      "then": {
+        "reason": "high-ketones",
+        "target": "target.diabetes-follow-up.high-ketones"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.high-ketones": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.vomiting-dehydration",
+      "priority": 123,
+      "then": {
+        "reason": "vomiting-dehydration",
+        "target": "target.diabetes-follow-up.vomiting-dehydration"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.vomiting-dehydration": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.hyperglycemic-crisis",
+      "priority": 122,
+      "then": {
+        "reason": "hyperglycemic-crisis",
+        "target": "target.diabetes-follow-up.hyperglycemic-crisis"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.hyperglycemic-crisis": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.insulin-interruption",
+      "priority": 121,
+      "then": {
+        "reason": "insulin-interruption",
+        "target": "target.diabetes-follow-up.insulin-interruption"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.insulin-interruption": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.sglt2-dka",
+      "priority": 120,
+      "then": {
+        "reason": "sglt2-dka",
+        "target": "target.diabetes-follow-up.sglt2-dka"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.sglt2-dka": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.limb-threatening-foot",
+      "priority": 119,
+      "then": {
+        "reason": "limb-threatening-foot",
+        "target": "target.diabetes-follow-up.limb-threatening-foot"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.limb-threatening-foot": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.active-foot-problem",
+      "priority": 118,
+      "then": {
+        "reason": "active-foot-problem",
+        "target": "target.diabetes-follow-up.active-foot-problem"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.active-foot-problem": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.pregnancy-context",
+      "priority": 117,
+      "then": {
+        "reason": "pregnancy-context",
+        "target": "target.diabetes-follow-up.pregnancy-context"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.pregnancy-context": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.latest-hba1c",
+      "priority": 116,
+      "then": {
+        "reason": "latest-hba1c",
+        "target": "target.diabetes-follow-up.latest-hba1c"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.latest-hba1c": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.hba1c-date",
+      "priority": 115,
+      "then": {
+        "reason": "hba1c-date",
+        "target": "target.diabetes-follow-up.hba1c-date"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.hba1c-date": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.glucose-summary",
+      "priority": 114,
+      "then": {
+        "reason": "glucose-summary",
+        "target": "target.diabetes-follow-up.glucose-summary"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.glucose-summary": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.glucose-pattern",
+      "priority": 113,
+      "then": {
+        "reason": "glucose-pattern",
+        "target": "target.diabetes-follow-up.glucose-pattern"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.glucose-pattern": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.hyperglycemia-symptoms",
+      "priority": 112,
+      "then": {
+        "reason": "hyperglycemia-symptoms",
+        "target": "target.diabetes-follow-up.hyperglycemia-symptoms"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.hyperglycemia-symptoms": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.medicine-list",
+      "priority": 111,
+      "then": {
+        "reason": "medicine-list",
+        "target": "target.diabetes-follow-up.medicine-list"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.medicine-list": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.missed-doses",
+      "priority": 110,
+      "then": {
+        "reason": "missed-doses",
+        "target": "target.diabetes-follow-up.missed-doses"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.missed-doses": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.hypoglycemia-frequency",
+      "priority": 109,
+      "then": {
+        "reason": "hypoglycemia-frequency",
+        "target": "target.diabetes-follow-up.hypoglycemia-frequency"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.hypoglycemia-frequency": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.glycemic-goal",
+      "priority": 108,
+      "then": {
+        "reason": "glycemic-goal",
+        "target": "target.diabetes-follow-up.glycemic-goal"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.glycemic-goal": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.severe-hypoglycemia-history",
+      "priority": 108,
+      "then": {
+        "reason": "severe-hypoglycemia-history",
+        "target": "target.diabetes-follow-up.severe-hypoglycemia-history"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.severe-hypoglycemia-history": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.hypoglycemia-awareness",
+      "priority": 107,
+      "then": {
+        "reason": "hypoglycemia-awareness",
+        "target": "target.diabetes-follow-up.hypoglycemia-awareness"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.hypoglycemia-awareness": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.recent-glucose-context",
+      "priority": 107,
+      "then": {
+        "reason": "recent-glucose-context",
+        "target": "target.diabetes-follow-up.recent-glucose-context"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.recent-glucose-context": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.monitoring-method",
+      "priority": 106,
+      "then": {
+        "reason": "monitoring-method",
+        "target": "target.diabetes-follow-up.monitoring-method"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.monitoring-method": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.recent-change",
+      "priority": 105,
+      "then": {
+        "reason": "recent-change",
+        "target": "target.diabetes-follow-up.recent-change"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.recent-change": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.vision-change",
+      "priority": 105,
+      "then": {
+        "reason": "vision-change",
+        "target": "target.diabetes-follow-up.vision-change"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.vision-change": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.adverse-effects",
+      "priority": 104,
+      "then": {
+        "reason": "adverse-effects",
+        "target": "target.diabetes-follow-up.adverse-effects"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.adverse-effects": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.insulin-technique",
+      "priority": 103,
+      "then": {
+        "reason": "insulin-technique",
+        "target": "target.diabetes-follow-up.insulin-technique"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.insulin-technique": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.sick-day-plan",
+      "priority": 102,
+      "then": {
+        "reason": "sick-day-plan",
+        "target": "target.diabetes-follow-up.sick-day-plan"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.sick-day-plan": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.kidney-function",
+      "priority": 101,
+      "then": {
+        "reason": "kidney-function",
+        "target": "target.diabetes-follow-up.kidney-function"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.kidney-function": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.activate.diabetes-follow-up",
+      "priority": 100,
+      "then": {
+        "activate_intents": [
+          "intent.characterize_follow_up",
+          "intent.screen_red_flags",
+          "intent.risk_assessment",
+          "intent.follow_up_support"
+        ]
+      },
+      "type": "activation",
+      "when": {
+        "rfe": "rfe.diabetes_follow_up"
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.albuminuria",
+      "priority": 100,
+      "then": {
+        "reason": "albuminuria",
+        "target": "target.diabetes-follow-up.albuminuria"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.albuminuria": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.retinal-screening",
+      "priority": 100,
+      "then": {
+        "reason": "retinal-screening",
+        "target": "target.diabetes-follow-up.retinal-screening"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.retinal-screening": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.foot-neuropathy",
+      "priority": 99,
+      "then": {
+        "reason": "foot-neuropathy",
+        "target": "target.diabetes-follow-up.foot-neuropathy"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.foot-neuropathy": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.kidney-progression",
+      "priority": 99,
+      "then": {
+        "reason": "kidney-progression",
+        "target": "target.diabetes-follow-up.kidney-progression"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.kidney-progression": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.foot-exam",
+      "priority": 98,
+      "then": {
+        "reason": "foot-exam",
+        "target": "target.diabetes-follow-up.foot-exam"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.foot-exam": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.foot-history",
+      "priority": 97,
+      "then": {
+        "reason": "foot-history",
+        "target": "target.diabetes-follow-up.foot-history"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.foot-history": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.hypoglycemia-preparedness",
+      "priority": 96,
+      "then": {
+        "reason": "hypoglycemia-preparedness",
+        "target": "target.diabetes-follow-up.hypoglycemia-preparedness"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.hypoglycemia-preparedness": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.blood-pressure",
+      "priority": 95,
+      "then": {
+        "reason": "blood-pressure",
+        "target": "target.diabetes-follow-up.blood-pressure"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.blood-pressure": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.lipid-statin",
+      "priority": 94,
+      "then": {
+        "reason": "lipid-statin",
+        "target": "target.diabetes-follow-up.lipid-statin"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.lipid-statin": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.cvd-history",
+      "priority": 93,
+      "then": {
+        "reason": "cvd-history",
+        "target": "target.diabetes-follow-up.cvd-history"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.cvd-history": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.device-problem",
+      "priority": 92,
+      "then": {
+        "reason": "device-problem",
+        "target": "target.diabetes-follow-up.device-problem"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.device-problem": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.tobacco",
+      "priority": 92,
+      "then": {
+        "reason": "tobacco",
+        "target": "target.diabetes-follow-up.tobacco"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.tobacco": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.foot-self-care",
+      "priority": 91,
+      "then": {
+        "reason": "foot-self-care",
+        "target": "target.diabetes-follow-up.foot-self-care"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.foot-self-care": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.weight-bmi",
+      "priority": 90,
+      "then": {
+        "reason": "weight-bmi",
+        "target": "target.diabetes-follow-up.weight-bmi"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.weight-bmi": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.food-pattern",
+      "priority": 89,
+      "then": {
+        "reason": "food-pattern",
+        "target": "target.diabetes-follow-up.food-pattern"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.food-pattern": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.activity",
+      "priority": 88,
+      "then": {
+        "reason": "activity",
+        "target": "target.diabetes-follow-up.activity"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.activity": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.infection-screen",
+      "priority": 87,
+      "then": {
+        "reason": "infection-screen",
+        "target": "target.diabetes-follow-up.infection-screen"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.infection-screen": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.alcohol",
+      "priority": 86,
+      "then": {
+        "reason": "alcohol",
+        "target": "target.diabetes-follow-up.alcohol"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.alcohol": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.access-barrier",
+      "priority": 85,
+      "then": {
+        "reason": "access-barrier",
+        "target": "target.diabetes-follow-up.access-barrier"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.access-barrier": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.preventive-review",
+      "priority": 84,
+      "then": {
+        "reason": "preventive-review",
+        "target": "target.diabetes-follow-up.preventive-review"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.preventive-review": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.patient-goal",
+      "priority": 83,
+      "then": {
+        "reason": "patient-goal",
+        "target": "target.diabetes-follow-up.patient-goal"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.patient-goal": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.complete.access-barrier",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.access-barrier"
+      }
+    },
+    {
+      "id": "rule.generated.complete.active-foot-problem",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.active-foot-problem"
+      }
+    },
+    {
+      "id": "rule.generated.complete.activity",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.activity"
+      }
+    },
+    {
+      "id": "rule.generated.complete.adverse-effects",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.adverse-effects"
+      }
+    },
+    {
+      "id": "rule.generated.complete.albuminuria",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.albuminuria"
+      }
+    },
+    {
+      "id": "rule.generated.complete.alcohol",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.alcohol"
+      }
+    },
+    {
+      "id": "rule.generated.complete.blood-pressure",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.blood-pressure"
+      }
+    },
+    {
+      "id": "rule.generated.complete.current-low-glucose",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.current-low-glucose"
+      }
+    },
+    {
+      "id": "rule.generated.complete.current-severe-hypoglycemia",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.current-severe-hypoglycemia"
+      }
+    },
+    {
+      "id": "rule.generated.complete.cvd-history",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.cvd-history"
+      }
+    },
+    {
+      "id": "rule.generated.complete.device-problem",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.device-problem"
+      }
+    },
+    {
+      "id": "rule.generated.complete.dka-symptoms",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.dka-symptoms"
+      }
+    },
+    {
+      "id": "rule.generated.complete.food-pattern",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.food-pattern"
+      }
+    },
+    {
+      "id": "rule.generated.complete.foot-exam",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.foot-exam"
+      }
+    },
+    {
+      "id": "rule.generated.complete.foot-history",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.foot-history"
+      }
+    },
+    {
+      "id": "rule.generated.complete.foot-neuropathy",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.foot-neuropathy"
+      }
+    },
+    {
+      "id": "rule.generated.complete.foot-self-care",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.foot-self-care"
+      }
+    },
+    {
+      "id": "rule.generated.complete.glucose-pattern",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.glucose-pattern"
+      }
+    },
+    {
+      "id": "rule.generated.complete.glucose-summary",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.glucose-summary"
+      }
+    },
+    {
+      "id": "rule.generated.complete.glycemic-goal",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.glycemic-goal"
+      }
+    },
+    {
+      "id": "rule.generated.complete.hba1c-date",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.hba1c-date"
+      }
+    },
+    {
+      "id": "rule.generated.complete.high-ketones",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.high-ketones"
+      }
+    },
+    {
+      "id": "rule.generated.complete.hyperglycemia-symptoms",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.hyperglycemia-symptoms"
+      }
+    },
+    {
+      "id": "rule.generated.complete.hyperglycemic-crisis",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.hyperglycemic-crisis"
+      }
+    },
+    {
+      "id": "rule.generated.complete.hypoglycemia-awareness",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.hypoglycemia-awareness"
+      }
+    },
+    {
+      "id": "rule.generated.complete.hypoglycemia-frequency",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.hypoglycemia-frequency"
+      }
+    },
+    {
+      "id": "rule.generated.complete.hypoglycemia-preparedness",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.hypoglycemia-preparedness"
+      }
+    },
+    {
+      "id": "rule.generated.complete.infection-screen",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.infection-screen"
+      }
+    },
+    {
+      "id": "rule.generated.complete.insulin-interruption",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.insulin-interruption"
+      }
+    },
+    {
+      "id": "rule.generated.complete.insulin-technique",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.insulin-technique"
+      }
+    },
+    {
+      "id": "rule.generated.complete.kidney-function",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.kidney-function"
+      }
+    },
+    {
+      "id": "rule.generated.complete.kidney-progression",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.kidney-progression"
+      }
+    },
+    {
+      "id": "rule.generated.complete.latest-hba1c",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.latest-hba1c"
+      }
+    },
+    {
+      "id": "rule.generated.complete.limb-threatening-foot",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.limb-threatening-foot"
+      }
+    },
+    {
+      "id": "rule.generated.complete.lipid-statin",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.lipid-statin"
+      }
+    },
+    {
+      "id": "rule.generated.complete.medicine-list",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.medicine-list"
+      }
+    },
+    {
+      "id": "rule.generated.complete.missed-doses",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.missed-doses"
+      }
+    },
+    {
+      "id": "rule.generated.complete.monitoring-method",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.monitoring-method"
+      }
+    },
+    {
+      "id": "rule.generated.complete.patient-goal",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.patient-goal"
+      }
+    },
+    {
+      "id": "rule.generated.complete.pregnancy-context",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.pregnancy-context"
+      }
+    },
+    {
+      "id": "rule.generated.complete.preventive-review",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.preventive-review"
+      }
+    },
+    {
+      "id": "rule.generated.complete.primary-focus",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.primary-focus"
+      }
+    },
+    {
+      "id": "rule.generated.complete.recent-change",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.recent-change"
+      }
+    },
+    {
+      "id": "rule.generated.complete.recent-glucose-context",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.recent-glucose-context"
+      }
+    },
+    {
+      "id": "rule.generated.complete.requested",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.requested"
+      }
+    },
+    {
+      "id": "rule.generated.complete.retinal-screening",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.retinal-screening"
+      }
+    },
+    {
+      "id": "rule.generated.complete.severe-hypoglycemia-history",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.severe-hypoglycemia-history"
+      }
+    },
+    {
+      "id": "rule.generated.complete.sglt2-dka",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.sglt2-dka"
+      }
+    },
+    {
+      "id": "rule.generated.complete.sick-day-plan",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.sick-day-plan"
+      }
+    },
+    {
+      "id": "rule.generated.complete.tobacco",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.tobacco"
+      }
+    },
+    {
+      "id": "rule.generated.complete.type-context",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.type-context"
+      }
+    },
+    {
+      "id": "rule.generated.complete.vision-change",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.vision-change"
+      }
+    },
+    {
+      "id": "rule.generated.complete.vomiting-dehydration",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.vomiting-dehydration"
+      }
+    },
+    {
+      "id": "rule.generated.complete.weight-bmi",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.weight-bmi"
+      }
+    }
+  ],
+  "knowledge_source_status": {
+    "clinical_sources_are_compiled_not_queried_live": true,
+    "review_status": "unreviewed",
+    "status": "research_only"
+  },
+  "knowledge_sources": [
+    {
+      "complete": false,
+      "id": "source.ada.soc2026.ckd",
+      "kind": "clinical_guidance_metadata",
+      "last_monitored_at": "2026-07-14",
+      "license_status": "restricted",
+      "monitor_interval_days": 1,
+      "publisher": "American Diabetes Association",
+      "title": "Chronic Kidney Disease and Risk Management: Standards of Care in Diabetes—2026",
+      "url": "https://diabetesjournals.org/care/article/49/Supplement_1/S246/163914/",
+      "version": "2026"
+    },
+    {
+      "complete": false,
+      "id": "source.ada.soc2026.glycemic-goals",
+      "kind": "clinical_guidance_metadata",
+      "last_monitored_at": "2026-07-14",
+      "license_status": "restricted",
+      "monitor_interval_days": 1,
+      "publisher": "American Diabetes Association",
+      "title": "Glycemic Goals, Hypoglycemia, and Hyperglycemic Crises: Standards of Care in Diabetes—2026",
+      "url": "https://diabetesjournals.org/care/article/49/Supplement_1/S132/163927/",
+      "version": "2026"
+    },
+    {
+      "complete": false,
+      "id": "source.ada.soc2026.retina-neuropathy-foot",
+      "kind": "clinical_guidance_metadata",
+      "last_monitored_at": "2026-07-14",
+      "license_status": "restricted",
+      "monitor_interval_days": 1,
+      "publisher": "American Diabetes Association",
+      "title": "Retinopathy, Neuropathy, and Foot Care: Standards of Care in Diabetes—2026",
+      "url": "https://diabetesjournals.org/care/article/49/Supplement_1/S261/163919/",
+      "version": "2026"
+    },
+    {
+      "complete": false,
+      "id": "source.nhs.dka.2026",
+      "kind": "clinical_guidance_metadata",
+      "last_monitored_at": "2026-07-14",
+      "license_status": "unknown",
+      "monitor_interval_days": 7,
+      "publisher": "NHS",
+      "title": "Diabetic ketoacidosis",
+      "url": "https://www.nhs.uk/conditions/diabetic-ketoacidosis/",
+      "version": "accessed-2026-07-14"
+    },
+    {
+      "complete": false,
+      "id": "source.nhs.hypoglycaemia.2026",
+      "kind": "clinical_guidance_metadata",
+      "last_monitored_at": "2026-07-14",
+      "license_status": "unknown",
+      "monitor_interval_days": 7,
+      "publisher": "NHS",
+      "title": "Low blood sugar (hypoglycaemia)",
+      "url": "https://www.nhs.uk/conditions/low-blood-sugar-hypoglycaemia/",
+      "version": "accessed-2026-07-14"
+    },
+    {
+      "complete": false,
+      "id": "source.nice.ng17.diabetes-type1",
+      "kind": "clinical_guidance_metadata",
+      "last_monitored_at": "2026-07-14",
+      "license_status": "restricted",
+      "monitor_interval_days": 1,
+      "publisher": "NICE",
+      "title": "Type 1 diabetes in adults: diagnosis and management",
+      "url": "https://www.nice.org.uk/guidance/ng17/chapter/recommendations",
+      "version": "NG17"
+    },
+    {
+      "complete": false,
+      "id": "source.nice.ng19.diabetic-foot.2025",
+      "kind": "clinical_guidance_metadata",
+      "last_monitored_at": "2026-07-14",
+      "license_status": "restricted",
+      "monitor_interval_days": 1,
+      "publisher": "NICE",
+      "title": "Diabetic foot problems: prevention and management",
+      "url": "https://www.nice.org.uk/guidance/ng19/chapter/Recommendations",
+      "version": "NG19-reviewed-2025-07-03"
+    },
+    {
+      "complete": false,
+      "id": "source.nice.ng28.diabetes-type2.2026",
+      "kind": "clinical_guidance_metadata",
+      "last_monitored_at": "2026-07-14",
+      "license_status": "restricted",
+      "monitor_interval_days": 1,
+      "publisher": "NICE",
+      "title": "Type 2 diabetes in adults: management",
+      "url": "https://www.nice.org.uk/guidance/ng28",
+      "version": "NG28-updated-2026-02-18"
+    },
+    {
+      "complete": false,
+      "id": "source.stom.diabetes.20260714",
+      "kind": "terminology_mrcm_query_summary",
+      "last_monitored_at": "2026-07-14",
+      "license_status": "restricted",
+      "monitor_interval_days": 30,
+      "publisher": "Infoclinic",
+      "title": "STOM diabetes terminology and MRCM summary",
+      "url": "https://stom.infoclinic.co",
+      "version": "SNOMEDCT-20260701"
+    }
+  ],
+  "package_id": "package.primary-care-diabetes-follow-up",
+  "package_version": "0.1.0",
+  "reason_for_encounter": "rfe.diabetes_follow_up",
+  "resource_type": "ReasonForEncounterRuleCollection",
+  "review_status": "unreviewed",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "version": "1.24.0"
+}
