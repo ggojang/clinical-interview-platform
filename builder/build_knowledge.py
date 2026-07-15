@@ -229,6 +229,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-oral-dental-symptoms.json",
         "version": "0.1.0",
     },
+    "wound_minor_injury": {
+        "base_graph": ROOT / "knowledge/base/primary-care-wound-minor-injury.json",
+        "base_rules": ROOT / "rules/base/primary-care-wound-minor-injury.json",
+        "fragment_root": ROOT / "knowledge/generated/injury/wound-minor-injury",
+        "output_graph": ROOT / "knowledge/graph/primary-care-wound-minor-injury.json",
+        "output_rules": ROOT / "rules/primary-care-wound-minor-injury.json",
+        "version": "0.1.0",
+    },
 }
 
 

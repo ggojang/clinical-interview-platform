@@ -333,6 +333,17 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/oral-dental/oral-dental-symptoms",
         "research_manifests": [ROOT / "sources/manifests/primary-care-oral-dental-symptoms-research.json"],
     },
+    "wound_minor_injury": {
+        "graph": ROOT / "knowledge/graph/primary-care-wound-minor-injury.json",
+        "rules": ROOT / "rules/primary-care-wound-minor-injury.json",
+        "sources": ROOT / "sources/manifests/primary-care-wound-minor-injury.json",
+        "completion_policy": ROOT / "policies/primary-care-wound-minor-injury-completion.json",
+        "output": ROOT / "packages/generated/primary-care-wound-minor-injury-0.1.0.json",
+        "package_id": "package.primary-care-wound-minor-injury", "package_version": "0.1.0",
+        "rfe": "rfe.wound_minor_injury",
+        "simulation_root": ROOT / "simulation/patients/injury/wound-minor-injury",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-wound-minor-injury-research.json"],
+    },
 }
 
 ALLOWED_NODE_TYPES = {

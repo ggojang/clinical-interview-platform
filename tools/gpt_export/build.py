@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "1.25.0"
+VERSION = "1.26.0"
 GENERATED_AT = "2026-07-15T00:00:00Z"
 PRIVATE_KEYS = {
     "raw_text", "raw_input", "patient_response", "patient_responses",
@@ -103,7 +103,7 @@ def compact_safety_rule_index(item: dict[str, Any]) -> dict[str, Any]:
     then = item.get("then", {})
     result["then"] = {
         key: then[key]
-        for key in ("safety_level", "action")
+        for key in ("safety_level",)
         if key in then
     }
     return result
@@ -524,6 +524,7 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
         compact_safety_rule_index(item) for item in aggregate_rules["items"]
     ]
     aggregate_rules["payload_role"] = "legacy_cross_rfe_safety_index"
+    aggregate_rules["default_action"] = "human_handoff"
     aggregate_rules["complete_rule_payloads"] = "/gpt/rfe/{rfe}/rules.json"
     resources = {
         "common-facts.json": common_facts,

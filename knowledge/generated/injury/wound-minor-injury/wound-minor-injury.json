@@ -1,0 +1,2697 @@
+{
+  "id": "knowledge.generated.wound-minor-injury",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-wound-minor-injury-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-07-14",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-07-15",
+    "next_full_review_at": "2027-01-10",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.injury.routing",
+      "type": "ClinicalGroup",
+      "display": "routing"
+    },
+    {
+      "id": "group.injury.shared-safety",
+      "type": "ClinicalGroup",
+      "display": "shared-safety"
+    },
+    {
+      "id": "group.injury.common",
+      "type": "ClinicalGroup",
+      "display": "common"
+    },
+    {
+      "id": "group.injury.open-wound",
+      "type": "ClinicalGroup",
+      "display": "open-wound"
+    },
+    {
+      "id": "group.injury.burn",
+      "type": "ClinicalGroup",
+      "display": "burn"
+    },
+    {
+      "id": "group.injury.blunt-sprain",
+      "type": "ClinicalGroup",
+      "display": "blunt-sprain"
+    },
+    {
+      "id": "group.injury.bite-puncture",
+      "type": "ClinicalGroup",
+      "display": "bite-puncture"
+    },
+    {
+      "id": "group.injury.head-injury",
+      "type": "ClinicalGroup",
+      "display": "head-injury"
+    }
+  ],
+  "group_hypothesis_edges": [],
+  "safety_rules": [
+    {
+      "id": "rule.wound-minor-injury.safety.uncontrolled-bleeding",
+      "priority": 1000,
+      "when": {
+        "fact": "injury.uncontrolled_heavy_bleeding",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.wound-minor-injury.safety.spurting-bleeding",
+      "priority": 1000,
+      "when": {
+        "fact": "injury.spurting_bright_red_bleeding",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.wound-minor-injury.safety.neurovascular-loss",
+      "priority": 1000,
+      "when": {
+        "fact": "injury.loss_of_sensation_or_movement",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.wound-minor-injury.safety.circulation-loss",
+      "priority": 1000,
+      "when": {
+        "fact": "injury.distal_cold_blue_pale",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.wound-minor-injury.safety.amputation",
+      "priority": 1000,
+      "when": {
+        "fact": "injury.amputation_or_near_amputation",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.wound-minor-injury.safety.open-fracture-deformity",
+      "priority": 1000,
+      "when": {
+        "fact": "injury.open_fracture_or_gross_deformity",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.wound-minor-injury.safety.large-deep-wound",
+      "priority": 990,
+      "when": {
+        "fact": "injury.large_deep_or_gaping_wound",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.wound-minor-injury.safety.embedded-object",
+      "priority": 990,
+      "when": {
+        "fact": "injury.embedded_or_impaled_object",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.wound-minor-injury.safety.high-energy",
+      "priority": 1000,
+      "when": {
+        "fact": "injury.severe_crush_or_high_energy_mechanism",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.wound-minor-injury.safety.eye-injury",
+      "priority": 1000,
+      "when": {
+        "fact": "injury.eye_or_eyelid_penetrating_or_chemical_injury",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.wound-minor-injury.safety.burn-airway",
+      "priority": 1000,
+      "when": {
+        "fact": "injury.burn_airway_or_smoke_exposure",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.wound-minor-injury.safety.chemical-electrical-burn",
+      "priority": 1000,
+      "when": {
+        "fact": "injury.chemical_or_electrical_burn",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.wound-minor-injury.safety.major-burn",
+      "priority": 1000,
+      "when": {
+        "fact": "injury.very_large_deep_or_circumferential_burn",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.wound-minor-injury.safety.high-risk-burn-site",
+      "priority": 960,
+      "when": {
+        "fact": "injury.burn_face_hands_genitals_or_major_joint",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.wound-minor-injury.safety.head-consciousness",
+      "priority": 1000,
+      "when": {
+        "fact": "injury.head_loss_consciousness_or_confusion",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.wound-minor-injury.safety.head-neurology",
+      "priority": 1000,
+      "when": {
+        "fact": "injury.head_seizure_or_focal_neurology",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.wound-minor-injury.safety.head-vomiting-headache",
+      "priority": 980,
+      "when": {
+        "fact": "injury.head_repeated_vomiting_or_worsening_headache",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.wound-minor-injury.safety.head-bleeding-risk",
+      "priority": 980,
+      "when": {
+        "fact": "injury.head_anticoagulant_or_bleeding_disorder",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.wound-minor-injury.safety.severe-infection",
+      "priority": 1000,
+      "when": {
+        "fact": "injury.severe_infection_or_systemic_illness",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.wound-minor-injury.safety.pain-out-of-proportion",
+      "priority": 970,
+      "when": {
+        "fact": "injury.severe_pain_out_of_proportion",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.wound-minor-injury.safety.high-risk-bite",
+      "priority": 970,
+      "when": {
+        "fact": "injury.bite_deep_structure_or_dangerous_animal",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.wound-minor-injury.safety.safeguarding",
+      "priority": 990,
+      "when": {
+        "fact": "injury.safeguarding_or_non_accidental_concern",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "injury.primary_group",
+        "display": "Primary Wound or Minor Injury Group",
+        "value_type": "coded",
+        "allowed_values": [
+          "open_wound",
+          "burn",
+          "blunt_sprain",
+          "bite_puncture",
+          "head_injury",
+          "other_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.wound-minor-injury.primary-group",
+        "display": "Primary Wound or Minor Injury Group",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.primary-group",
+        "wording": "가장 불편한 문제는 베이거나 찢어진 상처, 화상, 부딪힘·삠, 물림·찔림, 머리 외상 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 160,
+          "reason": "primary-group"
+        }
+      ],
+      "supports": [
+        "group.injury.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.uncontrolled_heavy_bleeding",
+        "display": "Uncontrolled Heavy Bleeding",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.wound-minor-injury.uncontrolled-bleeding",
+        "display": "Uncontrolled Heavy Bleeding",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.uncontrolled-bleeding",
+        "wording": "깨끗한 천이나 거즈로 계속 세게 눌러도 피가 멎지 않나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 159,
+          "reason": "uncontrolled-bleeding"
+        }
+      ],
+      "supports": [
+        "group.injury.shared-safety",
+        "group.injury.open-wound"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.spurting_bright_red_bleeding",
+        "display": "Spurting Bright Red Bleeding",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.wound-minor-injury.spurting-bleeding",
+        "display": "Spurting Bright Red Bleeding",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.spurting-bleeding",
+        "wording": "밝은 선홍색 피가 맥박에 맞춰 뿜어 나오나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 158,
+          "reason": "spurting-bleeding"
+        }
+      ],
+      "supports": [
+        "group.injury.shared-safety",
+        "group.injury.open-wound"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.loss_of_sensation_or_movement",
+        "display": "Loss of Sensation or Movement after Injury",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.wound-minor-injury.neurovascular-loss",
+        "display": "Loss of Sensation or Movement after Injury",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.neurovascular-loss",
+        "wording": "다친 부위 아래쪽의 감각이 없어졌거나 손가락·발가락 등을 움직이기 어렵나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 157,
+          "reason": "neurovascular-loss"
+        }
+      ],
+      "supports": [
+        "group.injury.shared-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.distal_cold_blue_pale",
+        "display": "Cold Blue or Pale Distal Limb",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.wound-minor-injury.circulation-loss",
+        "display": "Cold Blue or Pale Distal Limb",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.circulation-loss",
+        "wording": "다친 부위 아래쪽이 반대편보다 차갑거나 창백·파랗게 변했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 156,
+          "reason": "circulation-loss"
+        }
+      ],
+      "supports": [
+        "group.injury.shared-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.amputation_or_near_amputation",
+        "display": "Amputation or Near-amputation",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.wound-minor-injury.amputation",
+        "display": "Amputation or Near-amputation",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.amputation",
+        "wording": "손가락·발가락이나 다른 신체 일부가 절단됐거나 거의 떨어져 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 155,
+          "reason": "amputation"
+        }
+      ],
+      "supports": [
+        "group.injury.shared-safety",
+        "group.injury.open-wound"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.open_fracture_or_gross_deformity",
+        "display": "Open Fracture or Gross Deformity",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "125605004"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.wound-minor-injury",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.wound-minor-injury.open-fracture-deformity",
+        "display": "Open Fracture or Gross Deformity",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.open-fracture-deformity",
+        "wording": "뼈가 보이거나 다친 부위 모양이 심하게 변하고 비정상 방향으로 꺾였나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 154,
+          "reason": "open-fracture-deformity"
+        }
+      ],
+      "supports": [
+        "group.injury.shared-safety",
+        "group.injury.blunt-sprain"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.large_deep_or_gaping_wound",
+        "display": "Large Deep or Gaping Wound",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "125643001"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.wound-minor-injury",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.wound-minor-injury.large-deep-wound",
+        "display": "Large Deep or Gaping Wound",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.large-deep-wound",
+        "wording": "상처가 매우 크거나 깊고 벌어져 있으며 지방·근육·뼈가 보이나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 153,
+          "reason": "large-deep-wound"
+        }
+      ],
+      "supports": [
+        "group.injury.shared-safety",
+        "group.injury.open-wound"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.embedded_or_impaled_object",
+        "display": "Embedded or Impaled Object",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "211463006"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.wound-minor-injury",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.wound-minor-injury.embedded-object",
+        "display": "Embedded or Impaled Object",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.embedded-object",
+        "wording": "유리·금속·나무 조각이나 다른 물체가 상처 깊이 박혀 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 152,
+          "reason": "embedded-object"
+        }
+      ],
+      "supports": [
+        "group.injury.shared-safety",
+        "group.injury.open-wound",
+        "group.injury.bite-puncture"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.severe_crush_or_high_energy_mechanism",
+        "display": "Severe Crush or High-energy Mechanism",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.wound-minor-injury.high-energy",
+        "display": "Severe Crush or High-energy Mechanism",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.high-energy",
+        "wording": "차량 사고, 높은 곳에서 추락, 기계에 눌림 같은 큰 충격으로 다쳤나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 151,
+          "reason": "high-energy"
+        }
+      ],
+      "supports": [
+        "group.injury.shared-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.eye_or_eyelid_penetrating_or_chemical_injury",
+        "display": "Serious Eye or Eyelid Injury",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.wound-minor-injury.eye-injury",
+        "display": "Serious Eye or Eyelid Injury",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.eye-injury",
+        "wording": "눈에 물체가 박혔거나 화학물질이 들어갔거나 갑자기 시력이 변했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 150,
+          "reason": "eye-injury"
+        }
+      ],
+      "supports": [
+        "group.injury.shared-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.burn_airway_or_smoke_exposure",
+        "display": "Burn with Airway or Smoke Exposure",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.wound-minor-injury.burn-airway",
+        "display": "Burn with Airway or Smoke Exposure",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.burn-airway",
+        "wording": "밀폐된 곳의 연기·불에 노출된 뒤 숨이 차거나 목소리가 변하고 얼굴·입안이 그을렸나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 149,
+          "reason": "burn-airway"
+        }
+      ],
+      "supports": [
+        "group.injury.shared-safety",
+        "group.injury.burn"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.chemical_or_electrical_burn",
+        "display": "Chemical or Electrical Burn",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "284196006"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.wound-minor-injury",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.wound-minor-injury.chemical-electrical-burn",
+        "display": "Chemical or Electrical Burn",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.chemical-electrical-burn",
+        "wording": "산·알칼리 같은 화학물질 또는 전기로 생긴 화상인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 148,
+          "reason": "chemical-electrical-burn"
+        }
+      ],
+      "supports": [
+        "group.injury.shared-safety",
+        "group.injury.burn"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.very_large_deep_or_circumferential_burn",
+        "display": "Very Large Deep or Circumferential Burn",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.wound-minor-injury.major-burn",
+        "display": "Very Large Deep or Circumferential Burn",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.major-burn",
+        "wording": "화상이 매우 넓거나 깊어 피부가 희거나 검게 변했거나 팔·다리·몸통을 빙 둘러싸나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 147,
+          "reason": "major-burn"
+        }
+      ],
+      "supports": [
+        "group.injury.shared-safety",
+        "group.injury.burn"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.burn_face_hands_genitals_or_major_joint",
+        "display": "Burn at High-risk Site",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.wound-minor-injury.high-risk-burn-site",
+        "display": "Burn at High-risk Site",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.high-risk-burn-site",
+        "wording": "화상이 얼굴, 손, 발, 생식기·회음부 또는 큰 관절 위에 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 146,
+          "reason": "high-risk-burn-site"
+        }
+      ],
+      "supports": [
+        "group.injury.shared-safety",
+        "group.injury.burn"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.head_loss_consciousness_or_confusion",
+        "display": "Head Injury with Loss of Consciousness or Confusion",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "82271004"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.wound-minor-injury",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.wound-minor-injury.head-consciousness",
+        "display": "Head Injury with Loss of Consciousness or Confusion",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.head-consciousness",
+        "wording": "머리를 다친 뒤 의식을 잃었거나 지금 혼란스럽고 평소와 다르게 처지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 145,
+          "reason": "head-consciousness"
+        }
+      ],
+      "supports": [
+        "group.injury.shared-safety",
+        "group.injury.head-injury"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.head_seizure_or_focal_neurology",
+        "display": "Head Injury with Seizure or Focal Neurology",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.wound-minor-injury.head-neurology",
+        "display": "Head Injury with Seizure or Focal Neurology",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.head-neurology",
+        "wording": "머리를 다친 뒤 경련, 한쪽 힘 빠짐·감각 저하, 말 어눌함이 생겼나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 144,
+          "reason": "head-neurology"
+        }
+      ],
+      "supports": [
+        "group.injury.shared-safety",
+        "group.injury.head-injury"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.head_repeated_vomiting_or_worsening_headache",
+        "display": "Head Injury with Repeated Vomiting or Worsening Headache",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.wound-minor-injury.head-vomiting-headache",
+        "display": "Head Injury with Repeated Vomiting or Worsening Headache",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.head-vomiting-headache",
+        "wording": "머리를 다친 뒤 반복해서 토하거나 두통이 계속 심해지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 143,
+          "reason": "head-vomiting-headache"
+        }
+      ],
+      "supports": [
+        "group.injury.shared-safety",
+        "group.injury.head-injury"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.head_anticoagulant_or_bleeding_disorder",
+        "display": "Head Injury with Anticoagulant or Bleeding Risk",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.wound-minor-injury.head-bleeding-risk",
+        "display": "Head Injury with Anticoagulant or Bleeding Risk",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.head-bleeding-risk",
+        "wording": "머리를 다쳤고 항응고제·항혈소판제(아스피린 단독 제외)를 복용하거나 출혈 질환이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 142,
+          "reason": "head-bleeding-risk"
+        }
+      ],
+      "supports": [
+        "group.injury.shared-safety",
+        "group.injury.head-injury"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.severe_infection_or_systemic_illness",
+        "display": "Severe Wound Infection or Systemic Illness",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "76844004"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.wound-minor-injury",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.wound-minor-injury.severe-infection",
+        "display": "Severe Wound Infection or Systemic Illness",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.severe-infection",
+        "wording": "상처 주변 붉은 기운이 빠르게 퍼지거나 고열·심한 오한·혼란·심한 처짐이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 141,
+          "reason": "severe-infection"
+        }
+      ],
+      "supports": [
+        "group.injury.shared-safety",
+        "group.injury.open-wound",
+        "group.injury.bite-puncture"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.severe_pain_out_of_proportion",
+        "display": "Severe Pain Out of Proportion",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.wound-minor-injury.pain-out-of-proportion",
+        "display": "Severe Pain Out of Proportion",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.pain-out-of-proportion",
+        "wording": "겉으로 보이는 상처보다 통증이 훨씬 심하거나 빠르게 악화하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 140,
+          "reason": "pain-out-of-proportion"
+        }
+      ],
+      "supports": [
+        "group.injury.shared-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.bite_deep_structure_or_dangerous_animal",
+        "display": "High-risk Bite or Deep Penetration",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "399907009"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.wound-minor-injury",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.wound-minor-injury.high-risk-bite",
+        "display": "High-risk Bite or Deep Penetration",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.high-risk-bite",
+        "wording": "사람·야생동물·떠돌이 동물에게 물렸거나 관절·힘줄·뼈 가까이 깊게 뚫렸나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 139,
+          "reason": "high-risk-bite"
+        }
+      ],
+      "supports": [
+        "group.injury.shared-safety",
+        "group.injury.bite-puncture"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.safeguarding_or_non_accidental_concern",
+        "display": "Safeguarding or Non-accidental Injury Concern",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.wound-minor-injury.safeguarding",
+        "display": "Safeguarding or Non-accidental Injury Concern",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.safeguarding",
+        "wording": "누군가에게 다쳤거나 설명하기 어려운 반복 손상 등 현재 안전이 걱정되는 상황인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 138,
+          "reason": "safeguarding"
+        }
+      ],
+      "supports": [
+        "group.injury.shared-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.time_since_event",
+        "display": "Time Since Injury",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.wound-minor-injury.time",
+        "display": "Time Since Injury",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.time",
+        "wording": "언제 다쳤나요? 날짜와 대략적인 시간을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "time"
+        }
+      ],
+      "supports": [
+        "group.injury.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.mechanism",
+        "display": "Injury Mechanism",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.wound-minor-injury.mechanism",
+        "display": "Injury Mechanism",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.mechanism",
+        "wording": "무엇에 의해 어떤 방식으로 다쳤나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "mechanism"
+        }
+      ],
+      "supports": [
+        "group.injury.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.body_site_and_laterality",
+        "display": "Body Site and Laterality",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.wound-minor-injury.site-laterality",
+        "display": "Body Site and Laterality",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.site-laterality",
+        "wording": "다친 신체 부위와 왼쪽·오른쪽·양쪽 여부를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "site-laterality"
+        }
+      ],
+      "supports": [
+        "group.injury.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.number_of_sites",
+        "display": "Number of Injured Sites",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.wound-minor-injury.site-count",
+        "display": "Number of Injured Sites",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.site-count",
+        "wording": "다친 곳이 한 군데인가요, 여러 군데인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 127,
+          "reason": "site-count"
+        }
+      ],
+      "supports": [
+        "group.injury.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.pain_zero_to_ten",
+        "display": "Injury Pain Score",
+        "value_type": "integer"
+      },
+      "target": {
+        "id": "target.wound-minor-injury.pain-score",
+        "display": "Injury Pain Score",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.pain-score",
+        "wording": "현재 통증을 0점부터 10점까지로 표현하면 몇 점인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 126,
+          "reason": "pain-score"
+        }
+      ],
+      "supports": [
+        "group.injury.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.swelling_bruising_and_progression",
+        "display": "Swelling Bruising and Progression",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "125667009"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.wound-minor-injury",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.wound-minor-injury.swelling-bruising",
+        "display": "Swelling Bruising and Progression",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.swelling-bruising",
+        "wording": "부기·멍이 있고 좋아지는지, 그대로인지, 커지는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 125,
+          "reason": "swelling-bruising"
+        }
+      ],
+      "supports": [
+        "group.injury.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.function_weight_bearing_or_use",
+        "display": "Functional Impact after Injury",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.wound-minor-injury.function",
+        "display": "Functional Impact after Injury",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.function",
+        "wording": "다친 부위를 움직이거나 사용하거나 체중을 실을 수 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 124,
+          "reason": "function"
+        }
+      ],
+      "supports": [
+        "group.injury.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.first_aid_or_treatment_already_done",
+        "display": "First Aid or Treatment Already Done",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.wound-minor-injury.first-aid",
+        "display": "First Aid or Treatment Already Done",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.first-aid",
+        "wording": "세척·압박·냉각·붕대·약 복용 등 이미 한 처치와 그 반응을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 118,
+          "reason": "first-aid"
+        }
+      ],
+      "supports": [
+        "group.injury.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.tetanus_immunization_status",
+        "display": "Tetanus Immunization Status",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.wound-minor-injury.tetanus",
+        "display": "Tetanus Immunization Status",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.tetanus",
+        "wording": "파상풍 예방접종을 받았는지, 마지막 접종 시기를 기억하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 117,
+          "reason": "tetanus"
+        }
+      ],
+      "supports": [
+        "group.injury.common",
+        "group.injury.open-wound",
+        "group.injury.bite-puncture"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.diabetes_immunosuppression_or_poor_circulation",
+        "display": "Wound Healing Risk Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.wound-minor-injury.healing-risk",
+        "display": "Wound Healing Risk Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.healing-risk",
+        "wording": "당뇨, 면역저하·항암치료, 혈액순환 문제 또는 상처 회복에 영향을 줄 질환이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 116,
+          "reason": "healing-risk"
+        }
+      ],
+      "supports": [
+        "group.injury.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.medicines_allergies_and_bleeding_risk",
+        "display": "Medicines Allergies and Bleeding Risk",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.wound-minor-injury.medicines-allergies",
+        "display": "Medicines Allergies and Bleeding Risk",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.medicines-allergies",
+        "wording": "복용약, 약물 알레르기, 항응고제·항혈소판제 또는 출혈 질환을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 115,
+          "reason": "medicines-allergies"
+        }
+      ],
+      "supports": [
+        "group.injury.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.other_detail_or_patient_priority",
+        "display": "Other Injury Detail or Patient Priority",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.wound-minor-injury.other-detail",
+        "display": "Other Injury Detail or Patient Priority",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.other-detail",
+        "wording": "질문에 없지만 꼭 전달하고 싶은 내용이나 가장 걱정되는 점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 80,
+          "reason": "other-detail"
+        }
+      ],
+      "supports": [
+        "group.injury.routing",
+        "group.injury.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.wound_type",
+        "display": "Open Wound Type",
+        "value_type": "coded",
+        "allowed_values": [
+          "cut_laceration",
+          "abrasion",
+          "skin_tear",
+          "puncture",
+          "crush_open_wound",
+          "other_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.wound-minor-injury.wound-type",
+        "display": "Open Wound Type",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.wound-type",
+        "wording": "상처는 베임·찢어짐, 긁힘, 피부 벗겨짐, 찔림, 눌려 터짐 중 무엇에 가깝나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 123,
+          "reason": "wound-type"
+        }
+      ],
+      "supports": [
+        "group.injury.open-wound"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.wound_length_depth_and_gaping",
+        "display": "Wound Size Depth and Gaping",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.wound-minor-injury.wound-size",
+        "display": "Wound Size Depth and Gaping",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.wound-size",
+        "wording": "상처의 대략적인 길이·깊이와 벌어진 정도를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 122,
+          "reason": "wound-size"
+        }
+      ],
+      "supports": [
+        "group.injury.open-wound"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.wound_contamination",
+        "display": "Wound Contamination",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.wound-minor-injury.contamination",
+        "display": "Wound Contamination",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.contamination",
+        "wording": "흙·녹·유리·나무·체액 등 무엇이 묻었고 씻은 뒤에도 남아 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 121,
+          "reason": "contamination"
+        }
+      ],
+      "supports": [
+        "group.injury.open-wound"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.wound_bleeding_current",
+        "display": "Current Wound Bleeding",
+        "value_type": "coded",
+        "allowed_values": [
+          "stopped",
+          "oozing",
+          "stops_with_pressure",
+          "heavy_persistent",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.wound-minor-injury.bleeding-detail",
+        "display": "Current Wound Bleeding",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.bleeding-detail",
+        "wording": "현재 출혈은 멎음, 조금 배어 나옴, 압박하면 멎음, 계속 많이 남 중 어느 정도인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 120,
+          "reason": "bleeding-detail"
+        }
+      ],
+      "supports": [
+        "group.injury.open-wound"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.wound_infection_features",
+        "display": "Wound Infection Features",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.wound-minor-injury.infection-features",
+        "display": "Wound Infection Features",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.infection-features",
+        "wording": "붉어짐·열감·통증이 증가하거나 고름·나쁜 냄새·붉은 줄이 생겼나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 119,
+          "reason": "infection-features"
+        }
+      ],
+      "supports": [
+        "group.injury.open-wound"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.wound_face_palm_joint_or_cosmetic_site",
+        "display": "Wound at Functionally Important Site",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.wound-minor-injury.important-site",
+        "display": "Wound at Functionally Important Site",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.important-site",
+        "wording": "상처가 얼굴, 손바닥, 관절 위 또는 기능·흉터가 특히 걱정되는 부위인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 110,
+          "reason": "important-site"
+        }
+      ],
+      "supports": [
+        "group.injury.open-wound"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.burn_cause",
+        "display": "Burn Cause",
+        "value_type": "coded",
+        "allowed_values": [
+          "scald",
+          "flame_contact",
+          "chemical",
+          "electrical",
+          "friction",
+          "other_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.wound-minor-injury.burn-cause",
+        "display": "Burn Cause",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.burn-cause",
+        "wording": "화상 원인은 뜨거운 물·증기, 불·뜨거운 물체, 화학물질, 전기, 마찰 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 123,
+          "reason": "burn-cause"
+        }
+      ],
+      "supports": [
+        "group.injury.burn"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.burn_extent",
+        "display": "Burn Extent",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.wound-minor-injury.burn-extent",
+        "display": "Burn Extent",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.burn-extent",
+        "wording": "화상 범위를 본인의 손바닥 크기와 비교하면 어느 정도인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 122,
+          "reason": "burn-extent"
+        }
+      ],
+      "supports": [
+        "group.injury.burn"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.burn_skin_appearance_and_blisters",
+        "display": "Burn Appearance and Blisters",
+        "value_type": "coded",
+        "allowed_values": [
+          "red_only",
+          "blistered",
+          "white_mottled",
+          "charred_black",
+          "mixed_or_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.wound-minor-injury.burn-appearance",
+        "display": "Burn Appearance and Blisters",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.burn-appearance",
+        "wording": "피부는 붉음, 물집, 희거나 얼룩짐, 검게 탐 중 어느 모습인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 121,
+          "reason": "burn-appearance"
+        }
+      ],
+      "supports": [
+        "group.injury.burn"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.burn_cooling_duration",
+        "display": "Burn Cooling Duration",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.wound-minor-injury.burn-cooling",
+        "display": "Burn Cooling Duration",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.burn-cooling",
+        "wording": "흐르는 시원한 물로 식혔다면 언제부터 몇 분간 했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 120,
+          "reason": "burn-cooling"
+        }
+      ],
+      "supports": [
+        "group.injury.burn"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.burn_clothing_jewellery_or_adherent_material",
+        "display": "Burn Clothing or Jewellery Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.wound-minor-injury.burn-material",
+        "display": "Burn Clothing or Jewellery Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.burn-material",
+        "wording": "화상 부위에 붙은 옷이나 조이는 장신구가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 119,
+          "reason": "burn-material"
+        }
+      ],
+      "supports": [
+        "group.injury.burn"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.blunt_injury_type",
+        "display": "Blunt or Musculoskeletal Injury Type",
+        "value_type": "coded",
+        "allowed_values": [
+          "contusion",
+          "sprain",
+          "strain",
+          "possible_fracture",
+          "other_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.wound-minor-injury.blunt-type",
+        "display": "Blunt or Musculoskeletal Injury Type",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.blunt-type",
+        "wording": "주된 문제는 멍·타박, 관절 삠, 근육 늘어남, 골절 의심 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 123,
+          "reason": "blunt-type"
+        }
+      ],
+      "supports": [
+        "group.injury.blunt-sprain"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.crack_or_pop_at_injury",
+        "display": "Crack or Pop at Injury",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.wound-minor-injury.crack-pop",
+        "display": "Crack or Pop at Injury",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.crack-pop",
+        "wording": "다칠 때 뚝·딱 하는 소리를 들었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 122,
+          "reason": "crack-pop"
+        }
+      ],
+      "supports": [
+        "group.injury.blunt-sprain"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.range_of_motion",
+        "display": "Range of Motion after Injury",
+        "value_type": "coded",
+        "allowed_values": [
+          "normal",
+          "mildly_limited",
+          "markedly_limited",
+          "unable",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.wound-minor-injury.range-motion",
+        "display": "Range of Motion after Injury",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.range-motion",
+        "wording": "움직임은 정상, 조금 제한, 많이 제한, 전혀 못 움직임 중 어느 정도인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 121,
+          "reason": "range-motion"
+        }
+      ],
+      "supports": [
+        "group.injury.blunt-sprain"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.immediate_or_delayed_swelling",
+        "display": "Immediate or Delayed Swelling",
+        "value_type": "coded",
+        "allowed_values": [
+          "immediate",
+          "within_hours",
+          "next_day_or_later",
+          "none",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.wound-minor-injury.swelling-timing",
+        "display": "Immediate or Delayed Swelling",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.swelling-timing",
+        "wording": "부기는 즉시, 몇 시간 뒤, 다음 날 이후 중 언제 생겼나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 120,
+          "reason": "swelling-timing"
+        }
+      ],
+      "supports": [
+        "group.injury.blunt-sprain"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.prior_injury_surgery_or_instability",
+        "display": "Prior Injury Surgery or Instability",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.wound-minor-injury.prior-injury",
+        "display": "Prior Injury Surgery or Instability",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.prior-injury",
+        "wording": "같은 부위의 과거 손상·수술·반복 빠짐 또는 불안정함이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 110,
+          "reason": "prior-injury"
+        }
+      ],
+      "supports": [
+        "group.injury.blunt-sprain"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.bite_source",
+        "display": "Bite or Puncture Source",
+        "value_type": "coded",
+        "allowed_values": [
+          "human",
+          "dog",
+          "cat",
+          "wild_stray_animal",
+          "sharp_object",
+          "other_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.wound-minor-injury.bite-source",
+        "display": "Bite or Puncture Source",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.bite-source",
+        "wording": "사람, 개, 고양이, 야생·떠돌이 동물, 못·바늘·가시 등 무엇에 물리거나 찔렸나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 123,
+          "reason": "bite-source"
+        }
+      ],
+      "supports": [
+        "group.injury.bite-puncture"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.bite_skin_broken_and_blood_drawn",
+        "display": "Bite Skin Break and Bleeding",
+        "value_type": "coded",
+        "allowed_values": [
+          "not_broken",
+          "broken_no_blood",
+          "blood_drawn",
+          "deep_penetration",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.wound-minor-injury.bite-depth",
+        "display": "Bite Skin Break and Bleeding",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.bite-depth",
+        "wording": "피부가 안 뚫림, 뚫렸지만 피 안 남, 피가 남, 깊게 뚫림 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 122,
+          "reason": "bite-depth"
+        }
+      ],
+      "supports": [
+        "group.injury.bite-puncture"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.bite_animal_ownership_and_vaccination",
+        "display": "Animal Ownership and Vaccination Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.wound-minor-injury.animal-context",
+        "display": "Animal Ownership and Vaccination Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.animal-context",
+        "wording": "동물의 종류, 주인이 있는지, 예방접종 상태와 현재 관찰 가능 여부를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 121,
+          "reason": "animal-context"
+        }
+      ],
+      "supports": [
+        "group.injury.bite-puncture"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.bite_location_high_risk_area",
+        "display": "Bite at High-risk Area",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.wound-minor-injury.bite-location",
+        "display": "Bite at High-risk Area",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.bite-location",
+        "wording": "물린 곳이 손·발·얼굴·생식기·관절 위 또는 혈액순환이 나쁜 부위인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 120,
+          "reason": "bite-location"
+        }
+      ],
+      "supports": [
+        "group.injury.bite-puncture"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.bite_infection_progression",
+        "display": "Bite Infection Progression",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.wound-minor-injury.bite-infection",
+        "display": "Bite Infection Progression",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.bite-infection",
+        "wording": "붉어짐·부기·열감·통증·분비물이 생기거나 빠르게 심해지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 119,
+          "reason": "bite-infection"
+        }
+      ],
+      "supports": [
+        "group.injury.bite-puncture"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.head_mechanism_and_height",
+        "display": "Head Injury Mechanism and Height",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.wound-minor-injury.head-mechanism",
+        "display": "Head Injury Mechanism and Height",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.head-mechanism",
+        "wording": "머리를 어떻게 다쳤고, 추락했다면 대략 어느 높이였나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 123,
+          "reason": "head-mechanism"
+        }
+      ],
+      "supports": [
+        "group.injury.head-injury"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.head_amnesia",
+        "display": "Head Injury Amnesia",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.wound-minor-injury.head-amnesia",
+        "display": "Head Injury Amnesia",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.head-amnesia",
+        "wording": "사고 전후 일이 기억나지 않는 구간이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 122,
+          "reason": "head-amnesia"
+        }
+      ],
+      "supports": [
+        "group.injury.head-injury"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.head_vomiting_count",
+        "display": "Vomiting Count after Head Injury",
+        "value_type": "integer"
+      },
+      "target": {
+        "id": "target.wound-minor-injury.head-vomiting-count",
+        "display": "Vomiting Count after Head Injury",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.head-vomiting-count",
+        "wording": "머리를 다친 뒤 몇 번 토했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 121,
+          "reason": "head-vomiting-count"
+        }
+      ],
+      "supports": [
+        "group.injury.head-injury"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.head_headache_course",
+        "display": "Headache Course after Head Injury",
+        "value_type": "coded",
+        "allowed_values": [
+          "none",
+          "improving",
+          "same",
+          "worsening",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.wound-minor-injury.headache-course",
+        "display": "Headache Course after Head Injury",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.headache-course",
+        "wording": "두통은 없음, 좋아짐, 그대로, 악화 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 120,
+          "reason": "headache-course"
+        }
+      ],
+      "supports": [
+        "group.injury.head-injury"
+      ]
+    },
+    {
+      "fact": {
+        "id": "injury.head_observer_available",
+        "display": "Competent Observer Available after Head Injury",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.wound-minor-injury.head-observer",
+        "display": "Competent Observer Available after Head Injury",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.wound-minor-injury.head-observer",
+        "wording": "귀가한다면 상태 변화를 살필 수 있는 성인이 함께 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 110,
+          "reason": "head-observer"
+        }
+      ],
+      "supports": [
+        "group.injury.head-injury"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nhs.cuts-grazes.2026",
+      "source.nhs.burns-scalds.2026",
+      "source.nhs.acid-chemical-burns.2024",
+      "source.nice.ng184.bites.2020",
+      "source.nice.ng232.head-injury.2025",
+      "source.nhs.sprains-strains.2024",
+      "source.stom.wound-minor-injury.20260715"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}
