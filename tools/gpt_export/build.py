@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "1.28.0"
+VERSION = "1.29.0"
 GENERATED_AT = "2026-07-15T00:00:00Z"
 PRIVATE_KEYS = {
     "raw_text", "raw_input", "patient_response", "patient_responses",
@@ -498,10 +498,15 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
     workflow_facts = load_json(
         root / "knowledge" / "shared" / "encounter-workflow-facts.json"
     )
+    clinician_context = sanitize(
+        load_json(root / "knowledge" / "shared" / "clinician-submission-context.json")
+    )
     common_facts = envelope(
         "CommonInterviewFactCollection",
         deduplicate(
-            shared_facts.get("facts", []) + workflow_facts.get("facts", [])
+            shared_facts.get("facts", [])
+            + workflow_facts.get("facts", [])
+            + clinician_context.get("facts", [])
         ),
     )
     common_facts["items"] = [compact(item) for item in common_facts["items"]]
@@ -542,6 +547,7 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
         "safety-rules.json": aggregate_rules,
         "screening-kr.json": screening,
         "terminology-source.json": terminology_source,
+        "clinician-submission-context.json": clinician_context,
     }
     resources.update(collect_rfe_resources(root))
     resources.update(collect_patient_experience_questionnaire(root))
@@ -692,9 +698,13 @@ def build(root: Path, output: Path) -> dict[str, Any]:
         "longitudinal_context_review_policy": encounter_policy[
             "longitudinal_context_review"
         ],
+        "clinician_submission_context_policy": resources[
+            "clinician-submission-context.json"
+        ],
         "preferred_loading": {
             "catalog_operation": "getReasonForEncounters",
             "common_operation": "getCommonInterviewFacts",
+            "clinician_submission_context": "/gpt/clinician-submission-context.json",
             "rfe_operations": [
                 "getReasonForEncounterRules",
                 "getReasonForEncounterQuestions",

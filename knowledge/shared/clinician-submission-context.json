@@ -1,0 +1,391 @@
+{
+  "id": "knowledge.shared.clinician-submission-context",
+  "version": "0.1.0",
+  "status": "research_only",
+  "review_status": "unreviewed",
+  "usage_modes": ["research_test", "simulation"],
+  "activation": {
+    "mode": "explicit_clinician_submission",
+    "applies_to": "all_adaptive_reason_for_encounter_packages",
+    "excluded_workflows": ["fixed_questionnaire", "fhir_conversion"],
+    "collect_after": "package_specific_safety_and_required_clinical_facts"
+  },
+  "facts": [
+    {
+      "id": "encounter.context_review_state",
+      "type": "Fact",
+      "display": "Longitudinal Context Review State",
+      "display_ko": "기본 건강정보 확인 시점",
+      "value_type": "coded",
+      "allowed_values": ["first_encounter", "medication_due", "all_due", "current"],
+      "report_field": "encounter.context_review_state",
+      "status": "research_only",
+      "review_status": "unreviewed"
+    },
+    {
+      "id": "encounter.information_source",
+      "type": "Fact",
+      "display": "Information Source",
+      "display_ko": "정보 제공자와 자료 출처",
+      "value_type": "string",
+      "report_field": "encounter.information_source",
+      "status": "research_only",
+      "review_status": "unreviewed"
+    },
+    {
+      "id": "patient.age_years",
+      "type": "Fact",
+      "display": "Age in Years",
+      "display_ko": "만 나이",
+      "value_type": "integer",
+      "report_field": "demographics.age_years",
+      "status": "research_only",
+      "review_status": "unreviewed"
+    },
+    {
+      "id": "patient.sex_for_clinical_care",
+      "type": "Fact",
+      "display": "Sex or Anatomy Context Relevant to Clinical Care",
+      "display_ko": "진료에 필요한 성별·해부학적 정보",
+      "value_type": "coded",
+      "allowed_values": ["female", "male", "intersex_or_variation", "another_clinical_context", "not_clinically_relevant"],
+      "report_field": "demographics.sex_for_clinical_care",
+      "status": "research_only",
+      "review_status": "unreviewed"
+    },
+    {
+      "id": "patient.height_cm",
+      "type": "Fact",
+      "display": "Height in Centimetres",
+      "display_ko": "키(cm)",
+      "value_type": "integer",
+      "report_field": "measurements.height_cm",
+      "status": "research_only",
+      "review_status": "unreviewed"
+    },
+    {
+      "id": "patient.weight_kg",
+      "type": "Fact",
+      "display": "Weight in Kilograms",
+      "display_ko": "몸무게(kg)",
+      "value_type": "string",
+      "report_field": "measurements.weight_kg",
+      "status": "research_only",
+      "review_status": "unreviewed"
+    },
+    {
+      "id": "patient.blood_group_abo_rh",
+      "type": "Fact",
+      "display": "ABO and Rh Blood Group",
+      "display_ko": "ABO·Rh 혈액형",
+      "value_type": "string",
+      "report_field": "demographics.blood_group",
+      "status": "research_only",
+      "review_status": "unreviewed"
+    },
+    {
+      "id": "history.condition.current",
+      "type": "Fact",
+      "display": "Current and Past Conditions",
+      "display_ko": "현재 및 과거 질환",
+      "value_type": "string",
+      "report_field": "history.conditions",
+      "status": "research_only",
+      "review_status": "unreviewed"
+    },
+    {
+      "id": "history.procedure.past",
+      "type": "Fact",
+      "display": "Past Procedures and Surgery",
+      "display_ko": "수술 및 시술력",
+      "value_type": "string",
+      "report_field": "history.procedures",
+      "status": "research_only",
+      "review_status": "unreviewed"
+    },
+    {
+      "id": "medication.current",
+      "type": "Fact",
+      "display": "Current Medication",
+      "display_ko": "현재 복용약",
+      "value_type": "string",
+      "report_field": "medications.current",
+      "status": "research_only",
+      "review_status": "unreviewed"
+    },
+    {
+      "id": "allergy.current",
+      "type": "Fact",
+      "display": "Known Allergies and Reactions",
+      "display_ko": "알레르기 및 반응",
+      "value_type": "string",
+      "report_field": "allergies.current",
+      "status": "research_only",
+      "review_status": "unreviewed"
+    },
+    {
+      "id": "history.family",
+      "type": "Fact",
+      "display": "Family History",
+      "display_ko": "가족력",
+      "value_type": "string",
+      "report_field": "history.family",
+      "status": "research_only",
+      "review_status": "unreviewed"
+    },
+    {
+      "id": "occupation.current",
+      "type": "Fact",
+      "display": "Occupation and Relevant Exposure",
+      "display_ko": "직업 및 관련 노출",
+      "value_type": "string",
+      "report_field": "social.occupation_exposure",
+      "status": "research_only",
+      "review_status": "unreviewed"
+    },
+    {
+      "id": "patient.smoking.status",
+      "type": "Fact",
+      "display": "Smoking Status",
+      "display_ko": "흡연 상태",
+      "value_type": "coded",
+      "allowed_values": ["current", "former", "never"],
+      "report_field": "social.smoking_status",
+      "status": "research_only",
+      "review_status": "unreviewed"
+    },
+    {
+      "id": "patient.smoking.exposure_detail",
+      "type": "Fact",
+      "display": "Smoking Exposure Detail",
+      "display_ko": "흡연량·기간·중단 시점",
+      "value_type": "string",
+      "report_field": "social.smoking_exposure",
+      "status": "research_only",
+      "review_status": "unreviewed"
+    },
+    {
+      "id": "patient.alcohol.pattern",
+      "type": "Fact",
+      "display": "Alcohol Use Pattern",
+      "display_ko": "음주 빈도와 양",
+      "value_type": "string",
+      "report_field": "social.alcohol_pattern",
+      "status": "research_only",
+      "review_status": "unreviewed"
+    },
+    {
+      "id": "clinical.measurements.available",
+      "type": "Fact",
+      "display": "Available Clinical Measurements",
+      "display_ko": "확인 가능한 활력징후·측정값",
+      "value_type": "string",
+      "report_field": "measurements.clinical",
+      "status": "research_only",
+      "review_status": "unreviewed"
+    },
+    {
+      "id": "history.immunization.relevant",
+      "type": "Fact",
+      "display": "Relevant Immunization History",
+      "display_ko": "현재 문제와 관련된 예방접종력",
+      "value_type": "string",
+      "report_field": "history.immunization",
+      "status": "research_only",
+      "review_status": "unreviewed"
+    },
+    {
+      "id": "interview.final_additional_comment",
+      "type": "Fact",
+      "display": "Final Additional Comment",
+      "display_ko": "마지막 추가 의견",
+      "value_type": "string",
+      "report_field": "additional_comments.final",
+      "status": "research_only",
+      "review_status": "unreviewed"
+    }
+  ],
+  "questions": [
+    {
+      "template_id": "question.clinician-context.review-state",
+      "fact_id": "encounter.context_review_state",
+      "wording": "이 서비스에서 기본 건강정보를 처음 작성하시나요? 1 처음 작성함, 2 복용약만 90일 넘게 확인하지 않음, 3 전체 기본정보를 1년 넘게 확인하지 않음, 4 최근 확인하여 현재 정보임",
+      "answer_code_map": {"1": "first_encounter", "2": "medication_due", "3": "all_due", "4": "current"},
+      "priority": 100
+    },
+    {
+      "template_id": "question.clinician-context.information-source",
+      "fact_id": "encounter.information_source",
+      "wording": "이 답변은 누가, 어떤 자료를 바탕으로 제공했나요? 예: 본인 진술, 보호자 진술, 진료기록·검사결과, 여러 출처의 조합",
+      "priority": 95
+    },
+    {
+      "template_id": "question.clinician-context.age",
+      "fact_id": "patient.age_years",
+      "wording": "만 나이는 몇 세인가요? 생년월일이나 이름은 입력하지 않아도 됩니다.",
+      "priority": 90
+    },
+    {
+      "template_id": "question.clinician-context.sex",
+      "fact_id": "patient.sex_for_clinical_care",
+      "wording": "현재 진료 판단에 필요한 성별 또는 해부학적 정보를 선택해 주세요. 1 여성, 2 남성, 3 간성·성분화 변이, 4 그 밖의 진료 관련 정보, 5 현재 문제에는 관련 없음",
+      "answer_code_map": {"1": "female", "2": "male", "3": "intersex_or_variation", "4": "another_clinical_context", "5": "not_clinically_relevant"},
+      "priority": 85
+    },
+    {
+      "template_id": "question.clinician-context.conditions",
+      "fact_id": "history.condition.current",
+      "wording": "현재 진단받았거나 과거에 치료받은 주요 질환을 진단명, 진단 시기, 현재 상태와 함께 알려주세요. 없으면 '없음'이라고 답해 주세요.",
+      "priority": 80
+    },
+    {
+      "template_id": "question.clinician-context.procedures",
+      "fact_id": "history.procedure.past",
+      "wording": "받은 수술·주요 시술을 명칭, 시기, 이유, 중요한 합병증과 함께 알려주세요. 없으면 '없음'이라고 답해 주세요.",
+      "priority": 75
+    },
+    {
+      "template_id": "question.clinician-context.medications",
+      "fact_id": "medication.current",
+      "wording": "현재 사용하는 처방약·일반약·건강기능식품을 제품명 또는 성분명, 용량, 투여 경로, 횟수, 복용 이유와 함께 알려주세요. 없으면 '없음'이라고 답해 주세요.",
+      "priority": 70
+    },
+    {
+      "template_id": "question.clinician-context.allergies",
+      "fact_id": "allergy.current",
+      "wording": "약물·음식·기타 알레르기가 있다면 원인, 나타난 반응, 심한 정도를 알려주세요. 없으면 '없음'이라고 답해 주세요.",
+      "priority": 65
+    },
+    {
+      "template_id": "question.clinician-context.family-history",
+      "fact_id": "history.family",
+      "wording": "부모·형제자매·자녀 등 가까운 가족의 주요 질환을 가족관계, 질환명, 발병 나이와 함께 알려주세요. 없으면 '없음'이라고 답해 주세요.",
+      "priority": 60
+    },
+    {
+      "template_id": "question.clinician-context.occupation",
+      "fact_id": "occupation.current",
+      "wording": "현재·최근 직업, 종사 기간과 분진·화학물질·감염·소음·반복동작·교대근무 등 관련 노출을 알려주세요.",
+      "priority": 55
+    },
+    {
+      "template_id": "question.clinician-context.smoking-status",
+      "fact_id": "patient.smoking.status",
+      "wording": "흡연 상태를 선택해 주세요. 1 현재 흡연, 2 과거 흡연, 3 평생 비흡연",
+      "answer_code_map": {"1": "current", "2": "former", "3": "never"},
+      "priority": 50
+    },
+    {
+      "template_id": "question.clinician-context.smoking-detail",
+      "fact_id": "patient.smoking.exposure_detail",
+      "wording": "흡연 또는 간접흡연 노출이 있다면 하루 양, 기간, 중단 시점과 계산 가능한 경우 갑년(pack-years)을 알려주세요. 없으면 '없음'이라고 답해 주세요.",
+      "priority": 45
+    },
+    {
+      "template_id": "question.clinician-context.alcohol",
+      "fact_id": "patient.alcohol.pattern",
+      "wording": "음주 여부, 주당 빈도, 술 종류와 한 번에 마시는 양을 알려주세요. 마시지 않으면 '없음'이라고 답해 주세요.",
+      "priority": 40
+    },
+    {
+      "template_id": "question.clinician-context.measurements",
+      "fact_id": "clinical.measurements.available",
+      "wording": "최근 혈압, 맥박, 체온, 호흡수, 산소포화도 등 확인 가능한 측정값이 있으면 측정 시각·단위·출처와 함께 알려주세요. 없으면 '없음'이라고 답해 주세요.",
+      "priority": 20
+    },
+    {
+      "template_id": "question.clinician-context.final-comment",
+      "fact_id": "interview.final_additional_comment",
+      "wording": "앞 질문에 없었지만 의료진에게 꼭 전달할 내용이나 원하는 도움이 있나요? 없으면 '없음'이라고 답해 주세요.",
+      "priority": 1
+    }
+  ],
+  "completion": {
+    "always_required": [
+      "encounter.context_review_state",
+      "encounter.information_source",
+      "patient.age_years",
+      "patient.sex_for_clinical_care",
+      "interview.final_additional_comment"
+    ],
+    "conditional_required_facts": [
+      {
+        "selector_fact": "encounter.context_review_state",
+        "cases": {
+          "first_encounter": [
+            "history.condition.current",
+            "history.procedure.past",
+            "medication.current",
+            "allergy.current",
+            "history.family",
+            "occupation.current",
+            "patient.smoking.status",
+            "patient.smoking.exposure_detail",
+            "patient.alcohol.pattern"
+          ],
+          "medication_due": ["medication.current"],
+          "all_due": [
+            "history.condition.current",
+            "history.procedure.past",
+            "medication.current",
+            "allergy.current",
+            "history.family",
+            "occupation.current",
+            "patient.smoking.status",
+            "patient.smoking.exposure_detail",
+            "patient.alcohol.pattern"
+          ],
+          "current": []
+        },
+        "default_when_selector_data_absent": [
+          "history.condition.current",
+          "history.procedure.past",
+          "medication.current",
+          "allergy.current",
+          "history.family",
+          "occupation.current",
+          "patient.smoking.status",
+          "patient.smoking.exposure_detail",
+          "patient.alcohol.pattern"
+        ]
+      }
+    ],
+    "optional_when_relevant": [
+      "patient.height_cm",
+      "patient.weight_kg",
+      "patient.blood_group_abo_rh",
+      "clinical.measurements.available",
+      "history.immunization.relevant"
+    ],
+    "additional_question_budget": 15,
+    "data_absent_states_count_as_resolved": ["asked-unknown", "asked-declined", "not-applicable"]
+  },
+  "clinician_handoff": {
+    "format": "non_fhir_structured_summary",
+    "deferred_outputs": ["fixed_questionnaire", "fhir_r4_resource_conversion"],
+    "sections": [
+      {"id": "encounter", "fact_ids": ["encounter.context_review_state", "encounter.information_source"]},
+      {"id": "demographics", "fact_ids": ["patient.age_years", "patient.sex_for_clinical_care", "patient.height_cm", "patient.weight_kg", "patient.blood_group_abo_rh"]},
+      {"id": "medical_history", "fact_ids": ["history.condition.current", "history.procedure.past", "history.immunization.relevant"]},
+      {"id": "medications_and_allergies", "fact_ids": ["medication.current", "allergy.current"]},
+      {"id": "family_and_social_history", "fact_ids": ["history.family", "occupation.current", "patient.smoking.status", "patient.smoking.exposure_detail", "patient.alcohol.pattern"]},
+      {"id": "measurements", "fact_ids": ["clinical.measurements.available"]},
+      {"id": "additional_comments", "fact_ids": ["interview.final_additional_comment", "interview.additional_comment"]}
+    ],
+    "preserve_for_each_fact": ["status", "value", "dataAbsentReason", "confidence", "evidence_source", "last_updated_turn"],
+    "required_summary_lists": ["known", "pertinent_negative", "unknown", "declined", "not_applicable", "conflicted", "not_asked"],
+    "completion_must_be_explicit": true
+  },
+  "provenance": {
+    "created_by": {"type": "ai", "id": "codex-gpt5"},
+    "created_at": "2026-07-15T00:00:00Z",
+    "source_refs": [
+      "docs/context/002-encounter-context.md",
+      "docs/context/005-fact.md",
+      "docs/context/017-clinical-memory.md",
+      "policies/encounter-context-review.json"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

@@ -18,6 +18,9 @@ DEFAULT_GRAPH = ROOT / "knowledge/graph/primary-care-cough.json"
 DEFAULT_RULES = ROOT / "rules/primary-care-cough.json"
 DEFAULT_SOURCES = ROOT / "sources/manifests/primary-care-cough.json"
 DEFAULT_COMPLETION_POLICY = ROOT / "policies/primary-care-cough-completion.json"
+CLINICIAN_SUBMISSION_CONTEXT = (
+    ROOT / "knowledge/shared/clinician-submission-context.json"
+)
 DEFAULT_OUTPUT = ROOT / "packages/generated/primary-care-cough-0.3.0.json"
 PACKAGE_PROFILES = {
     "cough": {
@@ -632,6 +635,7 @@ def compile_package(
     rule_graph = load_json(rules_path)
     sources = materialize_source_digests(load_json(sources_path))
     completion_policy = load_json(config["completion_policy"])
+    clinician_submission_context = load_json(CLINICIAN_SUBMISSION_CONTEXT)
     node_index = validate_graph(graph)
     sorted_rules = validate_rules(rule_graph, node_index, production)
     validate_sources(sources, production)
@@ -675,6 +679,38 @@ def compile_package(
         if missing:
             raise CompilationError(f"completion policy has unresolved Facts: {sorted(missing)}")
 
+    context_facts = {
+        item.get("id"): item
+        for item in clinician_submission_context.get("facts", [])
+        if isinstance(item, dict) and item.get("id")
+    }
+    context_questions = clinician_submission_context.get("questions", [])
+    question_fact_ids = {
+        item.get("fact_id") for item in context_questions if isinstance(item, dict)
+    }
+    completion = clinician_submission_context.get("completion", {})
+    referenced_context_facts = set(completion.get("always_required", []))
+    for conditional in completion.get("conditional_required_facts", []):
+        referenced_context_facts.add(conditional.get("selector_fact"))
+        for fact_ids in conditional.get("cases", {}).values():
+            referenced_context_facts.update(fact_ids)
+        referenced_context_facts.update(
+            conditional.get("default_when_selector_data_absent", [])
+        )
+    referenced_context_facts.discard(None)
+    missing_context_facts = referenced_context_facts - set(context_facts)
+    if missing_context_facts:
+        raise CompilationError(
+            "clinician submission context has unresolved Facts: "
+            f"{sorted(missing_context_facts)}"
+        )
+    missing_context_questions = referenced_context_facts - question_fact_ids
+    if missing_context_questions:
+        raise CompilationError(
+            "clinician submission context has required Facts without questions: "
+            f"{sorted(missing_context_questions)}"
+        )
+
     package: dict[str, Any] = {
         "package_id": config["package_id"],
         "package_version": config["package_version"],
@@ -700,6 +736,14 @@ def compile_package(
         ],
         "refresh_policy": load_json(ROOT / "policies/knowledge-refresh.json"),
         "interview_completion_policy": completion_policy,
+        "clinician_submission_context": {
+            "id": clinician_submission_context["id"],
+            "version": clinician_submission_context["version"],
+            "status": clinician_submission_context["status"],
+            "review_status": clinician_submission_context["review_status"],
+            "resource_ref": str(CLINICIAN_SUBMISSION_CONTEXT.relative_to(ROOT)),
+            "semantic_digest": semantic_digest(clinician_submission_context),
+        },
         "simulations": simulations,
         "coverage": coverage(node_index, indexes, simulations, sorted_rules),
         "compatibility": {

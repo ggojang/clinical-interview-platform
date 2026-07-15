@@ -14,6 +14,9 @@ from runtime.memory import ClinicalMemory
 from runtime.package import DEFAULT_PACKAGE, load_package
 
 
+REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
+
+
 def duration_class(value: Any) -> str | None:
     if not isinstance(value, dict):
         return None
@@ -164,6 +167,7 @@ class InterviewSession:
     execution_mode: str = "research_test"
     reason_for_encounter: str | None = None
     max_turns: int | None = None
+    clinician_submission: bool = False
     asked: list[str] = field(default_factory=list)
     active_patterns: list[str] = field(default_factory=list)
     trace: list[dict[str, Any]] = field(default_factory=list)
@@ -176,16 +180,40 @@ class InterviewSession:
     memory: ClinicalMemory = field(init=False)
     active_intents: list[str] = field(init=False, default_factory=list)
     active_targets: dict[str, str] = field(init=False, default_factory=dict)
+    clinician_fact_index: dict[str, dict[str, Any]] = field(
+        init=False, default_factory=dict
+    )
+    clinician_question_index: dict[str, dict[str, Any]] = field(
+        init=False, default_factory=dict
+    )
 
     def __post_init__(self) -> None:
         self.package = load_package(self.package_path, self.execution_mode)
+        clinician_context = (
+            self._load_clinician_context() if self.clinician_submission else {}
+        )
+        self.clinician_fact_index = {
+            item["id"]: item
+            for item in clinician_context.get("facts", [])
+            if isinstance(item, dict) and item.get("id")
+        }
+        self.clinician_question_index = {
+            item["fact_id"]: item
+            for item in clinician_context.get("questions", [])
+            if isinstance(item, dict) and item.get("fact_id")
+        }
         if self.max_turns is None:
             routine_budget = (
                 self.package.get("interview_completion_policy", {})
                 .get("question_budget", {})
                 .get("routine", 40)
             )
-            self.max_turns = max(40, int(routine_budget) + 1)
+            context_budget = (
+                clinician_context.get("completion", {})
+                .get("additional_question_budget", 0)
+                if self.clinician_submission else 0
+            )
+            self.max_turns = max(40, int(routine_budget) + int(context_budget) + 1)
         package_rfes = self.package.get("scope", {}).get("reasons_for_encounter", [])
         if self.reason_for_encounter is None:
             if len(package_rfes) != 1:
@@ -217,6 +245,35 @@ class InterviewSession:
             for target in targets.get(intent, [])
         }
 
+    def _load_clinician_context(self) -> dict[str, Any]:
+        reference = self.package.get("clinician_submission_context", {})
+        if not reference:
+            return {}
+        if reference.get("facts"):
+            return reference
+        resource_ref = reference.get("resource_ref")
+        if not resource_ref:
+            return {}
+        path = (REPOSITORY_ROOT / resource_ref).resolve()
+        shared_root = (REPOSITORY_ROOT / "knowledge" / "shared").resolve()
+        if shared_root not in path.parents:
+            raise ValueError("clinician submission context must be under knowledge/shared")
+        try:
+            import json
+            document = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            raise ValueError(
+                f"cannot load clinician submission context {resource_ref}"
+            ) from exc
+        from compiler.build_package import semantic_digest
+        if semantic_digest(document) != reference.get("semantic_digest"):
+            raise ValueError("clinician submission context semantic digest mismatch")
+        self.package["_resolved_clinician_submission_context"] = document
+        return document
+
+    def _clinician_context(self) -> dict[str, Any]:
+        return self.package.get("_resolved_clinician_submission_context", {})
+
     @property
     def turn(self) -> int:
         return self.memory.turn
@@ -245,7 +302,7 @@ class InterviewSession:
         additions = extract(answer_text, turn, expected_fact)
         low = answer_text.lower().strip()
         low_normalized = low.rstrip(".!?")
-        for node in self.package["knowledge_graph"]["nodes"]:
+        for node in self._fact_nodes():
             if node["type"] != "Fact" or node["id"] in additions:
                 continue
             cues = node.get("extraction_cues", [])
@@ -256,17 +313,17 @@ class InterviewSession:
                 additions[node["id"]] = fact(True, answer_text, turn, .78)
 
         if expected_fact and expected_fact not in additions:
-            node = next(
-                (
-                    item for item in self.package["knowledge_graph"]["nodes"]
-                    if item["id"] == expected_fact
-                ),
-                None,
-            )
+            node = self._fact_node(expected_fact)
             if node:
                 allowed = node.get("allowed_values", [])
                 normalized = low_normalized
-                if expected_fact == "symptom.dyspnea" and normalized in {"1", "2"}:
+                template = self._questions_by_fact().get(expected_fact, {})
+                answer_code_map = template.get("answer_code_map", {})
+                if normalized in answer_code_map:
+                    additions[expected_fact] = fact(
+                        answer_code_map[normalized], answer_text, turn, .95
+                    )
+                elif expected_fact == "symptom.dyspnea" and normalized in {"1", "2"}:
                     additions[expected_fact] = fact(
                         "mild" if normalized == "1" else "none", answer_text, turn, .95
                     )
@@ -311,10 +368,7 @@ class InterviewSession:
             for candidate in additions.values():
                 candidate["correction"] = True
         merge_results: dict[str, str] = {}
-        allowed_facts = {
-            node["id"] for node in self.package["knowledge_graph"]["nodes"]
-            if node["type"] == "Fact"
-        }
+        allowed_facts = {node["id"] for node in self._fact_nodes()}
         for fact_id, candidate in additions.items():
             if fact_id in allowed_facts:
                 merge_results[fact_id] = self.memory.merge(fact_id, candidate)
@@ -518,7 +572,7 @@ class InterviewSession:
         self.edit_reference_map = {
             f"E{index}": fact_id for index, fact_id in enumerate(editable, 1)
         }
-        questions = self.package["indexes"]["questions_by_fact"]
+        questions = self._questions_by_fact()
         items = []
         for edit_ref, fact_id in self.edit_reference_map.items():
             record = self.memory.facts[fact_id]
@@ -568,7 +622,7 @@ class InterviewSession:
         state = self._current_state()
         state["edit_prompt"] = {
             "fact_id": target,
-            "label": self.package["indexes"]["questions_by_fact"].get(target, {}).get("wording", target),
+            "label": self._questions_by_fact().get(target, {}).get("wording", target),
             "current_status": record.get("status"),
             "current_value": record.get("value"),
             "dataAbsentReason": record.get("dataAbsentReason"),
@@ -578,7 +632,7 @@ class InterviewSession:
         return state
 
     def _question_for_fact(self, fact_id: str, reason: str) -> dict[str, Any] | None:
-        template = self.package["indexes"]["questions_by_fact"].get(fact_id)
+        template = self._questions_by_fact().get(fact_id)
         if not template:
             return None
         return {
@@ -589,6 +643,31 @@ class InterviewSession:
             "score": 1000,
             "reason": reason,
         }
+
+    def _fact_nodes(self) -> list[dict[str, Any]]:
+        nodes = [
+            node for node in self.package["knowledge_graph"]["nodes"]
+            if node.get("type") == "Fact"
+        ]
+        if not self.clinician_submission:
+            return nodes
+        package_ids = {node["id"] for node in nodes}
+        return nodes + [
+            node for fact_id, node in self.clinician_fact_index.items()
+            if fact_id not in package_ids
+        ]
+
+    def _fact_node(self, fact_id: str) -> dict[str, Any] | None:
+        return next(
+            (node for node in self._fact_nodes() if node.get("id") == fact_id),
+            None,
+        )
+
+    def _questions_by_fact(self) -> dict[str, dict[str, Any]]:
+        questions = dict(self.package["indexes"]["questions_by_fact"])
+        if self.clinician_submission:
+            questions.update(self.clinician_question_index)
+        return questions
 
     def _current_state(self) -> dict[str, Any]:
         classification = duration_class(self.memory.value("symptom.duration"))
@@ -1256,7 +1335,7 @@ class InterviewSession:
             else:
                 self.active_targets[target] = "active"
 
-    def _required_facts(
+    def _package_required_facts(
         self, classification: str | None, safety: dict[str, Any]
     ) -> list[str]:
         policy = self.package["interview_completion_policy"]
@@ -1285,6 +1364,27 @@ class InterviewSession:
                 required.update(cases[value])
             elif value is not None:
                 required.update(conditional.get("default", []))
+        return sorted(required)
+
+    def _required_facts(
+        self, classification: str | None, safety: dict[str, Any]
+    ) -> list[str]:
+        required = set(self._package_required_facts(classification, safety))
+        if not self.clinician_submission:
+            return sorted(required)
+        completion = self._clinician_context().get("completion", {})
+        required.update(completion.get("always_required", []))
+        for conditional in completion.get("conditional_required_facts", []):
+            selector = conditional.get("selector_fact")
+            selector_state = self.memory.state(selector) if selector else "not_asked"
+            selector_value = self.memory.value(selector) if selector else None
+            cases = conditional.get("cases", {})
+            if selector_state == "known" and selector_value in cases:
+                required.update(cases[selector_value])
+            elif selector_state in {"unknown", "not_applicable", "conflicted"}:
+                required.update(
+                    conditional.get("default_when_selector_data_absent", [])
+                )
         return sorted(required)
 
     def _completion(
@@ -1317,7 +1417,16 @@ class InterviewSession:
     def _question_budget(self, safety_level: str) -> int:
         policy = self.package["interview_completion_policy"]
         budgets = policy.get("question_budget", {})
-        return int(budgets.get("clarify" if safety_level == "clarify" else "routine", 18))
+        budget = int(
+            budgets.get("clarify" if safety_level == "clarify" else "routine", 18)
+        )
+        if self.clinician_submission:
+            budget += int(
+                self._clinician_context()
+                .get("completion", {})
+                .get("additional_question_budget", 0)
+            )
+        return budget
 
     def _safety(self) -> dict[str, Any]:
         matched = []
@@ -1350,7 +1459,7 @@ class InterviewSession:
         if safety_level in {"urgent", "emergency"}:
             return None
 
-        questions = self.package["indexes"]["questions_by_fact"]
+        questions = self._questions_by_fact()
         for conflict in self.memory.contradictions:
             if conflict["status"] == "unresolved" and conflict["fact_id"] in questions:
                 fact_id = conflict["fact_id"]
@@ -1404,15 +1513,77 @@ class InterviewSession:
                 "reason": rule["then"].get("reason", rule["id"]),
                 "rule_id": rule["id"],
             })
+        package_required = self._package_required_facts(classification, self._safety())
+        package_missing = [
+            fact_id for fact_id in package_required
+            if self.memory.state(fact_id) not in {
+                "known", "unknown", "not_applicable"
+            }
+        ]
+        if self.clinician_submission and not package_missing:
+            shared_candidates = []
+            for fact_id in required_facts:
+                template = self.clinician_question_index.get(fact_id)
+                if not template:
+                    continue
+                if self.memory.state(fact_id) in {"known", "unknown", "not_applicable"}:
+                    continue
+                if fact_id in self.asked:
+                    continue
+                shared_candidates.append({
+                    "target_id": "target.clinician_submission_context",
+                    "fact_id": fact_id,
+                    "template_id": template["template_id"],
+                    "text": template["wording"],
+                    "score": int(template.get("priority", 0)),
+                    "base_score": int(template.get("priority", 0)),
+                    "reason": "clinician_submission_context_completion",
+                    "rule_id": template["template_id"],
+                })
+            if shared_candidates:
+                return max(
+                    shared_candidates,
+                    key=lambda item: (item["score"], item["rule_id"]),
+                )
         if not candidates:
             return None
         return max(candidates, key=lambda item: (item["score"], item["rule_id"]))
 
     def _target_for_fact(self, fact_id: str) -> str | None:
+        if fact_id in self.clinician_fact_index:
+            return "target.clinician_submission_context"
         for target, facts in self.package["indexes"]["target_facts"].items():
             if fact_id in facts:
                 return target
         return None
+
+    def clinician_handoff(self) -> dict[str, Any] | None:
+        """Return a non-FHIR clinician-facing structure with missingness preserved."""
+        if not self.clinician_submission:
+            return None
+        policy = self._clinician_context().get("clinician_handoff", {})
+        sections = []
+        for section in policy.get("sections", []):
+            entries = []
+            for fact_id in section.get("fact_ids", []):
+                record = self.memory.facts.get(fact_id)
+                entries.append({
+                    "fact_id": fact_id,
+                    "status": self.memory.state(fact_id),
+                    "value": record.get("value") if record else None,
+                    "dataAbsentReason": (
+                        record.get("dataAbsentReason") if record else "not-asked"
+                    ),
+                    "confidence": record.get("confidence") if record else None,
+                })
+            sections.append({"id": section["id"], "entries": entries})
+        return {
+            "format": "non_fhir_structured_summary",
+            "status": "research_only",
+            "review_status": "unreviewed",
+            "reason_for_encounter": self.reason_for_encounter,
+            "sections": sections,
+        }
 
     def snapshot(
         self,
@@ -1438,6 +1609,7 @@ class InterviewSession:
             "selected_question": question,
             "stop_reason": stop_reason,
             "completion_status": completion,
+            "clinician_handoff": self.clinician_handoff(),
             "revision_status": {
                 "pending_fact_id": self.pending_edit_fact,
                 "amended_after_completion": self.amended_after_completion,

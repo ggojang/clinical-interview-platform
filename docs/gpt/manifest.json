@@ -150,6 +150,508 @@
       "answer_cannot_be_reliably_mapped_to_current_fact"
     ]
   },
+  "clinician_submission_context_policy": {
+    "activation": {
+      "applies_to": "all_adaptive_reason_for_encounter_packages",
+      "collect_after": "package_specific_safety_and_required_clinical_facts",
+      "excluded_workflows": [
+        "fixed_questionnaire",
+        "fhir_conversion"
+      ],
+      "mode": "explicit_clinician_submission"
+    },
+    "clinician_handoff": {
+      "completion_must_be_explicit": true,
+      "deferred_outputs": [
+        "fixed_questionnaire",
+        "fhir_r4_resource_conversion"
+      ],
+      "format": "non_fhir_structured_summary",
+      "preserve_for_each_fact": [
+        "status",
+        "value",
+        "dataAbsentReason",
+        "confidence",
+        "evidence_source",
+        "last_updated_turn"
+      ],
+      "required_summary_lists": [
+        "known",
+        "pertinent_negative",
+        "unknown",
+        "declined",
+        "not_applicable",
+        "conflicted",
+        "not_asked"
+      ],
+      "sections": [
+        {
+          "fact_ids": [
+            "encounter.context_review_state",
+            "encounter.information_source"
+          ],
+          "id": "encounter"
+        },
+        {
+          "fact_ids": [
+            "patient.age_years",
+            "patient.sex_for_clinical_care",
+            "patient.height_cm",
+            "patient.weight_kg",
+            "patient.blood_group_abo_rh"
+          ],
+          "id": "demographics"
+        },
+        {
+          "fact_ids": [
+            "history.condition.current",
+            "history.procedure.past",
+            "history.immunization.relevant"
+          ],
+          "id": "medical_history"
+        },
+        {
+          "fact_ids": [
+            "medication.current",
+            "allergy.current"
+          ],
+          "id": "medications_and_allergies"
+        },
+        {
+          "fact_ids": [
+            "history.family",
+            "occupation.current",
+            "patient.smoking.status",
+            "patient.smoking.exposure_detail",
+            "patient.alcohol.pattern"
+          ],
+          "id": "family_and_social_history"
+        },
+        {
+          "fact_ids": [
+            "clinical.measurements.available"
+          ],
+          "id": "measurements"
+        },
+        {
+          "fact_ids": [
+            "interview.final_additional_comment",
+            "interview.additional_comment"
+          ],
+          "id": "additional_comments"
+        }
+      ]
+    },
+    "completion": {
+      "additional_question_budget": 15,
+      "always_required": [
+        "encounter.context_review_state",
+        "encounter.information_source",
+        "patient.age_years",
+        "patient.sex_for_clinical_care",
+        "interview.final_additional_comment"
+      ],
+      "conditional_required_facts": [
+        {
+          "cases": {
+            "all_due": [
+              "history.condition.current",
+              "history.procedure.past",
+              "medication.current",
+              "allergy.current",
+              "history.family",
+              "occupation.current",
+              "patient.smoking.status",
+              "patient.smoking.exposure_detail",
+              "patient.alcohol.pattern"
+            ],
+            "current": [],
+            "first_encounter": [
+              "history.condition.current",
+              "history.procedure.past",
+              "medication.current",
+              "allergy.current",
+              "history.family",
+              "occupation.current",
+              "patient.smoking.status",
+              "patient.smoking.exposure_detail",
+              "patient.alcohol.pattern"
+            ],
+            "medication_due": [
+              "medication.current"
+            ]
+          },
+          "default_when_selector_data_absent": [
+            "history.condition.current",
+            "history.procedure.past",
+            "medication.current",
+            "allergy.current",
+            "history.family",
+            "occupation.current",
+            "patient.smoking.status",
+            "patient.smoking.exposure_detail",
+            "patient.alcohol.pattern"
+          ],
+          "selector_fact": "encounter.context_review_state"
+        }
+      ],
+      "data_absent_states_count_as_resolved": [
+        "asked-unknown",
+        "asked-declined",
+        "not-applicable"
+      ],
+      "optional_when_relevant": [
+        "patient.height_cm",
+        "patient.weight_kg",
+        "patient.blood_group_abo_rh",
+        "clinical.measurements.available",
+        "history.immunization.relevant"
+      ]
+    },
+    "facts": [
+      {
+        "allowed_values": [
+          "first_encounter",
+          "medication_due",
+          "all_due",
+          "current"
+        ],
+        "display": "Longitudinal Context Review State",
+        "display_ko": "기본 건강정보 확인 시점",
+        "id": "encounter.context_review_state",
+        "report_field": "encounter.context_review_state",
+        "review_status": "unreviewed",
+        "status": "research_only",
+        "type": "Fact",
+        "value_type": "coded"
+      },
+      {
+        "display": "Information Source",
+        "display_ko": "정보 제공자와 자료 출처",
+        "id": "encounter.information_source",
+        "report_field": "encounter.information_source",
+        "review_status": "unreviewed",
+        "status": "research_only",
+        "type": "Fact",
+        "value_type": "string"
+      },
+      {
+        "display": "Age in Years",
+        "display_ko": "만 나이",
+        "id": "patient.age_years",
+        "report_field": "demographics.age_years",
+        "review_status": "unreviewed",
+        "status": "research_only",
+        "type": "Fact",
+        "value_type": "integer"
+      },
+      {
+        "allowed_values": [
+          "female",
+          "male",
+          "intersex_or_variation",
+          "another_clinical_context",
+          "not_clinically_relevant"
+        ],
+        "display": "Sex or Anatomy Context Relevant to Clinical Care",
+        "display_ko": "진료에 필요한 성별·해부학적 정보",
+        "id": "patient.sex_for_clinical_care",
+        "report_field": "demographics.sex_for_clinical_care",
+        "review_status": "unreviewed",
+        "status": "research_only",
+        "type": "Fact",
+        "value_type": "coded"
+      },
+      {
+        "display": "Height in Centimetres",
+        "display_ko": "키(cm)",
+        "id": "patient.height_cm",
+        "report_field": "measurements.height_cm",
+        "review_status": "unreviewed",
+        "status": "research_only",
+        "type": "Fact",
+        "value_type": "integer"
+      },
+      {
+        "display": "Weight in Kilograms",
+        "display_ko": "몸무게(kg)",
+        "id": "patient.weight_kg",
+        "report_field": "measurements.weight_kg",
+        "review_status": "unreviewed",
+        "status": "research_only",
+        "type": "Fact",
+        "value_type": "string"
+      },
+      {
+        "display": "ABO and Rh Blood Group",
+        "display_ko": "ABO·Rh 혈액형",
+        "id": "patient.blood_group_abo_rh",
+        "report_field": "demographics.blood_group",
+        "review_status": "unreviewed",
+        "status": "research_only",
+        "type": "Fact",
+        "value_type": "string"
+      },
+      {
+        "display": "Current and Past Conditions",
+        "display_ko": "현재 및 과거 질환",
+        "id": "history.condition.current",
+        "report_field": "history.conditions",
+        "review_status": "unreviewed",
+        "status": "research_only",
+        "type": "Fact",
+        "value_type": "string"
+      },
+      {
+        "display": "Past Procedures and Surgery",
+        "display_ko": "수술 및 시술력",
+        "id": "history.procedure.past",
+        "report_field": "history.procedures",
+        "review_status": "unreviewed",
+        "status": "research_only",
+        "type": "Fact",
+        "value_type": "string"
+      },
+      {
+        "display": "Current Medication",
+        "display_ko": "현재 복용약",
+        "id": "medication.current",
+        "report_field": "medications.current",
+        "review_status": "unreviewed",
+        "status": "research_only",
+        "type": "Fact",
+        "value_type": "string"
+      },
+      {
+        "display": "Known Allergies and Reactions",
+        "display_ko": "알레르기 및 반응",
+        "id": "allergy.current",
+        "report_field": "allergies.current",
+        "review_status": "unreviewed",
+        "status": "research_only",
+        "type": "Fact",
+        "value_type": "string"
+      },
+      {
+        "display": "Family History",
+        "display_ko": "가족력",
+        "id": "history.family",
+        "report_field": "history.family",
+        "review_status": "unreviewed",
+        "status": "research_only",
+        "type": "Fact",
+        "value_type": "string"
+      },
+      {
+        "display": "Occupation and Relevant Exposure",
+        "display_ko": "직업 및 관련 노출",
+        "id": "occupation.current",
+        "report_field": "social.occupation_exposure",
+        "review_status": "unreviewed",
+        "status": "research_only",
+        "type": "Fact",
+        "value_type": "string"
+      },
+      {
+        "allowed_values": [
+          "current",
+          "former",
+          "never"
+        ],
+        "display": "Smoking Status",
+        "display_ko": "흡연 상태",
+        "id": "patient.smoking.status",
+        "report_field": "social.smoking_status",
+        "review_status": "unreviewed",
+        "status": "research_only",
+        "type": "Fact",
+        "value_type": "coded"
+      },
+      {
+        "display": "Smoking Exposure Detail",
+        "display_ko": "흡연량·기간·중단 시점",
+        "id": "patient.smoking.exposure_detail",
+        "report_field": "social.smoking_exposure",
+        "review_status": "unreviewed",
+        "status": "research_only",
+        "type": "Fact",
+        "value_type": "string"
+      },
+      {
+        "display": "Alcohol Use Pattern",
+        "display_ko": "음주 빈도와 양",
+        "id": "patient.alcohol.pattern",
+        "report_field": "social.alcohol_pattern",
+        "review_status": "unreviewed",
+        "status": "research_only",
+        "type": "Fact",
+        "value_type": "string"
+      },
+      {
+        "display": "Available Clinical Measurements",
+        "display_ko": "확인 가능한 활력징후·측정값",
+        "id": "clinical.measurements.available",
+        "report_field": "measurements.clinical",
+        "review_status": "unreviewed",
+        "status": "research_only",
+        "type": "Fact",
+        "value_type": "string"
+      },
+      {
+        "display": "Relevant Immunization History",
+        "display_ko": "현재 문제와 관련된 예방접종력",
+        "id": "history.immunization.relevant",
+        "report_field": "history.immunization",
+        "review_status": "unreviewed",
+        "status": "research_only",
+        "type": "Fact",
+        "value_type": "string"
+      },
+      {
+        "display": "Final Additional Comment",
+        "display_ko": "마지막 추가 의견",
+        "id": "interview.final_additional_comment",
+        "report_field": "additional_comments.final",
+        "review_status": "unreviewed",
+        "status": "research_only",
+        "type": "Fact",
+        "value_type": "string"
+      }
+    ],
+    "id": "knowledge.shared.clinician-submission-context",
+    "provenance": {
+      "created_at": "2026-07-15T00:00:00Z",
+      "created_by": {
+        "id": "codex-gpt5",
+        "type": "ai"
+      },
+      "review_status": "unreviewed",
+      "source_refs": [
+        "docs/context/002-encounter-context.md",
+        "docs/context/005-fact.md",
+        "docs/context/017-clinical-memory.md",
+        "policies/encounter-context-review.json"
+      ],
+      "version": "0.1.0"
+    },
+    "questions": [
+      {
+        "answer_code_map": {
+          "1": "first_encounter",
+          "2": "medication_due",
+          "3": "all_due",
+          "4": "current"
+        },
+        "fact_id": "encounter.context_review_state",
+        "priority": 100,
+        "template_id": "question.clinician-context.review-state",
+        "wording": "이 서비스에서 기본 건강정보를 처음 작성하시나요? 1 처음 작성함, 2 복용약만 90일 넘게 확인하지 않음, 3 전체 기본정보를 1년 넘게 확인하지 않음, 4 최근 확인하여 현재 정보임"
+      },
+      {
+        "fact_id": "encounter.information_source",
+        "priority": 95,
+        "template_id": "question.clinician-context.information-source",
+        "wording": "이 답변은 누가, 어떤 자료를 바탕으로 제공했나요? 예: 본인 진술, 보호자 진술, 진료기록·검사결과, 여러 출처의 조합"
+      },
+      {
+        "fact_id": "patient.age_years",
+        "priority": 90,
+        "template_id": "question.clinician-context.age",
+        "wording": "만 나이는 몇 세인가요? 생년월일이나 이름은 입력하지 않아도 됩니다."
+      },
+      {
+        "answer_code_map": {
+          "1": "female",
+          "2": "male",
+          "3": "intersex_or_variation",
+          "4": "another_clinical_context",
+          "5": "not_clinically_relevant"
+        },
+        "fact_id": "patient.sex_for_clinical_care",
+        "priority": 85,
+        "template_id": "question.clinician-context.sex",
+        "wording": "현재 진료 판단에 필요한 성별 또는 해부학적 정보를 선택해 주세요. 1 여성, 2 남성, 3 간성·성분화 변이, 4 그 밖의 진료 관련 정보, 5 현재 문제에는 관련 없음"
+      },
+      {
+        "fact_id": "history.condition.current",
+        "priority": 80,
+        "template_id": "question.clinician-context.conditions",
+        "wording": "현재 진단받았거나 과거에 치료받은 주요 질환을 진단명, 진단 시기, 현재 상태와 함께 알려주세요. 없으면 '없음'이라고 답해 주세요."
+      },
+      {
+        "fact_id": "history.procedure.past",
+        "priority": 75,
+        "template_id": "question.clinician-context.procedures",
+        "wording": "받은 수술·주요 시술을 명칭, 시기, 이유, 중요한 합병증과 함께 알려주세요. 없으면 '없음'이라고 답해 주세요."
+      },
+      {
+        "fact_id": "medication.current",
+        "priority": 70,
+        "template_id": "question.clinician-context.medications",
+        "wording": "현재 사용하는 처방약·일반약·건강기능식품을 제품명 또는 성분명, 용량, 투여 경로, 횟수, 복용 이유와 함께 알려주세요. 없으면 '없음'이라고 답해 주세요."
+      },
+      {
+        "fact_id": "allergy.current",
+        "priority": 65,
+        "template_id": "question.clinician-context.allergies",
+        "wording": "약물·음식·기타 알레르기가 있다면 원인, 나타난 반응, 심한 정도를 알려주세요. 없으면 '없음'이라고 답해 주세요."
+      },
+      {
+        "fact_id": "history.family",
+        "priority": 60,
+        "template_id": "question.clinician-context.family-history",
+        "wording": "부모·형제자매·자녀 등 가까운 가족의 주요 질환을 가족관계, 질환명, 발병 나이와 함께 알려주세요. 없으면 '없음'이라고 답해 주세요."
+      },
+      {
+        "fact_id": "occupation.current",
+        "priority": 55,
+        "template_id": "question.clinician-context.occupation",
+        "wording": "현재·최근 직업, 종사 기간과 분진·화학물질·감염·소음·반복동작·교대근무 등 관련 노출을 알려주세요."
+      },
+      {
+        "answer_code_map": {
+          "1": "current",
+          "2": "former",
+          "3": "never"
+        },
+        "fact_id": "patient.smoking.status",
+        "priority": 50,
+        "template_id": "question.clinician-context.smoking-status",
+        "wording": "흡연 상태를 선택해 주세요. 1 현재 흡연, 2 과거 흡연, 3 평생 비흡연"
+      },
+      {
+        "fact_id": "patient.smoking.exposure_detail",
+        "priority": 45,
+        "template_id": "question.clinician-context.smoking-detail",
+        "wording": "흡연 또는 간접흡연 노출이 있다면 하루 양, 기간, 중단 시점과 계산 가능한 경우 갑년(pack-years)을 알려주세요. 없으면 '없음'이라고 답해 주세요."
+      },
+      {
+        "fact_id": "patient.alcohol.pattern",
+        "priority": 40,
+        "template_id": "question.clinician-context.alcohol",
+        "wording": "음주 여부, 주당 빈도, 술 종류와 한 번에 마시는 양을 알려주세요. 마시지 않으면 '없음'이라고 답해 주세요."
+      },
+      {
+        "fact_id": "clinical.measurements.available",
+        "priority": 20,
+        "template_id": "question.clinician-context.measurements",
+        "wording": "최근 혈압, 맥박, 체온, 호흡수, 산소포화도 등 확인 가능한 측정값이 있으면 측정 시각·단위·출처와 함께 알려주세요. 없으면 '없음'이라고 답해 주세요."
+      },
+      {
+        "fact_id": "interview.final_additional_comment",
+        "priority": 1,
+        "template_id": "question.clinician-context.final-comment",
+        "wording": "앞 질문에 없었지만 의료진에게 꼭 전달할 내용이나 원하는 도움이 있나요? 없으면 '없음'이라고 답해 주세요."
+      }
+    ],
+    "review_status": "unreviewed",
+    "status": "research_only",
+    "usage_modes": [
+      "research_test",
+      "simulation"
+    ],
+    "version": "0.1.0"
+  },
   "completion_handoff_policy": {
     "completion_announcement_ko": "설문이 종료되었습니다. 현재 응답은 이 종료 시점을 기준으로 확정되었습니다. 이후 입력은 기존 결과의 수정 요청 또는 새로운 상담 사유로 구분됩니다.",
     "completion_confirmation_is_not_consent": true,
@@ -1250,11 +1752,12 @@
       }
     ],
     "status": "research_only",
-    "version": "1.28.0"
+    "version": "1.29.0"
   },
   "preferred_loading": {
     "aggregate_resources_are_backward_compatible": true,
     "catalog_operation": "getReasonForEncounters",
+    "clinician_submission_context": "/gpt/clinician-submission-context.json",
     "common_operation": "getCommonInterviewFacts",
     "questionnaire_operations": [
       "getPatientExperienceQuestionnaire",
@@ -1349,76 +1852,82 @@
   },
   "resources": [
     {
-      "count": 34,
-      "name": "common-facts",
-      "path": "/gpt/common-facts.json",
-      "sha256": "ff73802862663cafc1ba15bf2e25154445d395b9f82fd0e4b72cea00e15055b6"
+      "count": 0,
+      "name": "clinician-submission-context",
+      "path": "/gpt/clinician-submission-context.json",
+      "sha256": "9d3d071486b94d36848fee96f29a9031c77ff6b72ded5bb32301b427d4e0ce68"
     },
     {
-      "count": 1096,
+      "count": 45,
+      "name": "common-facts",
+      "path": "/gpt/common-facts.json",
+      "sha256": "6e09cb9235e821a26e6d4745550d1082b051577d73a7abf6cf181148e7aa0ff5"
+    },
+    {
+      "count": 1107,
       "name": "facts",
       "path": "/gpt/facts.json",
-      "sha256": "d811374ddb625aec439c8c2211e7447d22a512a0fddb27e485edb19723ba9382"
+      "sha256": "b46a5dd65c07d390e72b53bc3f30ab5a4b306607189fd388593fc942c912eaa0"
     },
     {
       "count": 10,
       "name": "question-groups",
       "path": "/gpt/question-groups.json",
-      "sha256": "e46f1f80a7686b2dfd8b88aad63480892b012aedac61af3067d6d1803d132125"
+      "sha256": "7cbc344e1765e40637d245738cad9d77086db91f94543c30ce3ad22ed8698ae9"
     },
     {
       "count": 26,
       "name": "questionnaires-patient-experience-5th-2025-metadata",
       "path": "/gpt/questionnaires/patient-experience-5th-2025/metadata.json",
-      "sha256": "88b8bed2bab323ea0e8a5c60edf7f69944d0fc0d4f2e484a77fd92df10bf3b50"
+      "sha256": "91efa19f5752a078ec40a057cb959914671aba03170e9ea0eae2159bc90af68e"
     },
     {
       "count": 4,
       "name": "questionnaires-patient-experience-5th-2025-sections-1",
       "path": "/gpt/questionnaires/patient-experience-5th-2025/sections/1.json",
-      "sha256": "de6f6e9d3ae866a097089786b58c9d5788328d2a76d5f984c7970db45ac8247a"
+      "sha256": "62d64a84058e65f2a6cdda4fd24f598ea7aa2a41183e89e27db47456e8e954c3"
     },
     {
       "count": 4,
       "name": "questionnaires-patient-experience-5th-2025-sections-2",
       "path": "/gpt/questionnaires/patient-experience-5th-2025/sections/2.json",
-      "sha256": "8b1044f520d4271d9909ea049fe42b3c002c5807501c687edd20115bc182fb8f"
+      "sha256": "02782cc8941049ee982985fa36f8432c01707217fbfd09ec381d6403b4a1909c"
     },
     {
       "count": 5,
       "name": "questionnaires-patient-experience-5th-2025-sections-3",
       "path": "/gpt/questionnaires/patient-experience-5th-2025/sections/3.json",
-      "sha256": "7afb2a1452fcbdef20097c7c925837a9727be2bfa1b5fa57143465c0de0509b8"
+      "sha256": "0c9066edbfe07a5ff4400f5f82341721b082405d5ccc935238913ced3576124b"
     },
     {
       "count": 1,
       "name": "questionnaires-patient-experience-5th-2025-sections-4",
       "path": "/gpt/questionnaires/patient-experience-5th-2025/sections/4.json",
-      "sha256": "83a4115e14a8a9eb22d9aae333753026c77041e301286cd8033ced1c30c40d23"
+      "sha256": "8d5fb773855f09969e0d65458393990de6f9caf0ad4a84979f48ced6c2926d05"
     },
     {
       "count": 3,
       "name": "questionnaires-patient-experience-5th-2025-sections-5",
       "path": "/gpt/questionnaires/patient-experience-5th-2025/sections/5.json",
-      "sha256": "87ea4fc4b4e704d779e7681a42263a1e192df246ca953b95d266dda2de2dce9f"
+      "sha256": "2674b26412a3d3c2cbe684d51ee4b4d2599caf4c822fc3cef3024e7055cc2d0e"
     },
     {
       "count": 4,
       "name": "questionnaires-patient-experience-5th-2025-sections-6",
       "path": "/gpt/questionnaires/patient-experience-5th-2025/sections/6.json",
-      "sha256": "51d5b25edcce2f2f34617fcf0e43e0b33e32cfc0dd91574cee973fc24574a50e"
+      "sha256": "f78eaa80eab7f6bdae790ff040aac5146b1846cd5d04053bff3a660d7db2a125"
     },
     {
       "count": 2,
       "name": "questionnaires-patient-experience-5th-2025-sections-7",
       "path": "/gpt/questionnaires/patient-experience-5th-2025/sections/7.json",
-      "sha256": "d5d363eda5af89929af8c35e31e115ff0bc4e5b553e652f49a1487a7782ec30e"
+      "sha256": "485ec61ba4aa07f7a9c2e3e8e13b2c538aec61739f843940a17a8f0eb38b4202"
     },
     {
       "count": 3,
       "name": "questionnaires-patient-experience-5th-2025-sections-8",
       "path": "/gpt/questionnaires/patient-experience-5th-2025/sections/8.json",
-      "sha256": "4156e5bdc777f5d269fe876f46d3c23358b12eed8ecf920a31fbc8ccbf64c0c6"
+      "sha256": "5312bbffcb2d3bb0d02976265ba39a9654a746559ed17677786a62f19cf1e135"
     },
     {
       "count": 33,
@@ -1430,595 +1939,595 @@
       "count": 28,
       "name": "rfe-abdominal_pain-facts",
       "path": "/gpt/rfe/abdominal_pain/facts.json",
-      "sha256": "0a9c8a4dc379f9a5183e0a849e8b311bc0321301de6f792c24dbbb71eff620c5"
+      "sha256": "7b0b90d67adf2ed7be6a6bdd20c6f9009b52c5d52868322d9e82f59cb5d761a3"
     },
     {
       "count": 28,
       "name": "rfe-abdominal_pain-questions",
       "path": "/gpt/rfe/abdominal_pain/questions.json",
-      "sha256": "b393bd1ef6bf82a0e681d0721a736d4feb011ea3f30e2f3aab328e34bc22a37d"
+      "sha256": "1e08f6e055e7250c54b744cc500ccf0a419bf1c4be33eb807eacddb16447aa01"
     },
     {
       "count": 69,
       "name": "rfe-abdominal_pain-rules",
       "path": "/gpt/rfe/abdominal_pain/rules.json",
-      "sha256": "f605cfa3fa29318940ec416c52cfc0fed6eb6f5af25819b0dc7e9ea931401f92"
+      "sha256": "62dcb06ea1db2cf19e216a7465ff1b035e101493cf419e5993390f4edee1f00d"
     },
     {
       "count": 34,
       "name": "rfe-back_pain-facts",
       "path": "/gpt/rfe/back_pain/facts.json",
-      "sha256": "2b06d6b8d096173f6180ccf4f0017c91040ca4cf48284cb24a91adc99ed89bb0"
+      "sha256": "dfa60f3fd2a0bcba65032dbf5ce39694e7c3aa8bbf67eeb14b408b1af36a3fa5"
     },
     {
       "count": 34,
       "name": "rfe-back_pain-questions",
       "path": "/gpt/rfe/back_pain/questions.json",
-      "sha256": "4fdf5422dd0ed4162f7edce6656e52a3b5c380535fe5d2e3e71a67e4c60bb51d"
+      "sha256": "2309bc7190055702b320696d8a0ff5fc388dd5079464a4980e5724d69619cd8e"
     },
     {
       "count": 81,
       "name": "rfe-back_pain-rules",
       "path": "/gpt/rfe/back_pain/rules.json",
-      "sha256": "d48d6d30cd4a86a0cf48de4ab25ec149b6954d76606fecf61c34898c63ab03bd"
+      "sha256": "4ed3a9297da197bc93197617a139589ee1b25e7154acdb2925bacefbcd81ed18"
     },
     {
       "count": 35,
       "name": "rfe-bowel_symptoms-facts",
       "path": "/gpt/rfe/bowel_symptoms/facts.json",
-      "sha256": "45b6aa54eafe8fa0b2a7259c133061a042dfbbbcaa8d0c45ac0115796d0b60f5"
+      "sha256": "b2dcbdd60fad35582f40465defffdf0fb9063497230d30db2e1159c454fbeefd"
     },
     {
       "count": 35,
       "name": "rfe-bowel_symptoms-questions",
       "path": "/gpt/rfe/bowel_symptoms/questions.json",
-      "sha256": "3b8ffdf5a5621669a861b151d677b1c2017f9c5575ea380c18c6da295f910431"
+      "sha256": "01affecadb7b76e4bf03c9e3c19b99ca2825e9a8c75674fab58fdef85ad0574f"
     },
     {
       "count": 80,
       "name": "rfe-bowel_symptoms-rules",
       "path": "/gpt/rfe/bowel_symptoms/rules.json",
-      "sha256": "fbab2def0f10d626aa4e36b434350ffb315077db26cb4824e0a735613c742a9a"
+      "sha256": "5df85a5684e3446af4d4d2a25864763daf770051c1d0966673b4f62e1532e45d"
     },
     {
       "count": 30,
       "name": "rfe-chest_pain-facts",
       "path": "/gpt/rfe/chest_pain/facts.json",
-      "sha256": "6a316814d1d8312df7644e7fc40db5779469950f02b452cd635cce28ff78160f"
+      "sha256": "69423a895f49ad795952716978d0dcee2489804276ec0f3f3639e114698ef036"
     },
     {
       "count": 30,
       "name": "rfe-chest_pain-questions",
       "path": "/gpt/rfe/chest_pain/questions.json",
-      "sha256": "7bbd7a19e78b74dd3d57672cbd50f98c76c70ea14436d8c7a4b700f254c7d1c6"
+      "sha256": "cf7934548e1c073ce37538e65cde46ce39db412d4e9b4891305a5855e7d9d42e"
     },
     {
       "count": 73,
       "name": "rfe-chest_pain-rules",
       "path": "/gpt/rfe/chest_pain/rules.json",
-      "sha256": "5240b5829005f6bc81dc380ac109051e37ffe60d4c0f1102f66a72325cad01a7"
+      "sha256": "98f30b96e90cf31298d421b74ce86323d5381f82455b9dd85f37bfe58bf109ec"
     },
     {
       "count": 35,
       "name": "rfe-cough-facts",
       "path": "/gpt/rfe/cough/facts.json",
-      "sha256": "7230864e1674c030bd2d60d2debfb4fa7e987143689de04b7b2c68f71dc75275"
+      "sha256": "64cea988fcba6c4f79bf7fb87c4c1ca01837b45ffd1ed46c9c508b3f42d831dd"
     },
     {
       "count": 35,
       "name": "rfe-cough-questions",
       "path": "/gpt/rfe/cough/questions.json",
-      "sha256": "65d24d0198e50353fde97b4d4eb2f184dec94e03e59b4d171d463f2ccbbd27b3"
+      "sha256": "2dcbe2f1f871bdf5e7ecb0b33840bb7e67355f1f4207b598ee95b51a2fe2d579"
     },
     {
       "count": 88,
       "name": "rfe-cough-rules",
       "path": "/gpt/rfe/cough/rules.json",
-      "sha256": "8125912f5b63dd28f170f59bea8509955079e297c31806f06dfec5cdbf35def8"
+      "sha256": "3dd2480a38bdcf4120aa4d3dfc1994a5732d55f34a6b45992465ae01f4fe0924"
     },
     {
       "count": 54,
       "name": "rfe-diabetes_follow_up-facts",
       "path": "/gpt/rfe/diabetes_follow_up/facts.json",
-      "sha256": "b26c92b80f4f508df05d615eae1d9ccc63c2e020d13fa8626a88e795013d375d"
+      "sha256": "311e324f399f5ec710d727f614e1efb0bb02ea0ef0c063572fbfb934de46bb7c"
     },
     {
       "count": 54,
       "name": "rfe-diabetes_follow_up-questions",
       "path": "/gpt/rfe/diabetes_follow_up/questions.json",
-      "sha256": "f00525936fbaeaeb3d4257c87a16c23a7a19e375d08593412853990f01c6f279"
+      "sha256": "684c5abddf98a2a7c54df1539bf3cd5d9bf204267d557724eda3e85aff4b74d5"
     },
     {
       "count": 120,
       "name": "rfe-diabetes_follow_up-rules",
       "path": "/gpt/rfe/diabetes_follow_up/rules.json",
-      "sha256": "8b9ed9aa3bf11f22aae2d3620133119743bed877df8d237eb050df4c0a11cf52"
+      "sha256": "be67a81a5fa194574efdf0888dc6f7c88444e841c4fca77351939c1daefbbfff"
     },
     {
       "count": 31,
       "name": "rfe-dizziness_syncope-facts",
       "path": "/gpt/rfe/dizziness_syncope/facts.json",
-      "sha256": "d071cf4426c518418c73576df02eefe817a73273f9d60dbd85d11cdde748342e"
+      "sha256": "ee03a2167d338a1f71d1710e7b0528203c4e11a1ee2bcbf270ad404e8b9f2986"
     },
     {
       "count": 31,
       "name": "rfe-dizziness_syncope-questions",
       "path": "/gpt/rfe/dizziness_syncope/questions.json",
-      "sha256": "568654241246e429ac5d1f4b394eb84b9ad23cb3a33396a79517f126d032fac8"
+      "sha256": "1fe721f77859c5b7035c26426b404ec8f44306d556e813d638050e546f22d445"
     },
     {
       "count": 76,
       "name": "rfe-dizziness_syncope-rules",
       "path": "/gpt/rfe/dizziness_syncope/rules.json",
-      "sha256": "26023277baa2804c67f2afe7f4d7acecbafebc1cdf75749337dfba855e585f77"
+      "sha256": "080f8bfd249055b5710a2868019ba29ac00fb52b0004cbfc7598cc92993073c2"
     },
     {
       "count": 24,
       "name": "rfe-dyspnea-facts",
       "path": "/gpt/rfe/dyspnea/facts.json",
-      "sha256": "3bc1d877c54aeed18c1c8882cd3ae2d135cd7c6dd28a8fea5876bff34c722661"
+      "sha256": "4a58f3a1d7ecec2db002ee29178563beb6b3d7a115c3b76ead7b27b4fbced17f"
     },
     {
       "count": 24,
       "name": "rfe-dyspnea-questions",
       "path": "/gpt/rfe/dyspnea/questions.json",
-      "sha256": "6b0e13a50d72146b1f654d4fc182b27de631f0e424afd91ef1672b205084e373"
+      "sha256": "5e077dc675f169f580290c9a6fec01bed1ac3d5233cb6d8be0061813c366d393"
     },
     {
       "count": 57,
       "name": "rfe-dyspnea-rules",
       "path": "/gpt/rfe/dyspnea/rules.json",
-      "sha256": "ab36ee5d929ace55ffac377bef9a4c4070cab7907d7956b4bd1846c6123613e5"
+      "sha256": "67f7387bb40e9bf27e0a433d75aedbe416bfe468a8a945e2fab9fc993c9138bc"
     },
     {
       "count": 44,
       "name": "rfe-ear_hearing_symptoms-facts",
       "path": "/gpt/rfe/ear_hearing_symptoms/facts.json",
-      "sha256": "9970aa2bfc3c881cbac79ea59539b57cea91fdc2d4b468b73d4a83019e96a5aa"
+      "sha256": "5cd6650563edb92063aeb85bce2b9aa044cc6403dd8d2106856c173a6beb76fa"
     },
     {
       "count": 44,
       "name": "rfe-ear_hearing_symptoms-questions",
       "path": "/gpt/rfe/ear_hearing_symptoms/questions.json",
-      "sha256": "efb701de0daa53bd50540517f256084284b56e532a1ce699e8eae59130e354ae"
+      "sha256": "e821f77e207bdc1dbcdbc155080f2dddace51a05489b1dbaad3db905464ee75b"
     },
     {
       "count": 101,
       "name": "rfe-ear_hearing_symptoms-rules",
       "path": "/gpt/rfe/ear_hearing_symptoms/rules.json",
-      "sha256": "05aa721d57b2d6c9f838e459eb87e99cecc2554aa46b57110f6aa71b66c7acc5"
+      "sha256": "1ff86f9d7b6fdfa0c7f098be2a204a5396df519df77a7b360932f9b119dc8a87"
     },
     {
       "count": 35,
       "name": "rfe-edema-facts",
       "path": "/gpt/rfe/edema/facts.json",
-      "sha256": "18636a3748cd575ff71d327019ad1bc13985095cc942e2818ff7fc161e0fa952"
+      "sha256": "042a0d646b6e72c87e7f9f7145c5b4f8937dd153d8be3a53deac53b27d589ff9"
     },
     {
       "count": 35,
       "name": "rfe-edema-questions",
       "path": "/gpt/rfe/edema/questions.json",
-      "sha256": "4acfca8e9dfc8b4cb73235a52b8d71e634a8a546836f2feaf301eff4c9e33315"
+      "sha256": "e29e59968aee37f65b523c050f6952766ca0381692754e33fbcd960028b38ae1"
     },
     {
       "count": 81,
       "name": "rfe-edema-rules",
       "path": "/gpt/rfe/edema/rules.json",
-      "sha256": "2e3f3f04fb7563a7589d8fe33411ae3ba43df5479b7c382b6507ca838effaab4"
+      "sha256": "32bd6d31e4a50e7cc8e57c1ddedffbef76f1c3c74a8c2c567156683771e3d1c2"
     },
     {
       "count": 43,
       "name": "rfe-eye_symptoms-facts",
       "path": "/gpt/rfe/eye_symptoms/facts.json",
-      "sha256": "82d14628a77c8843bbf1e6be0004292ce6eca326e929e1cc10cb49bf1fa1e4c3"
+      "sha256": "70e2b6d7b1d7c0652503a086db1ffae65e1e8983f9d33d68908128e32f0f53aa"
     },
     {
       "count": 43,
       "name": "rfe-eye_symptoms-questions",
       "path": "/gpt/rfe/eye_symptoms/questions.json",
-      "sha256": "5a194cc72e5c35b37f184690e7de529d4afe1b4313d3c690363514584fa36d66"
+      "sha256": "9a58b6f1b9cb1a939be8ad86657ffc9f8744aa8c197ba3d9bda0b1e71348a5e9"
     },
     {
       "count": 102,
       "name": "rfe-eye_symptoms-rules",
       "path": "/gpt/rfe/eye_symptoms/rules.json",
-      "sha256": "b1c4fa6e7f444441d4126d9b8a32ce0d558fddc7dcbd221efd0f8b57413ca837"
+      "sha256": "554128a6c7600db312b529bde360dcde76ba2ed3a924890aac0118547a1f141d"
     },
     {
       "count": 34,
       "name": "rfe-fatigue-facts",
       "path": "/gpt/rfe/fatigue/facts.json",
-      "sha256": "2c3bb64fa0b2b6e972a361aecf4aa70ee5d02fe3d37a6e4f36bcdbc60502a66d"
+      "sha256": "77e7845e1b5c7dcffbf15b78f032f333ff9a0e9627871c03c1674454bfbe3e54"
     },
     {
       "count": 34,
       "name": "rfe-fatigue-questions",
       "path": "/gpt/rfe/fatigue/questions.json",
-      "sha256": "da9d4101c683d3d9cff62242ab1cb8f079385ce1ec4f96f7c038a508f87e12b3"
+      "sha256": "972cf51404d005c848ee0ca0d0e50121ff1d04448a763c310a5364ff57a2a9dd"
     },
     {
       "count": 76,
       "name": "rfe-fatigue-rules",
       "path": "/gpt/rfe/fatigue/rules.json",
-      "sha256": "e9d83810f2b1e578090c61d734e6c3810a46db0f1536c2a67f33e468860fee1d"
+      "sha256": "1a970b86e84031ca2782821d907cfea475a562e0d349abe43e76250b89d2af07"
     },
     {
       "count": 19,
       "name": "rfe-fever-facts",
       "path": "/gpt/rfe/fever/facts.json",
-      "sha256": "fdd79d98661d50106e142000d97c6d2f52a384779337890663bc0680279f6511"
+      "sha256": "56b0ea44195f3cf6415d3cd25d559329f7ede9168b4624ac42cee417e6723d51"
     },
     {
       "count": 19,
       "name": "rfe-fever-questions",
       "path": "/gpt/rfe/fever/questions.json",
-      "sha256": "44d26ed0e47b686802953b26a5e425c59fa7b8f76891f384e4f17b3c1ba5cb41"
+      "sha256": "5a03d49241347e847b334285b462c4fb7283498c3bbed2f3d9d90d9928043a27"
     },
     {
       "count": 45,
       "name": "rfe-fever-rules",
       "path": "/gpt/rfe/fever/rules.json",
-      "sha256": "1037441cec2c0058bd3c7d3316c91d10b4f894761782370ffa8b275b50875d23"
+      "sha256": "2fc54b22cedc9c666340459e6afa05d8cc6c1c64f4047fb2f437b15d5a73b9b5"
     },
     {
       "count": 32,
       "name": "rfe-focal_weakness_numbness-facts",
       "path": "/gpt/rfe/focal_weakness_numbness/facts.json",
-      "sha256": "4ba70107caa130dc124751fd251e9d58f0221c0f095bdb6473888c3efdac0dba"
+      "sha256": "75d24c7975252552d46e1c858b8637b0579d977062557a3cb622eda231759291"
     },
     {
       "count": 32,
       "name": "rfe-focal_weakness_numbness-questions",
       "path": "/gpt/rfe/focal_weakness_numbness/questions.json",
-      "sha256": "c4185054b68c4859111dedf22c61b348e3c1927a0be692acea3c761de0367262"
+      "sha256": "6dd58cea24527ceaedccac3c83ba328629716f77d0e2ee089566d340e0275b42"
     },
     {
       "count": 76,
       "name": "rfe-focal_weakness_numbness-rules",
       "path": "/gpt/rfe/focal_weakness_numbness/rules.json",
-      "sha256": "501fc5725c712cf77bf6912975cc658bf59ccd1ed7212fe64234008aea623585"
+      "sha256": "cb09015198d46b0ad9af2082000637a63f5b45d28c718aeaa08d11600b35a2ba"
     },
     {
       "count": 30,
       "name": "rfe-headache-facts",
       "path": "/gpt/rfe/headache/facts.json",
-      "sha256": "a2c78927447e14c9b2ffaa4594e178b275fde7ad73ae1b4d68a1614cb09f6a13"
+      "sha256": "d412873463c0340ef5b74616fff06db2c1d13a2eb62cf7ee45130cde75c0419e"
     },
     {
       "count": 30,
       "name": "rfe-headache-questions",
       "path": "/gpt/rfe/headache/questions.json",
-      "sha256": "676f5cb8823ad2ada12678903d4e9b8d04d2f68338b5018bd9755c9ac1140031"
+      "sha256": "889efe7c9969c946a11992bc5d12393dc887272b34754d56b85b04cbe084bf03"
     },
     {
       "count": 71,
       "name": "rfe-headache-rules",
       "path": "/gpt/rfe/headache/rules.json",
-      "sha256": "6ccd0b4f8218fa68f3278c5e97fd992604e1e41ae4286353ce6952c32ec99d47"
+      "sha256": "d3069cf4158b7615edaaa02a1868efddeccfcfb0f722c127c8065eced320bbe8"
     },
     {
       "count": 38,
       "name": "rfe-hypertension_follow_up-facts",
       "path": "/gpt/rfe/hypertension_follow_up/facts.json",
-      "sha256": "efd1a2bdf2e7793474e383930553f2467c498f81688e2f622e5fcfe3fb884f77"
+      "sha256": "d6ea9499d5db5de0806e33dda1c4cd3ce8a94924690542ba9dcd38de8cdc030d"
     },
     {
       "count": 38,
       "name": "rfe-hypertension_follow_up-questions",
       "path": "/gpt/rfe/hypertension_follow_up/questions.json",
-      "sha256": "ceb238cac12a929696337aa443e239a1857833841233c31361c950f018014cc9"
+      "sha256": "59280f2aa38440d3626642125f4662adb108651b2c890088cba1a62d2ed1b27e"
     },
     {
       "count": 86,
       "name": "rfe-hypertension_follow_up-rules",
       "path": "/gpt/rfe/hypertension_follow_up/rules.json",
-      "sha256": "4e9902afd5661d0c64dbeddcd920ca571f393beadc68fad1227c0b181bee4901"
+      "sha256": "c7457f23f1b350441bda6caeafe437f4ce8950dee77b8ce513a37d7ba0e96771"
     },
     {
       "count": 37,
       "name": "rfe-joint_limb_complaint-facts",
       "path": "/gpt/rfe/joint_limb_complaint/facts.json",
-      "sha256": "cd5454dfbb5f7b5c89680620fa1737a9cec18aea69839d30c728c0fb81d4f1fc"
+      "sha256": "06aa3e8fa5fc0796fa6b17135f08889b769fa9b42a08abc6c6362ac079f7c5ad"
     },
     {
       "count": 37,
       "name": "rfe-joint_limb_complaint-questions",
       "path": "/gpt/rfe/joint_limb_complaint/questions.json",
-      "sha256": "4b128ca24258ac8a45252b1280cc732485cded66a28229a681d298d8b74cfac1"
+      "sha256": "a6cf6141305d2112eb2f09306324e29e8993d05dc01f834acada99ca712f9c08"
     },
     {
       "count": 87,
       "name": "rfe-joint_limb_complaint-rules",
       "path": "/gpt/rfe/joint_limb_complaint/rules.json",
-      "sha256": "e0b05923d5cbff0c7944b51f13116acb0ae045006396a0eaa612804257157d9d"
+      "sha256": "3d4c6d825a8f39aa022753335dbfaf38b14ff271c991d77de9ca9eb38860ae15"
     },
     {
       "count": 36,
       "name": "rfe-medication_review-facts",
       "path": "/gpt/rfe/medication_review/facts.json",
-      "sha256": "75445b3d0f9a984a0721fe258fc96eb1360ee34a74110dc27db32bc1727db25c"
+      "sha256": "79a500a3d6caed8ffe8eedb6002d87706cf8d2cd7e7d8c57538d78bc7961e1c2"
     },
     {
       "count": 36,
       "name": "rfe-medication_review-questions",
       "path": "/gpt/rfe/medication_review/questions.json",
-      "sha256": "4bd772ebde1d2a5f1505563b1b86d5c33c6e988ef1d4e543995ba2f3c8887218"
+      "sha256": "770ef6b483c9acd414254a91ee81a398461aac8755ae79f1b0071a4c085d847d"
     },
     {
       "count": 82,
       "name": "rfe-medication_review-rules",
       "path": "/gpt/rfe/medication_review/rules.json",
-      "sha256": "54654f04dfa89b91fd3853ce16663dc4e86e953f7306e20e8c5f4b1ed7dbb6c3"
+      "sha256": "3c52c72bd5f658cc1d607e44dd2c900c806a55b935ca0debb3d4a9a7733033bb"
     },
     {
       "count": 64,
       "name": "rfe-memory_cognitive_concern-facts",
       "path": "/gpt/rfe/memory_cognitive_concern/facts.json",
-      "sha256": "dd577980a9edf3b634292882d927a1524ab39f0dbc1b2ba18cdde032943fb3f2"
+      "sha256": "8d4ddd93eebfd187a90b4e5d3c300af83e0485f8bef6fa9392f8b65cc25f480b"
     },
     {
       "count": 64,
       "name": "rfe-memory_cognitive_concern-questions",
       "path": "/gpt/rfe/memory_cognitive_concern/questions.json",
-      "sha256": "0e12438bdfa1e7bb4beff39675356a866a07edce23fb8b8f9cb9cf5375813083"
+      "sha256": "e1ad6b05298f9e86183766b1fc5ec71c6f46b288506089be85c6d5ef1504b04c"
     },
     {
       "count": 146,
       "name": "rfe-memory_cognitive_concern-rules",
       "path": "/gpt/rfe/memory_cognitive_concern/rules.json",
-      "sha256": "2a83745b68baa75a212af4728a3302408fdf2742ff73a9bd0d341d08ff3ced4c"
+      "sha256": "3c975de27e4b835abf4cb892c0d32455b0c39373e05aac83665e19a7dbdd48b9"
     },
     {
       "count": 64,
       "name": "rfe-memory_cognitive_concern-rules-completion",
       "path": "/gpt/rfe/memory_cognitive_concern/rules/completion.json",
-      "sha256": "c39120e4c7ab8bcf2d9d035ab2b87d6237079d08ab39a0e2fcf75136bae2b544"
+      "sha256": "92c0fb9392aa2c3e895a8a945bd3f80974b49206230db913fd449274c0c39382"
     },
     {
       "count": 64,
       "name": "rfe-memory_cognitive_concern-rules-priority",
       "path": "/gpt/rfe/memory_cognitive_concern/rules/priority.json",
-      "sha256": "a579e19641bf016a6c362882f6551258224e3c07d78ab86f7ee472b1b5c1d5b9"
+      "sha256": "d3939c18b9342c4cde56e204b348abdbe8c501a9b5301b887c9de4bf013c6a21"
     },
     {
       "count": 39,
       "name": "rfe-mental_health_sleep-facts",
       "path": "/gpt/rfe/mental_health_sleep/facts.json",
-      "sha256": "63b7ea8b16f38bcffc80387f6d3eac05c3713dd8059958443834c0e5e252c798"
+      "sha256": "9c800f911c441abc6b7dc46a04e396435032c6ca1f9943ad93f75e823ecf11cb"
     },
     {
       "count": 39,
       "name": "rfe-mental_health_sleep-questions",
       "path": "/gpt/rfe/mental_health_sleep/questions.json",
-      "sha256": "0783d2c5b4604f1b504c134beda9bd11d06e7489e7e6f00765c86b676f1a4c16"
+      "sha256": "7bb9de3edf88d5af217d0eb36e38bc71cebf20413629f250f1e5a25297e7c882"
     },
     {
       "count": 90,
       "name": "rfe-mental_health_sleep-rules",
       "path": "/gpt/rfe/mental_health_sleep/rules.json",
-      "sha256": "aaab84facff45ef220e314d409e70389b54144d383b24a3ce2dbbea5d6045058"
+      "sha256": "d2ec9d538417e2eff308f572c1c7df3c01e38dfe5c3a52a7fba48570c1503dbb"
     },
     {
       "count": 70,
       "name": "rfe-oral_dental_symptoms-facts",
       "path": "/gpt/rfe/oral_dental_symptoms/facts.json",
-      "sha256": "d8a5b8ca04211927fa27284ca66fe0789e8c0271e9de4fb773dca6c629f0d425"
+      "sha256": "79cf5b12ee2efaf2088f4799f48f2e5e158edc68b2ef3016e9028e5bbf7c3481"
     },
     {
       "count": 70,
       "name": "rfe-oral_dental_symptoms-questions",
       "path": "/gpt/rfe/oral_dental_symptoms/questions.json",
-      "sha256": "8bf0725f211d3926e1a758f9fe48569570d52087b077a599873f147fa21631b3"
+      "sha256": "e0bbd3e08c8a583aa73effa1b9da10b31f00cd1bab1910ff69103063fcf46fb7"
     },
     {
       "count": 161,
       "name": "rfe-oral_dental_symptoms-rules",
       "path": "/gpt/rfe/oral_dental_symptoms/rules.json",
-      "sha256": "f1f67482a04cba0131376b4a6fdae4b6b8021b13e88acc8cd7e8c4cf4246fb74"
+      "sha256": "f1efc079cf5926abb1ff7e6a4cfd34a8bd5ce4ef86bd7eb2053da0fdbcc0a208"
     },
     {
       "count": 70,
       "name": "rfe-oral_dental_symptoms-rules-completion",
       "path": "/gpt/rfe/oral_dental_symptoms/rules/completion.json",
-      "sha256": "b30107a899668528f2d75bfbdb0d5440eb9a5671229f2be8491760f92e63e88c"
+      "sha256": "1847d16eb2b25992329bc533204d4c422edff0f6d0c90c53e07c20162b5ab214"
     },
     {
       "count": 70,
       "name": "rfe-oral_dental_symptoms-rules-priority",
       "path": "/gpt/rfe/oral_dental_symptoms/rules/priority.json",
-      "sha256": "1b74cd07ed3968c7fbc41d6b58a162db16dbf185ad2b4685063f0d268499ffcd"
+      "sha256": "1f5608956721af5e709025c0dc949b86322ffdce45bd277debf77d9f345cb204"
     },
     {
       "count": 36,
       "name": "rfe-palpitations-facts",
       "path": "/gpt/rfe/palpitations/facts.json",
-      "sha256": "2d3a1223e4135ca14c19da17ad971f5384773c2bd8610ac138d28d62b23bd79a"
+      "sha256": "42cd556e27396c0c43ea8d94585880bfced44618db6fbeb403bdbd3de1a42b05"
     },
     {
       "count": 36,
       "name": "rfe-palpitations-questions",
       "path": "/gpt/rfe/palpitations/questions.json",
-      "sha256": "0d84e1a37727c49d8b728b705e59e63178cb78285554659fd4e1ce1baee31093"
+      "sha256": "b61ca0d25ca2099daac1177e90080a38f77dc3aee0babd1df016efb76128735d"
     },
     {
       "count": 82,
       "name": "rfe-palpitations-rules",
       "path": "/gpt/rfe/palpitations/rules.json",
-      "sha256": "f6311ede4e33b74f4104a4be28f2b517e2ab29a7a173907b421581cb0b36aec0"
+      "sha256": "be9f62d8e24d5ada25d2a4ff552054423c5fc59a0c917bd0bbede050dace4a29"
     },
     {
       "count": 86,
       "name": "rfe-pregnancy_postpartum_concern-facts",
       "path": "/gpt/rfe/pregnancy_postpartum_concern/facts.json",
-      "sha256": "faa2e8d3144f46a9a99e50313208072cc122d1fedda5dda18fc4aef3628f95a6"
+      "sha256": "4b1a1a0f19530a62a3a19485add672461d1f7b2ce82da9c117e77a0d2c6d9491"
     },
     {
       "count": 86,
       "name": "rfe-pregnancy_postpartum_concern-questions",
       "path": "/gpt/rfe/pregnancy_postpartum_concern/questions.json",
-      "sha256": "32085299ade9fdac5f13335ab3b7c87976d96e73f5369531bebf312c200cb9f6"
+      "sha256": "ccbc8cf10043de635e351c716183ffd8e6d7d1c2f361c83edc4e67f0a2d43056"
     },
     {
       "count": 196,
       "name": "rfe-pregnancy_postpartum_concern-rules",
       "path": "/gpt/rfe/pregnancy_postpartum_concern/rules.json",
-      "sha256": "80d131fa87bf41430298d4fa07f027ad179295ef17ff66c6ae097221e90246a8"
+      "sha256": "7ccbcf3deb68a206e5e80929dcb951a768a646cac45282f97389a75f9954364f"
     },
     {
       "count": 86,
       "name": "rfe-pregnancy_postpartum_concern-rules-completion",
       "path": "/gpt/rfe/pregnancy_postpartum_concern/rules/completion.json",
-      "sha256": "4999f5b88a3ee82b639bf5077b13681925abc9b9675ad881ec4b7546c7d9d5d2"
+      "sha256": "556303f18054caea5cfa19f36ee7a9a8e76a2370f82e426cdd480c3fa3ae8db1"
     },
     {
       "count": 86,
       "name": "rfe-pregnancy_postpartum_concern-rules-priority",
       "path": "/gpt/rfe/pregnancy_postpartum_concern/rules/priority.json",
-      "sha256": "cc25decc874a9c047be68f1c205aa50698952c9b7ce8953a38c9db30c61056af"
+      "sha256": "05cce1da55a2f16a3aedceaacdf8b888997603517d220181f41b23d5776c80fe"
     },
     {
       "count": 49,
       "name": "rfe-reproductive_genital_symptoms-facts",
       "path": "/gpt/rfe/reproductive_genital_symptoms/facts.json",
-      "sha256": "767f03425941e202e52895455b1ba14e17f5c59bdf3b616f3a0d760067dfe48d"
+      "sha256": "361089596613a9322f1fca58d00530961c829d1c3299fe7f84ff89f8720d43c6"
     },
     {
       "count": 49,
       "name": "rfe-reproductive_genital_symptoms-questions",
       "path": "/gpt/rfe/reproductive_genital_symptoms/questions.json",
-      "sha256": "acfbdb66a0a4a4c43f02b1e0eedf685745d7ba8b2e145543e12921c6eb75ec69"
+      "sha256": "3d96626906dd21d26972c55aef85f381f03ed7cf275930bb57fc55fd44905427"
     },
     {
       "count": 114,
       "name": "rfe-reproductive_genital_symptoms-rules",
       "path": "/gpt/rfe/reproductive_genital_symptoms/rules.json",
-      "sha256": "0c32a7672ad27a90e50c0d758d440ca06a1f882744d920a81dd0c97540fc01bd"
+      "sha256": "61ab005a3636b6b67fdacfa5c0aa8a03f3226e58b437ea71520cfcbef719815d"
     },
     {
       "count": 36,
       "name": "rfe-skin_complaint-facts",
       "path": "/gpt/rfe/skin_complaint/facts.json",
-      "sha256": "1c0cf892164ffad007b8c2d25487892c8a4939c7011bde62846463f8e116ed1c"
+      "sha256": "ce7fd32d4dbc14eed099be04de89095482358ad272eb2034ad373de318fb86a6"
     },
     {
       "count": 36,
       "name": "rfe-skin_complaint-questions",
       "path": "/gpt/rfe/skin_complaint/questions.json",
-      "sha256": "45ce1cee35386b9f1dcbd84de8dbfa07b6b2ce0fbaede6b6c40e92be79d9c5e6"
+      "sha256": "9a623e5424c93a9dc008e7e87e0abd98899a363632108bb888ae35136c4ae49e"
     },
     {
       "count": 83,
       "name": "rfe-skin_complaint-rules",
       "path": "/gpt/rfe/skin_complaint/rules.json",
-      "sha256": "81c4248c561c1187171864d457caf304c87be22e57853847bade369d073836f6"
+      "sha256": "3a095a16d32e759958533842f3695d08c8e71338f843c6cdb5918f1a09dcd3ac"
     },
     {
       "count": 39,
       "name": "rfe-upper_respiratory_symptoms-facts",
       "path": "/gpt/rfe/upper_respiratory_symptoms/facts.json",
-      "sha256": "03e008c1c2a38dc5824a872ce9a453a3cc1144eb2ac338459e23cff80e8efece"
+      "sha256": "b8bfb75ab887c56cdece5e4fca7cddade844f44904e654a552a9e63142dcd36d"
     },
     {
       "count": 39,
       "name": "rfe-upper_respiratory_symptoms-questions",
       "path": "/gpt/rfe/upper_respiratory_symptoms/questions.json",
-      "sha256": "14eb004193f487a07fd6df84c6337a95048f54d311facdc8208da623f5e3abc3"
+      "sha256": "faad5e0e1d0a31a2971f73e1462ea1f089ab8732da697535fe4cde45a6556ca0"
     },
     {
       "count": 89,
       "name": "rfe-upper_respiratory_symptoms-rules",
       "path": "/gpt/rfe/upper_respiratory_symptoms/rules.json",
-      "sha256": "237cb2c539bf43953a944edbdb7400933a860aea5ffdb52654c6186412413f24"
+      "sha256": "0c50468c0f9bd8d666267493c2937917b3a42358826d9be2010be223e884e999"
     },
     {
       "count": 37,
       "name": "rfe-urinary_symptoms-facts",
       "path": "/gpt/rfe/urinary_symptoms/facts.json",
-      "sha256": "8414a5b911b8bbba30dbae43e11464a69a23e35231bb53ffaa8bbce661326f7f"
+      "sha256": "683175c3df72cbf196bc84b612434b9432f5d8a5f43512a21b994436a9ec30bb"
     },
     {
       "count": 37,
       "name": "rfe-urinary_symptoms-questions",
       "path": "/gpt/rfe/urinary_symptoms/questions.json",
-      "sha256": "d3e379e0629a2ad91ec0f609d5e9a156624226cd5db64144accee4b9cfba5461"
+      "sha256": "0f1de067cb8cf85d73c0fcdf361e2fe64f26ffffdeb2ce4829d646bb77878e04"
     },
     {
       "count": 86,
       "name": "rfe-urinary_symptoms-rules",
       "path": "/gpt/rfe/urinary_symptoms/rules.json",
-      "sha256": "9eb4d91fb80c2322a0959c686c81c001d8b5d8cd2eab09fb865a66594a1954da"
+      "sha256": "d3070a4529632f1f130b429fc3d1c2fd34421e56cb5f320eb73c0fcfa5b7b459"
     },
     {
       "count": 30,
       "name": "rfe-vomiting_diarrhea-facts",
       "path": "/gpt/rfe/vomiting_diarrhea/facts.json",
-      "sha256": "503011b01afc64878e06c5ea6e91285d0b7add5c6e295fa2878f8909010a9d63"
+      "sha256": "f3f5d0a687e3f7705f903ab9d7f2020a1ced0ea161619f949450f0617a157176"
     },
     {
       "count": 30,
       "name": "rfe-vomiting_diarrhea-questions",
       "path": "/gpt/rfe/vomiting_diarrhea/questions.json",
-      "sha256": "f1319dd1568c4b62c368180baa352d0c7d8ab75a1655a4998a178d88ab85df81"
+      "sha256": "fb923673a1b66e11d24740173e6ce224041ddae8f1367194751fad5636c8bf18"
     },
     {
       "count": 73,
       "name": "rfe-vomiting_diarrhea-rules",
       "path": "/gpt/rfe/vomiting_diarrhea/rules.json",
-      "sha256": "4d8121fe459ef1c9f1e91409785a4897a564d5e7af666b38aa8701a7eee076c3"
+      "sha256": "a498e005bd26f128bfaf4faa865f0ba4578bcbcbdc24102ba44f418d209a41cb"
     },
     {
       "count": 38,
       "name": "rfe-weight_constitutional_change-facts",
       "path": "/gpt/rfe/weight_constitutional_change/facts.json",
-      "sha256": "79f08514eb96773d42ac6b759ebaf705175f49bb3744ac8f826e85d50c3f952d"
+      "sha256": "3d58b0648569f5352c24314c0d6fe3a3834f2e37c11ce1efc2adf12f7d338e06"
     },
     {
       "count": 38,
       "name": "rfe-weight_constitutional_change-questions",
       "path": "/gpt/rfe/weight_constitutional_change/questions.json",
-      "sha256": "8a45340ec876ab1446d374a2c98933a4821cc0e0b5914e7f1ca9a99ec0fdfa47"
+      "sha256": "26a11341383c737a87a83b5bade560a31afeb51943c74fb80a0ec9de534e0ec1"
     },
     {
       "count": 87,
       "name": "rfe-weight_constitutional_change-rules",
       "path": "/gpt/rfe/weight_constitutional_change/rules.json",
-      "sha256": "85247069d36f060b84d84f1bc56817ea794ad05714ed3027515861957ef9c20f"
+      "sha256": "2f2aabdab706e592854dcc151b5f63d91fcdbdf6348eeba599c8d2ea5e6a4e14"
     },
     {
       "count": 61,
       "name": "rfe-wound_minor_injury-facts",
       "path": "/gpt/rfe/wound_minor_injury/facts.json",
-      "sha256": "0a2961d005844b457c085c5aa83837ebe1274d6d4673720dd3661638fa6284e7"
+      "sha256": "42c30880f80ac965fd2eddfab010497e8bc5a2802d84251f9143e617fbc59bf0"
     },
     {
       "count": 61,
       "name": "rfe-wound_minor_injury-questions",
       "path": "/gpt/rfe/wound_minor_injury/questions.json",
-      "sha256": "385230170d46d929c81766098c546b46295d9f7bf449f391dcd7ada47014d8d5"
+      "sha256": "a6abd826d58bcec8dfd428ffeb05768203bfc1b933fcca152e56a2fb471b311f"
     },
     {
       "count": 145,
       "name": "rfe-wound_minor_injury-rules",
       "path": "/gpt/rfe/wound_minor_injury/rules.json",
-      "sha256": "d3fb7b15e9fbf8143dfe1518712753894fd9a5a30ab30f7fb78fe42c4892e7e7"
+      "sha256": "c79712d0fd093844eb2a953f94a902256ec3a4d90cd4e2ebb918103a23f0bdd8"
     },
     {
       "count": 61,
       "name": "rfe-wound_minor_injury-rules-completion",
       "path": "/gpt/rfe/wound_minor_injury/rules/completion.json",
-      "sha256": "1ca43be83981fe7aafac838624b8495f71ce6a16750f15ffdeb3223699b065b3"
+      "sha256": "288a04d519263108a54e9ae5c038a33d2f6a18e452787b92ad55c00c6e7d9521"
     },
     {
       "count": 61,
       "name": "rfe-wound_minor_injury-rules-priority",
       "path": "/gpt/rfe/wound_minor_injury/rules/priority.json",
-      "sha256": "8253d4ab1ad21e5e0005d2bbd6b74b8af85f00cd874346822f7b891710d8cbf0"
+      "sha256": "9c062d62a31ea18bfd758e4d10740271f4f87e69a4effc70a37770337c0814c4"
     },
     {
       "count": 358,
       "name": "safety-rules",
       "path": "/gpt/safety-rules.json",
-      "sha256": "e478a432302f796de7c8f2f57220dda4945880fe5ef754786e2e5b3eaa75282a"
+      "sha256": "935168cc737775ec7eb8a767b85b734d308ed909ae112ee01d99e1e0822585b8"
     },
     {
       "count": 10,
@@ -2271,5 +2780,5 @@
     ],
     "unreadable_material": "request_clearer_crop_or_text_once"
   },
-  "version": "1.28.0"
+  "version": "1.29.0"
 }
