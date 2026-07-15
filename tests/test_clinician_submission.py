@@ -68,6 +68,20 @@ class ClinicianSubmissionContextTest(unittest.TestCase):
                     package["indexes"]["questions_by_fact"],
                 )
 
+    def test_every_generated_package_loads_in_clinician_submission_mode(self):
+        for profile, config in PACKAGE_PROFILES.items():
+            with self.subTest(profile=profile):
+                session = InterviewSession(
+                    f"generated-clinician-{profile}",
+                    package_path=config["output"],
+                    clinician_submission=True,
+                )
+                handoff = session.clinician_handoff()
+                self.assertEqual(
+                    handoff["sections"][0]["id"],
+                    "reason_for_encounter_clinical_facts",
+                )
+
     def test_opt_in_mode_adds_context_requirements_and_numeric_mapping(self):
         session = self._session()
         required = session._required_facts(None, session._safety())
@@ -216,9 +230,34 @@ class ClinicianSubmissionContextTest(unittest.TestCase):
                         state["completion_status"]["missing_facts"],
                     )
                     self.assertEqual(len(selected), len(set(selected)))
-                    self.assertIsNotNone(state["clinician_handoff"])
+                    handoff = state["clinician_handoff"]
+                    self.assertIsNotNone(handoff)
+                    clinical_section = handoff["sections"][0]
+                    self.assertEqual(
+                        clinical_section["id"],
+                        "reason_for_encounter_clinical_facts",
+                    )
+                    self.assertTrue(clinical_section["entries"])
+                    self.assertFalse(
+                        clinical_section["summary"]["missing_required_fact_ids"]
+                    )
+                    for entry in clinical_section["entries"]:
+                        self.assertIn("status", entry)
+                        self.assertIn("dataAbsentReason", entry)
+                        self.assertIn("safety_relevant", entry)
                 finally:
                     path.unlink(missing_ok=True)
+
+    def test_incomplete_previsit_handoff_exposes_missing_symptom_facts(self):
+        session = self._session()
+        handoff = session.clinician_handoff()
+        clinical_section = handoff["sections"][0]
+        missing = set(clinical_section["summary"]["missing_required_fact_ids"])
+        self.assertIn("symptom.sputum", missing)
+        self.assertIn("symptom.duration", missing)
+        self.assertTrue(any(
+            entry["safety_relevant"] for entry in clinical_section["entries"]
+        ))
 
 
 if __name__ == "__main__":

@@ -164,6 +164,21 @@ def _condition_matches(condition: dict[str, Any], memory: ClinicalMemory) -> boo
     return False
 
 
+def _condition_fact_ids(value: Any) -> set[str]:
+    """Collect Fact references from an executable Rule condition."""
+    if isinstance(value, dict):
+        found = {value["fact"]} if isinstance(value.get("fact"), str) else set()
+        for item in value.values():
+            found.update(_condition_fact_ids(item))
+        return found
+    if isinstance(value, list):
+        found: set[str] = set()
+        for item in value:
+            found.update(_condition_fact_ids(item))
+        return found
+    return set()
+
+
 @dataclass
 class InterviewSession:
     session_id: str
@@ -1670,6 +1685,67 @@ class InterviewSession:
         if not self.clinician_submission:
             return None
         policy = self._clinician_context().get("clinician_handoff", {})
+        classification = duration_class(self.memory.value("symptom.duration"))
+        safety = self._safety()
+        package_required = set(
+            self._package_required_facts(classification, safety)
+        )
+        must_be_known = set(
+            self.package.get("interview_completion_policy", {})
+            .get("must_be_known_facts", [])
+        )
+        package_fact_nodes = {
+            node["id"]: node
+            for node in self.package["knowledge_graph"]["nodes"]
+            if node.get("type") == "Fact"
+        }
+        shared_fact_ids = set(self.clinician_fact_index)
+        observed_package_facts = (
+            set(self.memory.facts) | set(self.asked) | package_required
+        ) & set(package_fact_nodes)
+        package_specific_ids = observed_package_facts - shared_fact_ids
+        safety_fact_ids: set[str] = set()
+        for rule in self.package["rule_graph"]["rules"]:
+            if rule.get("type") == "safety":
+                safety_fact_ids.update(_condition_fact_ids(rule.get("when", {})))
+        groups_by_fact: dict[str, list[str]] = {}
+        for edge in self.package["knowledge_graph"]["edges"]:
+            if (
+                edge.get("type") == "SUPPORTS"
+                and edge.get("from") in package_fact_nodes
+                and str(edge.get("to", "")).startswith("group.")
+            ):
+                groups_by_fact.setdefault(edge["from"], []).append(edge["to"])
+        questions = self._questions_by_fact()
+
+        def package_entry(fact_id: str) -> dict[str, Any]:
+            record = self.memory.facts.get(fact_id)
+            state = self.memory.state(fact_id)
+            return {
+                "fact_id": fact_id,
+                "question_label": questions.get(fact_id, {}).get("wording", fact_id),
+                "clinical_group_ids": sorted(groups_by_fact.get(fact_id, [])),
+                "status": state,
+                "value": record.get("value") if record else None,
+                "dataAbsentReason": (
+                    record.get("dataAbsentReason") if record else "not-asked"
+                ),
+                "confidence": record.get("confidence") if record else None,
+                "required_for_current_encounter": fact_id in package_required,
+                "must_be_known": fact_id in must_be_known,
+                "safety_relevant": fact_id in safety_fact_ids,
+            }
+
+        ordered_package_ids = sorted(
+            package_specific_ids,
+            key=lambda fact_id: (
+                fact_id not in safety_fact_ids,
+                fact_id not in package_required,
+                self.asked.index(fact_id) if fact_id in self.asked else len(self.asked),
+                fact_id,
+            ),
+        )
+        package_entries = [package_entry(fact_id) for fact_id in ordered_package_ids]
         sections = []
         for section in policy.get("sections", []):
             entries = []
@@ -1685,12 +1761,42 @@ class InterviewSession:
                     "confidence": record.get("confidence") if record else None,
                 })
             sections.append({"id": section["id"], "entries": entries})
+        sections.insert(0, {
+            "id": "reason_for_encounter_clinical_facts",
+            "reason_for_encounter": self.reason_for_encounter,
+            "entries": package_entries,
+            "summary": {
+                "required_fact_count": len(package_required),
+                "included_package_specific_fact_count": len(package_entries),
+                "known_fact_ids": [
+                    item["fact_id"] for item in package_entries
+                    if item["status"] == "known"
+                ],
+                "data_absent_fact_ids": [
+                    item["fact_id"] for item in package_entries
+                    if item["status"] in {"unknown", "not_applicable"}
+                ],
+                "conflicting_fact_ids": [
+                    item["fact_id"] for item in package_entries
+                    if item["status"] == "conflicted"
+                ],
+                "missing_required_fact_ids": sorted(
+                    fact_id for fact_id in package_required
+                    if self.memory.state(fact_id) == "not_asked"
+                ),
+                "must_be_known_missing_fact_ids": sorted(
+                    fact_id for fact_id in package_required & must_be_known
+                    if self.memory.state(fact_id) != "known"
+                ),
+            },
+        })
         return {
             "format": "non_fhir_structured_summary",
             "status": "research_only",
             "review_status": "unreviewed",
             "reason_for_encounter": self.reason_for_encounter,
             "encounter_context": deepcopy(self.encounter_context),
+            "safety_status": safety,
             "sections": sections,
         }
 

@@ -1,0 +1,57 @@
+{
+  "id": "simulation.clinician-previsit-handoff-cases",
+  "version": "0.1.0",
+  "status": "synthetic",
+  "contains_real_patient_data": false,
+  "coverage_scope": "all_implemented_symptom_packages",
+  "cases": [
+    {
+      "id": "HANDOFF-INCOMPLETE-FIRST-ENCOUNTER",
+      "condition": "required symptom Facts remain not asked",
+      "expected": ["missing_required_fact_ids", "safety_relevant_fact_markers"]
+    },
+    {
+      "id": "HANDOFF-COMPLETE-WITH-DATA-ABSENT",
+      "condition": "required Facts are known or carry dataAbsentReason",
+      "expected": ["package_clinical_entries", "data_absent_fact_ids", "no_silent_negative"]
+    },
+    {
+      "id": "HANDOFF-PROXY-REMOTE-FOLLOW-UP",
+      "condition": "caregiver answers during remote follow-up",
+      "expected": ["proxy_report", "remote_assessment_limitations", "encounter_context"]
+    },
+    {
+      "id": "HANDOFF-SAFETY-ESCALATION",
+      "condition": "urgent or emergency Rule is triggered before routine completion",
+      "expected": ["safety_status", "triggered_rules", "missing_required_fact_ids"]
+    },
+    {
+      "id": "HANDOFF-CONFLICTING-ANSWER",
+      "condition": "two incompatible answers are preserved",
+      "expected": ["conflicting_fact_ids", "no_silent_overwrite"]
+    }
+  ],
+  "required_entry_fields": [
+    "fact_id",
+    "question_label",
+    "clinical_group_ids",
+    "status",
+    "value",
+    "dataAbsentReason",
+    "confidence",
+    "required_for_current_encounter",
+    "must_be_known",
+    "safety_relevant"
+  ],
+  "provenance": {
+    "created_by": {"type": "ai", "id": "codex-gpt5"},
+    "created_at": "2026-07-16T00:00:00Z",
+    "source_refs": [
+      "docs/context/004-interview-target.md",
+      "docs/context/005-fact.md",
+      "docs/context/021-simulation-model.md"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

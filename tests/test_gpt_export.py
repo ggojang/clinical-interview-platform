@@ -374,6 +374,28 @@ class GptExportTests(unittest.TestCase):
                     "vomiting_diarrhea", "weight_constitutional_change",
                 },
             )
+            planned = {
+                entry["id"] for entry in catalog["entries"]
+                if entry.get("implementation_status") == "planned"
+            }
+            self.assertEqual(planned, {
+                "rfe.epistaxis",
+                "rfe.tremor_movement_concern",
+                "rfe.seizure_event_follow_up",
+                "rfe.pediatric_growth_development",
+                "rfe.gait_falls_concern",
+            })
+            self.assertTrue(all(
+                "package_id" not in entry
+                for entry in catalog["entries"]
+                if entry["id"] in planned
+            ))
+            dysphagia = next(
+                entry for entry in catalog["entries"]
+                if entry["id"] == "rfe.dyspepsia_reflux"
+            )
+            self.assertIn("연하곤란", dysphagia["aliases"])
+            self.assertIn("dysphagia", dysphagia["aliases"])
             abdominal = json.loads(
                 (output_path / "rfe/abdominal_pain/facts.json").read_text(
                     encoding="utf-8"

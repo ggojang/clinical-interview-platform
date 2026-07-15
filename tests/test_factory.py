@@ -29,6 +29,28 @@ from tools.validator.audit_expansion_queue import run as run_expansion_audit
 
 
 class CompilerTests(unittest.TestCase):
+    def test_next_gap_queue_tracks_unimplemented_previsit_packages(self):
+        root = Path(__file__).resolve().parents[1]
+        queue = json.loads(
+            (root / "knowledge/catalog/planned-package-work-queue-v0.4.json")
+            .read_text(encoding="utf-8")
+        )
+        catalog = json.loads(
+            (root / "knowledge/catalog/primary-care-rfe.json")
+            .read_text(encoding="utf-8")
+        )
+        queued = {item["rfe"] for item in queue["order"]}
+        planned = {
+            item["id"] for item in catalog["entries"]
+            if item.get("implementation_status") == "planned"
+        }
+        self.assertEqual(queued, planned)
+        self.assertTrue(all(item["state"] == "planned" for item in queue["order"]))
+        self.assertIn(
+            "clinician handoff includes collected required missing and conflicting package Facts",
+            queue["definition_of_done"],
+        )
+
     def test_grouped_expansion_queue_passes_release_gate_audit(self):
         report = run_expansion_audit()
         self.assertTrue(report["passed"])

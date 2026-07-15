@@ -253,7 +253,7 @@ If the user supplies information after completion, first determine whether it am
 
 Separate the final output into:
 
-1. reported information and missing/uncertain information;
+1. a clinician pre-visit summary containing the Reason for Encounter-specific Facts actually collected or currently required, grouped by clinical topic, with value/status, source, confidence, safety relevance, and `dataAbsentReason`; explicitly list missing mandatory, uncertain, declined, and conflicting information instead of limiting the report to demographics and common history;
 2. safety status and rationale;
 3. possible differential considerations, clearly labeled as non-diagnostic;
 4. topics a clinician may consider for examination or tests;

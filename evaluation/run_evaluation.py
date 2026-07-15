@@ -22,6 +22,7 @@ def evaluate_case(case_path: Path, package_path: Path) -> dict[str, Any]:
         case["id"],
         package_path=package_path,
         encounter_context=case.get("encounter_context"),
+        clinician_submission=bool(case.get("clinician_submission", False)),
     )
     utterance = simulator.initial(case.get("simulation_language", "en"))
     selected_facts: list[str] = []
@@ -126,6 +127,7 @@ def evaluate_case(case_path: Path, package_path: Path) -> dict[str, Any]:
         "completion_status": state.get("completion_status"),
         "package": state.get("package"),
         "encounter_context": state.get("patient_context"),
+        "clinician_handoff": state.get("clinician_handoff"),
     }
 
 
