@@ -1,0 +1,2072 @@
+{
+  "id": "knowledge.generated.thyroid-concern-follow-up",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-thyroid-concern-follow-up-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-07-14",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-07-15",
+    "next_full_review_at": "2027-01-10",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.thyroid.routing",
+      "type": "ClinicalGroup",
+      "display": "routing"
+    },
+    {
+      "id": "group.thyroid.safety",
+      "type": "ClinicalGroup",
+      "display": "safety"
+    },
+    {
+      "id": "group.thyroid.common",
+      "type": "ClinicalGroup",
+      "display": "common"
+    },
+    {
+      "id": "group.thyroid.hyper",
+      "type": "ClinicalGroup",
+      "display": "hyper"
+    },
+    {
+      "id": "group.thyroid.hypo",
+      "type": "ClinicalGroup",
+      "display": "hypo"
+    },
+    {
+      "id": "group.thyroid.treatment",
+      "type": "ClinicalGroup",
+      "display": "treatment"
+    },
+    {
+      "id": "group.thyroid.neck-eye",
+      "type": "ClinicalGroup",
+      "display": "neck-eye"
+    }
+  ],
+  "group_hypothesis_edges": [],
+  "safety_rules": [
+    {
+      "id": "rule.thyroid-concern-follow-up.safety.storm",
+      "priority": 1000,
+      "when": {
+        "fact": "thyroid.storm_pattern",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.thyroid-concern-follow-up.safety.myxoedema",
+      "priority": 1000,
+      "when": {
+        "fact": "thyroid.myxoedema_pattern",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.thyroid-concern-follow-up.safety.cardiopulmonary",
+      "priority": 1000,
+      "when": {
+        "fact": "thyroid.cardiopulmonary_instability",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.thyroid-concern-follow-up.safety.airway",
+      "priority": 1000,
+      "when": {
+        "fact": "thyroid.airway_or_swallowing_compromise",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.thyroid-concern-follow-up.safety.agranulocytosis",
+      "priority": 990,
+      "when": {
+        "fact": "thyroid.antithyroid_fever_sore_throat_or_ulcers",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.thyroid-concern-follow-up.safety.liver-warning",
+      "priority": 980,
+      "when": {
+        "fact": "thyroid.antithyroid_liver_warning",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.thyroid-concern-follow-up.safety.vision-warning",
+      "priority": 990,
+      "when": {
+        "fact": "thyroid.sudden_vision_loss_or_severe_eye_pain",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.thyroid-concern-follow-up.safety.rapid-neck-growth",
+      "priority": 980,
+      "when": {
+        "fact": "thyroid.rapid_neck_growth_hoarseness_or_dysphagia",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.thyroid-concern-follow-up.safety.pregnancy-treatment",
+      "priority": 970,
+      "when": {
+        "fact": "thyroid.pregnancy_or_planning_with_treatment_risk",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.thyroid-concern-follow-up.safety.vomiting-dehydration",
+      "priority": 980,
+      "when": {
+        "fact": "thyroid.severe_persistent_vomiting_and_dehydration",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.thyroid-concern-follow-up.safety.bradycardia-syncope",
+      "priority": 1000,
+      "when": {
+        "fact": "thyroid.severe_bradycardia_with_syncope",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.thyroid-concern-follow-up.safety.postoperative",
+      "priority": 1000,
+      "when": {
+        "fact": "thyroid.postoperative_neck_swelling_or_tetany",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "thyroid.primary_group",
+        "display": "Primary Thyroid Presentation",
+        "value_type": "coded",
+        "allowed_values": [
+          "suspected_hyperthyroid",
+          "suspected_hypothyroid",
+          "known_hyperthyroid_followup",
+          "known_hypothyroid_followup",
+          "thyroid_enlargement_or_nodule",
+          "post_treatment_followup",
+          "other_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.primary-group",
+        "display": "Primary Thyroid Presentation",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.primary-group",
+        "wording": "이번 방문은 갑상선기능 항진 의심 증상, 저하 의심 증상, 항진증 추적, 저하증 추적, 목의 갑상선 비대·결절, 수술·방사성요오드 후 추적 중 무엇에 가깝나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 180,
+          "reason": "primary-group"
+        }
+      ],
+      "supports": [
+        "group.thyroid.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.storm_pattern",
+        "display": "Possible Thyroid Storm",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.storm",
+        "display": "Possible Thyroid Storm",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.storm",
+        "wording": "고열과 매우 빠르거나 불규칙한 맥박이 있으면서 심한 초조·혼란·의식저하 중 하나가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 179,
+          "reason": "storm"
+        }
+      ],
+      "supports": [
+        "group.thyroid.safety",
+        "group.thyroid.hyper"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.myxoedema_pattern",
+        "display": "Possible Myxoedema Emergency",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.myxoedema",
+        "display": "Possible Myxoedema Emergency",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.myxoedema",
+        "wording": "체온이 비정상적으로 낮고 심하게 졸리거나 혼란스러우며 숨이 느려지거나 깨우기 어려운가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 178,
+          "reason": "myxoedema"
+        }
+      ],
+      "supports": [
+        "group.thyroid.safety",
+        "group.thyroid.hypo"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.cardiopulmonary_instability",
+        "display": "Cardiopulmonary Instability",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.cardiopulmonary",
+        "display": "Cardiopulmonary Instability",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.cardiopulmonary",
+        "wording": "두근거림과 함께 지속되는 흉통·심한 호흡곤란·실신 또는 거의 쓰러질 것 같은 증상이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 177,
+          "reason": "cardiopulmonary"
+        }
+      ],
+      "supports": [
+        "group.thyroid.safety",
+        "group.thyroid.hyper"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.airway_or_swallowing_compromise",
+        "display": "Airway or Swallowing Compromise",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.airway",
+        "display": "Airway or Swallowing Compromise",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.airway",
+        "wording": "목의 부기 때문에 숨쉬기 매우 어렵거나 침도 삼키기 힘든가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 176,
+          "reason": "airway"
+        }
+      ],
+      "supports": [
+        "group.thyroid.safety",
+        "group.thyroid.neck-eye"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.antithyroid_fever_sore_throat_or_ulcers",
+        "display": "Antithyroid Drug Infection Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.agranulocytosis",
+        "display": "Antithyroid Drug Infection Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.agranulocytosis",
+        "wording": "카비마졸·메티마졸·프로필티오우라실을 복용 중이며 발열·심한 인후통·입안 궤양·감염 같은 심한 처짐이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 175,
+          "reason": "agranulocytosis"
+        }
+      ],
+      "supports": [
+        "group.thyroid.safety",
+        "group.thyroid.treatment"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.antithyroid_liver_warning",
+        "display": "Antithyroid Drug Liver Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.liver-warning",
+        "display": "Antithyroid Drug Liver Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.liver-warning",
+        "wording": "항갑상선제를 복용 중이며 황달·짙은 소변·창백한 변·전신 가려움 또는 오른쪽 윗배 통증이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 174,
+          "reason": "liver-warning"
+        }
+      ],
+      "supports": [
+        "group.thyroid.safety",
+        "group.thyroid.treatment"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.sudden_vision_loss_or_severe_eye_pain",
+        "display": "Vision-threatening Eye Symptoms",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.vision-warning",
+        "display": "Vision-threatening Eye Symptoms",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.vision-warning",
+        "wording": "갑자기 시력이 떨어지거나 색이 다르게 보이고, 심한 눈 통증 또는 빠르게 심해지는 복시가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 173,
+          "reason": "vision-warning"
+        }
+      ],
+      "supports": [
+        "group.thyroid.safety",
+        "group.thyroid.neck-eye"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.rapid_neck_growth_hoarseness_or_dysphagia",
+        "display": "Rapid Thyroid Enlargement Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.rapid-neck-growth",
+        "display": "Rapid Thyroid Enlargement Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.rapid-neck-growth",
+        "wording": "목의 덩이·부기가 빠르게 커지거나 새로 지속되는 쉰목소리·삼킴곤란이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 172,
+          "reason": "rapid-neck-growth"
+        }
+      ],
+      "supports": [
+        "group.thyroid.safety",
+        "group.thyroid.neck-eye"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.pregnancy_or_planning_with_treatment_risk",
+        "display": "Pregnancy with Thyroid Treatment Risk",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.pregnancy-treatment",
+        "display": "Pregnancy with Thyroid Treatment Risk",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.pregnancy-treatment",
+        "wording": "임신 중·수유 중·임신 계획이 있는데 항갑상선제·방사성요오드 치료 중이거나 갑상선약 조정이 필요한 상황인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 171,
+          "reason": "pregnancy-treatment"
+        }
+      ],
+      "supports": [
+        "group.thyroid.safety",
+        "group.thyroid.treatment"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.severe_persistent_vomiting_and_dehydration",
+        "display": "Severe Vomiting and Dehydration",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.vomiting-dehydration",
+        "display": "Severe Vomiting and Dehydration",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.vomiting-dehydration",
+        "wording": "심한 두근거림·떨림과 함께 계속 토해서 물을 못 마시고 소변이 크게 줄었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 170,
+          "reason": "vomiting-dehydration"
+        }
+      ],
+      "supports": [
+        "group.thyroid.safety",
+        "group.thyroid.hyper"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.severe_bradycardia_with_syncope",
+        "display": "Severe Bradycardia with Syncope",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.bradycardia-syncope",
+        "display": "Severe Bradycardia with Syncope",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.bradycardia-syncope",
+        "wording": "맥박이 매우 느리다고 들었거나 느껴지면서 실신·의식 혼란·심한 호흡곤란이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 169,
+          "reason": "bradycardia-syncope"
+        }
+      ],
+      "supports": [
+        "group.thyroid.safety",
+        "group.thyroid.hypo"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.postoperative_neck_swelling_or_tetany",
+        "display": "Post-thyroid Surgery Emergency",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.postoperative",
+        "display": "Post-thyroid Surgery Emergency",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.postoperative",
+        "wording": "최근 갑상선 수술 후 목이 빠르게 붓거나 숨쉬기 어렵고, 입 주위·손발 저림 또는 손이 심하게 오그라드나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 168,
+          "reason": "postoperative"
+        }
+      ],
+      "supports": [
+        "group.thyroid.safety",
+        "group.thyroid.treatment"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.onset_duration_and_course",
+        "display": "Onset Duration and Course",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.onset",
+        "display": "Onset Duration and Course",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.onset",
+        "wording": "증상이나 검사 이상을 처음 안 시기, 지속 기간과 좋아짐·악화·반복 경과를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 155,
+          "reason": "onset"
+        }
+      ],
+      "supports": [
+        "group.thyroid.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.diagnosis_and_cause",
+        "display": "Thyroid Diagnosis and Cause",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.diagnosis",
+        "display": "Thyroid Diagnosis and Cause",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.diagnosis",
+        "wording": "진단받은 갑상선 질환과 원인(그레이브스병·하시모토갑상선염·결절·갑상선염 등), 진단 시기를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 154,
+          "reason": "diagnosis"
+        }
+      ],
+      "supports": [
+        "group.thyroid.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.current_symptom_priority",
+        "display": "Current Symptom Priority",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.priority",
+        "display": "Current Symptom Priority",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.priority",
+        "wording": "현재 가장 불편하거나 의료진에게 우선 확인받고 싶은 증상은 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 153,
+          "reason": "priority"
+        }
+      ],
+      "supports": [
+        "group.thyroid.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.weight_and_appetite_change",
+        "display": "Weight and Appetite Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.weight",
+        "display": "Weight and Appetite Change",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.weight",
+        "wording": "최근 체중과 식욕 변화의 양·기간, 의도한 변화인지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 152,
+          "reason": "weight"
+        }
+      ],
+      "supports": [
+        "group.thyroid.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.heart_rate_rhythm_and_blood_pressure",
+        "display": "Heart Rate Rhythm and Blood Pressure",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.vitals",
+        "display": "Heart Rate Rhythm and Blood Pressure",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.vitals",
+        "wording": "최근 맥박수·규칙성·혈압 측정값과 측정 시각을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 151,
+          "reason": "vitals"
+        }
+      ],
+      "supports": [
+        "group.thyroid.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.temperature_heat_or_cold_intolerance",
+        "display": "Temperature Intolerance",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.temperature",
+        "display": "Temperature Intolerance",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.temperature",
+        "wording": "더위를 못 참음·땀이 많음 또는 추위를 심하게 탐·체온 저하가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 150,
+          "reason": "temperature"
+        }
+      ],
+      "supports": [
+        "group.thyroid.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.energy_sleep_and_function",
+        "display": "Energy Sleep and Function",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.function",
+        "display": "Energy Sleep and Function",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.function",
+        "wording": "피로·기력·잠·업무·학업·일상 기능이 어떻게 달라졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 149,
+          "reason": "function"
+        }
+      ],
+      "supports": [
+        "group.thyroid.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.bowel_habit_change",
+        "display": "Bowel Habit Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.bowel",
+        "display": "Bowel Habit Change",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.bowel",
+        "wording": "배변 횟수 증가·설사 또는 변비가 새로 생겼나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 148,
+          "reason": "bowel"
+        }
+      ],
+      "supports": [
+        "group.thyroid.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.menstrual_fertility_and_sexual_change",
+        "display": "Menstrual Fertility and Sexual Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.reproductive",
+        "display": "Menstrual Fertility and Sexual Change",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.reproductive",
+        "wording": "해당되면 생리 주기·양, 임신 가능성·임신 계획·난임 또는 성기능 변화를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 147,
+          "reason": "reproductive"
+        }
+      ],
+      "supports": [
+        "group.thyroid.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.neck_or_eye_pain_present",
+        "display": "Thyroid-related Pain Present",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.pain-present",
+        "display": "Thyroid-related Pain Present",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.pain-present",
+        "wording": "목 앞쪽이나 눈 주위에 현재 통증이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 146,
+          "reason": "pain-present"
+        }
+      ],
+      "supports": [
+        "group.thyroid.common",
+        "group.thyroid.neck-eye"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.pain_nrs",
+        "display": "Thyroid-related Pain NRS",
+        "value_type": "integer"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.pain-nrs",
+        "display": "Thyroid-related Pain NRS",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.pain-nrs",
+        "wording": "[필수] 현재 목 또는 눈 통증을 0부터 10까지 숫자로 알려주세요. 0은 통증 없음, 10은 상상할 수 있는 가장 심한 통증입니다.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 145,
+          "reason": "pain-nrs"
+        }
+      ],
+      "supports": [
+        "group.thyroid.common",
+        "group.thyroid.neck-eye"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.current_medicines_dose_and_schedule",
+        "display": "Current Thyroid Medicines",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.medicines",
+        "display": "Current Thyroid Medicines",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.medicines",
+        "wording": "갑상선약과 관련 약의 이름·용량·복용 횟수·복용 시간, 최근 변경일을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 144,
+          "reason": "medicines"
+        }
+      ],
+      "supports": [
+        "group.thyroid.common",
+        "group.thyroid.treatment"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.adherence_and_missed_doses",
+        "display": "Adherence and Missed Doses",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.adherence",
+        "display": "Adherence and Missed Doses",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.adherence",
+        "wording": "최근 빠뜨리거나 임의로 중단·증량한 횟수와 이유를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 143,
+          "reason": "adherence"
+        }
+      ],
+      "supports": [
+        "group.thyroid.common",
+        "group.thyroid.treatment"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.medicine_timing_interactions_and_biotin",
+        "display": "Medicine Timing Interactions and Biotin",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.interactions",
+        "display": "Medicine Timing Interactions and Biotin",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.interactions",
+        "wording": "레보티록신 복용과 음식·철분·칼슘·제산제 간격, 비오틴 보충제와 다른 약·건강식품을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 142,
+          "reason": "interactions"
+        }
+      ],
+      "supports": [
+        "group.thyroid.common",
+        "group.thyroid.treatment"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.latest_tsh_ft4_ft3_results",
+        "display": "Latest Thyroid Function Tests",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.latest-labs",
+        "display": "Latest Thyroid Function Tests",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.latest-labs",
+        "wording": "최근 TSH·유리 T4·유리 T3 결과, 검사일과 검사실 기준범위를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 141,
+          "reason": "latest-labs"
+        }
+      ],
+      "supports": [
+        "group.thyroid.common",
+        "group.thyroid.treatment"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.test_trend_and_treatment_relation",
+        "display": "Thyroid Test Trend",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.lab-trend",
+        "display": "Thyroid Test Trend",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.lab-trend",
+        "wording": "이전 검사와 비교한 추세, 약 변경 후 검사까지의 간격과 당시 증상을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 140,
+          "reason": "lab-trend"
+        }
+      ],
+      "supports": [
+        "group.thyroid.common",
+        "group.thyroid.treatment"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.antibody_imaging_and_pathology_results",
+        "display": "Antibody Imaging and Pathology",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.tests",
+        "display": "Antibody Imaging and Pathology",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.tests",
+        "wording": "TPOAb·TRAb 등 항체, 초음파·핵의학검사·세침검사 결과와 날짜를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 139,
+          "reason": "tests"
+        }
+      ],
+      "supports": [
+        "group.thyroid.common",
+        "group.thyroid.neck-eye"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.prior_treatments_and_procedures",
+        "display": "Prior Thyroid Treatments",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.prior-treatment",
+        "display": "Prior Thyroid Treatments",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.prior-treatment",
+        "wording": "과거 항갑상선제·방사성요오드·수술과 치료 시기·결과·합병증을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 138,
+          "reason": "prior-treatment"
+        }
+      ],
+      "supports": [
+        "group.thyroid.common",
+        "group.thyroid.treatment"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.autoimmune_pituitary_cardiac_and_bone_history",
+        "display": "Relevant Comorbidity",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.comorbidity",
+        "display": "Relevant Comorbidity",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.comorbidity",
+        "wording": "다른 자가면역질환, 뇌하수체·심장·골다공증·간질환 병력을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 137,
+          "reason": "comorbidity"
+        }
+      ],
+      "supports": [
+        "group.thyroid.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.family_history",
+        "display": "Thyroid Family History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.family",
+        "display": "Thyroid Family History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.family",
+        "wording": "가족의 갑상선기능 이상·갑상선암·자가면역질환 병력을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 136,
+          "reason": "family"
+        }
+      ],
+      "supports": [
+        "group.thyroid.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.smoking_vaping_and_iodine_exposure",
+        "display": "Smoking and Iodine Exposure",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.exposure",
+        "display": "Smoking and Iodine Exposure",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.exposure",
+        "wording": "흡연·전자담배와 최근 조영제 검사, 요오드 함유 약·보충제·해조류 과다섭취를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 135,
+          "reason": "exposure"
+        }
+      ],
+      "supports": [
+        "group.thyroid.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.other_detail_or_patient_priority",
+        "display": "Other Thyroid Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.other-detail",
+        "display": "Other Thyroid Detail",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.other-detail",
+        "wording": "질문에 없지만 의료진에게 꼭 전달하고 싶은 내용이나 걱정을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 80,
+          "reason": "other-detail"
+        }
+      ],
+      "supports": [
+        "group.thyroid.routing",
+        "group.thyroid.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.hyper_palpitations_tremor_and_anxiety",
+        "display": "Hyperthyroid Symptom Cluster",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.hyper-cluster",
+        "display": "Hyperthyroid Symptom Cluster",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.hyper-cluster",
+        "wording": "두근거림·손떨림·초조·불안·과민함의 빈도와 심한 정도를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "hyper-cluster"
+        }
+      ],
+      "supports": [
+        "group.thyroid.hyper"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.hyper_muscle_weakness_and_exercise_tolerance",
+        "display": "Hyperthyroid Weakness",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.hyper-weakness",
+        "display": "Hyperthyroid Weakness",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.hyper-weakness",
+        "wording": "허벅지·어깨 근력 저하, 계단·운동 능력 감소가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "hyper-weakness"
+        }
+      ],
+      "supports": [
+        "group.thyroid.hyper"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.hyper_skin_hair_and_nail_change",
+        "display": "Hyperthyroid Skin Hair Nail Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.hyper-skin",
+        "display": "Hyperthyroid Skin Hair Nail Change",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.hyper-skin",
+        "wording": "피부가 덥고 축축함, 탈모·가려움·손발톱 변화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "hyper-skin"
+        }
+      ],
+      "supports": [
+        "group.thyroid.hyper"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.hyper_episode_triggers",
+        "display": "Thyrotoxicosis Triggers",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.hyper-triggers",
+        "display": "Thyrotoxicosis Triggers",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.hyper-triggers",
+        "wording": "최근 감염·수술·출산·갑상선 외상·약 중단 또는 요오드 노출 뒤 증상이 악화됐나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 127,
+          "reason": "hyper-triggers"
+        }
+      ],
+      "supports": [
+        "group.thyroid.hyper"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.hypo_cognitive_mood_and_slowness",
+        "display": "Hypothyroid Cognitive and Mood Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.hypo-cognition",
+        "display": "Hypothyroid Cognitive and Mood Change",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.hypo-cognition",
+        "wording": "생각·말·움직임이 느려짐, 집중·기억 저하 또는 우울감이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "hypo-cognition"
+        }
+      ],
+      "supports": [
+        "group.thyroid.hypo"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.hypo_skin_hair_swelling_and_voice",
+        "display": "Hypothyroid Physical Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.hypo-physical",
+        "display": "Hypothyroid Physical Change",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.hypo-physical",
+        "wording": "피부 건조·탈모·얼굴이나 몸의 부기·쉰목소리가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "hypo-physical"
+        }
+      ],
+      "supports": [
+        "group.thyroid.hypo"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.hypo_muscle_joint_and_cramp",
+        "display": "Hypothyroid Musculoskeletal Symptoms",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.hypo-muscle",
+        "display": "Hypothyroid Musculoskeletal Symptoms",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.hypo-muscle",
+        "wording": "근육통·관절통·쥐·근력저하가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "hypo-muscle"
+        }
+      ],
+      "supports": [
+        "group.thyroid.hypo"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.hypo_snoring_breathing_and_daytime_sleepiness",
+        "display": "Hypothyroid Breathing and Sleep",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.hypo-sleep",
+        "display": "Hypothyroid Breathing and Sleep",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.hypo-sleep",
+        "wording": "코골이·수면 중 호흡 문제·낮의 심한 졸림이 새로 생기거나 악화됐나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 127,
+          "reason": "hypo-sleep"
+        }
+      ],
+      "supports": [
+        "group.thyroid.hypo"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.neck_size_site_growth_and_laterality",
+        "display": "Thyroid Enlargement Detail",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "237495005"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.thyroid-concern-follow-up",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.neck-detail",
+        "display": "Thyroid Enlargement Detail",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.neck-detail",
+        "wording": "목 앞 부기·결절의 정확한 위치, 좌우, 크기와 성장 속도를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "neck-detail"
+        }
+      ],
+      "supports": [
+        "group.thyroid.neck-eye"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.compressive_neck_symptoms",
+        "display": "Compressive Neck Symptoms",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.compression",
+        "display": "Compressive Neck Symptoms",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.compression",
+        "wording": "숨참·누울 때 압박감·삼킴곤란·기침·쉰목소리가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "compression"
+        }
+      ],
+      "supports": [
+        "group.thyroid.neck-eye"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.eye_dryness_redness_bulging_and_diplopia",
+        "display": "Thyroid Eye Symptoms",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.eye-detail",
+        "display": "Thyroid Eye Symptoms",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.eye-detail",
+        "wording": "눈 건조·모래 낀 느낌·충혈·눈부심·돌출·눈꺼풀 변화·복시가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "eye-detail"
+        }
+      ],
+      "supports": [
+        "group.thyroid.neck-eye"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.eye_symptom_laterality_and_progression",
+        "display": "Thyroid Eye Laterality and Progression",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.eye-course",
+        "display": "Thyroid Eye Laterality and Progression",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.eye-course",
+        "wording": "눈 증상이 왼쪽·오른쪽·양쪽 중 어디이며 얼마나 빠르게 변했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 127,
+          "reason": "eye-course"
+        }
+      ],
+      "supports": [
+        "group.thyroid.neck-eye"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.treatment_side_effects",
+        "display": "Thyroid Treatment Side Effects",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.side-effects",
+        "display": "Thyroid Treatment Side Effects",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.side-effects",
+        "wording": "발진·가려움·멍·출혈·감염·복통·황달 등 치료 후 생긴 증상을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "side-effects"
+        }
+      ],
+      "supports": [
+        "group.thyroid.treatment"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.levothyroxine_response_and_overtreatment",
+        "display": "Levothyroxine Response",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.lt4-response",
+        "display": "Levothyroxine Response",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.lt4-response",
+        "wording": "레보티록신 복용 후 증상 변화와 두근거림·떨림·불면 같은 과치료 의심 증상이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "lt4-response"
+        }
+      ],
+      "supports": [
+        "group.thyroid.treatment"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.antithyroid_response_and_hypothyroid_shift",
+        "display": "Antithyroid Treatment Response",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.atd-response",
+        "display": "Antithyroid Treatment Response",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.atd-response",
+        "wording": "항갑상선제 후 증상 변화와 추위·피로·변비·체중증가 같은 저하 증상이 생겼나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "atd-response"
+        }
+      ],
+      "supports": [
+        "group.thyroid.treatment"
+      ]
+    },
+    {
+      "fact": {
+        "id": "thyroid.followup_plan_and_specialist",
+        "display": "Follow-up Plan",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.thyroid-concern-follow-up.followup-plan",
+        "display": "Follow-up Plan",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.thyroid-concern-follow-up.followup-plan",
+        "wording": "다음 혈액검사·초음파·내분비·안과 진료 일정과 의료진이 준 조정 기준을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 127,
+          "reason": "followup-plan"
+        }
+      ],
+      "supports": [
+        "group.thyroid.treatment"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nice.ng145.thyroid.2025",
+      "source.nhs.hyperthyroidism-complications.2026",
+      "source.nhs.carbimazole-safety.2026",
+      "source.stom.thyroid.20260715"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

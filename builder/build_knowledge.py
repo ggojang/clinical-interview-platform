@@ -285,6 +285,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-dyspepsia-reflux.json",
         "version": "0.1.0",
     },
+    "thyroid_concern_follow_up": {
+        "base_graph": ROOT / "knowledge/base/primary-care-thyroid-concern-follow-up.json",
+        "base_rules": ROOT / "rules/base/primary-care-thyroid-concern-follow-up.json",
+        "fragment_root": ROOT / "knowledge/generated/endocrine/thyroid-concern-follow-up",
+        "output_graph": ROOT / "knowledge/graph/primary-care-thyroid-concern-follow-up.json",
+        "output_rules": ROOT / "rules/primary-care-thyroid-concern-follow-up.json",
+        "version": "0.1.0",
+    },
 }
 
 

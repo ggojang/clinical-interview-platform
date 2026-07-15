@@ -56,6 +56,7 @@ class PatientSimulator:
                         "injury.pain_zero_to_ten",
                         "lump.pain_nrs",
                         "dyspepsia.pain_nrs",
+                        "thyroid.pain_nrs",
                     }
                     and isinstance(item.get("value"), int)
                     and 0 <= item["value"] <= 10
