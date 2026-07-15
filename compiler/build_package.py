@@ -447,6 +447,17 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/renal/kidney-function-ckd-follow-up",
         "research_manifests": [ROOT / "sources/manifests/primary-care-kidney-function-ckd-follow-up-research.json"],
     },
+    "liver_function_chronic_follow_up": {
+        "graph": ROOT / "knowledge/graph/primary-care-liver-function-chronic-follow-up.json",
+        "rules": ROOT / "rules/primary-care-liver-function-chronic-follow-up.json",
+        "sources": ROOT / "sources/manifests/primary-care-liver-function-chronic-follow-up.json",
+        "completion_policy": ROOT / "policies/primary-care-liver-function-chronic-follow-up-completion.json",
+        "output": ROOT / "packages/generated/primary-care-liver-function-chronic-follow-up-0.1.0.json",
+        "package_id": "package.primary-care-liver-function-chronic-follow-up", "package_version": "0.1.0",
+        "rfe": "rfe.liver_function_chronic_follow_up",
+        "simulation_root": ROOT / "simulation/patients/hepatology/liver-function-chronic-follow-up",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-liver-function-chronic-follow-up-research.json"],
+    },
 }
 
 ALLOWED_NODE_TYPES = {

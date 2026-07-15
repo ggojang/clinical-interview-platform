@@ -309,6 +309,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-kidney-function-ckd-follow-up.json",
         "version": "0.1.0",
     },
+    "liver_function_chronic_follow_up": {
+        "base_graph": ROOT / "knowledge/base/primary-care-liver-function-chronic-follow-up.json",
+        "base_rules": ROOT / "rules/base/primary-care-liver-function-chronic-follow-up.json",
+        "fragment_root": ROOT / "knowledge/generated/hepatology/liver-function-chronic-follow-up",
+        "output_graph": ROOT / "knowledge/graph/primary-care-liver-function-chronic-follow-up.json",
+        "output_rules": ROOT / "rules/primary-care-liver-function-chronic-follow-up.json",
+        "version": "0.1.0",
+    },
 }
 
 

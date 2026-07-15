@@ -1,0 +1,1750 @@
+{
+  "id": "knowledge.generated.liver-function-chronic-follow-up",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-liver-function-chronic-follow-up-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-07-14",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-07-15",
+    "next_full_review_at": "2027-01-10",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.liver.routing",
+      "type": "ClinicalGroup",
+      "display": "routing"
+    },
+    {
+      "id": "group.liver.safety",
+      "type": "ClinicalGroup",
+      "display": "safety"
+    },
+    {
+      "id": "group.liver.common",
+      "type": "ClinicalGroup",
+      "display": "common"
+    },
+    {
+      "id": "group.liver.cause",
+      "type": "ClinicalGroup",
+      "display": "cause"
+    },
+    {
+      "id": "group.liver.complication",
+      "type": "ClinicalGroup",
+      "display": "complication"
+    },
+    {
+      "id": "group.liver.treatment",
+      "type": "ClinicalGroup",
+      "display": "treatment"
+    }
+  ],
+  "group_hypothesis_edges": [],
+  "safety_rules": [
+    {
+      "id": "rule.liver-function-chronic-follow-up.safety.gi-bleed",
+      "priority": 1000,
+      "when": {
+        "fact": "liver.haematemesis_or_melena",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.liver-function-chronic-follow-up.safety.encephalopathy",
+      "priority": 1000,
+      "when": {
+        "fact": "liver.new_confusion_or_reduced_consciousness",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.liver-function-chronic-follow-up.safety.ascites-infection",
+      "priority": 990,
+      "when": {
+        "fact": "liver.ascites_with_fever_or_severe_pain",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.liver-function-chronic-follow-up.safety.rapid-jaundice",
+      "priority": 990,
+      "when": {
+        "fact": "liver.rapid_jaundice_with_systemic_illness",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.liver-function-chronic-follow-up.safety.biliary-sepsis",
+      "priority": 990,
+      "when": {
+        "fact": "liver.severe_right_upper_pain_fever_jaundice",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.liver-function-chronic-follow-up.safety.toxic-overdose",
+      "priority": 1000,
+      "when": {
+        "fact": "liver.acetaminophen_or_toxic_overdose",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.liver-function-chronic-follow-up.safety.coagulopathy",
+      "priority": 1000,
+      "when": {
+        "fact": "liver.severe_bleeding_or_coagulopathy",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.liver-function-chronic-follow-up.safety.ascites-dyspnea",
+      "priority": 1000,
+      "when": {
+        "fact": "liver.respiratory_distress_with_tense_ascites",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.liver-function-chronic-follow-up.safety.dehydration-oliguria",
+      "priority": 980,
+      "when": {
+        "fact": "liver.severe_vomiting_dehydration_or_oliguria",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.liver-function-chronic-follow-up.safety.alcohol-withdrawal",
+      "priority": 1000,
+      "when": {
+        "fact": "liver.alcohol_withdrawal_severe_pattern",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.liver-function-chronic-follow-up.safety.post-procedure",
+      "priority": 980,
+      "when": {
+        "fact": "liver.post_procedure_bleeding_or_infection",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.liver-function-chronic-follow-up.safety.urgent-result",
+      "priority": 990,
+      "when": {
+        "fact": "liver.urgent_abnormal_result_callback",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "liver.primary_group",
+        "display": "Primary Liver Presentation",
+        "value_type": "coded",
+        "allowed_values": [
+          "abnormal_liver_tests",
+          "steatotic_metabolic_liver",
+          "viral_hepatitis",
+          "alcohol_related_liver",
+          "cirrhosis_followup",
+          "medicine_or_supplement_injury",
+          "post_treatment_followup",
+          "other_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.primary-group",
+        "display": "Primary Liver Presentation",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.primary-group",
+        "wording": "이번 방문은 간수치 이상, 지방간·대사성 간질환, 바이러스간염, 알코올 관련 간질환, 간경변 추적, 약물·보충제 관련 이상, 치료 후 추적 중 무엇에 가깝나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 180,
+          "reason": "primary-group"
+        }
+      ],
+      "supports": [
+        "group.liver.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.haematemesis_or_melena",
+        "display": "Variceal or Upper GI Bleeding",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.gi-bleed",
+        "display": "Variceal or Upper GI Bleeding",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.gi-bleed",
+        "wording": "피를 토하거나 커피 찌꺼기 같은 구토, 검고 끈적한 타르변이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 179,
+          "reason": "gi-bleed"
+        }
+      ],
+      "supports": [
+        "group.liver.safety",
+        "group.liver.complication"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.new_confusion_or_reduced_consciousness",
+        "display": "Possible Hepatic Encephalopathy",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.encephalopathy",
+        "display": "Possible Hepatic Encephalopathy",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.encephalopathy",
+        "wording": "새로 혼란스럽거나 말이 어눌해지고, 성격·수면이 갑자기 변하거나 깨우기 어려운가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 178,
+          "reason": "encephalopathy"
+        }
+      ],
+      "supports": [
+        "group.liver.safety",
+        "group.liver.complication"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.ascites_with_fever_or_severe_pain",
+        "display": "Possible Spontaneous Bacterial Peritonitis",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.ascites-infection",
+        "display": "Possible Spontaneous Bacterial Peritonitis",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.ascites-infection",
+        "wording": "복수가 있거나 배가 불러온 상태에서 발열·오한·새로운 심한 복통·혼란이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 177,
+          "reason": "ascites-infection"
+        }
+      ],
+      "supports": [
+        "group.liver.safety",
+        "group.liver.complication"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.rapid_jaundice_with_systemic_illness",
+        "display": "Rapid Jaundice and Systemic Illness",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "18165001"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.liver-function-chronic-follow-up",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.rapid-jaundice",
+        "display": "Rapid Jaundice and Systemic Illness",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.rapid-jaundice",
+        "wording": "황달이 빠르게 심해지면서 심한 처짐·구토·혼란·출혈 중 하나가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 176,
+          "reason": "rapid-jaundice"
+        }
+      ],
+      "supports": [
+        "group.liver.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.severe_right_upper_pain_fever_jaundice",
+        "display": "Biliary Sepsis Pattern",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.biliary-sepsis",
+        "display": "Biliary Sepsis Pattern",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.biliary-sepsis",
+        "wording": "오른쪽 윗배의 심한 통증과 발열·오한·황달이 함께 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 175,
+          "reason": "biliary-sepsis"
+        }
+      ],
+      "supports": [
+        "group.liver.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.acetaminophen_or_toxic_overdose",
+        "display": "Potential Hepatotoxic Overdose",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.toxic-overdose",
+        "display": "Potential Hepatotoxic Overdose",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.toxic-overdose",
+        "wording": "아세트아미노펜 등 약을 권장량보다 많이 먹었거나 독성 물질을 복용한 가능성이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 174,
+          "reason": "toxic-overdose"
+        }
+      ],
+      "supports": [
+        "group.liver.safety",
+        "group.liver.treatment"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.severe_bleeding_or_coagulopathy",
+        "display": "Severe Bleeding or Coagulopathy",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.coagulopathy",
+        "display": "Severe Bleeding or Coagulopathy",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.coagulopathy",
+        "wording": "압박해도 멈추지 않는 출혈, 많은 코피·잇몸출혈 또는 갑자기 커지는 멍이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 173,
+          "reason": "coagulopathy"
+        }
+      ],
+      "supports": [
+        "group.liver.safety",
+        "group.liver.complication"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.respiratory_distress_with_tense_ascites",
+        "display": "Respiratory Distress with Ascites",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.ascites-dyspnea",
+        "display": "Respiratory Distress with Ascites",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.ascites-dyspnea",
+        "wording": "배가 매우 팽팽하게 불러오면서 가만히 있어도 숨쉬기 어렵거나 누울 수 없나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 172,
+          "reason": "ascites-dyspnea"
+        }
+      ],
+      "supports": [
+        "group.liver.safety",
+        "group.liver.complication"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.severe_vomiting_dehydration_or_oliguria",
+        "display": "Dehydration or Kidney Deterioration",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.dehydration-oliguria",
+        "display": "Dehydration or Kidney Deterioration",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.dehydration-oliguria",
+        "wording": "계속 토하거나 설사해 물을 못 마시고 소변이 크게 줄며 어지럽거나 실신할 것 같은가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 171,
+          "reason": "dehydration-oliguria"
+        }
+      ],
+      "supports": [
+        "group.liver.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.alcohol_withdrawal_severe_pattern",
+        "display": "Severe Alcohol Withdrawal",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.alcohol-withdrawal",
+        "display": "Severe Alcohol Withdrawal",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.alcohol-withdrawal",
+        "wording": "최근 술을 갑자기 줄이거나 끊은 뒤 심한 떨림·환각·경련·혼란이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 170,
+          "reason": "alcohol-withdrawal"
+        }
+      ],
+      "supports": [
+        "group.liver.safety",
+        "group.liver.cause"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.post_procedure_bleeding_or_infection",
+        "display": "Post Liver Procedure Complication",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.post-procedure",
+        "display": "Post Liver Procedure Complication",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.post-procedure",
+        "wording": "최근 간생검·복수천자·내시경 치료 후 많은 출혈, 심한 복통·발열·어지럼이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 169,
+          "reason": "post-procedure"
+        }
+      ],
+      "supports": [
+        "group.liver.safety",
+        "group.liver.treatment"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.urgent_abnormal_result_callback",
+        "display": "Urgent Liver Result Alert",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.urgent-result",
+        "display": "Urgent Liver Result Alert",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.urgent-result",
+        "wording": "의료기관에서 간수치·빌리루빈·INR 등 결과 때문에 즉시 평가받으라고 연락받았나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 168,
+          "reason": "urgent-result"
+        }
+      ],
+      "supports": [
+        "group.liver.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.onset_duration_and_course",
+        "display": "Onset Duration and Course",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.onset",
+        "display": "Onset Duration and Course",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.onset",
+        "wording": "증상 또는 검사 이상을 처음 안 시기, 지속 기간과 경과를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 155,
+          "reason": "onset"
+        }
+      ],
+      "supports": [
+        "group.liver.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.current_symptom_priority",
+        "display": "Current Symptom Priority",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.priority",
+        "display": "Current Symptom Priority",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.priority",
+        "wording": "현재 가장 불편하거나 의료진에게 우선 확인받고 싶은 점은 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 154,
+          "reason": "priority"
+        }
+      ],
+      "supports": [
+        "group.liver.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.diagnosis_cause_stage_and_date",
+        "display": "Liver Diagnosis Cause and Stage",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "328383001"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.liver-function-chronic-follow-up",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.diagnosis",
+        "display": "Liver Diagnosis Cause and Stage",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.diagnosis",
+        "wording": "알고 있는 간질환의 진단명·원인·섬유화 또는 간경변 단계와 진단 시기를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 153,
+          "reason": "diagnosis"
+        }
+      ],
+      "supports": [
+        "group.liver.common",
+        "group.liver.cause"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.latest_ast_alt_alp_ggt_and_reference",
+        "display": "Latest Liver Enzymes",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "166643006"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.liver-function-chronic-follow-up",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.enzymes",
+        "display": "Latest Liver Enzymes",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.enzymes",
+        "wording": "최근 AST·ALT·ALP·GGT 수치, 검사일과 기준범위를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 152,
+          "reason": "enzymes"
+        }
+      ],
+      "supports": [
+        "group.liver.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.bilirubin_albumin_inr_and_platelets",
+        "display": "Liver Function and Portal Markers",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.function-tests",
+        "display": "Liver Function and Portal Markers",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.function-tests",
+        "wording": "총·직접 빌리루빈, 알부민, PT/INR, 혈소판 결과와 날짜를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 151,
+          "reason": "function-tests"
+        }
+      ],
+      "supports": [
+        "group.liver.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.test_trend_and_baseline",
+        "display": "Liver Test Trend",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.trend",
+        "display": "Liver Test Trend",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.trend",
+        "wording": "이전 검사와 비교한 추세, 평소 기준값과 갑자기 변한 시점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 150,
+          "reason": "trend"
+        }
+      ],
+      "supports": [
+        "group.liver.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.jaundice_urine_stool_and_pruritus",
+        "display": "Jaundice Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.jaundice-detail",
+        "display": "Jaundice Detail",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.jaundice-detail",
+        "wording": "눈·피부 황달, 짙은 소변·창백한 변·가려움의 시작과 변화를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 149,
+          "reason": "jaundice-detail"
+        }
+      ],
+      "supports": [
+        "group.liver.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.abdominal_distension_edema_and_weight",
+        "display": "Ascites Oedema and Weight",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "389026000"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.liver-function-chronic-follow-up",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.fluid",
+        "display": "Ascites Oedema and Weight",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.fluid",
+        "wording": "복부팽만·복수, 다리부종과 최근 체중·허리둘레 변화를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 148,
+          "reason": "fluid"
+        }
+      ],
+      "supports": [
+        "group.liver.common",
+        "group.liver.complication"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.abdominal_pain_nausea_appetite_and_weight_loss",
+        "display": "Abdominal and Constitutional Symptoms",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.abdominal",
+        "display": "Abdominal and Constitutional Symptoms",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.abdominal",
+        "wording": "복통 위치·양상, 메스꺼움·식욕저하와 의도하지 않은 체중감소가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 147,
+          "reason": "abdominal"
+        }
+      ],
+      "supports": [
+        "group.liver.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.fatigue_sleep_cognition_and_function",
+        "display": "Fatigue Cognition and Function",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.function",
+        "display": "Fatigue Cognition and Function",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.function",
+        "wording": "피로·수면·집중·기억 변화와 일상 기능 저하를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 146,
+          "reason": "function"
+        }
+      ],
+      "supports": [
+        "group.liver.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.bleeding_bruising_and_stool_history",
+        "display": "Bleeding History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.bleeding",
+        "display": "Bleeding History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.bleeding",
+        "wording": "코피·잇몸출혈·멍, 구토혈·검은변·혈변과 과거 정맥류 출혈이 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 145,
+          "reason": "bleeding"
+        }
+      ],
+      "supports": [
+        "group.liver.common",
+        "group.liver.complication"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.current_medicines_doses_and_adherence",
+        "display": "Current Medicines",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.medicines",
+        "display": "Current Medicines",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.medicines",
+        "wording": "현재 처방약의 이름·용량·복용법, 최근 변경과 빠뜨린 복용을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 144,
+          "reason": "medicines"
+        }
+      ],
+      "supports": [
+        "group.liver.common",
+        "group.liver.treatment"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.otc_herbal_supplement_and_acetaminophen",
+        "display": "Potential Hepatotoxic Exposures",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.hepatotoxins",
+        "display": "Potential Hepatotoxic Exposures",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.hepatotoxins",
+        "wording": "진통제·감기약, 한약·보충제·다이어트제품과 아세트아미노펜 하루 복용량을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 143,
+          "reason": "hepatotoxins"
+        }
+      ],
+      "supports": [
+        "group.liver.common",
+        "group.liver.cause"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.alcohol_pattern_and_last_use",
+        "display": "Alcohol Pattern",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.alcohol",
+        "display": "Alcohol Pattern",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.alcohol",
+        "wording": "술 종류·한 번 양·주당 횟수, 폭음과 마지막 음주 시각, 최근 감량·중단을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 142,
+          "reason": "alcohol"
+        }
+      ],
+      "supports": [
+        "group.liver.common",
+        "group.liver.cause"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.metabolic_risk_weight_waist_diabetes_lipids",
+        "display": "Metabolic Risk",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.metabolic",
+        "display": "Metabolic Risk",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.metabolic",
+        "wording": "키·체중·허리둘레와 당뇨·고혈압·이상지질혈증·수면무호흡 상태를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 141,
+          "reason": "metabolic"
+        }
+      ],
+      "supports": [
+        "group.liver.common",
+        "group.liver.cause"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.hepatitis_risk_vaccination_and_results",
+        "display": "Viral Hepatitis Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.hepatitis",
+        "display": "Viral Hepatitis Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.hepatitis",
+        "wording": "B·C형간염 검사·바이러스 수치, 예방접종과 혈액·주사·문신·성접촉·가족 노출 위험을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 140,
+          "reason": "hepatitis"
+        }
+      ],
+      "supports": [
+        "group.liver.common",
+        "group.liver.cause"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.autoimmune_metabolic_and_family_history",
+        "display": "Other Liver Causes and Family History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.other-causes",
+        "display": "Other Liver Causes and Family History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.other-causes",
+        "wording": "자가면역·철·구리 관련 질환과 가족의 간질환·간암 병력을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 139,
+          "reason": "other-causes"
+        }
+      ],
+      "supports": [
+        "group.liver.common",
+        "group.liver.cause"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.pregnancy_status_and_plans",
+        "display": "Pregnancy Status and Plans",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.pregnancy",
+        "display": "Pregnancy Status and Plans",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.pregnancy",
+        "wording": "임신 중·수유 중·임신 계획 여부와 관련 약물 상담을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 138,
+          "reason": "pregnancy"
+        }
+      ],
+      "supports": [
+        "group.liver.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.other_detail_or_patient_priority",
+        "display": "Other Liver Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.other-detail",
+        "display": "Other Liver Detail",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.other-detail",
+        "wording": "질문에 없지만 의료진에게 꼭 전달하고 싶은 내용이나 걱정을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 80,
+          "reason": "other-detail"
+        }
+      ],
+      "supports": [
+        "group.liver.routing",
+        "group.liver.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.ultrasound_ct_mri_and_elastography",
+        "display": "Liver Imaging and Elastography",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.imaging",
+        "display": "Liver Imaging and Elastography",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.imaging",
+        "wording": "초음파·CT·MRI와 탄성도검사 결과, 지방간·결절·비장비대·문맥 소견을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "imaging"
+        }
+      ],
+      "supports": [
+        "group.liver.cause"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.fibrosis_scores_and_biopsy",
+        "display": "Fibrosis Assessment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.fibrosis",
+        "display": "Fibrosis Assessment",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.fibrosis",
+        "wording": "FIB-4·ELF 등 섬유화 점수와 간생검 결과·날짜를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "fibrosis"
+        }
+      ],
+      "supports": [
+        "group.liver.cause"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.prior_decompensation_admissions_and_triggers",
+        "display": "Prior Decompensation",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.decompensation",
+        "display": "Prior Decompensation",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.decompensation",
+        "wording": "과거 복수·뇌증·정맥류 출혈·황달로 입원한 시기와 유발 요인을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "decompensation"
+        }
+      ],
+      "supports": [
+        "group.liver.complication"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.encephalopathy_lactulose_and_bowel_target",
+        "display": "Encephalopathy Management",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "13920009"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.liver-function-chronic-follow-up",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.encephalopathy-management",
+        "display": "Encephalopathy Management",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.encephalopathy-management",
+        "wording": "간성뇌증 병력, 락툴로오스·리팍시민 복용과 하루 목표 배변 횟수를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 127,
+          "reason": "encephalopathy-management"
+        }
+      ],
+      "supports": [
+        "group.liver.complication",
+        "group.liver.treatment"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.ascites_diuretics_paracentesis_and_sbp",
+        "display": "Ascites Management",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.ascites-management",
+        "display": "Ascites Management",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.ascites-management",
+        "wording": "이뇨제·염분 제한, 복수천자 횟수·마지막 날짜와 자발성 세균성 복막염 병력을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 126,
+          "reason": "ascites-management"
+        }
+      ],
+      "supports": [
+        "group.liver.complication",
+        "group.liver.treatment"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.varices_endoscopy_beta_blocker_and_banding",
+        "display": "Varices Management",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.varices",
+        "display": "Varices Management",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.varices",
+        "wording": "위내시경 정맥류 결과, 밴드결찰과 카르베딜롤·프로프라놀롤 복용·맥박·혈압을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 125,
+          "reason": "varices"
+        }
+      ],
+      "supports": [
+        "group.liver.complication",
+        "group.liver.treatment"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.hcc_surveillance_ultrasound_afp",
+        "display": "HCC Surveillance",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.hcc-surveillance",
+        "display": "HCC Surveillance",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.hcc-surveillance",
+        "wording": "간암 감시 초음파·AFP의 마지막 날짜·결과와 다음 예약을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 124,
+          "reason": "hcc-surveillance"
+        }
+      ],
+      "supports": [
+        "group.liver.complication",
+        "group.liver.treatment"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.antiviral_or_disease_specific_treatment",
+        "display": "Disease-specific Treatment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.specific-treatment",
+        "display": "Disease-specific Treatment",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.specific-treatment",
+        "wording": "항바이러스제·면역억제제·대사질환 치료의 이름·기간·반응을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 123,
+          "reason": "specific-treatment"
+        }
+      ],
+      "supports": [
+        "group.liver.treatment"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.transplant_evaluation_and_care_plan",
+        "display": "Transplant and Care Plan",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.transplant-plan",
+        "display": "Transplant and Care Plan",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.transplant-plan",
+        "wording": "간이식 평가 여부, 간 전문진료 일정과 악화 시 안내받은 기준을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 122,
+          "reason": "transplant-plan"
+        }
+      ],
+      "supports": [
+        "group.liver.treatment"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nice.ng50.cirrhosis.2023",
+      "source.nice.ng49.nafld.2024",
+      "source.nice.cg165.hepatitis-b",
+      "source.stom.liver.20260715"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}
