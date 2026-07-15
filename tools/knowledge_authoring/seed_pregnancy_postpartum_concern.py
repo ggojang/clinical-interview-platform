@@ -12,6 +12,7 @@ SOURCES = [
     "source.nice.ng194.postnatal-care.2021", "source.nice.cg192.perinatal-mental-health.2025",
     "source.nhs.pregnancy-urgent-symptoms.2026", "source.nhs.fetal-movements.2024",
     "source.nhs.labour-signs.2026", "source.nhs.postpartum-body.2024",
+    "source.nice.ng201.antenatal-history.2021", "source.acog.revitalize-obstetric-definitions.2026",
     "source.stom.pregnancy-postpartum.20260715",
 ]
 G = {k: f"group.pregnancy.{k}" for k in (
@@ -57,7 +58,23 @@ def fragment():
         Q("pregnancy.stage", "Pregnancy or Postpartum Stage", "coded", "stage", "현재 임신 가능성 있음, 임신 확인됨, 출산 후, 최근 유산·임신 종료 후, 잘 모름 중 어디에 해당하나요?", 140, [G["common"]], C, allowed_values=["possible_pregnancy", "confirmed_pregnancy", "postpartum", "recent_pregnancy_loss_or_end", "unclear"], terminology_binding={"system": SN, "code": "77386006"}, mrcm_ref=M),
         Q("pregnancy.gestational_age_or_postpartum_day", "Gestational Age or Postpartum Interval", "string", "timing", "임신 몇 주인지 또는 출산·유산·임신 종료 후 며칠이나 몇 주인지 알려주세요.", 139, [G["common"]], C),
         Q("pregnancy.main_symptom_duration_and_progression", "Main Symptom Duration and Progression", "string", "duration", "주된 증상은 언제 시작했고 좋아짐·같음·악화 중 어느 쪽인가요?", 138, [G["common"]], C),
-        Q("pregnancy.prior_pregnancies_and_outcomes", "Prior Pregnancy and Outcome History", "string", "obstetric-history", "이전 임신·출산·유산·자궁외임신과 관련 합병증을 알려주세요.", 130, [G["common"]], R),
+        Q("pregnancy.prior_pregnancies_and_outcomes", "Prior Pregnancy and Outcome History", "string", "obstetric-history", "알고 있다면 의료기록에 적힌 산과력 표기(G/P 또는 GTPAL)와 각 임신의 연도·임신 주수·결과를 알려주세요.", 136, [G["common"]], R),
+        Q("pregnancy.obstetric_gravidity_total", "Gravidity", "integer", "gravidity", "현재 임신을 포함해 지금까지 임신한 총횟수(G)는 몇 회인가요?", 135, [G["common"]], R),
+        Q("pregnancy.obstetric_parity_total", "Parity", "integer", "parity", "의료기관에서 G/P 형식으로 기록한 출산력(P)은 몇 회인가요?", 134, [G["common"]], R),
+        Q("pregnancy.obstetric_parity_threshold_as_recorded", "Parity Gestational Threshold as Recorded", "string", "parity-threshold", "출산력(P) 계산에 적용한 기준 임신 주수나 기관 기준을 알고 있나요? 모르면 모름이라고 답해주세요.", 134, [G["common"]], R),
+        Q("pregnancy.obstetric_term_birth_count", "Term Birth Count", "integer", "term-births", "만삭 분만 횟수(T)는 몇 회인가요?", 133, [G["common"]], R),
+        Q("pregnancy.obstetric_preterm_birth_count", "Preterm Birth Count", "integer", "preterm-births", "GTPAL에서 조산에 해당하는 횟수(P)는 몇 회인가요?", 133, [G["common"]], R),
+        Q("pregnancy.obstetric_spontaneous_loss_count", "Spontaneous Pregnancy Loss Count", "integer", "spontaneous-losses", "자연유산 횟수는 몇 회인가요?", 132, [G["common"]], R),
+        Q("pregnancy.obstetric_induced_termination_count", "Induced Termination Count", "integer", "induced-terminations", "인공임신중절 또는 의학적 임신종결 횟수는 몇 회인가요?", 132, [G["common"]], R),
+        Q("pregnancy.obstetric_ectopic_count", "Ectopic Pregnancy Count", "integer", "ectopic-count", "자궁외임신 횟수는 몇 회인가요?", 132, [G["common"]], R),
+        Q("pregnancy.obstetric_molar_pregnancy_count", "Molar Pregnancy Count", "integer", "molar-count", "포상기태 임신 횟수는 몇 회인가요?", 131, [G["common"]], R),
+        Q("pregnancy.obstetric_living_children_count", "Living Children Count", "integer", "living-children", "현재 생존한 자녀 수(L)는 몇 명인가요?", 131, [G["common"]], R),
+        Q("pregnancy.prior_multiple_gestation_history", "Prior Multiple Gestation History", "string", "multiple-gestation-history", "쌍태아 이상 다태임신 병력이 있다면 임신 결과를 알려주세요.", 130, [G["common"]], R),
+        Q("pregnancy.prior_delivery_modes_and_caesarean_count", "Prior Delivery Modes and Caesarean Count", "string", "prior-delivery-modes", "이전 분만별로 자연분만·흡입/겸자분만·제왕절개 여부와 제왕절개 횟수를 알려주세요.", 130, [G["common"]], R),
+        Q("pregnancy.prior_obstetric_complications", "Prior Obstetric Complications", "string", "prior-obstetric-complications", "이전 임신에서 임신성 고혈압·전자간증, 임신성 당뇨, 조산, 태반 문제, 산후출혈 또는 혈전이 있었나요?", 130, [G["common"]], R),
+        Q("pregnancy.prior_fetal_neonatal_outcomes", "Prior Fetal and Neonatal Outcomes", "string", "prior-fetal-neonatal-outcomes", "이전 임신에서 사산, 신생아 사망, 선천성 질환 또는 신생아중환자실 치료가 있었나요?", 130, [G["common"]], R),
+        Q("pregnancy.estimated_due_date_and_dating_method", "Estimated Due Date and Dating Method", "string", "due-date-dating", "분만예정일과 산정 방법(마지막 생리, 초기 초음파 또는 보조생식 날짜)을 알려주세요.", 137, [G["common"]], R),
+        Q("pregnancy.current_conception_method_and_plurality", "Current Conception Method and Plurality", "string", "conception-plurality", "이번 임신이 자연임신인지 보조생식인지와 단태아·다태아 여부를 알려주세요.", 130, [G["common"]], R),
         Q("pregnancy.current_antenatal_or_postnatal_care", "Current Maternity Care", "string", "care-team", "현재 다니는 산부인과·조산사·산후 진료팀과 다음 예약이 있나요?", 129, [G["common"]], R),
         Q("pregnancy.medical_and_surgical_history", "Relevant Medical and Surgical History", "string", "medical-history", "고혈압·당뇨·혈전·심장·신장·간·갑상선 질환과 수술력을 알려주세요.", 128, [G["common"]], R),
         Q("pregnancy.current_medicines_allergies_and_supplements", "Medicines Allergies and Supplements", "string", "medicines", "처방약·일반약·영양제와 약물 알레르기를 알려주세요.", 127, [G["common"]], R),
@@ -134,7 +151,20 @@ def completion(f):
         "mental_feeding": ["postpartum.mood_anxiety_and_interest", "postpartum.sleep_when_baby_sleeps", "postpartum.bonding_intrusive_thoughts_and_function", "postpartum.prior_mental_health_and_family_history", "postpartum.feeding_method_and_intake", "postpartum.breast_nipple_pain_redness_or_lump", "postpartum.lactation_support_and_baby_output"],
         "other_unclear": ["pregnancy.other_detail_or_patient_priority"],
     }
-    policy["required_facts"]["routine"] = ["pregnancy.stage", "pregnancy.gestational_age_or_postpartum_day", "pregnancy.main_symptom_duration_and_progression", "pregnancy.prior_pregnancies_and_outcomes", "pregnancy.current_antenatal_or_postnatal_care", "pregnancy.medical_and_surgical_history", "pregnancy.current_medicines_allergies_and_supplements", "pregnancy.support_and_living_situation", "pregnancy.other_detail_or_patient_priority"]
+    policy["required_facts"]["routine"] = [
+        "pregnancy.stage", "pregnancy.gestational_age_or_postpartum_day", "pregnancy.estimated_due_date_and_dating_method",
+        "pregnancy.current_conception_method_and_plurality", "pregnancy.main_symptom_duration_and_progression",
+        "pregnancy.prior_pregnancies_and_outcomes", "pregnancy.obstetric_gravidity_total", "pregnancy.obstetric_parity_total",
+        "pregnancy.obstetric_parity_threshold_as_recorded",
+        "pregnancy.obstetric_term_birth_count", "pregnancy.obstetric_preterm_birth_count",
+        "pregnancy.obstetric_spontaneous_loss_count", "pregnancy.obstetric_induced_termination_count",
+        "pregnancy.obstetric_ectopic_count", "pregnancy.obstetric_molar_pregnancy_count",
+        "pregnancy.obstetric_living_children_count", "pregnancy.prior_multiple_gestation_history",
+        "pregnancy.prior_delivery_modes_and_caesarean_count", "pregnancy.prior_obstetric_complications",
+        "pregnancy.prior_fetal_neonatal_outcomes", "pregnancy.current_antenatal_or_postnatal_care",
+        "pregnancy.medical_and_surgical_history", "pregnancy.current_medicines_allergies_and_supplements",
+        "pregnancy.support_and_living_situation", "pregnancy.other_detail_or_patient_priority",
+    ]
     policy["conditional_required_facts"] = [{"selector_fact": "pregnancy.primary_concern_group", "cases": branches}]
     return policy
 
@@ -149,6 +179,8 @@ def source_docs():
         ("source.nhs.fetal-movements.2024", "NHS", "Your baby's movements", "reviewed-2024-07-08", "https://www.nhs.uk/pregnancy/keeping-well/your-babys-movements/", "public_health_guidance", 7, ["Reduced, absent or changed fetal movement requires immediate maternity-unit contact and should not wait until the next day."]),
         ("source.nhs.labour-signs.2026", "NHS", "Signs that labour has begun", "accessed-2026-07-15", "https://www.nhs.uk/pregnancy/labour-and-birth/signs-that-labour-has-begun/", "public_health_guidance", 7, ["Waters breaking, vaginal bleeding, reduced fetal movement and possible labour before 37 weeks require urgent maternity contact."]),
         ("source.nhs.postpartum-body.2024", "NHS", "Your body after the birth", "reviewed-2024-04-25", "https://www.nhs.uk/pregnancy/labour-and-birth/your-body/", "public_health_guidance", 7, ["Postpartum warning features include unilateral calf swelling, chest pain or dyspnoea, sudden heavy bleeding, fever with abdominal tenderness and headache with visual change or vomiting."]),
+        ("source.nice.ng201.antenatal-history.2021", "NICE", "Antenatal care: schedule of antenatal appointments", "NG201; accessed-2026-07-15", "https://www.nice.org.uk/guidance/ng201/resources/schedule-of-antenatal-appointments-pdf-9204300829", "nice_guidance", 7, ["The booking record should include obstetric, medical and family history, medicines, allergies, lifestyle, occupation, home situation and support network.", "Antenatal records should retain history, test results, examination findings, medicines and discussions for clinical use."]),
+        ("source.acog.revitalize-obstetric-definitions.2026", "ACOG", "reVITALize: Obstetrics Data Definitions", "accessed-2026-07-15", "https://www.acog.org/practice-management/health-it-and-clinical-informatics/revitalize-obstetrics-data-definitions", "clinical_guideline", 1, ["Parity is a count of pregnancies reaching the stated gestational threshold, independent of fetal number or outcome.", "Structured obstetric data should preserve plurality and pregnancy outcome concepts without inferring parity from number of fetuses."]),
         ("source.stom.pregnancy-postpartum.20260715", "Infoclinic", "STOM pregnancy and postpartum terminology and MRCM summary", "SNOMEDCT-20260701", "https://stom.infoclinic.co", "terminology_server", 30, ["STOM returned active candidates for pregnancy, postpartum state, pregnancy-associated genital bleeding, reduced fetal movement, amniotic fluid leak, labour contraction, postpartum haemorrhage, pre-eclampsia, mastitis and postpartum psychosis.", "Finding site and Severity were allowed MRCM attributes for the selected concepts; MRCM does not determine clinical urgency."]),
     ]
     arts = [{"id": i, "kind": "terminology_mrcm_query_summary" if profile == "terminology_server" else "clinical_guidance_metadata", "publisher": pub, "title": title, "version": ver, "url": url, "language": "en", "digest": "live_response_summary_not_raw_cache" if profile == "terminology_server" else "metadata_only_not_cached", "license_status": "restricted" if pub in {"NICE", "Infoclinic"} else "unknown", "complete": False, "monitor_profile": profile, "monitor_interval_days": days, "last_monitored_at": "2026-07-15", "next_monitor_at": "2026-08-14" if days == 30 else "2026-07-22", "monitor_result": "current_official_source_confirmed", "assertions": assertions} for i, pub, title, ver, url, profile, days, assertions in defs]

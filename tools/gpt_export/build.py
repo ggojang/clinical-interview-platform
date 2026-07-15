@@ -160,6 +160,15 @@ def rfe_resource(
     items: list[dict[str, Any]],
 ) -> dict[str, Any]:
     compact_items = [compact(item) for item in items]
+    if resource_type == "ReasonForEncounterQuestionCollection":
+        compact_items = [
+            {
+                key: value
+                for key, value in item.items()
+                if not (key == "display" and value == item.get("wording"))
+            }
+            for item in compact_items
+        ]
     if resource_type == "ReasonForEncounterRuleCollection":
         # The envelope carries the review status for every compiled rule.
         # Keep rule type and executable semantics, but omit repeated status text.

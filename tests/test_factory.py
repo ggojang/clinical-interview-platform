@@ -786,6 +786,22 @@ class CompilerTests(unittest.TestCase):
         }
         self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
         self.assertGreaterEqual(len(facts), 60)
+        self.assertTrue({
+            "pregnancy.obstetric_gravidity_total",
+            "pregnancy.obstetric_parity_total",
+            "pregnancy.obstetric_parity_threshold_as_recorded",
+            "pregnancy.obstetric_term_birth_count",
+            "pregnancy.obstetric_preterm_birth_count",
+            "pregnancy.obstetric_spontaneous_loss_count",
+            "pregnancy.obstetric_induced_termination_count",
+            "pregnancy.obstetric_ectopic_count",
+            "pregnancy.obstetric_molar_pregnancy_count",
+            "pregnancy.obstetric_living_children_count",
+            "pregnancy.prior_delivery_modes_and_caesarean_count",
+            "pregnancy.prior_obstetric_complications",
+            "pregnancy.prior_fetal_neonatal_outcomes",
+            "pregnancy.estimated_due_date_and_dating_method",
+        }.issubset(facts))
         self.assertEqual(package["coverage"]["total_safety_rules"], 23)
         self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 23)
         self.assertEqual(package["coverage"]["uncovered_safety_rules"], [])
