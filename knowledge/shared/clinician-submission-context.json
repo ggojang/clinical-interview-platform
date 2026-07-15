@@ -195,6 +195,46 @@
       "review_status": "unreviewed"
     },
     {
+      "id": "encounter.rfe.prior_episode_and_evaluation",
+      "type": "Fact",
+      "display": "Prior Episode and Evaluation for Current Reason for Encounter",
+      "display_ko": "현재 문제의 과거 발생 및 평가",
+      "value_type": "string",
+      "report_field": "rfe_clinical_summary.prior_episode_and_evaluation",
+      "status": "research_only",
+      "review_status": "unreviewed"
+    },
+    {
+      "id": "encounter.rfe.treatment_attempt_and_response",
+      "type": "Fact",
+      "display": "Treatment Attempt and Response for Current Reason for Encounter",
+      "display_ko": "현재 문제에 시행한 치료와 반응",
+      "value_type": "string",
+      "report_field": "rfe_clinical_summary.treatment_attempt_and_response",
+      "status": "research_only",
+      "review_status": "unreviewed"
+    },
+    {
+      "id": "encounter.rfe.functional_impact",
+      "type": "Fact",
+      "display": "Functional Impact of Current Reason for Encounter",
+      "display_ko": "현재 문제의 기능 영향",
+      "value_type": "string",
+      "report_field": "rfe_clinical_summary.functional_impact",
+      "status": "research_only",
+      "review_status": "unreviewed"
+    },
+    {
+      "id": "encounter.rfe.patient_concern_and_expectation",
+      "type": "Fact",
+      "display": "Patient Concern and Expectation for Current Reason for Encounter",
+      "display_ko": "현재 문제에 대한 우려와 원하는 도움",
+      "value_type": "string",
+      "report_field": "rfe_clinical_summary.patient_concern_and_expectation",
+      "status": "research_only",
+      "review_status": "unreviewed"
+    },
+    {
       "id": "interview.final_additional_comment",
       "type": "Fact",
       "display": "Final Additional Comment",
@@ -294,6 +334,30 @@
       "priority": 20
     },
     {
+      "template_id": "question.clinician-rfe.prior-episode-evaluation",
+      "fact_id": "encounter.rfe.prior_episode_and_evaluation",
+      "wording": "이번에 상담 중인 증상이나 문제가 과거에도 있었나요? 있었다면 당시 진단, 검사 결과와 진료기관의 설명을 알려주세요. 처음이면 '처음'이라고 답해 주세요.",
+      "priority": 140
+    },
+    {
+      "template_id": "question.clinician-rfe.treatment-response",
+      "fact_id": "encounter.rfe.treatment_attempt_and_response",
+      "wording": "이번 문제에 대해 약, 처치, 휴식 등 이미 해본 것이 있나요? 무엇을 언제 시행했고 효과나 부작용이 어땠는지 알려주세요. 없으면 '없음'이라고 답해 주세요.",
+      "priority": 135
+    },
+    {
+      "template_id": "question.clinician-rfe.functional-impact",
+      "fact_id": "encounter.rfe.functional_impact",
+      "wording": "이번 증상이나 문제가 수면, 식사, 보행, 일상생활, 학업·업무에 어느 정도 영향을 주고 있나요? 영향이 없으면 '없음'이라고 답해 주세요.",
+      "priority": 130
+    },
+    {
+      "template_id": "question.clinician-rfe.concern-expectation",
+      "fact_id": "encounter.rfe.patient_concern_and_expectation",
+      "wording": "이번 문제에서 가장 걱정되는 점과 의료진에게 확인하거나 도움받고 싶은 내용을 알려주세요.",
+      "priority": 125
+    },
+    {
       "template_id": "question.clinician-context.final-comment",
       "fact_id": "interview.final_additional_comment",
       "wording": "앞 질문에 없었지만 의료진에게 꼭 전달할 내용이나 원하는 도움이 있나요? 없으면 '없음'이라고 답해 주세요.",
@@ -301,6 +365,134 @@
     }
   ],
   "completion": {
+    "clinician_rfe_minimum": {
+      "required_domains": [
+        "presentation_and_patient_wording",
+        "onset_duration_and_course",
+        "site_laterality_and_radiation_when_applicable",
+        "character_and_severity",
+        "frequency_timing_and_triggers_when_applicable",
+        "functional_impact",
+        "associated_positive_and_pertinent_negative_findings",
+        "safety_red_flags",
+        "prior_episode_and_evaluation",
+        "treatment_attempt_and_response",
+        "relevant_history_medication_exposure_and_risk_context",
+        "patient_concern_and_expectation"
+      ],
+      "always_required_facts": [
+        "encounter.rfe.prior_episode_and_evaluation",
+        "encounter.rfe.treatment_attempt_and_response",
+        "encounter.rfe.functional_impact",
+        "encounter.rfe.patient_concern_and_expectation"
+      ],
+      "audited_reason_for_encounters": [
+        "rfe.cough",
+        "rfe.fever",
+        "rfe.dyspnea",
+        "rfe.abdominal_pain",
+        "rfe.chest_pain",
+        "rfe.headache",
+        "rfe.dizziness_syncope",
+        "rfe.vomiting_diarrhea",
+        "rfe.urinary_symptoms",
+        "rfe.fatigue",
+        "rfe.back_pain",
+        "rfe.skin_complaint",
+        "rfe.medication_review",
+        "rfe.upper_respiratory_symptoms",
+        "rfe.palpitations",
+        "rfe.bowel_symptoms",
+        "rfe.focal_weakness_numbness",
+        "rfe.joint_limb_complaint",
+        "rfe.mental_health_sleep",
+        "rfe.edema",
+        "rfe.hypertension_follow_up",
+        "rfe.weight_constitutional_change",
+        "rfe.reproductive_genital_symptoms",
+        "rfe.eye_symptoms",
+        "rfe.ear_hearing_symptoms",
+        "rfe.diabetes_follow_up",
+        "rfe.oral_dental_symptoms",
+        "rfe.wound_minor_injury",
+        "rfe.memory_cognitive_concern",
+        "rfe.pregnancy_postpartum_concern"
+      ],
+      "additional_required_facts_by_rfe": {
+        "rfe.cough": [
+          "exposure.occupational_irritant",
+          "exposure.sick_contact",
+          "exposure.tuberculosis_risk",
+          "history.recurrent_respiratory_infections",
+          "patient.smoking.status",
+          "symptom.cough_after_meals",
+          "symptom.cough_cold_air_trigger",
+          "symptom.cough_exercise_trigger",
+          "symptom.cough_lying_down",
+          "symptom.cough_nocturnal",
+          "symptom.cough_paroxysmal",
+          "symptom.cough_sudden_onset",
+          "symptom.cough_whoop",
+          "symptom.dysphagia",
+          "symptom.dysphonia_persistent",
+          "symptom.onset",
+          "symptom.sneezing",
+          "symptom.sputum"
+        ],
+        "rfe.fever": [
+          "exposure.sick_contact",
+          "symptom.chills",
+          "symptom.diarrhea",
+          "symptom.sore_throat",
+          "symptom.vomiting"
+        ],
+        "rfe.dyspnea": [
+          "history.venous_thromboembolism",
+          "patient.smoking.status",
+          "risk.recent_immobility_or_surgery",
+          "symptom.palpitations",
+          "symptom.pleuritic_chest_pain",
+          "symptom.sputum"
+        ],
+        "rfe.abdominal_pain": [
+          "symptom.missed_period",
+          "symptom.shoulder_tip_pain",
+          "symptom.vaginal_bleeding_or_discharge"
+        ],
+        "rfe.diabetes_follow_up": [
+          "diabetes.alcohol_and_hypoglycemia_context",
+          "diabetes.food_pattern_and_carbohydrate_management",
+          "diabetes.pregnant_or_planning_pregnancy",
+          "diabetes.vaccination_and_preventive_care_review",
+          "diabetes.weight_bmi_and_recent_change",
+          "lifestyle.physical_activity",
+          "lifestyle.tobacco_current"
+        ],
+        "rfe.oral_dental_symptoms": [
+          "oral.anticoagulant_or_bleeding_disorder",
+          "oral.current_medicines_allergies_and_self_treatment",
+          "oral.onset_and_progression",
+          "oral.recent_dental_visit_procedure_or_appliance",
+          "oral.side_arch_and_tooth"
+        ],
+        "rfe.wound_minor_injury": [
+          "injury.number_of_sites",
+          "injury.swelling_bruising_and_progression"
+        ],
+        "rfe.memory_cognitive_concern": [
+          "cognition.alcohol_substance_and_withdrawal_context",
+          "cognition.education_language_and_literacy_context",
+          "cognition.family_history_of_cognitive_disorder"
+        ],
+        "rfe.pregnancy_postpartum_concern": [
+          "pregnancy.blood_group_rh_and_antenatal_results",
+          "pregnancy.smoking_alcohol_substance_and_occupation"
+        ]
+      },
+      "unlisted_additional_required_facts": [],
+      "completion_requires_resolved_state": true,
+      "allowed_resolution_states": ["known", "asked-unknown", "asked-declined", "not-applicable"]
+    },
     "always_required": [
       "encounter.context_review_state",
       "encounter.information_source",
@@ -357,13 +549,14 @@
       "clinical.measurements.available",
       "history.immunization.relevant"
     ],
-    "additional_question_budget": 15,
+    "additional_question_budget": 40,
     "data_absent_states_count_as_resolved": ["asked-unknown", "asked-declined", "not-applicable"]
   },
   "clinician_handoff": {
     "format": "non_fhir_structured_summary",
     "deferred_outputs": ["fixed_questionnaire", "fhir_r4_resource_conversion"],
     "sections": [
+      {"id": "rfe_clinical_summary", "fact_ids": ["encounter.rfe.prior_episode_and_evaluation", "encounter.rfe.treatment_attempt_and_response", "encounter.rfe.functional_impact", "encounter.rfe.patient_concern_and_expectation"]},
       {"id": "encounter", "fact_ids": ["encounter.context_review_state", "encounter.information_source"]},
       {"id": "demographics", "fact_ids": ["patient.age_years", "patient.sex_for_clinical_care", "patient.height_cm", "patient.weight_kg", "patient.blood_group_abo_rh"]},
       {"id": "medical_history", "fact_ids": ["history.condition.current", "history.procedure.past", "history.immunization.relevant"]},

@@ -53,6 +53,33 @@ Height, weight, blood group, immunization history and measurements are collected
 
 ---
 
+# Reason-for-Encounter Minimum Dataset
+
+Common background history alone is insufficient for clinician submission.
+
+Every adaptive Reason-for-Encounter package is audited for a clinician minimum dataset covering:
+
+- presentation and the person's own description;
+- onset, duration and course;
+- site, laterality and radiation when applicable;
+- character and severity;
+- timing, frequency and triggers when applicable;
+- functional impact;
+- associated positive and pertinent negative findings;
+- safety red flags;
+- prior episodes, diagnoses, tests and clinical evaluation;
+- treatment already attempted, response and adverse effects;
+- relevant conditions, medicines, procedures, exposures and risk context;
+- the person's main concern and expected help.
+
+Package-specific Facts remain the authority for symptom detail and safety. The shared module adds only cross-cutting clinician-summary Facts and identifies existing package Facts that must become required in clinician-submission mode.
+
+Conditional anatomy, pregnancy, exposure and other branch Facts retain their applicability rules. A non-applicable branch is resolved explicitly rather than inferred as negative.
+
+The compiler rejects a package when its clinician minimum dataset references a missing Fact, lacks a Question for a required Fact, or has not audited that Reason for Encounter.
+
+---
+
 # Missing Information
 
 Known absence is a clinical answer.
@@ -67,6 +94,7 @@ Unknown, declined, not applicable, conflicted and never asked are distinct state
 
 The internal handoff groups Facts into:
 
+- Reason-for-Encounter clinical summary, including prior evaluation, attempted treatment, functional impact and the person's concern;
 - encounter and information source;
 - demographics and relevant clinical context;
 - medical, surgical and immunization history;

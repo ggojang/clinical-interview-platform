@@ -690,6 +690,10 @@ def compile_package(
     }
     completion = clinician_submission_context.get("completion", {})
     referenced_context_facts = set(completion.get("always_required", []))
+    clinician_rfe_minimum = completion.get("clinician_rfe_minimum", {})
+    referenced_context_facts.update(
+        clinician_rfe_minimum.get("always_required_facts", [])
+    )
     for conditional in completion.get("conditional_required_facts", []):
         referenced_context_facts.add(conditional.get("selector_fact"))
         for fact_ids in conditional.get("cases", {}).values():
@@ -709,6 +713,29 @@ def compile_package(
         raise CompilationError(
             "clinician submission context has required Facts without questions: "
             f"{sorted(missing_context_questions)}"
+        )
+    if config["rfe"] not in clinician_rfe_minimum.get(
+        "audited_reason_for_encounters", []
+    ):
+        raise CompilationError(
+            f"clinician minimum dataset has not audited {config['rfe']}"
+        )
+    rfe_additional_facts = set(
+        clinician_rfe_minimum.get("additional_required_facts_by_rfe", {})
+        .get(config["rfe"], [])
+    )
+    missing_rfe_facts = rfe_additional_facts - all_fact_ids
+    if missing_rfe_facts:
+        raise CompilationError(
+            "clinician minimum dataset references package-missing Facts: "
+            f"{sorted(missing_rfe_facts)}"
+        )
+    package_question_fact_ids = set(indexes["questions_by_fact"])
+    missing_rfe_questions = rfe_additional_facts - package_question_fact_ids
+    if missing_rfe_questions:
+        raise CompilationError(
+            "clinician minimum dataset has package Facts without questions: "
+            f"{sorted(missing_rfe_questions)}"
         )
 
     package: dict[str, Any] = {

@@ -1364,6 +1364,16 @@ class InterviewSession:
                 required.update(cases[value])
             elif value is not None:
                 required.update(conditional.get("default", []))
+        if self.clinician_submission:
+            minimum = (
+                self._clinician_context().get("completion", {})
+                .get("clinician_rfe_minimum", {})
+            )
+            required.update(minimum.get("always_required_facts", []))
+            required.update(
+                minimum.get("additional_required_facts_by_rfe", {})
+                .get(self.reason_for_encounter, [])
+            )
         return sorted(required)
 
     def _required_facts(
@@ -1516,6 +1526,7 @@ class InterviewSession:
         package_required = self._package_required_facts(classification, self._safety())
         package_missing = [
             fact_id for fact_id in package_required
+            if fact_id not in self.clinician_question_index
             if self.memory.state(fact_id) not in {
                 "known", "unknown", "not_applicable"
             }

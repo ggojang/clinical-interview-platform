@@ -310,6 +310,8 @@ Longitudinal background information is reviewed on the first encounter and there
 
 Adaptive RFE packages may opt into a reusable clinician-submission context after package-specific safety and required clinical Facts are resolved. This context records the information source, age, clinically relevant sex or anatomy context, due longitudinal history, detailed medication and allergy information, family and occupational exposure history, quantified smoking and alcohol history, available measurements and a final additional comment. It preserves known absence separately from unknown, declined, not applicable, conflicted and never asked states. Runtime can emit a non-FHIR structured clinician handoff grouped by encounter, demographics, history, medication and allergy, family and social history, measurements and additional comments. Fixed questionnaires and FHIR R4 projection remain separate deferred workflows and do not control this internal model.
 
+Clinician submission also strengthens the active Reason-for-Encounter package rather than relying on common history alone. Each adaptive RFE is compiler-audited for presentation, onset and course, anatomical site and laterality when applicable, character and severity, temporal pattern and triggers, functional impact, associated positive and pertinent negative findings, safety red flags, prior episodes and evaluation, attempted treatment and response, relevant clinical risk context, and the person's concern and expected help. Existing package Facts that are optional in ordinary research mode may become required only in clinician-submission mode. Conditional branches retain applicability and may resolve as not applicable; they are never silently converted to negative findings.
+
 ---
 
 # 9. Hypothesis Boundary
