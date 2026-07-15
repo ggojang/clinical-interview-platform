@@ -1,0 +1,2487 @@
+{
+  "id": "knowledge.generated.asthma-copd-follow-up",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-asthma-copd-follow-up-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-07-14",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-07-15",
+    "next_full_review_at": "2027-01-10",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.respiratory-follow-up.routing",
+      "type": "ClinicalGroup",
+      "display": "routing"
+    },
+    {
+      "id": "group.respiratory-follow-up.safety",
+      "type": "ClinicalGroup",
+      "display": "safety"
+    },
+    {
+      "id": "group.respiratory-follow-up.control",
+      "type": "ClinicalGroup",
+      "display": "control"
+    },
+    {
+      "id": "group.respiratory-follow-up.exacerbation",
+      "type": "ClinicalGroup",
+      "display": "exacerbation"
+    },
+    {
+      "id": "group.respiratory-follow-up.medication-device",
+      "type": "ClinicalGroup",
+      "display": "medication-device"
+    },
+    {
+      "id": "group.respiratory-follow-up.risk",
+      "type": "ClinicalGroup",
+      "display": "risk"
+    },
+    {
+      "id": "group.respiratory-follow-up.testing",
+      "type": "ClinicalGroup",
+      "display": "testing"
+    },
+    {
+      "id": "group.respiratory-follow-up.self-management",
+      "type": "ClinicalGroup",
+      "display": "self-management"
+    },
+    {
+      "id": "group.respiratory-follow-up.asthma",
+      "type": "ClinicalGroup",
+      "display": "asthma"
+    },
+    {
+      "id": "group.respiratory-follow-up.copd",
+      "type": "ClinicalGroup",
+      "display": "copd"
+    }
+  ],
+  "group_hypothesis_edges": [],
+  "safety_rules": [
+    {
+      "id": "rule.asthma-copd-follow-up.safety.unable-speak",
+      "priority": 1000,
+      "when": {
+        "fact": "resp_followup.unable_to_speak_or_severe_breathlessness",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.asthma-copd-follow-up.safety.cyanosis",
+      "priority": 1000,
+      "when": {
+        "fact": "resp_followup.blue_grey_lips_or_face",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.asthma-copd-follow-up.safety.confusion-exhaustion",
+      "priority": 1000,
+      "when": {
+        "fact": "resp_followup.confusion_drowsiness_or_exhaustion",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.asthma-copd-follow-up.safety.reliever-failure",
+      "priority": 1000,
+      "when": {
+        "fact": "resp_followup.rapid_worsening_despite_relief_inhaler",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.asthma-copd-follow-up.safety.chest-syncope",
+      "priority": 990,
+      "when": {
+        "fact": "resp_followup.chest_pain_syncope_or_new_arrhythmia",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.asthma-copd-follow-up.safety.hemoptysis",
+      "priority": 990,
+      "when": {
+        "fact": "resp_followup.significant_hemoptysis",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.asthma-copd-follow-up.safety.hypoxemia",
+      "priority": 1000,
+      "when": {
+        "fact": "resp_followup.known_severe_hypoxemia",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.asthma-copd-follow-up.safety.low-peak-flow",
+      "priority": 1000,
+      "when": {
+        "fact": "resp_followup.peak_flow_below_action_threshold",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.asthma-copd-follow-up.safety.oxygen-increase",
+      "priority": 980,
+      "when": {
+        "fact": "resp_followup.increased_home_oxygen_requirement",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.asthma-copd-follow-up.safety.fever-systemic",
+      "priority": 980,
+      "when": {
+        "fact": "resp_followup.fever_systemic_illness_with_worsening_breathing",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.asthma-copd-follow-up.safety.vte-warning",
+      "priority": 990,
+      "when": {
+        "fact": "resp_followup.sudden_unilateral_leg_swelling_or_pleuritic_pain",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.asthma-copd-follow-up.safety.post-discharge-worse",
+      "priority": 970,
+      "when": {
+        "fact": "resp_followup.recent_emergency_or_hospital_discharge_deterioration",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.asthma-copd-follow-up.safety.neurological-warning",
+      "priority": 990,
+      "when": {
+        "fact": "resp_followup.new_focal_neurological_or_severe_headache",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "resp_followup.condition_group",
+        "display": "Asthma or COPD Follow-up Group",
+        "value_type": "coded",
+        "allowed_values": [
+          "asthma",
+          "copd",
+          "asthma_copd_overlap",
+          "uncertain",
+          "other_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.condition-group",
+        "display": "Asthma or COPD Follow-up Group",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.condition-group",
+        "wording": "오늘 추적관리하려는 질환은 천식, COPD, 두 질환이 겹친 상태 또는 아직 불확실한 호흡기 질환 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 180,
+          "reason": "condition-group"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.current_acute_change",
+        "display": "Current Acute Respiratory Change",
+        "value_type": "coded",
+        "allowed_values": [
+          "stable_review",
+          "recent_worsening",
+          "recovering_from_exacerbation",
+          "post_hospital_review",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.acute-change",
+        "display": "Current Acute Respiratory Change",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.acute-change",
+        "wording": "평소 상태를 확인하는 방문인가요, 아니면 최근 호흡 증상이 악화되어 왔나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 179,
+          "reason": "acute-change"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.routing",
+        "group.respiratory-follow-up.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.unable_to_speak_or_severe_breathlessness",
+        "display": "Unable to Speak or Severe Breathlessness",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "267036007"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.asthma-copd-follow-up",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.unable-speak",
+        "display": "Unable to Speak or Severe Breathlessness",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.unable-speak",
+        "wording": "현재 숨이 너무 차서 한 문장을 이어 말하기 어렵거나 가만히 있어도 매우 숨찬가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 178,
+          "reason": "unable-speak"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.blue_grey_lips_or_face",
+        "display": "Blue or Grey Lips or Face",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.cyanosis",
+        "display": "Blue or Grey Lips or Face",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.cyanosis",
+        "wording": "현재 입술이나 얼굴이 파랗거나 회색빛으로 보이나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 177,
+          "reason": "cyanosis"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.confusion_drowsiness_or_exhaustion",
+        "display": "Confusion Drowsiness or Exhaustion",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.confusion-exhaustion",
+        "display": "Confusion Drowsiness or Exhaustion",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.confusion-exhaustion",
+        "wording": "현재 혼란스럽거나 심하게 졸리고, 숨쉬느라 지쳐 반응이 둔한가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 176,
+          "reason": "confusion-exhaustion"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.rapid_worsening_despite_relief_inhaler",
+        "display": "Rapid Worsening Despite Relief Inhaler",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.reliever-failure",
+        "display": "Rapid Worsening Despite Relief Inhaler",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.reliever-failure",
+        "wording": "완화 흡입기를 행동계획대로 사용해도 호흡곤란·쌕쌕거림이 빠르게 악화하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 175,
+          "reason": "reliever-failure"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.chest_pain_syncope_or_new_arrhythmia",
+        "display": "Chest Pain Syncope or New Arrhythmia",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.chest-syncope",
+        "display": "Chest Pain Syncope or New Arrhythmia",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.chest-syncope",
+        "wording": "호흡 악화와 함께 새롭거나 심한 가슴통증, 실신 또는 매우 불규칙한 두근거림이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 174,
+          "reason": "chest-syncope"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.significant_hemoptysis",
+        "display": "Significant Hemoptysis",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.hemoptysis",
+        "display": "Significant Hemoptysis",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.hemoptysis",
+        "wording": "기침할 때 단순히 가래에 실처럼 묻는 정도보다 많은 피가 나오나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 173,
+          "reason": "hemoptysis"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.known_severe_hypoxemia",
+        "display": "Known Severe Hypoxemia",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.hypoxemia",
+        "display": "Known Severe Hypoxemia",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.hypoxemia",
+        "wording": "산소포화도를 쟀다면 평소보다 크게 낮거나 의료진이 정한 응급 기준보다 낮나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 172,
+          "reason": "hypoxemia"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.peak_flow_below_action_threshold",
+        "display": "Peak Flow Below Action Threshold",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.low-peak-flow",
+        "display": "Peak Flow Below Action Threshold",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.low-peak-flow",
+        "wording": "최대호기유속을 쟀다면 개인 행동계획의 응급 구간 또는 평소 최고치의 절반 미만인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 171,
+          "reason": "low-peak-flow"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.safety",
+        "group.respiratory-follow-up.asthma"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.increased_home_oxygen_requirement",
+        "display": "Increased Home Oxygen Requirement",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.oxygen-increase",
+        "display": "Increased Home Oxygen Requirement",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.oxygen-increase",
+        "wording": "가정 산소를 사용 중이며 처방 범위를 넘겨야 할 만큼 숨차거나 평소 산소량으로 유지되지 않나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 170,
+          "reason": "oxygen-increase"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.safety",
+        "group.respiratory-follow-up.copd"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.fever_systemic_illness_with_worsening_breathing",
+        "display": "Systemic Illness with Worsening Breathing",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.fever-systemic",
+        "display": "Systemic Illness with Worsening Breathing",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.fever-systemic",
+        "wording": "호흡 악화와 함께 고열·심한 오한·혼란·심한 처짐이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 169,
+          "reason": "fever-systemic"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.safety",
+        "group.respiratory-follow-up.exacerbation"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.sudden_unilateral_leg_swelling_or_pleuritic_pain",
+        "display": "Possible Thromboembolic Warning Features",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.vte-warning",
+        "display": "Possible Thromboembolic Warning Features",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.vte-warning",
+        "wording": "갑작스러운 숨참과 함께 한쪽 다리가 붓고 아프거나 숨쉴 때 심해지는 흉통이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 168,
+          "reason": "vte-warning"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.recent_emergency_or_hospital_discharge_deterioration",
+        "display": "Deterioration after Emergency or Hospital Care",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.post-discharge-worse",
+        "display": "Deterioration after Emergency or Hospital Care",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.post-discharge-worse",
+        "wording": "최근 응급실·입원 치료 후 호전되지 않거나 다시 빠르게 나빠지고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 167,
+          "reason": "post-discharge-worse"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.safety",
+        "group.respiratory-follow-up.exacerbation"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.new_focal_neurological_or_severe_headache",
+        "display": "Neurological Warning with Respiratory Deterioration",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.neurological-warning",
+        "display": "Neurological Warning with Respiratory Deterioration",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.neurological-warning",
+        "wording": "호흡 악화와 함께 새 한쪽 마비·말 어눌함·경련 또는 갑작스러운 심한 두통이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 166,
+          "reason": "neurological-warning"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.diagnosis_and_confirming_tests",
+        "display": "Respiratory Diagnosis and Confirmation",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.diagnosis-confirmation",
+        "display": "Respiratory Diagnosis and Confirmation",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.diagnosis-confirmation",
+        "wording": "진단명, 진단 시기와 폐기능검사 등 진단을 확인한 검사 결과를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 155,
+          "reason": "diagnosis-confirmation"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.control",
+        "group.respiratory-follow-up.testing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.last_review_and_reason",
+        "display": "Last Review and Current Goal",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.review-goal",
+        "display": "Last Review and Current Goal",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.review-goal",
+        "wording": "마지막 진료 시기와 오늘 확인하거나 개선하고 싶은 가장 중요한 문제를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 154,
+          "reason": "review-goal"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.control"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.daytime_symptom_frequency",
+        "display": "Daytime Respiratory Symptom Frequency",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.daytime-symptoms",
+        "display": "Daytime Respiratory Symptom Frequency",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.daytime-symptoms",
+        "wording": "최근 4주 동안 낮에 기침·쌕쌕거림·숨참·가슴 답답함이 주당 며칠 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 153,
+          "reason": "daytime-symptoms"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.control"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.night_waking_frequency",
+        "display": "Night Waking Frequency",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.night-waking",
+        "display": "Night Waking Frequency",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.night-waking",
+        "wording": "최근 4주 동안 호흡 증상 때문에 밤에 깨거나 아침 일찍 깬 횟수는 어느 정도인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 152,
+          "reason": "night-waking"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.control"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.activity_limitation",
+        "display": "Activity Limitation from Respiratory Disease",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "248536006"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.asthma-copd-follow-up",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.activity-limit",
+        "display": "Activity Limitation from Respiratory Disease",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.activity-limit",
+        "wording": "걷기·계단·운동·집안일·직장이나 학교 활동이 얼마나 제한되나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 151,
+          "reason": "activity-limit"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.control"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.relief_inhaler_use",
+        "display": "Reliever Inhaler Use",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.reliever-use",
+        "display": "Reliever Inhaler Use",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.reliever-use",
+        "wording": "최근 4주 동안 완화 흡입기를 주당 며칠, 하루 몇 회 또는 몇 번 흡입했나요? 운동 전 계획 사용은 구분해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 150,
+          "reason": "reliever-use"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.control",
+        "group.respiratory-follow-up.medication-device"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.symptom_trajectory_and_variability",
+        "display": "Symptom Trajectory and Variability",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.trajectory",
+        "display": "Symptom Trajectory and Variability",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.trajectory",
+        "wording": "지난 방문 이후 증상은 좋아짐·비슷함·악화 중 무엇이며 하루나 계절에 따라 어떻게 달라지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 149,
+          "reason": "trajectory"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.control"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.work_school_sleep_and_daily_impact",
+        "display": "Work School Sleep and Daily Impact",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.daily-impact",
+        "display": "Work School Sleep and Daily Impact",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.daily-impact",
+        "wording": "호흡 문제로 결근·결석하거나 수면·돌봄·일상생활에 지장이 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 148,
+          "reason": "daily-impact"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.control"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.validated_control_score",
+        "display": "Validated Asthma or COPD Control Score",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.control-score",
+        "display": "Validated Asthma or COPD Control Score",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.control-score",
+        "wording": "최근 ACT·ACQ·CAT 같은 검사를 했다면 도구 이름, 점수와 날짜를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 147,
+          "reason": "control-score"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.control"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.exacerbations_last_12_months",
+        "display": "Exacerbations in Last 12 Months",
+        "value_type": "integer"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.exacerbation-count",
+        "display": "Exacerbations in Last 12 Months",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.exacerbation-count",
+        "wording": "지난 12개월 동안 평소보다 증상이 뚜렷하게 악화한 횟수는 몇 번인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 146,
+          "reason": "exacerbation-count"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.exacerbation"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.oral_steroid_courses_last_12_months",
+        "display": "Oral Steroid Courses in Last 12 Months",
+        "value_type": "integer"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.steroid-courses",
+        "display": "Oral Steroid Courses in Last 12 Months",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.steroid-courses",
+        "wording": "지난 12개월 동안 호흡기 악화로 먹거나 주사한 전신 스테로이드 치료는 몇 차례였나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 145,
+          "reason": "steroid-courses"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.exacerbation"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.antibiotic_courses_for_exacerbation",
+        "display": "Antibiotic Courses for Respiratory Exacerbation",
+        "value_type": "integer"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.antibiotic-courses",
+        "display": "Antibiotic Courses for Respiratory Exacerbation",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.antibiotic-courses",
+        "wording": "지난 12개월 동안 COPD 악화나 흉부 감염 때문에 항생제를 사용한 횟수는 몇 번인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 144,
+          "reason": "antibiotic-courses"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.exacerbation",
+        "group.respiratory-follow-up.copd"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.ed_visits_admissions_and_icu",
+        "display": "Emergency Visits Admissions and ICU History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.acute-care-history",
+        "display": "Emergency Visits Admissions and ICU History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.acute-care-history",
+        "wording": "지난 12개월의 응급실 방문·입원·중환자실 치료와 과거 삽관·인공호흡 경험을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 143,
+          "reason": "acute-care-history"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.exacerbation"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.last_exacerbation_treatment_and_recovery",
+        "display": "Last Exacerbation Treatment and Recovery",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.last-exacerbation",
+        "display": "Last Exacerbation Treatment and Recovery",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.last-exacerbation",
+        "wording": "가장 최근 악화 시기, 유발 요인, 치료 내용과 평소 상태로 회복했는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 142,
+          "reason": "last-exacerbation"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.exacerbation"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.maintenance_inhalers",
+        "display": "Maintenance Inhaler Regimen",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.maintenance-inhalers",
+        "display": "Maintenance Inhaler Regimen",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.maintenance-inhalers",
+        "wording": "매일 또는 정기적으로 사용하는 흡입기의 제품명·성분, 기기 종류, 용량과 사용 횟수를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 141,
+          "reason": "maintenance-inhalers"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.medication-device"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.relief_air_or_mart_plan",
+        "display": "Reliever AIR or MART Regimen",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.reliever-plan",
+        "display": "Reliever AIR or MART Regimen",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.reliever-plan",
+        "wording": "증상 때 쓰는 흡입기가 무엇이며 일반 완화제, AIR 또는 MART 방식 중 어떤 계획으로 사용하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 140,
+          "reason": "reliever-plan"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.medication-device"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.adherence_and_missed_doses",
+        "display": "Respiratory Medication Adherence",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.adherence",
+        "display": "Respiratory Medication Adherence",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.adherence",
+        "wording": "최근 4주 동안 유지 흡입기를 처방대로 사용한 정도와 빠뜨린 횟수·이유를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 139,
+          "reason": "adherence"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.medication-device"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.refill_access_and_cost_barriers",
+        "display": "Inhaler Refill and Access Barriers",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.access-barriers",
+        "display": "Inhaler Refill and Access Barriers",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.access-barriers",
+        "wording": "약이 떨어졌거나 처방·비용·보관·학교·직장 문제 때문에 사용하지 못한 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 138,
+          "reason": "access-barriers"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.medication-device"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.inhaler_technique_last_observed",
+        "display": "Inhaler Technique Assessment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.technique",
+        "display": "Inhaler Technique Assessment",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.technique",
+        "wording": "흡입기 사용 과정을 의료진이 직접 확인한 마지막 시기와 지적받은 사용 오류가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 137,
+          "reason": "technique"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.medication-device"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.device_fit_spacer_and_dose_counter",
+        "display": "Device Fit Spacer and Dose Counter",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.device-fit",
+        "display": "Device Fit Spacer and Dose Counter",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.device-fit",
+        "wording": "흡입기를 누르고 들이마시기 어렵거나 스페이서가 필요하며, 남은 용량을 확인하기 어려운가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 136,
+          "reason": "device-fit"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.medication-device"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.medicine_side_effects",
+        "display": "Respiratory Medicine Side Effects",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.side-effects",
+        "display": "Respiratory Medicine Side Effects",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.side-effects",
+        "wording": "목쉼·입안 흰 반점, 떨림·두근거림, 멍·체중 변화 등 약 사용 후 불편한 점이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 135,
+          "reason": "side-effects"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.medication-device"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.other_respiratory_treatments",
+        "display": "Other Respiratory Treatments",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.other-treatment",
+        "display": "Other Respiratory Treatments",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.other-treatment",
+        "wording": "먹는 약·주사 생물학제제·분무기·가정 산소·비침습환기 등 다른 치료를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 134,
+          "reason": "other-treatment"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.medication-device"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.smoking_vaping_and_pack_years",
+        "display": "Smoking Vaping and Pack-years",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "77176002"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.asthma-copd-follow-up",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.smoking",
+        "display": "Smoking Vaping and Pack-years",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.smoking",
+        "wording": "현재와 과거의 흡연·전자담배·간접흡연, 하루 양·기간과 갑년(pack-years)을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 133,
+          "reason": "smoking"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.occupational_exposure_and_time_away_pattern",
+        "display": "Occupational Respiratory Exposure",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.occupation",
+        "display": "Occupational Respiratory Exposure",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.occupation",
+        "wording": "직업과 분진·연기·화학물질 노출, 근무일과 휴일·휴가 때 증상 차이를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 132,
+          "reason": "occupation"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.risk",
+        "group.respiratory-follow-up.asthma"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.environmental_and_seasonal_triggers",
+        "display": "Environmental and Seasonal Triggers",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.environment",
+        "display": "Environmental and Seasonal Triggers",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.environment",
+        "wording": "꽃가루·집먼지·동물·곰팡이·찬 공기·대기오염·계절 변화 중 증상을 유발하는 것이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 131,
+          "reason": "environment"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.infection_and_vaccination_context",
+        "display": "Respiratory Infection and Vaccination Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.infection-vaccine",
+        "display": "Respiratory Infection and Vaccination Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.infection-vaccine",
+        "wording": "최근 감염과 독감·폐렴구균·코로나19 등 권고받은 예방접종 상태를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "infection-vaccine"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.risk",
+        "group.respiratory-follow-up.self-management"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.comorbidities_affecting_control",
+        "display": "Comorbidities Affecting Respiratory Control",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.comorbidities",
+        "display": "Comorbidities Affecting Respiratory Control",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.comorbidities",
+        "wording": "비염·부비동염·위식도역류·비만·수면무호흡·불안우울·심장질환 등 동반질환이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "comorbidities"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.allergy_atopy_and_nsaid_sensitivity",
+        "display": "Allergy Atopy and NSAID Sensitivity",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.allergy-atopy",
+        "display": "Allergy Atopy and NSAID Sensitivity",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.allergy-atopy",
+        "wording": "알레르기비염·습진·음식·약물 알레르기, 코폴립 또는 아스피린·NSAID 후 호흡 악화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "allergy-atopy"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.risk",
+        "group.respiratory-follow-up.asthma"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.pregnancy_breastfeeding_or_planning",
+        "display": "Pregnancy Breastfeeding or Planning",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.pregnancy",
+        "display": "Pregnancy Breastfeeding or Planning",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.pregnancy",
+        "wording": "현재 임신·수유 중이거나 임신을 계획하고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 127,
+          "reason": "pregnancy"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.risk",
+        "group.respiratory-follow-up.asthma"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.spirometry_date_and_results",
+        "display": "Spirometry Date and Results",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.spirometry",
+        "display": "Spirometry Date and Results",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.spirometry",
+        "wording": "최근 폐기능검사 날짜와 FEV1, FVC, FEV1/FVC 및 기관지확장제 반응 결과를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 126,
+          "reason": "spirometry"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.testing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.peak_flow_best_current_and_variability",
+        "display": "Peak Flow Results",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.peak-flow",
+        "display": "Peak Flow Results",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.peak-flow",
+        "wording": "개인 최고 최대호기유속, 최근 측정값과 일중 변동을 알고 있다면 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 125,
+          "reason": "peak-flow"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.testing",
+        "group.respiratory-follow-up.asthma"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.feno_eosinophil_and_allergy_results",
+        "display": "FeNO Eosinophil and Allergy Results",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.biomarkers",
+        "display": "FeNO Eosinophil and Allergy Results",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.biomarkers",
+        "wording": "최근 FeNO, 혈중 호산구 또는 알레르기 검사 결과와 날짜를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 124,
+          "reason": "biomarkers"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.testing",
+        "group.respiratory-follow-up.asthma"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.oxygen_saturation_and_blood_gas",
+        "display": "Oxygen Saturation and Blood Gas",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.oxygen-results",
+        "display": "Oxygen Saturation and Blood Gas",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.oxygen-results",
+        "wording": "안정 시와 활동 시 산소포화도, 동맥혈가스검사 결과가 있다면 날짜와 함께 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 123,
+          "reason": "oxygen-results"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.testing",
+        "group.respiratory-follow-up.copd"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.imaging_and_specialist_assessment",
+        "display": "Respiratory Imaging and Specialist Assessment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.imaging-specialist",
+        "display": "Respiratory Imaging and Specialist Assessment",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.imaging-specialist",
+        "wording": "최근 흉부 X선·CT와 호흡기 전문진료 결과, 예정된 추적검사를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 122,
+          "reason": "imaging-specialist"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.testing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.written_action_plan",
+        "display": "Written Respiratory Action Plan",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.action-plan",
+        "display": "Written Respiratory Action Plan",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.action-plan",
+        "wording": "서면 행동계획이 있으며 평소·악화·응급 단계에서 무엇을 해야 하는지 이해하고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 121,
+          "reason": "action-plan"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.self-management"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.pulmonary_rehabilitation_and_activity",
+        "display": "Pulmonary Rehabilitation and Physical Activity",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.rehab-activity",
+        "display": "Pulmonary Rehabilitation and Physical Activity",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.rehab-activity",
+        "wording": "폐재활 참여 경험과 현재 신체활동·운동량, 참여를 막는 요인을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 120,
+          "reason": "rehab-activity"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.self-management",
+        "group.respiratory-follow-up.copd"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.nutrition_weight_and_frailty",
+        "display": "Nutrition Weight and Frailty",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.nutrition-weight",
+        "display": "Nutrition Weight and Frailty",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.nutrition-weight",
+        "wording": "최근 체중 변화, 식욕·영양 상태와 근력 저하 또는 쇠약을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 119,
+          "reason": "nutrition-weight"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.self-management",
+        "group.respiratory-follow-up.copd"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.home_oxygen_prescription_and_safety",
+        "display": "Home Oxygen Prescription and Safety",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.oxygen-safety",
+        "display": "Home Oxygen Prescription and Safety",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.oxygen-safety",
+        "wording": "가정 산소의 처방 유량·사용 시간, 실제 사용과 흡연·화기 안전수칙 준수 여부를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 118,
+          "reason": "oxygen-safety"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.self-management",
+        "group.respiratory-follow-up.copd"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.other_detail_or_patient_priority",
+        "display": "Other Respiratory Follow-up Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.other-detail",
+        "display": "Other Respiratory Follow-up Detail",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.other-detail",
+        "wording": "질문에 없지만 의료진에게 꼭 전달하고 싶은 내용이나 가장 걱정되는 점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 80,
+          "reason": "other-detail"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.asthma_trigger_pattern",
+        "display": "Asthma Trigger and Variability Pattern",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.asthma-pattern",
+        "display": "Asthma Trigger and Variability Pattern",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.asthma-pattern",
+        "wording": "운동·웃음·찬 공기·알레르겐·감염 후 증상과 주간 변동 등 천식의 양상을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 117,
+          "reason": "asthma-pattern"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.asthma"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.asthma_prior_near_fatal_or_high_risk_history",
+        "display": "High-risk Asthma History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.asthma-high-risk",
+        "display": "High-risk Asthma History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.asthma-high-risk",
+        "wording": "과거 생명을 위협한 천식 발작, 중환자실·삽관 또는 최근 반복 악화가 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 116,
+          "reason": "asthma-high-risk"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.asthma",
+        "group.respiratory-follow-up.exacerbation"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.asthma_step_change_and_response",
+        "display": "Asthma Treatment Change and Response",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.asthma-step-change",
+        "display": "Asthma Treatment Change and Response",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.asthma-step-change",
+        "wording": "최근 천식 치료를 시작·증량·감량한 날짜와 이후 증상·완화제 사용·부작용 변화를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 115,
+          "reason": "asthma-step-change"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.asthma",
+        "group.respiratory-follow-up.medication-device"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.copd_dyspnea_grade",
+        "display": "COPD Dyspnea Grade",
+        "value_type": "coded",
+        "allowed_values": [
+          "mmrc_0",
+          "mmrc_1",
+          "mmrc_2",
+          "mmrc_3",
+          "mmrc_4",
+          "not_scored_or_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.copd-dyspnea-grade",
+        "display": "COPD Dyspnea Grade",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.copd-dyspnea-grade",
+        "wording": "평지 보행과 일상활동에서 숨찬 정도를 mMRC 0~4 중 알고 있다면 선택하거나 구체적으로 설명해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 117,
+          "reason": "copd-dyspnea-grade"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.copd"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.copd_cough_sputum_and_change",
+        "display": "COPD Cough Sputum and Change",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "28743005"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.asthma-copd-follow-up",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.copd-sputum",
+        "display": "COPD Cough Sputum and Change",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.copd-sputum",
+        "wording": "평소 기침·가래의 양과 색, 최근 증가하거나 누렇게·초록색으로 변했는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 116,
+          "reason": "copd-sputum"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.copd"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.copd_chronic_bronchitis_pattern",
+        "display": "COPD Chronic Bronchitis Pattern",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.copd-bronchitis",
+        "display": "COPD Chronic Bronchitis Pattern",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.copd-bronchitis",
+        "wording": "기침과 가래가 해마다 몇 달씩 지속되는지, 최근 1년의 양상을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 115,
+          "reason": "copd-bronchitis"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.copd"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.copd_edema_cor_pulmonale_features",
+        "display": "COPD Edema and Cor Pulmonale Features",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.copd-edema",
+        "display": "COPD Edema and Cor Pulmonale Features",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.copd-edema",
+        "wording": "발목·다리 부종, 체중 증가, 배가 붓는 느낌 또는 누우면 더 숨찬 증상이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 114,
+          "reason": "copd-edema"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.copd"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nice.ng245.asthma.2025",
+      "source.nice.ng115.copd.2025",
+      "source.gina.strategy.2025",
+      "source.gold.report.2026",
+      "source.stom.asthma-copd-follow-up.20260715"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

@@ -1,0 +1,183 @@
+#!/usr/bin/env python3
+"""Materialize unreviewed asthma and COPD follow-up interview knowledge."""
+from profile_support import *
+
+P = "asthma-copd-follow-up"
+RFE = "rfe.asthma_copd_follow_up"
+M = "mapping.snomed-mrcm.asthma-copd-follow-up"
+SN = "http://snomed.info/sct"
+ACQUIRED_AT = "2026-07-15T00:00:00Z"
+SOURCES = [
+    "source.nice.ng245.asthma.2025",
+    "source.nice.ng115.copd.2025",
+    "source.gina.strategy.2025",
+    "source.gold.report.2026",
+    "source.stom.asthma-copd-follow-up.20260715",
+]
+G = {k: f"group.respiratory-follow-up.{k}" for k in (
+    "routing", "safety", "control", "exacerbation", "medication-device",
+    "risk", "testing", "self-management", "asthma", "copd",
+)}
+C = ["intent.characterize_symptom"]
+S = ["intent.screen_red_flags"]
+D = ["intent.differentiate_common_causes"]
+R = ["intent.risk_assessment"]
+
+
+def Q(fid, display, value_type, key, wording, score, groups, intents, **kwargs):
+    return entry(P, fid, display, value_type, key, wording, score, key, groups, intents=intents, **kwargs)
+
+
+def fragment():
+    e = [
+        Q("resp_followup.condition_group", "Asthma or COPD Follow-up Group", "coded", "condition-group", "오늘 추적관리하려는 질환은 천식, COPD, 두 질환이 겹친 상태 또는 아직 불확실한 호흡기 질환 중 무엇인가요?", 180, [G["routing"]], C, allowed_values=["asthma", "copd", "asthma_copd_overlap", "uncertain", "other_unclear"]),
+        Q("resp_followup.current_acute_change", "Current Acute Respiratory Change", "coded", "acute-change", "평소 상태를 확인하는 방문인가요, 아니면 최근 호흡 증상이 악화되어 왔나요?", 179, [G["routing"], G["safety"]], C, allowed_values=["stable_review", "recent_worsening", "recovering_from_exacerbation", "post_hospital_review", "unclear"]),
+
+        Q("resp_followup.unable_to_speak_or_severe_breathlessness", "Unable to Speak or Severe Breathlessness", "boolean", "unable-speak", "현재 숨이 너무 차서 한 문장을 이어 말하기 어렵거나 가만히 있어도 매우 숨찬가요?", 178, [G["safety"]], S, safety_relevant=True, terminology_binding={"system": SN, "code": "267036007"}, mrcm_ref=M),
+        Q("resp_followup.blue_grey_lips_or_face", "Blue or Grey Lips or Face", "boolean", "cyanosis", "현재 입술이나 얼굴이 파랗거나 회색빛으로 보이나요?", 177, [G["safety"]], S, safety_relevant=True),
+        Q("resp_followup.confusion_drowsiness_or_exhaustion", "Confusion Drowsiness or Exhaustion", "boolean", "confusion-exhaustion", "현재 혼란스럽거나 심하게 졸리고, 숨쉬느라 지쳐 반응이 둔한가요?", 176, [G["safety"]], S, safety_relevant=True),
+        Q("resp_followup.rapid_worsening_despite_relief_inhaler", "Rapid Worsening Despite Relief Inhaler", "boolean", "reliever-failure", "완화 흡입기를 행동계획대로 사용해도 호흡곤란·쌕쌕거림이 빠르게 악화하나요?", 175, [G["safety"]], S, safety_relevant=True),
+        Q("resp_followup.chest_pain_syncope_or_new_arrhythmia", "Chest Pain Syncope or New Arrhythmia", "boolean", "chest-syncope", "호흡 악화와 함께 새롭거나 심한 가슴통증, 실신 또는 매우 불규칙한 두근거림이 있나요?", 174, [G["safety"]], S, safety_relevant=True),
+        Q("resp_followup.significant_hemoptysis", "Significant Hemoptysis", "boolean", "hemoptysis", "기침할 때 단순히 가래에 실처럼 묻는 정도보다 많은 피가 나오나요?", 173, [G["safety"]], S, safety_relevant=True),
+        Q("resp_followup.known_severe_hypoxemia", "Known Severe Hypoxemia", "boolean", "hypoxemia", "산소포화도를 쟀다면 평소보다 크게 낮거나 의료진이 정한 응급 기준보다 낮나요?", 172, [G["safety"]], S, safety_relevant=True),
+        Q("resp_followup.peak_flow_below_action_threshold", "Peak Flow Below Action Threshold", "boolean", "low-peak-flow", "최대호기유속을 쟀다면 개인 행동계획의 응급 구간 또는 평소 최고치의 절반 미만인가요?", 171, [G["safety"], G["asthma"]], S, safety_relevant=True),
+        Q("resp_followup.increased_home_oxygen_requirement", "Increased Home Oxygen Requirement", "boolean", "oxygen-increase", "가정 산소를 사용 중이며 처방 범위를 넘겨야 할 만큼 숨차거나 평소 산소량으로 유지되지 않나요?", 170, [G["safety"], G["copd"]], S, safety_relevant=True),
+        Q("resp_followup.fever_systemic_illness_with_worsening_breathing", "Systemic Illness with Worsening Breathing", "boolean", "fever-systemic", "호흡 악화와 함께 고열·심한 오한·혼란·심한 처짐이 있나요?", 169, [G["safety"], G["exacerbation"]], S, safety_relevant=True),
+        Q("resp_followup.sudden_unilateral_leg_swelling_or_pleuritic_pain", "Possible Thromboembolic Warning Features", "boolean", "vte-warning", "갑작스러운 숨참과 함께 한쪽 다리가 붓고 아프거나 숨쉴 때 심해지는 흉통이 있나요?", 168, [G["safety"]], S, safety_relevant=True),
+        Q("resp_followup.recent_emergency_or_hospital_discharge_deterioration", "Deterioration after Emergency or Hospital Care", "boolean", "post-discharge-worse", "최근 응급실·입원 치료 후 호전되지 않거나 다시 빠르게 나빠지고 있나요?", 167, [G["safety"], G["exacerbation"]], S, safety_relevant=True),
+        Q("resp_followup.new_focal_neurological_or_severe_headache", "Neurological Warning with Respiratory Deterioration", "boolean", "neurological-warning", "호흡 악화와 함께 새 한쪽 마비·말 어눌함·경련 또는 갑작스러운 심한 두통이 있나요?", 166, [G["safety"]], S, safety_relevant=True),
+
+        Q("resp_followup.diagnosis_and_confirming_tests", "Respiratory Diagnosis and Confirmation", "string", "diagnosis-confirmation", "진단명, 진단 시기와 폐기능검사 등 진단을 확인한 검사 결과를 알려주세요.", 155, [G["control"], G["testing"]], R),
+        Q("resp_followup.last_review_and_reason", "Last Review and Current Goal", "string", "review-goal", "마지막 진료 시기와 오늘 확인하거나 개선하고 싶은 가장 중요한 문제를 알려주세요.", 154, [G["control"]], C),
+        Q("resp_followup.daytime_symptom_frequency", "Daytime Respiratory Symptom Frequency", "string", "daytime-symptoms", "최근 4주 동안 낮에 기침·쌕쌕거림·숨참·가슴 답답함이 주당 며칠 있었나요?", 153, [G["control"]], C),
+        Q("resp_followup.night_waking_frequency", "Night Waking Frequency", "string", "night-waking", "최근 4주 동안 호흡 증상 때문에 밤에 깨거나 아침 일찍 깬 횟수는 어느 정도인가요?", 152, [G["control"]], C),
+        Q("resp_followup.activity_limitation", "Activity Limitation from Respiratory Disease", "string", "activity-limit", "걷기·계단·운동·집안일·직장이나 학교 활동이 얼마나 제한되나요?", 151, [G["control"]], C, terminology_binding={"system": SN, "code": "248536006"}, mrcm_ref=M),
+        Q("resp_followup.relief_inhaler_use", "Reliever Inhaler Use", "string", "reliever-use", "최근 4주 동안 완화 흡입기를 주당 며칠, 하루 몇 회 또는 몇 번 흡입했나요? 운동 전 계획 사용은 구분해 주세요.", 150, [G["control"], G["medication-device"]], R),
+        Q("resp_followup.symptom_trajectory_and_variability", "Symptom Trajectory and Variability", "string", "trajectory", "지난 방문 이후 증상은 좋아짐·비슷함·악화 중 무엇이며 하루나 계절에 따라 어떻게 달라지나요?", 149, [G["control"]], C),
+        Q("resp_followup.work_school_sleep_and_daily_impact", "Work School Sleep and Daily Impact", "string", "daily-impact", "호흡 문제로 결근·결석하거나 수면·돌봄·일상생활에 지장이 있었나요?", 148, [G["control"]], R),
+        Q("resp_followup.validated_control_score", "Validated Asthma or COPD Control Score", "string", "control-score", "최근 ACT·ACQ·CAT 같은 검사를 했다면 도구 이름, 점수와 날짜를 알려주세요.", 147, [G["control"]], R),
+
+        Q("resp_followup.exacerbations_last_12_months", "Exacerbations in Last 12 Months", "integer", "exacerbation-count", "지난 12개월 동안 평소보다 증상이 뚜렷하게 악화한 횟수는 몇 번인가요?", 146, [G["exacerbation"]], R),
+        Q("resp_followup.oral_steroid_courses_last_12_months", "Oral Steroid Courses in Last 12 Months", "integer", "steroid-courses", "지난 12개월 동안 호흡기 악화로 먹거나 주사한 전신 스테로이드 치료는 몇 차례였나요?", 145, [G["exacerbation"]], R),
+        Q("resp_followup.antibiotic_courses_for_exacerbation", "Antibiotic Courses for Respiratory Exacerbation", "integer", "antibiotic-courses", "지난 12개월 동안 COPD 악화나 흉부 감염 때문에 항생제를 사용한 횟수는 몇 번인가요?", 144, [G["exacerbation"], G["copd"]], R),
+        Q("resp_followup.ed_visits_admissions_and_icu", "Emergency Visits Admissions and ICU History", "string", "acute-care-history", "지난 12개월의 응급실 방문·입원·중환자실 치료와 과거 삽관·인공호흡 경험을 알려주세요.", 143, [G["exacerbation"]], R),
+        Q("resp_followup.last_exacerbation_treatment_and_recovery", "Last Exacerbation Treatment and Recovery", "string", "last-exacerbation", "가장 최근 악화 시기, 유발 요인, 치료 내용과 평소 상태로 회복했는지 알려주세요.", 142, [G["exacerbation"]], R),
+
+        Q("resp_followup.maintenance_inhalers", "Maintenance Inhaler Regimen", "string", "maintenance-inhalers", "매일 또는 정기적으로 사용하는 흡입기의 제품명·성분, 기기 종류, 용량과 사용 횟수를 알려주세요.", 141, [G["medication-device"]], R),
+        Q("resp_followup.relief_air_or_mart_plan", "Reliever AIR or MART Regimen", "string", "reliever-plan", "증상 때 쓰는 흡입기가 무엇이며 일반 완화제, AIR 또는 MART 방식 중 어떤 계획으로 사용하나요?", 140, [G["medication-device"]], R),
+        Q("resp_followup.adherence_and_missed_doses", "Respiratory Medication Adherence", "string", "adherence", "최근 4주 동안 유지 흡입기를 처방대로 사용한 정도와 빠뜨린 횟수·이유를 알려주세요.", 139, [G["medication-device"]], R),
+        Q("resp_followup.refill_access_and_cost_barriers", "Inhaler Refill and Access Barriers", "string", "access-barriers", "약이 떨어졌거나 처방·비용·보관·학교·직장 문제 때문에 사용하지 못한 적이 있나요?", 138, [G["medication-device"]], R),
+        Q("resp_followup.inhaler_technique_last_observed", "Inhaler Technique Assessment", "string", "technique", "흡입기 사용 과정을 의료진이 직접 확인한 마지막 시기와 지적받은 사용 오류가 있나요?", 137, [G["medication-device"]], R),
+        Q("resp_followup.device_fit_spacer_and_dose_counter", "Device Fit Spacer and Dose Counter", "string", "device-fit", "흡입기를 누르고 들이마시기 어렵거나 스페이서가 필요하며, 남은 용량을 확인하기 어려운가요?", 136, [G["medication-device"]], R),
+        Q("resp_followup.medicine_side_effects", "Respiratory Medicine Side Effects", "string", "side-effects", "목쉼·입안 흰 반점, 떨림·두근거림, 멍·체중 변화 등 약 사용 후 불편한 점이 있나요?", 135, [G["medication-device"]], R),
+        Q("resp_followup.other_respiratory_treatments", "Other Respiratory Treatments", "string", "other-treatment", "먹는 약·주사 생물학제제·분무기·가정 산소·비침습환기 등 다른 치료를 알려주세요.", 134, [G["medication-device"]], R),
+
+        Q("resp_followup.smoking_vaping_and_pack_years", "Smoking Vaping and Pack-years", "string", "smoking", "현재와 과거의 흡연·전자담배·간접흡연, 하루 양·기간과 갑년(pack-years)을 알려주세요.", 133, [G["risk"]], R, terminology_binding={"system": SN, "code": "77176002"}, mrcm_ref=M),
+        Q("resp_followup.occupational_exposure_and_time_away_pattern", "Occupational Respiratory Exposure", "string", "occupation", "직업과 분진·연기·화학물질 노출, 근무일과 휴일·휴가 때 증상 차이를 알려주세요.", 132, [G["risk"], G["asthma"]], D),
+        Q("resp_followup.environmental_and_seasonal_triggers", "Environmental and Seasonal Triggers", "string", "environment", "꽃가루·집먼지·동물·곰팡이·찬 공기·대기오염·계절 변화 중 증상을 유발하는 것이 있나요?", 131, [G["risk"]], D),
+        Q("resp_followup.infection_and_vaccination_context", "Respiratory Infection and Vaccination Context", "string", "infection-vaccine", "최근 감염과 독감·폐렴구균·코로나19 등 권고받은 예방접종 상태를 알려주세요.", 130, [G["risk"], G["self-management"]], R),
+        Q("resp_followup.comorbidities_affecting_control", "Comorbidities Affecting Respiratory Control", "string", "comorbidities", "비염·부비동염·위식도역류·비만·수면무호흡·불안우울·심장질환 등 동반질환이 있나요?", 129, [G["risk"]], D),
+        Q("resp_followup.allergy_atopy_and_nsaid_sensitivity", "Allergy Atopy and NSAID Sensitivity", "string", "allergy-atopy", "알레르기비염·습진·음식·약물 알레르기, 코폴립 또는 아스피린·NSAID 후 호흡 악화가 있나요?", 128, [G["risk"], G["asthma"]], D),
+        Q("resp_followup.pregnancy_breastfeeding_or_planning", "Pregnancy Breastfeeding or Planning", "string", "pregnancy", "현재 임신·수유 중이거나 임신을 계획하고 있나요?", 127, [G["risk"], G["asthma"]], R),
+
+        Q("resp_followup.spirometry_date_and_results", "Spirometry Date and Results", "string", "spirometry", "최근 폐기능검사 날짜와 FEV1, FVC, FEV1/FVC 및 기관지확장제 반응 결과를 알려주세요.", 126, [G["testing"]], R),
+        Q("resp_followup.peak_flow_best_current_and_variability", "Peak Flow Results", "string", "peak-flow", "개인 최고 최대호기유속, 최근 측정값과 일중 변동을 알고 있다면 알려주세요.", 125, [G["testing"], G["asthma"]], R),
+        Q("resp_followup.feno_eosinophil_and_allergy_results", "FeNO Eosinophil and Allergy Results", "string", "biomarkers", "최근 FeNO, 혈중 호산구 또는 알레르기 검사 결과와 날짜를 알려주세요.", 124, [G["testing"], G["asthma"]], R),
+        Q("resp_followup.oxygen_saturation_and_blood_gas", "Oxygen Saturation and Blood Gas", "string", "oxygen-results", "안정 시와 활동 시 산소포화도, 동맥혈가스검사 결과가 있다면 날짜와 함께 알려주세요.", 123, [G["testing"], G["copd"]], R),
+        Q("resp_followup.imaging_and_specialist_assessment", "Respiratory Imaging and Specialist Assessment", "string", "imaging-specialist", "최근 흉부 X선·CT와 호흡기 전문진료 결과, 예정된 추적검사를 알려주세요.", 122, [G["testing"]], R),
+
+        Q("resp_followup.written_action_plan", "Written Respiratory Action Plan", "string", "action-plan", "서면 행동계획이 있으며 평소·악화·응급 단계에서 무엇을 해야 하는지 이해하고 있나요?", 121, [G["self-management"]], R),
+        Q("resp_followup.pulmonary_rehabilitation_and_activity", "Pulmonary Rehabilitation and Physical Activity", "string", "rehab-activity", "폐재활 참여 경험과 현재 신체활동·운동량, 참여를 막는 요인을 알려주세요.", 120, [G["self-management"], G["copd"]], R),
+        Q("resp_followup.nutrition_weight_and_frailty", "Nutrition Weight and Frailty", "string", "nutrition-weight", "최근 체중 변화, 식욕·영양 상태와 근력 저하 또는 쇠약을 알려주세요.", 119, [G["self-management"], G["copd"]], R),
+        Q("resp_followup.home_oxygen_prescription_and_safety", "Home Oxygen Prescription and Safety", "string", "oxygen-safety", "가정 산소의 처방 유량·사용 시간, 실제 사용과 흡연·화기 안전수칙 준수 여부를 알려주세요.", 118, [G["self-management"], G["copd"]], R),
+        Q("resp_followup.other_detail_or_patient_priority", "Other Respiratory Follow-up Detail", "string", "other-detail", "질문에 없지만 의료진에게 꼭 전달하고 싶은 내용이나 가장 걱정되는 점을 알려주세요.", 80, [G["routing"]], C),
+
+        Q("resp_followup.asthma_trigger_pattern", "Asthma Trigger and Variability Pattern", "string", "asthma-pattern", "운동·웃음·찬 공기·알레르겐·감염 후 증상과 주간 변동 등 천식의 양상을 알려주세요.", 117, [G["asthma"]], C),
+        Q("resp_followup.asthma_prior_near_fatal_or_high_risk_history", "High-risk Asthma History", "string", "asthma-high-risk", "과거 생명을 위협한 천식 발작, 중환자실·삽관 또는 최근 반복 악화가 있었나요?", 116, [G["asthma"], G["exacerbation"]], R),
+        Q("resp_followup.asthma_step_change_and_response", "Asthma Treatment Change and Response", "string", "asthma-step-change", "최근 천식 치료를 시작·증량·감량한 날짜와 이후 증상·완화제 사용·부작용 변화를 알려주세요.", 115, [G["asthma"], G["medication-device"]], R),
+
+        Q("resp_followup.copd_dyspnea_grade", "COPD Dyspnea Grade", "coded", "copd-dyspnea-grade", "평지 보행과 일상활동에서 숨찬 정도를 mMRC 0~4 중 알고 있다면 선택하거나 구체적으로 설명해 주세요.", 117, [G["copd"]], C, allowed_values=["mmrc_0", "mmrc_1", "mmrc_2", "mmrc_3", "mmrc_4", "not_scored_or_unclear"]),
+        Q("resp_followup.copd_cough_sputum_and_change", "COPD Cough Sputum and Change", "string", "copd-sputum", "평소 기침·가래의 양과 색, 최근 증가하거나 누렇게·초록색으로 변했는지 알려주세요.", 116, [G["copd"]], C, terminology_binding={"system": SN, "code": "28743005"}, mrcm_ref=M),
+        Q("resp_followup.copd_chronic_bronchitis_pattern", "COPD Chronic Bronchitis Pattern", "string", "copd-bronchitis", "기침과 가래가 해마다 몇 달씩 지속되는지, 최근 1년의 양상을 알려주세요.", 115, [G["copd"]], C),
+        Q("resp_followup.copd_edema_cor_pulmonale_features", "COPD Edema and Cor Pulmonale Features", "string", "copd-edema", "발목·다리 부종, 체중 증가, 배가 붓는 느낌 또는 누우면 더 숨찬 증상이 있나요?", 114, [G["copd"]], R),
+    ]
+    rules = [
+        safety_rule(P, "unable-speak", {"fact": "resp_followup.unable_to_speak_or_severe_breathlessness", "equals": True}, "emergency", 1000),
+        safety_rule(P, "cyanosis", {"fact": "resp_followup.blue_grey_lips_or_face", "equals": True}, "emergency", 1000),
+        safety_rule(P, "confusion-exhaustion", {"fact": "resp_followup.confusion_drowsiness_or_exhaustion", "equals": True}, "emergency", 1000),
+        safety_rule(P, "reliever-failure", {"fact": "resp_followup.rapid_worsening_despite_relief_inhaler", "equals": True}, "emergency", 1000),
+        safety_rule(P, "chest-syncope", {"fact": "resp_followup.chest_pain_syncope_or_new_arrhythmia", "equals": True}, "emergency", 990),
+        safety_rule(P, "hemoptysis", {"fact": "resp_followup.significant_hemoptysis", "equals": True}, "emergency", 990),
+        safety_rule(P, "hypoxemia", {"fact": "resp_followup.known_severe_hypoxemia", "equals": True}, "emergency", 1000),
+        safety_rule(P, "low-peak-flow", {"fact": "resp_followup.peak_flow_below_action_threshold", "equals": True}, "emergency", 1000),
+        safety_rule(P, "oxygen-increase", {"fact": "resp_followup.increased_home_oxygen_requirement", "equals": True}, "urgent", 980),
+        safety_rule(P, "fever-systemic", {"fact": "resp_followup.fever_systemic_illness_with_worsening_breathing", "equals": True}, "urgent", 980),
+        safety_rule(P, "vte-warning", {"fact": "resp_followup.sudden_unilateral_leg_swelling_or_pleuritic_pain", "equals": True}, "emergency", 990),
+        safety_rule(P, "post-discharge-worse", {"fact": "resp_followup.recent_emergency_or_hospital_discharge_deterioration", "equals": True}, "urgent", 970),
+        safety_rule(P, "neurological-warning", {"fact": "resp_followup.new_focal_neurological_or_severe_headache", "equals": True}, "emergency", 990),
+    ]
+    return {"id": "knowledge.generated.asthma-copd-follow-up", "version": VERSION, "status": "research_only", "usage_modes": ["research_test", "simulation"], "source_manifest": "source-manifest.primary-care-asthma-copd-follow-up-research", "default_refresh": default_refresh(), "extra_nodes": [{"id": value, "type": "ClinicalGroup", "display": value.split(".")[-1]} for value in G.values()], "group_hypothesis_edges": [], "safety_rules": rules, "entries": e, "provenance": provenance(SOURCES)}
+
+
+def completion(f):
+    policy = completion_policy(prefix=P, fragment=f, presentation_fact="resp_followup.condition_group", question_budget=65, source_refs=SOURCES)
+    common = ["resp_followup.current_acute_change", "resp_followup.diagnosis_and_confirming_tests", "resp_followup.last_review_and_reason", "resp_followup.daytime_symptom_frequency", "resp_followup.night_waking_frequency", "resp_followup.activity_limitation", "resp_followup.relief_inhaler_use", "resp_followup.symptom_trajectory_and_variability", "resp_followup.exacerbations_last_12_months", "resp_followup.oral_steroid_courses_last_12_months", "resp_followup.ed_visits_admissions_and_icu", "resp_followup.maintenance_inhalers", "resp_followup.relief_air_or_mart_plan", "resp_followup.adherence_and_missed_doses", "resp_followup.inhaler_technique_last_observed", "resp_followup.smoking_vaping_and_pack_years", "resp_followup.written_action_plan", "resp_followup.other_detail_or_patient_priority"]
+    asthma = ["resp_followup.asthma_trigger_pattern", "resp_followup.asthma_prior_near_fatal_or_high_risk_history", "resp_followup.asthma_step_change_and_response", "resp_followup.occupational_exposure_and_time_away_pattern", "resp_followup.allergy_atopy_and_nsaid_sensitivity", "resp_followup.peak_flow_best_current_and_variability", "resp_followup.feno_eosinophil_and_allergy_results", "resp_followup.pregnancy_breastfeeding_or_planning"]
+    copd = ["resp_followup.copd_dyspnea_grade", "resp_followup.copd_cough_sputum_and_change", "resp_followup.copd_chronic_bronchitis_pattern", "resp_followup.copd_edema_cor_pulmonale_features", "resp_followup.antibiotic_courses_for_exacerbation", "resp_followup.oxygen_saturation_and_blood_gas", "resp_followup.pulmonary_rehabilitation_and_activity", "resp_followup.nutrition_weight_and_frailty", "resp_followup.home_oxygen_prescription_and_safety"]
+    policy["required_facts"]["routine"] = common
+    policy["conditional_required_facts"] = [{"selector_fact": "resp_followup.condition_group", "cases": {"asthma": asthma, "copd": copd, "asthma_copd_overlap": asthma + copd, "uncertain": ["resp_followup.spirometry_date_and_results", "resp_followup.imaging_and_specialist_assessment"], "other_unclear": ["resp_followup.other_detail_or_patient_priority"]}}]
+    return policy
+
+
+def source_docs():
+    defs = [
+        ("source.nice.ng245.asthma.2025", "NICE", "Asthma: diagnosis, monitoring and chronic asthma management", "NG245; amended-2025-11", "https://www.nice.org.uk/guidance/ng245/chapter/recommendations", "nice_guidance", 7, ["Monitor symptoms, work or school absence, reliever use, oral corticosteroid courses and emergency or hospital attendance at every asthma review.", "Check adherence and inhaler technique at every asthma-related review; assess comorbidities, smoking or vaping, occupational and environmental factors before treatment adjustment."]),
+        ("source.nice.ng115.copd.2025", "NICE", "Chronic obstructive pulmonary disease in over 16s", "NG115; links-updated-2025-03", "https://www.nice.org.uk/guidance/ng115/chapter/Recommendations", "nice_guidance", 7, ["COPD follow-up includes symptoms and breathlessness, exacerbation history, smoking, inhaler technique and adherence, physical activity or pulmonary rehabilitation, vaccination and comorbidities.", "Educate people to recognise and manage exacerbations; continued smoking, infection, pollution, inactivity and seasonal variation increase exacerbation risk."]),
+        ("source.gina.strategy.2025", "GINA", "Global Strategy for Asthma Management and Prevention", "2025-05-25", "https://ginasthma.org/2025-gina-strategy-report/", "clinical_guideline", 1, ["Assess symptom control, exacerbation and lung-function risk, medicine adverse effects, inhaler technique and adherence; review modifiable risk factors, comorbidities and patient satisfaction."]),
+        ("source.gold.report.2026", "GOLD", "Global Strategy for Prevention, Diagnosis and Management of COPD", "2026-v1.3", "https://goldcopd.org/2026-gold-report-and-pocket-guide/", "clinical_guideline", 1, ["COPD follow-up reassesses dyspnea and exacerbations and regularly checks inhaler technique, adherence, smoking and continued risk exposure; non-pharmacological treatment and action plans are reviewed."]),
+        ("source.stom.asthma-copd-follow-up.20260715", "Infoclinic", "STOM asthma and COPD terminology and MRCM summary", "SNOMEDCT-20260701", "https://stom.infoclinic.co", "terminology_server", 30, ["FHIR lookup confirmed active concepts for asthma, COPD, acute COPD exacerbation, dyspnea, wheezing, cough, productive cough, smoker and functional activity findings.", "MRCM summaries support expression validation only and do not set interview priority, diagnosis or urgency."]),
+    ]
+    artifacts = [{"id": i, "kind": "terminology_mrcm_query_summary" if profile == "terminology_server" else "clinical_guidance_metadata", "publisher": pub, "title": title, "version": version, "url": url, "language": "en", "digest": "live_response_summary_not_raw_cache" if profile == "terminology_server" else "metadata_only_not_cached", "license_status": "restricted", "complete": False, "monitor_profile": profile, "monitor_interval_days": days, "last_monitored_at": "2026-07-15", "next_monitor_at": "2026-08-14" if days == 30 else ("2026-07-22" if days == 7 else "2026-07-16"), "monitor_result": "current_official_source_confirmed", "assertions": assertions} for i, pub, title, version, url, profile, days, assertions in defs]
+    research = {"id": "source-manifest.primary-care-asthma-copd-follow-up-research", "version": VERSION, "acquired_at": ACQUIRED_AT, "status": "research_only", "artifacts": artifacts, "provenance": provenance([item[0] for item in defs])}
+    paths = [("source.repository.foundation", "repository_specification", "FOUNDATION.md", True), ("source.generated.asthma-copd-follow-up", "generated_clinical_knowledge", "knowledge/generated/respiratory/asthma-copd-follow-up/asthma-copd-follow-up.json", True), ("source.mapping.asthma-copd-follow-up", "terminology_mapping", "mappings/terminology/snomed-mrcm-asthma-copd-follow-up.json", False), ("source.external.asthma-copd-follow-up", "external_source_manifest", "sources/manifests/primary-care-asthma-copd-follow-up-research.json", False), ("source.policy.asthma-copd-follow-up", "runtime_policy", "policies/primary-care-asthma-copd-follow-up-completion.json", True)]
+    primary = {"id": "source-manifest.primary-care-asthma-copd-follow-up", "version": VERSION, "acquired_at": ACQUIRED_AT, "artifacts": [{"id": i, "kind": kind, "publisher": "clinical-interview-platform", "version": VERSION, "language": "en", "path": path, "digest": "computed_at_build", "license_status": "allowed" if complete else "unknown", "complete": complete} for i, kind, path, complete in paths], "provenance": provenance(["FOUNDATION.md", "PROJECT_CONTEXT.md"])}
+    return primary, research
+
+
+def cases(f):
+    out = {}
+    for index, rule in enumerate(f["safety_rules"]):
+        fid = rule["when"]["fact"]
+        key = rule["id"].split("safety.")[1]
+        level = rule["then"]["safety_level"]
+        out[f"RESP-FOLLOWUP-{key.upper()}.json"] = {"id": f"RESP-FOLLOWUP-{key.upper()}", "simulation_language": "ko", "persona": {"age": 35 + index}, "initial_statement": {"ko": "천식이나 COPD 추적 진료를 받으러 왔어요."}, "hidden_state": {fid: {"value": True}}, "expected": {"expected_safety_level": level, "expected_safety_action": "human_handoff", "expected_stop_reason": f"{level}_escalation", "expected_triggered_rules_contains": [rule["id"]], "expected_max_turns": 35, "forbidden_assertions": ["diagnosis.acute_severe_asthma", "diagnosis.copd_exacerbation", "recommendation.change_inhaler_dose"]}, "provenance": provenance(SOURCES)}
+    policy = completion(f)
+    required = set(policy["required_facts"]["always"] + policy["required_facts"]["routine"] + policy["conditional_required_facts"][0]["cases"]["asthma"])
+    by_id = {item["fact"]["id"]: item["fact"] for item in f["entries"]}
+    hidden = {}
+    for fid in required:
+        fact = by_id[fid]
+        if fact["value_type"] == "boolean": hidden[fid] = {"value": False}
+        elif fact["value_type"] == "coded": hidden[fid] = {"value": fact.get("allowed_values", ["unclear"])[-1]}
+        elif fact["value_type"] == "integer": hidden[fid] = {"value": 0}
+        else: hidden[fid] = {"value": "없음"}
+    hidden["resp_followup.condition_group"] = {"value": "asthma"}
+    hidden["resp_followup.current_acute_change"] = {"value": "stable_review"}
+    declined = "resp_followup.inhaler_technique_last_observed"
+    hidden.pop(declined)
+    out["RESP-FOLLOWUP-ASTHMA-DATA-ABSENT.json"] = {"id": "RESP-FOLLOWUP-ASTHMA-DATA-ABSENT", "simulation_language": "ko", "persona": {"age": 42}, "initial_statement": {"ko": "천식 정기 진료를 받으러 왔고 요즘은 대체로 괜찮아요."}, "hidden_state": hidden, "response_behavior": {declined: {"dataAbsentReason": "asked-unknown"}}, "expected": {"expected_data_absent_reasons": {declined: "asked-unknown"}, "expected_safety_level": "routine", "expected_stop_reason": "required_targets_addressed_with_absent_data", "expected_max_turns": 65, "forbidden_assertions": ["diagnosis.controlled_asthma", "recommendation.step_down_treatment"]}, "provenance": provenance(["source.nice.ng245.asthma.2025", "specifications/clinical-memory.md"])}
+    return out
+
+
+def main():
+    f = fragment()
+    graph, rules = base_graph_and_rules(prefix=P, rfe=RFE, display="Asthma or COPD Follow-up", intents=[("intent.characterize_symptom", "Assess Current Respiratory Control"), ("intent.screen_red_flags", "Screen Acute Deterioration"), ("intent.differentiate_common_causes", "Assess Modifiable Contributors"), ("intent.risk_assessment", "Assess Exacerbation and Long-term Risk")])
+    primary, research = source_docs()
+    concepts = [("195967001", "Asthma (disorder)", 22), ("13645005", "Chronic obstructive pulmonary disease (disorder)", 22), ("195951007", "Acute exacerbation of chronic obstructive pulmonary disease (disorder)", 22), ("267036007", "Dyspnea (finding)", 20), ("56018004", "Wheezing (finding)", 20), ("49727002", "Cough (finding)", 20), ("28743005", "Productive cough (finding)", 20), ("77176002", "Smoker (finding)", 20), ("248536006", "Finding of functional performance and activity (finding)", 20)]
+    mapping = {"id": M, "version": VERSION, "status": "research_only", "review_status": "unreviewed", "terminology": {"system": SN, "version": "http://snomed.info/sct/900000000000207008/version/20260701", "source": "STOM"}, "focus_concepts": [{"code": c, "display": d, "concept_active": True, "attribute_count_returned": n} for c, d, n in concepts], "verified_attribute_ids": ["363698007", "246112005", "263502005"], "validation": {"method": "build_time_live_fhir_lookup_and_mrcm_summary", "checked_at": ACQUIRED_AT, "raw_response_cached": False, "complete_mrcm_snapshot": False, "clinical_rule_authority": False, "result": "provisional_pass"}, "provenance": provenance(["source.stom.asthma-copd-follow-up.20260715"])}
+    docs = [("knowledge/base/primary-care-asthma-copd-follow-up.json", graph), ("rules/base/primary-care-asthma-copd-follow-up.json", rules), ("knowledge/generated/respiratory/asthma-copd-follow-up/asthma-copd-follow-up.json", f), ("mappings/terminology/snomed-mrcm-asthma-copd-follow-up.json", mapping), ("sources/manifests/primary-care-asthma-copd-follow-up.json", primary), ("sources/manifests/primary-care-asthma-copd-follow-up-research.json", research), ("policies/primary-care-asthma-copd-follow-up-completion.json", completion(f))]
+    for path, document in docs: write_json(path, document)
+    for name, case in cases(f).items(): write_json("simulation/patients/respiratory/asthma-copd-follow-up/" + name, case)
+
+
+if __name__ == "__main__": main()

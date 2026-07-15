@@ -381,6 +381,17 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/allergy/allergy-concern",
         "research_manifests": [ROOT / "sources/manifests/primary-care-allergy-concern-research.json"],
     },
+    "asthma_copd_follow_up": {
+        "graph": ROOT / "knowledge/graph/primary-care-asthma-copd-follow-up.json",
+        "rules": ROOT / "rules/primary-care-asthma-copd-follow-up.json",
+        "sources": ROOT / "sources/manifests/primary-care-asthma-copd-follow-up.json",
+        "completion_policy": ROOT / "policies/primary-care-asthma-copd-follow-up-completion.json",
+        "output": ROOT / "packages/generated/primary-care-asthma-copd-follow-up-0.1.0.json",
+        "package_id": "package.primary-care-asthma-copd-follow-up", "package_version": "0.1.0",
+        "rfe": "rfe.asthma_copd_follow_up",
+        "simulation_root": ROOT / "simulation/patients/respiratory/asthma-copd-follow-up",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-asthma-copd-follow-up-research.json"],
+    },
 }
 
 ALLOWED_NODE_TYPES = {

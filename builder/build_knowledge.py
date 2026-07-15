@@ -261,6 +261,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-allergy-concern.json",
         "version": "0.1.0",
     },
+    "asthma_copd_follow_up": {
+        "base_graph": ROOT / "knowledge/base/primary-care-asthma-copd-follow-up.json",
+        "base_rules": ROOT / "rules/base/primary-care-asthma-copd-follow-up.json",
+        "fragment_root": ROOT / "knowledge/generated/respiratory/asthma-copd-follow-up",
+        "output_graph": ROOT / "knowledge/graph/primary-care-asthma-copd-follow-up.json",
+        "output_rules": ROOT / "rules/primary-care-asthma-copd-follow-up.json",
+        "version": "0.1.0",
+    },
 }
 
 
