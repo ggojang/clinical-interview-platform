@@ -106,6 +106,7 @@ class GptExportTests(unittest.TestCase):
                 "rfe-pregnancy_postpartum_concern-rules-completion", "rfe-pregnancy_postpartum_concern-rules-priority",
                 "rfe-allergy_concern-facts", "rfe-allergy_concern-questions", "rfe-allergy_concern-rules",
                 "rfe-asthma_copd_follow_up-facts", "rfe-asthma_copd_follow_up-questions", "rfe-asthma_copd_follow_up-rules",
+                "rfe-lump_lymph_node-facts", "rfe-lump_lymph_node-questions", "rfe-lump_lymph_node-rules",
                 "questionnaires-patient-experience-5th-2025-metadata",
                 "questionnaires-patient-experience-5th-2025-sections-1",
                 "questionnaires-patient-experience-5th-2025-sections-8",
@@ -226,6 +227,7 @@ class GptExportTests(unittest.TestCase):
         self.assertIn("pregnancy_postpartum_concern", schema)
         self.assertIn("allergy_concern", schema)
         self.assertIn("asthma_copd_follow_up", schema)
+        self.assertIn("lump_lymph_node", schema)
         self.assertIn("operationId: getReasonForEncounterRulePartition", schema)
         self.assertIn("operationId: getHiraAdequacyAssessmentInterviews", schema)
         self.assertIn(
@@ -358,7 +360,7 @@ class GptExportTests(unittest.TestCase):
                 {
                     "abdominal_pain", "back_pain", "bowel_symptoms", "chest_pain", "cough", "diabetes_follow_up", "dizziness_syncope",
                     "dyspnea", "ear_hearing_symptoms", "edema", "eye_symptoms", "fatigue", "fever", "focal_weakness_numbness", "headache", "hypertension_follow_up", "joint_limb_complaint", "medication_review", "mental_health_sleep",
-                    "allergy_concern", "asthma_copd_follow_up", "memory_cognitive_concern", "oral_dental_symptoms", "palpitations", "pregnancy_postpartum_concern", "reproductive_genital_symptoms", "skin_complaint", "upper_respiratory_symptoms", "urinary_symptoms", "wound_minor_injury",
+                    "allergy_concern", "asthma_copd_follow_up", "lump_lymph_node", "memory_cognitive_concern", "oral_dental_symptoms", "palpitations", "pregnancy_postpartum_concern", "reproductive_genital_symptoms", "skin_complaint", "upper_respiratory_symptoms", "urinary_symptoms", "wound_minor_injury",
                     "vomiting_diarrhea", "weight_constitutional_change",
                 },
             )

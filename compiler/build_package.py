@@ -392,6 +392,17 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/respiratory/asthma-copd-follow-up",
         "research_manifests": [ROOT / "sources/manifests/primary-care-asthma-copd-follow-up-research.json"],
     },
+    "lump_lymph_node": {
+        "graph": ROOT / "knowledge/graph/primary-care-lump-lymph-node.json",
+        "rules": ROOT / "rules/primary-care-lump-lymph-node.json",
+        "sources": ROOT / "sources/manifests/primary-care-lump-lymph-node.json",
+        "completion_policy": ROOT / "policies/primary-care-lump-lymph-node-completion.json",
+        "output": ROOT / "packages/generated/primary-care-lump-lymph-node-0.1.0.json",
+        "package_id": "package.primary-care-lump-lymph-node", "package_version": "0.1.0",
+        "rfe": "rfe.lump_lymph_node",
+        "simulation_root": ROOT / "simulation/patients/general/lump-lymph-node",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-lump-lymph-node-research.json"],
+    },
 }
 
 ALLOWED_NODE_TYPES = {

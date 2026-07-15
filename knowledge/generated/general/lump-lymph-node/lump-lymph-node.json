@@ -1,0 +1,2430 @@
+{
+  "id": "knowledge.generated.lump-lymph-node",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-lump-lymph-node-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-07-14",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-07-15",
+    "next_full_review_at": "2027-01-10",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.lump.routing",
+      "type": "ClinicalGroup",
+      "display": "routing"
+    },
+    {
+      "id": "group.lump.safety",
+      "type": "ClinicalGroup",
+      "display": "safety"
+    },
+    {
+      "id": "group.lump.common",
+      "type": "ClinicalGroup",
+      "display": "common"
+    },
+    {
+      "id": "group.lump.lymph-node",
+      "type": "ClinicalGroup",
+      "display": "lymph-node"
+    },
+    {
+      "id": "group.lump.skin-soft-tissue",
+      "type": "ClinicalGroup",
+      "display": "skin-soft-tissue"
+    },
+    {
+      "id": "group.lump.breast-axilla",
+      "type": "ClinicalGroup",
+      "display": "breast-axilla"
+    },
+    {
+      "id": "group.lump.neck",
+      "type": "ClinicalGroup",
+      "display": "neck"
+    },
+    {
+      "id": "group.lump.groin-scrotal",
+      "type": "ClinicalGroup",
+      "display": "groin-scrotal"
+    },
+    {
+      "id": "group.lump.abdominal-pelvic",
+      "type": "ClinicalGroup",
+      "display": "abdominal-pelvic"
+    },
+    {
+      "id": "group.lump.bone",
+      "type": "ClinicalGroup",
+      "display": "bone"
+    }
+  ],
+  "group_hypothesis_edges": [],
+  "safety_rules": [
+    {
+      "id": "rule.lump-lymph-node.safety.airway-swallow",
+      "priority": 1000,
+      "when": {
+        "fact": "lump.airway_or_swallowing_compromise",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.lump-lymph-node.safety.spreading-infection",
+      "priority": 1000,
+      "when": {
+        "fact": "lump.rapidly_spreading_red_hot_swelling_with_systemic_illness",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.lump-lymph-node.safety.pulsatile",
+      "priority": 1000,
+      "when": {
+        "fact": "lump.pulsatile_or_suddenly_expanding_mass",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.lump-lymph-node.safety.neurovascular",
+      "priority": 1000,
+      "when": {
+        "fact": "lump.limb_neurovascular_compromise",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.lump-lymph-node.safety.testicular-pain",
+      "priority": 1000,
+      "when": {
+        "fact": "lump.sudden_severe_testicular_or_scrotal_pain",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.lump-lymph-node.safety.incarcerated-groin",
+      "priority": 1000,
+      "when": {
+        "fact": "lump.painful_irreducible_groin_mass_with_vomiting",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.lump-lymph-node.safety.breast-infection",
+      "priority": 980,
+      "when": {
+        "fact": "lump.breast_inflammation_with_systemic_illness",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.lump-lymph-node.safety.rapid-deep-fixed",
+      "priority": 970,
+      "when": {
+        "fact": "lump.rapid_growth_or_large_deep_fixed_mass",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.lump-lymph-node.safety.supraclavicular",
+      "priority": 970,
+      "when": {
+        "fact": "lump.supraclavicular_or_persistent_cervical_node",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.lump-lymph-node.safety.generalized-b",
+      "priority": 970,
+      "when": {
+        "fact": "lump.generalized_nodes_with_b_symptoms",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.lump-lymph-node.safety.breast-axillary",
+      "priority": 960,
+      "when": {
+        "fact": "lump.unexplained_breast_or_axillary_lump",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.lump-lymph-node.safety.testicular-change",
+      "priority": 960,
+      "when": {
+        "fact": "lump.nonpainful_testicular_change",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.lump-lymph-node.safety.abdominal-pelvic",
+      "priority": 960,
+      "when": {
+        "fact": "lump.abdominal_pelvic_mass_or_ascites",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.lump-lymph-node.safety.child-warning",
+      "priority": 970,
+      "when": {
+        "fact": "lump.child_unexplained_lymphadenopathy_or_bone_swelling",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.lump-lymph-node.safety.ulceration-bleeding",
+      "priority": 950,
+      "when": {
+        "fact": "lump.ulceration_bleeding_or_skin_breakdown",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "lump.primary_group",
+        "display": "Primary Lump Group",
+        "value_type": "coded",
+        "allowed_values": [
+          "lymph_node",
+          "skin_subcutaneous",
+          "deep_soft_tissue",
+          "breast_axilla",
+          "neck",
+          "groin_scrotal",
+          "abdominal_pelvic",
+          "bone",
+          "other_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.lump-lymph-node.primary-group",
+        "display": "Primary Lump Group",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.primary-group",
+        "wording": "덩이나 부기는 림프절, 피부·피하, 깊은 연부조직, 유방·겨드랑이, 목, 서혜부·음낭, 복부·골반 또는 뼈 중 어디에 가깝나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 180,
+          "reason": "primary-group"
+        }
+      ],
+      "supports": [
+        "group.lump.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.airway_or_swallowing_compromise",
+        "display": "Airway or Swallowing Compromise from Lump",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.lump-lymph-node.airway-swallow",
+        "display": "Airway or Swallowing Compromise from Lump",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.airway-swallow",
+        "wording": "목·입안의 덩이나 부기 때문에 숨쉬기 매우 어렵거나 침도 삼키기 힘든가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 179,
+          "reason": "airway-swallow"
+        }
+      ],
+      "supports": [
+        "group.lump.safety",
+        "group.lump.neck"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.rapidly_spreading_red_hot_swelling_with_systemic_illness",
+        "display": "Rapidly Spreading Inflamed Swelling",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.lump-lymph-node.spreading-infection",
+        "display": "Rapidly Spreading Inflamed Swelling",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.spreading-infection",
+        "wording": "덩이 주변의 붉음·열감·통증이 빠르게 퍼지면서 고열·오한·혼란·심한 처짐이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 178,
+          "reason": "spreading-infection"
+        }
+      ],
+      "supports": [
+        "group.lump.safety",
+        "group.lump.skin-soft-tissue"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.pulsatile_or_suddenly_expanding_mass",
+        "display": "Pulsatile or Suddenly Expanding Mass",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.lump-lymph-node.pulsatile",
+        "display": "Pulsatile or Suddenly Expanding Mass",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.pulsatile",
+        "wording": "덩이가 맥박처럼 뛰거나 갑자기 커지면서 심한 통증·어지럼·실신이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 177,
+          "reason": "pulsatile"
+        }
+      ],
+      "supports": [
+        "group.lump.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.limb_neurovascular_compromise",
+        "display": "Limb Neurovascular Compromise from Mass",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.lump-lymph-node.neurovascular",
+        "display": "Limb Neurovascular Compromise from Mass",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.neurovascular",
+        "wording": "팔·다리 덩이 아래쪽이 갑자기 차갑고 창백·파래지거나 감각·움직임이 떨어졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 176,
+          "reason": "neurovascular"
+        }
+      ],
+      "supports": [
+        "group.lump.safety",
+        "group.lump.skin-soft-tissue"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.sudden_severe_testicular_or_scrotal_pain",
+        "display": "Sudden Severe Testicular or Scrotal Pain",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.lump-lymph-node.testicular-pain",
+        "display": "Sudden Severe Testicular or Scrotal Pain",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.testicular-pain",
+        "wording": "고환·음낭 덩이와 함께 갑자기 심한 통증, 메스꺼움·구토가 생겼나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 175,
+          "reason": "testicular-pain"
+        }
+      ],
+      "supports": [
+        "group.lump.safety",
+        "group.lump.groin-scrotal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.painful_irreducible_groin_mass_with_vomiting",
+        "display": "Painful Irreducible Groin Mass",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.lump-lymph-node.incarcerated-groin",
+        "display": "Painful Irreducible Groin Mass",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.incarcerated-groin",
+        "wording": "서혜부 덩이가 매우 아프고 눕거나 가볍게 눌러도 들어가지 않으면서 구토·복부팽만이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 174,
+          "reason": "incarcerated-groin"
+        }
+      ],
+      "supports": [
+        "group.lump.safety",
+        "group.lump.groin-scrotal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.breast_inflammation_with_systemic_illness",
+        "display": "Breast Inflammation with Systemic Illness",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.lump-lymph-node.breast-infection",
+        "display": "Breast Inflammation with Systemic Illness",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.breast-infection",
+        "wording": "유방이 빠르게 붉고 뜨겁게 붓고 심하게 아프면서 고열·오한·심한 처짐이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 173,
+          "reason": "breast-infection"
+        }
+      ],
+      "supports": [
+        "group.lump.safety",
+        "group.lump.breast-axilla"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.rapid_growth_or_large_deep_fixed_mass",
+        "display": "Rapidly Growing Deep or Fixed Mass",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.lump-lymph-node.rapid-deep-fixed",
+        "display": "Rapidly Growing Deep or Fixed Mass",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.rapid-deep-fixed",
+        "wording": "원인 모를 덩이가 계속 커지거나 깊고 단단하며 주변에 고정된 느낌인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 172,
+          "reason": "rapid-deep-fixed"
+        }
+      ],
+      "supports": [
+        "group.lump.safety",
+        "group.lump.skin-soft-tissue"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.supraclavicular_or_persistent_cervical_node",
+        "display": "Supraclavicular or Persistent Cervical Node",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.lump-lymph-node.supraclavicular",
+        "display": "Supraclavicular or Persistent Cervical Node",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.supraclavicular",
+        "wording": "쇄골 위·아래 림프절이 붓거나 목의 덩이가 지속되고 원인이 분명하지 않나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 171,
+          "reason": "supraclavicular"
+        }
+      ],
+      "supports": [
+        "group.lump.safety",
+        "group.lump.lymph-node",
+        "group.lump.neck"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.generalized_nodes_with_b_symptoms",
+        "display": "Generalized Nodes with Systemic Symptoms",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.lump-lymph-node.generalized-b",
+        "display": "Generalized Nodes with Systemic Symptoms",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.generalized-b",
+        "wording": "여러 부위 림프절이 붓고 원인 모를 발열·흠뻑 젖는 야간발한·체중감소·가려움 중 하나 이상이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 170,
+          "reason": "generalized-b"
+        }
+      ],
+      "supports": [
+        "group.lump.safety",
+        "group.lump.lymph-node"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.unexplained_breast_or_axillary_lump",
+        "display": "Unexplained Breast or Axillary Lump",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.lump-lymph-node.breast-axillary",
+        "display": "Unexplained Breast or Axillary Lump",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.breast-axillary",
+        "wording": "유방 또는 겨드랑이에 원인이 분명하지 않은 새 덩이가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 169,
+          "reason": "breast-axillary"
+        }
+      ],
+      "supports": [
+        "group.lump.safety",
+        "group.lump.breast-axilla"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.nonpainful_testicular_change",
+        "display": "Non-painful Testicular Change",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.lump-lymph-node.testicular-change",
+        "display": "Non-painful Testicular Change",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.testicular-change",
+        "wording": "고환 자체가 아프지 않게 커졌거나 모양·단단함·표면 감촉이 달라졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 168,
+          "reason": "testicular-change"
+        }
+      ],
+      "supports": [
+        "group.lump.safety",
+        "group.lump.groin-scrotal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.abdominal_pelvic_mass_or_ascites",
+        "display": "Abdominal or Pelvic Mass or Ascites",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.lump-lymph-node.abdominal-pelvic",
+        "display": "Abdominal or Pelvic Mass or Ascites",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.abdominal-pelvic",
+        "wording": "배나 골반에서 덩이가 만져지거나 원인 모르게 배가 계속 불러오고 복수가 의심되나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 167,
+          "reason": "abdominal-pelvic"
+        }
+      ],
+      "supports": [
+        "group.lump.safety",
+        "group.lump.abdominal-pelvic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.child_unexplained_lymphadenopathy_or_bone_swelling",
+        "display": "Child Unexplained Nodes or Bone Swelling",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.lump-lymph-node.child-warning",
+        "display": "Child Unexplained Nodes or Bone Swelling",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.child-warning",
+        "wording": "소아·청소년에게 원인 모를 지속성 림프절 또는 뼈의 부기·통증이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 166,
+          "reason": "child-warning"
+        }
+      ],
+      "supports": [
+        "group.lump.safety",
+        "group.lump.lymph-node",
+        "group.lump.bone"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.ulceration_bleeding_or_skin_breakdown",
+        "display": "Ulcerating or Bleeding Lump",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.lump-lymph-node.ulceration-bleeding",
+        "display": "Ulcerating or Bleeding Lump",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.ulceration-bleeding",
+        "wording": "덩이 위 피부가 헐거나 잘 낫지 않고 반복 출혈·진물·괴사가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 165,
+          "reason": "ulceration-bleeding"
+        }
+      ],
+      "supports": [
+        "group.lump.safety",
+        "group.lump.skin-soft-tissue"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.exact_body_site",
+        "display": "Exact Lump Body Site",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.body-site",
+        "display": "Exact Lump Body Site",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.body-site",
+        "wording": "덩이의 정확한 신체 부위와 표면·피부 아래·깊은 곳 중 어디인지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 155,
+          "reason": "body-site"
+        }
+      ],
+      "supports": [
+        "group.lump.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.laterality",
+        "display": "Lump Laterality",
+        "value_type": "coded",
+        "allowed_values": [
+          "left",
+          "right",
+          "bilateral",
+          "midline",
+          "not_lateralizable_or_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.lump-lymph-node.laterality",
+        "display": "Lump Laterality",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.laterality",
+        "wording": "덩이는 왼쪽, 오른쪽, 양쪽 또는 정중앙 중 어디인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 154,
+          "reason": "laterality"
+        }
+      ],
+      "supports": [
+        "group.lump.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.number_and_distribution",
+        "display": "Number and Distribution of Lumps",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.number-distribution",
+        "display": "Number and Distribution of Lumps",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.number-distribution",
+        "wording": "한 개인가요 여러 개인가요? 여러 개라면 한 부위에 모였는지 여러 신체 부위에 있는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 153,
+          "reason": "number-distribution"
+        }
+      ],
+      "supports": [
+        "group.lump.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.onset_duration_and_discovery",
+        "display": "Lump Onset Duration and Discovery",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.onset-duration",
+        "display": "Lump Onset Duration and Discovery",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.onset-duration",
+        "wording": "처음 발견한 날짜·상황과 얼마나 지속됐는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 152,
+          "reason": "onset-duration"
+        }
+      ],
+      "supports": [
+        "group.lump.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.size_and_measurement",
+        "display": "Lump Size and Measurement",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.size",
+        "display": "Lump Size and Measurement",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.size",
+        "wording": "현재 크기를 센티미터 또는 콩·포도·달걀 같은 비교물로 알려주세요. 이전 측정값도 있으면 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 151,
+          "reason": "size"
+        }
+      ],
+      "supports": [
+        "group.lump.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.growth_course",
+        "display": "Lump Growth Course",
+        "value_type": "coded",
+        "allowed_values": [
+          "decreasing",
+          "stable",
+          "slowly_increasing",
+          "rapidly_increasing",
+          "fluctuating",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.lump-lymph-node.growth",
+        "display": "Lump Growth Course",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.growth",
+        "wording": "크기는 줄어듦, 그대로, 서서히 커짐, 빠르게 커짐 또는 커졌다 작아짐 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 150,
+          "reason": "growth"
+        }
+      ],
+      "supports": [
+        "group.lump.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.pain_nrs",
+        "display": "Lump Pain NRS",
+        "value_type": "integer"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.pain-nrs",
+        "display": "Lump Pain NRS",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.pain-nrs",
+        "wording": "덩이가 아프다면 현재 통증을 0점부터 10점까지 숫자로 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 149,
+          "reason": "pain-nrs"
+        }
+      ],
+      "supports": [
+        "group.lump.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.tenderness_and_pain_pattern",
+        "display": "Lump Tenderness and Pain Pattern",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.pain-pattern",
+        "display": "Lump Tenderness and Pain Pattern",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.pain-pattern",
+        "wording": "만질 때만 아픈지, 가만히 있어도 아픈지, 밤이나 움직임·식사·생리와 연관되는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 148,
+          "reason": "pain-pattern"
+        }
+      ],
+      "supports": [
+        "group.lump.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.consistency_mobility_and_depth",
+        "display": "Lump Consistency Mobility and Depth",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.consistency",
+        "display": "Lump Consistency Mobility and Depth",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.consistency",
+        "wording": "부드러움·고무같음·단단함, 손으로 밀면 움직이는지, 피부나 깊은 조직에 고정됐는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 147,
+          "reason": "consistency"
+        }
+      ],
+      "supports": [
+        "group.lump.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.skin_surface_changes",
+        "display": "Skin Changes over Lump",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.skin-change",
+        "display": "Skin Changes over Lump",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.skin-change",
+        "wording": "덩이 위 피부의 붉음·열감·멍·색 변화·구멍·진물·궤양 여부를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 146,
+          "reason": "skin-change"
+        }
+      ],
+      "supports": [
+        "group.lump.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.relation_to_movement_swallowing_or_straining",
+        "display": "Lump Dynamic Features",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.dynamic",
+        "display": "Lump Dynamic Features",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.dynamic",
+        "wording": "움직임·삼킴·기침·힘주기·자세에 따라 덩이가 움직이거나 커졌다 작아지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 145,
+          "reason": "dynamic"
+        }
+      ],
+      "supports": [
+        "group.lump.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.recurrence_prior_removal_or_pathology",
+        "display": "Prior Lump Removal or Pathology",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.prior-lump",
+        "display": "Prior Lump Removal or Pathology",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.prior-lump",
+        "wording": "같은 곳에 이전에도 생겼거나 제거·배액·조직검사를 했나요? 결과를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 144,
+          "reason": "prior-lump"
+        }
+      ],
+      "supports": [
+        "group.lump.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.recent_injury_injection_procedure_or_implant",
+        "display": "Local Injury Procedure or Implant",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.local-event",
+        "display": "Local Injury Procedure or Implant",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.local-event",
+        "wording": "최근 해당 부위의 외상·주사·수술·보형물·필러 또는 반복 압박이 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 143,
+          "reason": "local-event"
+        }
+      ],
+      "supports": [
+        "group.lump.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.current_tests_and_referrals",
+        "display": "Lump Tests and Referrals",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.tests-referral",
+        "display": "Lump Tests and Referrals",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.tests-referral",
+        "wording": "이미 받은 진찰·혈액검사·초음파·X선·CT·MRI·조직검사 결과와 예약된 진료를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 142,
+          "reason": "tests-referral"
+        }
+      ],
+      "supports": [
+        "group.lump.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.cancer_immunosuppression_and_radiation_history",
+        "display": "Cancer and Immunosuppression Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.cancer-risk",
+        "display": "Cancer and Immunosuppression Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.cancer-risk",
+        "wording": "과거 암·방사선치료·장기이식·면역저하 또는 현재 항암·면역억제 치료가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 141,
+          "reason": "cancer-risk"
+        }
+      ],
+      "supports": [
+        "group.lump.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.family_history_and_genetic_risk",
+        "display": "Family and Genetic Risk for Lump",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.family-risk",
+        "display": "Family and Genetic Risk for Lump",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.family-risk",
+        "wording": "가족의 암·림프종·유전성 종양 또는 비슷한 덩이 병력을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 140,
+          "reason": "family-risk"
+        }
+      ],
+      "supports": [
+        "group.lump.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.current_medicines_and_anticoagulation",
+        "display": "Medicines and Bleeding Risk",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.medicines",
+        "display": "Medicines and Bleeding Risk",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.medicines",
+        "wording": "현재 복용약과 항응고제·항혈소판제, 최근 시작한 약을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 139,
+          "reason": "medicines"
+        }
+      ],
+      "supports": [
+        "group.lump.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.other_detail_or_patient_priority",
+        "display": "Other Lump Detail or Patient Priority",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.other-detail",
+        "display": "Other Lump Detail or Patient Priority",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.other-detail",
+        "wording": "질문에 없지만 의료진에게 꼭 전달하고 싶은 내용이나 가장 걱정되는 점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 80,
+          "reason": "other-detail"
+        }
+      ],
+      "supports": [
+        "group.lump.routing",
+        "group.lump.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.node_regions",
+        "display": "Lymph Node Regions",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "30746006"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.lump-lymph-node",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.lump-lymph-node.node-regions",
+        "display": "Lymph Node Regions",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.node-regions",
+        "wording": "목·턱밑·쇄골·겨드랑이·서혜부 중 어느 림프절이 부었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "node-regions"
+        }
+      ],
+      "supports": [
+        "group.lump.lymph-node"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.local_infection_symptoms",
+        "display": "Local Infection near Lymph Nodes",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.local-infection",
+        "display": "Local Infection near Lymph Nodes",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.local-infection",
+        "wording": "최근 감기·인후통·귀·치아·피부 상처·감염 등 림프절 주변의 증상이 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "local-infection"
+        }
+      ],
+      "supports": [
+        "group.lump.lymph-node"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.systemic_b_symptoms",
+        "display": "Systemic Symptoms with Lymphadenopathy",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.b-symptoms",
+        "display": "Systemic Symptoms with Lymphadenopathy",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.b-symptoms",
+        "wording": "원인 모를 발열, 흠뻑 젖는 야간발한, 체중감소·식욕저하·가려움·숨참이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "b-symptoms"
+        }
+      ],
+      "supports": [
+        "group.lump.lymph-node"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.recent_vaccination_infection_travel_or_animal_exposure",
+        "display": "Lymph Node Exposure Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.node-exposures",
+        "display": "Lymph Node Exposure Context",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.node-exposures",
+        "wording": "최근 예방접종·감염, 해외여행, 결핵 노출, 고양이 등 동물 접촉이 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 127,
+          "reason": "node-exposures"
+        }
+      ],
+      "supports": [
+        "group.lump.lymph-node"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.alcohol_induced_node_pain",
+        "display": "Alcohol-induced Lymph Node Pain",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.alcohol-node-pain",
+        "display": "Alcohol-induced Lymph Node Pain",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.alcohol-node-pain",
+        "wording": "술을 마신 뒤 림프절 부위 통증이 생기거나 심해지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 126,
+          "reason": "alcohol-node-pain"
+        }
+      ],
+      "supports": [
+        "group.lump.lymph-node"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.skin_punctum_fluctuation_or_drainage",
+        "display": "Skin Lump Punctum Fluctuation or Drainage",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.skin-features",
+        "display": "Skin Lump Punctum Fluctuation or Drainage",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.skin-features",
+        "wording": "피부 덩이에 가운데 구멍, 말랑한 고름 느낌, 냄새 나는 내용물이나 배출이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "skin-features"
+        }
+      ],
+      "supports": [
+        "group.lump.skin-soft-tissue"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.soft_tissue_depth_fascia_and_function",
+        "display": "Soft Tissue Mass Depth and Functional Impact",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.soft-tissue-depth",
+        "display": "Soft Tissue Mass Depth and Functional Impact",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.soft-tissue-depth",
+        "wording": "덩이가 근육·근막 아래 깊은 느낌인지, 관절·근육 움직임이나 기능을 방해하는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "soft-tissue-depth"
+        }
+      ],
+      "supports": [
+        "group.lump.skin-soft-tissue"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.soft_tissue_size_growth_and_recurrence",
+        "display": "Soft Tissue Mass Growth and Recurrence",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.soft-tissue-growth",
+        "display": "Soft Tissue Mass Growth and Recurrence",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.soft-tissue-growth",
+        "wording": "연부조직 덩이의 현재·이전 크기, 증가 속도와 제거 후 재발 여부를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "soft-tissue-growth"
+        }
+      ],
+      "supports": [
+        "group.lump.skin-soft-tissue"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.breast_anatomy_age_and_hormonal_context",
+        "display": "Breast Lump Clinical Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.breast-context",
+        "display": "Breast Lump Clinical Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.breast-context",
+        "wording": "연령과 유방 조직·호르몬 치료 여부, 임신·수유·폐경 및 마지막 생리 시기를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "breast-context"
+        }
+      ],
+      "supports": [
+        "group.lump.breast-axilla"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.breast_cycle_relation_and_change",
+        "display": "Breast Lump Cycle Relation",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.breast-cycle",
+        "display": "Breast Lump Cycle Relation",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.breast-cycle",
+        "wording": "덩이와 통증이 생리 주기에 따라 변하는지, 계속 남아 있거나 커지는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "breast-cycle"
+        }
+      ],
+      "supports": [
+        "group.lump.breast-axilla"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.nipple_discharge_retraction_or_skin_dimpling",
+        "display": "Nipple and Breast Skin Changes",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.breast-warning",
+        "display": "Nipple and Breast Skin Changes",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.breast-warning",
+        "wording": "한쪽 유두 분비물·피, 유두 함몰, 피부 함몰·오렌지껍질 변화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "breast-warning"
+        }
+      ],
+      "supports": [
+        "group.lump.breast-axilla"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.breast_implant_surgery_and_family_history",
+        "display": "Breast Procedure and Family History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.breast-history",
+        "display": "Breast Procedure and Family History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.breast-history",
+        "wording": "유방 보형물·수술·조직검사와 본인·가족의 유방·난소암 병력을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 127,
+          "reason": "breast-history"
+        }
+      ],
+      "supports": [
+        "group.lump.breast-axilla"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.neck_subsite_and_swallow_movement",
+        "display": "Neck Lump Subsite and Movement",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.neck-subsite",
+        "display": "Neck Lump Subsite and Movement",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.neck-subsite",
+        "wording": "목 앞·옆·턱밑·귀밑 중 어디이며 침 삼킬 때나 혀를 내밀 때 움직이나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "neck-subsite"
+        }
+      ],
+      "supports": [
+        "group.lump.neck"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.hoarseness_dysphagia_or_oral_lesion",
+        "display": "Head and Neck Associated Symptoms",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.neck-associated",
+        "display": "Head and Neck Associated Symptoms",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.neck-associated",
+        "wording": "지속되는 목쉼, 삼킴곤란·통증, 한쪽 귀 통증 또는 입안 궤양·덩이가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "neck-associated"
+        }
+      ],
+      "supports": [
+        "group.lump.neck"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.thyroid_or_salivary_features",
+        "display": "Thyroid or Salivary Features",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.thyroid-salivary",
+        "display": "Thyroid or Salivary Features",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.thyroid-salivary",
+        "wording": "두근거림·체중변화·더위·추위 민감 또는 식사 때 턱밑·귀밑이 붓고 아픈 증상이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "thyroid-salivary"
+        }
+      ],
+      "supports": [
+        "group.lump.neck"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.head_neck_tobacco_alcohol_and_hpv_context",
+        "display": "Head and Neck Risk Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.neck-risk",
+        "display": "Head and Neck Risk Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.neck-risk",
+        "wording": "흡연·음주력, HPV 관련 병력과 과거 두경부암·방사선치료를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 127,
+          "reason": "neck-risk"
+        }
+      ],
+      "supports": [
+        "group.lump.neck"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.groin_scrotal_exact_structure",
+        "display": "Groin or Scrotal Lump Structure",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.groin-structure",
+        "display": "Groin or Scrotal Lump Structure",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.groin-structure",
+        "wording": "덩이가 서혜부, 음낭 피부, 고환 자체 또는 고환 주변 중 어디에서 만져지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "groin-structure"
+        }
+      ],
+      "supports": [
+        "group.lump.groin-scrotal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.groin_reducibility_and_cough_impulse",
+        "display": "Groin Lump Reducibility",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.groin-reducibility",
+        "display": "Groin Lump Reducibility",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.groin-reducibility",
+        "wording": "누우면 작아지거나 손으로 들어가고, 기침·힘주기·서 있을 때 커지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "groin-reducibility"
+        }
+      ],
+      "supports": [
+        "group.lump.groin-scrotal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.testicular_shape_texture_and_heaviness",
+        "display": "Testicular Shape Texture and Heaviness",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.testicular-detail",
+        "display": "Testicular Shape Texture and Heaviness",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.testicular-detail",
+        "wording": "고환의 크기·모양·단단함 변화, 묵직함 또는 둔한 통증이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "testicular-detail"
+        }
+      ],
+      "supports": [
+        "group.lump.groin-scrotal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.genital_urinary_infection_or_trauma",
+        "display": "Genital Urinary Infection or Trauma Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.genital-context",
+        "display": "Genital Urinary Infection or Trauma Context",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.genital-context",
+        "wording": "배뇨 증상·분비물·성매개감염 위험, 최근 외상·수술이 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 127,
+          "reason": "genital-context"
+        }
+      ],
+      "supports": [
+        "group.lump.groin-scrotal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.abdominal_pelvic_location_and_distension",
+        "display": "Abdominal Pelvic Lump Detail",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "309524007"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.lump-lymph-node",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.lump-lymph-node.abdomen-detail",
+        "display": "Abdominal Pelvic Lump Detail",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.abdomen-detail",
+        "wording": "배·골반 어느 부위에서 만져지고, 복부팽만·조기포만·식욕저하가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "abdomen-detail"
+        }
+      ],
+      "supports": [
+        "group.lump.abdominal-pelvic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.abdominal_bowel_urinary_or_bleeding_symptoms",
+        "display": "Abdominal Pelvic Associated Symptoms",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.abdomen-associated",
+        "display": "Abdominal Pelvic Associated Symptoms",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.abdomen-associated",
+        "wording": "배변·배뇨 변화, 혈변·혈뇨, 질 출혈·분비물 또는 체중감소가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "abdomen-associated"
+        }
+      ],
+      "supports": [
+        "group.lump.abdominal-pelvic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.pregnancy_reproductive_and_gynaecologic_context",
+        "display": "Reproductive Context for Pelvic Mass",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.pelvic-context",
+        "display": "Reproductive Context for Pelvic Mass",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.pelvic-context",
+        "wording": "임신 가능성, 마지막 생리, 폐경 상태와 자궁·난소 질환·수술력을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "pelvic-context"
+        }
+      ],
+      "supports": [
+        "group.lump.abdominal-pelvic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.bone_site_pain_and_night_pattern",
+        "display": "Bone Swelling and Pain Pattern",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.bone-pattern",
+        "display": "Bone Swelling and Pain Pattern",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.bone-pattern",
+        "wording": "뼈의 부위와 부기, 밤에 깨는 통증·지속 통증 또는 압통이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "bone-pattern"
+        }
+      ],
+      "supports": [
+        "group.lump.bone"
+      ]
+    },
+    {
+      "fact": {
+        "id": "lump.bone_trauma_function_and_fracture_context",
+        "display": "Bone Lump Trauma and Function",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.lump-lymph-node.bone-function",
+        "display": "Bone Lump Trauma and Function",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.lump-lymph-node.bone-function",
+        "wording": "외상 없이 생겼는지, 움직임·체중부하 제한 또는 병적 골절 의심 상황이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "bone-function"
+        }
+      ],
+      "supports": [
+        "group.lump.bone"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nice.ng12.lump.2026",
+      "source.nhs.lumps.2026",
+      "source.nhs.swollen-glands.2023",
+      "source.nhs.non-hodgkin-lymphoma.2026",
+      "source.stom.lump-lymph-node.20260715"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

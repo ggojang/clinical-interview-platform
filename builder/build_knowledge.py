@@ -269,6 +269,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-asthma-copd-follow-up.json",
         "version": "0.1.0",
     },
+    "lump_lymph_node": {
+        "base_graph": ROOT / "knowledge/base/primary-care-lump-lymph-node.json",
+        "base_rules": ROOT / "rules/base/primary-care-lump-lymph-node.json",
+        "fragment_root": ROOT / "knowledge/generated/general/lump-lymph-node",
+        "output_graph": ROOT / "knowledge/graph/primary-care-lump-lymph-node.json",
+        "output_rules": ROOT / "rules/primary-care-lump-lymph-node.json",
+        "version": "0.1.0",
+    },
 }
 
 

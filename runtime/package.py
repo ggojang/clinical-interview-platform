@@ -41,6 +41,7 @@ MEMORY_COGNITIVE_CONCERN_PACKAGE = ROOT / "packages/generated/primary-care-memor
 PREGNANCY_POSTPARTUM_CONCERN_PACKAGE = ROOT / "packages/generated/primary-care-pregnancy-postpartum-concern-0.1.0.json"
 ALLERGY_CONCERN_PACKAGE = ROOT / "packages/generated/primary-care-allergy-concern-0.1.0.json"
 ASTHMA_COPD_FOLLOW_UP_PACKAGE = ROOT / "packages/generated/primary-care-asthma-copd-follow-up-0.1.0.json"
+LUMP_LYMPH_NODE_PACKAGE = ROOT / "packages/generated/primary-care-lump-lymph-node-0.1.0.json"
 
 
 class PackageLoadError(RuntimeError):
