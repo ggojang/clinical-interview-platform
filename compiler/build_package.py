@@ -425,6 +425,17 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/endocrine/thyroid-concern-follow-up",
         "research_manifests": [ROOT / "sources/manifests/primary-care-thyroid-concern-follow-up-research.json"],
     },
+    "anemia_concern_follow_up": {
+        "graph": ROOT / "knowledge/graph/primary-care-anemia-concern-follow-up.json",
+        "rules": ROOT / "rules/primary-care-anemia-concern-follow-up.json",
+        "sources": ROOT / "sources/manifests/primary-care-anemia-concern-follow-up.json",
+        "completion_policy": ROOT / "policies/primary-care-anemia-concern-follow-up-completion.json",
+        "output": ROOT / "packages/generated/primary-care-anemia-concern-follow-up-0.1.0.json",
+        "package_id": "package.primary-care-anemia-concern-follow-up", "package_version": "0.1.0",
+        "rfe": "rfe.anemia_concern_follow_up",
+        "simulation_root": ROOT / "simulation/patients/hematology/anemia-concern-follow-up",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-anemia-concern-follow-up-research.json"],
+    },
 }
 
 ALLOWED_NODE_TYPES = {

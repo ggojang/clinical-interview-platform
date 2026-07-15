@@ -1,0 +1,1960 @@
+{
+  "id": "knowledge.generated.anemia-concern-follow-up",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-anemia-concern-follow-up-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-07-14",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-07-15",
+    "next_full_review_at": "2027-01-10",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.anemia.routing",
+      "type": "ClinicalGroup",
+      "display": "routing"
+    },
+    {
+      "id": "group.anemia.safety",
+      "type": "ClinicalGroup",
+      "display": "safety"
+    },
+    {
+      "id": "group.anemia.common",
+      "type": "ClinicalGroup",
+      "display": "common"
+    },
+    {
+      "id": "group.anemia.bleeding",
+      "type": "ClinicalGroup",
+      "display": "bleeding"
+    },
+    {
+      "id": "group.anemia.nutrition",
+      "type": "ClinicalGroup",
+      "display": "nutrition"
+    },
+    {
+      "id": "group.anemia.chronic",
+      "type": "ClinicalGroup",
+      "display": "chronic"
+    },
+    {
+      "id": "group.anemia.treatment",
+      "type": "ClinicalGroup",
+      "display": "treatment"
+    }
+  ],
+  "group_hypothesis_edges": [],
+  "safety_rules": [
+    {
+      "id": "rule.anemia-concern-follow-up.safety.cardiopulmonary",
+      "priority": 1000,
+      "when": {
+        "fact": "anemia.chest_pain_rest_dyspnea_or_syncope",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.anemia-concern-follow-up.safety.upper-gi-bleed",
+      "priority": 1000,
+      "when": {
+        "fact": "anemia.active_upper_gi_bleeding",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.anemia-concern-follow-up.safety.lower-gi-bleed",
+      "priority": 1000,
+      "when": {
+        "fact": "anemia.active_lower_gi_bleeding_with_instability",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.anemia-concern-follow-up.safety.vaginal-bleed",
+      "priority": 1000,
+      "when": {
+        "fact": "anemia.heavy_vaginal_bleeding_with_instability",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.anemia-concern-follow-up.safety.pregnancy-bleed",
+      "priority": 1000,
+      "when": {
+        "fact": "anemia.pregnancy_or_postpartum_bleeding",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.anemia-concern-follow-up.safety.neurologic",
+      "priority": 1000,
+      "when": {
+        "fact": "anemia.confusion_or_new_neurologic_deficit",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.anemia-concern-follow-up.safety.critical-hb",
+      "priority": 990,
+      "when": {
+        "fact": "anemia.known_critical_or_rapidly_falling_hemoglobin",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.anemia-concern-follow-up.safety.transfusion-reaction",
+      "priority": 1000,
+      "when": {
+        "fact": "anemia.transfusion_reaction_pattern",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.anemia-concern-follow-up.safety.hemolysis",
+      "priority": 980,
+      "when": {
+        "fact": "anemia.hemolysis_pattern",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.anemia-concern-follow-up.safety.bleeding-fever",
+      "priority": 980,
+      "when": {
+        "fact": "anemia.unexplained_bleeding_bruising_and_fever",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.anemia-concern-follow-up.safety.anticoagulant-bleed",
+      "priority": 980,
+      "when": {
+        "fact": "anemia.anticoagulant_with_new_bleeding",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.anemia-concern-follow-up.safety.severe-infection",
+      "priority": 1000,
+      "when": {
+        "fact": "anemia.severe_infection_or_sepsis_pattern",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "anemia.primary_group",
+        "display": "Primary Anaemia Presentation",
+        "value_type": "coded",
+        "allowed_values": [
+          "suspected_symptomatic",
+          "abnormal_blood_result",
+          "iron_deficiency",
+          "b12_folate_or_macrocytic",
+          "chronic_disease_or_renal",
+          "bleeding_related",
+          "treatment_followup",
+          "other_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.primary-group",
+        "display": "Primary Anaemia Presentation",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.primary-group",
+        "wording": "이번 방문은 빈혈 의심 증상, 혈액검사상 빈혈, 철결핍빈혈, 비타민 B12·엽산 관련 빈혈, 만성질환·신장질환 관련 빈혈, 출혈 관련 빈혈, 치료 후 추적 중 무엇에 가깝나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 180,
+          "reason": "primary-group"
+        }
+      ],
+      "supports": [
+        "group.anemia.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.chest_pain_rest_dyspnea_or_syncope",
+        "display": "Cardiopulmonary Instability with Anaemia",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.cardiopulmonary",
+        "display": "Cardiopulmonary Instability with Anaemia",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.cardiopulmonary",
+        "wording": "심한 쇠약과 함께 가만히 있어도 흉통·호흡곤란이 있거나 실신했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 179,
+          "reason": "cardiopulmonary"
+        }
+      ],
+      "supports": [
+        "group.anemia.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.active_upper_gi_bleeding",
+        "display": "Active Upper Gastrointestinal Bleeding",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.upper-gi-bleed",
+        "display": "Active Upper Gastrointestinal Bleeding",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.upper-gi-bleed",
+        "wording": "피를 토하거나 커피 찌꺼기 같은 구토, 검고 끈적한 타르변이 현재 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 178,
+          "reason": "upper-gi-bleed"
+        }
+      ],
+      "supports": [
+        "group.anemia.safety",
+        "group.anemia.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.active_lower_gi_bleeding_with_instability",
+        "display": "Active Lower Gastrointestinal Bleeding",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.lower-gi-bleed",
+        "display": "Active Lower Gastrointestinal Bleeding",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.lower-gi-bleed",
+        "wording": "많은 혈변이 계속되면서 어지럼·식은땀·실신할 것 같은 느낌이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 177,
+          "reason": "lower-gi-bleed"
+        }
+      ],
+      "supports": [
+        "group.anemia.safety",
+        "group.anemia.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.heavy_vaginal_bleeding_with_instability",
+        "display": "Heavy Vaginal Bleeding with Instability",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.vaginal-bleed",
+        "display": "Heavy Vaginal Bleeding with Instability",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.vaginal-bleed",
+        "wording": "질 출혈이 매우 많아 패드를 한 시간마다 갈 정도이거나 큰 혈덩이가 나오면서 어지럼·실신 느낌이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 176,
+          "reason": "vaginal-bleed"
+        }
+      ],
+      "supports": [
+        "group.anemia.safety",
+        "group.anemia.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.pregnancy_or_postpartum_bleeding",
+        "display": "Pregnancy or Postpartum Bleeding",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.pregnancy-bleed",
+        "display": "Pregnancy or Postpartum Bleeding",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.pregnancy-bleed",
+        "wording": "임신 중이거나 출산·유산 후인데 많은 출혈, 심한 복통, 어지럼·실신이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 175,
+          "reason": "pregnancy-bleed"
+        }
+      ],
+      "supports": [
+        "group.anemia.safety",
+        "group.anemia.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.confusion_or_new_neurologic_deficit",
+        "display": "Neurologic Instability",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.neurologic",
+        "display": "Neurologic Instability",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.neurologic",
+        "wording": "새로운 혼란·의식저하, 한쪽 마비·말하기 어려움 또는 걷기 힘든 심한 균형 문제가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 174,
+          "reason": "neurologic"
+        }
+      ],
+      "supports": [
+        "group.anemia.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.known_critical_or_rapidly_falling_hemoglobin",
+        "display": "Critical or Rapidly Falling Haemoglobin",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.critical-hb",
+        "display": "Critical or Rapidly Falling Haemoglobin",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.critical-hb",
+        "wording": "의료기관에서 혈색소가 매우 낮거나 빠르게 떨어져 즉시 평가가 필요하다고 안내받았나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 173,
+          "reason": "critical-hb"
+        }
+      ],
+      "supports": [
+        "group.anemia.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.transfusion_reaction_pattern",
+        "display": "Possible Transfusion Reaction",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.transfusion-reaction",
+        "display": "Possible Transfusion Reaction",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.transfusion-reaction",
+        "wording": "수혈 중이거나 직후에 숨참·흉통·고열·오한·허리통증·붉거나 짙은 소변이 생겼나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 172,
+          "reason": "transfusion-reaction"
+        }
+      ],
+      "supports": [
+        "group.anemia.safety",
+        "group.anemia.treatment"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.hemolysis_pattern",
+        "display": "Possible Acute Haemolysis",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.hemolysis",
+        "display": "Possible Acute Haemolysis",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.hemolysis",
+        "wording": "갑자기 눈·피부가 노래지고 소변이 콜라색으로 짙어지면서 심한 쇠약·복통·등통증이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 171,
+          "reason": "hemolysis"
+        }
+      ],
+      "supports": [
+        "group.anemia.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.unexplained_bleeding_bruising_and_fever",
+        "display": "Possible Marrow or Haematologic Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.bleeding-fever",
+        "display": "Possible Marrow or Haematologic Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.bleeding-fever",
+        "wording": "원인 모를 멍·점상출혈·코피·잇몸출혈과 함께 지속 발열·반복 감염·심한 피로 중 하나가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 170,
+          "reason": "bleeding-fever"
+        }
+      ],
+      "supports": [
+        "group.anemia.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.anticoagulant_with_new_bleeding",
+        "display": "Bleeding while Anticoagulated",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.anticoagulant-bleed",
+        "display": "Bleeding while Anticoagulated",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.anticoagulant-bleed",
+        "wording": "항응고제·항혈소판제를 복용 중이며 새로 생긴 지속 출혈이나 큰 멍, 혈뇨·혈변이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 169,
+          "reason": "anticoagulant-bleed"
+        }
+      ],
+      "supports": [
+        "group.anemia.safety",
+        "group.anemia.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.severe_infection_or_sepsis_pattern",
+        "display": "Severe Infection with Cytopenia Concern",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.severe-infection",
+        "display": "Severe Infection with Cytopenia Concern",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.severe-infection",
+        "wording": "항암·면역억제 치료 중이거나 백혈구 감소를 들었는데 고열·오한·혼란·심한 처짐이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 168,
+          "reason": "severe-infection"
+        }
+      ],
+      "supports": [
+        "group.anemia.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.onset_duration_and_course",
+        "display": "Onset Duration and Course",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.onset",
+        "display": "Onset Duration and Course",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.onset",
+        "wording": "증상 또는 검사 이상을 처음 안 시기, 지속 기간과 악화·호전·반복 경과를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 155,
+          "reason": "onset"
+        }
+      ],
+      "supports": [
+        "group.anemia.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.current_symptom_priority",
+        "display": "Current Symptom Priority",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.priority",
+        "display": "Current Symptom Priority",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.priority",
+        "wording": "현재 가장 불편하거나 의료진에게 우선 확인받고 싶은 증상은 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 154,
+          "reason": "priority"
+        }
+      ],
+      "supports": [
+        "group.anemia.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.fatigue_weakness_and_function",
+        "display": "Fatigue Weakness and Function",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.fatigue",
+        "display": "Fatigue Weakness and Function",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.fatigue",
+        "wording": "피로·기력저하가 업무·학업·운동·일상활동을 얼마나 방해하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 153,
+          "reason": "fatigue"
+        }
+      ],
+      "supports": [
+        "group.anemia.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.exertional_dyspnea_palpitations_and_dizziness",
+        "display": "Exertional Symptoms",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.exertional",
+        "display": "Exertional Symptoms",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.exertional",
+        "wording": "걷기·계단에서 숨참·두근거림·어지럼이 생기는 정도와 이전 대비 변화를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 152,
+          "reason": "exertional"
+        }
+      ],
+      "supports": [
+        "group.anemia.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.headache_cognition_and_sleep",
+        "display": "Headache Cognition and Sleep",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.cognition",
+        "display": "Headache Cognition and Sleep",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.cognition",
+        "wording": "두통·집중력저하·졸림·수면 변화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 151,
+          "reason": "cognition"
+        }
+      ],
+      "supports": [
+        "group.anemia.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.pallor_cold_hands_and_orthostasis",
+        "display": "Pallor and Orthostatic Symptoms",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.pallor",
+        "display": "Pallor and Orthostatic Symptoms",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.pallor",
+        "wording": "창백함·손발 차가움, 일어설 때 어지럼 또는 맥박이 빨라지는 느낌이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 150,
+          "reason": "pallor"
+        }
+      ],
+      "supports": [
+        "group.anemia.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.pica_restless_legs_and_nail_hair_change",
+        "display": "Iron-deficiency-associated Symptoms",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.pica",
+        "display": "Iron-deficiency-associated Symptoms",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.pica",
+        "wording": "얼음·흙 등을 먹고 싶은 느낌, 하지불안, 손발톱·탈모·혀 통증 변화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 149,
+          "reason": "pica"
+        }
+      ],
+      "supports": [
+        "group.anemia.common",
+        "group.anemia.nutrition"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.latest_cbc_and_reference_range",
+        "display": "Latest Complete Blood Count",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "165397008"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.anemia-concern-follow-up",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.cbc",
+        "display": "Latest Complete Blood Count",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.cbc",
+        "wording": "최근 혈색소·헤마토크릿·적혈구·MCV·MCH·RDW 수치, 검사일과 기준범위를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 148,
+          "reason": "cbc"
+        }
+      ],
+      "supports": [
+        "group.anemia.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.cbc_trend_and_prior_baseline",
+        "display": "CBC Trend",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.cbc-trend",
+        "display": "CBC Trend",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.cbc-trend",
+        "wording": "이전 혈액검사와 비교해 혈색소·MCV가 어떻게 변했고 평소 기준값은 얼마였나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 147,
+          "reason": "cbc-trend"
+        }
+      ],
+      "supports": [
+        "group.anemia.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.white_cells_platelets_and_other_cytopenias",
+        "display": "Other Blood Cell Lines",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.other-lines",
+        "display": "Other Blood Cell Lines",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.other-lines",
+        "wording": "백혈구·호중구·혈소판 이상도 함께 있었나요? 결과와 추세를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 146,
+          "reason": "other-lines"
+        }
+      ],
+      "supports": [
+        "group.anemia.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.ferritin_iron_tsat_tibc_and_inflammation",
+        "display": "Iron Studies and Inflammation",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.iron-studies",
+        "display": "Iron Studies and Inflammation",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.iron-studies",
+        "wording": "페리틴·혈청철·트랜스페린포화도·TIBC와 CRP 등 염증 수치, 검사일을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 145,
+          "reason": "iron-studies"
+        }
+      ],
+      "supports": [
+        "group.anemia.common",
+        "group.anemia.nutrition"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.reticulocyte_bilirubin_ldh_haptoglobin",
+        "display": "Reticulocyte and Haemolysis Tests",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.hemolysis-tests",
+        "display": "Reticulocyte and Haemolysis Tests",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.hemolysis-tests",
+        "wording": "망상적혈구·빌리루빈·LDH·합토글로빈 등 용혈 관련 결과가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 144,
+          "reason": "hemolysis-tests"
+        }
+      ],
+      "supports": [
+        "group.anemia.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.b12_folate_and_related_tests",
+        "display": "B12 Folate and Related Tests",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.b12-folate-tests",
+        "display": "B12 Folate and Related Tests",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.b12-folate-tests",
+        "wording": "비타민 B12·엽산과 관련 추가검사 결과, 검사일을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 143,
+          "reason": "b12-folate-tests"
+        }
+      ],
+      "supports": [
+        "group.anemia.common",
+        "group.anemia.nutrition"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.current_medicines_and_supplements",
+        "display": "Current Medicines and Supplements",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.medicines",
+        "display": "Current Medicines and Supplements",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.medicines",
+        "wording": "현재 복용약 전체와 철분·B12·엽산·건강보조제의 제품명·용량·복용법을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 142,
+          "reason": "medicines"
+        }
+      ],
+      "supports": [
+        "group.anemia.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.nsaid_antiplatelet_anticoagulant_use",
+        "display": "Bleeding-risk Medicines",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.bleeding-medicines",
+        "display": "Bleeding-risk Medicines",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.bleeding-medicines",
+        "wording": "진통소염제·아스피린·항혈소판제·항응고제의 이름, 복용 빈도와 시작 시기를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 141,
+          "reason": "bleeding-medicines"
+        }
+      ],
+      "supports": [
+        "group.anemia.common",
+        "group.anemia.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.past_anemia_transfusion_and_blood_disorder",
+        "display": "Past Anaemia and Transfusion History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.past-history",
+        "display": "Past Anaemia and Transfusion History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.past-history",
+        "wording": "과거 빈혈 유형·치료·수혈, 혈액질환 또는 비슷한 재발 병력을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 140,
+          "reason": "past-history"
+        }
+      ],
+      "supports": [
+        "group.anemia.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.family_history_and_ancestry_context",
+        "display": "Family and Haemoglobinopathy Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.family",
+        "display": "Family and Haemoglobinopathy Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.family",
+        "wording": "가족의 빈혈·혈색소질환·출혈질환과 관련해 의료진에게 필요한 가족 배경을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 139,
+          "reason": "family"
+        }
+      ],
+      "supports": [
+        "group.anemia.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.pregnancy_postpartum_and_lactation",
+        "display": "Pregnancy Postpartum and Lactation",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.pregnancy",
+        "display": "Pregnancy Postpartum and Lactation",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.pregnancy",
+        "wording": "현재 임신·수유 여부, 임신 주수 또는 출산·유산 시기와 출혈량을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 138,
+          "reason": "pregnancy"
+        }
+      ],
+      "supports": [
+        "group.anemia.common",
+        "group.anemia.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.other_detail_or_patient_priority",
+        "display": "Other Anaemia Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.other-detail",
+        "display": "Other Anaemia Detail",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.other-detail",
+        "wording": "질문에 없지만 의료진에게 꼭 전달하고 싶은 내용이나 가장 걱정되는 점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 80,
+          "reason": "other-detail"
+        }
+      ],
+      "supports": [
+        "group.anemia.routing",
+        "group.anemia.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.menstrual_pattern_and_heavy_bleeding",
+        "display": "Menstrual Blood Loss",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.menstrual",
+        "display": "Menstrual Blood Loss",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.menstrual",
+        "wording": "해당되면 생리 주기·기간, 가장 많은 날 패드·탐폰 교체 횟수, 큰 혈덩이·샘·야간 교체 여부를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "menstrual"
+        }
+      ],
+      "supports": [
+        "group.anemia.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.gi_bleeding_and_bowel_change",
+        "display": "Gastrointestinal Bleeding and Bowel Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.gi-bleeding",
+        "display": "Gastrointestinal Bleeding and Bowel Change",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.gi-bleeding",
+        "wording": "검은변·혈변·구토혈, 배변 습관 변화·복통·체중감소가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "gi-bleeding"
+        }
+      ],
+      "supports": [
+        "group.anemia.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.urinary_nasal_dental_and_other_bleeding",
+        "display": "Other Bleeding Sources",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.other-bleeding",
+        "display": "Other Bleeding Sources",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.other-bleeding",
+        "wording": "혈뇨·코피·잇몸출혈·멍, 상처 후 오래가는 출혈이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "other-bleeding"
+        }
+      ],
+      "supports": [
+        "group.anemia.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.blood_donation_surgery_trauma_and_procedures",
+        "display": "Blood Loss Events",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.blood-loss-events",
+        "display": "Blood Loss Events",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.blood-loss-events",
+        "wording": "헌혈 빈도와 최근 수술·외상·출산·시술로 인한 출혈을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 127,
+          "reason": "blood-loss-events"
+        }
+      ],
+      "supports": [
+        "group.anemia.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.dietary_iron_b12_folate_intake",
+        "display": "Dietary Intake",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.diet",
+        "display": "Dietary Intake",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.diet",
+        "wording": "육류·생선·달걀·콩·채소 등 철분·B12·엽산 공급 식품과 제한식·채식 여부를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "diet"
+        }
+      ],
+      "supports": [
+        "group.anemia.nutrition"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.appetite_weight_and_food_security",
+        "display": "Nutrition Adequacy",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.nutrition",
+        "display": "Nutrition Adequacy",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.nutrition",
+        "wording": "식욕·체중 변화, 식사량과 충분한 음식을 지속적으로 구할 수 있는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "nutrition"
+        }
+      ],
+      "supports": [
+        "group.anemia.nutrition"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.malabsorption_gi_surgery_and_coeliac_context",
+        "display": "Malabsorption and GI Surgery",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.malabsorption",
+        "display": "Malabsorption and GI Surgery",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.malabsorption",
+        "wording": "셀리악병·염증성장질환·만성설사, 위·장 절제 또는 비만수술 병력이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "malabsorption"
+        }
+      ],
+      "supports": [
+        "group.anemia.nutrition"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.chronic_kidney_inflammation_cancer_and_infection",
+        "display": "Chronic Disease Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.chronic-disease",
+        "display": "Chronic Disease Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.chronic-disease",
+        "wording": "만성신장질환·염증성질환·감염·암·심부전·간질환이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "chronic-disease"
+        }
+      ],
+      "supports": [
+        "group.anemia.chronic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.renal_dialysis_and_esa_history",
+        "display": "Renal and ESA Treatment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.renal-treatment",
+        "display": "Renal and ESA Treatment",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.renal-treatment",
+        "wording": "신장기능·투석 상태와 조혈자극제 투여 여부·일정을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "renal-treatment"
+        }
+      ],
+      "supports": [
+        "group.anemia.chronic",
+        "group.anemia.treatment"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.endocrine_liver_and_bone_marrow_context",
+        "display": "Other Systemic Causes",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.systemic",
+        "display": "Other Systemic Causes",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.systemic",
+        "wording": "갑상선·간질환, 골수질환 또는 항암·방사선 치료 병력이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "systemic"
+        }
+      ],
+      "supports": [
+        "group.anemia.chronic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.oral_iron_regimen_adherence_and_tolerance",
+        "display": "Oral Iron Treatment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.oral-iron",
+        "display": "Oral Iron Treatment",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.oral-iron",
+        "wording": "경구 철분 제품·원소철 용량·복용 간격, 빠뜨린 횟수와 변비·복통·메스꺼움 등 부작용을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "oral-iron"
+        }
+      ],
+      "supports": [
+        "group.anemia.treatment"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.iv_iron_details_and_reaction",
+        "display": "Intravenous Iron Treatment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.iv-iron",
+        "display": "Intravenous Iron Treatment",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.iv-iron",
+        "wording": "정맥 철분 제품·총 투여량·날짜와 주입 반응을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "iv-iron"
+        }
+      ],
+      "supports": [
+        "group.anemia.treatment"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.b12_folate_treatment_details",
+        "display": "B12 and Folate Treatment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.vitamin-treatment",
+        "display": "B12 and Folate Treatment",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.vitamin-treatment",
+        "wording": "B12 주사·경구약과 엽산 용량·기간·복용완료 여부를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "vitamin-treatment"
+        }
+      ],
+      "supports": [
+        "group.anemia.treatment"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.treatment_response_and_followup_labs",
+        "display": "Treatment Response",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.response",
+        "display": "Treatment Response",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.response",
+        "wording": "치료 후 증상과 혈색소·페리틴이 얼마나 변했고 언제 재검할 예정인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 127,
+          "reason": "response"
+        }
+      ],
+      "supports": [
+        "group.anemia.treatment"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.fit_endoscopy_coeliac_and_gynaecologic_workup",
+        "display": "Cause Investigation",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.investigation",
+        "display": "Cause Investigation",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.investigation",
+        "wording": "FIT·위내시경·대장내시경·셀리악검사·산부인과 검사 결과와 예정 검사를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 126,
+          "reason": "investigation"
+        }
+      ],
+      "supports": [
+        "group.anemia.treatment",
+        "group.anemia.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.specialist_referral_and_safety_net",
+        "display": "Referral and Safety Net",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.referral",
+        "display": "Referral and Safety Net",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.referral",
+        "wording": "혈액내과·소화기·산부인과·신장 진료 일정과 악화 시 안내받은 기준을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 125,
+          "reason": "referral"
+        }
+      ],
+      "supports": [
+        "group.anemia.treatment"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.bsg.ida.2021",
+      "source.nice.ng12.anemia.2026",
+      "source.who.ferritin.2020",
+      "source.stom.anemia.20260715"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

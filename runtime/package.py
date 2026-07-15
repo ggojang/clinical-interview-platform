@@ -44,6 +44,7 @@ ASTHMA_COPD_FOLLOW_UP_PACKAGE = ROOT / "packages/generated/primary-care-asthma-c
 LUMP_LYMPH_NODE_PACKAGE = ROOT / "packages/generated/primary-care-lump-lymph-node-0.1.0.json"
 DYSPEPSIA_REFLUX_PACKAGE = ROOT / "packages/generated/primary-care-dyspepsia-reflux-0.1.0.json"
 THYROID_CONCERN_FOLLOW_UP_PACKAGE = ROOT / "packages/generated/primary-care-thyroid-concern-follow-up-0.1.0.json"
+ANEMIA_CONCERN_FOLLOW_UP_PACKAGE = ROOT / "packages/generated/primary-care-anemia-concern-follow-up-0.1.0.json"
 
 
 class PackageLoadError(RuntimeError):

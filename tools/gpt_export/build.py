@@ -85,12 +85,10 @@ def compact(value: Any) -> Any:
 def compact_fact_index(item: dict[str, Any]) -> dict[str, Any]:
     """Keep the legacy aggregate as discovery metadata, not a knowledge payload."""
     # Korean labels for shared Facts remain in common-facts.json. Omitting the
-    # duplicate label here keeps this legacy cross-RFE discovery index bounded.
-    keys = ("id",)
-    result = {key: item[key] for key in keys if key in item}
-    if item.get("safety_relevant") is True:
-        result["safety_relevant"] = True
-    return result
+    # duplicate label and safety flag here keeps this legacy cross-RFE index
+    # bounded. Safety discovery is served by safety-rules.json and complete
+    # Fact metadata remains available in each RFE-specific facts resource.
+    return {"id": item["id"]}
 
 
 def compact_safety_rule_index(item: dict[str, Any]) -> dict[str, Any]:
