@@ -739,6 +739,7 @@ def build(root: Path, output: Path) -> dict[str, Any]:
         "question_choice_semantic_alignment_policy": encounter_policy[
             "question_choice_semantic_alignment"
         ],
+        "encounter_context_policy": encounter_policy["encounter_context"],
         "result_follow_up_policy": encounter_policy["result_follow_up"],
         "uploaded_clinical_material_policy": encounter_policy[
             "uploaded_clinical_material"

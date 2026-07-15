@@ -1,0 +1,45 @@
+{
+  "id": "simulation.encounter-context-cases",
+  "version": "0.1.0",
+  "status": "synthetic",
+  "contains_real_patient_data": false,
+  "cases": [
+    {
+      "id": "CONTEXT-PRIMARY-NEW-CHAT",
+      "context": {"care_setting": "primary_care", "encounter_type": "new_encounter", "interview_initiator": "patient", "interview_mode": "chat", "available_information": ["no_previous_records"], "time_constraint": "routine", "clinical_responsibility": "decision_support"},
+      "expected": {"safety_first": false, "response_source": "patient_report", "remote_assessment_limitations_apply": true}
+    },
+    {
+      "id": "CONTEXT-ED-EMERGENCY-FACE-TO-FACE",
+      "context": {"care_setting": "emergency_department", "encounter_type": "new_encounter", "interview_initiator": "clinician", "interview_mode": "face_to_face", "available_information": ["previous_clinical_memory"], "time_constraint": "emergency", "clinical_responsibility": "independent_assessment"},
+      "expected": {"safety_first": true, "question_budget_cap": 12, "physical_examination_available": true, "candidate_intent": "intent.screen_red_flags"}
+    },
+    {
+      "id": "CONTEXT-SPECIALIST-FOLLOW-UP-VIDEO",
+      "context": {"care_setting": "specialist_clinic", "encounter_type": "follow_up", "interview_initiator": "patient", "interview_mode": "video", "available_information": ["previous_clinical_memory", "medication_history", "laboratory_data"], "time_constraint": "scheduled", "clinical_responsibility": "follow_up_support"},
+      "expected": {"remote_assessment_limitations_apply": true, "candidate_intent": "intent.follow_up_support"}
+    },
+    {
+      "id": "CONTEXT-HOME-VISIT-CAREGIVER",
+      "context": {"care_setting": "home_visit", "encounter_type": "follow_up", "interview_initiator": "caregiver", "interview_mode": "face_to_face", "available_information": ["previous_clinical_memory", "medication_history"], "time_constraint": "scheduled", "clinical_responsibility": "shared_care"},
+      "expected": {"response_source": "proxy_report", "source_attribution_required": true, "physical_examination_available": true}
+    },
+    {
+      "id": "CONTEXT-HEALTH-CHECKUP-SCREENING",
+      "context": {"care_setting": "health_checkup", "encounter_type": "preventive_visit", "interview_initiator": "health_system", "interview_mode": "asynchronous_questionnaire", "available_information": ["health_examination"], "time_constraint": "screening", "clinical_responsibility": "education"},
+      "expected": {"intent_modifier": "screening", "remote_assessment_limitations_apply": true}
+    },
+    {
+      "id": "CONTEXT-MEDICATION-REVIEW-TELEPHONE",
+      "context": {"care_setting": "telemedicine", "encounter_type": "medication_review", "interview_initiator": "patient", "interview_mode": "telephone", "available_information": ["medication_history", "FHIR_bundle"], "time_constraint": "scheduled", "clinical_responsibility": "shared_care"},
+      "expected": {"intent_modifier": "medication_reconciliation", "physical_examination_available": false}
+    }
+  ],
+  "provenance": {
+    "created_by": {"type": "ai", "id": "codex-gpt5"},
+    "created_at": "2026-07-16T00:00:00Z",
+    "source_refs": ["docs/context/002-encounter-context.md"],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

@@ -5,12 +5,14 @@ medical sources or create new medical rules.
 """
 from __future__ import annotations
 
+from copy import deepcopy
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 import re
 
 from runtime.memory import ClinicalMemory
+from runtime.encounter_context import normalize_encounter_context
 from runtime.package import DEFAULT_PACKAGE, load_package
 
 
@@ -170,6 +172,7 @@ class InterviewSession:
     reason_for_encounter: str | None = None
     max_turns: int | None = None
     clinician_submission: bool = False
+    encounter_context: dict[str, Any] | None = None
     asked: list[str] = field(default_factory=list)
     active_patterns: list[str] = field(default_factory=list)
     trace: list[dict[str, Any]] = field(default_factory=list)
@@ -190,6 +193,7 @@ class InterviewSession:
     )
 
     def __post_init__(self) -> None:
+        self.encounter_context = normalize_encounter_context(self.encounter_context)
         self.package = load_package(self.package_path, self.execution_mode)
         clinician_context = (
             self._load_clinician_context() if self.clinician_submission else {}
@@ -239,6 +243,14 @@ class InterviewSession:
             intent
             for rule in activation
             for intent in rule.get("then", {}).get("activate_intents", [])
+        })
+        available_intents = {
+            node["id"] for node in self.package["knowledge_graph"]["nodes"]
+            if node.get("type") == "ClinicalIntent"
+        }
+        self.active_intents = sorted(set(self.active_intents) | {
+            intent for intent in self.encounter_context["candidate_intents"]
+            if intent in available_intents
         })
         targets = self.package["indexes"]["intent_targets"]
         self.active_targets = {
@@ -551,6 +563,7 @@ class InterviewSession:
         trace_entry = {
             "turn": turn,
             "observed": patient_text,
+            "encounter_context": deepcopy(self.encounter_context),
             "facts_added": list(additions),
             "merge_results": merge_results,
             "duration_class": classification,
@@ -1511,6 +1524,9 @@ class InterviewSession:
                 .get("completion", {})
                 .get("additional_question_budget", 0)
             )
+        context_cap = self.encounter_context.get("question_budget_cap")
+        if context_cap is not None:
+            budget = min(budget, int(context_cap))
         return budget
 
     def _safety(self) -> dict[str, Any]:
@@ -1674,6 +1690,7 @@ class InterviewSession:
             "status": "research_only",
             "review_status": "unreviewed",
             "reason_for_encounter": self.reason_for_encounter,
+            "encounter_context": deepcopy(self.encounter_context),
             "sections": sections,
         }
 
@@ -1689,7 +1706,7 @@ class InterviewSession:
         return {
             "session_id": self.session_id,
             "turn": self.turn,
-            "patient_context": {},
+            "patient_context": deepcopy(self.encounter_context),
             "duration_class": classification,
             "facts": memory["facts"],
             "data_absent_facts": memory["data_absent_facts"],

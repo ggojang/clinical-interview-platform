@@ -549,6 +549,18 @@ class GptExportTests(unittest.TestCase):
             self.assertTrue(
                 alignment["safety_gate"]["same_alignment_rules_apply"]
             )
+            context_policy = manifest["encounter_context_policy"]
+            self.assertTrue(context_policy["diagnosis_independent"])
+            self.assertTrue(
+                context_policy["emergency_or_urgent_context"]["safety_first"]
+            )
+            self.assertFalse(
+                context_policy["remote_mode"]["physical_examination_available"]
+            )
+            self.assertEqual(
+                context_policy["caregiver_initiated"]["response_source"],
+                "proxy_report",
+            )
             result_policy = manifest["result_follow_up_policy"]
             self.assertFalse(
                 result_policy["institution_result_check"]["request_upload"]

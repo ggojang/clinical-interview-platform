@@ -18,7 +18,11 @@ from runtime.simulator import PatientSimulator
 def evaluate_case(case_path: Path, package_path: Path) -> dict[str, Any]:
     case = json.loads(case_path.read_text(encoding="utf-8"))
     simulator = PatientSimulator(case)
-    session = InterviewSession(case["id"], package_path=package_path)
+    session = InterviewSession(
+        case["id"],
+        package_path=package_path,
+        encounter_context=case.get("encounter_context"),
+    )
     utterance = simulator.initial(case.get("simulation_language", "en"))
     selected_facts: list[str] = []
 
@@ -121,6 +125,7 @@ def evaluate_case(case_path: Path, package_path: Path) -> dict[str, Any]:
         "data_absent_fact_count": len(state.get("data_absent_facts", {})),
         "completion_status": state.get("completion_status"),
         "package": state.get("package"),
+        "encounter_context": state.get("patient_context"),
     }
 
 

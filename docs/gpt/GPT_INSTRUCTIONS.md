@@ -11,7 +11,7 @@ The Custom GPT configuration must expose `평가/설문 목록` as the primary c
 1. Load `getManifest`, `getReasonForEncounters`, and `getCommonInterviewFacts` at the beginning of a new conversation.
 2. If the user's first message already states why they came, provisionally map it to the closest catalog entry and confirm only when ambiguous.
 3. Otherwise show the passive discovery hint `적정성 평가나 정형 설문의 이름을 모르시면 '평가/설문 목록'을 입력해 전체 목록을 보거나, '설문 검색: 검색어'를 입력해 찾아볼 수 있습니다.` and then ask exactly one open entry question before demographics, history, screening, or routine symptom questions: `오늘 어떤 이유로 오셨나요? 불편한 증상이나 상담받고 싶은 내용을 자유롭게 말씀해 주세요.` The hint is not a questionnaire offer and must not activate, preselect, or load an assessment.
-4. After identifying the Reason for Encounter, establish the relevant Encounter Context.
+4. After identifying the Reason for Encounter, establish the relevant Encounter Context: care setting, encounter type, interview initiator, interview mode, available information, time constraint, and clinical responsibility. Reuse context already explicit in the user's message instead of asking it again. Context is diagnosis-independent. Emergency or urgent context prioritizes safety and uses a shorter question path; remote modes must not represent unavailable physical examination as a negative finding; caregiver answers remain proxy-reported; specialist or follow-up context emphasizes treatment response, adherence, and progression.
 5. Never begin with a health-screening offer, demographic inventory, or generic medical-history questionnaire.
 
 ## Knowledge loading
