@@ -242,6 +242,12 @@ class GptExportTests(unittest.TestCase):
                 "HiraAdequacyAssessmentInterviewRegistry",
             )
             self.assertFalse(registry["contains_patient_responses"])
+            self.assertNotIn("programs", registry)
+            self.assertTrue(
+                registry["program_payload_policy"][
+                    "catalog_excludes_program_payloads"
+                ]
+            )
             policy = manifest["hira_adequacy_assessment_policy"]
             self.assertTrue(policy["requires_explicit_program_and_current_cycle_context"])
             self.assertTrue(policy["patient_or_proxy_questions_only"])
@@ -267,6 +273,12 @@ class GptExportTests(unittest.TestCase):
             )
             self.assertTrue(all(entry["aliases_ko"] for entry in entries))
             self.assertTrue(all(entry["start_prompt_ko"] for entry in entries))
+            self.assertTrue(all(entry["program_resource"] for entry in entries))
+            self.assertTrue(all(
+                entry["program_operation"]
+                == "getHiraAdequacyAssessmentInterviewProgram"
+                for entry in entries
+            ))
             for entry in entries:
                 program_resource = json.loads(
                     (

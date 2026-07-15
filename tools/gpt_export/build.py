@@ -531,6 +531,24 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
             "assessment_context": hira_assessments["assessment_context"],
             "program": program,
         }
+    hira_assessment_catalog = {
+        key: value
+        for key, value in hira_assessments.items()
+        if key != "programs"
+    }
+    hira_assessment_catalog["entry_catalog"] = [
+        {
+            **entry,
+            "program_resource": f"/gpt/assessments/{entry['program_id']}.json",
+            "program_operation": "getHiraAdequacyAssessmentInterviewProgram",
+        }
+        for entry in hira_assessments.get("entry_catalog", [])
+    ]
+    hira_assessment_catalog["program_payload_policy"] = {
+        "catalog_excludes_program_payloads": True,
+        "load_selected_program_only_after_affirmative_confirmation": True,
+        "operation": "getHiraAdequacyAssessmentInterviewProgram",
+    }
     common_facts = envelope(
         "CommonInterviewFactCollection",
         deduplicate(
@@ -578,7 +596,7 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
         "screening-kr.json": screening,
         "terminology-source.json": terminology_source,
         "clinician-submission-context.json": clinician_context,
-        "hira-adequacy-assessments.json": hira_assessments,
+        "hira-adequacy-assessments.json": hira_assessment_catalog,
     }
     resources.update(hira_programs)
     resources.update(collect_rfe_resources(root))

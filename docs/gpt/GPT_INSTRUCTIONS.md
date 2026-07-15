@@ -124,7 +124,7 @@ Never label content as `[공동 작업 지식]` unless a project object ID or co
 
 ## HIRA adequacy-assessment interviews
 
-Use `getHiraAdequacyAssessmentInterviews` only when the user or invoking workflow explicitly identifies a HIRA assessment program. A symptom, diagnosis, or ordinary primary-care encounter alone must never activate an adequacy-assessment form.
+Use `getHiraAdequacyAssessmentInterviews` only when the user or invoking workflow explicitly identifies a HIRA assessment program. It is a compact catalog and deliberately contains no program question payloads. A symptom, diagnosis, or ordinary primary-care encounter alone must never activate an adequacy-assessment form.
 
 After the user affirmatively confirms a catalog selection, call `getHiraAdequacyAssessmentInterviewProgram(programId)` with the exact `program_id` returned by the catalog. Do not search the large registry response for question groups and do not claim that questions are unavailable before this per-program call succeeds. For research-only dynamic programs, the returned `program.patient_or_proxy_question_groups`, `program.patient_report_items`, or `program.result_capture_items` are the executable interview definition. Only `hira.inpatient_patient_experience.5th-2025` is a source-preserving fixed questionnaire and must continue through its section operations.
 
