@@ -127,12 +127,25 @@ class CompilerTests(unittest.TestCase):
         self.assertTrue(all(node["provenance"]["review_status"] == "unreviewed" for node in generated))
 
     def test_refresh_scheduler_uses_source_specific_cadence(self):
-        daily = due_sources(date.fromisoformat("2026-07-16"))
+        root = Path(__file__).resolve().parents[1]
+        cough_manifest = json.loads(
+            (root / "sources/manifests/respiratory-cough-research.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        artifacts = {item["id"]: item for item in cough_manifest["artifacts"]}
+        daily_date = date.fromisoformat(
+            artifacts["source.ers.chronic-cough.2020"]["next_monitor_at"]
+        )
+        daily = due_sources(daily_date)
         daily_ids = {item["source_id"] for item in daily["due"]}
         self.assertIn("source.ers.chronic-cough.2020", daily_ids)
         self.assertIn("source.gina.strategy.2026", daily_ids)
         self.assertNotIn("source.nice.ng120", daily_ids)
-        weekly = due_sources(date.fromisoformat("2026-07-20"))
+        weekly_date = date.fromisoformat(
+            artifacts["source.nice.ng120"]["next_monitor_at"]
+        )
+        weekly = due_sources(weekly_date)
         weekly_ids = {item["source_id"] for item in weekly["due"]}
         self.assertIn("source.nice.ng120", weekly_ids)
         self.assertIn("source.cdc.common-cold.2026", weekly_ids)
@@ -150,9 +163,9 @@ class CompilerTests(unittest.TestCase):
             Path(__file__).resolve().parents[1]
             / "sources/manifests/stom-terminology.json"
         )
-        stom_monthly = due_sources(
-            date.fromisoformat("2026-08-13"), stom_manifest
-        )
+        stom = json.loads(stom_manifest.read_text(encoding="utf-8"))
+        stom_due_date = date.fromisoformat(stom["artifacts"][0]["next_monitor_at"])
+        stom_monthly = due_sources(stom_due_date, stom_manifest)
         self.assertEqual(
             {item["source_id"] for item in stom_monthly["due"]},
             {"source.stom.fhir-r4-terminology-server"},
