@@ -25,6 +25,10 @@ This directory is a static, read-only knowledge API for a Custom GPT test chatbo
 
 Run `python3 tools/gpt_export/build.py` after changing Knowledge or Facts. The generated resources are deterministic and contain no simulation or response data.
 
+## Custom GPT start screen
+
+Apply `custom-gpt-config.json` when configuring or republishing the Custom GPT. The first Conversation starter must be `평가/설문 목록`; selecting it sends the exact list command and displays the registered assessment/questionnaire catalog without activating one. Repository or GitHub Pages updates do not modify ChatGPT editor fields automatically, so the Conversation starters field must be saved in the GPT editor after a configuration change.
+
 The GPT must start from Reason for Encounter, then load only the matching compact RFE resources. The large aggregate files remain available for offline inspection and backward compatibility but are intentionally absent from the Action schema.
 
 When an exact patient-experience activation alias is entered, the existing opening screen and a concise explanation may be shown, but the GPT's final actionable question before the survey asks only whether the user wants to complete it. An affirmative answer retrieves the uploaded standalone Knowledge file and enters its first source item immediately without another explanation or confirmation. The split Action sections remain a fallback when that file is unavailable. Only answer options present in the source Questionnaire are displayed; absent-answer states are never introduced as synthetic numbered options. This preserves all 26 FHIR-linked source questions while avoiding Action availability and response-size failures.

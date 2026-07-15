@@ -253,6 +253,10 @@ class GptExportTests(unittest.TestCase):
                 "설문 검색",
                 manifest["interview_entry"]["discovery_commands"]["search_prefixes"],
             )
+            self.assertEqual(
+                manifest["interview_entry"]["conversation_starters"][0],
+                "평가/설문 목록",
+            )
             entries = registry["entry_catalog"]
             self.assertEqual(
                 [entry["selection_number"] for entry in entries],
@@ -264,6 +268,18 @@ class GptExportTests(unittest.TestCase):
                 manifest["preferred_loading"]["assessment_operation"],
                 "getHiraAdequacyAssessmentInterviews",
             )
+
+    def test_custom_gpt_config_requires_clickable_assessment_catalog_starter(self):
+        config = json.loads(
+            (ROOT / "docs/gpt/custom-gpt-config.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(config["conversation_starters"][0], "평가/설문 목록")
+        policy = config["conversation_starter_policy"]
+        self.assertTrue(policy["primary_is_required"])
+        self.assertTrue(policy["selection_opens_catalog_without_activation"])
+        self.assertTrue(
+            config["editor_application"]["requires_editor_save_or_update"]
+        )
 
     def test_rfe_catalog_and_bundles_are_consistent(self):
         with tempfile.TemporaryDirectory() as output:
