@@ -370,6 +370,17 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/obstetric/pregnancy-postpartum-concern",
         "research_manifests": [ROOT / "sources/manifests/primary-care-pregnancy-postpartum-concern-research.json"],
     },
+    "allergy_concern": {
+        "graph": ROOT / "knowledge/graph/primary-care-allergy-concern.json",
+        "rules": ROOT / "rules/primary-care-allergy-concern.json",
+        "sources": ROOT / "sources/manifests/primary-care-allergy-concern.json",
+        "completion_policy": ROOT / "policies/primary-care-allergy-concern-completion.json",
+        "output": ROOT / "packages/generated/primary-care-allergy-concern-0.1.0.json",
+        "package_id": "package.primary-care-allergy-concern", "package_version": "0.1.0",
+        "rfe": "rfe.allergy_concern",
+        "simulation_root": ROOT / "simulation/patients/allergy/allergy-concern",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-allergy-concern-research.json"],
+    },
 }
 
 ALLOWED_NODE_TYPES = {

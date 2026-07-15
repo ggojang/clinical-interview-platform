@@ -39,6 +39,7 @@ ORAL_DENTAL_SYMPTOMS_PACKAGE = ROOT / "packages/generated/primary-care-oral-dent
 WOUND_MINOR_INJURY_PACKAGE = ROOT / "packages/generated/primary-care-wound-minor-injury-0.1.0.json"
 MEMORY_COGNITIVE_CONCERN_PACKAGE = ROOT / "packages/generated/primary-care-memory-cognitive-concern-0.1.0.json"
 PREGNANCY_POSTPARTUM_CONCERN_PACKAGE = ROOT / "packages/generated/primary-care-pregnancy-postpartum-concern-0.1.0.json"
+ALLERGY_CONCERN_PACKAGE = ROOT / "packages/generated/primary-care-allergy-concern-0.1.0.json"
 
 
 class PackageLoadError(RuntimeError):

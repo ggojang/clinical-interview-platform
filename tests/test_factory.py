@@ -19,7 +19,7 @@ from runtime.package import (
     ABDOMINAL_PAIN_PACKAGE, BACK_PAIN_PACKAGE, BOWEL_SYMPTOMS_PACKAGE, CHEST_PAIN_PACKAGE, DEFAULT_PACKAGE,
     DIZZINESS_SYNCOPE_PACKAGE, DYSPNEA_PACKAGE, FEVER_PACKAGE, HEADACHE_PACKAGE,
     DIABETES_FOLLOW_UP_PACKAGE, EAR_HEARING_SYMPTOMS_PACKAGE, EDEMA_PACKAGE, EYE_SYMPTOMS_PACKAGE, FATIGUE_PACKAGE, FOCAL_WEAKNESS_NUMBNESS_PACKAGE, HYPERTENSION_FOLLOW_UP_PACKAGE, JOINT_LIMB_COMPLAINT_PACKAGE, MEDICATION_REVIEW_PACKAGE, MENTAL_HEALTH_SLEEP_PACKAGE, PALPITATIONS_PACKAGE, REPRODUCTIVE_GENITAL_SYMPTOMS_PACKAGE, SKIN_COMPLAINT_PACKAGE,
-    MEMORY_COGNITIVE_CONCERN_PACKAGE, ORAL_DENTAL_SYMPTOMS_PACKAGE, PREGNANCY_POSTPARTUM_CONCERN_PACKAGE, WOUND_MINOR_INJURY_PACKAGE, UPPER_RESPIRATORY_SYMPTOMS_PACKAGE, URINARY_SYMPTOMS_PACKAGE, WEIGHT_CONSTITUTIONAL_CHANGE_PACKAGE,
+    ALLERGY_CONCERN_PACKAGE, MEMORY_COGNITIVE_CONCERN_PACKAGE, ORAL_DENTAL_SYMPTOMS_PACKAGE, PREGNANCY_POSTPARTUM_CONCERN_PACKAGE, WOUND_MINOR_INJURY_PACKAGE, UPPER_RESPIRATORY_SYMPTOMS_PACKAGE, URINARY_SYMPTOMS_PACKAGE, WEIGHT_CONSTITUTIONAL_CHANGE_PACKAGE,
     VOMITING_DIARRHEA_PACKAGE,
     PackageLoadError, load_package,
 )
@@ -69,6 +69,7 @@ class CompilerTests(unittest.TestCase):
             "wound_minor_injury",
             "memory_cognitive_concern",
             "pregnancy_postpartum_concern",
+            "allergy_concern",
         ):
             with self.subTest(profile=profile), self.assertRaises(CompilationError):
                 compile_package(production=True, profile=profile)
@@ -816,6 +817,33 @@ class CompilerTests(unittest.TestCase):
             (
                 Path(__file__).resolve().parents[1]
                 / "mappings/terminology/snomed-mrcm-pregnancy-postpartum-concern.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(len(mapping["focus_concepts"]), 10)
+        self.assertFalse(mapping["validation"]["clinical_rule_authority"])
+
+    def test_allergy_concern_package_is_complete(self):
+        package = compile_package(profile="allergy_concern")
+        facts = {
+            node["id"] for node in package["knowledge_graph"]["nodes"]
+            if node["type"] == "Fact"
+        }
+        self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
+        self.assertGreaterEqual(len(facts), 45)
+        self.assertEqual(package["coverage"]["total_safety_rules"], 12)
+        self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 12)
+        self.assertEqual(package["coverage"]["uncovered_safety_rules"], [])
+        self.assertEqual(package["coverage"]["data_absent_reason_simulations"], 1)
+        conditional = package["interview_completion_policy"]["conditional_required_facts"][0]
+        self.assertEqual(conditional["selector_fact"], "allergy.primary_group")
+        self.assertEqual(
+            set(conditional["cases"]),
+            {"acute_systemic", "skin_angioedema", "respiratory", "food", "drug", "sting_contact", "other_unclear"},
+        )
+        mapping = json.loads(
+            (
+                Path(__file__).resolve().parents[1]
+                / "mappings/terminology/snomed-mrcm-allergy-concern.json"
             ).read_text(encoding="utf-8")
         )
         self.assertEqual(len(mapping["focus_concepts"]), 10)

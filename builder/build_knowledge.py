@@ -253,6 +253,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-pregnancy-postpartum-concern.json",
         "version": "0.1.0",
     },
+    "allergy_concern": {
+        "base_graph": ROOT / "knowledge/base/primary-care-allergy-concern.json",
+        "base_rules": ROOT / "rules/base/primary-care-allergy-concern.json",
+        "fragment_root": ROOT / "knowledge/generated/allergy/allergy-concern",
+        "output_graph": ROOT / "knowledge/graph/primary-care-allergy-concern.json",
+        "output_rules": ROOT / "rules/primary-care-allergy-concern.json",
+        "version": "0.1.0",
+    },
 }
 
 
