@@ -150,6 +150,8 @@ def extract(text: str, turn: int, expected_fact: str | None = None) -> dict[str,
 def _condition_matches(condition: dict[str, Any], memory: ClinicalMemory) -> bool:
     if "all" in condition:
         return all(_condition_matches(item, memory) for item in condition["all"])
+    if "any" in condition:
+        return any(_condition_matches(item, memory) for item in condition["any"])
     fact_id = condition.get("fact")
     if fact_id:
         value = memory.value(fact_id)
@@ -335,12 +337,15 @@ class InterviewSession:
                     additions[expected_fact] = fact(
                         normalized, answer_text, turn, .92
                     )
-                elif node.get("value_type") == "integer" and re.fullmatch(
-                    r"\d+", normalized
-                ):
-                    additions[expected_fact] = fact(
-                        int(normalized), answer_text, turn, .95
-                    )
+                elif node.get("value_type") == "integer" and re.fullmatch(r"\d+", normalized):
+                    numeric_value = int(normalized)
+                    minimum = node.get("minimum")
+                    maximum = node.get("maximum")
+                    if ((minimum is None or numeric_value >= minimum)
+                            and (maximum is None or numeric_value <= maximum)):
+                        additions[expected_fact] = fact(
+                            numeric_value, answer_text, turn, .95
+                        )
                 elif (
                     node.get("value_type") == "string"
                     and normalized
@@ -373,7 +378,18 @@ class InterviewSession:
             if fact_id in allowed_facts:
                 merge_results[fact_id] = self.memory.merge(fact_id, candidate)
         if expected_fact and expected_fact not in additions:
-            if low_normalized in {
+            template = self._questions_by_fact().get(expected_fact, {})
+            data_absent_code_map = template.get("data_absent_code_map", {})
+            mapped_absence = data_absent_code_map.get(low_normalized)
+            if mapped_absence:
+                self.memory.mark_absent(
+                    expected_fact, answer_text, mapped_absence,
+                    correction=bool(correction_target),
+                )
+                merge_results[expected_fact] = (
+                    "corrected" if correction_target else mapped_absence
+                )
+            elif low_normalized in {
                 "3",
                 "i am not sure", "i'm not sure", "not sure",
                 "모르겠어요", "잘 모르겠어요",
@@ -420,12 +436,31 @@ class InterviewSession:
                 "after_completion": was_complete,
             })
 
+        mandatory_facts = set(
+            self.package.get("interview_completion_policy", {})
+            .get("must_be_known_facts", [])
+        )
+        mandatory_answer_missing = bool(
+            expected_fact in mandatory_facts
+            and merge_results.get(expected_fact) in {
+                "asked-unknown", "asked-declined", "not-applicable"
+            }
+        )
         needs_clarification = bool(
             expected_fact
-            and expected_fact not in merge_results
+            and (
+                expected_fact not in merge_results
+                or (
+                    mandatory_answer_missing
+                    and self.clarification_counts.get(expected_fact, 0) < 1
+                )
+            )
             and not correction_target
         )
-        if expected_fact and expected_fact in merge_results:
+        if (
+            expected_fact and expected_fact in merge_results
+            and not mandatory_answer_missing
+        ):
             self.clarification_counts.pop(expected_fact, None)
 
         classification = duration_class(self.memory.value("symptom.duration"))
@@ -456,18 +491,25 @@ class InterviewSession:
             self.clarification_counts[expected_fact] = (
                 self.clarification_counts.get(expected_fact, 0) + 1
             )
-            question = self._question_for_fact(
-                expected_fact, "answer_not_understood_reconfirmation"
+            clarification_reason = (
+                "mandatory_answer_required"
+                if mandatory_answer_missing
+                else "answer_not_understood_reconfirmation"
             )
+            question = self._question_for_fact(expected_fact, clarification_reason)
             clarification = self._clarification_payload(
-                expected_fact, patient_text, self.clarification_counts[expected_fact]
+                expected_fact, patient_text, self.clarification_counts[expected_fact],
+                mandatory=mandatory_answer_missing,
             )
             self.memory.record_event("answer_clarification_requested", {
                 "actor": "runtime",
                 "turn": turn,
                 "fact_id": expected_fact,
                 "attempt": self.clarification_counts[expected_fact],
-                "reason": "answer_not_understood",
+                "reason": (
+                    "mandatory_answer_required"
+                    if mandatory_answer_missing else "answer_not_understood"
+                ),
             })
         resume_fact = self.last_question_fact if correction_target else None
         if (
@@ -493,6 +535,12 @@ class InterviewSession:
                 if completion["data_absent_facts"]
                 else "all_required_targets_resolved"
             )
+        elif (
+            completion.get("required_known_missing_facts")
+            and not completion.get("missing_facts")
+            and not completion.get("conflicted_facts")
+        ):
+            stop_reason = "mandatory_fact_not_obtained"
         elif budget_reached:
             stop_reason = "question_budget_reached"
         elif turn >= self.max_turns:
@@ -526,7 +574,8 @@ class InterviewSession:
         return state
 
     def _clarification_payload(
-        self, fact_id: str, raw_response: str, attempt: int
+        self, fact_id: str, raw_response: str, attempt: int,
+        mandatory: bool = False,
     ) -> dict[str, Any]:
         node = next(
             item for item in self.package["knowledge_graph"]["nodes"]
@@ -535,18 +584,28 @@ class InterviewSession:
         payload = {
             "required": True,
             "fact_id": fact_id,
-            "reason": "possible_typo_invalid_option_or_ambiguous_meaning",
+            "reason": (
+                "mandatory_answer_required"
+                if mandatory else "possible_typo_invalid_option_or_ambiguous_meaning"
+            ),
             "attempt": attempt,
             "raw_response": raw_response,
             "suggested_interpretation": None,
             "confirmation_required_before_fact_merge": True,
-            "message_ko": "응답을 명확히 이해하지 못했습니다. 원래 질문에 다시 답해 주세요.",
+            "message_ko": (
+                "이 항목은 필수이므로 제시된 유효한 값으로 답변해 주세요."
+                if mandatory
+                else "응답을 명확히 이해하지 못했습니다. 원래 질문에 다시 답해 주세요."
+            ),
             "binary_numeric_codes": {
                 "1": "yes", "2": "no", "3": "asked-unknown", "4": "asked-declined"
             },
         }
         if node.get("allowed_values"):
             payload["allowed_values"] = list(node["allowed_values"])
+        if mandatory:
+            payload["unknown_or_declined_options_offered"] = False
+            payload["completion_blocked_until_known"] = True
         payload["value_type"] = node.get("value_type")
         return payload
 
@@ -1351,6 +1410,10 @@ class InterviewSession:
         else:
             required.update(configured.get("routine", []))
         for conditional in policy.get("conditional_required_facts", []):
+            if "when" in conditional:
+                if _condition_matches(conditional["when"], self.memory):
+                    required.update(conditional.get("required_facts", []))
+                continue
             selector = conditional.get("selector_fact")
             value = self.memory.value(selector) if selector else None
             cases = conditional.get("cases", {})
@@ -1415,13 +1478,25 @@ class InterviewSession:
                 "known", "unknown", "not_applicable", "conflicted"
             }
         ]
+        must_be_known = set(
+            self.package["interview_completion_policy"].get("must_be_known_facts", [])
+        ) & set(required)
+        required_known_missing = [
+            fact_id for fact_id in sorted(must_be_known)
+            if self.memory.state(fact_id) != "known"
+        ]
         return {
-            "complete": bool(required) and not missing and not conflicted,
+            "complete": (
+                bool(required) and not missing and not conflicted
+                and not required_known_missing
+            ),
             "required_facts": required,
             "known_facts": known,
             "data_absent_facts": absent,
             "missing_facts": missing,
             "conflicted_facts": conflicted,
+            "must_be_known_facts": sorted(must_be_known),
+            "required_known_missing_facts": required_known_missing,
         }
 
     def _question_budget(self, safety_level: str) -> int:
@@ -1492,6 +1567,12 @@ class InterviewSession:
             if not facts:
                 continue
             fact_id = facts[0]
+            if (
+                rule.get("then", {}).get("reason")
+                == "mandatory_standardized_pain_assessment"
+                and fact_id not in required_facts
+            ):
+                continue
             if self.memory.state(fact_id) in {"known", "unknown", "not_applicable"}:
                 continue
             if fact_id in self.asked:

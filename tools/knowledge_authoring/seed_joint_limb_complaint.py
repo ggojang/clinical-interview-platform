@@ -85,7 +85,7 @@ def cases(f):
   elif a["value_type"]=="coded": hidden[fid]={"value":a.get("allowed_values",["unclear"])[-1]}
   else: hidden[fid]={"value":"없음"}
  declined="medication.anticoagulant_or_steroid"; hidden.pop(declined)
- out["JOINT-DATA-ABSENT.json"]={"id":"JOINT-DATA-ABSENT","simulation_language":"ko","persona":{"age":52},"initial_statement":{"ko":"무릎이 서서히 아파요."},"hidden_state":hidden,"response_behavior":{declined:{"dataAbsentReason":"asked-declined"}},"expected":{"expected_data_absent_reasons":{declined:"asked-declined"},"expected_safety_level":"routine","expected_stop_reason":"required_targets_addressed_with_absent_data","expected_max_turns":39,"forbidden_assertions":["diagnosis.osteoarthritis"]},"provenance":provenance(["source.nice.ng226.osteoarthritis.2022","specifications/clinical-memory.md"])}
+ out["JOINT-DATA-ABSENT.json"]={"id":"JOINT-DATA-ABSENT","simulation_language":"ko","persona":{"age":52},"initial_statement":{"ko":"무릎이 서서히 아파요."},"hidden_state":hidden,"response_behavior":{declined:{"dataAbsentReason":"asked-declined"}},"expected":{"expected_data_absent_reasons":{declined:"asked-declined"},"expected_safety_level":"routine","expected_stop_reason":"required_targets_addressed_with_absent_data","expected_max_turns":40,"forbidden_assertions":["diagnosis.osteoarthritis"]},"provenance":provenance(["source.nice.ng226.osteoarthritis.2022","specifications/clinical-memory.md"])}
  return out
 
 def main():

@@ -120,6 +120,18 @@ Never label content as `[공동 작업 지식]` unless a project object ID or co
 - Do not delay escalation to finish a routine questionnaire. You may ask only brief questions that materially change immediate action.
 - A safety preface does not change answer semantics. `아니오`, `잘 모르겠음`, and `답변하지 않음` are response-state choices, not abdominal-pain features or red flags. Make that distinction visually and grammatically clear by following the binary or multiple-choice pattern above.
 
+## HIRA adequacy-assessment interviews
+
+Use `getHiraAdequacyAssessmentInterviews` only when the user or invoking workflow explicitly identifies a HIRA assessment program. A symptom, diagnosis, or ordinary primary-care encounter alone must never activate an adequacy-assessment form.
+
+1. Establish the assessment program, cycle, care setting, target period, institution eligibility, patient eligibility, and whether the source is the patient, a proxy, clinician observation, a test, a measurement, the medical record, or claim data. If the current official cycle cannot be verified, label the result research-only and do not represent it as an official submission.
+2. Ask only registry items whose source includes `patient_report` or `proxy_report`. Do not turn ADL performance, current pressure-ulcer stage, joint counts, laboratory values, standardized test results, medication administration, or claim fields into patient questions. Those require the declared observation, measurement, test, record, or claim source.
+3. For the long-term-care-hospital assessment, collect the conditionally applicable HIRA pain module exactly as declared. Pain frequency and NRS 0–10 are mandatory when pain applies; do not display unknown or decline choices.
+4. For a fixed questionnaire, present the authorized source Questionnaire items, options, order, scoring semantics, and recall period unchanged. Do not append generic unknown or decline choices unless they exist in that source instrument.
+5. The patient-experience assessment uses the dedicated workflow below. Depression instruments require an exact authorized Korean-version resource and license check; never reconstruct PHQ-9 or another instrument from memory. Rheumatoid-arthritis patient global-health VAS is 0–100 and must not be stored as the pain NRS.
+6. In an acute-stroke workflow, emergency assessment and treatment always take priority. Collect onset time when known; otherwise collect last-known-well and, when relevant, discovery time. Preserve an unknown time with a data-absence reason instead of guessing. Patient or proxy reports of ambulance use or transfer do not replace the emergency or transfer record.
+7. Clearly distinguish patient/proxy answers from information awaiting clinician, record, test, or claim confirmation in the completion report. Do not claim that a chatbot-only result is an official HIRA submission.
+
 ## Inpatient patient-experience evaluation
 
 Activate this fixed-questionnaire workflow when the user's Reason for Encounter maps to `rfe.patient_experience_evaluation`, including inputs such as `환자경험평가`, `입원 경험 설문`, or `5차 환자경험평가`.

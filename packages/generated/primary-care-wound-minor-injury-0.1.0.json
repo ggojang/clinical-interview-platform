@@ -15,7 +15,7 @@
   },
   "coverage": {
     "data_absent_reason_simulations": 1,
-    "facts_with_questions": 61,
+    "facts_with_questions": 62,
     "known_gaps": [
       "External guideline artifacts are not cached or license-verified.",
       "Clinical and safety review is incomplete.",
@@ -25,18 +25,18 @@
       "ClinicalGroup": 8,
       "ClinicalIntent": 4,
       "EncounterContext": 1,
-      "Fact": 61,
-      "InterviewTarget": 61,
-      "QuestionTemplate": 61,
+      "Fact": 62,
+      "InterviewTarget": 62,
+      "QuestionTemplate": 62,
       "ReasonForEncounter": 1
     },
-    "required_targets_linked_to_facts": 61,
+    "required_targets_linked_to_facts": 62,
     "reviewed_for_production": false,
     "safety_rules_with_simulations": 22,
     "simulation_count": 23,
-    "total_facts": 61,
+    "total_facts": 62,
     "total_safety_rules": 22,
-    "total_targets": 61,
+    "total_targets": 62,
     "uncovered_safety_rules": []
   },
   "indexes": {
@@ -782,9 +782,28 @@
         ],
         "template_id": "question.wound-minor-injury.wound-type",
         "wording": "상처는 베임·찢어짐, 긁힘, 피부 벗겨짐, 찔림, 눌려 터짐 중 무엇에 가깝나요?"
+      },
+      "pain.frequency": {
+        "answer_code_map": {
+          "1": "none",
+          "2": "less_than_daily",
+          "3": "daily"
+        },
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ],
+        "template_id": "question.standardized_pain_frequency",
+        "wording": "[필수] 최근 평가 대상 기간 동안 통증은 얼마나 자주 있었나요? 1 통증 없음, 2 통증이 있으나 매일은 아님, 3 매일 통증이 있음"
       }
     },
     "target_facts": {
+      "target.standardized_pain_frequency": [
+        "pain.frequency"
+      ],
       "target.wound-minor-injury.amputation": [
         "injury.amputation_or_near_amputation"
       ],
@@ -1024,6 +1043,10 @@
       }
     ],
     "id": "policy.primary-care-wound-minor-injury-completion",
+    "must_be_known_facts": [
+      "pain.frequency",
+      "injury.pain_zero_to_ten"
+    ],
     "provenance": {
       "created_at": "2026-07-14T00:00:00Z",
       "created_by": {
@@ -1044,7 +1067,7 @@
     },
     "question_budget": {
       "clarify": 12,
-      "routine": 58
+      "routine": 59
     },
     "required_facts": {
       "always": [
@@ -1070,7 +1093,9 @@
         "injury.severe_infection_or_systemic_illness",
         "injury.severe_pain_out_of_proportion",
         "injury.bite_deep_structure_or_dangerous_animal",
-        "injury.safeguarding_or_non_accidental_concern"
+        "injury.safeguarding_or_non_accidental_concern",
+        "pain.frequency",
+        "injury.pain_zero_to_ten"
       ],
       "routine": [
         "injury.time_since_event",
@@ -9134,6 +9159,46 @@
         "to": "intent.risk_assessment",
         "type": "SUGGESTS",
         "version": "0.1.0"
+      },
+      {
+        "from": "target.standardized_pain_frequency",
+        "id": "edge.hira-pain.target.standardized_pain_frequency.requires",
+        "provenance": {
+          "created_at": "2026-07-15T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.hira.nursing-hospital-adequacy-2025"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "pain.frequency",
+        "type": "REQUIRES",
+        "version": "0.1.0"
+      },
+      {
+        "from": "question.standardized_pain_frequency",
+        "id": "edge.hira-pain.question.standardized_pain_frequency.collects",
+        "provenance": {
+          "created_at": "2026-07-15T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.hira.nursing-hospital-adequacy-2025"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "pain.frequency",
+        "type": "COLLECTS",
+        "version": "0.1.0"
       }
     ],
     "id": "knowledge.primary-care-wound-minor-injury",
@@ -11424,10 +11489,27 @@
         "version": "0.1.0"
       },
       {
+        "derived_category": {
+          "moderate": [
+            4,
+            6
+          ],
+          "none_or_mild": [
+            0,
+            3
+          ],
+          "severe": [
+            7,
+            10
+          ]
+        },
         "description": "",
         "display": "Injury Pain Score",
         "extraction_cues": [],
         "id": "injury.pain_zero_to_ten",
+        "maximum": 10,
+        "minimum": 0,
+        "must_preserve_raw_score": true,
         "provenance": {
           "created_at": "2026-07-14T00:00:00Z",
           "created_by": {
@@ -11459,7 +11541,15 @@
           },
           "policy_id": "policy.knowledge-refresh"
         },
+        "required_when_pain_applies": true,
         "safety_relevant": false,
+        "scale": {
+          "lower_anchor": "no_pain",
+          "maximum": 10,
+          "minimum": 0,
+          "type": "NRS",
+          "upper_anchor": "worst_imaginable_pain"
+        },
         "source_manifest": "source-manifest.primary-care-wound-minor-injury-research",
         "status": "research_only",
         "type": "Fact",
@@ -14269,6 +14359,11 @@
           ],
           "version": "0.1.0"
         },
+        "required_numeric_range": [
+          0,
+          10
+        ],
+        "scale_type": "NRS",
         "source_manifest": "source-manifest.primary-care-wound-minor-injury-research",
         "status": "research_only",
         "type": "QuestionTemplate",
@@ -16895,6 +16990,84 @@
           "simulation"
         ],
         "version": "0.1.0"
+      },
+      {
+        "allowed_values": [
+          "none",
+          "less_than_daily",
+          "daily"
+        ],
+        "assessment_program": "HIRA_nursing_hospital_adequacy_assessment",
+        "display": "Pain frequency",
+        "display_ko": "통증 빈도",
+        "id": "pain.frequency",
+        "provenance": {
+          "created_at": "2026-07-15T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.hira.nursing-hospital-adequacy-2025"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "type": "Fact",
+        "value_type": "coded",
+        "version": "0.1.0"
+      },
+      {
+        "display": "Standardized pain frequency",
+        "id": "target.standardized_pain_frequency",
+        "provenance": {
+          "created_at": "2026-07-15T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.hira.nursing-hospital-adequacy-2025"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "type": "InterviewTarget",
+        "version": "0.1.0"
+      },
+      {
+        "answer_code_map": {
+          "1": "none",
+          "2": "less_than_daily",
+          "3": "daily"
+        },
+        "fact_id": "pain.frequency",
+        "id": "question.standardized_pain_frequency",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ],
+        "provenance": {
+          "created_at": "2026-07-15T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.hira.nursing-hospital-adequacy-2025"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "type": "QuestionTemplate",
+        "version": "0.1.0",
+        "wording": "[필수] 최근 평가 대상 기간 동안 통증은 얼마나 자주 있었나요? 1 통증 없음, 2 통증이 있으나 매일은 아님, 3 매일 통증이 있음"
       }
     ],
     "provenance": {
@@ -16913,6 +17086,26 @@
   },
   "package_id": "package.primary-care-wound-minor-injury",
   "package_version": "0.1.0",
+  "pain_assessment_context": {
+    "id": "knowledge.shared.hira-pain-assessment",
+    "recording_requirements": {
+      "data_absent_reason_may_be_audited_but_requires_reconfirmation": true,
+      "mandatory_items_do_not_offer_unknown_or_declined_options": true,
+      "preserve_assessed_at": true,
+      "preserve_frequency": true,
+      "preserve_informant": true,
+      "preserve_information_source": true,
+      "preserve_observation_period": true,
+      "preserve_raw_score": true,
+      "preserve_scale_type": true,
+      "preserve_treatment_flags_when_assessment_program_requires": true
+    },
+    "resource_ref": "knowledge/shared/hira-pain-assessment.json",
+    "review_status": "unreviewed",
+    "semantic_digest": "sha256:404985bce554f68ff4c094873506c31a80dba34d753dc13d13cdc2a930b1f9d5",
+    "status": "research_only",
+    "version": "0.1.0"
+  },
   "provenance": {
     "created_at": "2026-07-13T00:00:00Z",
     "created_by": {
@@ -21300,6 +21493,30 @@
         }
       },
       {
+        "id": "rule.hira-pain.priority.pain.frequency",
+        "priority": 96,
+        "provenance": {
+          "created_at": "2026-07-15T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.hira.nursing-hospital-adequacy-2025"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "then": {
+          "reason": "mandatory_standardized_pain_assessment",
+          "target": "target.standardized_pain_frequency"
+        },
+        "type": "priority",
+        "version": "0.1.0",
+        "when": {}
+      },
+      {
         "id": "rule.generated.priority.any.other-detail",
         "priority": 80,
         "provenance": {
@@ -24352,7 +24569,7 @@
       "rfe.wound_minor_injury"
     ]
   },
-  "semantic_digest": "sha256:e3a36cab3654e666008b74a57d15e9b474de9cf23356edb125950191f1f8b870",
+  "semantic_digest": "sha256:bf17d83c9cda1724572c3f4046d4d1a19a8bef427cf6038b1a5d8c888bc2d4d2",
   "simulations": [
     {
       "expected": {

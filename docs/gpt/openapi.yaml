@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Clinical Interview Research Knowledge
-  version: 1.15.4
+  version: 1.16.0
   description: Read-only, research-only Knowledge and Fact resources. No patient data is accepted.
 servers:
   - url: https://ggojang.github.io/clinical-interview-platform
@@ -92,6 +92,16 @@ paths:
       responses:
         '200':
           description: Korean screening knowledge
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/JsonDocument'}
+  /gpt/hira-adequacy-assessments.json:
+    get:
+      operationId: getHiraAdequacyAssessmentInterviews
+      summary: Get source-aware HIRA adequacy-assessment interview definitions after explicit program and cycle selection
+      responses:
+        '200':
+          description: Research-only registry separating patient or proxy questions, fixed questionnaires, and clinician observation, test, record, or claim fields
           content:
             application/json:
               schema: {$ref: '#/components/schemas/JsonDocument'}

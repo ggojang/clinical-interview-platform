@@ -21,6 +21,7 @@ DEFAULT_COMPLETION_POLICY = ROOT / "policies/primary-care-cough-completion.json"
 CLINICIAN_SUBMISSION_CONTEXT = (
     ROOT / "knowledge/shared/clinician-submission-context.json"
 )
+HIRA_PAIN_ASSESSMENT = ROOT / "knowledge/shared/hira-pain-assessment.json"
 DEFAULT_OUTPUT = ROOT / "packages/generated/primary-care-cough-0.3.0.json"
 PACKAGE_PROFILES = {
     "cough": {
@@ -556,6 +557,14 @@ def build_indexes(
                 "wording": q["wording"],
                 "language": q.get("language", "en"),
                 "mode": q.get("mode", []),
+                **(
+                    {"answer_code_map": q["answer_code_map"]}
+                    if "answer_code_map" in q else {}
+                ),
+                **(
+                    {"data_absent_code_map": q["data_absent_code_map"]}
+                    if "data_absent_code_map" in q else {}
+                ),
             }
         elif edge["type"] == "REQUIRES":
             target_facts.setdefault(edge["from"], []).append(edge["to"])
@@ -618,6 +627,112 @@ def semantic_digest(payload: dict[str, Any]) -> str:
     return "sha256:" + hashlib.sha256(encoded.encode("utf-8")).hexdigest()
 
 
+def apply_hira_pain_assessment(
+    profile: str,
+    graph: dict[str, Any],
+    rule_graph: dict[str, Any],
+    completion_policy: dict[str, Any],
+) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any], dict[str, Any] | None]:
+    """Compose the reusable HIRA-aligned pain module at Build Time.
+
+    The profile binding is explicit so the compiler never guesses that an
+    unrelated symptom means pain. A known NRS value is mandatory whenever the
+    binding activates; dataAbsentReason remains recordable but cannot make the
+    assessment complete.
+    """
+    module = load_json(HIRA_PAIN_ASSESSMENT)
+    binding = module.get("profile_bindings", {}).get(profile)
+    if not binding:
+        return graph, rule_graph, completion_policy, None
+
+    graph = deepcopy(graph)
+    rule_graph = deepcopy(rule_graph)
+    completion_policy = deepcopy(completion_policy)
+    existing_ids = {node["id"] for node in graph["nodes"]}
+    provenance = deepcopy(module["provenance"])
+
+    existing_nrs_fact = binding.get("existing_nrs_fact")
+    nrs_fact_id = existing_nrs_fact or "pain.nrs_score"
+    nodes_to_add = [module["facts"][0]]
+    questions_to_add = [module["questions"][0]]
+    targets_to_add = [module["targets"][0]]
+    if not existing_nrs_fact:
+        nodes_to_add.append(module["facts"][1])
+        questions_to_add.append(module["questions"][1])
+        targets_to_add.append(module["targets"][1])
+    else:
+        if existing_nrs_fact not in existing_ids:
+            raise CompilationError(
+                f"pain assessment binding references missing NRS Fact: {existing_nrs_fact}"
+            )
+        nrs_node = next(node for node in graph["nodes"] if node["id"] == existing_nrs_fact)
+        nrs_node.update({
+            "value_type": "integer", "minimum": 0, "maximum": 10,
+            "scale": deepcopy(module["facts"][1]["scale"]),
+            "derived_category": deepcopy(module["facts"][1]["derived_category"]),
+            "must_preserve_raw_score": True,
+            "required_when_pain_applies": True,
+        })
+
+    graph["nodes"].extend(deepcopy(nodes_to_add + targets_to_add + questions_to_add))
+    for target, question, fact_node in zip(targets_to_add, questions_to_add, nodes_to_add):
+        fact_id = fact_node["id"]
+        graph["edges"].extend([
+            {
+                "id": f"edge.hira-pain.{target['id']}.requires",
+                "type": "REQUIRES", "from": target["id"], "to": fact_id,
+                "version": module["version"], "status": "research_only",
+                "provenance": deepcopy(provenance),
+            },
+            {
+                "id": f"edge.hira-pain.{question['id']}.collects",
+                "type": "COLLECTS", "from": question["id"], "to": fact_id,
+                "version": module["version"], "status": "research_only",
+                "provenance": deepcopy(provenance),
+            },
+        ])
+        rule_graph["rules"].append({
+            "id": f"rule.hira-pain.priority.{fact_id}",
+            "type": "priority", "priority": 96,
+            "when": {},
+            "then": {"target": target["id"], "reason": "mandatory_standardized_pain_assessment"},
+            "version": module["version"], "status": "research_only",
+            "provenance": deepcopy(provenance),
+        })
+
+    # Existing profile-specific NRS questions remain canonical, but are
+    # annotated and range-validated through the shared module.
+    if existing_nrs_fact:
+        question_id = next(
+            edge["from"] for edge in graph["edges"]
+            if edge["type"] == "COLLECTS" and edge["to"] == existing_nrs_fact
+        )
+        question_node = next(node for node in graph["nodes"] if node["id"] == question_id)
+        question_node["scale_type"] = "NRS"
+        question_node["required_numeric_range"] = [0, 10]
+
+    required_pair = ["pain.frequency", nrs_fact_id]
+    completion_policy.setdefault("question_budget", {})["routine"] = int(
+        completion_policy.get("question_budget", {}).get("routine", 40)
+    ) + len(nodes_to_add)
+    completion_policy.setdefault("must_be_known_facts", [])
+    for fact_id in required_pair:
+        if fact_id not in completion_policy["must_be_known_facts"]:
+            completion_policy["must_be_known_facts"].append(fact_id)
+    if binding["activation"] == "always":
+        always = completion_policy.setdefault("required_facts", {}).setdefault("always", [])
+        for fact_id in required_pair:
+            if fact_id not in always:
+                always.append(fact_id)
+    else:
+        completion_policy.setdefault("conditional_required_facts", []).append({
+            "when": deepcopy(binding["when"]),
+            "required_facts": required_pair,
+            "reason": "pain_item_activated",
+        })
+    return graph, rule_graph, completion_policy, module
+
+
 def compile_package(
     graph_path: Path | None = None,
     rules_path: Path | None = None,
@@ -635,6 +750,9 @@ def compile_package(
     rule_graph = load_json(rules_path)
     sources = materialize_source_digests(load_json(sources_path))
     completion_policy = load_json(config["completion_policy"])
+    graph, rule_graph, completion_policy, pain_assessment = apply_hira_pain_assessment(
+        profile, graph, rule_graph, completion_policy
+    )
     clinician_submission_context = load_json(CLINICIAN_SUBMISSION_CONTEXT)
     node_index = validate_graph(graph)
     sorted_rules = validate_rules(rule_graph, node_index, production)
@@ -651,6 +769,22 @@ def compile_package(
         if missing:
             raise CompilationError(f"completion policy has unresolved Facts: {sorted(missing)}")
     for conditional in completion_policy.get("conditional_required_facts", []):
+        if "when" in conditional:
+            condition_refs = {
+                value for key, value in walk_values(conditional["when"])
+                if key == "fact" and isinstance(value, str)
+            }
+            missing = condition_refs - all_fact_ids
+            if missing:
+                raise CompilationError(
+                    f"conditional completion policy has unresolved condition Facts: {sorted(missing)}"
+                )
+            missing = set(conditional.get("required_facts", [])) - all_fact_ids
+            if missing:
+                raise CompilationError(
+                    f"conditional completion policy has unresolved Facts: {sorted(missing)}"
+                )
+            continue
         selector_id = conditional.get("selector_fact")
         if selector_id not in all_fact_ids:
             raise CompilationError(
@@ -763,6 +897,15 @@ def compile_package(
         ],
         "refresh_policy": load_json(ROOT / "policies/knowledge-refresh.json"),
         "interview_completion_policy": completion_policy,
+        "pain_assessment_context": ({
+            "id": pain_assessment["id"],
+            "version": pain_assessment["version"],
+            "status": pain_assessment["status"],
+            "review_status": pain_assessment["review_status"],
+            "resource_ref": str(HIRA_PAIN_ASSESSMENT.relative_to(ROOT)),
+            "semantic_digest": semantic_digest(pain_assessment),
+            "recording_requirements": pain_assessment["recording_requirements"],
+        } if pain_assessment else None),
         "clinician_submission_context": {
             "id": clinician_submission_context["id"],
             "version": clinician_submission_context["version"],

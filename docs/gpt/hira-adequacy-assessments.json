@@ -1,0 +1,737 @@
+{
+  "assessment_context": {
+    "activation_policy": {
+      "confirm_current_cycle_before_official_submission": true,
+      "never_activate_from_symptom_alone": true,
+      "ordinary_primary_care_interview_is_not_an_assessment_submission": true,
+      "requires_explicit_program_or_workflow_context": true
+    },
+    "required_fields": [
+      "assessment_program_id",
+      "assessment_cycle",
+      "care_setting",
+      "target_period",
+      "institution_eligibility_status",
+      "patient_eligibility_status",
+      "information_source"
+    ]
+  },
+  "contains_patient_responses": false,
+  "id": "knowledge.hira-adequacy-assessment-interviews-2026",
+  "information_source_codes": [
+    "patient_report",
+    "proxy_report",
+    "clinician_observation",
+    "performance_assessment",
+    "measurement",
+    "standardized_test",
+    "medical_record",
+    "claim_data"
+  ],
+  "portfolio_triage": {
+    "direct_patient_or_proxy_interview_programs": [
+      "hira.long_term_care_hospital_inpatient.2026-cycle2-8",
+      "hira.depression_outpatient",
+      "hira.rheumatoid_arthritis",
+      "hira.inpatient_patient_experience.5th-2025",
+      "hira.acute_stroke_event_history"
+    ],
+    "primarily_record_claim_test_or_institution_level_programs": [
+      "hypertension_and_diabetes",
+      "asthma",
+      "chronic_obstructive_pulmonary_disease",
+      "tuberculosis",
+      "hemodialysis",
+      "drug_benefit",
+      "coronary_artery_bypass_graft",
+      "hospital_standardized_mortality",
+      "risk_standardized_readmission",
+      "anesthesia",
+      "intensive_care_unit",
+      "neonatal_intensive_care_unit",
+      "cancer",
+      "transfusion",
+      "surgical_antibiotic_prophylaxis",
+      "pneumonia",
+      "length_of_stay",
+      "imaging"
+    ],
+    "rule": "A patient may report history relevant to a primarily non-interview program, but the report never replaces the required claim, prescription, laboratory, imaging, procedure, observation, or institutional evidence.",
+    "scope": "2026 HIRA continuing adequacy-assessment portfolio"
+  },
+  "programs": [
+    {
+      "assessment_type": "structured_assessment",
+      "care_setting": "long_term_care_hospital_inpatient",
+      "default_assessment_frequency": "monthly",
+      "default_observation_period_days": 7,
+      "display_ko": "2026년(2주기 8차) 요양병원 입원급여 적정성 평가",
+      "id": "hira.long_term_care_hospital_inpatient.2026-cycle2-8",
+      "measurement_test_or_record_requirements": [
+        {
+          "id": "hira.ltc.height_weight",
+          "source": [
+            "measurement",
+            "medical_record"
+          ]
+        },
+        {
+          "id": "hira.ltc.mmse_cdr_gds",
+          "source": [
+            "standardized_test",
+            "medical_record"
+          ]
+        },
+        {
+          "id": "hira.ltc.hba1c_or_glucose",
+          "source": [
+            "measurement",
+            "medical_record"
+          ]
+        },
+        {
+          "id": "hira.ltc.medications_and_treatments",
+          "source": [
+            "medical_record",
+            "claim_data"
+          ]
+        }
+      ],
+      "official_submission_requires_clinician_or_record_confirmation": true,
+      "patient_or_proxy_question_groups": [
+        {
+          "display_ko": "일반정보와 건강습관",
+          "id": "hira.ltc.general_and_health_habits",
+          "items": [
+            {
+              "id": "hira.ltc.previous_residence",
+              "required": true,
+              "source": [
+                "patient_report",
+                "proxy_report"
+              ],
+              "text_ko": "입원하시기 전에는 어디에서 생활하셨나요?",
+              "value_type": "coded_or_text"
+            },
+            {
+              "id": "hira.ltc.education_level",
+              "required": true,
+              "source": [
+                "patient_report",
+                "proxy_report"
+              ],
+              "text_ko": "최종 학력은 어떻게 되나요?",
+              "value_type": "coded"
+            },
+            {
+              "id": "hira.ltc.current_smoking",
+              "required": true,
+              "source": [
+                "patient_report",
+                "proxy_report"
+              ],
+              "text_ko": "현재 담배를 피우시나요?",
+              "value_type": "boolean"
+            },
+            {
+              "id": "hira.ltc.frequent_alcohol_use",
+              "required": true,
+              "source": [
+                "patient_report",
+                "proxy_report"
+              ],
+              "text_ko": "현재 자주 술을 드시나요?",
+              "value_type": "boolean"
+            },
+            {
+              "id": "hira.ltc.exercise_four_days_thirty_minutes",
+              "required": true,
+              "source": [
+                "patient_report",
+                "proxy_report"
+              ],
+              "text_ko": "보통 일주일에 4일 이상, 한 번에 30분 이상 운동하시나요?",
+              "value_type": "boolean"
+            },
+            {
+              "id": "hira.ltc.three_meals_daily",
+              "required": true,
+              "source": [
+                "patient_report",
+                "proxy_report"
+              ],
+              "text_ko": "보통 하루 세 끼를 드시나요?",
+              "value_type": "boolean"
+            }
+          ]
+        },
+        {
+          "display_ko": "장기요양과 사회적 필요",
+          "id": "hira.ltc.long_term_care_and_social_needs",
+          "items": [
+            {
+              "id": "hira.ltc.long_term_care_grade",
+              "required": true,
+              "source": [
+                "patient_report",
+                "proxy_report"
+              ],
+              "text_ko": "노인장기요양보험 등급을 받았거나 신청 중인가요?",
+              "value_type": "coded_or_text"
+            },
+            {
+              "id": "hira.ltc.long_term_care_services",
+              "required": true,
+              "source": [
+                "patient_report",
+                "proxy_report"
+              ],
+              "text_ko": "현재 이용 중인 장기요양서비스가 있나요?",
+              "value_type": "multi_text"
+            },
+            {
+              "id": "hira.ltc.long_term_care_service_intent",
+              "required": true,
+              "source": [
+                "patient_report",
+                "proxy_report"
+              ],
+              "text_ko": "퇴원 후 장기요양서비스를 이용할 의향이 있나요?",
+              "value_type": "coded"
+            },
+            {
+              "id": "hira.ltc.no_caregiver_or_meal_help",
+              "required": true,
+              "source": [
+                "patient_report",
+                "proxy_report"
+              ],
+              "text_ko": "식사 준비나 돌봄을 도와줄 사람이 없어 어려움이 있나요?",
+              "value_type": "boolean"
+            },
+            {
+              "id": "hira.ltc.utility_shutoff_risk",
+              "required": true,
+              "source": [
+                "patient_report",
+                "proxy_report"
+              ],
+              "text_ko": "공과금을 내지 못해 전기·수도·가스가 끊길 위험이 있나요?",
+              "value_type": "boolean"
+            },
+            {
+              "id": "hira.ltc.housing_instability",
+              "required": true,
+              "source": [
+                "patient_report",
+                "proxy_report"
+              ],
+              "text_ko": "현재 거주할 곳이 불안정하거나 노숙 상태인가요?",
+              "value_type": "boolean"
+            },
+            {
+              "id": "hira.ltc.financial_difficulty",
+              "required": true,
+              "source": [
+                "patient_report",
+                "proxy_report"
+              ],
+              "text_ko": "의료비·주거비·난방비를 지불하기 어려운가요?",
+              "value_type": "boolean"
+            },
+            {
+              "id": "hira.ltc.transportation_barrier",
+              "required": true,
+              "source": [
+                "patient_report",
+                "proxy_report"
+              ],
+              "text_ko": "교통 문제 때문에 진료를 받거나 일상생활을 하는 데 어려움이 있나요?",
+              "value_type": "boolean"
+            },
+            {
+              "id": "hira.ltc.food_or_abuse_urgent_need",
+              "required": true,
+              "safety_relevant": true,
+              "source": [
+                "patient_report",
+                "proxy_report"
+              ],
+              "text_ko": "식량 부족이나 학대 등 지금 바로 도움이 필요한 문제가 있나요?",
+              "value_type": "boolean"
+            }
+          ]
+        },
+        {
+          "display_ko": "낙상·삼킴·피부 병력",
+          "id": "hira.ltc.history_and_symptoms",
+          "items": [
+            {
+              "id": "hira.ltc.fall_last_30_days",
+              "required": true,
+              "source": [
+                "patient_report",
+                "proxy_report",
+                "medical_record"
+              ],
+              "text_ko": "최근 30일 안에 넘어진 적이 있나요?",
+              "value_type": "boolean"
+            },
+            {
+              "id": "hira.ltc.fall_days_31_to_180",
+              "required": true,
+              "source": [
+                "patient_report",
+                "proxy_report",
+                "medical_record"
+              ],
+              "text_ko": "31일 전부터 180일 전 사이에 넘어진 적이 있나요?",
+              "value_type": "boolean"
+            },
+            {
+              "id": "hira.ltc.swallowing_difficulty",
+              "required": true,
+              "source": [
+                "patient_report",
+                "proxy_report",
+                "clinician_observation"
+              ],
+              "text_ko": "음식이나 물을 삼키기 어렵거나 자주 사레가 드나요?",
+              "value_type": "boolean"
+            },
+            {
+              "does_not_replace_measurement": true,
+              "id": "hira.ltc.recent_weight_loss_report",
+              "required": false,
+              "source": [
+                "patient_report",
+                "proxy_report"
+              ],
+              "text_ko": "최근 체중이 줄었다고 느끼거나 들은 적이 있나요?",
+              "value_type": "boolean"
+            },
+            {
+              "id": "hira.ltc.pressure_ulcer_previous_year",
+              "required": true,
+              "source": [
+                "patient_report",
+                "proxy_report",
+                "medical_record"
+              ],
+              "text_ko": "지난 1년 동안 욕창이 생긴 적이 있나요?",
+              "value_type": "boolean"
+            }
+          ]
+        }
+      ],
+      "reusable_modules": [
+        {
+          "id": "hira.ltc.pain",
+          "must_collect": [
+            "pain.frequency",
+            "pain.nrs_score"
+          ],
+          "required_when": "pain_item_applies",
+          "resource_ref": "knowledge/shared/hira-pain-assessment.json"
+        }
+      ],
+      "source_refs": [
+        "source.hira.ltc-adequacy-cycle2-8.2026",
+        "source.hira.ltc-patient-assessment-amendment.2026-117"
+      ],
+      "structured_observation_not_patient_questions": [
+        {
+          "components": [
+            "short_term_memory",
+            "decision_making",
+            "making_self_understood",
+            "verbal_communication"
+          ],
+          "id": "hira.ltc.cognition_and_communication",
+          "source": [
+            "clinician_observation",
+            "performance_assessment"
+          ]
+        },
+        {
+          "components": [
+            "delusions",
+            "hallucinations",
+            "agitation_aggression",
+            "depression",
+            "anxiety",
+            "elation",
+            "apathy",
+            "disinhibition",
+            "irritability",
+            "abnormal_motor_behavior",
+            "sleep_night_behavior",
+            "appetite_eating_change",
+            "resistance_to_care",
+            "wandering"
+          ],
+          "id": "hira.ltc.behavioral_psychological_symptoms",
+          "source": [
+            "clinician_observation",
+            "proxy_report",
+            "medical_record"
+          ]
+        },
+        {
+          "components": [
+            "dressing",
+            "face_washing",
+            "tooth_brushing",
+            "bathing",
+            "eating",
+            "bed_mobility",
+            "sitting_up",
+            "transfer",
+            "leaving_room",
+            "toileting"
+          ],
+          "id": "hira.ltc.activities_of_daily_living",
+          "source": [
+            "clinician_observation",
+            "performance_assessment"
+          ]
+        },
+        {
+          "components": [
+            "bowel_continence",
+            "urinary_continence",
+            "bladder_diary",
+            "indwelling_catheter"
+          ],
+          "id": "hira.ltc.bowel_bladder_status",
+          "source": [
+            "clinician_observation",
+            "medical_record"
+          ]
+        },
+        {
+          "components": [
+            "current_pressure_ulcer",
+            "site",
+            "stage",
+            "treatment"
+          ],
+          "id": "hira.ltc.skin_and_pressure_ulcer_current",
+          "source": [
+            "clinician_observation",
+            "medical_record"
+          ]
+        }
+      ],
+      "target_period": {
+        "end": "2026-12-31",
+        "start": "2026-07-01"
+      }
+    },
+    {
+      "activation": {
+        "do_not_activate_from_transient_low_mood_alone": true,
+        "requires_depression_outpatient_assessment_context": true,
+        "requires_selected_instrument": true
+      },
+      "assessment_type": "fixed_standardized_instrument",
+      "display_ko": "우울증 외래 적정성 평가 증상평가",
+      "fixed_questionnaire_policy": {
+        "current_cycle_timing_requires_source_verification": true,
+        "initial_and_reassessment_are_distinct_events": true,
+        "never_reconstruct_missing_items_with_ai": true,
+        "preserve_original_items_options_scoring_and_recall_period": true,
+        "use_exact_authorized_version": true,
+        "verify_korean_translation_and_license": true
+      },
+      "id": "hira.depression_outpatient",
+      "information_source": [
+        "patient_report",
+        "proxy_report",
+        "standardized_test",
+        "medical_record"
+      ],
+      "recognized_instruments": [
+        {
+          "id": "PHQ-9",
+          "level": 1
+        },
+        {
+          "id": "EPDS",
+          "level": 1
+        },
+        {
+          "id": "BDI",
+          "level": 2
+        },
+        {
+          "id": "GDS",
+          "level": 2
+        },
+        {
+          "id": "QIDS",
+          "level": 2
+        },
+        {
+          "id": "RRS",
+          "level": 2
+        },
+        {
+          "id": "HADS",
+          "level": 2
+        },
+        {
+          "id": "CES-D",
+          "level": 2
+        },
+        {
+          "id": "HDRS",
+          "level": 3
+        },
+        {
+          "id": "IDS",
+          "level": 3
+        },
+        {
+          "id": "CSDD",
+          "level": 3
+        },
+        {
+          "id": "SNSB",
+          "level": "recognized"
+        }
+      ],
+      "source_refs": [
+        "source.hira.depression-outpatient-results-cycle2",
+        "source.hira.depression-outpatient-plan-cycle2"
+      ]
+    },
+    {
+      "activation": {
+        "current_cycle_indicator_definition_requires_source_verification": true,
+        "must_not_delay_emergency_assessment_or_treatment": true,
+        "requires_suspected_or_confirmed_acute_stroke_workflow": true
+      },
+      "assessment_type": "time_critical_event_history",
+      "data_absent_policy": {
+        "record_reason_not_guess": true,
+        "unknown_event_time_is_allowed": true,
+        "use_last_known_well_when_onset_unknown": true
+      },
+      "display_ko": "급성기뇌졸중 적정성 평가 관련 병원 전 사건 시각",
+      "id": "hira.acute_stroke_event_history",
+      "measurement_test_or_record_requirements": [
+        {
+          "id": "hira.stroke.emergency_arrival_datetime",
+          "source": [
+            "medical_record"
+          ]
+        },
+        {
+          "id": "hira.stroke.brain_imaging_datetime",
+          "source": [
+            "medical_record",
+            "measurement"
+          ]
+        },
+        {
+          "id": "hira.stroke.thrombolysis_or_thrombectomy",
+          "source": [
+            "medical_record",
+            "claim_data"
+          ]
+        },
+        {
+          "id": "hira.stroke.nihss_or_clinical_assessment",
+          "source": [
+            "standardized_test",
+            "medical_record"
+          ]
+        }
+      ],
+      "patient_or_proxy_question_groups": [
+        {
+          "display_ko": "증상 발생과 병원 도착 전 경과",
+          "id": "hira.stroke.prehospital_timeline",
+          "items": [
+            {
+              "id": "hira.stroke.timeline_reporter",
+              "required": true,
+              "source": [
+                "patient_report",
+                "proxy_report"
+              ],
+              "text_ko": "이 시간 정보를 알려주시는 분은 환자 본인인가요, 목격자나 보호자인가요?",
+              "value_type": "coded"
+            },
+            {
+              "id": "hira.stroke.symptom_onset_known",
+              "required": true,
+              "source": [
+                "patient_report",
+                "proxy_report",
+                "medical_record"
+              ],
+              "text_ko": "증상이 시작된 시각을 정확히 알 수 있나요?",
+              "value_type": "boolean"
+            },
+            {
+              "id": "hira.stroke.symptom_onset_datetime",
+              "required_when": "hira.stroke.symptom_onset_known=true",
+              "source": [
+                "patient_report",
+                "proxy_report",
+                "medical_record"
+              ],
+              "text_ko": "증상이 시작된 날짜와 시각은 언제인가요?",
+              "value_type": "dateTime"
+            },
+            {
+              "id": "hira.stroke.last_known_well_datetime",
+              "required_when": "hira.stroke.symptom_onset_known=false",
+              "source": [
+                "patient_report",
+                "proxy_report",
+                "medical_record"
+              ],
+              "text_ko": "시작 시각이 불확실하다면, 증상 없이 정상으로 확인된 마지막 날짜와 시각은 언제인가요?",
+              "value_type": "dateTime"
+            },
+            {
+              "id": "hira.stroke.discovery_datetime",
+              "required_when": "symptom_onset_uncertain_or_wake_up_stroke",
+              "source": [
+                "patient_report",
+                "proxy_report",
+                "medical_record"
+              ],
+              "text_ko": "증상을 처음 발견한 날짜와 시각은 언제인가요?",
+              "value_type": "dateTime"
+            },
+            {
+              "id": "hira.stroke.ambulance_use",
+              "required": true,
+              "source": [
+                "patient_report",
+                "proxy_report",
+                "medical_record"
+              ],
+              "text_ko": "이번 증상으로 구급차를 이용했나요?",
+              "value_type": "boolean"
+            },
+            {
+              "id": "hira.stroke.transferred_from_other_hospital",
+              "required": true,
+              "source": [
+                "patient_report",
+                "proxy_report",
+                "medical_record"
+              ],
+              "text_ko": "다른 병원에서 진료를 받은 뒤 이 병원으로 옮겨왔나요?",
+              "value_type": "boolean"
+            }
+          ]
+        }
+      ],
+      "source_refs": [
+        "source.hira.adequacy-plan.2026",
+        "source.hira.acute-stroke-results-cycle8.2020"
+      ]
+    },
+    {
+      "activation": {
+        "requires_rheumatoid_arthritis_assessment_context": true
+      },
+      "assessment_type": "composite_clinical_score",
+      "clinician_test_components": [
+        {
+          "id": "hira.ra.tender_joint_count",
+          "source": [
+            "clinician_observation"
+          ]
+        },
+        {
+          "id": "hira.ra.swollen_joint_count",
+          "source": [
+            "clinician_observation"
+          ]
+        },
+        {
+          "id": "hira.ra.esr_or_crp",
+          "source": [
+            "measurement",
+            "medical_record"
+          ]
+        }
+      ],
+      "display_ko": "류마티스관절염 적정성 평가 질병활성도",
+      "id": "hira.rheumatoid_arthritis",
+      "patient_report_items": [
+        {
+          "id": "hira.ra.patient_global_health_vas",
+          "is_pain_score": false,
+          "maximum": 100,
+          "minimum": 0,
+          "required": true,
+          "scale_type": "VAS",
+          "source": [
+            "patient_report"
+          ],
+          "text_ko": "현재 관절염을 포함한 전반적인 건강상태를 0부터 100까지 표시해 주세요.",
+          "value_type": "integer"
+        }
+      ],
+      "rule": "Patient global health VAS must never be stored as pain.nrs_score.",
+      "source_refs": [
+        "source.hira.ra-benefit-standard.2025"
+      ]
+    },
+    {
+      "activation": {
+        "reason_for_encounter": "rfe.patient_experience_evaluation",
+        "requires_start_confirmation": true
+      },
+      "assessment_type": "fixed_questionnaire",
+      "display_ko": "2025년(5차) 입원 환자경험평가",
+      "fixed_questionnaire_policy": {
+        "display_only_source_answer_options": true,
+        "display_source_items_unchanged": true,
+        "do_not_mix_adaptive_clinical_questions": true,
+        "preserve_source_option_codes": true
+      },
+      "id": "hira.inpatient_patient_experience.5th-2025",
+      "question_count": 26,
+      "questionnaire_ref": "fhir/r4/questionnaires/kr-patient-experience-evaluation-5th-2025.json",
+      "section_count": 8,
+      "source_refs": [
+        "source.hira.patient-experience-5th.2025"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_at": "2026-07-15T00:00:00Z",
+    "created_by": {
+      "id": "codex-gpt5",
+      "type": "ai"
+    },
+    "review_status": "unreviewed",
+    "source_refs": [
+      "source.hira.adequacy-plan.2026",
+      "source.hira.ltc-adequacy-cycle2-8.2026",
+      "source.hira.depression-outpatient-results-cycle2",
+      "source.hira.acute-stroke-results-cycle8.2020",
+      "source.hira.ra-benefit-standard.2025",
+      "source.hira.patient-experience-5th.2025"
+    ],
+    "version": "0.1.0"
+  },
+  "purpose": "Conditionally activate patient- or proxy-report collection used by Korean HIRA adequacy assessments without converting observation, test, claim, or medical-record fields into patient questions.",
+  "resource_type": "HiraAdequacyAssessmentInterviewRegistry",
+  "review_status": "unreviewed",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "version": "0.1.0"
+}

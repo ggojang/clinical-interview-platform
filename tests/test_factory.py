@@ -232,7 +232,7 @@ class CompilerTests(unittest.TestCase):
             node["id"] for node in first["knowledge_graph"]["nodes"]
             if node["type"] == "Fact"
         }
-        self.assertEqual(len(facts), 28)
+        self.assertEqual(len(facts), 30)
         self.assertEqual(facts, set(first["indexes"]["questions_by_fact"]))
         self.assertEqual(first["coverage"]["total_safety_rules"], 12)
         self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 12)
@@ -268,7 +268,7 @@ class CompilerTests(unittest.TestCase):
             node["id"] for node in first["knowledge_graph"]["nodes"]
             if node["type"] == "Fact"
         }
-        self.assertEqual(len(facts), 30)
+        self.assertEqual(len(facts), 32)
         self.assertEqual(facts, set(first["indexes"]["questions_by_fact"]))
         self.assertEqual(first["coverage"]["total_safety_rules"], 12)
         self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 12)
@@ -301,7 +301,7 @@ class CompilerTests(unittest.TestCase):
             node["id"] for node in first["knowledge_graph"]["nodes"]
             if node["type"] == "Fact"
         }
-        self.assertEqual(len(facts), 30)
+        self.assertEqual(len(facts), 32)
         self.assertEqual(facts, set(first["indexes"]["questions_by_fact"]))
         self.assertEqual(first["coverage"]["total_safety_rules"], 10)
         self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 10)
@@ -382,7 +382,7 @@ class CompilerTests(unittest.TestCase):
             node["id"] for node in first["knowledge_graph"]["nodes"]
             if node["type"] == "Fact"
         }
-        self.assertEqual(len(facts), 37)
+        self.assertEqual(len(facts), 39)
         self.assertEqual(facts, set(first["indexes"]["questions_by_fact"]))
         self.assertEqual(first["coverage"]["total_safety_rules"], 11)
         self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 11)
@@ -432,7 +432,7 @@ class CompilerTests(unittest.TestCase):
             node["id"] for node in first["knowledge_graph"]["nodes"]
             if node["type"] == "Fact"
         }
-        self.assertEqual(len(facts), 34)
+        self.assertEqual(len(facts), 36)
         self.assertEqual(facts, set(first["indexes"]["questions_by_fact"]))
         self.assertEqual(first["coverage"]["total_safety_rules"], 12)
         self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 12)
@@ -457,7 +457,7 @@ class CompilerTests(unittest.TestCase):
             node["id"] for node in first["knowledge_graph"]["nodes"]
             if node["type"] == "Fact"
         }
-        self.assertEqual(len(facts), 36)
+        self.assertEqual(len(facts), 38)
         self.assertEqual(facts, set(first["indexes"]["questions_by_fact"]))
         self.assertEqual(first["coverage"]["total_safety_rules"], 10)
         self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 10)
@@ -508,7 +508,7 @@ class CompilerTests(unittest.TestCase):
             node["id"] for node in first["knowledge_graph"]["nodes"]
             if node["type"] == "Fact"
         }
-        self.assertEqual(len(facts), 39)
+        self.assertEqual(len(facts), 41)
         self.assertEqual(facts, set(first["indexes"]["questions_by_fact"]))
         self.assertEqual(first["coverage"]["total_safety_rules"], 10)
         self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 10)
@@ -571,7 +571,7 @@ class CompilerTests(unittest.TestCase):
     def test_joint_limb_package_is_complete(self):
         package = compile_package(profile="joint_limb_complaint")
         facts = {n["id"] for n in package["knowledge_graph"]["nodes"] if n["type"] == "Fact"}
-        self.assertEqual(len(facts), 37); self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
+        self.assertEqual(len(facts), 39); self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
         self.assertEqual(package["coverage"]["total_safety_rules"], 12)
         self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 12)
         self.assertEqual(package["coverage"]["uncovered_safety_rules"], [])
@@ -587,7 +587,7 @@ class CompilerTests(unittest.TestCase):
     def test_edema_package_is_complete(self):
         package = compile_package(profile="edema")
         facts = {n["id"] for n in package["knowledge_graph"]["nodes"] if n["type"] == "Fact"}
-        self.assertEqual(len(facts), 35)
+        self.assertEqual(len(facts), 37)
         self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
         self.assertEqual(package["coverage"]["total_safety_rules"], 10)
         self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 10)
@@ -633,7 +633,7 @@ class CompilerTests(unittest.TestCase):
     def test_reproductive_genital_package_is_complete(self):
         package = compile_package(profile="reproductive_genital_symptoms")
         facts = {n["id"] for n in package["knowledge_graph"]["nodes"] if n["type"] == "Fact"}
-        self.assertEqual(len(facts), 49)
+        self.assertEqual(len(facts), 51)
         self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
         self.assertEqual(package["coverage"]["total_safety_rules"], 15)
         self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 15)
@@ -651,7 +651,7 @@ class CompilerTests(unittest.TestCase):
     def test_eye_symptoms_package_is_complete_and_lateralizable(self):
         package = compile_package(profile="eye_symptoms")
         facts = {n["id"] for n in package["knowledge_graph"]["nodes"] if n["type"] == "Fact"}
-        self.assertEqual(len(facts), 43)
+        self.assertEqual(len(facts), 45)
         self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
         self.assertEqual(package["coverage"]["total_safety_rules"], 15)
         self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 15)
@@ -665,7 +665,7 @@ class CompilerTests(unittest.TestCase):
     def test_ear_hearing_symptoms_package_is_complete(self):
         package = compile_package(profile="ear_hearing_symptoms")
         facts = {n["id"] for n in package["knowledge_graph"]["nodes"] if n["type"] == "Fact"}
-        self.assertEqual(len(facts), 44)
+        self.assertEqual(len(facts), 46)
         self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
         self.assertEqual(package["coverage"]["total_safety_rules"], 12)
         self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 12)
@@ -1082,8 +1082,8 @@ class PackageRuntimeTests(unittest.TestCase):
     def test_abdominal_pain_package_simulation_evaluation_passes(self):
         report = run_evaluation(ABDOMINAL_PAIN_PACKAGE)
         self.assertTrue(report["passed"])
-        self.assertEqual(report["case_count"], 13)
-        self.assertLessEqual(max(item["turns"] for item in report["results"]), 29)
+        self.assertEqual(report["case_count"], 14)
+        self.assertLessEqual(max(item["turns"] for item in report["results"]), 32)
 
     def test_abdominal_pain_runtime_uses_abdominal_rfe(self):
         session = InterviewSession(
@@ -1103,7 +1103,7 @@ class PackageRuntimeTests(unittest.TestCase):
         report = run_evaluation(CHEST_PAIN_PACKAGE)
         self.assertTrue(report["passed"])
         self.assertEqual(report["case_count"], 13)
-        self.assertLessEqual(max(item["turns"] for item in report["results"]), 31)
+        self.assertLessEqual(max(item["turns"] for item in report["results"]), 33)
 
     def test_chest_pain_runtime_uses_chest_pain_rfe(self):
         session = InterviewSession("chest-runtime", package_path=CHEST_PAIN_PACKAGE)
@@ -1119,7 +1119,7 @@ class PackageRuntimeTests(unittest.TestCase):
         report = run_evaluation(HEADACHE_PACKAGE)
         self.assertTrue(report["passed"])
         self.assertEqual(report["case_count"], 11)
-        self.assertLessEqual(max(item["turns"] for item in report["results"]), 31)
+        self.assertLessEqual(max(item["turns"] for item in report["results"]), 33)
 
     def test_headache_runtime_uses_headache_rfe(self):
         session = InterviewSession("headache-runtime", package_path=HEADACHE_PACKAGE)
@@ -1175,7 +1175,7 @@ class PackageRuntimeTests(unittest.TestCase):
         report = run_evaluation(URINARY_SYMPTOMS_PACKAGE)
         self.assertTrue(report["passed"])
         self.assertEqual(report["case_count"], 12)
-        self.assertLessEqual(max(item["turns"] for item in report["results"]), 38)
+        self.assertLessEqual(max(item["turns"] for item in report["results"]), 39)
 
     def test_urinary_symptoms_runtime_uses_urinary_rfe(self):
         session = InterviewSession(
@@ -1211,7 +1211,7 @@ class PackageRuntimeTests(unittest.TestCase):
         report = run_evaluation(BACK_PAIN_PACKAGE)
         self.assertTrue(report["passed"])
         self.assertEqual(report["case_count"], 13)
-        self.assertLessEqual(max(item["turns"] for item in report["results"]), 35)
+        self.assertLessEqual(max(item["turns"] for item in report["results"]), 36)
 
     def test_back_pain_runtime_uses_back_pain_rfe(self):
         session = InterviewSession("back-pain-runtime", package_path=BACK_PAIN_PACKAGE)

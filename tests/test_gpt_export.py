@@ -56,6 +56,7 @@ class GptExportTests(unittest.TestCase):
             self.assertTrue({
                 "common-facts", "reason-for-encounters", "screening-kr",
                 "terminology-source",
+                "hira-adequacy-assessments",
                 "rfe-cough-facts", "rfe-cough-questions", "rfe-cough-rules",
                 "rfe-dyspnea-facts", "rfe-dyspnea-questions", "rfe-dyspnea-rules",
                 "rfe-fever-facts", "rfe-fever-questions", "rfe-fever-rules",
@@ -222,6 +223,29 @@ class GptExportTests(unittest.TestCase):
         self.assertIn("memory_cognitive_concern", schema)
         self.assertIn("pregnancy_postpartum_concern", schema)
         self.assertIn("operationId: getReasonForEncounterRulePartition", schema)
+        self.assertIn("operationId: getHiraAdequacyAssessmentInterviews", schema)
+
+    def test_hira_assessment_registry_is_exported_with_source_boundaries(self):
+        with tempfile.TemporaryDirectory() as output:
+            output_path = Path(output)
+            manifest = build(ROOT, output_path)
+            registry = json.loads(
+                (output_path / "hira-adequacy-assessments.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            self.assertEqual(
+                registry["resource_type"],
+                "HiraAdequacyAssessmentInterviewRegistry",
+            )
+            self.assertFalse(registry["contains_patient_responses"])
+            policy = manifest["hira_adequacy_assessment_policy"]
+            self.assertTrue(policy["requires_explicit_program_and_current_cycle_context"])
+            self.assertTrue(policy["patient_or_proxy_questions_only"])
+            self.assertEqual(
+                manifest["preferred_loading"]["assessment_operation"],
+                "getHiraAdequacyAssessmentInterviews",
+            )
 
     def test_rfe_catalog_and_bundles_are_consistent(self):
         with tempfile.TemporaryDirectory() as output:
@@ -250,7 +274,7 @@ class GptExportTests(unittest.TestCase):
                     encoding="utf-8"
                 )
             )
-            self.assertEqual(abdominal["count"], 28)
+            self.assertEqual(abdominal["count"], 30)
             location = next(
                 item for item in abdominal["items"]
                 if item["id"] == "symptom.abdominal_pain.location"
@@ -263,13 +287,13 @@ class GptExportTests(unittest.TestCase):
                     encoding="utf-8"
                 )
             )
-            self.assertEqual(chest["count"], 30)
+            self.assertEqual(chest["count"], 32)
             headache = json.loads(
                 (output_path / "rfe/headache/facts.json").read_text(
                     encoding="utf-8"
                 )
             )
-            self.assertEqual(headache["count"], 30)
+            self.assertEqual(headache["count"], 32)
             dizziness = json.loads(
                 (output_path / "rfe/dizziness_syncope/facts.json").read_text(
                     encoding="utf-8"
@@ -287,7 +311,7 @@ class GptExportTests(unittest.TestCase):
                     encoding="utf-8"
                 )
             )
-            self.assertEqual(urinary["count"], 37)
+            self.assertEqual(urinary["count"], 39)
             fatigue = json.loads(
                 (output_path / "rfe/fatigue/facts.json").read_text(encoding="utf-8")
             )
@@ -295,11 +319,11 @@ class GptExportTests(unittest.TestCase):
             back_pain = json.loads(
                 (output_path / "rfe/back_pain/facts.json").read_text(encoding="utf-8")
             )
-            self.assertEqual(back_pain["count"], 34)
+            self.assertEqual(back_pain["count"], 36)
             skin = json.loads(
                 (output_path / "rfe/skin_complaint/facts.json").read_text(encoding="utf-8")
             )
-            self.assertEqual(skin["count"], 36)
+            self.assertEqual(skin["count"], 38)
             medication = json.loads(
                 (output_path / "rfe/medication_review/facts.json").read_text(
                     encoding="utf-8"
@@ -311,7 +335,7 @@ class GptExportTests(unittest.TestCase):
                     encoding="utf-8"
                 )
             )
-            self.assertEqual(upper["count"], 39)
+            self.assertEqual(upper["count"], 41)
             palpitations = json.loads(
                 (output_path / "rfe/palpitations/facts.json").read_text(encoding="utf-8")
             )
@@ -323,21 +347,21 @@ class GptExportTests(unittest.TestCase):
             focal = json.loads((output_path / "rfe/focal_weakness_numbness/facts.json").read_text(encoding="utf-8"))
             self.assertEqual(focal["count"], 32)
             joint = json.loads((output_path / "rfe/joint_limb_complaint/facts.json").read_text(encoding="utf-8"))
-            self.assertEqual(joint["count"], 37)
+            self.assertEqual(joint["count"], 39)
             mental = json.loads((output_path / "rfe/mental_health_sleep/facts.json").read_text(encoding="utf-8"))
             self.assertEqual(mental["count"], 39)
             edema = json.loads((output_path / "rfe/edema/facts.json").read_text(encoding="utf-8"))
-            self.assertEqual(edema["count"], 35)
+            self.assertEqual(edema["count"], 37)
             hypertension = json.loads((output_path / "rfe/hypertension_follow_up/facts.json").read_text(encoding="utf-8"))
             self.assertEqual(hypertension["count"], 38)
             constitutional = json.loads((output_path / "rfe/weight_constitutional_change/facts.json").read_text(encoding="utf-8"))
             self.assertEqual(constitutional["count"], 38)
             genital = json.loads((output_path / "rfe/reproductive_genital_symptoms/facts.json").read_text(encoding="utf-8"))
-            self.assertEqual(genital["count"], 49)
+            self.assertEqual(genital["count"], 51)
             eye = json.loads((output_path / "rfe/eye_symptoms/facts.json").read_text(encoding="utf-8"))
-            self.assertEqual(eye["count"], 43)
+            self.assertEqual(eye["count"], 45)
             ear = json.loads((output_path / "rfe/ear_hearing_symptoms/facts.json").read_text(encoding="utf-8"))
-            self.assertEqual(ear["count"], 44)
+            self.assertEqual(ear["count"], 46)
             diabetes = json.loads((output_path / "rfe/diabetes_follow_up/facts.json").read_text(encoding="utf-8"))
             self.assertEqual(diabetes["count"], 54)
             for slug in implemented:

@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "1.30.0"
+VERSION = "1.31.0"
 GENERATED_AT = "2026-07-15T00:00:00Z"
 PRIVATE_KEYS = {
     "raw_text", "raw_input", "patient_response", "patient_responses",
@@ -501,6 +501,16 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
     clinician_context = sanitize(
         load_json(root / "knowledge" / "shared" / "clinician-submission-context.json")
     )
+    hira_assessments = sanitize(load_json(
+        root / "knowledge" / "assessments"
+        / "hira-adequacy-assessment-interviews-2026.json"
+    ))
+    if hira_assessments.get("status") != "research_only" or hira_assessments.get(
+        "review_status"
+    ) != "unreviewed":
+        raise RuntimeError("HIRA assessment knowledge must remain research_only/unreviewed")
+    hira_assessments["resource_type"] = "HiraAdequacyAssessmentInterviewRegistry"
+    hira_assessments["contains_patient_responses"] = False
     common_facts = envelope(
         "CommonInterviewFactCollection",
         deduplicate(
@@ -548,6 +558,7 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
         "screening-kr.json": screening,
         "terminology-source.json": terminology_source,
         "clinician-submission-context.json": clinician_context,
+        "hira-adequacy-assessments.json": hira_assessments,
     }
     resources.update(collect_rfe_resources(root))
     resources.update(collect_patient_experience_questionnaire(root))
@@ -629,6 +640,14 @@ def build(root: Path, output: Path) -> dict[str, Any]:
         "patient_experience_questionnaire_policy": resources[
             "questionnaires/patient-experience-5th-2025/metadata.json"
         ],
+        "hira_adequacy_assessment_policy": {
+            "resource": "/gpt/hira-adequacy-assessments.json",
+            "operation": "getHiraAdequacyAssessmentInterviews",
+            "requires_explicit_program_and_current_cycle_context": True,
+            "patient_or_proxy_questions_only": True,
+            "do_not_convert_observation_test_record_or_claim_fields_to_patient_questions": True,
+            "official_submission_requires_source_appropriate_confirmation": True,
+        },
         "numbering_policy": {
             "display_question_sequence": False,
             "question_tracking": "stable_question_id",
@@ -714,6 +733,7 @@ def build(root: Path, output: Path) -> dict[str, Any]:
                 "getPatientExperienceQuestionnaire",
                 "getPatientExperienceQuestionnaireSection",
             ],
+            "assessment_operation": "getHiraAdequacyAssessmentInterviews",
             "aggregate_resources_are_backward_compatible": True,
         },
         "resources": manifest_resources,

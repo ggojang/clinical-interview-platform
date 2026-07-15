@@ -15,7 +15,7 @@
   },
   "coverage": {
     "data_absent_reason_simulations": 1,
-    "facts_with_questions": 70,
+    "facts_with_questions": 71,
     "known_gaps": [
       "External guideline artifacts are not cached or license-verified.",
       "Clinical and safety review is incomplete.",
@@ -25,18 +25,18 @@
       "ClinicalGroup": 8,
       "ClinicalIntent": 4,
       "EncounterContext": 1,
-      "Fact": 70,
-      "InterviewTarget": 70,
-      "QuestionTemplate": 70,
+      "Fact": 71,
+      "InterviewTarget": 71,
+      "QuestionTemplate": 71,
       "ReasonForEncounter": 1
     },
-    "required_targets_linked_to_facts": 70,
+    "required_targets_linked_to_facts": 71,
     "reviewed_for_production": false,
     "safety_rules_with_simulations": 20,
     "simulation_count": 21,
-    "total_facts": 70,
+    "total_facts": 71,
     "total_safety_rules": 20,
-    "total_targets": 70,
+    "total_targets": 71,
     "uncovered_safety_rules": []
   },
   "indexes": {
@@ -890,6 +890,22 @@
         ],
         "template_id": "question.oral-dental-symptoms.associated-warning",
         "wording": "원치 않는 체중 감소, 계속되는 쉰 목소리 또는 삼킴 어려움이 있나요?"
+      },
+      "pain.frequency": {
+        "answer_code_map": {
+          "1": "none",
+          "2": "less_than_daily",
+          "3": "daily"
+        },
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ],
+        "template_id": "question.standardized_pain_frequency",
+        "wording": "[필수] 최근 평가 대상 기간 동안 통증은 얼마나 자주 있었나요? 1 통증 없음, 2 통증이 있으나 매일은 아님, 3 매일 통증이 있음"
       }
     },
     "target_facts": {
@@ -1102,6 +1118,9 @@
       ],
       "target.oral-dental-symptoms.wisdom-tooth": [
         "oral.erupting_wisdom_tooth_or_pericoronal_symptoms"
+      ],
+      "target.standardized_pain_frequency": [
+        "pain.frequency"
       ]
     }
   },
@@ -1170,6 +1189,10 @@
       }
     ],
     "id": "policy.primary-care-oral-dental-symptoms-completion",
+    "must_be_known_facts": [
+      "pain.frequency",
+      "oral.pain_score_zero_to_ten"
+    ],
     "provenance": {
       "created_at": "2026-07-14T00:00:00Z",
       "created_by": {
@@ -1191,7 +1214,7 @@
     },
     "question_budget": {
       "clarify": 12,
-      "routine": 58
+      "routine": 59
     },
     "required_facts": {
       "always": [
@@ -1215,7 +1238,9 @@
         "oral.unexplained_lip_or_mouth_lump",
         "oral.persistent_red_or_red_white_patch",
         "oral.persistent_unexplained_neck_lump",
-        "oral.loose_tooth_or_appliance_airway_risk"
+        "oral.loose_tooth_or_appliance_airway_risk",
+        "pain.frequency",
+        "oral.pain_score_zero_to_ten"
       ],
       "routine": [
         "oral.symptom_duration",
@@ -10812,6 +10837,46 @@
         "to": "intent.risk_assessment",
         "type": "SUGGESTS",
         "version": "0.1.0"
+      },
+      {
+        "from": "target.standardized_pain_frequency",
+        "id": "edge.hira-pain.target.standardized_pain_frequency.requires",
+        "provenance": {
+          "created_at": "2026-07-15T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.hira.nursing-hospital-adequacy-2025"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "pain.frequency",
+        "type": "REQUIRES",
+        "version": "0.1.0"
+      },
+      {
+        "from": "question.standardized_pain_frequency",
+        "id": "edge.hira-pain.question.standardized_pain_frequency.collects",
+        "provenance": {
+          "created_at": "2026-07-15T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.hira.nursing-hospital-adequacy-2025"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "pain.frequency",
+        "type": "COLLECTS",
+        "version": "0.1.0"
       }
     ],
     "id": "knowledge.primary-care-oral-dental-symptoms",
@@ -12820,10 +12885,27 @@
         "version": "0.1.0"
       },
       {
+        "derived_category": {
+          "moderate": [
+            4,
+            6
+          ],
+          "none_or_mild": [
+            0,
+            3
+          ],
+          "severe": [
+            7,
+            10
+          ]
+        },
         "description": "",
         "display": "Oral Dental Pain Score",
         "extraction_cues": [],
         "id": "oral.pain_score_zero_to_ten",
+        "maximum": 10,
+        "minimum": 0,
+        "must_preserve_raw_score": true,
         "provenance": {
           "created_at": "2026-07-14T00:00:00Z",
           "created_by": {
@@ -12856,7 +12938,15 @@
           },
           "policy_id": "policy.knowledge-refresh"
         },
+        "required_when_pain_applies": true,
         "safety_relevant": false,
+        "scale": {
+          "lower_anchor": "no_pain",
+          "maximum": 10,
+          "minimum": 0,
+          "type": "NRS",
+          "upper_anchor": "worst_imaginable_pain"
+        },
         "source_manifest": "source-manifest.primary-care-oral-dental-symptoms-research",
         "status": "research_only",
         "type": "Fact",
@@ -16150,6 +16240,11 @@
           ],
           "version": "0.1.0"
         },
+        "required_numeric_range": [
+          0,
+          10
+        ],
+        "scale_type": "NRS",
         "source_manifest": "source-manifest.primary-care-oral-dental-symptoms-research",
         "status": "research_only",
         "type": "QuestionTemplate",
@@ -19878,6 +19973,84 @@
           "simulation"
         ],
         "version": "0.1.0"
+      },
+      {
+        "allowed_values": [
+          "none",
+          "less_than_daily",
+          "daily"
+        ],
+        "assessment_program": "HIRA_nursing_hospital_adequacy_assessment",
+        "display": "Pain frequency",
+        "display_ko": "통증 빈도",
+        "id": "pain.frequency",
+        "provenance": {
+          "created_at": "2026-07-15T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.hira.nursing-hospital-adequacy-2025"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "type": "Fact",
+        "value_type": "coded",
+        "version": "0.1.0"
+      },
+      {
+        "display": "Standardized pain frequency",
+        "id": "target.standardized_pain_frequency",
+        "provenance": {
+          "created_at": "2026-07-15T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.hira.nursing-hospital-adequacy-2025"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "type": "InterviewTarget",
+        "version": "0.1.0"
+      },
+      {
+        "answer_code_map": {
+          "1": "none",
+          "2": "less_than_daily",
+          "3": "daily"
+        },
+        "fact_id": "pain.frequency",
+        "id": "question.standardized_pain_frequency",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ],
+        "provenance": {
+          "created_at": "2026-07-15T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.hira.nursing-hospital-adequacy-2025"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "type": "QuestionTemplate",
+        "version": "0.1.0",
+        "wording": "[필수] 최근 평가 대상 기간 동안 통증은 얼마나 자주 있었나요? 1 통증 없음, 2 통증이 있으나 매일은 아님, 3 매일 통증이 있음"
       }
     ],
     "provenance": {
@@ -19896,6 +20069,26 @@
   },
   "package_id": "package.primary-care-oral-dental-symptoms",
   "package_version": "0.1.0",
+  "pain_assessment_context": {
+    "id": "knowledge.shared.hira-pain-assessment",
+    "recording_requirements": {
+      "data_absent_reason_may_be_audited_but_requires_reconfirmation": true,
+      "mandatory_items_do_not_offer_unknown_or_declined_options": true,
+      "preserve_assessed_at": true,
+      "preserve_frequency": true,
+      "preserve_informant": true,
+      "preserve_information_source": true,
+      "preserve_observation_period": true,
+      "preserve_raw_score": true,
+      "preserve_scale_type": true,
+      "preserve_treatment_flags_when_assessment_program_requires": true
+    },
+    "resource_ref": "knowledge/shared/hira-pain-assessment.json",
+    "review_status": "unreviewed",
+    "semantic_digest": "sha256:404985bce554f68ff4c094873506c31a80dba34d753dc13d13cdc2a930b1f9d5",
+    "status": "research_only",
+    "version": "0.1.0"
+  },
   "provenance": {
     "created_at": "2026-07-13T00:00:00Z",
     "created_by": {
@@ -24713,6 +24906,30 @@
         }
       },
       {
+        "id": "rule.hira-pain.priority.pain.frequency",
+        "priority": 96,
+        "provenance": {
+          "created_at": "2026-07-15T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.hira.nursing-hospital-adequacy-2025"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "then": {
+          "reason": "mandatory_standardized_pain_assessment",
+          "target": "target.standardized_pain_frequency"
+        },
+        "type": "priority",
+        "version": "0.1.0",
+        "when": {}
+      },
+      {
         "id": "rule.generated.priority.any.jaw-context",
         "priority": 94,
         "provenance": {
@@ -28329,7 +28546,7 @@
       "rfe.oral_dental_symptoms"
     ]
   },
-  "semantic_digest": "sha256:d15569b175f1aabbd54382ebf26279323d22c6e5138f5217671d5a00a402e3bc",
+  "semantic_digest": "sha256:4597e64fcd63264b19f30f4f4d2e1c0210c5d234ad93acc28ec50edc540f7912",
   "simulations": [
     {
       "expected": {

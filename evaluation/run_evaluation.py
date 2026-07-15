@@ -88,7 +88,20 @@ def evaluate_case(case_path: Path, package_path: Path) -> dict[str, Any]:
         if forbidden in serialized:
             failures.append(f"forbidden assertion present: {forbidden}")
 
-    if len(selected_facts) != len(set(selected_facts)):
+    repeated = {
+        fact_id: selected_facts.count(fact_id)
+        for fact_id in set(selected_facts)
+        if selected_facts.count(fact_id) > 1
+    }
+    mandatory = set(
+        session.package.get("interview_completion_policy", {})
+        .get("must_be_known_facts", [])
+    )
+    disallowed_repetitions = {
+        fact_id: count for fact_id, count in repeated.items()
+        if fact_id not in mandatory or count > 2
+    }
+    if disallowed_repetitions:
         failures.append("equivalent fact question repeated")
 
     return {

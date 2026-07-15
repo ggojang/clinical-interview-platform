@@ -15,7 +15,7 @@
   },
   "coverage": {
     "data_absent_reason_simulations": 1,
-    "facts_with_questions": 37,
+    "facts_with_questions": 39,
     "known_gaps": [
       "External guideline artifacts are not cached or license-verified.",
       "Clinical and safety review is incomplete.",
@@ -25,19 +25,19 @@
       "ClinicalGroup": 6,
       "ClinicalIntent": 4,
       "EncounterContext": 1,
-      "Fact": 37,
+      "Fact": 39,
       "Hypothesis": 4,
-      "InterviewTarget": 37,
-      "QuestionTemplate": 37,
+      "InterviewTarget": 39,
+      "QuestionTemplate": 39,
       "ReasonForEncounter": 1
     },
-    "required_targets_linked_to_facts": 37,
+    "required_targets_linked_to_facts": 39,
     "reviewed_for_production": false,
     "safety_rules_with_simulations": 11,
     "simulation_count": 12,
-    "total_facts": 37,
+    "total_facts": 39,
     "total_safety_rules": 11,
-    "total_targets": 37,
+    "total_targets": 39,
     "uncovered_safety_rules": []
   },
   "indexes": {
@@ -157,6 +157,33 @@
         ],
         "template_id": "question.urinary.low-temperature",
         "wording": "체온을 쟀을 때 36도보다 낮았나요?"
+      },
+      "pain.frequency": {
+        "answer_code_map": {
+          "1": "none",
+          "2": "less_than_daily",
+          "3": "daily"
+        },
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ],
+        "template_id": "question.standardized_pain_frequency",
+        "wording": "[필수] 최근 평가 대상 기간 동안 통증은 얼마나 자주 있었나요? 1 통증 없음, 2 통증이 있으나 매일은 아님, 3 매일 통증이 있음"
+      },
+      "pain.nrs_score": {
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ],
+        "template_id": "question.standardized_pain_nrs",
+        "wording": "[필수] 현재 통증을 0부터 10까지 숫자로 알려주세요. 0은 통증이 전혀 없음, 10은 상상할 수 있는 가장 심한 통증입니다."
       },
       "patient.age_45_or_older": {
         "language": "ko",
@@ -501,6 +528,12 @@
       }
     },
     "target_facts": {
+      "target.standardized_pain_frequency": [
+        "pain.frequency"
+      ],
+      "target.standardized_pain_nrs": [
+        "pain.nrs_score"
+      ],
       "target.urinary.age45": [
         "patient.age_45_or_older"
       ],
@@ -621,7 +654,28 @@
       "not_applicable"
     ],
     "clarification_facts_by_rule": {},
+    "conditional_required_facts": [
+      {
+        "reason": "pain_item_activated",
+        "required_facts": [
+          "pain.frequency",
+          "pain.nrs_score"
+        ],
+        "when": {
+          "fact": "symptom.dysuria.severity",
+          "in": [
+            "mild",
+            "moderate",
+            "severe"
+          ]
+        }
+      }
+    ],
     "id": "policy.primary-care-urinary-symptoms-completion",
+    "must_be_known_facts": [
+      "pain.frequency",
+      "pain.nrs_score"
+    ],
     "provenance": {
       "created_at": "2026-07-14T00:00:00Z",
       "created_by": {
@@ -640,7 +694,7 @@
     },
     "question_budget": {
       "clarify": 12,
-      "routine": 38
+      "routine": 40
     },
     "required_facts": {
       "always": [
@@ -5511,6 +5565,86 @@
         "to": "intent.risk_assessment",
         "type": "SUGGESTS",
         "version": "0.1.0"
+      },
+      {
+        "from": "target.standardized_pain_frequency",
+        "id": "edge.hira-pain.target.standardized_pain_frequency.requires",
+        "provenance": {
+          "created_at": "2026-07-15T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.hira.nursing-hospital-adequacy-2025"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "pain.frequency",
+        "type": "REQUIRES",
+        "version": "0.1.0"
+      },
+      {
+        "from": "question.standardized_pain_frequency",
+        "id": "edge.hira-pain.question.standardized_pain_frequency.collects",
+        "provenance": {
+          "created_at": "2026-07-15T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.hira.nursing-hospital-adequacy-2025"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "pain.frequency",
+        "type": "COLLECTS",
+        "version": "0.1.0"
+      },
+      {
+        "from": "target.standardized_pain_nrs",
+        "id": "edge.hira-pain.target.standardized_pain_nrs.requires",
+        "provenance": {
+          "created_at": "2026-07-15T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.hira.nursing-hospital-adequacy-2025"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "pain.nrs_score",
+        "type": "REQUIRES",
+        "version": "0.1.0"
+      },
+      {
+        "from": "question.standardized_pain_nrs",
+        "id": "edge.hira-pain.question.standardized_pain_nrs.collects",
+        "provenance": {
+          "created_at": "2026-07-15T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.hira.nursing-hospital-adequacy-2025"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "pain.nrs_score",
+        "type": "COLLECTS",
+        "version": "0.1.0"
       }
     ],
     "id": "knowledge.primary-care-urinary-symptoms",
@@ -10183,6 +10317,177 @@
         ],
         "value_type": "boolean",
         "version": "0.1.0"
+      },
+      {
+        "allowed_values": [
+          "none",
+          "less_than_daily",
+          "daily"
+        ],
+        "assessment_program": "HIRA_nursing_hospital_adequacy_assessment",
+        "display": "Pain frequency",
+        "display_ko": "통증 빈도",
+        "id": "pain.frequency",
+        "provenance": {
+          "created_at": "2026-07-15T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.hira.nursing-hospital-adequacy-2025"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "type": "Fact",
+        "value_type": "coded",
+        "version": "0.1.0"
+      },
+      {
+        "assessment_program": "HIRA_nursing_hospital_adequacy_assessment",
+        "derived_category": {
+          "moderate": [
+            4,
+            6
+          ],
+          "none_or_mild": [
+            0,
+            3
+          ],
+          "severe": [
+            7,
+            10
+          ]
+        },
+        "display": "Pain intensity NRS raw score",
+        "display_ko": "통증 강도 NRS 원점수",
+        "id": "pain.nrs_score",
+        "maximum": 10,
+        "minimum": 0,
+        "must_preserve_raw_score": true,
+        "provenance": {
+          "created_at": "2026-07-15T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.hira.nursing-hospital-adequacy-2025"
+          ],
+          "version": "0.1.0"
+        },
+        "required_when_pain_applies": true,
+        "scale": {
+          "lower_anchor": "no_pain",
+          "maximum": 10,
+          "minimum": 0,
+          "type": "NRS",
+          "upper_anchor": "worst_imaginable_pain"
+        },
+        "status": "research_only",
+        "type": "Fact",
+        "value_type": "integer",
+        "version": "0.1.0"
+      },
+      {
+        "display": "Standardized pain frequency",
+        "id": "target.standardized_pain_frequency",
+        "provenance": {
+          "created_at": "2026-07-15T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.hira.nursing-hospital-adequacy-2025"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "type": "InterviewTarget",
+        "version": "0.1.0"
+      },
+      {
+        "display": "Standardized pain NRS",
+        "id": "target.standardized_pain_nrs",
+        "provenance": {
+          "created_at": "2026-07-15T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.hira.nursing-hospital-adequacy-2025"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "type": "InterviewTarget",
+        "version": "0.1.0"
+      },
+      {
+        "answer_code_map": {
+          "1": "none",
+          "2": "less_than_daily",
+          "3": "daily"
+        },
+        "fact_id": "pain.frequency",
+        "id": "question.standardized_pain_frequency",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ],
+        "provenance": {
+          "created_at": "2026-07-15T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.hira.nursing-hospital-adequacy-2025"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "type": "QuestionTemplate",
+        "version": "0.1.0",
+        "wording": "[필수] 최근 평가 대상 기간 동안 통증은 얼마나 자주 있었나요? 1 통증 없음, 2 통증이 있으나 매일은 아님, 3 매일 통증이 있음"
+      },
+      {
+        "fact_id": "pain.nrs_score",
+        "id": "question.standardized_pain_nrs",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ],
+        "provenance": {
+          "created_at": "2026-07-15T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.hira.nursing-hospital-adequacy-2025"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "type": "QuestionTemplate",
+        "version": "0.1.0",
+        "wording": "[필수] 현재 통증을 0부터 10까지 숫자로 알려주세요. 0은 통증이 전혀 없음, 10은 상상할 수 있는 가장 심한 통증입니다."
       }
     ],
     "provenance": {
@@ -10201,6 +10506,26 @@
   },
   "package_id": "package.primary-care-urinary-symptoms",
   "package_version": "0.1.0",
+  "pain_assessment_context": {
+    "id": "knowledge.shared.hira-pain-assessment",
+    "recording_requirements": {
+      "data_absent_reason_may_be_audited_but_requires_reconfirmation": true,
+      "mandatory_items_do_not_offer_unknown_or_declined_options": true,
+      "preserve_assessed_at": true,
+      "preserve_frequency": true,
+      "preserve_informant": true,
+      "preserve_information_source": true,
+      "preserve_observation_period": true,
+      "preserve_raw_score": true,
+      "preserve_scale_type": true,
+      "preserve_treatment_flags_when_assessment_program_requires": true
+    },
+    "resource_ref": "knowledge/shared/hira-pain-assessment.json",
+    "review_status": "unreviewed",
+    "semantic_digest": "sha256:404985bce554f68ff4c094873506c31a80dba34d753dc13d13cdc2a930b1f9d5",
+    "status": "research_only",
+    "version": "0.1.0"
+  },
   "provenance": {
     "created_at": "2026-07-13T00:00:00Z",
     "created_by": {
@@ -11980,6 +12305,54 @@
             "target.urinary.immunocompromise": "active"
           }
         }
+      },
+      {
+        "id": "rule.hira-pain.priority.pain.frequency",
+        "priority": 96,
+        "provenance": {
+          "created_at": "2026-07-15T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.hira.nursing-hospital-adequacy-2025"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "then": {
+          "reason": "mandatory_standardized_pain_assessment",
+          "target": "target.standardized_pain_frequency"
+        },
+        "type": "priority",
+        "version": "0.1.0",
+        "when": {}
+      },
+      {
+        "id": "rule.hira-pain.priority.pain.nrs_score",
+        "priority": 96,
+        "provenance": {
+          "created_at": "2026-07-15T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.hira.nursing-hospital-adequacy-2025"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "then": {
+          "reason": "mandatory_standardized_pain_assessment",
+          "target": "target.standardized_pain_nrs"
+        },
+        "type": "priority",
+        "version": "0.1.0",
+        "when": {}
       },
       {
         "id": "rule.generated.priority.any.catheter",
@@ -14670,7 +15043,7 @@
       "rfe.urinary_symptoms"
     ]
   },
-  "semantic_digest": "sha256:fa6760732588357479ae82b1ecf3b3a1324250c5d00e6133eeac2c924d83d090",
+  "semantic_digest": "sha256:3775eb9da93d282439a6dda85a03539ae6364e41523619a4c48dc91ffb9cb223",
   "simulations": [
     {
       "expected": {
@@ -14705,7 +15078,7 @@
         "expected_data_absent_reasons": {
           "exposure.new_or_unprotected_sexual_contact": "asked-declined"
         },
-        "expected_max_turns": 38,
+        "expected_max_turns": 39,
         "expected_safety_level": "routine",
         "expected_stop_reason": "required_targets_addressed_with_absent_data",
         "forbidden_assertions": [
