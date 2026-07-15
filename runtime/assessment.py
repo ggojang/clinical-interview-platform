@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -25,6 +26,78 @@ class HiraAssessmentRegistry:
         self.document = json.loads(path.read_text(encoding="utf-8"))
         self.programs = {
             program["id"]: program for program in self.document.get("programs", [])
+        }
+        self.entries = {
+            entry["program_id"]: entry
+            for entry in self.document.get("entry_catalog", [])
+        }
+
+    @staticmethod
+    def _normalize_entry_text(text: str) -> str:
+        return re.sub(r"[^0-9a-z가-힣]+", "", text.casefold())
+
+    def resolve_entry(self, text: str) -> dict[str, Any]:
+        """Resolve an explicit assessment/questionnaire request at the RFE boundary."""
+        normalized = self._normalize_entry_text(text)
+        generic_aliases = {
+            self._normalize_entry_text(alias)
+            for alias in self.document["entry_policy"]["generic_aliases_ko"]
+        }
+        if normalized in generic_aliases:
+            return {
+                "status": "selection_required",
+                "workflow_state": "entry_unresolved",
+                "prompt_ko": self.document["entry_policy"]["generic_prompt_ko"],
+                "options": [
+                    {
+                        "number": entry["selection_number"],
+                        "program_id": entry["program_id"],
+                        "display_ko": entry["display_ko"],
+                    }
+                    for entry in self.document["entry_catalog"]
+                ],
+            }
+
+        matches = []
+        for entry in self.document["entry_catalog"]:
+            for alias in entry["aliases_ko"]:
+                candidate = self._normalize_entry_text(alias)
+                if normalized == candidate or candidate in normalized:
+                    matches.append(entry)
+                    break
+        unique = {entry["program_id"]: entry for entry in matches}
+        if len(unique) != 1:
+            return {
+                "status": "no_match" if not unique else "selection_required",
+                "workflow_state": "entry_unresolved",
+                "requested_text": text,
+                "preserve_requested_title": True,
+            }
+        entry = next(iter(unique.values()))
+        return self.entry_confirmation(entry["program_id"])
+
+    def select_entry(self, selection_number: int) -> dict[str, Any]:
+        for entry in self.document["entry_catalog"]:
+            if entry["selection_number"] == selection_number:
+                return self.entry_confirmation(entry["program_id"])
+        raise AssessmentContextError(f"unknown assessment selection: {selection_number}")
+
+    def entry_confirmation(self, program_id: str) -> dict[str, Any]:
+        if program_id not in self.entries:
+            raise AssessmentContextError(f"unknown assessment program: {program_id}")
+        entry = self.entries[program_id]
+        program = self.programs[program_id]
+        return {
+            "status": "matched",
+            "workflow_state": "awaiting_start_confirmation",
+            "program_id": program_id,
+            "display_ko": entry["display_ko"],
+            "prompt_ko": entry["start_prompt_ko"],
+            "options": self.document["entry_policy"]["start_confirmation_options"],
+            "runtime_readiness": entry["runtime_readiness"],
+            "safety_action_precedes_confirmation": program.get("activation", {}).get(
+                "must_not_delay_emergency_assessment_or_treatment", False
+            ),
         }
 
     def activate(self, program_id: str, context: dict[str, Any]) -> dict[str, Any]:

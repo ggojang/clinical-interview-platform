@@ -5,6 +5,100 @@
   "review_status": "unreviewed",
   "usage_modes": ["research_test", "simulation"],
   "purpose": "Conditionally activate patient- or proxy-report collection used by Korean HIRA adequacy assessments without converting observation, test, claim, or medical-record fields into patient questions.",
+  "entry_policy": {
+    "entry_point": "reason_for_encounter",
+    "generic_aliases_ko": ["적정성 평가", "적정성평가", "정형 설문", "정형설문", "공식 설문", "평가 설문"],
+    "generic_prompt_ko": "작성하려는 적정성 평가 또는 정형 설문을 선택해 주세요.",
+    "specific_alias_match_required": true,
+    "never_activate_from_diagnosis_or_symptom_name_alone": true,
+    "workflow_states": [
+      "entry_unresolved",
+      "program_selected",
+      "awaiting_start_confirmation",
+      "collecting_assessment_context",
+      "ready_to_start",
+      "in_progress",
+      "completed",
+      "stopped"
+    ],
+    "start_confirmation_options": {"1": "예", "2": "아니오", "3": "잘 모르겠음", "4": "답변하지 않음"},
+    "after_affirmative": [
+      "collect_only_missing_assessment_context_fields",
+      "verify_instrument_resource_when_fixed",
+      "start_first_source_item_without_reconfirmation"
+    ],
+    "after_negative": "return_to_open_reason_for_encounter",
+    "unknown_title": "preserve_requested_title_and_ask_for_source_or_exact_questionnaire_name",
+    "safety_precedence": "time_critical_safety_action_precedes_entry_confirmation"
+  },
+  "fixed_questionnaire_registration_policy": {
+    "purpose": "Allow additional source-controlled fixed questionnaires to use the same Reason-for-Encounter entry workflow without embedding routing logic in the chatbot prompt.",
+    "required_metadata": [
+      "questionnaire_id",
+      "canonical_title",
+      "version",
+      "source_ref",
+      "aliases_ko",
+      "start_prompt_ko",
+      "resource_ref",
+      "runtime_readiness"
+    ],
+    "registration_rules": {
+      "aliases_must_be_specific_to_instrument": true,
+      "generic_title_never_autoselects": true,
+      "source_resource_required_before_first_item": true,
+      "one_start_confirmation_only": true,
+      "preserve_source_items_options_order_scoring_and_recall": true,
+      "missing_source_must_not_be_reconstructed_by_ai": true
+    }
+  },
+  "entry_catalog": [
+    {
+      "selection_number": 1,
+      "entry_type": "assessment_program",
+      "program_id": "hira.long_term_care_hospital_inpatient.2026-cycle2-8",
+      "display_ko": "2026년(2주기 8차) 요양병원 입원급여 적정성 평가 문진",
+      "aliases_ko": ["요양병원 적정성 평가", "요양병원 입원급여 평가", "요양병원 환자평가표", "2주기 8차 요양병원 평가"],
+      "start_prompt_ko": "요양병원 입원급여 적정성 평가 문진을 시작하시겠습니까?",
+      "runtime_readiness": "research_test_ready"
+    },
+    {
+      "selection_number": 2,
+      "entry_type": "fixed_standardized_instrument",
+      "program_id": "hira.depression_outpatient",
+      "display_ko": "우울증 외래 적정성 평가 증상척도",
+      "aliases_ko": ["우울증 외래 적정성 평가", "우울증 적정성 평가", "우울증 평가 척도"],
+      "start_prompt_ko": "우울증 외래 적정성 평가 증상척도를 작성하시겠습니까?",
+      "runtime_readiness": "authorized_instrument_resource_required"
+    },
+    {
+      "selection_number": 3,
+      "entry_type": "assessment_program",
+      "program_id": "hira.rheumatoid_arthritis",
+      "display_ko": "류마티스관절염 적정성 평가 질병활성도 문진",
+      "aliases_ko": ["류마티스관절염 적정성 평가", "류마티스 관절염 평가", "류마티스 질병활성도 평가"],
+      "start_prompt_ko": "류마티스관절염 적정성 평가의 환자 보고 항목을 작성하시겠습니까?",
+      "runtime_readiness": "research_test_ready"
+    },
+    {
+      "selection_number": 4,
+      "entry_type": "fixed_questionnaire",
+      "program_id": "hira.inpatient_patient_experience.5th-2025",
+      "display_ko": "2025년(5차) 입원 환자경험평가",
+      "aliases_ko": ["환자경험평가", "환자 경험 평가", "입원 경험 설문", "입원 환자경험 설문", "5차 환자경험평가", "환자경험 설문"],
+      "start_prompt_ko": "환자경험평가 설문을 작성하시겠습니까?",
+      "runtime_readiness": "fixed_questionnaire_ready"
+    },
+    {
+      "selection_number": 5,
+      "entry_type": "assessment_program",
+      "program_id": "hira.acute_stroke_event_history",
+      "display_ko": "급성기뇌졸중 적정성 평가 관련 병원 전 사건 문진",
+      "aliases_ko": ["급성기뇌졸중 적정성 평가", "급성기 뇌졸중 평가", "뇌졸중 발생시각 문진"],
+      "start_prompt_ko": "급성기뇌졸중 관련 병원 전 사건 정보를 작성하시겠습니까?",
+      "runtime_readiness": "safety_first_research_test_ready"
+    }
+  ],
   "assessment_context": {
     "required_fields": [
       "assessment_program_id",

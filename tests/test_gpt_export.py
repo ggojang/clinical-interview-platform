@@ -242,6 +242,16 @@ class GptExportTests(unittest.TestCase):
             policy = manifest["hira_adequacy_assessment_policy"]
             self.assertTrue(policy["requires_explicit_program_and_current_cycle_context"])
             self.assertTrue(policy["patient_or_proxy_questions_only"])
+            self.assertEqual(policy["entry_point"], "reason_for_encounter")
+            self.assertTrue(policy["generic_request_returns_numbered_program_selection"])
+            self.assertTrue(policy["specific_alias_requires_single_start_confirmation"])
+            entries = registry["entry_catalog"]
+            self.assertEqual(
+                [entry["selection_number"] for entry in entries],
+                [1, 2, 3, 4, 5],
+            )
+            self.assertTrue(all(entry["aliases_ko"] for entry in entries))
+            self.assertTrue(all(entry["start_prompt_ko"] for entry in entries))
             self.assertEqual(
                 manifest["preferred_loading"]["assessment_operation"],
                 "getHiraAdequacyAssessmentInterviews",

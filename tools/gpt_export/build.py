@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "1.31.0"
+VERSION = "1.32.0"
 GENERATED_AT = "2026-07-15T00:00:00Z"
 PRIVATE_KEYS = {
     "raw_text", "raw_input", "patient_response", "patient_responses",
@@ -643,6 +643,11 @@ def build(root: Path, output: Path) -> dict[str, Any]:
         "hira_adequacy_assessment_policy": {
             "resource": "/gpt/hira-adequacy-assessments.json",
             "operation": "getHiraAdequacyAssessmentInterviews",
+            "entry_point": "reason_for_encounter",
+            "entry_catalog_path": "/gpt/hira-adequacy-assessments.json#/entry_catalog",
+            "generic_request_returns_numbered_program_selection": True,
+            "specific_alias_requires_single_start_confirmation": True,
+            "affirmative_start_does_not_allow_reconfirmation": True,
             "requires_explicit_program_and_current_cycle_context": True,
             "patient_or_proxy_questions_only": True,
             "do_not_convert_observation_test_record_or_claim_fields_to_patient_questions": True,

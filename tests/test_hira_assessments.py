@@ -49,6 +49,38 @@ class HiraAssessmentTests(unittest.TestCase):
         with self.assertRaises(AssessmentContextError):
             self.registry.activate(program_id, wrong)
 
+    def test_generic_assessment_entry_returns_unique_numbered_catalog(self):
+        result = self.registry.resolve_entry("정형 설문")
+        self.assertEqual(result["status"], "selection_required")
+        self.assertEqual(result["workflow_state"], "entry_unresolved")
+        numbers = [option["number"] for option in result["options"]]
+        self.assertEqual(numbers, [1, 2, 3, 4, 5])
+        self.assertEqual(len(numbers), len(set(numbers)))
+        registration = self.registry.document["fixed_questionnaire_registration_policy"]
+        self.assertIn("resource_ref", registration["required_metadata"])
+        self.assertTrue(
+            registration["registration_rules"]["missing_source_must_not_be_reconstructed_by_ai"]
+        )
+
+    def test_specific_alias_enters_single_start_confirmation(self):
+        result = self.registry.resolve_entry("환자경험평가를 작성하고 싶어요")
+        self.assertEqual(result["status"], "matched")
+        self.assertEqual(
+            result["program_id"],
+            "hira.inpatient_patient_experience.5th-2025",
+        )
+        self.assertEqual(result["workflow_state"], "awaiting_start_confirmation")
+        self.assertEqual(result["prompt_ko"], "환자경험평가 설문을 작성하시겠습니까?")
+        self.assertEqual(result["options"], {"1": "예", "2": "아니오", "3": "잘 모르겠음", "4": "답변하지 않음"})
+
+    def test_diagnosis_name_alone_does_not_activate_assessment(self):
+        self.assertEqual(self.registry.resolve_entry("우울증")["status"], "no_match")
+        self.assertEqual(self.registry.resolve_entry("류마티스관절염")["status"], "no_match")
+
+    def test_stroke_entry_marks_safety_as_preceding_confirmation(self):
+        result = self.registry.resolve_entry("급성기 뇌졸중 평가")
+        self.assertTrue(result["safety_action_precedes_confirmation"])
+
     def test_nursing_program_exposes_patient_questions_but_not_observations(self):
         program_id = "hira.long_term_care_hospital_inpatient.2026-cycle2-8"
         activated = self.registry.activate(program_id, context(program_id))
