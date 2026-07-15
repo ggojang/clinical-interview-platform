@@ -344,6 +344,17 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/injury/wound-minor-injury",
         "research_manifests": [ROOT / "sources/manifests/primary-care-wound-minor-injury-research.json"],
     },
+    "memory_cognitive_concern": {
+        "graph": ROOT / "knowledge/graph/primary-care-memory-cognitive-concern.json",
+        "rules": ROOT / "rules/primary-care-memory-cognitive-concern.json",
+        "sources": ROOT / "sources/manifests/primary-care-memory-cognitive-concern.json",
+        "completion_policy": ROOT / "policies/primary-care-memory-cognitive-concern-completion.json",
+        "output": ROOT / "packages/generated/primary-care-memory-cognitive-concern-0.1.0.json",
+        "package_id": "package.primary-care-memory-cognitive-concern", "package_version": "0.1.0",
+        "rfe": "rfe.memory_cognitive_concern",
+        "simulation_root": ROOT / "simulation/patients/neurological/memory-cognitive-concern",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-memory-cognitive-concern-research.json"],
+    },
 }
 
 ALLOWED_NODE_TYPES = {

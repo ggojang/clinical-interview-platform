@@ -37,6 +37,7 @@ EAR_HEARING_SYMPTOMS_PACKAGE = ROOT / "packages/generated/primary-care-ear-heari
 DIABETES_FOLLOW_UP_PACKAGE = ROOT / "packages/generated/primary-care-diabetes-follow-up-0.1.0.json"
 ORAL_DENTAL_SYMPTOMS_PACKAGE = ROOT / "packages/generated/primary-care-oral-dental-symptoms-0.1.0.json"
 WOUND_MINOR_INJURY_PACKAGE = ROOT / "packages/generated/primary-care-wound-minor-injury-0.1.0.json"
+MEMORY_COGNITIVE_CONCERN_PACKAGE = ROOT / "packages/generated/primary-care-memory-cognitive-concern-0.1.0.json"
 
 
 class PackageLoadError(RuntimeError):

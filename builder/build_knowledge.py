@@ -237,6 +237,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-wound-minor-injury.json",
         "version": "0.1.0",
     },
+    "memory_cognitive_concern": {
+        "base_graph": ROOT / "knowledge/base/primary-care-memory-cognitive-concern.json",
+        "base_rules": ROOT / "rules/base/primary-care-memory-cognitive-concern.json",
+        "fragment_root": ROOT / "knowledge/generated/neurological/memory-cognitive-concern",
+        "output_graph": ROOT / "knowledge/graph/primary-care-memory-cognitive-concern.json",
+        "output_rules": ROOT / "rules/primary-care-memory-cognitive-concern.json",
+        "version": "0.1.0",
+    },
 }
 
 

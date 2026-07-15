@@ -1,0 +1,2656 @@
+{
+  "id": "knowledge.generated.memory-cognitive-concern",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-memory-cognitive-concern-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-07-14",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-07-15",
+    "next_full_review_at": "2027-01-10",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.cognition.routing",
+      "type": "ClinicalGroup",
+      "display": "routing"
+    },
+    {
+      "id": "group.cognition.shared-safety",
+      "type": "ClinicalGroup",
+      "display": "shared-safety"
+    },
+    {
+      "id": "group.cognition.common",
+      "type": "ClinicalGroup",
+      "display": "common"
+    },
+    {
+      "id": "group.cognition.memory",
+      "type": "ClinicalGroup",
+      "display": "memory"
+    },
+    {
+      "id": "group.cognition.acute-confusion",
+      "type": "ClinicalGroup",
+      "display": "acute-confusion"
+    },
+    {
+      "id": "group.cognition.executive-language",
+      "type": "ClinicalGroup",
+      "display": "executive-language"
+    },
+    {
+      "id": "group.cognition.behavior-perception",
+      "type": "ClinicalGroup",
+      "display": "behavior-perception"
+    },
+    {
+      "id": "group.cognition.function-safety",
+      "type": "ClinicalGroup",
+      "display": "function-safety"
+    }
+  ],
+  "group_hypothesis_edges": [],
+  "safety_rules": [
+    {
+      "id": "rule.memory-cognitive-concern.safety.sudden-confusion",
+      "priority": 1000,
+      "when": {
+        "fact": "cognition.sudden_confusion_hours_or_days",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.memory-cognitive-concern.safety.stroke-features",
+      "priority": 1000,
+      "when": {
+        "fact": "cognition.stroke_fast_or_focal_neurology",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.memory-cognitive-concern.safety.reduced-consciousness",
+      "priority": 1000,
+      "when": {
+        "fact": "cognition.reduced_consciousness_or_difficult_to_wake",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.memory-cognitive-concern.safety.seizure",
+      "priority": 1000,
+      "when": {
+        "fact": "cognition.new_seizure",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.memory-cognitive-concern.safety.headache-head-injury",
+      "priority": 1000,
+      "when": {
+        "fact": "cognition.sudden_severe_headache_or_head_injury",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.memory-cognitive-concern.safety.systemic-illness",
+      "priority": 1000,
+      "when": {
+        "fact": "cognition.severe_infection_or_systemic_illness",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.memory-cognitive-concern.safety.hypoglycemia",
+      "priority": 1000,
+      "when": {
+        "fact": "cognition.possible_severe_hypoglycemia",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.memory-cognitive-concern.safety.carbon-monoxide",
+      "priority": 1000,
+      "when": {
+        "fact": "cognition.possible_carbon_monoxide_cluster",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.memory-cognitive-concern.safety.substance-emergency",
+      "priority": 1000,
+      "when": {
+        "fact": "cognition.overdose_intoxication_or_withdrawal",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.memory-cognitive-concern.safety.immediate-harm",
+      "priority": 1000,
+      "when": {
+        "fact": "cognition.immediate_self_harm_or_harm_to_others",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.memory-cognitive-concern.safety.wandering-danger",
+      "priority": 1000,
+      "when": {
+        "fact": "cognition.wandering_missing_or_immediate_environmental_danger",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.memory-cognitive-concern.safety.essential-care-failure",
+      "priority": 980,
+      "when": {
+        "fact": "cognition.unable_to_eat_drink_or_take_essential_medicine",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.memory-cognitive-concern.safety.functional-danger",
+      "priority": 970,
+      "when": {
+        "fact": "cognition.dangerous_driving_cooking_finance_or_medication_event",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.memory-cognitive-concern.safety.rapid-progression",
+      "priority": 970,
+      "when": {
+        "fact": "cognition.rapid_progression_over_weeks_or_months",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.memory-cognitive-concern.safety.dangerous-psychosis",
+      "priority": 1000,
+      "when": {
+        "fact": "cognition.new_hallucination_delusion_with_danger",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.memory-cognitive-concern.safety.falls-mobility-danger",
+      "priority": 970,
+      "when": {
+        "fact": "cognition.falls_or_cannot_walk_safely",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.memory-cognitive-concern.safety.safeguarding",
+      "priority": 990,
+      "when": {
+        "fact": "cognition.abuse_neglect_exploitation_or_safeguarding_concern",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "cognition.primary_concern_group",
+        "display": "Primary Cognitive Concern Group",
+        "value_type": "coded",
+        "allowed_values": [
+          "memory",
+          "acute_confusion",
+          "executive_language",
+          "behavior_perception",
+          "function_safety",
+          "other_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.primary-group",
+        "display": "Primary Cognitive Concern Group",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.primary-group",
+        "wording": "가장 걱정되는 변화는 기억력, 갑작스러운 혼란·집중 저하, 말하기·계획하기, 행동·기분·환각, 일상 기능·안전 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 160,
+          "reason": "primary-group"
+        }
+      ],
+      "supports": [
+        "group.cognition.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.sudden_confusion_hours_or_days",
+        "display": "Sudden Confusion over Hours or Days",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "130987000"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.memory-cognitive-concern",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.sudden-confusion",
+        "display": "Sudden Confusion over Hours or Days",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.sudden-confusion",
+        "wording": "몇 시간 또는 며칠 사이에 갑자기 혼란스러워지거나 평소와 확연히 달라졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 159,
+          "reason": "sudden-confusion"
+        }
+      ],
+      "supports": [
+        "group.cognition.shared-safety",
+        "group.cognition.acute-confusion"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.stroke_fast_or_focal_neurology",
+        "display": "Cognitive Change with Stroke Warning Features",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.stroke-features",
+        "display": "Cognitive Change with Stroke Warning Features",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.stroke-features",
+        "wording": "갑자기 얼굴 한쪽 처짐, 한쪽 팔·다리 힘 빠짐·저림, 말이 어눌하거나 이해하기 어려움이 생겼나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 158,
+          "reason": "stroke-features"
+        }
+      ],
+      "supports": [
+        "group.cognition.shared-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.reduced_consciousness_or_difficult_to_wake",
+        "display": "Reduced Consciousness or Difficult to Wake",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.reduced-consciousness",
+        "display": "Reduced Consciousness or Difficult to Wake",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.reduced-consciousness",
+        "wording": "깨우기 어렵거나 의식이 흐려 대화가 거의 되지 않나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 157,
+          "reason": "reduced-consciousness"
+        }
+      ],
+      "supports": [
+        "group.cognition.shared-safety",
+        "group.cognition.acute-confusion"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.new_seizure",
+        "display": "New Seizure with Cognitive Change",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.seizure",
+        "display": "New Seizure with Cognitive Change",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.seizure",
+        "wording": "새로 경련하거나 몸이 떨린 뒤 의식·기억이 돌아오지 않았나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 156,
+          "reason": "seizure"
+        }
+      ],
+      "supports": [
+        "group.cognition.shared-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.sudden_severe_headache_or_head_injury",
+        "display": "Severe Headache or Head Injury with Cognitive Change",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.headache-head-injury",
+        "display": "Severe Headache or Head Injury with Cognitive Change",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.headache-head-injury",
+        "wording": "갑작스러운 매우 심한 두통이 있거나 머리를 다친 뒤 기억·행동·의식이 변했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 155,
+          "reason": "headache-head-injury"
+        }
+      ],
+      "supports": [
+        "group.cognition.shared-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.severe_infection_or_systemic_illness",
+        "display": "Severe Infection or Systemic Illness with Confusion",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.systemic-illness",
+        "display": "Severe Infection or Systemic Illness with Confusion",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.systemic-illness",
+        "wording": "혼란과 함께 고열·심한 오한·호흡곤란·심한 처짐 등 전신 상태가 매우 나쁜가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 154,
+          "reason": "systemic-illness"
+        }
+      ],
+      "supports": [
+        "group.cognition.shared-safety",
+        "group.cognition.acute-confusion"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.possible_severe_hypoglycemia",
+        "display": "Possible Severe Hypoglycemia with Confusion",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.hypoglycemia",
+        "display": "Possible Severe Hypoglycemia with Confusion",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.hypoglycemia",
+        "wording": "당뇨가 있으면서 식은땀·떨림·심한 졸림·혼란이 있고 혈당이 매우 낮거나 측정할 수 없나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 153,
+          "reason": "hypoglycemia"
+        }
+      ],
+      "supports": [
+        "group.cognition.shared-safety",
+        "group.cognition.acute-confusion"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.possible_carbon_monoxide_cluster",
+        "display": "Possible Carbon Monoxide Exposure Cluster",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.carbon-monoxide",
+        "display": "Possible Carbon Monoxide Exposure Cluster",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.carbon-monoxide",
+        "wording": "같은 공간의 다른 사람도 두통·어지럼·메스꺼움·혼란이 있고 난방기나 연소기구를 사용했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 152,
+          "reason": "carbon-monoxide"
+        }
+      ],
+      "supports": [
+        "group.cognition.shared-safety",
+        "group.cognition.acute-confusion"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.overdose_intoxication_or_withdrawal",
+        "display": "Overdose Intoxication or Withdrawal Concern",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.substance-emergency",
+        "display": "Overdose Intoxication or Withdrawal Concern",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.substance-emergency",
+        "wording": "약을 과량 복용했거나 술·약물 중독 또는 갑작스러운 금단이 의심되나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 151,
+          "reason": "substance-emergency"
+        }
+      ],
+      "supports": [
+        "group.cognition.shared-safety",
+        "group.cognition.acute-confusion"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.immediate_self_harm_or_harm_to_others",
+        "display": "Immediate Self-harm or Harm Risk",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.immediate-harm",
+        "display": "Immediate Self-harm or Harm Risk",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.immediate-harm",
+        "wording": "지금 자신이나 다른 사람을 해칠 생각·계획이 있거나 안전을 지키기 어렵나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 150,
+          "reason": "immediate-harm"
+        }
+      ],
+      "supports": [
+        "group.cognition.shared-safety",
+        "group.cognition.behavior-perception"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.wandering_missing_or_immediate_environmental_danger",
+        "display": "Wandering or Immediate Environmental Danger",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.wandering-danger",
+        "display": "Wandering or Immediate Environmental Danger",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.wandering-danger",
+        "wording": "길을 잃어 실종될 위험이 있거나 불·가스·교통 등 즉각적인 환경 위험에 노출돼 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 149,
+          "reason": "wandering-danger"
+        }
+      ],
+      "supports": [
+        "group.cognition.shared-safety",
+        "group.cognition.function-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.unable_to_eat_drink_or_take_essential_medicine",
+        "display": "Unable to Meet Essential Care Needs",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.essential-care-failure",
+        "display": "Unable to Meet Essential Care Needs",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.essential-care-failure",
+        "wording": "혼자서는 물·음식을 거의 못 먹거나 꼭 필요한 약을 전혀 복용하지 못하는 상태인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 148,
+          "reason": "essential-care-failure"
+        }
+      ],
+      "supports": [
+        "group.cognition.shared-safety",
+        "group.cognition.function-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.dangerous_driving_cooking_finance_or_medication_event",
+        "display": "Recent Serious Functional Safety Event",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.functional-danger",
+        "display": "Recent Serious Functional Safety Event",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.functional-danger",
+        "wording": "운전 사고·가스 방치·큰 금전 피해·약 중복 복용처럼 실제로 위험한 일이 최근 생겼나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 147,
+          "reason": "functional-danger"
+        }
+      ],
+      "supports": [
+        "group.cognition.shared-safety",
+        "group.cognition.function-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.rapid_progression_over_weeks_or_months",
+        "display": "Rapid Cognitive Progression over Weeks or Months",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.rapid-progression",
+        "display": "Rapid Cognitive Progression over Weeks or Months",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.rapid-progression",
+        "wording": "기억·사고·행동 문제가 몇 주 또는 몇 달 사이 빠르게 악화하고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 146,
+          "reason": "rapid-progression"
+        }
+      ],
+      "supports": [
+        "group.cognition.shared-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.new_hallucination_delusion_with_danger",
+        "display": "New Hallucination or Delusion with Danger",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "7011001"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.memory-cognitive-concern",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.dangerous-psychosis",
+        "display": "New Hallucination or Delusion with Danger",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.dangerous-psychosis",
+        "wording": "새로 환각·심한 의심이 생겨 극도로 흥분하거나 위험하게 행동하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 145,
+          "reason": "dangerous-psychosis"
+        }
+      ],
+      "supports": [
+        "group.cognition.shared-safety",
+        "group.cognition.behavior-perception"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.falls_or_cannot_walk_safely",
+        "display": "Falls or Inability to Walk Safely",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.falls-mobility-danger",
+        "display": "Falls or Inability to Walk Safely",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.falls-mobility-danger",
+        "wording": "갑자기 걷기 어려워졌거나 반복해서 넘어져 지금 혼자 이동하기 위험한가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 144,
+          "reason": "falls-mobility-danger"
+        }
+      ],
+      "supports": [
+        "group.cognition.shared-safety",
+        "group.cognition.function-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.abuse_neglect_exploitation_or_safeguarding_concern",
+        "display": "Cognitive Safeguarding Concern",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.safeguarding",
+        "display": "Cognitive Safeguarding Concern",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.safeguarding",
+        "wording": "학대·방임·금전 착취가 의심되거나 돌봄 환경에서 현재 안전이 걱정되나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 143,
+          "reason": "safeguarding"
+        }
+      ],
+      "supports": [
+        "group.cognition.shared-safety",
+        "group.cognition.function-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.person_or_informant_reporting",
+        "display": "Person or Informant Reporting",
+        "value_type": "coded",
+        "allowed_values": [
+          "self",
+          "family_carer",
+          "both",
+          "other_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.reporter",
+        "display": "Person or Informant Reporting",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.reporter",
+        "wording": "이 변화를 주로 본 사람은 본인, 가족·보호자, 둘 다 중 누구인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 135,
+          "reason": "reporter"
+        }
+      ],
+      "supports": [
+        "group.cognition.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.onset_duration_and_course",
+        "display": "Cognitive Onset Duration and Course",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.duration-course",
+        "display": "Cognitive Onset Duration and Course",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.duration-course",
+        "wording": "언제 처음 시작했고 서서히·갑자기 또는 계단식으로 변했는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 134,
+          "reason": "duration-course"
+        }
+      ],
+      "supports": [
+        "group.cognition.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.fluctuation_during_day",
+        "display": "Cognitive Fluctuation",
+        "value_type": "coded",
+        "allowed_values": [
+          "marked_fluctuation",
+          "mild_fluctuation",
+          "stable",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.fluctuation",
+        "display": "Cognitive Fluctuation",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.fluctuation",
+        "wording": "증상이 하루 중 들쭉날쭉한가요, 비교적 일정한가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 133,
+          "reason": "fluctuation"
+        }
+      ],
+      "supports": [
+        "group.cognition.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.baseline_and_last_known_well",
+        "display": "Cognitive Baseline and Last Known Well",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.baseline",
+        "display": "Cognitive Baseline and Last Known Well",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.baseline",
+        "wording": "평소 인지·기능 상태와 마지막으로 평소와 같았던 때를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 132,
+          "reason": "baseline"
+        }
+      ],
+      "supports": [
+        "group.cognition.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.education_language_and_literacy_context",
+        "display": "Education Language and Literacy Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.communication-context",
+        "display": "Education Language and Literacy Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.communication-context",
+        "wording": "주로 사용하는 언어, 교육·문해 수준과 의사소통에 필요한 지원이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 126,
+          "reason": "communication-context"
+        }
+      ],
+      "supports": [
+        "group.cognition.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.hearing_vision_and_sensory_aids",
+        "display": "Hearing Vision and Sensory Aids",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.sensory",
+        "display": "Hearing Vision and Sensory Aids",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.sensory",
+        "wording": "청력·시력 문제가 있거나 보청기·안경을 사용하는데 최근 제대로 사용하지 못했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 125,
+          "reason": "sensory"
+        }
+      ],
+      "supports": [
+        "group.cognition.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.current_medicines_and_recent_changes",
+        "display": "Medicines and Recent Changes",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.medicines",
+        "display": "Medicines and Recent Changes",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.medicines",
+        "wording": "현재 복용약과 최근 시작·중단·증량한 약, 수면제·진정제·항히스타민제 등을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 124,
+          "reason": "medicines"
+        }
+      ],
+      "supports": [
+        "group.cognition.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.alcohol_substance_and_withdrawal_context",
+        "display": "Alcohol Substance and Withdrawal Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.substance-context",
+        "display": "Alcohol Substance and Withdrawal Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.substance-context",
+        "wording": "음주·기타 약물 사용과 최근 갑자기 줄이거나 끊은 일이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 123,
+          "reason": "substance-context"
+        }
+      ],
+      "supports": [
+        "group.cognition.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.sleep_mood_stress_and_anxiety",
+        "display": "Sleep Mood Stress and Anxiety",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.sleep-mood",
+        "display": "Sleep Mood Stress and Anxiety",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.sleep-mood",
+        "wording": "수면 부족, 우울감·흥미 저하, 불안 또는 큰 스트레스가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 122,
+          "reason": "sleep-mood"
+        }
+      ],
+      "supports": [
+        "group.cognition.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.medical_neurological_and_psychiatric_history",
+        "display": "Relevant Medical Neurological and Psychiatric History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.medical-history",
+        "display": "Relevant Medical Neurological and Psychiatric History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.medical-history",
+        "wording": "뇌졸중·머리 외상·경련·파킨슨병·치매·정신질환과 다른 중요한 병력이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 121,
+          "reason": "medical-history"
+        }
+      ],
+      "supports": [
+        "group.cognition.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.family_history_of_cognitive_disorder",
+        "display": "Family Cognitive History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.family-history",
+        "display": "Family Cognitive History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.family-history",
+        "wording": "가족 중 치매나 비교적 이른 나이에 생긴 인지질환이 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 112,
+          "reason": "family-history"
+        }
+      ],
+      "supports": [
+        "group.cognition.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.other_detail_or_patient_priority",
+        "display": "Other Cognitive Detail or Priority",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.other-detail",
+        "display": "Other Cognitive Detail or Priority",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.other-detail",
+        "wording": "질문에 없지만 꼭 전달하고 싶은 변화나 가장 걱정되는 점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 80,
+          "reason": "other-detail"
+        }
+      ],
+      "supports": [
+        "group.cognition.routing",
+        "group.cognition.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.recent_event_memory",
+        "display": "Recent Event Memory",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "386807006"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.memory-cognitive-concern",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.recent-memory",
+        "display": "Recent Event Memory",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.recent-memory",
+        "wording": "최근 대화·약속·방문 내용을 잊거나 같은 질문을 반복하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 120,
+          "reason": "recent-memory"
+        }
+      ],
+      "supports": [
+        "group.cognition.memory"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.misplacing_items_and_retracing",
+        "display": "Misplacing Items",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.misplacing",
+        "display": "Misplacing Items",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.misplacing",
+        "wording": "물건을 자주 엉뚱한 곳에 두고 찾는 과정을 되짚기 어려운가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 119,
+          "reason": "misplacing"
+        }
+      ],
+      "supports": [
+        "group.cognition.memory"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.appointments_and_dates",
+        "display": "Appointments and Dates",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.appointments",
+        "display": "Appointments and Dates",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.appointments",
+        "wording": "약속·날짜·해야 할 일을 기억하는 데 어떤 변화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 118,
+          "reason": "appointments"
+        }
+      ],
+      "supports": [
+        "group.cognition.memory"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.learning_new_information",
+        "display": "Learning New Information",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.new-learning",
+        "display": "Learning New Information",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.new-learning",
+        "wording": "새로운 기기 사용법이나 사람·장소 정보를 익히는 데 어려움이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 117,
+          "reason": "new-learning"
+        }
+      ],
+      "supports": [
+        "group.cognition.memory"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.remote_memory_and_recognition",
+        "display": "Remote Memory and Recognition",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.remote-memory",
+        "display": "Remote Memory and Recognition",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.remote-memory",
+        "wording": "오래된 기억이나 가까운 사람·익숙한 장소를 알아보는 데 변화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 116,
+          "reason": "remote-memory"
+        }
+      ],
+      "supports": [
+        "group.cognition.memory"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.memory_compensation_strategies",
+        "display": "Memory Compensation Strategies",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.memory-strategies",
+        "display": "Memory Compensation Strategies",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.memory-strategies",
+        "wording": "메모·달력·휴대전화 알림이나 가족 도움을 얼마나 사용하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 108,
+          "reason": "memory-strategies"
+        }
+      ],
+      "supports": [
+        "group.cognition.memory"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.attention_and_following_conversation",
+        "display": "Attention and Conversation Tracking",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "386806002"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.memory-cognitive-concern",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.attention",
+        "display": "Attention and Conversation Tracking",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.attention",
+        "wording": "대화나 간단한 설명에 집중하고 순서를 따라가기 어려운가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 120,
+          "reason": "attention"
+        }
+      ],
+      "supports": [
+        "group.cognition.acute-confusion"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.orientation_person_place_time",
+        "display": "Orientation to Person Place and Time",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "62476001"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.memory-cognitive-concern",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.orientation",
+        "display": "Orientation to Person Place and Time",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.orientation",
+        "wording": "자신이 누구인지, 어디에 있는지, 날짜·시간을 평소보다 더 헷갈리나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 119,
+          "reason": "orientation"
+        }
+      ],
+      "supports": [
+        "group.cognition.acute-confusion"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.sleep_wake_reversal_or_reduced_activity",
+        "display": "Sleep-wake or Activity Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.sleep-wake",
+        "display": "Sleep-wake or Activity Change",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.sleep-wake",
+        "wording": "낮밤이 바뀌거나 평소보다 지나치게 처지고 반응·움직임이 느려졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 118,
+          "reason": "sleep-wake"
+        }
+      ],
+      "supports": [
+        "group.cognition.acute-confusion"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.recent_infection_pain_or_fever",
+        "display": "Recent Infection Pain or Fever",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.infection-pain",
+        "display": "Recent Infection Pain or Fever",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.infection-pain",
+        "wording": "최근 감염 증상, 발열, 심한 통증이 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 117,
+          "reason": "infection-pain"
+        }
+      ],
+      "supports": [
+        "group.cognition.acute-confusion"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.dehydration_nutrition_constipation_or_urinary_retention",
+        "display": "Basic Physiological Contributors",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.physiological-context",
+        "display": "Basic Physiological Contributors",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.physiological-context",
+        "wording": "탈수·식사 저하·변비·소변이 안 나오는 문제가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 116,
+          "reason": "physiological-context"
+        }
+      ],
+      "supports": [
+        "group.cognition.acute-confusion"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.recent_surgery_hospitalization_or_environment_change",
+        "display": "Recent Surgery Hospital or Environment Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.recent-care",
+        "display": "Recent Surgery Hospital or Environment Change",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.recent-care",
+        "wording": "최근 수술·입원·마취 또는 거주 환경 변화가 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 115,
+          "reason": "recent-care"
+        }
+      ],
+      "supports": [
+        "group.cognition.acute-confusion"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.delirium_assessment_already_done",
+        "display": "Delirium Assessment Status",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.delirium-assessment",
+        "display": "Delirium Assessment Status",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.delirium-assessment",
+        "wording": "의료진이 4AT 등 급성 혼돈 평가를 시행했다면 언제 어떤 결과였나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 107,
+          "reason": "delirium-assessment"
+        }
+      ],
+      "supports": [
+        "group.cognition.acute-confusion"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.prior_similar_confusional_episode",
+        "display": "Prior Confusional Episode",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.prior-confusion",
+        "display": "Prior Confusional Episode",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.prior-confusion",
+        "wording": "이전에 감염·입원·약 변화 때 비슷한 혼란이 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 106,
+          "reason": "prior-confusion"
+        }
+      ],
+      "supports": [
+        "group.cognition.acute-confusion"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.word_finding_and_naming",
+        "display": "Word Finding and Naming",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "286384007"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.memory-cognitive-concern",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.word-finding",
+        "display": "Word Finding and Naming",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.word-finding",
+        "wording": "말하려는 단어가 잘 떠오르지 않거나 사물 이름을 대기 어려운가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 120,
+          "reason": "word-finding"
+        }
+      ],
+      "supports": [
+        "group.cognition.executive-language"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.comprehension_reading_and_writing",
+        "display": "Comprehension Reading and Writing",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.language-detail",
+        "display": "Comprehension Reading and Writing",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.language-detail",
+        "wording": "말을 이해하거나 읽기·쓰기 능력에 변화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 119,
+          "reason": "language-detail"
+        }
+      ],
+      "supports": [
+        "group.cognition.executive-language"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.planning_problem_solving_and_multistep_tasks",
+        "display": "Planning and Multistep Tasks",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.planning",
+        "display": "Planning and Multistep Tasks",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.planning",
+        "wording": "요리·여행 준비처럼 여러 단계의 일을 계획하고 순서대로 하기 어려운가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 118,
+          "reason": "planning"
+        }
+      ],
+      "supports": [
+        "group.cognition.executive-language"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.judgement_and_decision_making",
+        "display": "Judgement and Decision Making",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.judgement",
+        "display": "Judgement and Decision Making",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.judgement",
+        "wording": "판단력이 달라져 충동적 구매·의심스러운 계약·위험한 결정을 한 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 117,
+          "reason": "judgement"
+        }
+      ],
+      "supports": [
+        "group.cognition.executive-language"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.visuospatial_navigation_and_getting_lost",
+        "display": "Visuospatial Navigation",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.navigation",
+        "display": "Visuospatial Navigation",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.navigation",
+        "wording": "익숙한 길에서 헤매거나 거리·방향·물건 위치를 판단하기 어려운가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 116,
+          "reason": "navigation"
+        }
+      ],
+      "supports": [
+        "group.cognition.executive-language"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.calculation_money_and_technology",
+        "display": "Calculation Money and Technology",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.calculation",
+        "display": "Calculation Money and Technology",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.calculation",
+        "wording": "계산, 돈 관리, 전화·리모컨 등 익숙한 기기 사용이 어려워졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 115,
+          "reason": "calculation"
+        }
+      ],
+      "supports": [
+        "group.cognition.executive-language"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.depression_anxiety_apathy_or_irritability",
+        "display": "Mood Apathy and Irritability",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.mood-behavior",
+        "display": "Mood Apathy and Irritability",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.mood-behavior",
+        "wording": "우울·불안, 무관심, 쉽게 화냄 또는 감정 변화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 120,
+          "reason": "mood-behavior"
+        }
+      ],
+      "supports": [
+        "group.cognition.behavior-perception"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.personality_or_social_conduct_change",
+        "display": "Personality or Social Conduct Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.personality",
+        "display": "Personality or Social Conduct Change",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.personality",
+        "wording": "평소 성격·공감·예절·충동 조절이 눈에 띄게 달라졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 119,
+          "reason": "personality"
+        }
+      ],
+      "supports": [
+        "group.cognition.behavior-perception"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.hallucinations",
+        "display": "Hallucinations",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "7011001"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.memory-cognitive-concern",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.hallucinations",
+        "display": "Hallucinations",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.hallucinations",
+        "wording": "다른 사람에게 보이거나 들리지 않는 것을 보거나 듣는 일이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 118,
+          "reason": "hallucinations"
+        }
+      ],
+      "supports": [
+        "group.cognition.behavior-perception"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.delusions_suspicion_or_misidentification",
+        "display": "Delusions Suspicion or Misidentification",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.delusions",
+        "display": "Delusions Suspicion or Misidentification",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.delusions",
+        "wording": "도둑맞았다는 강한 의심이나 가족을 다른 사람으로 착각하는 일이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 117,
+          "reason": "delusions"
+        }
+      ],
+      "supports": [
+        "group.cognition.behavior-perception"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.sleep_behavior_and_dream_enactment",
+        "display": "Sleep Behavior and Dream Enactment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.sleep-behavior",
+        "display": "Sleep Behavior and Dream Enactment",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.sleep-behavior",
+        "wording": "잠결에 소리치거나 꿈대로 움직임, 심한 낮 졸림 또는 수면 변화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 116,
+          "reason": "sleep-behavior"
+        }
+      ],
+      "supports": [
+        "group.cognition.behavior-perception"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.movement_tremor_stiffness_or_slowing",
+        "display": "Movement Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.movement",
+        "display": "Movement Change",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.movement",
+        "wording": "떨림·몸 뻣뻣함·동작 느려짐·보행 변화가 함께 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 115,
+          "reason": "movement"
+        }
+      ],
+      "supports": [
+        "group.cognition.behavior-perception"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.basic_activities_of_daily_living",
+        "display": "Basic Activities of Daily Living",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.basic-adl",
+        "display": "Basic Activities of Daily Living",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.basic-adl",
+        "wording": "씻기·옷 입기·식사·화장실 사용에 도움이 필요한가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 120,
+          "reason": "basic-adl"
+        }
+      ],
+      "supports": [
+        "group.cognition.function-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.instrumental_activities_of_daily_living",
+        "display": "Instrumental Activities of Daily Living",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.instrumental-adl",
+        "display": "Instrumental Activities of Daily Living",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.instrumental-adl",
+        "wording": "장보기·요리·청소·전화·교통 이용에 어떤 도움이 필요한가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 119,
+          "reason": "instrumental-adl"
+        }
+      ],
+      "supports": [
+        "group.cognition.function-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.medication_management",
+        "display": "Medication Management Function",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.medication-function",
+        "display": "Medication Management Function",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.medication-function",
+        "wording": "약을 빠뜨리거나 중복 복용하지 않고 스스로 관리할 수 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 118,
+          "reason": "medication-function"
+        }
+      ],
+      "supports": [
+        "group.cognition.function-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.financial_management",
+        "display": "Financial Management Function",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.financial-function",
+        "display": "Financial Management Function",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.financial-function",
+        "wording": "공과금·은행 업무·현금 관리를 안전하게 할 수 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 117,
+          "reason": "financial-function"
+        }
+      ],
+      "supports": [
+        "group.cognition.function-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.driving_and_transport_safety",
+        "display": "Driving and Transport Safety",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.driving",
+        "display": "Driving and Transport Safety",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.driving",
+        "wording": "운전 중 길을 잃거나 사고·접촉이 늘었고 다른 교통수단은 안전하게 이용하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 116,
+          "reason": "driving"
+        }
+      ],
+      "supports": [
+        "group.cognition.function-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.living_arrangement_and_time_alone",
+        "display": "Living Arrangement and Time Alone",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.living-arrangement",
+        "display": "Living Arrangement and Time Alone",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.living-arrangement",
+        "wording": "누구와 살며 혼자 지내는 시간과 비상시에 연락할 사람을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 115,
+          "reason": "living-arrangement"
+        }
+      ],
+      "supports": [
+        "group.cognition.function-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.carer_support_and_burden",
+        "display": "Carer Support and Burden",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.carer-support",
+        "display": "Carer Support and Burden",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.carer-support",
+        "wording": "도움을 주는 사람과 돌봄 부담·휴식·추가 지원 필요를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 114,
+          "reason": "carer-support"
+        }
+      ],
+      "supports": [
+        "group.cognition.function-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "cognition.prior_cognitive_test_and_specialist_assessment",
+        "display": "Prior Cognitive and Specialist Assessment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.memory-cognitive-concern.prior-assessment",
+        "display": "Prior Cognitive and Specialist Assessment",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.memory-cognitive-concern.prior-assessment",
+        "wording": "이전에 검증된 인지검사나 기억클리닉 평가를 받았다면 시기와 결과를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 108,
+          "reason": "prior-assessment"
+        }
+      ],
+      "supports": [
+        "group.cognition.function-safety"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nice.ng97.dementia.2018",
+      "source.nice.cg103.delirium.2023",
+      "source.nhs.memory-loss.2023",
+      "source.nhs.sudden-confusion.2026",
+      "source.nhs.stroke-symptoms.2024",
+      "source.nhs.dementia-symptoms.2023",
+      "source.stom.memory-cognitive.20260715"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

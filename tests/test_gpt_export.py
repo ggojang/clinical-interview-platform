@@ -99,6 +99,8 @@ class GptExportTests(unittest.TestCase):
                 "rfe-oral_dental_symptoms-rules-completion", "rfe-oral_dental_symptoms-rules-priority",
                 "rfe-wound_minor_injury-facts", "rfe-wound_minor_injury-questions", "rfe-wound_minor_injury-rules",
                 "rfe-wound_minor_injury-rules-completion", "rfe-wound_minor_injury-rules-priority",
+                "rfe-memory_cognitive_concern-facts", "rfe-memory_cognitive_concern-questions", "rfe-memory_cognitive_concern-rules",
+                "rfe-memory_cognitive_concern-rules-completion", "rfe-memory_cognitive_concern-rules-priority",
                 "questionnaires-patient-experience-5th-2025-metadata",
                 "questionnaires-patient-experience-5th-2025-sections-1",
                 "questionnaires-patient-experience-5th-2025-sections-8",
@@ -215,6 +217,7 @@ class GptExportTests(unittest.TestCase):
         self.assertIn("diabetes_follow_up", schema)
         self.assertIn("oral_dental_symptoms", schema)
         self.assertIn("wound_minor_injury", schema)
+        self.assertIn("memory_cognitive_concern", schema)
         self.assertIn("operationId: getReasonForEncounterRulePartition", schema)
 
     def test_rfe_catalog_and_bundles_are_consistent(self):
@@ -235,7 +238,7 @@ class GptExportTests(unittest.TestCase):
                 {
                     "abdominal_pain", "back_pain", "bowel_symptoms", "chest_pain", "cough", "diabetes_follow_up", "dizziness_syncope",
                     "dyspnea", "ear_hearing_symptoms", "edema", "eye_symptoms", "fatigue", "fever", "focal_weakness_numbness", "headache", "hypertension_follow_up", "joint_limb_complaint", "medication_review", "mental_health_sleep",
-                    "oral_dental_symptoms", "palpitations", "reproductive_genital_symptoms", "skin_complaint", "upper_respiratory_symptoms", "urinary_symptoms", "wound_minor_injury",
+                    "memory_cognitive_concern", "oral_dental_symptoms", "palpitations", "reproductive_genital_symptoms", "skin_complaint", "upper_respiratory_symptoms", "urinary_symptoms", "wound_minor_injury",
                     "vomiting_diarrhea", "weight_constitutional_change",
                 },
             )
@@ -680,6 +683,11 @@ class GptExportTests(unittest.TestCase):
                 (output_path / "safety-rules.json").read_text(encoding="utf-8")
             )
             self.assertEqual(safety_index["default_action"], "human_handoff")
+            fact_index = json.loads(
+                (output_path / "facts.json").read_text(encoding="utf-8")
+            )
+            self.assertEqual(fact_index["payload_role"], "legacy_discovery_index")
+            self.assertTrue(all("id" in item for item in fact_index["items"]))
             questions = json.loads(
                 (output_path / "question-groups.json").read_text(encoding="utf-8")
             )
