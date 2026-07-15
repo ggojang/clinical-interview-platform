@@ -52,6 +52,14 @@ A complete clinical review begins only when a change is detected or the full-rev
 
 Check CDC and comparable public-health guidance every 7 days.
 
+## Interoperability Standards and Domain Datasets
+
+Check USCDI, USCDI+, FHIR implementation guidance and comparable versioned interoperability metadata every 7 days.
+
+A detected change triggers mapping and Coverage review.
+
+It does not directly change clinical questions, completion or Safety Rules.
+
 ---
 
 # Knowledge Review Classes

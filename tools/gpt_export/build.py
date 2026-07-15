@@ -499,6 +499,26 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
     clinician_context = sanitize(
         load_json(root / "knowledge" / "shared" / "clinician-submission-context.json")
     )
+    uscdi_core = sanitize(load_json(
+        root / "mappings" / "interoperability" / "uscdi-v6-core.json"
+    ))
+    uscdi_plus = sanitize(load_json(
+        root / "mappings" / "interoperability" / "uscdi-plus-domain-overlays.json"
+    ))
+    uscdi_policy = sanitize(load_json(
+        root / "policies" / "uscdi-interoperability-overlay.json"
+    ))
+    uscdi_coverage = sanitize(load_json(
+        root / "coverage" / "uscdi-interoperability-latest.json"
+    ))
+    for document, resource_type in (
+        (uscdi_core, "UscdiCoreInteroperabilityOverlay"),
+        (uscdi_plus, "UscdiPlusDomainOverlayCatalog"),
+        (uscdi_policy, "UscdiInteroperabilityPolicy"),
+        (uscdi_coverage, "UscdiInteroperabilityCoverageReport"),
+    ):
+        document["resource_type"] = resource_type
+        document["contains_patient_responses"] = False
     hira_assessments = sanitize(load_json(
         root / "knowledge" / "assessments"
         / "hira-adequacy-assessment-interviews-2026.json"
@@ -596,6 +616,10 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
         "screening-kr.json": screening,
         "terminology-source.json": terminology_source,
         "clinician-submission-context.json": clinician_context,
+        "interoperability/uscdi-v6-core.json": uscdi_core,
+        "interoperability/uscdi-plus-domain-overlays.json": uscdi_plus,
+        "interoperability/uscdi-policy.json": uscdi_policy,
+        "interoperability/uscdi-coverage.json": uscdi_coverage,
         "hira-adequacy-assessments.json": hira_assessment_catalog,
     }
     resources.update(hira_programs)
@@ -793,10 +817,19 @@ def build(root: Path, output: Path) -> dict[str, Any]:
         "clinician_submission_context_policy": resources[
             "clinician-submission-context.json"
         ],
+        "uscdi_interoperability_policy": resources[
+            "interoperability/uscdi-policy.json"
+        ],
         "preferred_loading": {
             "catalog_operation": "getReasonForEncounters",
             "common_operation": "getCommonInterviewFacts",
             "clinician_submission_context": "/gpt/clinician-submission-context.json",
+            "uscdi_interoperability": [
+                "/gpt/interoperability/uscdi-v6-core.json",
+                "/gpt/interoperability/uscdi-plus-domain-overlays.json",
+                "/gpt/interoperability/uscdi-policy.json",
+                "/gpt/interoperability/uscdi-coverage.json"
+            ],
             "rfe_operations": [
                 "getReasonForEncounterRules",
                 "getReasonForEncounterQuestions",

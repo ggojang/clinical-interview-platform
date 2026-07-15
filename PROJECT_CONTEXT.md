@@ -669,14 +669,16 @@ A presentation may not exist for vaccination, health checks, medication review o
 - docs/context/029-security-and-privacy.md — data-domain protection
 - docs/context/030-roadmap-and-definition-of-done.md — phases and gates
 - docs/context/031-knowledge-refresh-policy.md — source monitoring and knowledge re-review cadence
+- docs/context/032-clinician-submission-context.md — reusable clinician pre-visit minimum dataset and handoff
+- docs/context/033-uscdi-interoperability-overlay.md — USCDI v6 and USCDI+ as non-clinical interoperability Coverage overlays
 
 ---
 
 # 25. Current Repository State
 
-The current implementation is an early multi-RFE executable Knowledge Factory with cough, fever, breathing-difficulty, abdominal-pain, chest-pain, headache, dizziness-or-syncope, vomiting-or-diarrhoea, urinary-symptom, fatigue, back-pain, skin-complaint, medication-review, grouped upper-respiratory-symptom, palpitations, bowel-symptom, focal-weakness-or-numbness, joint-or-limb, mental-health-or-sleep, edema, hypertension-follow-up, weight-or-constitutional-change, reproductive-or-genital-symptom, eye-symptom, ear-or-hearing-symptom, diabetes-follow-up, oral-or-dental-symptom, wound-or-minor-injury and memory-or-cognitive-concern vertical slices.
+The current implementation is an early multi-RFE executable Knowledge Factory with thirty-nine independently compiled Primary Care Knowledge Package profiles.
 
-It includes a profile-driven deterministic Builder, a Primary Care Reason for Encounter catalog, 1,057 unique research Facts across thirty independently compiled packages, complete Fact-to-Question linkage within every package, shared Fact identity, versioned Source Manifests, source-specific refresh scheduling, deterministic Compiler, integrity-checked draft Knowledge Packages, evidence-preserving Clinical Memory with coded `dataAbsentReason`, package-driven and conditionally branched multi-turn Runtime, multi-domain warning-feature examples, limited English and Korean extraction, 394 synthetic JSON Simulations, Evaluation, computed Coverage, validation and 166 automated tests. Pregnancy and postpartum history includes structured gravidity, parity with its recording threshold, term and preterm birth counts, spontaneous and induced pregnancy losses, ectopic and molar pregnancy counts, living children, plurality, prior delivery modes, caesarean count, major obstetric complications, fetal or neonatal outcomes, estimated due date and dating method. The source notation and narrative remain preserved so jurisdiction-specific parity definitions are not silently imposed.
+It includes a profile-driven deterministic Builder, a Primary Care Reason for Encounter catalog, complete Fact-to-Question linkage within every package, shared Fact identity, versioned Source Manifests, source-specific refresh scheduling, deterministic Compiler, integrity-checked draft Knowledge Packages, evidence-preserving Clinical Memory with coded `dataAbsentReason`, package-driven and conditionally branched multi-turn Runtime, multi-domain warning-feature examples, limited English and Korean extraction, synthetic JSON Simulations, Evaluation, computed Coverage and automated validation. Pregnancy and postpartum history includes professional obstetric history and outcome details while preserving source notation and jurisdictional uncertainty. Every compiled package also contains a research-only USCDI v6 interoperability Coverage result and applicable USCDI+ domain overlays. These overlays identify exchange gaps but never control clinical questions, completion or Safety Rules, and they do not replace Korean SNOMED CT, LOINC, KCD or HIRA bindings.
 
 This implementation demonstrates parts of the intended architecture.
 
@@ -686,11 +688,11 @@ Known gaps include:
 
 - no live external Knowledge Acquisition connector or complete multi-domain Builder pipeline;
 - no persistent graph database or general-purpose graph authoring workflow;
-- Compiler and Knowledge Packages currently cover only the twenty-nine materialized Primary Care vertical slices listed above and not the full Primary Care scope;
+- Compiler and Knowledge Packages currently cover thirty-nine materialized Primary Care profiles and not the full Primary Care scope;
 - no signed or production-approved Knowledge Package;
 - Clinical Memory merge supports evidence and conflict but not the complete longitudinal policy;
 - Runtime provenance is present but not yet production-grade;
-- Simulation and Evaluation cover only the twenty-nine currently compiled vertical slices and not the full Primary Care scope;
+- Simulation and Evaluation cover only the thirty-nine currently compiled profiles and not the full Primary Care scope;
 - Coverage calculation is complete for the current Fact-to-Question package dimension but incomplete across Primary Care domains;
 - no governed production safety package;
 - no production privacy, security or deployment controls.

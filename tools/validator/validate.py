@@ -67,6 +67,8 @@ if errors:
 
 try:
     from compiler.build_package import load_json, validate_package
+    from interoperability.uscdi import validate_overlay_documents
+    validate_overlay_documents()
     package_paths = sorted((ROOT / "packages/generated").glob("*.json"))
     package_fact_counts = {}
     for package_path in package_paths:

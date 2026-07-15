@@ -1,0 +1,78 @@
+{
+  "id": "mapping.interoperability.uscdi-plus-domain-overlays",
+  "version": "0.1.0",
+  "status": "research_only",
+  "review_status": "unreviewed",
+  "framework": {
+    "name": "USCDI+",
+    "jurisdiction": "US",
+    "source_url": "https://healthit.gov/standards-and-technology/uscdi-plus/"
+  },
+  "domains": [
+    {
+      "id": "uscdi-plus.maternal-health",
+      "display": "USCDI+ Maternal Health",
+      "maturity": "pilot_validated_use_case",
+      "applicable_rfes": ["rfe.pregnancy_postpartum_concern"],
+      "elements": [
+        {"id": "maternal.episode_timing", "display": "Pregnancy episode and postpartum timing", "fact_ids": ["pregnancy.stage", "pregnancy.gestational_age_or_postpartum_day", "pregnancy.estimated_due_date_and_dating_method"]},
+        {"id": "maternal.obstetric_history", "display": "Obstetric history and outcomes", "fact_ids": ["pregnancy.obstetric_gravidity_total", "pregnancy.obstetric_parity_total", "pregnancy.obstetric_term_birth_count", "pregnancy.obstetric_preterm_birth_count", "pregnancy.obstetric_spontaneous_loss_count", "pregnancy.obstetric_induced_termination_count", "pregnancy.obstetric_ectopic_count", "pregnancy.obstetric_living_children_count"]},
+        {"id": "maternal.delivery", "display": "Delivery date, mode and complications", "fact_ids": ["postpartum.delivery_date_mode_and_complications", "pregnancy.prior_delivery_modes_and_caesarean_count", "pregnancy.prior_obstetric_complications"]},
+        {"id": "maternal.antenatal_results", "display": "Antenatal laboratory and imaging context", "fact_ids": ["pregnancy.blood_group_rh_and_antenatal_results", "pregnancy.prior_assessment_hcg_or_ultrasound", "pregnancy.last_fetal_check_and_result"]},
+        {"id": "maternal.hypertension_diabetes", "display": "Pregnancy hypertension and diabetes context", "fact_ids": ["pregnancy.latest_blood_pressure_and_trend", "pregnancy.glucose_diabetes_and_ketone_context", "postpartum.follow_up_blood_pressure_or_diabetes_plan"]},
+        {"id": "maternal.lactation_feeding", "display": "Lactation and infant feeding", "fact_ids": ["postpartum.feeding_method_and_intake", "postpartum.lactation_support_and_baby_output"]},
+        {"id": "maternal.postpartum_mental_health", "display": "Postpartum mood, safety and bonding", "fact_ids": ["postpartum.mood_anxiety_and_interest", "postpartum.bonding_intrusive_thoughts_and_function", "postpartum.self_harm_or_harm_to_baby"]},
+        {"id": "maternal.social_context", "display": "Substance, occupation, support and safeguarding context", "fact_ids": ["pregnancy.smoking_alcohol_substance_and_occupation", "pregnancy.support_and_living_situation", "pregnancy.domestic_abuse_or_safeguarding_concern"]}
+      ]
+    },
+    {
+      "id": "uscdi-plus.quality",
+      "display": "USCDI+ Quality",
+      "maturity": "published_data_element_list",
+      "applicable_rfes": ["*"],
+      "elements": [
+        {"id": "quality.patient_goal", "display": "Patient concern, goal and expected outcome", "fact_ids": ["encounter.rfe.patient_concern_and_expectation"]},
+        {"id": "quality.functional_impact", "display": "Patient-reported functional impact", "fact_ids": ["encounter.rfe.functional_impact"]},
+        {"id": "quality.pain_nrs", "display": "Pain presence and NRS score when pain applies", "fact_selectors": [{"kind": "exact", "value": "pain.frequency"}, {"kind": "regex", "value": "(pain.nrs_score|pain_nrs|pain_score_zero_to_ten|pain_zero_to_ten)$"}]},
+        {"id": "quality.information_source", "display": "Patient, proxy or record information source", "fact_ids": ["encounter.information_source"]},
+        {"id": "quality.data_completeness", "display": "Explicit missing-data state", "runtime_capability": "dataAbsentReason"}
+      ]
+    },
+    {
+      "id": "uscdi-plus.behavioral-health",
+      "display": "USCDI+ Behavioral Health",
+      "maturity": "official_domain_program",
+      "applicable_rfes": ["rfe.mental_health_sleep", "rfe.pregnancy_postpartum_concern"],
+      "elements": [
+        {"id": "behavioral.symptoms", "display": "Behavioral health symptom and duration", "fact_ids": ["symptom.mental_health_sleep.current", "symptom.mental_health_sleep.main_type", "symptom.duration", "symptom.low_mood", "symptom.anxiety_avoidance", "symptom.loss_of_interest_or_pleasure"]},
+        {"id": "behavioral.suicide_safety", "display": "Suicide and immediate safety assessment", "fact_ids": ["risk.suicidal_thoughts_current", "risk.suicide_plan_or_intent", "risk.unable_to_stay_safe", "event.recent_self_harm_or_suicide_attempt", "postpartum.self_harm_or_harm_to_baby"]},
+        {"id": "behavioral.substance", "display": "Alcohol, nicotine and substance context", "fact_ids": ["exposure.caffeine_alcohol_nicotine_sleep", "patient.alcohol.pattern", "patient.smoking.status", "pregnancy.smoking_alcohol_substance_and_occupation"]},
+        {"id": "behavioral.treatment", "display": "Behavioral health diagnosis, medication and treatment", "fact_ids": ["history.mental_health_diagnosis_or_treatment", "medication.mental_health_sleep_current_or_changed", "postpartum.prior_mental_health_and_family_history"]},
+        {"id": "behavioral.function_support", "display": "Function and available support", "fact_ids": ["symptom.mental_health_sleep.functional_impact", "support.trusted_person_available", "pregnancy.support_and_living_situation"]}
+      ]
+    },
+    {
+      "id": "uscdi-plus.public-health",
+      "display": "USCDI+ Public Health",
+      "maturity": "use_case_development",
+      "applicable_rfes": ["rfe.fever", "rfe.cough", "rfe.upper_respiratory_symptoms"],
+      "elements": [
+        {"id": "public-health.symptom_onset", "display": "Reportable symptom and onset context", "fact_ids": ["symptom.duration", "symptom.fever", "symptom.cough", "symptom.sore_throat"]},
+        {"id": "public-health.exposure", "display": "Sick contact and exposure context", "fact_ids": ["exposure.sick_contact", "exposure.tuberculosis_risk"]},
+        {"id": "public-health.immunization", "display": "Relevant immunization history", "fact_ids": ["history.immunization.relevant"]},
+        {"id": "public-health.laboratory", "display": "Laboratory test and result context", "fact_selectors": [{"kind": "regex", "value": "(laboratory|lab_result|test_result|viral_test)"}]}
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {"type": "ai", "id": "codex-gpt5"},
+    "created_at": "2026-07-16T00:00:00Z",
+    "source_refs": [
+      "source.uscdi-plus.overview.2026",
+      "source.uscdi-plus.maternal.2025",
+      "source.uscdi-plus.quality.2026"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

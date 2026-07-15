@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Clinical Interview Research Knowledge
-  version: 1.35.0
+  version: 1.36.0
   description: Read-only, research-only Knowledge and Fact resources. No patient data is accepted.
 servers:
   - url: https://ggojang.github.io/clinical-interview-platform
@@ -158,6 +158,46 @@ paths:
       responses:
         '200':
           description: Terminology source manifest
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/JsonDocument'}
+  /gpt/interoperability/uscdi-v6-core.json:
+    get:
+      operationId: getUscdiV6CoreOverlay
+      summary: Get the research-only USCDI v6 mapping and gap-analysis overlay; it never determines clinical questions
+      responses:
+        '200':
+          description: Versioned USCDI v6 interoperability overlay without patient responses
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/JsonDocument'}
+  /gpt/interoperability/uscdi-plus-domain-overlays.json:
+    get:
+      operationId: getUscdiPlusDomainOverlays
+      summary: Get domain-specific Maternal Health, Quality, Behavioral Health and Public Health mapping overlays
+      responses:
+        '200':
+          description: USCDI+ domain overlays with maturity and jurisdiction preserved
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/JsonDocument'}
+  /gpt/interoperability/uscdi-policy.json:
+    get:
+      operationId: getUscdiInteroperabilityPolicy
+      summary: Get the authority boundary that prevents USCDI gaps from creating clinical questions or safety rules
+      responses:
+        '200':
+          description: USCDI interoperability policy without patient responses
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/JsonDocument'}
+  /gpt/interoperability/uscdi-coverage.json:
+    get:
+      operationId: getUscdiInteroperabilityCoverage
+      summary: Get package-by-package USCDI v6 mapping Coverage and applicable USCDI+ domains
+      responses:
+        '200':
+          description: Research-only interoperability gap report without patient responses
           content:
             application/json:
               schema: {$ref: '#/components/schemas/JsonDocument'}

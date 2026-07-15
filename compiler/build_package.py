@@ -11,9 +11,14 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import sys
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from interoperability.uscdi import build_package_interoperability_coverage
+
 DEFAULT_GRAPH = ROOT / "knowledge/graph/primary-care-cough.json"
 DEFAULT_RULES = ROOT / "rules/primary-care-cough.json"
 DEFAULT_SOURCES = ROOT / "sources/manifests/primary-care-cough.json"
@@ -971,6 +976,25 @@ def compile_package(
             f"{sorted(missing_rfe_questions)}"
         )
 
+    interoperability_coverage = build_package_interoperability_coverage(
+        profile=profile,
+        rfe=config["rfe"],
+        package_fact_ids=all_fact_ids,
+        clinician_context_fact_ids=context_facts,
+    )
+    package_coverage = coverage(node_index, indexes, simulations, sorted_rules)
+    package_coverage["interoperability"] = {
+        "framework": "USCDI",
+        "framework_version": interoperability_coverage["core"]["framework_version"],
+        "mapped_element_count": interoperability_coverage["core"]["mapped_element_count"],
+        "eligible_element_count": interoperability_coverage["core"]["eligible_element_count"],
+        "coverage_percent": interoperability_coverage["core"]["coverage_percent"],
+        "applicable_uscdi_plus_domains": [
+            item["domain_id"] for item in interoperability_coverage["uscdi_plus_domains"]
+        ],
+        "clinical_authority": False,
+    }
+
     package: dict[str, Any] = {
         "package_id": config["package_id"],
         "package_version": config["package_version"],
@@ -1013,8 +1037,9 @@ def compile_package(
             "resource_ref": str(CLINICIAN_SUBMISSION_CONTEXT.relative_to(ROOT)),
             "semantic_digest": semantic_digest(clinician_submission_context),
         },
+        "interoperability_coverage": interoperability_coverage,
         "simulations": simulations,
-        "coverage": coverage(node_index, indexes, simulations, sorted_rules),
+        "coverage": package_coverage,
         "compatibility": {
             "runtime_min": "0.1.0",
             "runtime_max_tested": "0.1.0",
@@ -1028,6 +1053,9 @@ def compile_package(
                 str(graph_path.relative_to(ROOT)),
                 str(rules_path.relative_to(ROOT)),
                 str(sources_path.relative_to(ROOT)),
+                "mappings/interoperability/uscdi-v6-core.json",
+                "mappings/interoperability/uscdi-plus-domain-overlays.json",
+                "policies/uscdi-interoperability-overlay.json",
             ],
             "review_status": "unreviewed",
             "version": "0.1.0",
@@ -1057,6 +1085,22 @@ def validate_package(package: dict[str, Any]) -> None:
         raise CompilationError("package missing graph")
     node_index = validate_graph(graph)
     validate_rules(rules, node_index, bool(package.get("scope", {}).get("production_enabled")))
+    interoperability = package.get("interoperability_coverage")
+    if not isinstance(interoperability, dict):
+        raise CompilationError("package missing USCDI interoperability Coverage")
+    if interoperability.get("clinical_authority") is not False:
+        raise CompilationError("USCDI interoperability Coverage cannot control clinical behavior")
+    if interoperability.get("completion_authority") is not False:
+        raise CompilationError("USCDI interoperability Coverage cannot control completion")
+    if interoperability.get("core", {}).get("framework_version") != "v6":
+        raise CompilationError("unsupported USCDI core baseline")
+    allowed_mapping_statuses = {
+        "exact", "partial", "broader", "narrower", "contextual", "unmapped",
+        "not_patient_collectable",
+    }
+    for element in interoperability.get("core", {}).get("elements", []):
+        if element.get("mapping_status") not in allowed_mapping_statuses:
+            raise CompilationError("USCDI element has unsupported mapping status")
 
 
 def main() -> None:
