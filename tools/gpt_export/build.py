@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "1.32.0"
+VERSION = "1.33.0"
 GENERATED_AT = "2026-07-15T00:00:00Z"
 PRIVATE_KEYS = {
     "raw_text", "raw_input", "patient_response", "patient_responses",
@@ -611,6 +611,17 @@ def build(root: Path, output: Path) -> dict[str, Any]:
             "required_before": [
                 "demographics", "medical_history", "health_screening", "routine_questions"
             ],
+            "discovery_hint_ko": resources["hira-adequacy-assessments.json"][
+                "entry_policy"
+            ]["opening_discovery_hint_ko"],
+            "discovery_commands": {
+                "list": resources["hira-adequacy-assessments.json"]["entry_policy"][
+                    "list_commands_ko"
+                ],
+                "search_prefixes": resources["hira-adequacy-assessments.json"][
+                    "entry_policy"
+                ]["search_command_prefixes_ko"],
+            },
             "first_question_ko": "오늘 어떤 이유로 오셨나요? 불편한 증상이나 상담받고 싶은 내용을 자유롭게 말씀해 주세요.",
             "use_first_message_when_present": True,
             "confirm_only_when_ambiguous": True,

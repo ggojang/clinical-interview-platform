@@ -39,15 +39,27 @@ class HiraAssessmentRegistry:
     def resolve_entry(self, text: str) -> dict[str, Any]:
         """Resolve an explicit assessment/questionnaire request at the RFE boundary."""
         normalized = self._normalize_entry_text(text)
+        policy = self.document["entry_policy"]
+        for prefix in policy["search_command_prefixes_ko"]:
+            normalized_prefix = self._normalize_entry_text(prefix)
+            if normalized.startswith(normalized_prefix):
+                query = normalized[len(normalized_prefix):]
+                if not query:
+                    return {
+                        "status": "search_term_required",
+                        "workflow_state": "entry_unresolved",
+                        "prompt_ko": policy["search_prompt_ko"],
+                    }
+                return self.search_entries(query)
         generic_aliases = {
             self._normalize_entry_text(alias)
-            for alias in self.document["entry_policy"]["generic_aliases_ko"]
+            for alias in policy["generic_aliases_ko"]
         }
         if normalized in generic_aliases:
             return {
                 "status": "selection_required",
                 "workflow_state": "entry_unresolved",
-                "prompt_ko": self.document["entry_policy"]["generic_prompt_ko"],
+                "prompt_ko": policy["generic_prompt_ko"],
                 "options": [
                     {
                         "number": entry["selection_number"],
@@ -75,6 +87,34 @@ class HiraAssessmentRegistry:
             }
         entry = next(iter(unique.values()))
         return self.entry_confirmation(entry["program_id"])
+
+    def search_entries(self, query: str) -> dict[str, Any]:
+        normalized_query = self._normalize_entry_text(query)
+        matches = []
+        for entry in self.document["entry_catalog"]:
+            searchable = [entry["display_ko"], *entry["aliases_ko"]]
+            if any(
+                normalized_query in self._normalize_entry_text(value)
+                for value in searchable
+            ):
+                matches.append({
+                    "number": entry["selection_number"],
+                    "program_id": entry["program_id"],
+                    "display_ko": entry["display_ko"],
+                    "entry_type": entry["entry_type"],
+                    "runtime_readiness": entry["runtime_readiness"],
+                })
+        policy = self.document["entry_policy"]
+        return {
+            "status": "search_results" if matches else "no_search_result",
+            "workflow_state": "entry_unresolved",
+            "query": query,
+            "prompt_ko": (
+                "검색 결과에서 작성할 항목을 선택해 주세요."
+                if matches else policy["no_search_result_ko"]
+            ),
+            "options": matches,
+        }
 
     def select_entry(self, selection_number: int) -> dict[str, Any]:
         for entry in self.document["entry_catalog"]:

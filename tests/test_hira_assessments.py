@@ -62,6 +62,27 @@ class HiraAssessmentTests(unittest.TestCase):
             registration["registration_rules"]["missing_source_must_not_be_reconstructed_by_ai"]
         )
 
+    def test_opening_discovery_commands_list_or_search_without_activation(self):
+        policy = self.registry.document["entry_policy"]
+        self.assertIn("평가/설문 목록", policy["opening_discovery_hint_ko"])
+        listed = self.registry.resolve_entry("평가/설문 목록")
+        self.assertEqual(listed["status"], "selection_required")
+        searched = self.registry.resolve_entry("설문 검색: 환자경험")
+        self.assertEqual(searched["status"], "search_results")
+        self.assertEqual(len(searched["options"]), 1)
+        self.assertEqual(
+            searched["options"][0]["program_id"],
+            "hira.inpatient_patient_experience.5th-2025",
+        )
+        self.assertEqual(searched["workflow_state"], "entry_unresolved")
+
+    def test_search_handles_missing_term_and_no_result(self):
+        missing = self.registry.resolve_entry("설문 검색")
+        self.assertEqual(missing["status"], "search_term_required")
+        absent = self.registry.resolve_entry("평가 검색: 존재하지않는설문")
+        self.assertEqual(absent["status"], "no_search_result")
+        self.assertEqual(absent["options"], [])
+
     def test_specific_alias_enters_single_start_confirmation(self):
         result = self.registry.resolve_entry("환자경험평가를 작성하고 싶어요")
         self.assertEqual(result["status"], "matched")

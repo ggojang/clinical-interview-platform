@@ -245,6 +245,14 @@ class GptExportTests(unittest.TestCase):
             self.assertEqual(policy["entry_point"], "reason_for_encounter")
             self.assertTrue(policy["generic_request_returns_numbered_program_selection"])
             self.assertTrue(policy["specific_alias_requires_single_start_confirmation"])
+            self.assertIn(
+                "평가/설문 목록",
+                manifest["interview_entry"]["discovery_hint_ko"],
+            )
+            self.assertIn(
+                "설문 검색",
+                manifest["interview_entry"]["discovery_commands"]["search_prefixes"],
+            )
             entries = registry["entry_catalog"]
             self.assertEqual(
                 [entry["selection_number"] for entry in entries],
