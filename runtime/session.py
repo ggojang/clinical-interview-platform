@@ -163,7 +163,7 @@ class InterviewSession:
     package_path: Path | str = DEFAULT_PACKAGE
     execution_mode: str = "research_test"
     reason_for_encounter: str | None = None
-    max_turns: int = 40
+    max_turns: int | None = None
     asked: list[str] = field(default_factory=list)
     active_patterns: list[str] = field(default_factory=list)
     trace: list[dict[str, Any]] = field(default_factory=list)
@@ -179,6 +179,13 @@ class InterviewSession:
 
     def __post_init__(self) -> None:
         self.package = load_package(self.package_path, self.execution_mode)
+        if self.max_turns is None:
+            routine_budget = (
+                self.package.get("interview_completion_policy", {})
+                .get("question_budget", {})
+                .get("routine", 40)
+            )
+            self.max_turns = max(40, int(routine_budget) + 1)
         package_rfes = self.package.get("scope", {}).get("reasons_for_encounter", [])
         if self.reason_for_encounter is None:
             if len(package_rfes) != 1:

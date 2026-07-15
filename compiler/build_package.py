@@ -355,6 +355,17 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/neurological/memory-cognitive-concern",
         "research_manifests": [ROOT / "sources/manifests/primary-care-memory-cognitive-concern-research.json"],
     },
+    "pregnancy_postpartum_concern": {
+        "graph": ROOT / "knowledge/graph/primary-care-pregnancy-postpartum-concern.json",
+        "rules": ROOT / "rules/primary-care-pregnancy-postpartum-concern.json",
+        "sources": ROOT / "sources/manifests/primary-care-pregnancy-postpartum-concern.json",
+        "completion_policy": ROOT / "policies/primary-care-pregnancy-postpartum-concern-completion.json",
+        "output": ROOT / "packages/generated/primary-care-pregnancy-postpartum-concern-0.1.0.json",
+        "package_id": "package.primary-care-pregnancy-postpartum-concern", "package_version": "0.1.0",
+        "rfe": "rfe.pregnancy_postpartum_concern",
+        "simulation_root": ROOT / "simulation/patients/obstetric/pregnancy-postpartum-concern",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-pregnancy-postpartum-concern-research.json"],
+    },
 }
 
 ALLOWED_NODE_TYPES = {

@@ -245,6 +245,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-memory-cognitive-concern.json",
         "version": "0.1.0",
     },
+    "pregnancy_postpartum_concern": {
+        "base_graph": ROOT / "knowledge/base/primary-care-pregnancy-postpartum-concern.json",
+        "base_rules": ROOT / "rules/base/primary-care-pregnancy-postpartum-concern.json",
+        "fragment_root": ROOT / "knowledge/generated/obstetric/pregnancy-postpartum-concern",
+        "output_graph": ROOT / "knowledge/graph/primary-care-pregnancy-postpartum-concern.json",
+        "output_rules": ROOT / "rules/primary-care-pregnancy-postpartum-concern.json",
+        "version": "0.1.0",
+    },
 }
 
 

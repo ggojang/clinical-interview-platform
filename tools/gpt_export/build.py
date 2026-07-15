@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "1.27.0"
+VERSION = "1.28.0"
 GENERATED_AT = "2026-07-15T00:00:00Z"
 PRIVATE_KEYS = {
     "raw_text", "raw_input", "patient_response", "patient_responses",
@@ -95,17 +95,15 @@ def compact_fact_index(item: dict[str, Any]) -> dict[str, Any]:
 
 def compact_safety_rule_index(item: dict[str, Any]) -> dict[str, Any]:
     """Keep cross-RFE discovery essentials; full executable rules live per RFE."""
-    result = {
-        key: compact(item[key])
-        for key in ("id", "when")
-        if key in item
-    }
+    when = item.get("when", {})
+    result = {"id": item["id"]}
+    if "fact" in when:
+        result["fact"] = when["fact"]
+    if when.get("equals") is not True:
+        result["equals"] = compact(when.get("equals"))
     then = item.get("then", {})
-    result["then"] = {
-        key: then[key]
-        for key in ("safety_level",)
-        if key in then
-    }
+    if "safety_level" in then:
+        result["safety_level"] = then["safety_level"]
     return result
 
 
@@ -525,6 +523,7 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
     ]
     aggregate_rules["payload_role"] = "legacy_cross_rfe_safety_index"
     aggregate_rules["default_action"] = "human_handoff"
+    aggregate_rules["default_equals"] = True
     aggregate_rules["complete_rule_payloads"] = "/gpt/rfe/{rfe}/rules.json"
     resources = {
         "common-facts.json": common_facts,
