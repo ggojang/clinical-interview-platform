@@ -1,0 +1,139 @@
+{
+  "assessment_context": {
+    "activation_policy": {
+      "confirm_current_cycle_before_official_submission": true,
+      "never_activate_from_symptom_alone": true,
+      "ordinary_primary_care_interview_is_not_an_assessment_submission": true,
+      "requires_explicit_program_or_workflow_context": true
+    },
+    "required_fields": [
+      "assessment_program_id",
+      "assessment_cycle",
+      "care_setting",
+      "target_period",
+      "institution_eligibility_status",
+      "patient_eligibility_status",
+      "information_source"
+    ]
+  },
+  "contains_patient_responses": false,
+  "entry": {
+    "aliases_ko": [
+      "의료급여 정신과 적정성 평가",
+      "의료급여 정신과 환자경험",
+      "정신과 환자경험도 조사"
+    ],
+    "display_ko": "의료급여 정신과 적정성 평가 환자경험 문진",
+    "entry_type": "assessment_program",
+    "program_id": "hira.medical_aid_psychiatry_patient_experience",
+    "runtime_readiness": "research_test_result_capture_ready",
+    "selection_number": 6,
+    "start_prompt_ko": "의료급여 정신과 환자경험 조사 정보를 작성하시겠습니까?"
+  },
+  "id": "hira.medical_aid_psychiatry_patient_experience",
+  "program": {
+    "assessment_type": "structured_result_capture",
+    "display_ko": "의료급여 정신과 적정성 평가 환자경험 조사",
+    "fixed_instrument_boundary": {
+      "capture_execution_metadata_and_existing_results_only": true,
+      "exact_source_items_available": false,
+      "never_reconstruct_missing_items_with_ai": true
+    },
+    "id": "hira.medical_aid_psychiatry_patient_experience",
+    "official_submission_requires_clinician_or_record_confirmation": true,
+    "patient_or_proxy_question_groups": [
+      {
+        "display_ko": "환자경험 조사 시행정보",
+        "id": "hira.medical_aid_psychiatry.experience_result",
+        "items": [
+          {
+            "id": "hira.medical_aid_psychiatry.respondent",
+            "options": {
+              "1": "환자 본인",
+              "2": "보호자·대리인"
+            },
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report"
+            ],
+            "text_ko": "이 정보를 답하는 분은 환자 본인인가요, 보호자인가요?",
+            "value_type": "coded"
+          },
+          {
+            "id": "hira.medical_aid_psychiatry.survey_completed",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "medical_record"
+            ],
+            "text_ko": "입원 중 또는 퇴원 시 환자경험도 조사를 작성했나요?",
+            "value_type": "boolean"
+          },
+          {
+            "id": "hira.medical_aid_psychiatry.survey_date",
+            "required_when": "hira.medical_aid_psychiatry.survey_completed=true",
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "medical_record"
+            ],
+            "text_ko": "환자경험도 조사를 작성한 날짜는 언제인가요?",
+            "value_type": "date"
+          },
+          {
+            "id": "hira.medical_aid_psychiatry.instrument_name_version",
+            "required_when": "hira.medical_aid_psychiatry.survey_completed=true",
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "medical_record"
+            ],
+            "text_ko": "사용한 환자경험 조사표의 이름과 버전을 알고 있으면 알려주세요.",
+            "value_type": "text"
+          },
+          {
+            "id": "hira.medical_aid_psychiatry.completion_status",
+            "options": {
+              "1": "완료",
+              "2": "일부 작성",
+              "3": "작성하지 못함"
+            },
+            "required_when": "hira.medical_aid_psychiatry.survey_completed=true",
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "medical_record"
+            ],
+            "text_ko": "조사표를 끝까지 작성했나요?",
+            "value_type": "coded"
+          },
+          {
+            "id": "hira.medical_aid_psychiatry.additional_comment",
+            "required": false,
+            "source": [
+              "patient_report",
+              "proxy_report"
+            ],
+            "text_ko": "정신과 입원 경험에 관해 의료진에게 별도로 전달할 의견이 있나요?",
+            "value_type": "text"
+          }
+        ]
+      }
+    ],
+    "source_refs": [
+      "source.hira.adequacy-detailed-plan.2025",
+      "source.hira.mental-health-inpatient-explanation.2021"
+    ]
+  },
+  "resource_type": "HiraAdequacyAssessmentInterviewProgram",
+  "review_status": "unreviewed",
+  "start_confirmation_options": {
+    "1": "예",
+    "2": "아니오",
+    "3": "잘 모르겠음",
+    "4": "답변하지 않음"
+  },
+  "status": "research_only"
+}

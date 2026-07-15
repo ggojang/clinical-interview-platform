@@ -16,6 +16,7 @@ This directory is a static, read-only knowledge API for a Custom GPT test chatbo
 - `screening-kr.json`: Korean national screening candidate rules
 - `questionnaires/patient-experience-5th-2025/metadata.json`: activation, section index, answer semantics, and completion policy for the 2025 fifth inpatient patient-experience questionnaire
 - `questionnaires/patient-experience-5th-2025/sections/{1..8}.json`: one compact source-preserving Questionnaire section per Action response
+- `assessments/{programId}.json`: one compact executable definition for the selected HIRA patient/proxy assessment, loaded only after start confirmation
 - `knowledge-files/patient-experience-evaluation-5th-2025-chatbot.md`: standalone 8-section, 26-item fixed survey file for upload to Custom GPT Knowledge; preferred at runtime after activation confirmation
 - `terminology-source.json`: STOM identity, observed versions, cadence, and limitations
 - `openapi.yaml`: compiled Knowledge Custom GPT Action definition

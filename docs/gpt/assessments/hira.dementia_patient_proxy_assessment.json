@@ -1,0 +1,203 @@
+{
+  "assessment_context": {
+    "activation_policy": {
+      "confirm_current_cycle_before_official_submission": true,
+      "never_activate_from_symptom_alone": true,
+      "ordinary_primary_care_interview_is_not_an_assessment_submission": true,
+      "requires_explicit_program_or_workflow_context": true
+    },
+    "required_fields": [
+      "assessment_program_id",
+      "assessment_cycle",
+      "care_setting",
+      "target_period",
+      "institution_eligibility_status",
+      "patient_eligibility_status",
+      "information_source"
+    ]
+  },
+  "contains_patient_responses": false,
+  "entry": {
+    "aliases_ko": [
+      "치매 적정성 평가",
+      "치매 환자 문진",
+      "치매 보호자 문진",
+      "인지 행동 일상생활 평가"
+    ],
+    "display_ko": "치매 적정성 평가 환자·보호자 문진",
+    "entry_type": "assessment_program",
+    "program_id": "hira.dementia_patient_proxy_assessment",
+    "runtime_readiness": "clinician_confirmation_research_test_ready",
+    "selection_number": 10,
+    "start_prompt_ko": "치매 관련 환자·보호자 문진을 작성하시겠습니까?"
+  },
+  "id": "hira.dementia_patient_proxy_assessment",
+  "program": {
+    "assessment_type": "structured_assessment",
+    "display_ko": "치매 적정성 평가 환자·보호자 문진",
+    "id": "hira.dementia_patient_proxy_assessment",
+    "measurement_test_or_record_requirements": [
+      {
+        "id": "hira.dementia.cognitive_screen_or_scale",
+        "source": [
+          "standardized_test",
+          "medical_record"
+        ]
+      },
+      {
+        "id": "hira.dementia.neurocognitive_test",
+        "source": [
+          "standardized_test",
+          "medical_record"
+        ]
+      },
+      {
+        "id": "hira.dementia.brain_imaging",
+        "source": [
+          "medical_record",
+          "measurement"
+        ]
+      },
+      {
+        "id": "hira.dementia.required_laboratory_tests",
+        "source": [
+          "medical_record",
+          "measurement"
+        ]
+      }
+    ],
+    "official_submission_requires_clinician_or_record_confirmation": true,
+    "patient_or_proxy_question_groups": [
+      {
+        "display_ko": "인지·행동·일상생활 변화",
+        "id": "hira.dementia.patient_proxy_history",
+        "items": [
+          {
+            "id": "hira.dementia.respondent",
+            "options": {
+              "1": "환자 본인",
+              "2": "보호자·대리인",
+              "3": "함께 답변"
+            },
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report"
+            ],
+            "text_ko": "이 정보를 답하는 분은 환자 본인인가요, 환자를 잘 아는 보호자인가요?",
+            "value_type": "coded"
+          },
+          {
+            "id": "hira.dementia.change_onset",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "medical_record"
+            ],
+            "text_ko": "기억력이나 판단력 변화는 언제부터 시작되었나요?",
+            "value_type": "duration_or_date"
+          },
+          {
+            "id": "hira.dementia.change_course",
+            "options": {
+              "1": "서서히 진행",
+              "2": "갑자기 시작",
+              "3": "변동이 큼"
+            },
+            "required": true,
+            "safety_relevant": true,
+            "source": [
+              "patient_report",
+              "proxy_report"
+            ],
+            "text_ko": "변화가 서서히 진행했나요, 갑자기 시작했나요, 또는 좋아졌다 나빠졌다 하나요?",
+            "value_type": "coded"
+          },
+          {
+            "id": "hira.dementia.cognitive_domains",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report"
+            ],
+            "text_ko": "최근 기억, 길 찾기, 말하기, 계산, 판단 중 달라진 부분을 모두 알려주세요.",
+            "value_type": "multi_text"
+          },
+          {
+            "id": "hira.dementia.iadl_change",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report"
+            ],
+            "text_ko": "약 챙기기, 돈 관리, 전화 사용, 장보기, 요리, 교통수단 이용 중 혼자 하기 어려워진 일이 있나요?",
+            "value_type": "multi_text"
+          },
+          {
+            "id": "hira.dementia.basic_adl_change",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report"
+            ],
+            "text_ko": "옷 입기, 씻기, 식사, 이동, 화장실 사용에 도움이 필요한가요?",
+            "value_type": "multi_text"
+          },
+          {
+            "id": "hira.dementia.behavior_change",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report"
+            ],
+            "text_ko": "환각, 망상, 공격성, 배회, 수면 변화, 우울·불안 등 행동이나 정서 변화가 있나요?",
+            "value_type": "multi_text"
+          },
+          {
+            "id": "hira.dementia.safety_risk",
+            "required": true,
+            "safety_relevant": true,
+            "source": [
+              "patient_report",
+              "proxy_report"
+            ],
+            "text_ko": "길을 잃음, 가스·불 관리, 운전, 약 중복 복용, 낙상 등 현재 안전이 걱정되는 일이 있나요?",
+            "value_type": "multi_text"
+          },
+          {
+            "id": "hira.dementia.caregiver_burden",
+            "options": {
+              "1": "아니오",
+              "2": "다소 어려움",
+              "3": "매우 어려움"
+            },
+            "required_when": "respondent_includes_proxy",
+            "source": [
+              "proxy_report"
+            ],
+            "text_ko": "돌봄을 맡은 분이 지치거나 감당하기 어렵다고 느끼나요?",
+            "value_type": "coded"
+          }
+        ]
+      }
+    ],
+    "source_refs": [
+      "source.hira.adequacy-detailed-plan.2025"
+    ],
+    "standardized_test_boundary": {
+      "clinician_selects_and_administers_authorized_tool": true,
+      "exact_scale_items_not_embedded": true,
+      "patient_or_proxy_answers_do_not_replace_test": true
+    }
+  },
+  "resource_type": "HiraAdequacyAssessmentInterviewProgram",
+  "review_status": "unreviewed",
+  "start_confirmation_options": {
+    "1": "예",
+    "2": "아니오",
+    "3": "잘 모르겠음",
+    "4": "답변하지 않음"
+  },
+  "status": "research_only"
+}

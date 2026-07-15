@@ -1,0 +1,240 @@
+{
+  "assessment_context": {
+    "activation_policy": {
+      "confirm_current_cycle_before_official_submission": true,
+      "never_activate_from_symptom_alone": true,
+      "ordinary_primary_care_interview_is_not_an_assessment_submission": true,
+      "requires_explicit_program_or_workflow_context": true
+    },
+    "required_fields": [
+      "assessment_program_id",
+      "assessment_cycle",
+      "care_setting",
+      "target_period",
+      "institution_eligibility_status",
+      "patient_eligibility_status",
+      "information_source"
+    ]
+  },
+  "contains_patient_responses": false,
+  "entry": {
+    "aliases_ko": [
+      "마취 적정성 평가",
+      "마취 전 환자평가",
+      "회복실 통증 평가",
+      "마취 환자 문진"
+    ],
+    "display_ko": "마취 적정성 평가 환자 문진",
+    "entry_type": "assessment_program",
+    "program_id": "hira.anesthesia_patient_assessment",
+    "runtime_readiness": "clinician_confirmation_research_test_ready",
+    "selection_number": 8,
+    "start_prompt_ko": "마취 전·후 환자 문진을 작성하시겠습니까?"
+  },
+  "id": "hira.anesthesia_patient_assessment",
+  "program": {
+    "assessment_type": "structured_assessment",
+    "display_ko": "마취 적정성 평가 환자 문진",
+    "id": "hira.anesthesia_patient_assessment",
+    "measurement_test_or_record_requirements": [
+      {
+        "id": "hira.anesthesia.clinician_preanesthesia_assessment",
+        "source": [
+          "clinician_observation",
+          "medical_record"
+        ]
+      },
+      {
+        "id": "hira.anesthesia.vital_signs_and_temperature",
+        "source": [
+          "measurement",
+          "medical_record"
+        ]
+      }
+    ],
+    "official_submission_requires_clinician_or_record_confirmation": true,
+    "patient_or_proxy_question_groups": [
+      {
+        "display_ko": "마취 전 병력과 안전정보",
+        "id": "hira.anesthesia.preanesthesia_history",
+        "items": [
+          {
+            "id": "hira.anesthesia.planned_procedure",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "medical_record"
+            ],
+            "text_ko": "예정된 수술이나 시술의 이름을 알고 있으면 알려주세요.",
+            "value_type": "text"
+          },
+          {
+            "id": "hira.anesthesia.prior_anesthesia",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "medical_record"
+            ],
+            "text_ko": "이전에 전신마취나 수면마취를 받은 적이 있나요?",
+            "value_type": "boolean"
+          },
+          {
+            "id": "hira.anesthesia.prior_complication",
+            "required_when": "hira.anesthesia.prior_anesthesia=true",
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "medical_record"
+            ],
+            "text_ko": "이전 마취 중이나 이후에 심한 구역·구토, 알레르기, 고열, 깨어나기 어려움 등 문제가 있었나요?",
+            "value_type": "boolean"
+          },
+          {
+            "id": "hira.anesthesia.prior_complication_detail",
+            "required_when": "hira.anesthesia.prior_complication=true",
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "medical_record"
+            ],
+            "text_ko": "어떤 마취 문제가 있었는지 알려주세요.",
+            "value_type": "text"
+          },
+          {
+            "id": "hira.anesthesia.allergy",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "medical_record"
+            ],
+            "text_ko": "약, 음식, 라텍스 등에 알레르기가 있나요?",
+            "value_type": "boolean"
+          },
+          {
+            "id": "hira.anesthesia.allergy_detail",
+            "required_when": "hira.anesthesia.allergy=true",
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "medical_record"
+            ],
+            "text_ko": "알레르기 원인과 나타났던 반응을 알려주세요.",
+            "value_type": "text"
+          },
+          {
+            "id": "hira.anesthesia.current_medications",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "medical_record"
+            ],
+            "text_ko": "현재 복용 중인 약, 주사제, 건강보조제를 알려주세요. 특히 혈액을 묽게 하는 약과 당뇨약을 포함해 주세요.",
+            "value_type": "multi_text"
+          },
+          {
+            "id": "hira.anesthesia.last_food_drink",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "medical_record"
+            ],
+            "text_ko": "마지막으로 음식이나 물을 드신 날짜와 시각은 언제인가요?",
+            "value_type": "dateTime"
+          },
+          {
+            "id": "hira.anesthesia.pregnancy_possible",
+            "options": {
+              "1": "예",
+              "2": "아니오",
+              "3": "해당 없음"
+            },
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "medical_record"
+            ],
+            "text_ko": "임신 가능성이 있거나 현재 임신 중인가요? 해당되지 않으면 '해당 없음'이라고 답해 주세요.",
+            "value_type": "coded"
+          },
+          {
+            "id": "hira.anesthesia.loose_teeth_dentures",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "clinician_observation"
+            ],
+            "text_ko": "흔들리는 치아, 틀니, 임플란트 또는 입안의 보철물이 있나요?",
+            "value_type": "boolean"
+          }
+        ]
+      },
+      {
+        "display_ko": "회복실 증상",
+        "id": "hira.anesthesia.recovery_symptoms",
+        "items": [
+          {
+            "id": "hira.anesthesia.recovery_nausea_vomiting",
+            "options": {
+              "1": "없음",
+              "2": "메스꺼움",
+              "3": "구토"
+            },
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "clinician_observation"
+            ],
+            "text_ko": "마취 후 회복실에서 메스꺼움이나 구토가 있었나요?",
+            "value_type": "coded"
+          },
+          {
+            "id": "hira.anesthesia.recovery_pain_nrs",
+            "maximum": 10,
+            "minimum": 0,
+            "required": true,
+            "scale_type": "NRS",
+            "source": [
+              "patient_report",
+              "clinician_observation"
+            ],
+            "text_ko": "[필수] 회복실에서 현재 통증을 0점부터 10점까지 숫자로 답해 주세요. 0점은 통증 없음, 10점은 상상할 수 있는 가장 심한 통증입니다.",
+            "unknown_or_decline_options_visible": false,
+            "value_type": "integer"
+          },
+          {
+            "id": "hira.anesthesia.recovery_other_symptoms",
+            "required": false,
+            "safety_relevant": true,
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "clinician_observation"
+            ],
+            "text_ko": "호흡곤란, 가슴통증, 심한 어지럼 또는 다른 불편감이 있나요?",
+            "value_type": "text"
+          }
+        ]
+      }
+    ],
+    "source_refs": [
+      "source.hira.adequacy-detailed-plan.2025"
+    ]
+  },
+  "resource_type": "HiraAdequacyAssessmentInterviewProgram",
+  "review_status": "unreviewed",
+  "start_confirmation_options": {
+    "1": "예",
+    "2": "아니오",
+    "3": "잘 모르겠음",
+    "4": "답변하지 않음"
+  },
+  "status": "research_only"
+}

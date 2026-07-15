@@ -1,0 +1,219 @@
+{
+  "assessment_context": {
+    "activation_policy": {
+      "confirm_current_cycle_before_official_submission": true,
+      "never_activate_from_symptom_alone": true,
+      "ordinary_primary_care_interview_is_not_an_assessment_submission": true,
+      "requires_explicit_program_or_workflow_context": true
+    },
+    "required_fields": [
+      "assessment_program_id",
+      "assessment_cycle",
+      "care_setting",
+      "target_period",
+      "institution_eligibility_status",
+      "patient_eligibility_status",
+      "information_source"
+    ]
+  },
+  "contains_patient_responses": false,
+  "entry": {
+    "aliases_ko": [
+      "영상검사 적정성 평가",
+      "조영제 검사 전 문진",
+      "MRI 검사 전 문진",
+      "영상검사 환자평가"
+    ],
+    "display_ko": "영상검사 적정성 평가 검사 전 문진",
+    "entry_type": "assessment_program",
+    "program_id": "hira.imaging_pre_examination_assessment",
+    "runtime_readiness": "clinician_confirmation_research_test_ready",
+    "selection_number": 9,
+    "start_prompt_ko": "영상검사 전 안전 문진을 작성하시겠습니까?"
+  },
+  "id": "hira.imaging_pre_examination_assessment",
+  "program": {
+    "assessment_type": "structured_assessment",
+    "display_ko": "영상검사 적정성 평가 검사 전 문진",
+    "id": "hira.imaging_pre_examination_assessment",
+    "measurement_test_or_record_requirements": [
+      {
+        "id": "hira.imaging.renal_function",
+        "source": [
+          "measurement",
+          "medical_record"
+        ]
+      },
+      {
+        "id": "hira.imaging.device_mri_compatibility",
+        "source": [
+          "medical_record",
+          "clinician_observation"
+        ]
+      },
+      {
+        "id": "hira.imaging.final_exam_and_contrast_protocol",
+        "source": [
+          "medical_record",
+          "clinician_observation"
+        ]
+      }
+    ],
+    "official_submission_requires_clinician_or_record_confirmation": true,
+    "patient_or_proxy_question_groups": [
+      {
+        "display_ko": "영상검사 공통 안전정보",
+        "id": "hira.imaging.common_safety",
+        "items": [
+          {
+            "id": "hira.imaging.exam_type",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "medical_record"
+            ],
+            "text_ko": "예정된 검사가 CT, MRI, PET 중 무엇인지 알고 있나요?",
+            "value_type": "coded_or_text"
+          },
+          {
+            "id": "hira.imaging.contrast_planned",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "medical_record"
+            ],
+            "text_ko": "조영제를 사용하는 검사라고 안내받았나요?",
+            "value_type": "boolean"
+          },
+          {
+            "id": "hira.imaging.prior_contrast_reaction",
+            "required_when": "hira.imaging.contrast_planned=true",
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "medical_record"
+            ],
+            "text_ko": "이전에 조영제를 맞고 알레르기나 다른 이상반응이 있었나요?",
+            "value_type": "boolean"
+          },
+          {
+            "id": "hira.imaging.prior_contrast_reaction_detail",
+            "required_when": "hira.imaging.prior_contrast_reaction=true",
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "medical_record"
+            ],
+            "text_ko": "어떤 조영제 반응이 있었는지 알려주세요.",
+            "value_type": "text"
+          },
+          {
+            "id": "hira.imaging.kidney_disease_dialysis",
+            "required_when": "hira.imaging.contrast_planned=true",
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "medical_record"
+            ],
+            "text_ko": "신장질환이 있거나 투석을 받고 있나요?",
+            "value_type": "boolean"
+          },
+          {
+            "id": "hira.imaging.pregnancy_possible",
+            "options": {
+              "1": "예",
+              "2": "아니오",
+              "3": "해당 없음"
+            },
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "medical_record"
+            ],
+            "text_ko": "임신 가능성이 있거나 현재 임신 중인가요? 해당되지 않으면 '해당 없음'이라고 답해 주세요.",
+            "value_type": "coded"
+          },
+          {
+            "id": "hira.imaging.breastfeeding",
+            "options": {
+              "1": "예",
+              "2": "아니오",
+              "3": "해당 없음"
+            },
+            "required_when": "hira.imaging.contrast_planned=true",
+            "source": [
+              "patient_report",
+              "proxy_report"
+            ],
+            "text_ko": "현재 수유 중인가요? 해당되지 않으면 '해당 없음'이라고 답해 주세요.",
+            "value_type": "coded"
+          }
+        ]
+      },
+      {
+        "display_ko": "MRI 안전정보",
+        "id": "hira.imaging.mri_safety",
+        "items": [
+          {
+            "id": "hira.imaging.implanted_device",
+            "required_when": "hira.imaging.exam_type=MRI",
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "medical_record"
+            ],
+            "text_ko": "심박동기, 제세동기, 인공와우, 신경자극기, 약물펌프 등 몸 안에 삽입된 전자기기나 의료기기가 있나요?",
+            "value_type": "boolean"
+          },
+          {
+            "id": "hira.imaging.implanted_device_detail",
+            "required_when": "hira.imaging.implanted_device=true",
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "medical_record"
+            ],
+            "text_ko": "삽입된 기기의 이름, 제조사 또는 모델을 알고 있으면 알려주세요.",
+            "value_type": "text"
+          },
+          {
+            "id": "hira.imaging.metal_foreign_body",
+            "required_when": "hira.imaging.exam_type=MRI",
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "medical_record"
+            ],
+            "text_ko": "수술용 금속, 금속 파편, 탄환, 눈 주변 금속 이물질 등 몸 안에 금속이 있을 가능성이 있나요?",
+            "value_type": "boolean"
+          },
+          {
+            "id": "hira.imaging.claustrophobia",
+            "required_when": "hira.imaging.exam_type=MRI",
+            "source": [
+              "patient_report",
+              "proxy_report"
+            ],
+            "text_ko": "좁고 막힌 공간에서 심한 불안이나 공포를 느끼나요?",
+            "value_type": "boolean"
+          }
+        ]
+      }
+    ],
+    "source_refs": [
+      "source.hira.adequacy-detailed-plan.2025"
+    ]
+  },
+  "resource_type": "HiraAdequacyAssessmentInterviewProgram",
+  "review_status": "unreviewed",
+  "start_confirmation_options": {
+    "1": "예",
+    "2": "아니오",
+    "3": "잘 모르겠음",
+    "4": "답변하지 않음"
+  },
+  "status": "research_only"
+}

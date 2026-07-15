@@ -1,0 +1,175 @@
+{
+  "assessment_context": {
+    "activation_policy": {
+      "confirm_current_cycle_before_official_submission": true,
+      "never_activate_from_symptom_alone": true,
+      "ordinary_primary_care_interview_is_not_an_assessment_submission": true,
+      "requires_explicit_program_or_workflow_context": true
+    },
+    "required_fields": [
+      "assessment_program_id",
+      "assessment_cycle",
+      "care_setting",
+      "target_period",
+      "institution_eligibility_status",
+      "patient_eligibility_status",
+      "information_source"
+    ]
+  },
+  "contains_patient_responses": false,
+  "entry": {
+    "aliases_ko": [
+      "급성기뇌졸중 적정성 평가",
+      "급성기 뇌졸중 평가",
+      "뇌졸중 발생시각 문진"
+    ],
+    "display_ko": "급성기뇌졸중 적정성 평가 관련 병원 전 사건 문진",
+    "entry_type": "assessment_program",
+    "program_id": "hira.acute_stroke_event_history",
+    "runtime_readiness": "safety_first_research_test_ready",
+    "selection_number": 5,
+    "start_prompt_ko": "급성기뇌졸중 관련 병원 전 사건 정보를 작성하시겠습니까?"
+  },
+  "id": "hira.acute_stroke_event_history",
+  "program": {
+    "activation": {
+      "current_cycle_indicator_definition_requires_source_verification": true,
+      "must_not_delay_emergency_assessment_or_treatment": true,
+      "requires_suspected_or_confirmed_acute_stroke_workflow": true
+    },
+    "assessment_type": "time_critical_event_history",
+    "data_absent_policy": {
+      "record_reason_not_guess": true,
+      "unknown_event_time_is_allowed": true,
+      "use_last_known_well_when_onset_unknown": true
+    },
+    "display_ko": "급성기뇌졸중 적정성 평가 관련 병원 전 사건 시각",
+    "id": "hira.acute_stroke_event_history",
+    "measurement_test_or_record_requirements": [
+      {
+        "id": "hira.stroke.emergency_arrival_datetime",
+        "source": [
+          "medical_record"
+        ]
+      },
+      {
+        "id": "hira.stroke.brain_imaging_datetime",
+        "source": [
+          "medical_record",
+          "measurement"
+        ]
+      },
+      {
+        "id": "hira.stroke.thrombolysis_or_thrombectomy",
+        "source": [
+          "medical_record",
+          "claim_data"
+        ]
+      },
+      {
+        "id": "hira.stroke.nihss_or_clinical_assessment",
+        "source": [
+          "standardized_test",
+          "medical_record"
+        ]
+      }
+    ],
+    "patient_or_proxy_question_groups": [
+      {
+        "display_ko": "증상 발생과 병원 도착 전 경과",
+        "id": "hira.stroke.prehospital_timeline",
+        "items": [
+          {
+            "id": "hira.stroke.timeline_reporter",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report"
+            ],
+            "text_ko": "이 시간 정보를 알려주시는 분은 환자 본인인가요, 목격자나 보호자인가요?",
+            "value_type": "coded"
+          },
+          {
+            "id": "hira.stroke.symptom_onset_known",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "medical_record"
+            ],
+            "text_ko": "증상이 시작된 시각을 정확히 알 수 있나요?",
+            "value_type": "boolean"
+          },
+          {
+            "id": "hira.stroke.symptom_onset_datetime",
+            "required_when": "hira.stroke.symptom_onset_known=true",
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "medical_record"
+            ],
+            "text_ko": "증상이 시작된 날짜와 시각은 언제인가요?",
+            "value_type": "dateTime"
+          },
+          {
+            "id": "hira.stroke.last_known_well_datetime",
+            "required_when": "hira.stroke.symptom_onset_known=false",
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "medical_record"
+            ],
+            "text_ko": "시작 시각이 불확실하다면, 증상 없이 정상으로 확인된 마지막 날짜와 시각은 언제인가요?",
+            "value_type": "dateTime"
+          },
+          {
+            "id": "hira.stroke.discovery_datetime",
+            "required_when": "symptom_onset_uncertain_or_wake_up_stroke",
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "medical_record"
+            ],
+            "text_ko": "증상을 처음 발견한 날짜와 시각은 언제인가요?",
+            "value_type": "dateTime"
+          },
+          {
+            "id": "hira.stroke.ambulance_use",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "medical_record"
+            ],
+            "text_ko": "이번 증상으로 구급차를 이용했나요?",
+            "value_type": "boolean"
+          },
+          {
+            "id": "hira.stroke.transferred_from_other_hospital",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "medical_record"
+            ],
+            "text_ko": "다른 병원에서 진료를 받은 뒤 이 병원으로 옮겨왔나요?",
+            "value_type": "boolean"
+          }
+        ]
+      }
+    ],
+    "source_refs": [
+      "source.hira.adequacy-plan.2026",
+      "source.hira.acute-stroke-results-cycle8.2020"
+    ]
+  },
+  "resource_type": "HiraAdequacyAssessmentInterviewProgram",
+  "review_status": "unreviewed",
+  "start_confirmation_options": {
+    "1": "예",
+    "2": "아니오",
+    "3": "잘 모르겠음",
+    "4": "답변하지 않음"
+  },
+  "status": "research_only"
+}

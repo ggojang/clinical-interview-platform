@@ -511,6 +511,26 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
         raise RuntimeError("HIRA assessment knowledge must remain research_only/unreviewed")
     hira_assessments["resource_type"] = "HiraAdequacyAssessmentInterviewRegistry"
     hira_assessments["contains_patient_responses"] = False
+    hira_programs = {}
+    entries_by_program = {
+        entry["program_id"]: entry
+        for entry in hira_assessments.get("entry_catalog", [])
+    }
+    for program in hira_assessments.get("programs", []):
+        program_id = program["id"]
+        hira_programs[f"assessments/{program_id}.json"] = {
+            "resource_type": "HiraAdequacyAssessmentInterviewProgram",
+            "id": program_id,
+            "status": hira_assessments["status"],
+            "review_status": hira_assessments["review_status"],
+            "contains_patient_responses": False,
+            "entry": entries_by_program[program_id],
+            "start_confirmation_options": hira_assessments["entry_policy"][
+                "start_confirmation_options"
+            ],
+            "assessment_context": hira_assessments["assessment_context"],
+            "program": program,
+        }
     common_facts = envelope(
         "CommonInterviewFactCollection",
         deduplicate(
@@ -560,6 +580,7 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
         "clinician-submission-context.json": clinician_context,
         "hira-adequacy-assessments.json": hira_assessments,
     }
+    resources.update(hira_programs)
     resources.update(collect_rfe_resources(root))
     resources.update(collect_patient_experience_questionnaire(root))
     return resources
@@ -662,6 +683,8 @@ def build(root: Path, output: Path) -> dict[str, Any]:
         "hira_adequacy_assessment_policy": {
             "resource": "/gpt/hira-adequacy-assessments.json",
             "operation": "getHiraAdequacyAssessmentInterviews",
+            "program_resource_template": "/gpt/assessments/{programId}.json",
+            "program_operation": "getHiraAdequacyAssessmentInterviewProgram",
             "entry_point": "reason_for_encounter",
             "entry_catalog_path": "/gpt/hira-adequacy-assessments.json#/entry_catalog",
             "generic_request_returns_numbered_program_selection": True,
@@ -758,6 +781,7 @@ def build(root: Path, output: Path) -> dict[str, Any]:
                 "getPatientExperienceQuestionnaireSection",
             ],
             "assessment_operation": "getHiraAdequacyAssessmentInterviews",
+            "assessment_program_operation": "getHiraAdequacyAssessmentInterviewProgram",
             "aggregate_resources_are_backward_compatible": True,
         },
         "resources": manifest_resources,

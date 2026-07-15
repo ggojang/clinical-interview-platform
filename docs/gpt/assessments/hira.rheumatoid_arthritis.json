@@ -1,0 +1,91 @@
+{
+  "assessment_context": {
+    "activation_policy": {
+      "confirm_current_cycle_before_official_submission": true,
+      "never_activate_from_symptom_alone": true,
+      "ordinary_primary_care_interview_is_not_an_assessment_submission": true,
+      "requires_explicit_program_or_workflow_context": true
+    },
+    "required_fields": [
+      "assessment_program_id",
+      "assessment_cycle",
+      "care_setting",
+      "target_period",
+      "institution_eligibility_status",
+      "patient_eligibility_status",
+      "information_source"
+    ]
+  },
+  "contains_patient_responses": false,
+  "entry": {
+    "aliases_ko": [
+      "류마티스관절염 적정성 평가",
+      "류마티스 관절염 평가",
+      "류마티스 질병활성도 평가"
+    ],
+    "display_ko": "류마티스관절염 적정성 평가 질병활성도 문진",
+    "entry_type": "assessment_program",
+    "program_id": "hira.rheumatoid_arthritis",
+    "runtime_readiness": "research_test_ready",
+    "selection_number": 3,
+    "start_prompt_ko": "류마티스관절염 적정성 평가의 환자 보고 항목을 작성하시겠습니까?"
+  },
+  "id": "hira.rheumatoid_arthritis",
+  "program": {
+    "activation": {
+      "requires_rheumatoid_arthritis_assessment_context": true
+    },
+    "assessment_type": "composite_clinical_score",
+    "clinician_test_components": [
+      {
+        "id": "hira.ra.tender_joint_count",
+        "source": [
+          "clinician_observation"
+        ]
+      },
+      {
+        "id": "hira.ra.swollen_joint_count",
+        "source": [
+          "clinician_observation"
+        ]
+      },
+      {
+        "id": "hira.ra.esr_or_crp",
+        "source": [
+          "measurement",
+          "medical_record"
+        ]
+      }
+    ],
+    "display_ko": "류마티스관절염 적정성 평가 질병활성도",
+    "id": "hira.rheumatoid_arthritis",
+    "patient_report_items": [
+      {
+        "id": "hira.ra.patient_global_health_vas",
+        "is_pain_score": false,
+        "maximum": 100,
+        "minimum": 0,
+        "required": true,
+        "scale_type": "VAS",
+        "source": [
+          "patient_report"
+        ],
+        "text_ko": "현재 관절염을 포함한 전반적인 건강상태를 0부터 100까지 표시해 주세요.",
+        "value_type": "integer"
+      }
+    ],
+    "rule": "Patient global health VAS must never be stored as pain.nrs_score.",
+    "source_refs": [
+      "source.hira.ra-benefit-standard.2025"
+    ]
+  },
+  "resource_type": "HiraAdequacyAssessmentInterviewProgram",
+  "review_status": "unreviewed",
+  "start_confirmation_options": {
+    "1": "예",
+    "2": "아니오",
+    "3": "잘 모르겠음",
+    "4": "답변하지 않음"
+  },
+  "status": "research_only"
+}

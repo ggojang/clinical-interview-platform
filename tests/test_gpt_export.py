@@ -224,6 +224,9 @@ class GptExportTests(unittest.TestCase):
         self.assertIn("pregnancy_postpartum_concern", schema)
         self.assertIn("operationId: getReasonForEncounterRulePartition", schema)
         self.assertIn("operationId: getHiraAdequacyAssessmentInterviews", schema)
+        self.assertIn(
+            "operationId: getHiraAdequacyAssessmentInterviewProgram", schema
+        )
 
     def test_hira_assessment_registry_is_exported_with_source_boundaries(self):
         with tempfile.TemporaryDirectory() as output:
@@ -264,9 +267,30 @@ class GptExportTests(unittest.TestCase):
             )
             self.assertTrue(all(entry["aliases_ko"] for entry in entries))
             self.assertTrue(all(entry["start_prompt_ko"] for entry in entries))
+            for entry in entries:
+                program_resource = json.loads(
+                    (
+                        output_path
+                        / "assessments"
+                        / f"{entry['program_id']}.json"
+                    ).read_text(encoding="utf-8")
+                )
+                self.assertEqual(program_resource["id"], entry["program_id"])
+                self.assertEqual(
+                    program_resource["resource_type"],
+                    "HiraAdequacyAssessmentInterviewProgram",
+                )
+                self.assertFalse(program_resource["contains_patient_responses"])
+                self.assertEqual(
+                    program_resource["program"]["id"], entry["program_id"]
+                )
             self.assertEqual(
                 manifest["preferred_loading"]["assessment_operation"],
                 "getHiraAdequacyAssessmentInterviews",
+            )
+            self.assertEqual(
+                manifest["preferred_loading"]["assessment_program_operation"],
+                "getHiraAdequacyAssessmentInterviewProgram",
             )
 
     def test_custom_gpt_config_requires_clickable_assessment_catalog_starter(self):

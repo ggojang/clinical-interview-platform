@@ -1,0 +1,199 @@
+{
+  "assessment_context": {
+    "activation_policy": {
+      "confirm_current_cycle_before_official_submission": true,
+      "never_activate_from_symptom_alone": true,
+      "ordinary_primary_care_interview_is_not_an_assessment_submission": true,
+      "requires_explicit_program_or_workflow_context": true
+    },
+    "required_fields": [
+      "assessment_program_id",
+      "assessment_cycle",
+      "care_setting",
+      "target_period",
+      "institution_eligibility_status",
+      "patient_eligibility_status",
+      "information_source"
+    ]
+  },
+  "contains_patient_responses": false,
+  "entry": {
+    "aliases_ko": [
+      "우울증 외래 적정성 평가",
+      "우울증 적정성 평가",
+      "우울증 평가 척도"
+    ],
+    "display_ko": "우울증 외래 적정성 평가 증상척도",
+    "entry_type": "fixed_standardized_instrument",
+    "program_id": "hira.depression_outpatient",
+    "runtime_readiness": "research_test_result_capture_ready",
+    "selection_number": 2,
+    "start_prompt_ko": "우울증 외래 적정성 평가 증상척도를 작성하시겠습니까?"
+  },
+  "id": "hira.depression_outpatient",
+  "program": {
+    "activation": {
+      "do_not_activate_from_transient_low_mood_alone": true,
+      "requires_depression_outpatient_assessment_context": true,
+      "requires_selected_instrument": true
+    },
+    "assessment_type": "fixed_standardized_instrument",
+    "display_ko": "우울증 외래 적정성 평가 증상평가",
+    "fixed_questionnaire_policy": {
+      "current_cycle_timing_requires_source_verification": true,
+      "initial_and_reassessment_are_distinct_events": true,
+      "never_reconstruct_missing_items_with_ai": true,
+      "preserve_original_items_options_scoring_and_recall_period": true,
+      "use_exact_authorized_version": true,
+      "verify_korean_translation_and_license": true
+    },
+    "id": "hira.depression_outpatient",
+    "information_source": [
+      "patient_report",
+      "proxy_report",
+      "standardized_test",
+      "medical_record"
+    ],
+    "recognized_instruments": [
+      {
+        "id": "PHQ-9",
+        "level": 1
+      },
+      {
+        "id": "EPDS",
+        "level": 1
+      },
+      {
+        "id": "BDI",
+        "level": 2
+      },
+      {
+        "id": "GDS",
+        "level": 2
+      },
+      {
+        "id": "QIDS",
+        "level": 2
+      },
+      {
+        "id": "RRS",
+        "level": 2
+      },
+      {
+        "id": "HADS",
+        "level": 2
+      },
+      {
+        "id": "CES-D",
+        "level": 2
+      },
+      {
+        "id": "HDRS",
+        "level": 3
+      },
+      {
+        "id": "IDS",
+        "level": 3
+      },
+      {
+        "id": "CSDD",
+        "level": 3
+      },
+      {
+        "id": "SNSB",
+        "level": "recognized"
+      }
+    ],
+    "result_capture_items": [
+      {
+        "id": "hira.depression.assessment_event",
+        "options": {
+          "1": "초기평가",
+          "2": "재평가"
+        },
+        "required": true,
+        "source": [
+          "patient_report",
+          "proxy_report",
+          "medical_record"
+        ],
+        "text_ko": "이번 기록은 우울증상 초기평가인가요, 재평가인가요?",
+        "value_type": "coded"
+      },
+      {
+        "id": "hira.depression.instrument_name_version",
+        "required": true,
+        "source": [
+          "patient_report",
+          "proxy_report",
+          "medical_record"
+        ],
+        "text_ko": "실제로 사용한 우울증 평가도구의 이름과 버전을 알려주세요. 예: PHQ-9 한국어판",
+        "value_type": "text"
+      },
+      {
+        "id": "hira.depression.assessment_date",
+        "required": true,
+        "source": [
+          "patient_report",
+          "proxy_report",
+          "medical_record"
+        ],
+        "text_ko": "평가를 시행한 날짜는 언제인가요?",
+        "value_type": "date"
+      },
+      {
+        "id": "hira.depression.total_score",
+        "required": true,
+        "source": [
+          "patient_report",
+          "proxy_report",
+          "medical_record"
+        ],
+        "text_ko": "평가도구의 총점은 몇 점이었나요?",
+        "value_type": "decimal"
+      },
+      {
+        "id": "hira.depression.self_harm_item_positive",
+        "required": true,
+        "safety_relevant": true,
+        "source": [
+          "patient_report",
+          "proxy_report",
+          "medical_record"
+        ],
+        "text_ko": "사용한 평가도구에서 자해 또는 죽음과 관련된 문항에 양성 응답이 있었나요?",
+        "value_type": "boolean"
+      },
+      {
+        "id": "hira.depression.additional_result_context",
+        "required": false,
+        "source": [
+          "patient_report",
+          "proxy_report"
+        ],
+        "text_ko": "평가 결과와 함께 의료진에게 전달할 추가 내용이 있나요?",
+        "value_type": "text"
+      }
+    ],
+    "result_capture_policy": {
+      "does_not_administer_instrument_items": true,
+      "does_not_calculate_or_interpret_missing_score": true,
+      "positive_self_harm_response_requires_immediate_safety_assessment": true,
+      "requires_exact_instrument_name_version": true
+    },
+    "source_refs": [
+      "source.hira.depression-outpatient-results-cycle2",
+      "source.hira.depression-outpatient-plan-cycle2"
+    ]
+  },
+  "resource_type": "HiraAdequacyAssessmentInterviewProgram",
+  "review_status": "unreviewed",
+  "start_confirmation_options": {
+    "1": "예",
+    "2": "아니오",
+    "3": "잘 모르겠음",
+    "4": "답변하지 않음"
+  },
+  "status": "research_only"
+}

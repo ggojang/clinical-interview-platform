@@ -1,0 +1,412 @@
+{
+  "assessment_context": {
+    "activation_policy": {
+      "confirm_current_cycle_before_official_submission": true,
+      "never_activate_from_symptom_alone": true,
+      "ordinary_primary_care_interview_is_not_an_assessment_submission": true,
+      "requires_explicit_program_or_workflow_context": true
+    },
+    "required_fields": [
+      "assessment_program_id",
+      "assessment_cycle",
+      "care_setting",
+      "target_period",
+      "institution_eligibility_status",
+      "patient_eligibility_status",
+      "information_source"
+    ]
+  },
+  "contains_patient_responses": false,
+  "entry": {
+    "aliases_ko": [
+      "요양병원 적정성 평가",
+      "요양병원 입원급여 평가",
+      "요양병원 환자평가표",
+      "2주기 8차 요양병원 평가"
+    ],
+    "display_ko": "2026년(2주기 8차) 요양병원 입원급여 적정성 평가 문진",
+    "entry_type": "assessment_program",
+    "program_id": "hira.long_term_care_hospital_inpatient.2026-cycle2-8",
+    "runtime_readiness": "research_test_ready",
+    "selection_number": 1,
+    "start_prompt_ko": "요양병원 입원급여 적정성 평가 문진을 시작하시겠습니까?"
+  },
+  "id": "hira.long_term_care_hospital_inpatient.2026-cycle2-8",
+  "program": {
+    "assessment_type": "structured_assessment",
+    "care_setting": "long_term_care_hospital_inpatient",
+    "default_assessment_frequency": "monthly",
+    "default_observation_period_days": 7,
+    "display_ko": "2026년(2주기 8차) 요양병원 입원급여 적정성 평가",
+    "id": "hira.long_term_care_hospital_inpatient.2026-cycle2-8",
+    "measurement_test_or_record_requirements": [
+      {
+        "id": "hira.ltc.height_weight",
+        "source": [
+          "measurement",
+          "medical_record"
+        ]
+      },
+      {
+        "id": "hira.ltc.mmse_cdr_gds",
+        "source": [
+          "standardized_test",
+          "medical_record"
+        ]
+      },
+      {
+        "id": "hira.ltc.hba1c_or_glucose",
+        "source": [
+          "measurement",
+          "medical_record"
+        ]
+      },
+      {
+        "id": "hira.ltc.medications_and_treatments",
+        "source": [
+          "medical_record",
+          "claim_data"
+        ]
+      }
+    ],
+    "official_submission_requires_clinician_or_record_confirmation": true,
+    "patient_or_proxy_question_groups": [
+      {
+        "display_ko": "일반정보와 건강습관",
+        "id": "hira.ltc.general_and_health_habits",
+        "items": [
+          {
+            "id": "hira.ltc.previous_residence",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report"
+            ],
+            "text_ko": "입원하시기 전에는 어디에서 생활하셨나요?",
+            "value_type": "coded_or_text"
+          },
+          {
+            "id": "hira.ltc.education_level",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report"
+            ],
+            "text_ko": "최종 학력은 어떻게 되나요?",
+            "value_type": "coded"
+          },
+          {
+            "id": "hira.ltc.current_smoking",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report"
+            ],
+            "text_ko": "현재 담배를 피우시나요?",
+            "value_type": "boolean"
+          },
+          {
+            "id": "hira.ltc.frequent_alcohol_use",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report"
+            ],
+            "text_ko": "현재 자주 술을 드시나요?",
+            "value_type": "boolean"
+          },
+          {
+            "id": "hira.ltc.exercise_four_days_thirty_minutes",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report"
+            ],
+            "text_ko": "보통 일주일에 4일 이상, 한 번에 30분 이상 운동하시나요?",
+            "value_type": "boolean"
+          },
+          {
+            "id": "hira.ltc.three_meals_daily",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report"
+            ],
+            "text_ko": "보통 하루 세 끼를 드시나요?",
+            "value_type": "boolean"
+          }
+        ]
+      },
+      {
+        "display_ko": "장기요양과 사회적 필요",
+        "id": "hira.ltc.long_term_care_and_social_needs",
+        "items": [
+          {
+            "id": "hira.ltc.long_term_care_grade",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report"
+            ],
+            "text_ko": "노인장기요양보험 등급을 받았거나 신청 중인가요?",
+            "value_type": "coded_or_text"
+          },
+          {
+            "id": "hira.ltc.long_term_care_services",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report"
+            ],
+            "text_ko": "현재 이용 중인 장기요양서비스가 있나요?",
+            "value_type": "multi_text"
+          },
+          {
+            "id": "hira.ltc.long_term_care_service_intent",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report"
+            ],
+            "text_ko": "퇴원 후 장기요양서비스를 이용할 의향이 있나요?",
+            "value_type": "coded"
+          },
+          {
+            "id": "hira.ltc.no_caregiver_or_meal_help",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report"
+            ],
+            "text_ko": "식사 준비나 돌봄을 도와줄 사람이 없어 어려움이 있나요?",
+            "value_type": "boolean"
+          },
+          {
+            "id": "hira.ltc.utility_shutoff_risk",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report"
+            ],
+            "text_ko": "공과금을 내지 못해 전기·수도·가스가 끊길 위험이 있나요?",
+            "value_type": "boolean"
+          },
+          {
+            "id": "hira.ltc.housing_instability",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report"
+            ],
+            "text_ko": "현재 거주할 곳이 불안정하거나 노숙 상태인가요?",
+            "value_type": "boolean"
+          },
+          {
+            "id": "hira.ltc.financial_difficulty",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report"
+            ],
+            "text_ko": "의료비·주거비·난방비를 지불하기 어려운가요?",
+            "value_type": "boolean"
+          },
+          {
+            "id": "hira.ltc.transportation_barrier",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report"
+            ],
+            "text_ko": "교통 문제 때문에 진료를 받거나 일상생활을 하는 데 어려움이 있나요?",
+            "value_type": "boolean"
+          },
+          {
+            "id": "hira.ltc.food_or_abuse_urgent_need",
+            "required": true,
+            "safety_relevant": true,
+            "source": [
+              "patient_report",
+              "proxy_report"
+            ],
+            "text_ko": "식량 부족이나 학대 등 지금 바로 도움이 필요한 문제가 있나요?",
+            "value_type": "boolean"
+          }
+        ]
+      },
+      {
+        "display_ko": "낙상·삼킴·피부 병력",
+        "id": "hira.ltc.history_and_symptoms",
+        "items": [
+          {
+            "id": "hira.ltc.fall_last_30_days",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "medical_record"
+            ],
+            "text_ko": "최근 30일 안에 넘어진 적이 있나요?",
+            "value_type": "boolean"
+          },
+          {
+            "id": "hira.ltc.fall_days_31_to_180",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "medical_record"
+            ],
+            "text_ko": "31일 전부터 180일 전 사이에 넘어진 적이 있나요?",
+            "value_type": "boolean"
+          },
+          {
+            "id": "hira.ltc.swallowing_difficulty",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "clinician_observation"
+            ],
+            "text_ko": "음식이나 물을 삼키기 어렵거나 자주 사레가 드나요?",
+            "value_type": "boolean"
+          },
+          {
+            "does_not_replace_measurement": true,
+            "id": "hira.ltc.recent_weight_loss_report",
+            "required": false,
+            "source": [
+              "patient_report",
+              "proxy_report"
+            ],
+            "text_ko": "최근 체중이 줄었다고 느끼거나 들은 적이 있나요?",
+            "value_type": "boolean"
+          },
+          {
+            "id": "hira.ltc.pressure_ulcer_previous_year",
+            "required": true,
+            "source": [
+              "patient_report",
+              "proxy_report",
+              "medical_record"
+            ],
+            "text_ko": "지난 1년 동안 욕창이 생긴 적이 있나요?",
+            "value_type": "boolean"
+          }
+        ]
+      }
+    ],
+    "reusable_modules": [
+      {
+        "id": "hira.ltc.pain",
+        "must_collect": [
+          "pain.frequency",
+          "pain.nrs_score"
+        ],
+        "required_when": "pain_item_applies",
+        "resource_ref": "knowledge/shared/hira-pain-assessment.json"
+      }
+    ],
+    "source_refs": [
+      "source.hira.ltc-adequacy-cycle2-8.2026",
+      "source.hira.ltc-patient-assessment-amendment.2026-117"
+    ],
+    "structured_observation_not_patient_questions": [
+      {
+        "components": [
+          "short_term_memory",
+          "decision_making",
+          "making_self_understood",
+          "verbal_communication"
+        ],
+        "id": "hira.ltc.cognition_and_communication",
+        "source": [
+          "clinician_observation",
+          "performance_assessment"
+        ]
+      },
+      {
+        "components": [
+          "delusions",
+          "hallucinations",
+          "agitation_aggression",
+          "depression",
+          "anxiety",
+          "elation",
+          "apathy",
+          "disinhibition",
+          "irritability",
+          "abnormal_motor_behavior",
+          "sleep_night_behavior",
+          "appetite_eating_change",
+          "resistance_to_care",
+          "wandering"
+        ],
+        "id": "hira.ltc.behavioral_psychological_symptoms",
+        "source": [
+          "clinician_observation",
+          "proxy_report",
+          "medical_record"
+        ]
+      },
+      {
+        "components": [
+          "dressing",
+          "face_washing",
+          "tooth_brushing",
+          "bathing",
+          "eating",
+          "bed_mobility",
+          "sitting_up",
+          "transfer",
+          "leaving_room",
+          "toileting"
+        ],
+        "id": "hira.ltc.activities_of_daily_living",
+        "source": [
+          "clinician_observation",
+          "performance_assessment"
+        ]
+      },
+      {
+        "components": [
+          "bowel_continence",
+          "urinary_continence",
+          "bladder_diary",
+          "indwelling_catheter"
+        ],
+        "id": "hira.ltc.bowel_bladder_status",
+        "source": [
+          "clinician_observation",
+          "medical_record"
+        ]
+      },
+      {
+        "components": [
+          "current_pressure_ulcer",
+          "site",
+          "stage",
+          "treatment"
+        ],
+        "id": "hira.ltc.skin_and_pressure_ulcer_current",
+        "source": [
+          "clinician_observation",
+          "medical_record"
+        ]
+      }
+    ],
+    "target_period": {
+      "end": "2026-12-31",
+      "start": "2026-07-01"
+    }
+  },
+  "resource_type": "HiraAdequacyAssessmentInterviewProgram",
+  "review_status": "unreviewed",
+  "start_confirmation_options": {
+    "1": "예",
+    "2": "아니오",
+    "3": "잘 모르겠음",
+    "4": "답변하지 않음"
+  },
+  "status": "research_only"
+}
