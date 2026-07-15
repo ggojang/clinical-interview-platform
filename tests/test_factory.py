@@ -19,7 +19,7 @@ from runtime.package import (
     ABDOMINAL_PAIN_PACKAGE, BACK_PAIN_PACKAGE, BOWEL_SYMPTOMS_PACKAGE, CHEST_PAIN_PACKAGE, DEFAULT_PACKAGE,
     DIZZINESS_SYNCOPE_PACKAGE, DYSPNEA_PACKAGE, FEVER_PACKAGE, HEADACHE_PACKAGE,
     DIABETES_FOLLOW_UP_PACKAGE, EAR_HEARING_SYMPTOMS_PACKAGE, EDEMA_PACKAGE, EYE_SYMPTOMS_PACKAGE, FATIGUE_PACKAGE, FOCAL_WEAKNESS_NUMBNESS_PACKAGE, HYPERTENSION_FOLLOW_UP_PACKAGE, JOINT_LIMB_COMPLAINT_PACKAGE, MEDICATION_REVIEW_PACKAGE, MENTAL_HEALTH_SLEEP_PACKAGE, PALPITATIONS_PACKAGE, REPRODUCTIVE_GENITAL_SYMPTOMS_PACKAGE, SKIN_COMPLAINT_PACKAGE,
-    ALLERGY_CONCERN_PACKAGE, ANEMIA_CONCERN_FOLLOW_UP_PACKAGE, ASTHMA_COPD_FOLLOW_UP_PACKAGE, DYSPEPSIA_REFLUX_PACKAGE, THYROID_CONCERN_FOLLOW_UP_PACKAGE, KIDNEY_FUNCTION_CKD_FOLLOW_UP_PACKAGE, LIVER_FUNCTION_CHRONIC_FOLLOW_UP_PACKAGE, LUMP_LYMPH_NODE_PACKAGE, MEMORY_COGNITIVE_CONCERN_PACKAGE, ORAL_DENTAL_SYMPTOMS_PACKAGE, PREGNANCY_POSTPARTUM_CONCERN_PACKAGE, WOUND_MINOR_INJURY_PACKAGE, UPPER_RESPIRATORY_SYMPTOMS_PACKAGE, URINARY_SYMPTOMS_PACKAGE, WEIGHT_CONSTITUTIONAL_CHANGE_PACKAGE,
+    ALLERGY_CONCERN_PACKAGE, ANEMIA_CONCERN_FOLLOW_UP_PACKAGE, ASTHMA_COPD_FOLLOW_UP_PACKAGE, DYSPEPSIA_REFLUX_PACKAGE, THYROID_CONCERN_FOLLOW_UP_PACKAGE, KIDNEY_FUNCTION_CKD_FOLLOW_UP_PACKAGE, LIVER_FUNCTION_CHRONIC_FOLLOW_UP_PACKAGE, LUMP_LYMPH_NODE_PACKAGE, MEMORY_COGNITIVE_CONCERN_PACKAGE, ORAL_DENTAL_SYMPTOMS_PACKAGE, PREGNANCY_POSTPARTUM_CONCERN_PACKAGE, SEIZURE_EVENT_FOLLOW_UP_PACKAGE, WOUND_MINOR_INJURY_PACKAGE, UPPER_RESPIRATORY_SYMPTOMS_PACKAGE, URINARY_SYMPTOMS_PACKAGE, WEIGHT_CONSTITUTIONAL_CHANGE_PACKAGE,
     VOMITING_DIARRHEA_PACKAGE,
     PackageLoadError, load_package,
 )
@@ -39,13 +39,19 @@ class CompilerTests(unittest.TestCase):
             (root / "knowledge/catalog/primary-care-rfe.json")
             .read_text(encoding="utf-8")
         )
-        queued = {item["rfe"] for item in queue["order"]}
+        queued = {
+            item["rfe"] for item in queue["order"]
+            if item["state"] == "planned"
+        }
         planned = {
             item["id"] for item in catalog["entries"]
             if item.get("implementation_status") == "planned"
         }
         self.assertEqual(queued, planned)
-        self.assertTrue(all(item["state"] == "planned" for item in queue["order"]))
+        self.assertEqual(
+            next(item for item in queue["order"] if item["rfe"] == "rfe.seizure_event_follow_up")["state"],
+            "implemented_unreviewed",
+        )
         self.assertIn(
             "clinician handoff includes collected required missing and conflicting package Facts",
             queue["definition_of_done"],
@@ -97,6 +103,7 @@ class CompilerTests(unittest.TestCase):
             "dyspepsia_reflux",
             "thyroid_concern_follow_up",
             "anemia_concern_follow_up",
+            "seizure_event_follow_up",
             "kidney_function_ckd_follow_up",
             "liver_function_chronic_follow_up",
         ):
@@ -988,6 +995,23 @@ class CompilerTests(unittest.TestCase):
         mapping = json.loads((Path(__file__).resolve().parents[1] / "mappings/terminology/snomed-mrcm-anemia-concern-follow-up.json").read_text(encoding="utf-8"))
         self.assertEqual(len(mapping["focus_concepts"]), 8)
         self.assertFalse(mapping["validation"]["clinical_rule_authority"])
+
+    def test_seizure_event_follow_up_package_is_complete(self):
+        package = compile_package(profile="seizure_event_follow_up")
+        facts = {node["id"] for node in package["knowledge_graph"]["nodes"] if node["type"] == "Fact"}
+        self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
+        self.assertGreaterEqual(len(facts), 50)
+        self.assertEqual(package["coverage"]["total_safety_rules"], 12)
+        self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 12)
+        self.assertEqual(package["coverage"]["uncovered_safety_rules"], [])
+        self.assertEqual(package["coverage"]["data_absent_reason_simulations"], 2)
+        conditional = package["interview_completion_policy"]["conditional_required_facts"][0]
+        self.assertEqual(conditional["selector_fact"], "seizure.primary_group")
+        self.assertEqual(set(conditional["cases"]), {"first_suspected_event", "recurrent_undiagnosed_events", "known_epilepsy_breakthrough", "medication_or_treatment_followup", "alternative_event_unclear", "other_unclear"})
+        mapping = json.loads((Path(__file__).resolve().parents[1] / "mappings/terminology/snomed-mrcm-seizure-event-follow-up.json").read_text(encoding="utf-8"))
+        self.assertEqual(len(mapping["focus_concepts"]), 6)
+        self.assertFalse(mapping["validation"]["clinical_rule_authority"])
+        self.assertFalse(mapping["event_semantics"]["diagnosis_inferred"])
 
     def test_kidney_function_ckd_follow_up_package_is_complete(self):
         package = compile_package(profile="kidney_function_ckd_follow_up")

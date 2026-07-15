@@ -604,7 +604,9 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
     return resources
 
 
-def encoded(document: dict[str, Any]) -> bytes:
+def encoded(document: dict[str, Any], *, minified: bool = False) -> bytes:
+    if minified:
+        return (json.dumps(document, ensure_ascii=False, separators=(",", ":"), sort_keys=True) + "\n").encode()
     return (json.dumps(document, ensure_ascii=False, indent=2, sort_keys=True) + "\n").encode()
 
 
@@ -622,7 +624,11 @@ def build(root: Path, output: Path) -> dict[str, Any]:
     output.mkdir(parents=True, exist_ok=True)
     manifest_resources = []
     for name, document in sorted(resources.items()):
-        payload = encoded(document)
+        # The aggregate Fact file is a backward-compatible discovery index.
+        # Full, readable Fact payloads remain split by RFE; minifying this one
+        # index prevents growth in implemented packages from breaking the
+        # Custom GPT Action response-size guard.
+        payload = encoded(document, minified=name == "facts.json")
         destination = output / name
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_bytes(payload)

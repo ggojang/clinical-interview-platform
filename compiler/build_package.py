@@ -436,6 +436,17 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/hematology/anemia-concern-follow-up",
         "research_manifests": [ROOT / "sources/manifests/primary-care-anemia-concern-follow-up-research.json"],
     },
+    "seizure_event_follow_up": {
+        "graph": ROOT / "knowledge/graph/primary-care-seizure-event-follow-up.json",
+        "rules": ROOT / "rules/primary-care-seizure-event-follow-up.json",
+        "sources": ROOT / "sources/manifests/primary-care-seizure-event-follow-up.json",
+        "completion_policy": ROOT / "policies/primary-care-seizure-event-follow-up-completion.json",
+        "output": ROOT / "packages/generated/primary-care-seizure-event-follow-up-0.1.0.json",
+        "package_id": "package.primary-care-seizure-event-follow-up", "package_version": "0.1.0",
+        "rfe": "rfe.seizure_event_follow_up",
+        "simulation_root": ROOT / "simulation/patients/neurology/seizure-event-follow-up",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-seizure-event-follow-up-research.json"],
+    },
     "kidney_function_ckd_follow_up": {
         "graph": ROOT / "knowledge/graph/primary-care-kidney-function-ckd-follow-up.json",
         "rules": ROOT / "rules/primary-care-kidney-function-ckd-follow-up.json",
