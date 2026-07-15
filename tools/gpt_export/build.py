@@ -10,8 +10,8 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "1.24.0"
-GENERATED_AT = "2026-07-14T00:00:00Z"
+VERSION = "1.25.0"
+GENERATED_AT = "2026-07-15T00:00:00Z"
 PRIVATE_KEYS = {
     "raw_text", "raw_input", "patient_response", "patient_responses",
     "questionnaire_response", "conversation", "transcript", "evidence",
@@ -211,9 +211,52 @@ def collect_rfe_resources(root: Path) -> dict[str, dict[str, Any]]:
         resources[f"rfe/{slug}/questions.json"] = rfe_resource(
             "ReasonForEncounterQuestionCollection", rfe_id, package, questions
         )
-        resources[f"rfe/{slug}/rules.json"] = rfe_resource(
+        rule_path = f"rfe/{slug}/rules.json"
+        rule_resource = rfe_resource(
             "ReasonForEncounterRuleCollection", rfe_id, package, rules
         )
+        estimated_size = len(
+            json.dumps(rule_resource, ensure_ascii=False, indent=2, sort_keys=True)
+            .encode("utf-8")
+        )
+        if estimated_size >= 50_000:
+            partitions = []
+            index_rules = [
+                rule for rule in rules
+                if rule.get("type") in {"activation", "safety"}
+            ]
+            for rule_type in ("completion", "priority"):
+                partition_rules = [
+                    rule for rule in rules if rule.get("type") == rule_type
+                ]
+                if not partition_rules:
+                    continue
+                partition_path = f"rfe/{slug}/rules/{rule_type}.json"
+                resources[partition_path] = rfe_resource(
+                    "ReasonForEncounterRulePartition",
+                    rfe_id,
+                    package,
+                    partition_rules,
+                )
+                partitions.append({
+                    "rule_type": rule_type,
+                    "count": len(partition_rules),
+                    "path": f"/gpt/{partition_path}",
+                })
+            rule_resource = rfe_resource(
+                "ReasonForEncounterRuleCollectionIndex",
+                rfe_id,
+                package,
+                index_rules,
+            )
+            rule_resource["count"] = len(rules)
+            rule_resource["inline_count"] = len(index_rules)
+            rule_resource["partitions"] = partitions
+            rule_resource["loading_policy"] = (
+                "Load this safety and activation index first; load a declared "
+                "completion or priority partition only when needed."
+            )
+        resources[rule_path] = rule_resource
     return resources
 
 

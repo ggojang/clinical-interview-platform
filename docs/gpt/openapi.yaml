@@ -72,6 +72,19 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/JsonDocument'}
+  /gpt/rfe/{rfeId}/rules/{ruleType}.json:
+    get:
+      operationId: getReasonForEncounterRulePartition
+      summary: Get one declared compact rule partition after loading the RFE rule index
+      parameters:
+        - $ref: '#/components/parameters/RfeId'
+        - $ref: '#/components/parameters/RuleType'
+      responses:
+        '200':
+          description: Reason for Encounter rule partition
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/JsonDocument'}
   /gpt/screening-kr.json:
     get:
       operationId: getScreeningKnowledge
@@ -129,7 +142,15 @@ components:
       description: Implemented Reason for Encounter package identifier without the rfe prefix
       schema:
         type: string
-        enum: [abdominal_pain, back_pain, bowel_symptoms, chest_pain, cough, diabetes_follow_up, dizziness_syncope, dyspnea, ear_hearing_symptoms, edema, eye_symptoms, fatigue, fever, focal_weakness_numbness, headache, hypertension_follow_up, joint_limb_complaint, medication_review, mental_health_sleep, palpitations, reproductive_genital_symptoms, skin_complaint, upper_respiratory_symptoms, urinary_symptoms, vomiting_diarrhea, weight_constitutional_change]
+        enum: [abdominal_pain, back_pain, bowel_symptoms, chest_pain, cough, diabetes_follow_up, dizziness_syncope, dyspnea, ear_hearing_symptoms, edema, eye_symptoms, fatigue, fever, focal_weakness_numbness, headache, hypertension_follow_up, joint_limb_complaint, medication_review, mental_health_sleep, oral_dental_symptoms, palpitations, reproductive_genital_symptoms, skin_complaint, upper_respiratory_symptoms, urinary_symptoms, vomiting_diarrhea, weight_constitutional_change]
+    RuleType:
+      name: ruleType
+      in: path
+      required: true
+      description: Partition declared by the RFE rules index; do not guess an undeclared partition
+      schema:
+        type: string
+        enum: [completion, priority]
   schemas:
     JsonDocument:
       type: object

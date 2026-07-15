@@ -1,0 +1,3006 @@
+{
+  "id": "knowledge.generated.oral-dental-symptoms",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-oral-dental-symptoms-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-07-14",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-07-15",
+    "next_full_review_at": "2027-01-10",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.oral-dental.routing",
+      "type": "ClinicalGroup",
+      "display": "routing"
+    },
+    {
+      "id": "group.oral-dental.shared-safety",
+      "type": "ClinicalGroup",
+      "display": "shared-safety"
+    },
+    {
+      "id": "group.oral-dental.common",
+      "type": "ClinicalGroup",
+      "display": "common"
+    },
+    {
+      "id": "group.oral-dental.tooth-pain",
+      "type": "ClinicalGroup",
+      "display": "tooth-pain"
+    },
+    {
+      "id": "group.oral-dental.swelling-infection",
+      "type": "ClinicalGroup",
+      "display": "swelling-infection"
+    },
+    {
+      "id": "group.oral-dental.lesion-mucosa",
+      "type": "ClinicalGroup",
+      "display": "lesion-mucosa"
+    },
+    {
+      "id": "group.oral-dental.gum-periodontal",
+      "type": "ClinicalGroup",
+      "display": "gum-periodontal"
+    },
+    {
+      "id": "group.oral-dental.trauma-procedure",
+      "type": "ClinicalGroup",
+      "display": "trauma-procedure"
+    }
+  ],
+  "group_hypothesis_edges": [],
+  "safety_rules": [
+    {
+      "id": "rule.oral-dental-symptoms.safety.breathing-compromise",
+      "priority": 1000,
+      "when": {
+        "fact": "oral.difficulty_breathing_due_to_swelling",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.oral-dental-symptoms.safety.swallowing-compromise",
+      "priority": 1000,
+      "when": {
+        "fact": "oral.difficulty_swallowing_saliva_due_to_swelling",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.oral-dental-symptoms.safety.speaking-compromise",
+      "priority": 1000,
+      "when": {
+        "fact": "oral.difficulty_speaking_due_to_swelling",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.oral-dental-symptoms.safety.deep-spreading-swelling",
+      "priority": 1000,
+      "when": {
+        "fact": "oral.rapid_floor_of_mouth_tongue_or_neck_swelling",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.oral-dental-symptoms.safety.eye-swelling",
+      "priority": 1000,
+      "when": {
+        "fact": "oral.swelling_closing_eye_or_severe_eye_pain",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.oral-dental-symptoms.safety.vision-change",
+      "priority": 1000,
+      "when": {
+        "fact": "oral.new_vision_change_with_facial_swelling",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.oral-dental-symptoms.safety.severe-systemic-illness",
+      "priority": 1000,
+      "when": {
+        "fact": "oral.severe_systemic_illness_with_infection",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.oral-dental-symptoms.safety.uncontrolled-bleeding",
+      "priority": 1000,
+      "when": {
+        "fact": "oral.uncontrolled_heavy_bleeding",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.oral-dental-symptoms.safety.serious-trauma",
+      "priority": 1000,
+      "when": {
+        "fact": "oral.serious_face_or_jaw_trauma",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.oral-dental-symptoms.safety.permanent-tooth-avulsion",
+      "priority": 980,
+      "when": {
+        "fact": "oral.permanent_tooth_completely_avulsed",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.oral-dental-symptoms.safety.spreading-swelling",
+      "priority": 960,
+      "when": {
+        "fact": "oral.spreading_or_rapidly_worsening_swelling",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.oral-dental-symptoms.safety.significant-trismus",
+      "priority": 950,
+      "when": {
+        "fact": "oral.significant_trismus",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.oral-dental-symptoms.safety.uncontrolled-pain",
+      "priority": 940,
+      "when": {
+        "fact": "oral.severe_pain_not_controlled",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.oral-dental-symptoms.safety.high-risk-infection",
+      "priority": 940,
+      "when": {
+        "fact": "oral.high_risk_host_with_infection",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.oral-dental-symptoms.safety.postprocedure-bleeding",
+      "priority": 940,
+      "when": {
+        "fact": "oral.persistent_bleeding_after_dental_procedure",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.oral-dental-symptoms.safety.ulcer-over-three-weeks",
+      "priority": 920,
+      "when": {
+        "fact": "oral.unexplained_ulcer_over_three_weeks",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.oral-dental-symptoms.safety.oral-lump",
+      "priority": 920,
+      "when": {
+        "fact": "oral.unexplained_lip_or_mouth_lump",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.oral-dental-symptoms.safety.red-patch",
+      "priority": 920,
+      "when": {
+        "fact": "oral.persistent_red_or_red_white_patch",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.oral-dental-symptoms.safety.neck-lump",
+      "priority": 920,
+      "when": {
+        "fact": "oral.persistent_unexplained_neck_lump",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.oral-dental-symptoms.safety.airway-foreign-body-risk",
+      "priority": 930,
+      "when": {
+        "fact": "oral.loose_tooth_or_appliance_airway_risk",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "oral.primary_symptom_group",
+        "display": "Primary Oral or Dental Symptom Group",
+        "value_type": "coded",
+        "allowed_values": [
+          "tooth_pain",
+          "swelling_infection",
+          "lesion_mucosa",
+          "gum_periodontal",
+          "trauma_procedure",
+          "other_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.primary-group",
+        "display": "Primary Oral or Dental Symptom Group",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.primary-group",
+        "wording": "가장 불편한 문제는 치아 통증·민감함, 입안·얼굴 부종이나 감염, 구강 궤양·반점·덩이, 잇몸 문제, 외상·치과 처치 후 문제 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 150,
+          "reason": "primary-group"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.difficulty_breathing_due_to_swelling",
+        "display": "Breathing Difficulty with Oral or Facial Swelling",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.breathing-compromise",
+        "display": "Breathing Difficulty with Oral or Facial Swelling",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.breathing-compromise",
+        "wording": "입안·얼굴·목이 부으면서 지금 숨쉬기 어렵나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 149,
+          "reason": "breathing-compromise"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.shared-safety",
+        "group.oral-dental.swelling-infection"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.difficulty_swallowing_saliva_due_to_swelling",
+        "display": "Difficulty Swallowing Saliva with Swelling",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "40739000"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.oral-dental-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.swallowing-compromise",
+        "display": "Difficulty Swallowing Saliva with Swelling",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.swallowing-compromise",
+        "wording": "입안·얼굴·목이 부으면서 침도 삼키기 어렵거나 침을 흘리나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 148,
+          "reason": "swallowing-compromise"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.shared-safety",
+        "group.oral-dental.swelling-infection"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.difficulty_speaking_due_to_swelling",
+        "display": "Difficulty Speaking with Oral Swelling",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.speaking-compromise",
+        "display": "Difficulty Speaking with Oral Swelling",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.speaking-compromise",
+        "wording": "입안이나 목이 부으면서 평소처럼 말하기 어렵나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 147,
+          "reason": "speaking-compromise"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.shared-safety",
+        "group.oral-dental.swelling-infection"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.rapid_floor_of_mouth_tongue_or_neck_swelling",
+        "display": "Rapid Floor of Mouth Tongue or Neck Swelling",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.deep-spreading-swelling",
+        "display": "Rapid Floor of Mouth Tongue or Neck Swelling",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.deep-spreading-swelling",
+        "wording": "혀 아래·입바닥·목의 부기가 빠르게 커지거나 혀가 밀려 올라오는 느낌이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 146,
+          "reason": "deep-spreading-swelling"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.shared-safety",
+        "group.oral-dental.swelling-infection"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.swelling_closing_eye_or_severe_eye_pain",
+        "display": "Oral Facial Swelling Closing Eye or Causing Severe Eye Pain",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.eye-swelling",
+        "display": "Oral Facial Swelling Closing Eye or Causing Severe Eye Pain",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.eye-swelling",
+        "wording": "입안이나 얼굴의 부기가 눈 주변까지 번져 눈을 뜨기 어렵거나 눈이 심하게 아픈가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 145,
+          "reason": "eye-swelling"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.shared-safety",
+        "group.oral-dental.swelling-infection"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.new_vision_change_with_facial_swelling",
+        "display": "New Vision Change with Facial Swelling",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.vision-change",
+        "display": "New Vision Change with Facial Swelling",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.vision-change",
+        "wording": "얼굴이 부으면서 시야가 갑자기 흐려지거나 겹쳐 보이나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 144,
+          "reason": "vision-change"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.shared-safety",
+        "group.oral-dental.swelling-infection"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.severe_systemic_illness_with_infection",
+        "display": "Severe Systemic Illness with Oral Infection",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.severe-systemic-illness",
+        "display": "Severe Systemic Illness with Oral Infection",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.severe-systemic-illness",
+        "wording": "입안 통증이나 부기와 함께 의식이 흐리거나 심한 오한·탈진 등으로 전신 상태가 매우 나쁜가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 143,
+          "reason": "severe-systemic-illness"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.shared-safety",
+        "group.oral-dental.swelling-infection"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.uncontrolled_heavy_bleeding",
+        "display": "Uncontrolled Heavy Oral Bleeding",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "249418002"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.oral-dental-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.uncontrolled-bleeding",
+        "display": "Uncontrolled Heavy Oral Bleeding",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.uncontrolled-bleeding",
+        "wording": "입안에서 피가 많이 나고 깨끗한 거즈로 계속 눌러도 멎지 않나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 142,
+          "reason": "uncontrolled-bleeding"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.shared-safety",
+        "group.oral-dental.trauma-procedure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.serious_face_or_jaw_trauma",
+        "display": "Serious Face or Jaw Trauma",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "397869004"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.oral-dental-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.serious-trauma",
+        "display": "Serious Face or Jaw Trauma",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.serious-trauma",
+        "wording": "얼굴이나 턱을 심하게 다쳐 턱 모양이 변했거나 의식을 잃음·반복 구토·겹쳐 보임이 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 141,
+          "reason": "serious-trauma"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.shared-safety",
+        "group.oral-dental.trauma-procedure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.permanent_tooth_completely_avulsed",
+        "display": "Permanent Tooth Completely Knocked Out",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "109671008"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.oral-dental-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.permanent-tooth-avulsion",
+        "display": "Permanent Tooth Completely Knocked Out",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.permanent-tooth-avulsion",
+        "wording": "영구치가 외상으로 완전히 빠졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 140,
+          "reason": "permanent-tooth-avulsion"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.shared-safety",
+        "group.oral-dental.trauma-procedure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.spreading_or_rapidly_worsening_swelling",
+        "display": "Spreading or Rapidly Worsening Oral Facial Swelling",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.spreading-swelling",
+        "display": "Spreading or Rapidly Worsening Oral Facial Swelling",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.spreading-swelling",
+        "wording": "입안·잇몸·얼굴의 부기가 퍼지거나 빠르게 심해지고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 139,
+          "reason": "spreading-swelling"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.shared-safety",
+        "group.oral-dental.swelling-infection"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.significant_trismus",
+        "display": "Significant Trismus",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.significant-trismus",
+        "display": "Significant Trismus",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.significant-trismus",
+        "wording": "입이 잘 벌어지지 않아 손가락 두 개 정도도 넣기 어렵나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 138,
+          "reason": "significant-trismus"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.shared-safety",
+        "group.oral-dental.swelling-infection"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.severe_pain_not_controlled",
+        "display": "Severe Dental Pain Not Controlled by Usual Measures",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "27355003"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.oral-dental-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.uncontrolled-pain",
+        "display": "Severe Dental Pain Not Controlled by Usual Measures",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.uncontrolled-pain",
+        "wording": "치아나 입안 통증이 매우 심하고 일반적인 진통 방법으로도 조절되지 않아 잠이나 일상이 어렵나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 137,
+          "reason": "uncontrolled-pain"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.shared-safety",
+        "group.oral-dental.tooth-pain"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.high_risk_host_with_infection",
+        "display": "High-risk Host with Oral Infection",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.high-risk-infection",
+        "display": "High-risk Host with Oral Infection",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.high-risk-infection",
+        "wording": "면역억제 치료·항암치료·조절되지 않는 당뇨가 있으면서 입안 감염이나 부기가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 136,
+          "reason": "high-risk-infection"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.shared-safety",
+        "group.oral-dental.swelling-infection"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.persistent_bleeding_after_dental_procedure",
+        "display": "Persistent Bleeding after Dental Procedure",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.postprocedure-bleeding",
+        "display": "Persistent Bleeding after Dental Procedure",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.postprocedure-bleeding",
+        "wording": "최근 발치나 치과 처치 뒤 압박해도 출혈이 계속되거나 다시 많이 나나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 135,
+          "reason": "postprocedure-bleeding"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.shared-safety",
+        "group.oral-dental.trauma-procedure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.unexplained_ulcer_over_three_weeks",
+        "display": "Unexplained Oral Ulcer over Three Weeks",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "26284000"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.oral-dental-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.ulcer-over-three-weeks",
+        "display": "Unexplained Oral Ulcer over Three Weeks",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.ulcer-over-three-weeks",
+        "wording": "원인이 분명하지 않은 입안 궤양이 3주 넘게 낫지 않고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 134,
+          "reason": "ulcer-over-three-weeks"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.shared-safety",
+        "group.oral-dental.lesion-mucosa"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.unexplained_lip_or_mouth_lump",
+        "display": "Unexplained Lip or Oral Cavity Lump",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "1071000119107"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.oral-dental-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.oral-lump",
+        "display": "Unexplained Lip or Oral Cavity Lump",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.oral-lump",
+        "wording": "입술이나 입안에 원인을 모르는 덩이 또는 단단해진 부위가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 133,
+          "reason": "oral-lump"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.shared-safety",
+        "group.oral-dental.lesion-mucosa"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.persistent_red_or_red_white_patch",
+        "display": "Persistent Red or Red-white Oral Patch",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.red-patch",
+        "display": "Persistent Red or Red-white Oral Patch",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.red-patch",
+        "wording": "입안에 없어지지 않는 붉은 반점 또는 붉고 흰 반점이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 132,
+          "reason": "red-patch"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.shared-safety",
+        "group.oral-dental.lesion-mucosa"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.persistent_unexplained_neck_lump",
+        "display": "Persistent Unexplained Neck Lump",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.neck-lump",
+        "display": "Persistent Unexplained Neck Lump",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.neck-lump",
+        "wording": "목에 원인을 모르고 계속되는 덩이나 림프절 부기가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 131,
+          "reason": "neck-lump"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.shared-safety",
+        "group.oral-dental.lesion-mucosa"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.loose_tooth_or_appliance_airway_risk",
+        "display": "Loose Tooth or Appliance Airway Risk",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.airway-foreign-body-risk",
+        "display": "Loose Tooth or Appliance Airway Risk",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.airway-foreign-body-risk",
+        "wording": "빠질 듯 흔들리는 치아나 깨진 보철물이 목으로 넘어갈 위험이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "airway-foreign-body-risk"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.shared-safety",
+        "group.oral-dental.trauma-procedure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.symptom_duration",
+        "display": "Oral Dental Symptom Duration",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.duration",
+        "display": "Oral Dental Symptom Duration",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.duration",
+        "wording": "증상은 언제 시작됐고 계속되는지 반복되는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 120,
+          "reason": "duration"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.onset_and_progression",
+        "display": "Oral Dental Onset and Progression",
+        "value_type": "coded",
+        "allowed_values": [
+          "sudden_improving",
+          "sudden_same",
+          "sudden_worsening",
+          "gradual_improving",
+          "gradual_same",
+          "gradual_worsening",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.onset-progression",
+        "display": "Oral Dental Onset and Progression",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.onset-progression",
+        "wording": "갑자기 또는 서서히 시작했고, 좋아짐·같음·악화 중 어느 쪽인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 119,
+          "reason": "onset-progression"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.main_location",
+        "display": "Main Oral Dental Location",
+        "value_type": "coded",
+        "allowed_values": [
+          "tooth",
+          "gum",
+          "tongue",
+          "lip",
+          "buccal_mucosa",
+          "palate",
+          "floor_of_mouth",
+          "jaw_face",
+          "multiple_or_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.main-location",
+        "display": "Main Oral Dental Location",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.main-location",
+        "wording": "가장 불편한 곳은 치아, 잇몸, 혀, 입술, 볼 안쪽, 입천장, 혀 아래·입바닥, 턱·얼굴 중 어디인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 118,
+          "reason": "main-location"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.side_arch_and_tooth",
+        "display": "Oral Side Arch and Tooth",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.side-arch-tooth",
+        "display": "Oral Side Arch and Tooth",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.side-arch-tooth",
+        "wording": "왼쪽·오른쪽·양쪽 중 어디이며, 위턱·아래턱과 알 수 있다면 어느 치아인지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 117,
+          "reason": "side-arch-tooth"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.pain_score_zero_to_ten",
+        "display": "Oral Dental Pain Score",
+        "value_type": "integer"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.pain-score",
+        "display": "Oral Dental Pain Score",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.pain-score",
+        "wording": "통증을 0점부터 10점까지로 표현하면 몇 점인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 116,
+          "reason": "pain-score"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.chewing_sleep_speech_or_intake_impact",
+        "display": "Oral Functional Impact",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.functional-impact",
+        "display": "Oral Functional Impact",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.functional-impact",
+        "wording": "씹기·수면·말하기·음식이나 물 섭취에 어느 정도 영향이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 115,
+          "reason": "functional-impact"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.fever_chills_or_general_unwellness",
+        "display": "Fever Chills or General Unwellness",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.fever-systemic",
+        "display": "Fever Chills or General Unwellness",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.fever-systemic",
+        "wording": "열, 오한, 기운 없음 또는 몸이 아픈 느낌이 함께 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 114,
+          "reason": "fever-systemic"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.diabetes_immunosuppression_or_pregnancy",
+        "display": "Medical Risk Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.medical-risk",
+        "display": "Medical Risk Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.medical-risk",
+        "wording": "당뇨, 면역저하·항암치료, 임신 또는 다른 중요한 질환이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 108,
+          "reason": "medical-risk"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.anticoagulant_or_bleeding_disorder",
+        "display": "Anticoagulant or Bleeding Disorder",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.bleeding-risk",
+        "display": "Anticoagulant or Bleeding Disorder",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.bleeding-risk",
+        "wording": "항응고제·항혈소판제를 복용하거나 출혈 질환이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 107,
+          "reason": "bleeding-risk"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.common",
+        "group.oral-dental.trauma-procedure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.current_medicines_allergies_and_self_treatment",
+        "display": "Current Medicines Allergies and Self-treatment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.medicines-allergies",
+        "display": "Current Medicines Allergies and Self-treatment",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.medicines-allergies",
+        "wording": "현재 약·약물 알레르기와 이번 증상에 사용한 진통제·항생제·구강 제품을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 106,
+          "reason": "medicines-allergies"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.recent_dental_visit_procedure_or_appliance",
+        "display": "Recent Dental Visit Procedure or Appliance",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.recent-dental-care",
+        "display": "Recent Dental Visit Procedure or Appliance",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.recent-dental-care",
+        "wording": "최근 발치·충전·신경치료·임플란트·교정 등 치과 처치나 틀니·보철 변화가 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 105,
+          "reason": "recent-dental-care"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.other_detail_or_patient_priority",
+        "display": "Other Oral Dental Detail or Patient Priority",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.other-detail",
+        "display": "Other Oral Dental Detail or Patient Priority",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.other-detail",
+        "wording": "질문에 없지만 꼭 전달하고 싶은 증상이나 가장 걱정되는 점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 80,
+          "reason": "other-detail"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.routing",
+        "group.oral-dental.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.tooth_pain_character",
+        "display": "Tooth Pain Character",
+        "value_type": "coded",
+        "allowed_values": [
+          "throbbing",
+          "sharp",
+          "electric_shock_like",
+          "dull_pressure",
+          "mixed_or_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.tooth-pain-character",
+        "display": "Tooth Pain Character",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.tooth-pain-character",
+        "wording": "치아 통증은 욱신거림, 날카로움, 전기처럼 찌릿함, 묵직함 중 어느 느낌에 가깝나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 112,
+          "reason": "tooth-pain-character"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.tooth-pain"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.hot_cold_sweet_sensitivity",
+        "display": "Hot Cold or Sweet Tooth Sensitivity",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "13468005"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.oral-dental-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.temperature-sensitivity",
+        "display": "Hot Cold or Sweet Tooth Sensitivity",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.temperature-sensitivity",
+        "wording": "차갑거나 뜨겁거나 단 음식에 아프며, 자극이 사라진 뒤에도 통증이 남나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 111,
+          "reason": "temperature-sensitivity"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.tooth-pain"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.pain_on_biting_or_chewing",
+        "display": "Pain on Biting or Chewing",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.biting-pain",
+        "display": "Pain on Biting or Chewing",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.biting-pain",
+        "wording": "그 치아로 씹거나 이를 맞물릴 때 더 아픈가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 110,
+          "reason": "biting-pain"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.tooth-pain"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.spontaneous_or_night_waking_pain",
+        "display": "Spontaneous or Night-waking Tooth Pain",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.night-pain",
+        "display": "Spontaneous or Night-waking Tooth Pain",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.night-pain",
+        "wording": "자극이 없어도 아프거나 밤에 통증 때문에 깨나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 109,
+          "reason": "night-pain"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.tooth-pain"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.visible_cavity_fracture_or_lost_restoration",
+        "display": "Visible Cavity Fracture or Lost Restoration",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.tooth-damage",
+        "display": "Visible Cavity Fracture or Lost Restoration",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.tooth-damage",
+        "wording": "치아에 구멍·깨짐이 보이거나 충전재·크라운이 빠졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 104,
+          "reason": "tooth-damage"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.tooth-pain"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.pus_draining_pimple_or_bad_taste",
+        "display": "Pus Drainage Gum Pimple or Bad Taste",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "299709002"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.oral-dental-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.pus-bad-taste",
+        "display": "Pus Drainage Gum Pimple or Bad Taste",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.pus-bad-taste",
+        "wording": "잇몸에서 고름이 나오거나 뾰루지 같은 부위, 나쁜 맛·냄새가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 103,
+          "reason": "pus-bad-taste"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.tooth-pain",
+        "group.oral-dental.swelling-infection"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.tooth_mobility_or_bite_change",
+        "display": "Tooth Mobility or Bite Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.tooth-mobility",
+        "display": "Tooth Mobility or Bite Change",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.tooth-mobility",
+        "wording": "치아가 흔들리거나 이전과 다르게 먼저 닿는 느낌이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 102,
+          "reason": "tooth-mobility"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.tooth-pain",
+        "group.oral-dental.gum-periodontal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.erupting_wisdom_tooth_or_pericoronal_symptoms",
+        "display": "Wisdom Tooth Eruption Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.wisdom-tooth",
+        "display": "Wisdom Tooth Eruption Context",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.wisdom-tooth",
+        "wording": "맨 뒤 사랑니 주변 잇몸이 붓거나 음식이 끼고 입 벌리기 불편한가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 101,
+          "reason": "wisdom-tooth"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.tooth-pain",
+        "group.oral-dental.gum-periodontal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.jaw_joint_clenching_or_grinding_context",
+        "display": "Jaw Joint Clenching or Grinding Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.jaw-context",
+        "display": "Jaw Joint Clenching or Grinding Context",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.jaw-context",
+        "wording": "턱관절 소리·턱 근육 통증, 이 악물기나 이갈이가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 94,
+          "reason": "jaw-context"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.tooth-pain"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.swelling_site_and_extent",
+        "display": "Oral Facial Swelling Site and Extent",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.swelling-site",
+        "display": "Oral Facial Swelling Site and Extent",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.swelling-site",
+        "wording": "부기는 잇몸·볼·턱·입술·혀 아래·목 중 어디에서 어디까지 퍼져 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 113,
+          "reason": "swelling-site"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.swelling-infection"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.swelling_speed_and_recurrence",
+        "display": "Swelling Speed and Recurrence",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.swelling-course",
+        "display": "Swelling Speed and Recurrence",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.swelling-course",
+        "wording": "부기는 언제 시작해 얼마나 빨리 커졌고 이전에도 반복됐나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 112,
+          "reason": "swelling-course"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.swelling-infection"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.swelling_redness_warmth_or_pus",
+        "display": "Swelling Redness Warmth or Pus",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.swelling-character",
+        "display": "Swelling Redness Warmth or Pus",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.swelling-character",
+        "wording": "부은 곳이 붉거나 뜨겁고, 고름이나 분비물이 나오나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 111,
+          "reason": "swelling-character"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.swelling-infection"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.mouth_opening_degree",
+        "display": "Mouth Opening Degree",
+        "value_type": "coded",
+        "allowed_values": [
+          "normal",
+          "mildly_limited",
+          "less_than_two_fingers",
+          "nearly_unable",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.mouth-opening",
+        "display": "Mouth Opening Degree",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.mouth-opening",
+        "wording": "입 벌리기는 정상, 약간 제한, 손가락 두 개 미만, 거의 못 벌림 중 어느 정도인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 110,
+          "reason": "mouth-opening"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.swelling-infection"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.swallowing_saliva_and_voice_detail",
+        "display": "Swallowing Saliva and Voice Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.swallowing-voice-detail",
+        "display": "Swallowing Saliva and Voice Detail",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.swallowing-voice-detail",
+        "wording": "침과 물을 삼킬 수 있는지, 목소리가 먹먹하게 변했는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 109,
+          "reason": "swallowing-voice-detail"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.swelling-infection"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.eye_or_vision_detail",
+        "display": "Eye or Vision Detail with Facial Swelling",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.eye-detail",
+        "display": "Eye or Vision Detail with Facial Swelling",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.eye-detail",
+        "wording": "눈 주변 부기·통증, 눈을 뜨기 어려움 또는 시야 변화가 있다면 자세히 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 108,
+          "reason": "eye-detail"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.swelling-infection"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.prior_antibiotic_or_drainage_response",
+        "display": "Prior Antibiotic or Drainage Response",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.treatment-response",
+        "display": "Prior Antibiotic or Drainage Response",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.treatment-response",
+        "wording": "이번 문제로 항생제나 배농 치료를 받았다면 시작일과 좋아짐·같음·악화를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 100,
+          "reason": "treatment-response"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.swelling-infection"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.lesion_type",
+        "display": "Oral Lesion Type",
+        "value_type": "coded",
+        "allowed_values": [
+          "ulcer",
+          "white_patch",
+          "red_patch",
+          "red_white_patch",
+          "lump_or_induration",
+          "vesicle",
+          "wipeable_white_coating",
+          "other_unclear"
+        ],
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "1071000119107"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.oral-dental-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.lesion-type",
+        "display": "Oral Lesion Type",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.lesion-type",
+        "wording": "병변은 궤양, 흰 반점, 붉은 반점, 붉고 흰 반점, 덩이, 물집, 닦이는 흰 막 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 113,
+          "reason": "lesion-type"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.lesion-mucosa"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.lesion_site_number_and_size",
+        "display": "Oral Lesion Site Number and Size",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.lesion-site-size",
+        "display": "Oral Lesion Site Number and Size",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.lesion-site-size",
+        "wording": "입안의 정확한 위치와 개수, 대략적인 크기를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 112,
+          "reason": "lesion-site-size"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.lesion-mucosa"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.lesion_color_surface_and_border",
+        "display": "Oral Lesion Color Surface and Border",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.lesion-appearance",
+        "display": "Oral Lesion Color Surface and Border",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.lesion-appearance",
+        "wording": "색, 표면이 매끈한지 거친지, 가장자리 모양과 단단함을 설명해주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 111,
+          "reason": "lesion-appearance"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.lesion-mucosa"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.lesion_recurrence_and_healing_pattern",
+        "display": "Oral Lesion Recurrence and Healing Pattern",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.lesion-recurrence",
+        "display": "Oral Lesion Recurrence and Healing Pattern",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.lesion-recurrence",
+        "wording": "처음인지 반복되는지, 이전 병변은 완전히 나았다가 다시 생겼는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 110,
+          "reason": "lesion-recurrence"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.lesion-mucosa"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.lesion_pain_bleeding_or_induration",
+        "display": "Oral Lesion Pain Bleeding or Induration",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.lesion-symptoms",
+        "display": "Oral Lesion Pain Bleeding or Induration",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.lesion-symptoms",
+        "wording": "병변이 아프거나 쉽게 피가 나거나 만졌을 때 단단한가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 109,
+          "reason": "lesion-symptoms"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.lesion-mucosa"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.local_trauma_denture_or_sharp_tooth",
+        "display": "Local Trauma Denture or Sharp Tooth",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.local-irritation",
+        "display": "Local Trauma Denture or Sharp Tooth",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.local-irritation",
+        "wording": "볼·혀를 깨물었거나 날카로운 치아, 틀니·교정장치가 계속 닿았나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 103,
+          "reason": "local-irritation"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.lesion-mucosa"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.extraoral_ulcers_rash_eye_or_genital_symptoms",
+        "display": "Extraoral Ulcers Rash Eye or Genital Symptoms",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.extraoral-symptoms",
+        "display": "Extraoral Ulcers Rash Eye or Genital Symptoms",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.extraoral-symptoms",
+        "wording": "피부·눈·생식기 등 다른 부위에도 궤양·발진·염증이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 102,
+          "reason": "extraoral-symptoms"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.lesion-mucosa"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.weight_loss_hoarseness_or_persistent_swallowing_problem",
+        "display": "Weight Loss Hoarseness or Persistent Swallowing Problem",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.associated-warning",
+        "display": "Weight Loss Hoarseness or Persistent Swallowing Problem",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.associated-warning",
+        "wording": "원치 않는 체중 감소, 계속되는 쉰 목소리 또는 삼킴 어려움이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 101,
+          "reason": "associated-warning"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.lesion-mucosa"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.tobacco_alcohol_or_betel_exposure",
+        "display": "Tobacco Alcohol or Betel Exposure",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.exposure-risk",
+        "display": "Tobacco Alcohol or Betel Exposure",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.exposure-risk",
+        "wording": "흡연·씹는 담배·전자담배, 음주 또는 빈랑 사용 정도를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 99,
+          "reason": "exposure-risk"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.lesion-mucosa",
+        "group.oral-dental.gum-periodontal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.thrush_or_ulcer_risk_context",
+        "display": "Thrush or Ulcer Risk Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.mucosal-risk",
+        "display": "Thrush or Ulcer Risk Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.mucosal-risk",
+        "wording": "최근 항생제·흡입 스테로이드, 구강건조, 틀니, 영양 문제 또는 면역저하가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 98,
+          "reason": "mucosal-risk"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.lesion-mucosa"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.gum_bleeding_pattern",
+        "display": "Gum Bleeding Pattern",
+        "value_type": "coded",
+        "allowed_values": [
+          "brushing_only",
+          "spontaneous",
+          "prolonged",
+          "none",
+          "unclear"
+        ],
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "86276007"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.oral-dental-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.gum-bleeding",
+        "display": "Gum Bleeding Pattern",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.gum-bleeding",
+        "wording": "잇몸 출혈은 칫솔질 때만, 저절로, 오래 지속됨, 거의 없음 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 113,
+          "reason": "gum-bleeding"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.gum-periodontal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.gum_swelling_tenderness_or_recession",
+        "display": "Gum Swelling Tenderness or Recession",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.gum-condition",
+        "display": "Gum Swelling Tenderness or Recession",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.gum-condition",
+        "wording": "잇몸이 붓고 아프거나 내려가 치아 뿌리가 보이나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 112,
+          "reason": "gum-condition"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.gum-periodontal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.loose_teeth_pus_or_halitosis",
+        "display": "Loose Teeth Pus or Halitosis",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.periodontal-features",
+        "display": "Loose Teeth Pus or Halitosis",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.periodontal-features",
+        "wording": "치아 흔들림, 잇몸 고름 또는 계속되는 입 냄새가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 111,
+          "reason": "periodontal-features"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.gum-periodontal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.brushing_interdental_and_dental_review",
+        "display": "Oral Hygiene and Dental Review",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.oral-hygiene",
+        "display": "Oral Hygiene and Dental Review",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.oral-hygiene",
+        "wording": "칫솔질·치실이나 치간칫솔 사용과 마지막 치과 검진 시기를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 100,
+          "reason": "oral-hygiene"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.gum-periodontal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.periodontal_risk_context",
+        "display": "Periodontal Risk Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.periodontal-risk",
+        "display": "Periodontal Risk Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.periodontal-risk",
+        "wording": "흡연, 당뇨, 임신·호르몬 변화 또는 관련 약 복용이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 99,
+          "reason": "periodontal-risk"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.gum-periodontal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.trauma_or_procedure_time_and_mechanism",
+        "display": "Dental Trauma or Procedure Time and Mechanism",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.trauma-time",
+        "display": "Dental Trauma or Procedure Time and Mechanism",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.trauma-time",
+        "wording": "언제 어떤 사고나 치과 처치 뒤 문제가 생겼나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 113,
+          "reason": "trauma-time"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.trauma-procedure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.primary_or_permanent_tooth",
+        "display": "Primary or Permanent Tooth",
+        "value_type": "coded",
+        "allowed_values": [
+          "primary",
+          "permanent",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.tooth-type",
+        "display": "Primary or Permanent Tooth",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.tooth-type",
+        "wording": "다친 치아는 유치, 영구치, 잘 모르겠음 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 112,
+          "reason": "tooth-type"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.trauma-procedure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.trauma_injury_type",
+        "display": "Dental Trauma Injury Type",
+        "value_type": "coded",
+        "allowed_values": [
+          "fractured",
+          "loose",
+          "displaced",
+          "partially_avulsed",
+          "completely_avulsed",
+          "soft_tissue_only",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.injury-type",
+        "display": "Dental Trauma Injury Type",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.injury-type",
+        "wording": "치아는 깨짐, 흔들림, 위치 이동, 부분적으로 빠짐, 완전히 빠짐 중 어떤 상태인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 111,
+          "reason": "injury-type"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.trauma-procedure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.avulsed_tooth_handling_and_storage",
+        "display": "Avulsed Tooth Handling and Storage",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.tooth-storage",
+        "display": "Avulsed Tooth Handling and Storage",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.tooth-storage",
+        "wording": "빠진 치아를 찾았는지, 뿌리를 만지거나 씻었는지, 다시 넣었는지 또는 무엇에 보관 중인지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 110,
+          "reason": "tooth-storage"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.trauma-procedure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.jaw_bite_alignment_or_mobility",
+        "display": "Jaw Bite Alignment or Mobility",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.jaw-alignment",
+        "display": "Jaw Bite Alignment or Mobility",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.jaw-alignment",
+        "wording": "이를 물었을 때 맞물림이 달라졌거나 턱이 움직이지 않거나 비정상적으로 움직이나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 109,
+          "reason": "jaw-alignment"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.trauma-procedure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "oral.trauma_bleeding_cut_or_missing_fragment",
+        "display": "Trauma Bleeding Cut or Missing Fragment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.oral-dental-symptoms.trauma-soft-tissue",
+        "display": "Trauma Bleeding Cut or Missing Fragment",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.oral-dental-symptoms.trauma-soft-tissue",
+        "wording": "입술·혀·잇몸 상처와 출혈, 찾지 못한 치아 조각이나 보철물이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 108,
+          "reason": "trauma-soft-tissue"
+        }
+      ],
+      "supports": [
+        "group.oral-dental.trauma-procedure"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nhs-england.unscheduled-dental-care.2025",
+      "source.nice.ng12.oral-cancer.2026",
+      "source.nhs.dental-abscess.2026",
+      "source.nhs.emergency-dentist.2025",
+      "source.nhs.mouth-ulcers.2026",
+      "source.nhs.knocked-out-tooth.2025",
+      "source.nhs.oral-thrush.2026",
+      "source.stom.oral-dental.20260715"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

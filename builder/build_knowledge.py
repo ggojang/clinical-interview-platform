@@ -221,6 +221,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-diabetes-follow-up.json",
         "version": "0.1.0",
     },
+    "oral_dental_symptoms": {
+        "base_graph": ROOT / "knowledge/base/primary-care-oral-dental-symptoms.json",
+        "base_rules": ROOT / "rules/base/primary-care-oral-dental-symptoms.json",
+        "fragment_root": ROOT / "knowledge/generated/oral-dental/oral-dental-symptoms",
+        "output_graph": ROOT / "knowledge/graph/primary-care-oral-dental-symptoms.json",
+        "output_rules": ROOT / "rules/primary-care-oral-dental-symptoms.json",
+        "version": "0.1.0",
+    },
 }
 
 

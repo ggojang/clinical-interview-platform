@@ -322,6 +322,17 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/endocrine/diabetes-follow-up",
         "research_manifests": [ROOT / "sources/manifests/primary-care-diabetes-follow-up-research.json"],
     },
+    "oral_dental_symptoms": {
+        "graph": ROOT / "knowledge/graph/primary-care-oral-dental-symptoms.json",
+        "rules": ROOT / "rules/primary-care-oral-dental-symptoms.json",
+        "sources": ROOT / "sources/manifests/primary-care-oral-dental-symptoms.json",
+        "completion_policy": ROOT / "policies/primary-care-oral-dental-symptoms-completion.json",
+        "output": ROOT / "packages/generated/primary-care-oral-dental-symptoms-0.1.0.json",
+        "package_id": "package.primary-care-oral-dental-symptoms", "package_version": "0.1.0",
+        "rfe": "rfe.oral_dental_symptoms",
+        "simulation_root": ROOT / "simulation/patients/oral-dental/oral-dental-symptoms",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-oral-dental-symptoms-research.json"],
+    },
 }
 
 ALLOWED_NODE_TYPES = {
