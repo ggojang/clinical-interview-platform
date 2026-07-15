@@ -277,6 +277,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-lump-lymph-node.json",
         "version": "0.1.0",
     },
+    "dyspepsia_reflux": {
+        "base_graph": ROOT / "knowledge/base/primary-care-dyspepsia-reflux.json",
+        "base_rules": ROOT / "rules/base/primary-care-dyspepsia-reflux.json",
+        "fragment_root": ROOT / "knowledge/generated/gastrointestinal/dyspepsia-reflux",
+        "output_graph": ROOT / "knowledge/graph/primary-care-dyspepsia-reflux.json",
+        "output_rules": ROOT / "rules/primary-care-dyspepsia-reflux.json",
+        "version": "0.1.0",
+    },
 }
 
 

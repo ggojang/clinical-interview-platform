@@ -19,7 +19,7 @@ from runtime.package import (
     ABDOMINAL_PAIN_PACKAGE, BACK_PAIN_PACKAGE, BOWEL_SYMPTOMS_PACKAGE, CHEST_PAIN_PACKAGE, DEFAULT_PACKAGE,
     DIZZINESS_SYNCOPE_PACKAGE, DYSPNEA_PACKAGE, FEVER_PACKAGE, HEADACHE_PACKAGE,
     DIABETES_FOLLOW_UP_PACKAGE, EAR_HEARING_SYMPTOMS_PACKAGE, EDEMA_PACKAGE, EYE_SYMPTOMS_PACKAGE, FATIGUE_PACKAGE, FOCAL_WEAKNESS_NUMBNESS_PACKAGE, HYPERTENSION_FOLLOW_UP_PACKAGE, JOINT_LIMB_COMPLAINT_PACKAGE, MEDICATION_REVIEW_PACKAGE, MENTAL_HEALTH_SLEEP_PACKAGE, PALPITATIONS_PACKAGE, REPRODUCTIVE_GENITAL_SYMPTOMS_PACKAGE, SKIN_COMPLAINT_PACKAGE,
-    ALLERGY_CONCERN_PACKAGE, ASTHMA_COPD_FOLLOW_UP_PACKAGE, LUMP_LYMPH_NODE_PACKAGE, MEMORY_COGNITIVE_CONCERN_PACKAGE, ORAL_DENTAL_SYMPTOMS_PACKAGE, PREGNANCY_POSTPARTUM_CONCERN_PACKAGE, WOUND_MINOR_INJURY_PACKAGE, UPPER_RESPIRATORY_SYMPTOMS_PACKAGE, URINARY_SYMPTOMS_PACKAGE, WEIGHT_CONSTITUTIONAL_CHANGE_PACKAGE,
+    ALLERGY_CONCERN_PACKAGE, ASTHMA_COPD_FOLLOW_UP_PACKAGE, DYSPEPSIA_REFLUX_PACKAGE, LUMP_LYMPH_NODE_PACKAGE, MEMORY_COGNITIVE_CONCERN_PACKAGE, ORAL_DENTAL_SYMPTOMS_PACKAGE, PREGNANCY_POSTPARTUM_CONCERN_PACKAGE, WOUND_MINOR_INJURY_PACKAGE, UPPER_RESPIRATORY_SYMPTOMS_PACKAGE, URINARY_SYMPTOMS_PACKAGE, WEIGHT_CONSTITUTIONAL_CHANGE_PACKAGE,
     VOMITING_DIARRHEA_PACKAGE,
     PackageLoadError, load_package,
 )
@@ -72,6 +72,7 @@ class CompilerTests(unittest.TestCase):
             "allergy_concern",
             "asthma_copd_follow_up",
             "lump_lymph_node",
+            "dyspepsia_reflux",
         ):
             with self.subTest(profile=profile), self.assertRaises(CompilationError):
                 compile_package(production=True, profile=profile)
@@ -896,6 +897,25 @@ class CompilerTests(unittest.TestCase):
         pain = next(node for node in package["knowledge_graph"]["nodes"] if node["id"] == "lump.pain_nrs")
         self.assertEqual(pain["scale"]["type"], "NRS")
         self.assertIn("lump.pain_nrs", package["interview_completion_policy"]["must_be_known_facts"])
+
+    def test_dyspepsia_reflux_package_is_complete(self):
+        package = compile_package(profile="dyspepsia_reflux")
+        facts = {node["id"] for node in package["knowledge_graph"]["nodes"] if node["type"] == "Fact"}
+        self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
+        self.assertGreaterEqual(len(facts), 45)
+        self.assertEqual(package["coverage"]["total_safety_rules"], 13)
+        self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 13)
+        self.assertEqual(package["coverage"]["uncovered_safety_rules"], [])
+        self.assertEqual(package["coverage"]["data_absent_reason_simulations"], 1)
+        conditional = package["interview_completion_policy"]["conditional_required_facts"][0]
+        self.assertEqual(conditional["selector_fact"], "dyspepsia.primary_group")
+        self.assertEqual(set(conditional["cases"]), {"heartburn_reflux", "epigastric_pain_burning", "postprandial_fullness_early_satiety", "nausea_belching_bloating", "known_gord_or_ulcer_followup", "other_unclear"})
+        mapping = json.loads((Path(__file__).resolve().parents[1] / "mappings/terminology/snomed-mrcm-dyspepsia-reflux.json").read_text(encoding="utf-8"))
+        self.assertEqual(len(mapping["focus_concepts"]), 6)
+        self.assertFalse(mapping["validation"]["clinical_rule_authority"])
+        pain = next(node for node in package["knowledge_graph"]["nodes"] if node["id"] == "dyspepsia.pain_nrs")
+        self.assertEqual(pain["scale"]["type"], "NRS")
+        self.assertIn("dyspepsia.pain_nrs", package["interview_completion_policy"]["must_be_known_facts"])
 
 
 class ClinicalMemoryTests(unittest.TestCase):

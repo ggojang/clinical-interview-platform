@@ -55,6 +55,7 @@ class PatientSimulator:
                         "oral.pain_score_zero_to_ten",
                         "injury.pain_zero_to_ten",
                         "lump.pain_nrs",
+                        "dyspepsia.pain_nrs",
                     }
                     and isinstance(item.get("value"), int)
                     and 0 <= item["value"] <= 10

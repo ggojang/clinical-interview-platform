@@ -403,6 +403,17 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/general/lump-lymph-node",
         "research_manifests": [ROOT / "sources/manifests/primary-care-lump-lymph-node-research.json"],
     },
+    "dyspepsia_reflux": {
+        "graph": ROOT / "knowledge/graph/primary-care-dyspepsia-reflux.json",
+        "rules": ROOT / "rules/primary-care-dyspepsia-reflux.json",
+        "sources": ROOT / "sources/manifests/primary-care-dyspepsia-reflux.json",
+        "completion_policy": ROOT / "policies/primary-care-dyspepsia-reflux-completion.json",
+        "output": ROOT / "packages/generated/primary-care-dyspepsia-reflux-0.1.0.json",
+        "package_id": "package.primary-care-dyspepsia-reflux", "package_version": "0.1.0",
+        "rfe": "rfe.dyspepsia_reflux",
+        "simulation_root": ROOT / "simulation/patients/gastrointestinal/dyspepsia-reflux",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-dyspepsia-reflux-research.json"],
+    },
 }
 
 ALLOWED_NODE_TYPES = {
