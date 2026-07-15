@@ -37,6 +37,11 @@ class HiraAssessmentTests(unittest.TestCase):
                 "hira.acute_stroke_event_history",
                 "hira.rheumatoid_arthritis",
                 "hira.inpatient_patient_experience.5th-2025",
+                "hira.medical_aid_psychiatry_patient_experience",
+                "hira.mental_health_inpatient_patient_experience",
+                "hira.anesthesia_patient_assessment",
+                "hira.imaging_pre_examination_assessment",
+                "hira.dementia_patient_proxy_assessment",
             },
         )
 
@@ -54,7 +59,7 @@ class HiraAssessmentTests(unittest.TestCase):
         self.assertEqual(result["status"], "selection_required")
         self.assertEqual(result["workflow_state"], "entry_unresolved")
         numbers = [option["number"] for option in result["options"]]
-        self.assertEqual(numbers, [1, 2, 3, 4, 5])
+        self.assertEqual(numbers, list(range(1, 11)))
         self.assertEqual(len(numbers), len(set(numbers)))
         registration = self.registry.document["fixed_questionnaire_registration_policy"]
         self.assertIn("resource_ref", registration["required_metadata"])
@@ -69,10 +74,13 @@ class HiraAssessmentTests(unittest.TestCase):
         self.assertEqual(listed["status"], "selection_required")
         searched = self.registry.resolve_entry("설문 검색: 환자경험")
         self.assertEqual(searched["status"], "search_results")
-        self.assertEqual(len(searched["options"]), 1)
         self.assertEqual(
-            searched["options"][0]["program_id"],
-            "hira.inpatient_patient_experience.5th-2025",
+            {option["program_id"] for option in searched["options"]},
+            {
+                "hira.inpatient_patient_experience.5th-2025",
+                "hira.medical_aid_psychiatry_patient_experience",
+                "hira.mental_health_inpatient_patient_experience",
+            },
         )
         self.assertEqual(searched["workflow_state"], "entry_unresolved")
 
@@ -138,10 +146,70 @@ class HiraAssessmentTests(unittest.TestCase):
         program_id = "hira.depression_outpatient"
         activated = self.registry.activate(program_id, context(program_id))
         interview = activated["patient_interview"]
-        self.assertEqual(interview["mode"], "authorized_instrument_required")
-        self.assertFalse(interview["items_available"])
+        self.assertEqual(interview["mode"], "authorized_instrument_result_capture")
+        self.assertFalse(interview["instrument_items_available"])
+        self.assertTrue(interview["result_capture_available"])
         self.assertTrue(interview["never_reconstruct_with_ai"])
         self.assertIn("PHQ-9", {item["id"] for item in interview["recognized_instruments"]})
+        self.assertIn(
+            "hira.depression.total_score",
+            {item["id"] for item in interview["result_capture_items"]},
+        )
+
+    def test_all_ten_catalog_entries_are_writable_in_research_test_mode(self):
+        self.assertEqual(len(self.registry.entries), 10)
+        for program_id in self.registry.entries:
+            activated = self.registry.activate(program_id, context(program_id))
+            interview = activated["patient_interview"]
+            if interview["mode"] == "fixed_questionnaire":
+                self.assertGreater(interview["question_count"], 0)
+            elif interview["mode"] == "authorized_instrument_result_capture":
+                self.assertTrue(interview["result_capture_items"])
+            else:
+                self.assertTrue(interview["question_groups"], program_id)
+                self.assertTrue(
+                    any(group["items"] for group in interview["question_groups"]),
+                    program_id,
+                )
+
+        response_policy = self.registry.document["response_state_policy"]
+        self.assertIn("asked-unknown", response_policy["supported_data_absent_reasons"])
+        self.assertIn("asked-declined", response_policy["supported_data_absent_reasons"])
+        self.assertTrue(response_policy["unknown_is_never_negative"])
+        self.assertIn(
+            "hira.anesthesia.recovery_pain_nrs",
+            response_policy["mandatory_numeric_items"],
+        )
+
+    def test_new_clinician_confirmation_modules_expose_patient_questions(self):
+        expectations = {
+            "hira.medical_aid_psychiatry_patient_experience": "hira.medical_aid_psychiatry.survey_completed",
+            "hira.mental_health_inpatient_patient_experience": "hira.mental_health_inpatient.survey_completed",
+            "hira.anesthesia_patient_assessment": "hira.anesthesia.recovery_pain_nrs",
+            "hira.imaging_pre_examination_assessment": "hira.imaging.prior_contrast_reaction",
+            "hira.dementia_patient_proxy_assessment": "hira.dementia.safety_risk",
+        }
+        for program_id, expected_item in expectations.items():
+            activated = self.registry.activate(program_id, context(program_id))
+            item_ids = {
+                item["id"]
+                for group in activated["patient_interview"]["question_groups"]
+                for item in group["items"]
+            }
+            self.assertIn(expected_item, item_ids)
+            self.assertTrue(
+                activated["official_submission_requires_clinician_or_record_confirmation"]
+            )
+
+        anesthesia = self.registry.programs["hira.anesthesia_patient_assessment"]
+        pain = next(
+            item
+            for group in anesthesia["patient_or_proxy_question_groups"]
+            for item in group["items"]
+            if item["id"] == "hira.anesthesia.recovery_pain_nrs"
+        )
+        self.assertEqual((pain["minimum"], pain["maximum"]), (0, 10))
+        self.assertFalse(pain["unknown_or_decline_options_visible"])
 
     def test_ra_global_health_vas_is_not_pain_nrs(self):
         program_id = "hira.rheumatoid_arthritis"

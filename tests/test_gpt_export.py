@@ -260,7 +260,7 @@ class GptExportTests(unittest.TestCase):
             entries = registry["entry_catalog"]
             self.assertEqual(
                 [entry["selection_number"] for entry in entries],
-                [1, 2, 3, 4, 5],
+                list(range(1, 11)),
             )
             self.assertTrue(all(entry["aliases_ko"] for entry in entries))
             self.assertTrue(all(entry["start_prompt_ko"] for entry in entries))

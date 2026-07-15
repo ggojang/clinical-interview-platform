@@ -181,10 +181,15 @@ class HiraAssessmentRegistry:
             }
         if assessment_type == "fixed_standardized_instrument":
             return {
-                "mode": "authorized_instrument_required",
+                "mode": "authorized_instrument_result_capture",
                 "recognized_instruments": program["recognized_instruments"],
-                "items_available": False,
-                "reason": "exact authorized Korean instrument resource is required",
+                "instrument_items_available": False,
+                "result_capture_available": bool(program.get("result_capture_items")),
+                "result_capture_items": program.get("result_capture_items", []),
+                "reason": (
+                    "exact authorized Korean instrument resource is required to "
+                    "administer items; an existing named instrument result may be captured"
+                ),
                 "never_reconstruct_with_ai": True,
             }
 
