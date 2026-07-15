@@ -1,0 +1,1996 @@
+{
+  "id": "knowledge.generated.kidney-function-ckd-follow-up",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-kidney-function-ckd-follow-up-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-07-14",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-07-15",
+    "next_full_review_at": "2027-01-10",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.kidney.routing",
+      "type": "ClinicalGroup",
+      "display": "routing"
+    },
+    {
+      "id": "group.kidney.safety",
+      "type": "ClinicalGroup",
+      "display": "safety"
+    },
+    {
+      "id": "group.kidney.common",
+      "type": "ClinicalGroup",
+      "display": "common"
+    },
+    {
+      "id": "group.kidney.results",
+      "type": "ClinicalGroup",
+      "display": "results"
+    },
+    {
+      "id": "group.kidney.cause",
+      "type": "ClinicalGroup",
+      "display": "cause"
+    },
+    {
+      "id": "group.kidney.dialysis",
+      "type": "ClinicalGroup",
+      "display": "dialysis"
+    },
+    {
+      "id": "group.kidney.transplant",
+      "type": "ClinicalGroup",
+      "display": "transplant"
+    }
+  ],
+  "group_hypothesis_edges": [],
+  "safety_rules": [
+    {
+      "id": "rule.kidney-function-ckd-follow-up.safety.anuria",
+      "priority": 990,
+      "when": {
+        "fact": "kidney.anuria_or_severe_oliguria",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.kidney-function-ckd-follow-up.safety.pulmonary-edema",
+      "priority": 1000,
+      "when": {
+        "fact": "kidney.pulmonary_edema_pattern",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.kidney-function-ckd-follow-up.safety.hyperkalemia",
+      "priority": 1000,
+      "when": {
+        "fact": "kidney.hyperkalemia_instability_pattern",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.kidney-function-ckd-follow-up.safety.uremic-neurologic",
+      "priority": 1000,
+      "when": {
+        "fact": "kidney.uremic_neurologic_pattern",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.kidney-function-ckd-follow-up.safety.hypertensive-emergency",
+      "priority": 1000,
+      "when": {
+        "fact": "kidney.hypertensive_emergency_pattern",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.kidney-function-ckd-follow-up.safety.dehydration",
+      "priority": 980,
+      "when": {
+        "fact": "kidney.severe_dehydration_with_reduced_urine",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.kidney-function-ckd-follow-up.safety.access-bleeding",
+      "priority": 1000,
+      "when": {
+        "fact": "kidney.dialysis_access_uncontrolled_bleeding",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.kidney-function-ckd-follow-up.safety.access-infection",
+      "priority": 980,
+      "when": {
+        "fact": "kidney.dialysis_access_infection_or_failure",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.kidney-function-ckd-follow-up.safety.pd-peritonitis",
+      "priority": 990,
+      "when": {
+        "fact": "kidney.peritoneal_dialysis_peritonitis_pattern",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.kidney-function-ckd-follow-up.safety.transplant-warning",
+      "priority": 990,
+      "when": {
+        "fact": "kidney.transplant_graft_warning",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.kidney-function-ckd-follow-up.safety.flank-fever",
+      "priority": 980,
+      "when": {
+        "fact": "kidney.flank_pain_fever_and_systemic_illness",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.kidney-function-ckd-follow-up.safety.urgent-lab",
+      "priority": 990,
+      "when": {
+        "fact": "kidney.known_severe_aki_or_urgent_lab_callback",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "kidney.primary_group",
+        "display": "Primary Kidney Presentation",
+        "value_type": "coded",
+        "allowed_values": [
+          "abnormal_kidney_result",
+          "known_ckd_followup",
+          "acute_kidney_change",
+          "proteinuria_or_hematuria",
+          "dialysis_followup",
+          "kidney_transplant_followup",
+          "structural_or_hereditary",
+          "other_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.primary-group",
+        "display": "Primary Kidney Presentation",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.primary-group",
+        "wording": "이번 방문은 신장기능 검사 이상, 만성콩팥병 추적, 갑작스러운 신장기능 변화, 단백뇨·혈뇨, 투석 관리, 신장이식 후 관리, 구조적 신장·요로질환 중 무엇에 가깝나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 180,
+          "reason": "primary-group"
+        }
+      ],
+      "supports": [
+        "group.kidney.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.anuria_or_severe_oliguria",
+        "display": "Anuria or Severe Oliguria",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.anuria",
+        "display": "Anuria or Severe Oliguria",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.anuria",
+        "wording": "소변이 거의 또는 전혀 나오지 않으면서 몸이 붓거나 심하게 처지고 아픈가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 179,
+          "reason": "anuria"
+        }
+      ],
+      "supports": [
+        "group.kidney.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.pulmonary_edema_pattern",
+        "display": "Possible Pulmonary Oedema",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.pulmonary-edema",
+        "display": "Possible Pulmonary Oedema",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.pulmonary-edema",
+        "wording": "갑자기 심하게 숨차고 누우면 더 힘들거나 거품 섞인 가래·빠르게 심해지는 전신 부종이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 178,
+          "reason": "pulmonary-edema"
+        }
+      ],
+      "supports": [
+        "group.kidney.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.hyperkalemia_instability_pattern",
+        "display": "Possible Hyperkalaemic Instability",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.hyperkalemia",
+        "display": "Possible Hyperkalaemic Instability",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.hyperkalemia",
+        "wording": "칼륨이 높다고 들었거나 신장질환이 있으면서 갑작스러운 심한 근력저하·두근거림·실신이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 177,
+          "reason": "hyperkalemia"
+        }
+      ],
+      "supports": [
+        "group.kidney.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.uremic_neurologic_pattern",
+        "display": "Possible Uraemic Neurologic Emergency",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.uremic-neurologic",
+        "display": "Possible Uraemic Neurologic Emergency",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.uremic-neurologic",
+        "wording": "새로운 혼란·의식저하·경련 또는 깨우기 어려운 심한 졸림이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 176,
+          "reason": "uremic-neurologic"
+        }
+      ],
+      "supports": [
+        "group.kidney.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.hypertensive_emergency_pattern",
+        "display": "Possible Hypertensive Emergency",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.hypertensive-emergency",
+        "display": "Possible Hypertensive Emergency",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.hypertensive-emergency",
+        "wording": "혈압이 매우 높으면서 흉통·심한 호흡곤란·시력 변화·새 신경증상·의식 혼란이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 175,
+          "reason": "hypertensive-emergency"
+        }
+      ],
+      "supports": [
+        "group.kidney.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.severe_dehydration_with_reduced_urine",
+        "display": "Severe Dehydration with Reduced Urine",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.dehydration",
+        "display": "Severe Dehydration with Reduced Urine",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.dehydration",
+        "wording": "계속되는 구토·설사·고열 뒤 물을 못 마시고 소변이 크게 줄며 어지럽거나 실신할 것 같은가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 174,
+          "reason": "dehydration"
+        }
+      ],
+      "supports": [
+        "group.kidney.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.dialysis_access_uncontrolled_bleeding",
+        "display": "Dialysis Access Bleeding",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.access-bleeding",
+        "display": "Dialysis Access Bleeding",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.access-bleeding",
+        "wording": "투석 혈관이나 카테터에서 압박해도 피가 계속 많이 나나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 173,
+          "reason": "access-bleeding"
+        }
+      ],
+      "supports": [
+        "group.kidney.safety",
+        "group.kidney.dialysis"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.dialysis_access_infection_or_failure",
+        "display": "Dialysis Access Infection or Failure",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.access-infection",
+        "display": "Dialysis Access Infection or Failure",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.access-infection",
+        "wording": "투석 혈관·카테터 부위가 붉고 뜨겁고 아프면서 발열·오한이 있거나, 평소 만져지던 진동이 갑자기 사라졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 172,
+          "reason": "access-infection"
+        }
+      ],
+      "supports": [
+        "group.kidney.safety",
+        "group.kidney.dialysis"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.peritoneal_dialysis_peritonitis_pattern",
+        "display": "Peritoneal Dialysis Peritonitis Pattern",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.pd-peritonitis",
+        "display": "Peritoneal Dialysis Peritonitis Pattern",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.pd-peritonitis",
+        "wording": "복막투석 중 배액이 흐리거나 복통·발열·오한이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 171,
+          "reason": "pd-peritonitis"
+        }
+      ],
+      "supports": [
+        "group.kidney.safety",
+        "group.kidney.dialysis"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.transplant_graft_warning",
+        "display": "Kidney Transplant Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.transplant-warning",
+        "display": "Kidney Transplant Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.transplant-warning",
+        "wording": "신장이식 후 발열·오한, 이식 신장 부위 통증, 소변 감소 또는 갑작스러운 부종·체중증가가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 170,
+          "reason": "transplant-warning"
+        }
+      ],
+      "supports": [
+        "group.kidney.safety",
+        "group.kidney.transplant"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.flank_pain_fever_and_systemic_illness",
+        "display": "Upper Urinary Infection Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.flank-fever",
+        "display": "Upper Urinary Infection Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.flank-fever",
+        "wording": "옆구리 통증과 고열·오한·구토가 함께 있고 심하게 처지거나 혼란스러운가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 169,
+          "reason": "flank-fever"
+        }
+      ],
+      "supports": [
+        "group.kidney.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.known_severe_aki_or_urgent_lab_callback",
+        "display": "Urgent Kidney Laboratory Alert",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.urgent-lab",
+        "display": "Urgent Kidney Laboratory Alert",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.urgent-lab",
+        "wording": "의료기관에서 크레아티닌·칼륨·산증 등 결과 때문에 즉시 평가받으라고 연락받았나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 168,
+          "reason": "urgent-lab"
+        }
+      ],
+      "supports": [
+        "group.kidney.safety",
+        "group.kidney.results"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.onset_duration_and_course",
+        "display": "Onset Duration and Course",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.onset",
+        "display": "Onset Duration and Course",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.onset",
+        "wording": "증상 또는 검사 이상을 처음 안 시기, 지속 기간과 악화·호전 경과를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 155,
+          "reason": "onset"
+        }
+      ],
+      "supports": [
+        "group.kidney.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.current_symptom_priority",
+        "display": "Current Symptom Priority",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.priority",
+        "display": "Current Symptom Priority",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.priority",
+        "wording": "현재 가장 불편하거나 의료진에게 우선 확인받고 싶은 점은 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 154,
+          "reason": "priority"
+        }
+      ],
+      "supports": [
+        "group.kidney.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.ckd_cause_stage_and_diagnosis_date",
+        "display": "CKD Cause Stage and Diagnosis",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "709044004"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.kidney-function-ckd-follow-up",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.diagnosis",
+        "display": "CKD Cause Stage and Diagnosis",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.diagnosis",
+        "wording": "알고 있는 신장질환 원인, CKD G·A 단계와 진단 시기를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 153,
+          "reason": "diagnosis"
+        }
+      ],
+      "supports": [
+        "group.kidney.common",
+        "group.kidney.cause"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.latest_creatinine_egfr_and_reference",
+        "display": "Latest Creatinine and eGFR",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.egfr",
+        "display": "Latest Creatinine and eGFR",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.egfr",
+        "wording": "최근 크레아티닌·eGFR 수치, 검사일과 검사실 기준범위를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 152,
+          "reason": "egfr"
+        }
+      ],
+      "supports": [
+        "group.kidney.common",
+        "group.kidney.results"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.egfr_creatinine_trend_and_baseline",
+        "display": "Kidney Function Trend",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.trend",
+        "display": "Kidney Function Trend",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.trend",
+        "wording": "이전 크레아티닌·eGFR과 비교한 변화, 평소 기준값과 변화 속도를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 151,
+          "reason": "trend"
+        }
+      ],
+      "supports": [
+        "group.kidney.common",
+        "group.kidney.results"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.urine_acr_pcr_and_collection_context",
+        "display": "Urine ACR and PCR",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "29738008"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.kidney-function-ckd-follow-up",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.acr",
+        "display": "Urine ACR and PCR",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.acr",
+        "wording": "최근 소변 ACR·PCR 결과, 첫 아침 소변 여부와 재확인 결과를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 150,
+          "reason": "acr"
+        }
+      ],
+      "supports": [
+        "group.kidney.common",
+        "group.kidney.results"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.urinalysis_blood_protein_and_sediment",
+        "display": "Urinalysis Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.urinalysis",
+        "display": "Urinalysis Detail",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.urinalysis",
+        "wording": "소변검사의 단백·잠혈·적혈구·백혈구·원주 결과를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 149,
+          "reason": "urinalysis"
+        }
+      ],
+      "supports": [
+        "group.kidney.common",
+        "group.kidney.results"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.electrolytes_bicarbonate_urea_and_albumin",
+        "display": "Electrolytes and Metabolic Results",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.metabolic",
+        "display": "Electrolytes and Metabolic Results",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.metabolic",
+        "wording": "칼륨·나트륨·중탄산염·요소질소·칼슘·인·알부민 결과와 날짜를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 148,
+          "reason": "metabolic"
+        }
+      ],
+      "supports": [
+        "group.kidney.common",
+        "group.kidney.results"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.cbc_iron_pth_and_vitamin_d",
+        "display": "CKD Complication Tests",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.complication-tests",
+        "display": "CKD Complication Tests",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.complication-tests",
+        "wording": "혈색소·철분, PTH·비타민D 등 빈혈·뼈대사 관련 결과를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 147,
+          "reason": "complication-tests"
+        }
+      ],
+      "supports": [
+        "group.kidney.common",
+        "group.kidney.results"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.urine_volume_frequency_and_nocturia",
+        "display": "Urine Volume and Pattern",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.urine-pattern",
+        "display": "Urine Volume and Pattern",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.urine-pattern",
+        "wording": "하루 소변량, 횟수·야간뇨와 최근 증가·감소를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 146,
+          "reason": "urine-pattern"
+        }
+      ],
+      "supports": [
+        "group.kidney.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.edema_weight_and_fluid_change",
+        "display": "Oedema Weight and Fluid Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.fluid",
+        "display": "Oedema Weight and Fluid Change",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.fluid",
+        "wording": "발·다리·얼굴 부종, 최근 체중 변화와 하루 수분 섭취량을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 145,
+          "reason": "fluid"
+        }
+      ],
+      "supports": [
+        "group.kidney.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.dyspnea_fatigue_nausea_pruritus_and_cramps",
+        "display": "Kidney-related Symptom Burden",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.symptoms",
+        "display": "Kidney-related Symptom Burden",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.symptoms",
+        "wording": "숨참·피로·메스꺼움·식욕저하·가려움·쥐·수면장애가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 144,
+          "reason": "symptoms"
+        }
+      ],
+      "supports": [
+        "group.kidney.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.home_and_clinic_blood_pressure",
+        "display": "Blood Pressure",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.blood-pressure",
+        "display": "Blood Pressure",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.blood-pressure",
+        "wording": "가정·진료실 혈압과 맥박, 측정 날짜·자세와 최근 추세를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 143,
+          "reason": "blood-pressure"
+        }
+      ],
+      "supports": [
+        "group.kidney.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.current_medicines_doses_and_adherence",
+        "display": "Current Medicines and Adherence",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.medicines",
+        "display": "Current Medicines and Adherence",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.medicines",
+        "wording": "현재 처방약의 이름·용량·복용법, 최근 변경과 빠뜨린 복용을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 142,
+          "reason": "medicines"
+        }
+      ],
+      "supports": [
+        "group.kidney.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.acei_arb_sglt2_diuretic_and_mra",
+        "display": "Kidney-protective and Volume Medicines",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.renal-medicines",
+        "display": "Kidney-protective and Volume Medicines",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.renal-medicines",
+        "wording": "ACE억제제·ARB·SGLT2억제제·이뇨제·미네랄코르티코이드길항제 사용과 시작·증량일을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 141,
+          "reason": "renal-medicines"
+        }
+      ],
+      "supports": [
+        "group.kidney.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.nsaid_otc_herbal_and_contrast_exposure",
+        "display": "Nephrotoxin Exposure",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.nephrotoxins",
+        "display": "Nephrotoxin Exposure",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.nephrotoxins",
+        "wording": "진통소염제, 감기약·제산제, 한약·보충제와 최근 조영제 검사를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 140,
+          "reason": "nephrotoxins"
+        }
+      ],
+      "supports": [
+        "group.kidney.common",
+        "group.kidney.cause"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.recent_illness_intake_and_medication_holds",
+        "display": "Intercurrent Illness and Medicine Holds",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.illness",
+        "display": "Intercurrent Illness and Medicine Holds",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.illness",
+        "wording": "최근 구토·설사·발열·식사·수분 감소와 그동안 중단하거나 계속 먹은 약을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 139,
+          "reason": "illness"
+        }
+      ],
+      "supports": [
+        "group.kidney.common",
+        "group.kidney.cause"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.diabetes_hypertension_cardiovascular_and_gout",
+        "display": "Major CKD Comorbidities",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.comorbidity",
+        "display": "Major CKD Comorbidities",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.comorbidity",
+        "wording": "당뇨·고혈압·심장혈관질환·통풍과 최근 조절 상태를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 138,
+          "reason": "comorbidity"
+        }
+      ],
+      "supports": [
+        "group.kidney.common",
+        "group.kidney.cause"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.family_history_and_hereditary_disease",
+        "display": "Family and Hereditary Kidney History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.family",
+        "display": "Family and Hereditary Kidney History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.family",
+        "wording": "가족의 신부전·투석·이식·다낭신 등 유전성 신장질환 병력을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 137,
+          "reason": "family"
+        }
+      ],
+      "supports": [
+        "group.kidney.common",
+        "group.kidney.cause"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.pregnancy_status_and_plans",
+        "display": "Pregnancy Status and Plans",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.pregnancy",
+        "display": "Pregnancy Status and Plans",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.pregnancy",
+        "wording": "임신 중·수유 중·임신 계획 여부와 관련 약물 상담 내용을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 136,
+          "reason": "pregnancy"
+        }
+      ],
+      "supports": [
+        "group.kidney.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.diet_salt_protein_potassium_and_phosphate",
+        "display": "Kidney Diet",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.diet",
+        "display": "Kidney Diet",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.diet",
+        "wording": "소금·단백질·칼륨·인 섭취와 의료진이 정한 식이·수분 제한을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 135,
+          "reason": "diet"
+        }
+      ],
+      "supports": [
+        "group.kidney.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.smoking_alcohol_activity_and_weight",
+        "display": "Lifestyle and Weight",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.lifestyle",
+        "display": "Lifestyle and Weight",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.lifestyle",
+        "wording": "흡연·음주·운동, 키·체중과 최근 체중변화를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 134,
+          "reason": "lifestyle"
+        }
+      ],
+      "supports": [
+        "group.kidney.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.other_detail_or_patient_priority",
+        "display": "Other Kidney Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.other-detail",
+        "display": "Other Kidney Detail",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.other-detail",
+        "wording": "질문에 없지만 의료진에게 꼭 전달하고 싶은 내용이나 걱정을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 80,
+          "reason": "other-detail"
+        }
+      ],
+      "supports": [
+        "group.kidney.routing",
+        "group.kidney.common"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.prior_aki_dates_causes_and_recovery",
+        "display": "Prior Acute Kidney Injury",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "14669001"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.kidney-function-ckd-follow-up",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.prior-aki",
+        "display": "Prior Acute Kidney Injury",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.prior-aki",
+        "wording": "과거 급성신손상의 날짜·원인·단계, 투석 여부와 회복 후 기준 신장기능을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "prior-aki"
+        }
+      ],
+      "supports": [
+        "group.kidney.cause"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.stones_obstruction_prostate_and_infections",
+        "display": "Structural and Obstructive History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.structural",
+        "display": "Structural and Obstructive History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.structural",
+        "wording": "신장결석·요로폐쇄·전립선비대·반복 요로감염 병력을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "structural"
+        }
+      ],
+      "supports": [
+        "group.kidney.cause"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.autoimmune_systemic_and_glomerular_disease",
+        "display": "Systemic and Glomerular Disease",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.systemic",
+        "display": "Systemic and Glomerular Disease",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.systemic",
+        "wording": "루푸스·혈관염·사구체질환·다발골수종 등 신장에 영향을 줄 수 있는 병력이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "systemic"
+        }
+      ],
+      "supports": [
+        "group.kidney.cause"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.ultrasound_biopsy_and_kidney_imaging",
+        "display": "Kidney Imaging and Biopsy",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.imaging",
+        "display": "Kidney Imaging and Biopsy",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.imaging",
+        "wording": "신장 초음파·CT·조직검사 결과, 신장 크기·낭종·폐쇄 여부를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 127,
+          "reason": "imaging"
+        }
+      ],
+      "supports": [
+        "group.kidney.cause",
+        "group.kidney.results"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.kfre_and_referral_plan",
+        "display": "Kidney Failure Risk and Referral",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.risk-plan",
+        "display": "Kidney Failure Risk and Referral",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.risk-plan",
+        "wording": "신부전 위험도(KFRE)를 안내받았거나 신장내과 의뢰·재의뢰 기준이 정해졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 126,
+          "reason": "risk-plan"
+        }
+      ],
+      "supports": [
+        "group.kidney.cause"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.dialysis_modality_schedule_and_last_session",
+        "display": "Dialysis Modality and Schedule",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "265764009"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.kidney-function-ckd-follow-up",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.dialysis-schedule",
+        "display": "Dialysis Modality and Schedule",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.dialysis-schedule",
+        "wording": "혈액·복막투석 방식, 정규 일정과 마지막 투석 완료 여부를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "dialysis-schedule"
+        }
+      ],
+      "supports": [
+        "group.kidney.dialysis"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.dialysis_access_type_and_condition",
+        "display": "Dialysis Access",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.dialysis-access",
+        "display": "Dialysis Access",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.dialysis-access",
+        "wording": "동정맥루·인조혈관·카테터 위치와 통증·발적·분비물·진동 변화를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "dialysis-access"
+        }
+      ],
+      "supports": [
+        "group.kidney.dialysis"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.dialysis_weight_bp_cramps_and_recovery",
+        "display": "Dialysis Tolerance",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.dialysis-tolerance",
+        "display": "Dialysis Tolerance",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.dialysis-tolerance",
+        "wording": "투석 전후 체중·혈압, 저혈압·쥐·흉통·회복 시간과 목표 건체중을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "dialysis-tolerance"
+        }
+      ],
+      "supports": [
+        "group.kidney.dialysis"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.missed_or_shortened_dialysis",
+        "display": "Missed Dialysis",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.missed-dialysis",
+        "display": "Missed Dialysis",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.missed-dialysis",
+        "wording": "최근 빠뜨리거나 일찍 끝낸 투석과 이유, 이후 증상을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 127,
+          "reason": "missed-dialysis"
+        }
+      ],
+      "supports": [
+        "group.kidney.dialysis"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.transplant_date_donor_and_baseline_function",
+        "display": "Kidney Transplant Context",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "70536003"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.kidney-function-ckd-follow-up",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.transplant",
+        "display": "Kidney Transplant Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.transplant",
+        "wording": "이식 날짜·기증자 유형, 평소 크레아티닌과 과거 거부반응을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "transplant"
+        }
+      ],
+      "supports": [
+        "group.kidney.transplant"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.immunosuppression_levels_and_adherence",
+        "display": "Transplant Immunosuppression",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.immunosuppression",
+        "display": "Transplant Immunosuppression",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.immunosuppression",
+        "wording": "면역억제제 이름·용량·복용시각, 빠뜨린 복용과 최근 약물농도를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "immunosuppression"
+        }
+      ],
+      "supports": [
+        "group.kidney.transplant"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.transplant_infection_rejection_and_followup",
+        "display": "Transplant Follow-up",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.transplant-followup",
+        "display": "Transplant Follow-up",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.transplant-followup",
+        "wording": "최근 감염·거부반응·입원, 이식팀 검사와 다음 진료 일정을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "transplant-followup"
+        }
+      ],
+      "supports": [
+        "group.kidney.transplant"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nice.ng203.ckd.2025",
+      "source.nice.ng148.aki.2024",
+      "source.kdigo.ckd.2024",
+      "source.stom.kidney.20260715"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

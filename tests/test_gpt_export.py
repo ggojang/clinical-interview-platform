@@ -110,6 +110,7 @@ class GptExportTests(unittest.TestCase):
                 "rfe-dyspepsia_reflux-facts", "rfe-dyspepsia_reflux-questions", "rfe-dyspepsia_reflux-rules",
                 "rfe-thyroid_concern_follow_up-facts", "rfe-thyroid_concern_follow_up-questions", "rfe-thyroid_concern_follow_up-rules",
                 "rfe-anemia_concern_follow_up-facts", "rfe-anemia_concern_follow_up-questions", "rfe-anemia_concern_follow_up-rules",
+                "rfe-kidney_function_ckd_follow_up-facts", "rfe-kidney_function_ckd_follow_up-questions", "rfe-kidney_function_ckd_follow_up-rules",
                 "questionnaires-patient-experience-5th-2025-metadata",
                 "questionnaires-patient-experience-5th-2025-sections-1",
                 "questionnaires-patient-experience-5th-2025-sections-8",
@@ -234,6 +235,7 @@ class GptExportTests(unittest.TestCase):
         self.assertIn("dyspepsia_reflux", schema)
         self.assertIn("thyroid_concern_follow_up", schema)
         self.assertIn("anemia_concern_follow_up", schema)
+        self.assertIn("kidney_function_ckd_follow_up", schema)
         self.assertIn("operationId: getReasonForEncounterRulePartition", schema)
         self.assertIn("operationId: getHiraAdequacyAssessmentInterviews", schema)
         self.assertIn(
@@ -366,7 +368,7 @@ class GptExportTests(unittest.TestCase):
                 {
                     "abdominal_pain", "back_pain", "bowel_symptoms", "chest_pain", "cough", "diabetes_follow_up", "dizziness_syncope",
                     "dyspnea", "ear_hearing_symptoms", "edema", "eye_symptoms", "fatigue", "fever", "focal_weakness_numbness", "headache", "hypertension_follow_up", "joint_limb_complaint", "medication_review", "mental_health_sleep",
-                    "allergy_concern", "anemia_concern_follow_up", "asthma_copd_follow_up", "dyspepsia_reflux", "thyroid_concern_follow_up", "lump_lymph_node", "memory_cognitive_concern", "oral_dental_symptoms", "palpitations", "pregnancy_postpartum_concern", "reproductive_genital_symptoms", "skin_complaint", "upper_respiratory_symptoms", "urinary_symptoms", "wound_minor_injury",
+                    "allergy_concern", "anemia_concern_follow_up", "asthma_copd_follow_up", "dyspepsia_reflux", "thyroid_concern_follow_up", "kidney_function_ckd_follow_up", "lump_lymph_node", "memory_cognitive_concern", "oral_dental_symptoms", "palpitations", "pregnancy_postpartum_concern", "reproductive_genital_symptoms", "skin_complaint", "upper_respiratory_symptoms", "urinary_symptoms", "wound_minor_injury",
                     "vomiting_diarrhea", "weight_constitutional_change",
                 },
             )

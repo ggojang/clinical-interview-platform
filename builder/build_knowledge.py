@@ -301,6 +301,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-anemia-concern-follow-up.json",
         "version": "0.1.0",
     },
+    "kidney_function_ckd_follow_up": {
+        "base_graph": ROOT / "knowledge/base/primary-care-kidney-function-ckd-follow-up.json",
+        "base_rules": ROOT / "rules/base/primary-care-kidney-function-ckd-follow-up.json",
+        "fragment_root": ROOT / "knowledge/generated/renal/kidney-function-ckd-follow-up",
+        "output_graph": ROOT / "knowledge/graph/primary-care-kidney-function-ckd-follow-up.json",
+        "output_rules": ROOT / "rules/primary-care-kidney-function-ckd-follow-up.json",
+        "version": "0.1.0",
+    },
 }
 
 
