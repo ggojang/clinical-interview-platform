@@ -65,6 +65,8 @@ class HiraAssessmentRegistry:
                         "number": entry["selection_number"],
                         "program_id": entry["program_id"],
                         "display_ko": entry["display_ko"],
+                        "source_fidelity": entry["source_fidelity"],
+                        "source_notice_ko": entry["source_notice_ko"],
                     }
                     for entry in self.document["entry_catalog"]
                 ],
@@ -103,6 +105,8 @@ class HiraAssessmentRegistry:
                     "display_ko": entry["display_ko"],
                     "entry_type": entry["entry_type"],
                     "runtime_readiness": entry["runtime_readiness"],
+                    "source_fidelity": entry["source_fidelity"],
+                    "source_notice_ko": entry["source_notice_ko"],
                 })
         policy = self.document["entry_policy"]
         return {
@@ -133,6 +137,8 @@ class HiraAssessmentRegistry:
             "program_id": program_id,
             "display_ko": entry["display_ko"],
             "prompt_ko": entry["start_prompt_ko"],
+            "source_fidelity": entry["source_fidelity"],
+            "source_notice_ko": entry["source_notice_ko"],
             "options": self.document["entry_policy"]["start_confirmation_options"],
             "runtime_readiness": entry["runtime_readiness"],
             "safety_action_precedes_confirmation": program.get("activation", {}).get(
@@ -161,6 +167,8 @@ class HiraAssessmentRegistry:
             "status": self.document["status"],
             "review_status": self.document["review_status"],
             "assessment_type": program["assessment_type"],
+            "source_fidelity": self.entries[program_id]["source_fidelity"],
+            "source_notice_ko": self.entries[program_id]["source_notice_ko"],
             "patient_interview": self._patient_interview(program),
             "excluded_from_patient_interview": self._excluded(program),
             "official_submission_requires_clinician_or_record_confirmation": program.get(

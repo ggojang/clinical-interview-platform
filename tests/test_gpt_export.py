@@ -283,6 +283,15 @@ class GptExportTests(unittest.TestCase):
             )
             self.assertTrue(all(entry["aliases_ko"] for entry in entries))
             self.assertTrue(all(entry["start_prompt_ko"] for entry in entries))
+            self.assertTrue(all(entry["source_notice_ko"] for entry in entries))
+            self.assertEqual(
+                sum(
+                    entry["source_fidelity"]
+                    == "official_source_questionnaire_verified"
+                    for entry in entries
+                ),
+                1,
+            )
             self.assertTrue(all(entry["program_resource"] for entry in entries))
             self.assertTrue(all(
                 entry["program_operation"]

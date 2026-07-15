@@ -61,6 +61,8 @@ class HiraAssessmentTests(unittest.TestCase):
         numbers = [option["number"] for option in result["options"]]
         self.assertEqual(numbers, list(range(1, 11)))
         self.assertEqual(len(numbers), len(set(numbers)))
+        self.assertTrue(all(option["source_notice_ko"] for option in result["options"]))
+        self.assertTrue(all(option["source_fidelity"] for option in result["options"]))
         registration = self.registry.document["fixed_questionnaire_registration_policy"]
         self.assertIn("resource_ref", registration["required_metadata"])
         self.assertTrue(
@@ -100,7 +102,27 @@ class HiraAssessmentTests(unittest.TestCase):
         )
         self.assertEqual(result["workflow_state"], "awaiting_start_confirmation")
         self.assertEqual(result["prompt_ko"], "환자경험평가 설문을 작성하시겠습니까?")
+        self.assertEqual(
+            result["source_fidelity"],
+            "official_source_questionnaire_verified",
+        )
         self.assertEqual(result["options"], {"1": "예", "2": "아니오", "3": "잘 모르겠음", "4": "답변하지 않음"})
+
+    def test_unverified_source_fidelity_is_visible_in_catalog_confirmation_and_runtime(self):
+        program_id = "hira.anesthesia_patient_assessment"
+        listed = self.registry.resolve_entry("평가/설문 목록")
+        option = next(
+            item for item in listed["options"] if item["program_id"] == program_id
+        )
+        self.assertEqual(option["source_fidelity"], "official_item_set_not_verified")
+        self.assertIn("공식 설문 원문 미확인", option["source_notice_ko"])
+        confirmed = self.registry.entry_confirmation(program_id)
+        self.assertEqual(confirmed["source_notice_ko"], option["source_notice_ko"])
+        activated = self.registry.activate(program_id, context(program_id))
+        self.assertEqual(
+            activated["source_fidelity"], "official_item_set_not_verified"
+        )
+        self.assertEqual(activated["source_notice_ko"], option["source_notice_ko"])
 
     def test_diagnosis_name_alone_does_not_activate_assessment(self):
         self.assertEqual(self.registry.resolve_entry("우울증")["status"], "no_match")
