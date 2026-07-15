@@ -546,7 +546,9 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
     ]
     hira_assessment_catalog["program_payload_policy"] = {
         "catalog_excludes_program_payloads": True,
-        "load_selected_program_only_after_affirmative_confirmation": True,
+        "prefetch_selected_program_before_start_confirmation": True,
+        "do_not_display_items_before_affirmative_confirmation": True,
+        "prefetch_sends_patient_data": False,
         "operation": "getHiraAdequacyAssessmentInterviewProgram",
     }
     common_facts = envelope(
@@ -703,6 +705,7 @@ def build(root: Path, output: Path) -> dict[str, Any]:
             "operation": "getHiraAdequacyAssessmentInterviews",
             "program_resource_template": "/gpt/assessments/{programId}.json",
             "program_operation": "getHiraAdequacyAssessmentInterviewProgram",
+            "program_load_timing": "after_explicit_selection_before_start_confirmation",
             "entry_point": "reason_for_encounter",
             "entry_catalog_path": "/gpt/hira-adequacy-assessments.json#/entry_catalog",
             "generic_request_returns_numbered_program_selection": True,

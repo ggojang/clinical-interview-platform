@@ -248,6 +248,16 @@ class GptExportTests(unittest.TestCase):
                     "catalog_excludes_program_payloads"
                 ]
             )
+            self.assertTrue(
+                registry["program_payload_policy"][
+                    "prefetch_selected_program_before_start_confirmation"
+                ]
+            )
+            self.assertTrue(
+                registry["program_payload_policy"][
+                    "do_not_display_items_before_affirmative_confirmation"
+                ]
+            )
             policy = manifest["hira_adequacy_assessment_policy"]
             self.assertTrue(policy["requires_explicit_program_and_current_cycle_context"])
             self.assertTrue(policy["patient_or_proxy_questions_only"])
