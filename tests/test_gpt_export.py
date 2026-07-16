@@ -49,6 +49,15 @@ class GptExportTests(unittest.TestCase):
         self.assertFalse(collecting["management_or_self_test_advice_allowed"])
         completion = case["completion_phase_expectations"]
         self.assertTrue(completion["requires_explicit_confirmation"])
+        self.assertTrue(completion["requires_separate_numbered_review_turn"])
+        self.assertTrue(completion["review_rows_include_stable_q_or_u_reference"])
+        self.assertEqual(completion["review_number_edit_command_example"], "수정 2")
+        self.assertEqual(completion["review_complete_command"], "종료 확인")
+        self.assertFalse(completion["completion_options_share_review_turn"])
+        self.assertTrue(
+            completion["first_or_unknown_encounter_baseline_must_be_resolved_before_review"]
+        )
+        self.assertTrue(completion["another_chat_is_not_reusable_clinical_memory"])
         self.assertFalse(completion["diagnosis_claim_allowed"])
 
     def test_export_is_deterministic_and_response_free(self):
@@ -659,6 +668,16 @@ class GptExportTests(unittest.TestCase):
             self.assertTrue(
                 completion_policy["do_not_mark_completed_before_confirmation"]
             )
+            review_phase = completion_policy["review_phase"]
+            self.assertTrue(review_phase["must_precede_completion_confirmation"])
+            self.assertTrue(
+                review_phase["every_editable_row_has_continuous_review_number"]
+            )
+            self.assertTrue(
+                review_phase["do_not_show_completion_options_in_same_turn_as_review_rows"]
+            )
+            self.assertEqual(review_phase["review_complete_command_ko"], "종료 확인")
+            self.assertIn("수정 {review_number}", review_phase["edit_commands"])
             option_numbers = [
                 option["number"] for option in completion_policy["options"]
             ]
@@ -882,7 +901,22 @@ class GptExportTests(unittest.TestCase):
             self.assertTrue(
                 review_policy["do_not_ask_separate_recency_question_per_group"]
             )
+            self.assertTrue(review_policy["ask_one_due_baseline_group_per_question"])
+            self.assertTrue(
+                review_policy[
+                    "do_not_merge_diagnosis_and_procedure_history_into_one_binary_question"
+                ]
+            )
             self.assertTrue(review_policy["new_chat_is_not_proof_of_first_encounter"])
+            self.assertTrue(review_policy["no_cross_chat_clinical_memory_in_test_gpt"])
+            self.assertTrue(
+                review_policy["never_assume_another_chat_answered_baseline_history"]
+            )
+            self.assertTrue(
+                review_policy[
+                    "only_reuse_baseline_facts_explicit_in_current_conversation_or_current_upload"
+                ]
+            )
             self.assertEqual(
                 review_policy["first_encounter_required_group_order"],
                 [
