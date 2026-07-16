@@ -28,6 +28,7 @@ PROFILES = {
         "base_graph": ROOT / "knowledge/base/primary-care-fever.json",
         "base_rules": ROOT / "rules/base/primary-care-fever.json",
         "fragment_root": ROOT / "knowledge/generated/systemic",
+        "fragment_glob": "fever.json",
         "output_graph": ROOT / "knowledge/graph/primary-care-fever.json",
         "output_rules": ROOT / "rules/primary-care-fever.json",
         "version": "0.1.0",
@@ -307,6 +308,14 @@ PROFILES = {
         "fragment_root": ROOT / "knowledge/generated/neurology/seizure-event-follow-up",
         "output_graph": ROOT / "knowledge/graph/primary-care-seizure-event-follow-up.json",
         "output_rules": ROOT / "rules/primary-care-seizure-event-follow-up.json",
+        "version": "0.1.0",
+    },
+    "gait_falls_concern": {
+        "base_graph": ROOT / "knowledge/base/primary-care-gait-falls-concern.json",
+        "base_rules": ROOT / "rules/base/primary-care-gait-falls-concern.json",
+        "fragment_root": ROOT / "knowledge/generated/neurology/gait-falls-concern",
+        "output_graph": ROOT / "knowledge/graph/primary-care-gait-falls-concern.json",
+        "output_rules": ROOT / "rules/primary-care-gait-falls-concern.json",
         "version": "0.1.0",
     },
     "kidney_function_ckd_follow_up": {

@@ -13,13 +13,14 @@ from compiler.build_package import (
     semantic_digest,
     validate_package,
 )
+from builder.build_knowledge import build as build_knowledge
 from evaluation.run_evaluation import run as run_evaluation
 from runtime.memory import ClinicalMemory
 from runtime.package import (
     ABDOMINAL_PAIN_PACKAGE, BACK_PAIN_PACKAGE, BOWEL_SYMPTOMS_PACKAGE, CHEST_PAIN_PACKAGE, DEFAULT_PACKAGE,
     DIZZINESS_SYNCOPE_PACKAGE, DYSPNEA_PACKAGE, FEVER_PACKAGE, HEADACHE_PACKAGE,
     DIABETES_FOLLOW_UP_PACKAGE, EAR_HEARING_SYMPTOMS_PACKAGE, EDEMA_PACKAGE, EYE_SYMPTOMS_PACKAGE, FATIGUE_PACKAGE, FOCAL_WEAKNESS_NUMBNESS_PACKAGE, HYPERTENSION_FOLLOW_UP_PACKAGE, JOINT_LIMB_COMPLAINT_PACKAGE, MEDICATION_REVIEW_PACKAGE, MENTAL_HEALTH_SLEEP_PACKAGE, PALPITATIONS_PACKAGE, REPRODUCTIVE_GENITAL_SYMPTOMS_PACKAGE, SKIN_COMPLAINT_PACKAGE,
-    ALLERGY_CONCERN_PACKAGE, ANEMIA_CONCERN_FOLLOW_UP_PACKAGE, ASTHMA_COPD_FOLLOW_UP_PACKAGE, DYSPEPSIA_REFLUX_PACKAGE, THYROID_CONCERN_FOLLOW_UP_PACKAGE, KIDNEY_FUNCTION_CKD_FOLLOW_UP_PACKAGE, LIVER_FUNCTION_CHRONIC_FOLLOW_UP_PACKAGE, LUMP_LYMPH_NODE_PACKAGE, MEMORY_COGNITIVE_CONCERN_PACKAGE, ORAL_DENTAL_SYMPTOMS_PACKAGE, PREGNANCY_POSTPARTUM_CONCERN_PACKAGE, SEIZURE_EVENT_FOLLOW_UP_PACKAGE, WOUND_MINOR_INJURY_PACKAGE, UPPER_RESPIRATORY_SYMPTOMS_PACKAGE, URINARY_SYMPTOMS_PACKAGE, WEIGHT_CONSTITUTIONAL_CHANGE_PACKAGE,
+    ALLERGY_CONCERN_PACKAGE, ANEMIA_CONCERN_FOLLOW_UP_PACKAGE, ASTHMA_COPD_FOLLOW_UP_PACKAGE, DYSPEPSIA_REFLUX_PACKAGE, THYROID_CONCERN_FOLLOW_UP_PACKAGE, KIDNEY_FUNCTION_CKD_FOLLOW_UP_PACKAGE, LIVER_FUNCTION_CHRONIC_FOLLOW_UP_PACKAGE, GAIT_FALLS_CONCERN_PACKAGE, LUMP_LYMPH_NODE_PACKAGE, MEMORY_COGNITIVE_CONCERN_PACKAGE, ORAL_DENTAL_SYMPTOMS_PACKAGE, PREGNANCY_POSTPARTUM_CONCERN_PACKAGE, SEIZURE_EVENT_FOLLOW_UP_PACKAGE, WOUND_MINOR_INJURY_PACKAGE, UPPER_RESPIRATORY_SYMPTOMS_PACKAGE, URINARY_SYMPTOMS_PACKAGE, WEIGHT_CONSTITUTIONAL_CHANGE_PACKAGE,
     VOMITING_DIARRHEA_PACKAGE,
     PackageLoadError, load_package,
 )
@@ -29,6 +30,13 @@ from tools.validator.audit_expansion_queue import run as run_expansion_audit
 
 
 class CompilerTests(unittest.TestCase):
+    def test_fever_builder_does_not_absorb_nested_fatigue_fragment(self):
+        report = build_knowledge("fever")
+        self.assertEqual(
+            [item["fragment"] for item in report["fragments"]],
+            ["knowledge/generated/systemic/fever.json"],
+        )
+
     def test_next_gap_queue_tracks_unimplemented_previsit_packages(self):
         root = Path(__file__).resolve().parents[1]
         queue = json.loads(
@@ -50,6 +58,10 @@ class CompilerTests(unittest.TestCase):
         self.assertEqual(queued, planned)
         self.assertEqual(
             next(item for item in queue["order"] if item["rfe"] == "rfe.seizure_event_follow_up")["state"],
+            "implemented_unreviewed",
+        )
+        self.assertEqual(
+            next(item for item in queue["order"] if item["rfe"] == "rfe.gait_falls_concern")["state"],
             "implemented_unreviewed",
         )
         self.assertIn(
@@ -104,6 +116,7 @@ class CompilerTests(unittest.TestCase):
             "thyroid_concern_follow_up",
             "anemia_concern_follow_up",
             "seizure_event_follow_up",
+            "gait_falls_concern",
             "kidney_function_ckd_follow_up",
             "liver_function_chronic_follow_up",
         ):
@@ -1012,6 +1025,23 @@ class CompilerTests(unittest.TestCase):
         self.assertEqual(len(mapping["focus_concepts"]), 6)
         self.assertFalse(mapping["validation"]["clinical_rule_authority"])
         self.assertFalse(mapping["event_semantics"]["diagnosis_inferred"])
+
+    def test_gait_falls_concern_package_is_complete(self):
+        package = compile_package(profile="gait_falls_concern")
+        facts = {node["id"] for node in package["knowledge_graph"]["nodes"] if node["type"] == "Fact"}
+        self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
+        self.assertGreaterEqual(len(facts), 55)
+        self.assertEqual(package["coverage"]["total_safety_rules"], 13)
+        self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 13)
+        self.assertEqual(package["coverage"]["uncovered_safety_rules"], [])
+        self.assertEqual(package["coverage"]["data_absent_reason_simulations"], 1)
+        conditional = package["interview_completion_policy"]["conditional_required_facts"][0]
+        self.assertEqual(conditional["selector_fact"], "falls.primary_group")
+        self.assertEqual(set(conditional["cases"]), {"recent_single_fall", "recurrent_falls", "gait_balance_change_without_fall", "fear_or_near_falls", "post_fall_injury_followup", "known_mobility_condition_followup", "other_unclear"})
+        mapping = json.loads((Path(__file__).resolve().parents[1] / "mappings/terminology/snomed-mrcm-gait-falls-concern.json").read_text(encoding="utf-8"))
+        self.assertEqual(len(mapping["focus_concepts"]), 5)
+        self.assertFalse(mapping["validation"]["clinical_rule_authority"])
+        self.assertFalse(mapping["event_semantics"]["predictive_fall_risk_score_calculated"])
 
     def test_kidney_function_ckd_follow_up_package_is_complete(self):
         package = compile_package(profile="kidney_function_ckd_follow_up")

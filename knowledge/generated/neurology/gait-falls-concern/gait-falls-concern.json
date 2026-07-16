@@ -1,0 +1,2203 @@
+{
+  "id": "knowledge.generated.gait-falls-concern",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-gait-falls-concern-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-07-14",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-07-15",
+    "next_full_review_at": "2027-01-10",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.falls.routing",
+      "type": "ClinicalGroup",
+      "display": "routing"
+    },
+    {
+      "id": "group.falls.safety",
+      "type": "ClinicalGroup",
+      "display": "safety"
+    },
+    {
+      "id": "group.falls.event",
+      "type": "ClinicalGroup",
+      "display": "event"
+    },
+    {
+      "id": "group.falls.gait",
+      "type": "ClinicalGroup",
+      "display": "gait"
+    },
+    {
+      "id": "group.falls.contributors",
+      "type": "ClinicalGroup",
+      "display": "contributors"
+    },
+    {
+      "id": "group.falls.function",
+      "type": "ClinicalGroup",
+      "display": "function"
+    }
+  ],
+  "group_hypothesis_edges": [],
+  "safety_rules": [
+    {
+      "id": "rule.gait-falls-concern.safety.unable-walk",
+      "priority": 1000,
+      "when": {
+        "fact": "falls.current_unable_to_stand_or_walk_after_fall",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.gait-falls-concern.safety.major-injury",
+      "priority": 1000,
+      "when": {
+        "fact": "falls.major_bleeding_deformity_or_open_fracture",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.gait-falls-concern.safety.head-warning",
+      "priority": 1000,
+      "when": {
+        "fact": "falls.head_injury_reduced_consciousness_vomiting_or_seizure",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.gait-falls-concern.safety.head-anticoagulant",
+      "priority": 990,
+      "when": {
+        "fact": "falls.head_impact_with_anticoagulant_or_bleeding_risk",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.gait-falls-concern.safety.neuro-warning",
+      "priority": 1000,
+      "when": {
+        "fact": "falls.new_focal_neurologic_deficit_or_severe_ataxia",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.gait-falls-concern.safety.cardiac-warning",
+      "priority": 1000,
+      "when": {
+        "fact": "falls.syncope_chest_pain_palpitations_or_breathlessness",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.gait-falls-concern.safety.spinal-warning",
+      "priority": 1000,
+      "when": {
+        "fact": "falls.spinal_injury_with_weakness_numbness_or_sphincter_change",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.gait-falls-concern.safety.acute-illness",
+      "priority": 990,
+      "when": {
+        "fact": "falls.acute_confusion_fever_or_severe_illness",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.gait-falls-concern.safety.long-lie",
+      "priority": 990,
+      "when": {
+        "fact": "falls.prolonged_time_on_floor_or_cold_exposure",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.gait-falls-concern.safety.metabolic-toxic",
+      "priority": 1000,
+      "when": {
+        "fact": "falls.possible_hypoglycemia_overdose_or_intoxication",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.gait-falls-concern.safety.pregnancy-warning",
+      "priority": 1000,
+      "when": {
+        "fact": "falls.pregnancy_fall_with_bleeding_pain_or_reduced_movement",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.gait-falls-concern.safety.repeated-acute",
+      "priority": 990,
+      "when": {
+        "fact": "falls.repeated_falls_with_acute_deterioration",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.gait-falls-concern.safety.safeguarding",
+      "priority": 990,
+      "when": {
+        "fact": "falls.safeguarding_assault_or_unsafe_home_concern",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "falls.primary_group",
+        "display": "Primary Gait or Falls Presentation",
+        "value_type": "coded",
+        "allowed_values": [
+          "recent_single_fall",
+          "recurrent_falls",
+          "gait_balance_change_without_fall",
+          "fear_or_near_falls",
+          "post_fall_injury_followup",
+          "known_mobility_condition_followup",
+          "other_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.gait-falls-concern.primary-group",
+        "display": "Primary Gait or Falls Presentation",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.primary-group",
+        "wording": "이번 방문은 최근 한 번 넘어진 뒤 평가, 반복 낙상, 넘어지지는 않았지만 보행·균형 변화, 넘어질까 두려움·아찔한 순간, 낙상 손상 추적, 기존 신경·이동장애 추적 중 무엇에 가깝나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 195,
+          "reason": "primary-group"
+        }
+      ],
+      "supports": [
+        "group.falls.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.current_unable_to_stand_or_walk_after_fall",
+        "display": "Unable to Stand or Walk after Fall",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.gait-falls-concern.unable-walk",
+        "display": "Unable to Stand or Walk after Fall",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.unable-walk",
+        "wording": "넘어진 뒤 지금 체중을 싣거나 서거나 걷지 못하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 194,
+          "reason": "unable-walk"
+        }
+      ],
+      "supports": [
+        "group.falls.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.major_bleeding_deformity_or_open_fracture",
+        "display": "Major Injury Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.gait-falls-concern.major-injury",
+        "display": "Major Injury Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.major-injury",
+        "wording": "지혈되지 않는 심한 출혈, 뼈가 보이는 상처, 팔다리 변형 또는 고관절·골반 골절이 의심되는 심한 통증이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 193,
+          "reason": "major-injury"
+        }
+      ],
+      "supports": [
+        "group.falls.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.head_injury_reduced_consciousness_vomiting_or_seizure",
+        "display": "Serious Head Injury Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.gait-falls-concern.head-warning",
+        "display": "Serious Head Injury Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.head-warning",
+        "wording": "머리를 부딪힌 뒤 깨우기 어렵거나 의식이 흐림, 반복 구토, 경련 또는 점점 심해지는 두통이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 192,
+          "reason": "head-warning"
+        }
+      ],
+      "supports": [
+        "group.falls.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.head_impact_with_anticoagulant_or_bleeding_risk",
+        "display": "Head Impact with Bleeding Risk",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.gait-falls-concern.head-anticoagulant",
+        "display": "Head Impact with Bleeding Risk",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.head-anticoagulant",
+        "wording": "머리를 부딪혔고 항응고제·일부 항혈소판제를 복용하거나 출혈·응고 질환이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 191,
+          "reason": "head-anticoagulant"
+        }
+      ],
+      "supports": [
+        "group.falls.safety",
+        "group.falls.contributors"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.new_focal_neurologic_deficit_or_severe_ataxia",
+        "display": "Acute Neurologic Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.gait-falls-concern.neuro-warning",
+        "display": "Acute Neurologic Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.neuro-warning",
+        "wording": "새로 한쪽 힘 빠짐·감각저하·말 또는 시야 변화, 얼굴 처짐, 갑자기 걷기 어려운 심한 균형장애가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 190,
+          "reason": "neuro-warning"
+        }
+      ],
+      "supports": [
+        "group.falls.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.syncope_chest_pain_palpitations_or_breathlessness",
+        "display": "Cardiovascular Fall Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.gait-falls-concern.cardiac-warning",
+        "display": "Cardiovascular Fall Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.cardiac-warning",
+        "wording": "넘어지기 직전 또는 현재 실신, 흉통, 심한 두근거림이나 숨참이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 189,
+          "reason": "cardiac-warning"
+        }
+      ],
+      "supports": [
+        "group.falls.safety",
+        "group.falls.event"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.spinal_injury_with_weakness_numbness_or_sphincter_change",
+        "display": "Possible Spinal Injury Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.gait-falls-concern.spinal-warning",
+        "display": "Possible Spinal Injury Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.spinal-warning",
+        "wording": "목·등·허리를 다친 뒤 새 팔다리 마비·저림, 회음부 감각저하 또는 소변·대변 조절 변화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 188,
+          "reason": "spinal-warning"
+        }
+      ],
+      "supports": [
+        "group.falls.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.acute_confusion_fever_or_severe_illness",
+        "display": "Acute Illness or Delirium Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.gait-falls-concern.acute-illness",
+        "display": "Acute Illness or Delirium Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.acute-illness",
+        "wording": "갑자기 평소와 다르게 혼란스럽거나 고열·심한 쇠약과 함께 잇따라 넘어졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 187,
+          "reason": "acute-illness"
+        }
+      ],
+      "supports": [
+        "group.falls.safety",
+        "group.falls.contributors"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.prolonged_time_on_floor_or_cold_exposure",
+        "display": "Prolonged Time on Floor",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.gait-falls-concern.long-lie",
+        "display": "Prolonged Time on Floor",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.long-lie",
+        "wording": "넘어진 뒤 오래 일어나지 못했거나 구조를 요청하지 못해 추위·탈수·압박 손상이 걱정되나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 186,
+          "reason": "long-lie"
+        }
+      ],
+      "supports": [
+        "group.falls.safety",
+        "group.falls.event"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.possible_hypoglycemia_overdose_or_intoxication",
+        "display": "Metabolic or Toxic Fall Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.gait-falls-concern.metabolic-toxic",
+        "display": "Metabolic or Toxic Fall Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.metabolic-toxic",
+        "wording": "저혈당이 의심되거나 약물 과량, 술·중독물질 영향 속에서 넘어지고 아직 평소 상태가 아닌가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 185,
+          "reason": "metabolic-toxic"
+        }
+      ],
+      "supports": [
+        "group.falls.safety",
+        "group.falls.contributors"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.pregnancy_fall_with_bleeding_pain_or_reduced_movement",
+        "display": "Pregnancy Fall Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.gait-falls-concern.pregnancy-warning",
+        "display": "Pregnancy Fall Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.pregnancy-warning",
+        "wording": "임신 중 넘어졌고 질출혈·복통·양수 같은 분비물 또는 평소보다 태동 감소가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 184,
+          "reason": "pregnancy-warning"
+        }
+      ],
+      "supports": [
+        "group.falls.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.repeated_falls_with_acute_deterioration",
+        "display": "Repeated Falls with Acute Deterioration",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.gait-falls-concern.repeated-acute",
+        "display": "Repeated Falls with Acute Deterioration",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.repeated-acute",
+        "wording": "오늘 여러 번 넘어졌거나 짧은 기간에 급격히 늘면서 매번 평소 상태로 회복되지 않나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 183,
+          "reason": "repeated-acute"
+        }
+      ],
+      "supports": [
+        "group.falls.safety",
+        "group.falls.event"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.safeguarding_assault_or_unsafe_home_concern",
+        "display": "Safeguarding Concern",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.gait-falls-concern.safeguarding",
+        "display": "Safeguarding Concern",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.safeguarding",
+        "wording": "누군가 밀거나 다치게 했을 가능성, 돌봄 방임 또는 집에 돌아가면 안전하지 않을 우려가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 182,
+          "reason": "safeguarding"
+        }
+      ],
+      "supports": [
+        "group.falls.safety",
+        "group.falls.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.information_source_witness_and_reliability",
+        "display": "Information Source and Witness",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.witness",
+        "display": "Information Source and Witness",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.witness",
+        "wording": "내용은 본인 기억, 목격자·보호자 설명, 영상·기기 기록 중 무엇에 근거하며 목격자와 연락할 수 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 170,
+          "reason": "witness"
+        }
+      ],
+      "supports": [
+        "group.falls.event"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.event_date_time_place_activity_and_posture",
+        "display": "Fall Circumstances",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.circumstances",
+        "display": "Fall Circumstances",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.circumstances",
+        "wording": "넘어진 날짜·시각·장소, 당시 하던 일과 앉음·섬·걸음 등 자세를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 169,
+          "reason": "circumstances"
+        }
+      ],
+      "supports": [
+        "group.falls.event"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.mechanism_direction_height_and_surface",
+        "display": "Fall Mechanism",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.mechanism",
+        "display": "Fall Mechanism",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.mechanism",
+        "wording": "미끄러짐·걸림·균형 상실·다리 풀림 중 무엇 같았나요? 넘어진 방향, 계단·높이, 바닥 상태도 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 168,
+          "reason": "mechanism"
+        }
+      ],
+      "supports": [
+        "group.falls.event"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.prodrome_dizziness_vision_nausea_or_weakness",
+        "display": "Symptoms Before Fall",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.prodrome",
+        "display": "Symptoms Before Fall",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.prodrome",
+        "wording": "직전 어지럼, 시야 흐림, 식은땀, 메스꺼움, 갑작스러운 힘 빠짐 또는 아무 예고가 없었는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 167,
+          "reason": "prodrome"
+        }
+      ],
+      "supports": [
+        "group.falls.event"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.loss_of_consciousness_amnesia_and_recovery",
+        "display": "Awareness and Recovery",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "419045004"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.gait-falls-concern",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.gait-falls-concern.awareness",
+        "display": "Awareness and Recovery",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.awareness",
+        "wording": "의식을 잃었거나 사건 전후 기억 공백이 있었나요? 평소 상태로 돌아오는 데 얼마나 걸렸나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 166,
+          "reason": "awareness"
+        }
+      ],
+      "supports": [
+        "group.falls.event"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.head_impact_and_landed_body_sites",
+        "display": "Impact Sites",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.impact-sites",
+        "display": "Impact Sites",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.impact-sites",
+        "wording": "머리를 부딪혔는지와 바닥에 먼저 닿거나 다친 신체 부위, 왼쪽·오른쪽을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 165,
+          "reason": "impact-sites"
+        }
+      ],
+      "supports": [
+        "group.falls.event"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.assistance_to_rise_and_floor_time",
+        "display": "Ability to Rise and Floor Time",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.rise-floor-time",
+        "display": "Ability to Rise and Floor Time",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.rise-floor-time",
+        "wording": "스스로 일어났나요, 도움이 필요했나요? 바닥에 있었던 시간과 도움을 부른 방법을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 164,
+          "reason": "rise-floor-time"
+        }
+      ],
+      "supports": [
+        "group.falls.event",
+        "group.falls.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.current_injury_sites_swelling_bruising_and_function",
+        "display": "Current Injury Details",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.injury-detail",
+        "display": "Current Injury Details",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.injury-detail",
+        "wording": "현재 아픈·붓거나 멍든·출혈하는 부위와 움직임 또는 체중 부하 제한을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 163,
+          "reason": "injury-detail"
+        }
+      ],
+      "supports": [
+        "group.falls.event"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.current_injury_pain_present",
+        "display": "Current Injury Pain Present",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.pain-present",
+        "display": "Current Injury Pain Present",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.pain-present",
+        "wording": "낙상이나 보행 문제와 관련된 현재 통증이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 162,
+          "reason": "pain-present"
+        }
+      ],
+      "supports": [
+        "group.falls.event"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.current_injury_pain_nrs",
+        "display": "Current Injury Pain NRS",
+        "value_type": "integer"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.pain-nrs",
+        "display": "Current Injury Pain NRS",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.pain-nrs",
+        "wording": "[필수] 현재 통증을 0부터 10까지 숫자로 알려주세요. 0은 통증 없음, 10은 상상할 수 있는 가장 심한 통증입니다.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 161,
+          "reason": "pain-nrs"
+        }
+      ],
+      "supports": [
+        "group.falls.event"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.falls_and_near_falls_last_twelve_months",
+        "display": "Falls in Last Twelve Months",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "161898004"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.gait-falls-concern",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.gait-falls-concern.fall-history",
+        "display": "Falls in Last Twelve Months",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.fall-history",
+        "wording": "지난 12개월 동안 실제 낙상과 넘어질 뻔한 일이 각각 몇 번이었고 가장 최근은 언제였나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 160,
+          "reason": "fall-history"
+        }
+      ],
+      "supports": [
+        "group.falls.event",
+        "group.falls.gait"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.prior_fall_injuries_treatment_and_fractures",
+        "display": "Prior Fall Injuries",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.prior-injuries",
+        "display": "Prior Fall Injuries",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.prior-injuries",
+        "wording": "이전 낙상으로 골절·머리 손상·응급실 방문·입원·수술을 받은 적과 날짜를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 159,
+          "reason": "prior-injuries"
+        }
+      ],
+      "supports": [
+        "group.falls.event"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.gait_balance_onset_course_and_variability",
+        "display": "Gait Change Course",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "22325002"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.gait-falls-concern",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.gait-falls-concern.gait-course",
+        "display": "Gait Change Course",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.gait-course",
+        "wording": "걷기·균형 변화가 언제 시작되어 갑자기인지 서서히인지, 지속·악화·변동 여부를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 158,
+          "reason": "gait-course"
+        }
+      ],
+      "supports": [
+        "group.falls.gait"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.gait_pattern_and_laterality",
+        "display": "Gait Pattern and Laterality",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.gait-pattern",
+        "display": "Gait Pattern and Laterality",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.gait-pattern",
+        "wording": "종종걸음·발 끌림·보폭 넓어짐·한쪽 쏠림·발이 붙는 느낌·발 처짐 중 무엇이며 어느 쪽인지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 157,
+          "reason": "gait-pattern"
+        }
+      ],
+      "supports": [
+        "group.falls.gait"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.triggers_turning_stairs_darkness_and_dual_task",
+        "display": "Gait Triggers",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.gait-triggers",
+        "display": "Gait Triggers",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.gait-triggers",
+        "wording": "일어나기, 방향 전환, 계단, 울퉁불퉁한 길, 어두운 곳, 말하거나 물건을 들고 걸을 때 더 불안한가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 156,
+          "reason": "gait-triggers"
+        }
+      ],
+      "supports": [
+        "group.falls.gait"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.walking_distance_speed_endurance_and_rest",
+        "display": "Walking Capacity",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.walking-capacity",
+        "display": "Walking Capacity",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.walking-capacity",
+        "wording": "도움 없이 걸을 수 있는 거리·시간, 속도와 쉬어야 하는 이유가 이전과 어떻게 달라졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 155,
+          "reason": "walking-capacity"
+        }
+      ],
+      "supports": [
+        "group.falls.gait",
+        "group.falls.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.mobility_aid_type_fit_and_use",
+        "display": "Mobility Aid Use",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.mobility-aid",
+        "display": "Mobility Aid Use",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.mobility-aid",
+        "wording": "지팡이·보행기·휠체어 등 보조기구 종류, 사용 시기, 맞춤 점검 여부와 실제 사용 문제를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 154,
+          "reason": "mobility-aid"
+        }
+      ],
+      "supports": [
+        "group.falls.gait",
+        "group.falls.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.transfers_standing_chair_and_stairs",
+        "display": "Transfers and Stairs",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.transfers",
+        "display": "Transfers and Stairs",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.transfers",
+        "wording": "침대·의자·변기에서 일어나기, 오래 서기와 계단 이용에 손잡이 또는 사람 도움이 필요한가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 153,
+          "reason": "transfers"
+        }
+      ],
+      "supports": [
+        "group.falls.gait",
+        "group.falls.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.fear_confidence_and_activity_restriction",
+        "display": "Concern about Falling",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "129839007"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.gait-falls-concern",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.gait-falls-concern.fear",
+        "display": "Concern about Falling",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.fear",
+        "wording": "넘어질까 걱정되는 정도와 그 때문에 외출·운동·목욕·일상활동을 줄였는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 152,
+          "reason": "fear"
+        }
+      ],
+      "supports": [
+        "group.falls.gait",
+        "group.falls.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.baseline_mobility_and_recent_functional_change",
+        "display": "Baseline Mobility",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.baseline",
+        "display": "Baseline Mobility",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.baseline",
+        "wording": "문제 전 평소 보행·균형·독립 수준과 현재 달라진 점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 151,
+          "reason": "baseline"
+        }
+      ],
+      "supports": [
+        "group.falls.gait",
+        "group.falls.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.prior_gait_balance_assessment_and_therapy",
+        "display": "Previous Gait Assessment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.prior-assessment",
+        "display": "Previous Gait Assessment",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.prior-assessment",
+        "wording": "이전에 보행·균형 검사, 기립혈압, 재활·물리·작업치료 또는 낙상예방 교육을 받은 결과를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 150,
+          "reason": "prior-assessment"
+        }
+      ],
+      "supports": [
+        "group.falls.gait"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.orthostatic_symptoms_and_lying_standing_bp",
+        "display": "Orthostatic Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.orthostatic",
+        "display": "Orthostatic Context",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.orthostatic",
+        "wording": "누웠다·앉았다 일어날 때 어지럽거나 쓰러질 듯한가요? 가능하면 누운·선 혈압과 측정 시각을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 149,
+          "reason": "orthostatic"
+        }
+      ],
+      "supports": [
+        "group.falls.contributors"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.cardiac_history_and_rhythm_evaluation",
+        "display": "Cardiac Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.cardiac-context",
+        "display": "Cardiac Context",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.cardiac-context",
+        "wording": "부정맥·심장질환·실신 병력과 최근 심전도·심장검사 결과를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 148,
+          "reason": "cardiac-context"
+        }
+      ],
+      "supports": [
+        "group.falls.contributors"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.weakness_stiffness_tremor_numbness_and_coordination",
+        "display": "Neurologic and Musculoskeletal Symptoms",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.neuro-msk",
+        "display": "Neurologic and Musculoskeletal Symptoms",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.neuro-msk",
+        "wording": "근력 저하·경직·떨림·저림·감각 둔함·협응 저하 또는 관절 통증이 있나요? 부위와 좌우를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 147,
+          "reason": "neuro-msk"
+        }
+      ],
+      "supports": [
+        "group.falls.contributors"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.vertigo_hearing_and_vestibular_features",
+        "display": "Vestibular and Hearing Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.vestibular",
+        "display": "Vestibular and Hearing Context",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.vestibular",
+        "wording": "빙글 도는 어지럼, 머리 움직임과의 관계, 귀 먹먹함·이명·청력 변화를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 146,
+          "reason": "vestibular"
+        }
+      ],
+      "supports": [
+        "group.falls.contributors"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.vision_change_glasses_and_last_eye_check",
+        "display": "Vision Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.vision",
+        "display": "Vision Context",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.vision",
+        "wording": "시력·복시·시야 문제, 안경 사용과 최근 안과·시력검사 결과를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 145,
+          "reason": "vision"
+        }
+      ],
+      "supports": [
+        "group.falls.contributors"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.foot_pain_numbness_deformity_and_footwear",
+        "display": "Feet and Footwear",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.feet-footwear",
+        "display": "Feet and Footwear",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.feet-footwear",
+        "wording": "발 통증·저림·상처·변형과 평소 신발·슬리퍼의 맞음과 미끄러짐을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 144,
+          "reason": "feet-footwear"
+        }
+      ],
+      "supports": [
+        "group.falls.contributors"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.cognition_mood_delirium_and_attention_change",
+        "display": "Cognition and Mood",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.cognition-mood",
+        "display": "Cognition and Mood",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.cognition-mood",
+        "wording": "최근 기억·집중·판단·기분 변화 또는 갑작스러운 혼란이 있었는지 보호자 관찰과 함께 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 143,
+          "reason": "cognition-mood"
+        }
+      ],
+      "supports": [
+        "group.falls.contributors"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.urinary_urgency_nocturia_and_continence",
+        "display": "Continence Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.continence",
+        "display": "Continence Context",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.continence",
+        "wording": "급하게 소변을 보러 가거나 밤중 배뇨, 실금 때문에 서두르다 불안정해지는 일이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 142,
+          "reason": "continence"
+        }
+      ],
+      "supports": [
+        "group.falls.contributors"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.diet_fluids_weight_loss_and_frailty_context",
+        "display": "Nutrition and Frailty Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.nutrition",
+        "display": "Nutrition and Frailty Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.nutrition",
+        "wording": "식사·수분 섭취, 최근 체중 감소, 근력·활동 감소와 전반적인 쇠약 변화를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 141,
+          "reason": "nutrition"
+        }
+      ],
+      "supports": [
+        "group.falls.contributors"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.current_medicines_doses_and_adherence",
+        "display": "Current Medicines",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.medicines",
+        "display": "Current Medicines",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.medicines",
+        "wording": "처방약·일반약·한약·보충제의 이름·용량·횟수와 실제 복용 방법을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 140,
+          "reason": "medicines"
+        }
+      ],
+      "supports": [
+        "group.falls.contributors"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.sedating_bp_glucose_and_recent_medicine_changes",
+        "display": "Fall-related Medicine Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.medicine-risk",
+        "display": "Fall-related Medicine Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.medicine-risk",
+        "wording": "수면·진정제, 정신건강약, 혈압약·이뇨제, 혈당약과 최근 시작·중단·증량·누락 여부를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 139,
+          "reason": "medicine-risk"
+        }
+      ],
+      "supports": [
+        "group.falls.contributors"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.alcohol_substance_and_intoxication_context",
+        "display": "Alcohol and Substance Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.substance",
+        "display": "Alcohol and Substance Context",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.substance",
+        "wording": "음주 빈도·양·마지막 음주와 대마·진정물질 등 사용이 낙상 시점과 관련 있었는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 138,
+          "reason": "substance"
+        }
+      ],
+      "supports": [
+        "group.falls.contributors"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.long_term_conditions_and_previous_neurologic_disease",
+        "display": "Relevant Conditions",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.conditions",
+        "display": "Relevant Conditions",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.conditions",
+        "wording": "뇌졸중·파킨슨병·치매·당뇨·관절질환·골다공증·전정질환 등 보행과 골절 위험에 관련된 진단을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 137,
+          "reason": "conditions"
+        }
+      ],
+      "supports": [
+        "group.falls.contributors"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.osteoporosis_fragility_fracture_and_bone_health",
+        "display": "Bone Health",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.bone-health",
+        "display": "Bone Health",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.bone-health",
+        "wording": "골다공증·작은 충격 골절, 골밀도검사와 뼈 건강 치료 이력을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 136,
+          "reason": "bone-health"
+        }
+      ],
+      "supports": [
+        "group.falls.contributors"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.home_hazards_lighting_rugs_bathroom_and_stairs",
+        "display": "Home Hazards",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.home-hazards",
+        "display": "Home Hazards",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.home-hazards",
+        "wording": "집의 조명, 전선·카펫, 미끄러운 욕실, 문턱·계단·손잡이 등 넘어질 위험과 개선 여부를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "home-hazards"
+        }
+      ],
+      "supports": [
+        "group.falls.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.living_arrangement_support_and_alarm",
+        "display": "Support and Emergency Access",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.support",
+        "display": "Support and Emergency Access",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.support",
+        "wording": "혼자 사는지, 일상 도움을 주는 사람과 비상호출기·전화 접근, 넘어졌을 때 도움받는 계획을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "support"
+        }
+      ],
+      "supports": [
+        "group.falls.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.adl_bathing_toileting_dressing_and_meals",
+        "display": "Activities of Daily Living",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.adl",
+        "display": "Activities of Daily Living",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.adl",
+        "wording": "목욕·화장실·옷 입기·식사 준비·약 관리에 어느 정도 도움이 필요한가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "adl"
+        }
+      ],
+      "supports": [
+        "group.falls.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.driving_work_heights_and_community_mobility",
+        "display": "Driving and Occupational Safety",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.driving-work",
+        "display": "Driving and Occupational Safety",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.driving-work",
+        "wording": "운전, 고소·기계 작업, 통근·장보기 등에서 보행 문제가 안전과 역할에 미친 영향을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 127,
+          "reason": "driving-work"
+        }
+      ],
+      "supports": [
+        "group.falls.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "falls.patient_goal_priority_and_other_detail",
+        "display": "Patient Goal and Other Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.gait-falls-concern.other-detail",
+        "display": "Patient Goal and Other Detail",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.gait-falls-concern.other-detail",
+        "wording": "질문에 없지만 의료진에게 꼭 전달할 내용, 가장 걱정되는 점과 진료에서 원하는 도움을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 80,
+          "reason": "other-detail"
+        }
+      ],
+      "supports": [
+        "group.falls.routing",
+        "group.falls.function"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nice.ng249.2025",
+      "source.cdc.steadi.2025",
+      "source.nice.ng232.2025",
+      "source.stom.gait-falls.20260716"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

@@ -452,6 +452,17 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/neurology/seizure-event-follow-up",
         "research_manifests": [ROOT / "sources/manifests/primary-care-seizure-event-follow-up-research.json"],
     },
+    "gait_falls_concern": {
+        "graph": ROOT / "knowledge/graph/primary-care-gait-falls-concern.json",
+        "rules": ROOT / "rules/primary-care-gait-falls-concern.json",
+        "sources": ROOT / "sources/manifests/primary-care-gait-falls-concern.json",
+        "completion_policy": ROOT / "policies/primary-care-gait-falls-concern-completion.json",
+        "output": ROOT / "packages/generated/primary-care-gait-falls-concern-0.1.0.json",
+        "package_id": "package.primary-care-gait-falls-concern", "package_version": "0.1.0",
+        "rfe": "rfe.gait_falls_concern",
+        "simulation_root": ROOT / "simulation/patients/neurology/gait-falls-concern",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-gait-falls-concern-research.json"],
+    },
     "kidney_function_ckd_follow_up": {
         "graph": ROOT / "knowledge/graph/primary-care-kidney-function-ckd-follow-up.json",
         "rules": ROOT / "rules/primary-care-kidney-function-ckd-follow-up.json",
