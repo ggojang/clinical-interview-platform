@@ -811,7 +811,9 @@ def build(root: Path, output: Path) -> dict[str, Any]:
                 "https://ggojang.github.io/clinical-interview-platform/"
                 "gpt/stom-openapi.yaml"
             ),
-            "runtime_use": "optional_semantic_alignment_only",
+            "architectural_location": "external_terminology_verification_adapter",
+            "runtime_use": "prohibited",
+            "adapter_use": "optional_provisional_coding_and_interoperability_verification",
             "clinical_rule_selection_from_live_terminology": False,
             "send_raw_patient_response": False,
             "send_direct_identifiers": False,
@@ -830,6 +832,9 @@ def build(root: Path, output: Path) -> dict[str, Any]:
         "korean_claim_code_binding_policy": korean_claim_policy,
         "longitudinal_context_review_policy": encounter_policy[
             "longitudinal_context_review"
+        ],
+        "preventive_context_review_policy": encounter_policy[
+            "preventive_context_review"
         ],
         "clinician_submission_context_policy": resources[
             "clinician-submission-context.json"

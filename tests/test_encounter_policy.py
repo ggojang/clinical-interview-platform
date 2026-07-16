@@ -7,6 +7,7 @@ from runtime.encounter_policy import (
     classify_result_follow_up_goal,
     context_review_completion,
     context_review_due,
+    preventive_immunization_review_due,
     result_follow_up_action,
 )
 
@@ -88,6 +89,68 @@ class EncounterPolicyTests(unittest.TestCase):
         self.assertTrue(result["occupation.current"]["due"])
         self.assertFalse(result["social.alcohol"]["due"])
         self.assertTrue(result["social.smoking"]["due"])
+
+    def test_immunization_profile_is_not_activated_for_unrelated_symptom(self):
+        result = preventive_immunization_review_due(
+            encounter_type="new_encounter",
+            as_of=date(2026, 7, 16),
+            last_confirmed_at=None,
+        )
+        self.assertFalse(result["activated"])
+        self.assertFalse(result["due"])
+        self.assertEqual(result["reason"], "not_activated")
+        self.assertFalse(result["vaccine_due_status_inferred"])
+
+    def test_preventive_or_vaccination_context_activates_immunization_profile(self):
+        for encounter_type in ("preventive_visit", "annual_review", "vaccination"):
+            with self.subTest(encounter_type=encounter_type):
+                result = preventive_immunization_review_due(
+                    encounter_type=encounter_type,
+                    as_of=date(2026, 7, 16),
+                    last_confirmed_at=None,
+                )
+                self.assertTrue(result["activated"])
+                self.assertTrue(result["due"])
+                self.assertEqual(result["reason"], "never_confirmed")
+                self.assertFalse(result["vaccine_due_status_inferred"])
+
+        health_check = preventive_immunization_review_due(
+            encounter_type="new_encounter",
+            care_setting="health_checkup",
+            as_of=date(2026, 7, 16),
+            last_confirmed_at=None,
+        )
+        self.assertTrue(health_check["activated"])
+        self.assertTrue(health_check["due"])
+
+    def test_rfe_risk_rule_can_activate_recent_immunization_profile(self):
+        result = preventive_immunization_review_due(
+            encounter_type="new_encounter",
+            as_of=date(2026, 7, 16),
+            last_confirmed_at=date(2026, 6, 1),
+            rfe_or_risk_relevant=True,
+        )
+        self.assertTrue(result["activated"])
+        self.assertFalse(result["due"])
+        self.assertEqual(result["reason"], "recently_confirmed")
+        self.assertFalse(result["vaccine_due_status_inferred"])
+
+    def test_architecture_text_preserves_rfe_and_runtime_stom_boundary(self):
+        readme = (self.ROOT / "README.md").read_text(encoding="utf-8")
+        foundation = (self.ROOT / "FOUNDATION.md").read_text(encoding="utf-8")
+        context_foundation = (
+            self.ROOT / "docs/context/000-foundation.md"
+        ).read_text(encoding="utf-8")
+        project_context = (self.ROOT / "PROJECT_CONTEXT.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("Chief complaint: cough", readme)
+        self.assertIn("Initial Reason for Encounter (RFE) vertical slice: cough", readme)
+        for document in (foundation, context_foundation):
+            self.assertIn("Runtime never communicates with STOM.", document)
+            self.assertIn("outside the Clinical Interview Runtime", document)
+        self.assertNotIn("optional Runtime semantic-alignment service", foundation)
+        self.assertIn("Adapter is not part of the Clinical Interview Runtime", project_context)
 
     def test_first_encounter_cannot_complete_with_unresolved_context(self):
         due = context_review_due(

@@ -16,6 +16,17 @@ DEFAULT_REVIEW_INTERVAL_DAYS = {
     "social.smoking": 365,
 }
 
+PREVENTIVE_IMMUNIZATION_INTERVAL_DAYS = 365
+PREVENTIVE_IMMUNIZATION_ENCOUNTER_TYPES = {
+    "preventive_visit",
+    "annual_review",
+    "vaccination",
+}
+PREVENTIVE_IMMUNIZATION_CARE_SETTINGS = {
+    "health_checkup",
+    "community_screening",
+}
+
 RESOLVED_CONTEXT_STATES = {
     "answered",
     "current_existing",
@@ -113,4 +124,57 @@ def context_review_completion(
         "complete": not unresolved,
         "unresolved_groups": unresolved,
         "safety_deferred_groups": deferred,
+    }
+
+
+def preventive_immunization_review_due(
+    *,
+    encounter_type: str,
+    care_setting: str = "primary_care",
+    as_of: date,
+    last_confirmed_at: date | None,
+    rfe_or_risk_relevant: bool = False,
+    interval_days: int = PREVENTIVE_IMMUNIZATION_INTERVAL_DAYS,
+) -> dict[str, Any]:
+    """Review immunization history only when preventive context is activated.
+
+    This interval controls history reconfirmation, never whether a vaccine is
+    clinically due. Due status needs current age-, risk-, and jurisdiction-
+    specific schedule knowledge.
+    """
+    activated = (
+        encounter_type in PREVENTIVE_IMMUNIZATION_ENCOUNTER_TYPES
+        or care_setting in PREVENTIVE_IMMUNIZATION_CARE_SETTINGS
+        or rfe_or_risk_relevant
+    )
+    if not activated:
+        return {
+            "due": False,
+            "activated": False,
+            "reason": "not_activated",
+            "interval_days": interval_days,
+            "last_confirmed_at": (
+                last_confirmed_at.isoformat() if last_confirmed_at else None
+            ),
+            "vaccine_due_status_inferred": False,
+        }
+
+    elapsed_days = (
+        (as_of - last_confirmed_at).days if last_confirmed_at else None
+    )
+    due = last_confirmed_at is None or elapsed_days >= interval_days
+    return {
+        "due": due,
+        "activated": True,
+        "reason": (
+            "never_confirmed" if last_confirmed_at is None
+            else "interval_elapsed" if due
+            else "recently_confirmed"
+        ),
+        "interval_days": interval_days,
+        "last_confirmed_at": (
+            last_confirmed_at.isoformat() if last_confirmed_at else None
+        ),
+        "elapsed_days": elapsed_days,
+        "vaccine_due_status_inferred": False,
     }

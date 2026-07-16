@@ -41,7 +41,7 @@ Runtime is one consumer of the knowledge produced by this repository. Knowledge 
 
 The first end-to-end slice covers:
 
-- Chief complaint: cough
+- Initial Reason for Encounter (RFE) vertical slice: cough
 - Core facts: duration, onset, fever, dyspnea, sputum, hemoptysis, smoking
 - Respiratory red-flag screening
 - Clinical Memory updates

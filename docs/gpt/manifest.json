@@ -240,10 +240,16 @@
         {
           "fact_ids": [
             "history.condition.current",
-            "history.procedure.past",
-            "history.immunization.relevant"
+            "history.procedure.past"
           ],
           "id": "medical_history"
+        },
+        {
+          "fact_ids": [
+            "preventive.immunization.history",
+            "history.immunization.relevant"
+          ],
+          "id": "preventive_history"
         },
         {
           "fact_ids": [
@@ -721,7 +727,8 @@
         "patient.weight_kg",
         "patient.blood_group_abo_rh",
         "clinical.measurements.available",
-        "history.immunization.relevant"
+        "history.immunization.relevant",
+        "preventive.immunization.history"
       ]
     },
     "facts": [
@@ -924,6 +931,16 @@
         "value_type": "string"
       },
       {
+        "display": "Longitudinal Preventive Immunization Profile",
+        "display_ko": "예방접종 이력과 확인 상태",
+        "id": "preventive.immunization.history",
+        "report_field": "preventive.immunization_history",
+        "review_status": "unreviewed",
+        "status": "research_only",
+        "type": "Fact",
+        "value_type": "string"
+      },
+      {
         "display": "Prior Episode and Evaluation for Current Reason for Encounter",
         "display_ko": "현재 문제의 과거 발생 및 평가",
         "id": "encounter.rfe.prior_episode_and_evaluation",
@@ -988,7 +1005,7 @@
         "docs/context/017-clinical-memory.md",
         "policies/encounter-context-review.json"
       ],
-      "version": "0.1.0"
+      "version": "0.2.0"
     },
     "questions": [
       {
@@ -1094,6 +1111,12 @@
         "wording": "최근 혈압, 맥박, 체온, 호흡수, 산소포화도 등 확인 가능한 측정값이 있으면 측정 시각·단위·출처와 함께 알려주세요. 없으면 '없음'이라고 답해 주세요."
       },
       {
+        "fact_id": "preventive.immunization.history",
+        "priority": 18,
+        "template_id": "question.clinician-context.preventive-immunization",
+        "wording": "예방접종 이력을 확인하겠습니다. 접종한 백신의 이름, 접종 시기와 차수를 아는 범위에서 알려주시고, 접종기록이 있으면 그 출처도 알려주세요. 기억나지 않는 항목은 모른다고 답할 수 있습니다."
+      },
+      {
         "fact_id": "encounter.rfe.prior_episode_and_evaluation",
         "priority": 140,
         "template_id": "question.clinician-rfe.prior-episode-evaluation",
@@ -1130,7 +1153,7 @@
       "research_test",
       "simulation"
     ],
-    "version": "0.1.0"
+    "version": "0.2.0"
   },
   "completion_handoff_policy": {
     "clinician_previsit_content": {
@@ -2622,6 +2645,30 @@
       "/gpt/interoperability/uscdi-coverage.json"
     ]
   },
+  "preventive_context_review_policy": {
+    "activate_when_rfe_or_risk_rule_requires_immunization": true,
+    "activation_care_settings": [
+      "health_checkup",
+      "community_screening"
+    ],
+    "activation_encounter_types": [
+      "preventive_visit",
+      "annual_review",
+      "vaccination"
+    ],
+    "do_not_activate_for_unrelated_ordinary_symptom_encounter": true,
+    "fact_group": "preventive.immunization",
+    "fact_ids": [
+      "preventive.immunization.history"
+    ],
+    "interval_controls_history_reconfirmation_not_vaccine_due_status": true,
+    "interval_days": 365,
+    "preserve_unknown_partial_and_documented_states": true,
+    "question_ko": "예방접종 이력을 확인하겠습니다. 접종한 백신의 이름, 접종 시기와 차수를 아는 범위에서 알려주시고, 접종기록이 있으면 그 출처도 알려주세요. 기억나지 않는 항목은 모른다고 답할 수 있습니다.",
+    "reuse_longitudinally": true,
+    "separate_from_general_first_encounter_baseline": true,
+    "vaccine_due_status_requires_age_risk_jurisdiction_and_current_schedule": true
+  },
   "question_choice_semantic_alignment_policy": {
     "binary_single_proposition": {
       "display_group_label_ko": "응답",
@@ -2768,19 +2815,19 @@
       "count": 0,
       "name": "clinician-submission-context",
       "path": "/gpt/clinician-submission-context.json",
-      "sha256": "1df54d17278cdabecd496a0173917f96e21996ed562f5309ea28af606541db86"
+      "sha256": "d42bd5f7ebdabb286b564cc97143679820bf6e8c6a949fec4c6e198d19d8de1a"
     },
     {
-      "count": 49,
+      "count": 50,
       "name": "common-facts",
       "path": "/gpt/common-facts.json",
-      "sha256": "b0bce66895e6b874073396acfb58e299b30723cb26bc12485de0439142ff06e3"
+      "sha256": "97f333fc31d7419787d173180d7f32a6e683a78048560d8e34e9af90b778a678"
     },
     {
-      "count": 1785,
+      "count": 1786,
       "name": "facts",
       "path": "/gpt/facts.json",
-      "sha256": "2e0368fc533c2fd488ccb42ce93703673853821f39a90b8485e531fc95bcd289"
+      "sha256": "3664fb8d689c37bc321a37fdb9d7b6fdfa768da68312dd18da0e556ccde32da8"
     },
     {
       "count": 0,
@@ -3911,6 +3958,8 @@
   "status": "research_only",
   "terminology_lookup_policy": {
     "action_schema_url": "https://ggojang.github.io/clinical-interview-platform/gpt/stom-openapi.yaml",
+    "adapter_use": "optional_provisional_coding_and_interoperability_verification",
+    "architectural_location": "external_terminology_verification_adapter",
     "clinical_rule_selection_from_live_terminology": false,
     "fallback": "preserve_free_text_and_continue_with_compiled_knowledge",
     "mapping_flow": [
@@ -3922,7 +3971,7 @@
       "preserve_server_version_and_mapping_provenance"
     ],
     "review_status": "unreviewed",
-    "runtime_use": "optional_semantic_alignment_only",
+    "runtime_use": "prohibited",
     "send_direct_identifiers": false,
     "send_only_minimal_normalized_term_or_code": true,
     "send_raw_patient_response": false,

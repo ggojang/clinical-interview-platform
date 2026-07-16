@@ -62,10 +62,16 @@
       {
         "fact_ids": [
           "history.condition.current",
-          "history.procedure.past",
-          "history.immunization.relevant"
+          "history.procedure.past"
         ],
         "id": "medical_history"
+      },
+      {
+        "fact_ids": [
+          "preventive.immunization.history",
+          "history.immunization.relevant"
+        ],
+        "id": "preventive_history"
       },
       {
         "fact_ids": [
@@ -543,7 +549,8 @@
       "patient.weight_kg",
       "patient.blood_group_abo_rh",
       "clinical.measurements.available",
-      "history.immunization.relevant"
+      "history.immunization.relevant",
+      "preventive.immunization.history"
     ]
   },
   "facts": [
@@ -746,6 +753,16 @@
       "value_type": "string"
     },
     {
+      "display": "Longitudinal Preventive Immunization Profile",
+      "display_ko": "예방접종 이력과 확인 상태",
+      "id": "preventive.immunization.history",
+      "report_field": "preventive.immunization_history",
+      "review_status": "unreviewed",
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
       "display": "Prior Episode and Evaluation for Current Reason for Encounter",
       "display_ko": "현재 문제의 과거 발생 및 평가",
       "id": "encounter.rfe.prior_episode_and_evaluation",
@@ -810,7 +827,7 @@
       "docs/context/017-clinical-memory.md",
       "policies/encounter-context-review.json"
     ],
-    "version": "0.1.0"
+    "version": "0.2.0"
   },
   "questions": [
     {
@@ -916,6 +933,12 @@
       "wording": "최근 혈압, 맥박, 체온, 호흡수, 산소포화도 등 확인 가능한 측정값이 있으면 측정 시각·단위·출처와 함께 알려주세요. 없으면 '없음'이라고 답해 주세요."
     },
     {
+      "fact_id": "preventive.immunization.history",
+      "priority": 18,
+      "template_id": "question.clinician-context.preventive-immunization",
+      "wording": "예방접종 이력을 확인하겠습니다. 접종한 백신의 이름, 접종 시기와 차수를 아는 범위에서 알려주시고, 접종기록이 있으면 그 출처도 알려주세요. 기억나지 않는 항목은 모른다고 답할 수 있습니다."
+    },
+    {
       "fact_id": "encounter.rfe.prior_episode_and_evaluation",
       "priority": 140,
       "template_id": "question.clinician-rfe.prior-episode-evaluation",
@@ -952,5 +975,5 @@
     "research_test",
     "simulation"
   ],
-  "version": "0.1.0"
+  "version": "0.2.0"
 }

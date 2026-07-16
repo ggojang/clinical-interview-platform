@@ -448,15 +448,25 @@ Neither controls Runtime.
 
 # 16. STOM
 
-STOM is the build-time terminology provider and an optional Runtime semantic-alignment service.
+STOM is a build-time terminology provider.
 
-At Runtime, STOM receives only a minimal de-identified normalized term or code through approved read-only operations. Raw patient responses, identifiers, files, full narratives and combinations of clinical facts are prohibited.
+Runtime never communicates with STOM.
 
-STOM results are provisional coding candidates. Selected codes require active-state verification and retain server version, provenance and uncertainty.
+Knowledge Builder may communicate with STOM.
 
-Knowledge Builder may use the broader terminology API. Runtime may not use STOM to create clinical knowledge or rules.
+Compiled Runtime Packages never require STOM.
 
-Compiled Runtime Packages never require STOM and remain functional when it is unavailable.
+## Terminology Verification Adapter
+
+A host application or research-test orchestrator may expose an optional read-only Terminology Verification Adapter outside the Clinical Interview Runtime.
+
+The Adapter may receive only a minimal de-identified normalized term or terminology code for provisional coding and interoperability verification.
+
+The Adapter never selects Clinical Intent, Interview Target, Fact, Question, Safety Rule, urgency, hypothesis, diagnosis, completion state, or Runtime behavior.
+
+Raw patient responses, identifiers, files, full narratives, and combinations of clinical facts are prohibited.
+
+The Clinical Interview Runtime remains package-only and fully functional when the Adapter is absent or unavailable.
 
 ---
 

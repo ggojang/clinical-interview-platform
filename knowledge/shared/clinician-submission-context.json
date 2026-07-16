@@ -1,6 +1,6 @@
 {
   "id": "knowledge.shared.clinician-submission-context",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "status": "research_only",
   "review_status": "unreviewed",
   "usage_modes": ["research_test", "simulation"],
@@ -195,6 +195,16 @@
       "review_status": "unreviewed"
     },
     {
+      "id": "preventive.immunization.history",
+      "type": "Fact",
+      "display": "Longitudinal Preventive Immunization Profile",
+      "display_ko": "예방접종 이력과 확인 상태",
+      "value_type": "string",
+      "report_field": "preventive.immunization_history",
+      "status": "research_only",
+      "review_status": "unreviewed"
+    },
+    {
       "id": "encounter.rfe.prior_episode_and_evaluation",
       "type": "Fact",
       "display": "Prior Episode and Evaluation for Current Reason for Encounter",
@@ -332,6 +342,12 @@
       "fact_id": "clinical.measurements.available",
       "wording": "최근 혈압, 맥박, 체온, 호흡수, 산소포화도 등 확인 가능한 측정값이 있으면 측정 시각·단위·출처와 함께 알려주세요. 없으면 '없음'이라고 답해 주세요.",
       "priority": 20
+    },
+    {
+      "template_id": "question.clinician-context.preventive-immunization",
+      "fact_id": "preventive.immunization.history",
+      "wording": "예방접종 이력을 확인하겠습니다. 접종한 백신의 이름, 접종 시기와 차수를 아는 범위에서 알려주시고, 접종기록이 있으면 그 출처도 알려주세요. 기억나지 않는 항목은 모른다고 답할 수 있습니다.",
+      "priority": 18
     },
     {
       "template_id": "question.clinician-rfe.prior-episode-evaluation",
@@ -795,7 +811,8 @@
       "patient.weight_kg",
       "patient.blood_group_abo_rh",
       "clinical.measurements.available",
-      "history.immunization.relevant"
+      "history.immunization.relevant",
+      "preventive.immunization.history"
     ],
     "additional_question_budget": 40,
     "data_absent_states_count_as_resolved": ["asked-unknown", "asked-declined", "not-applicable"]
@@ -807,7 +824,8 @@
       {"id": "rfe_clinical_summary", "fact_ids": ["encounter.rfe.prior_episode_and_evaluation", "encounter.rfe.treatment_attempt_and_response", "encounter.rfe.functional_impact", "encounter.rfe.patient_concern_and_expectation"]},
       {"id": "encounter", "fact_ids": ["encounter.context_review_state", "encounter.information_source"]},
       {"id": "demographics", "fact_ids": ["patient.age_years", "patient.sex_for_clinical_care", "patient.height_cm", "patient.weight_kg", "patient.blood_group_abo_rh"]},
-      {"id": "medical_history", "fact_ids": ["history.condition.current", "history.procedure.past", "history.immunization.relevant"]},
+      {"id": "medical_history", "fact_ids": ["history.condition.current", "history.procedure.past"]},
+      {"id": "preventive_history", "fact_ids": ["preventive.immunization.history", "history.immunization.relevant"]},
       {"id": "medications_and_allergies", "fact_ids": ["medication.current", "allergy.current"]},
       {"id": "family_and_social_history", "fact_ids": ["history.family", "occupation.current", "patient.smoking.status", "patient.smoking.exposure_detail", "patient.alcohol.pattern"]},
       {"id": "measurements", "fact_ids": ["clinical.measurements.available"]},
@@ -827,6 +845,6 @@
       "policies/encounter-context-review.json"
     ],
     "review_status": "unreviewed",
-    "version": "0.1.0"
+    "version": "0.2.0"
   }
 }

@@ -67,6 +67,17 @@ class ClinicianSubmissionContextTest(unittest.TestCase):
                     "encounter.context_review_state",
                     package["indexes"]["questions_by_fact"],
                 )
+                facts = {item["id"] for item in module["facts"]}
+                self.assertIn("preventive.immunization.history", facts)
+                sections = {
+                    item["id"]: item
+                    for item in module["clinician_handoff"]["sections"]
+                }
+                self.assertIn("preventive_history", sections)
+                self.assertIn(
+                    "preventive.immunization.history",
+                    sections["preventive_history"]["fact_ids"],
+                )
 
     def test_every_generated_package_loads_in_clinician_submission_mode(self):
         for profile, config in PACKAGE_PROFILES.items():

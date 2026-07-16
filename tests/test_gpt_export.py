@@ -687,7 +687,11 @@ class GptExportTests(unittest.TestCase):
             )
             terminology = manifest["terminology_lookup_policy"]
             self.assertEqual(
-                terminology["runtime_use"], "optional_semantic_alignment_only"
+                terminology["runtime_use"], "prohibited"
+            )
+            self.assertEqual(
+                terminology["architectural_location"],
+                "external_terminology_verification_adapter",
             )
             self.assertFalse(
                 terminology["clinical_rule_selection_from_live_terminology"]
@@ -823,6 +827,32 @@ class GptExportTests(unittest.TestCase):
             self.assertEqual(
                 review_policy["groups"]["history.procedures"]["fact_ids"],
                 ["history.procedure.past"],
+            )
+            preventive_policy = manifest["preventive_context_review_policy"]
+            self.assertTrue(
+                preventive_policy["separate_from_general_first_encounter_baseline"]
+            )
+            self.assertEqual(
+                preventive_policy["fact_ids"],
+                ["preventive.immunization.history"],
+            )
+            self.assertTrue(
+                preventive_policy[
+                    "do_not_activate_for_unrelated_ordinary_symptom_encounter"
+                ]
+            )
+            self.assertTrue(
+                preventive_policy[
+                    "vaccine_due_status_requires_age_risk_jurisdiction_and_current_schedule"
+                ]
+            )
+            self.assertEqual(
+                manifest["terminology_lookup_policy"]["architectural_location"],
+                "external_terminology_verification_adapter",
+            )
+            self.assertEqual(
+                manifest["terminology_lookup_policy"]["runtime_use"],
+                "prohibited",
             )
             common = json.loads(
                 (output_path / "common-facts.json").read_text(encoding="utf-8")

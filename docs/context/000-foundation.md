@@ -456,6 +456,18 @@ Knowledge Builder may communicate with STOM.
 
 Compiled Runtime Packages never require STOM.
 
+## Terminology Verification Adapter
+
+A host application or research-test orchestrator may expose an optional read-only Terminology Verification Adapter outside the Clinical Interview Runtime.
+
+The Adapter may receive only a minimal de-identified normalized term or terminology code for provisional coding and interoperability verification.
+
+The Adapter never selects Clinical Intent, Interview Target, Fact, Question, Safety Rule, urgency, hypothesis, diagnosis, completion state, or Runtime behavior.
+
+Raw patient responses, identifiers, files, full narratives, and combinations of clinical facts are prohibited.
+
+The Clinical Interview Runtime remains package-only and fully functional when the Adapter is absent or unavailable.
+
 ---
 
 # 17. Guideline Integration

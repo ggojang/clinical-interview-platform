@@ -84,7 +84,12 @@ def normalize_encounter_context(value: dict[str, Any] | None = None) -> dict[str
     if raw["care_setting"] == "specialist_clinic" or raw["encounter_type"] == "follow_up":
         modifiers.extend(["treatment_response", "medication_adherence", "disease_progression"])
         candidate_intents.extend(["intent.characterize_follow_up", "intent.follow_up_support"])
-    if raw["care_setting"] in {"health_checkup", "community_screening"} or raw["encounter_type"] == "preventive_visit":
+    if (
+        raw["care_setting"] in {"health_checkup", "community_screening"}
+        or raw["encounter_type"] in {
+            "annual_review", "preventive_visit", "vaccination"
+        }
+    ):
         modifiers.extend(["prevention", "screening", "risk_assessment"])
         candidate_intents.extend(["intent.preventive_care", "intent.risk_assessment"])
     if raw["encounter_type"] == "medication_review":
