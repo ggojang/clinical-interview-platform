@@ -34,6 +34,17 @@ class GptExportTests(unittest.TestCase):
         collecting = case["collecting_phase_expectations"]
         self.assertEqual(collecting["maximum_question_stems_per_assistant_turn"], 1)
         self.assertFalse(collecting["question_reference_resets_after_answer"])
+        self.assertTrue(
+            collecting["numbered_options_are_shortcuts_not_a_closed_answer_set"]
+        )
+        self.assertTrue(collecting["unlisted_free_text_is_accepted"])
+        self.assertEqual(
+            collecting["choice_guidance_ko"],
+            "번호로 답하거나, 보기에 없으면 내용을 직접 입력해 주세요.",
+        )
+        self.assertEqual(
+            collecting["ambiguous_free_text_clarification_reference"], "Q1"
+        )
         self.assertFalse(collecting["ranked_differential_allowed"])
         self.assertFalse(collecting["management_or_self_test_advice_allowed"])
         completion = case["completion_phase_expectations"]
@@ -702,6 +713,23 @@ class GptExportTests(unittest.TestCase):
             question_identity = turn_contract["question_identity"]
             self.assertTrue(
                 question_identity["every_displayed_answer_option_has_visible_number"]
+            )
+            self.assertTrue(
+                question_identity[
+                    "numbered_options_are_shortcuts_not_a_closed_answer_set"
+                ]
+            )
+            self.assertEqual(
+                question_identity["choice_question_guidance_ko"],
+                "번호로 답하거나, 보기에 없으면 내용을 직접 입력해 주세요.",
+            )
+            self.assertTrue(
+                question_identity["accept_unlisted_korean_or_english_free_text"]
+            )
+            self.assertTrue(
+                question_identity[
+                    "ambiguous_free_text_reuses_same_question_reference_for_clarification"
+                ]
             )
             self.assertTrue(
                 question_identity[
