@@ -699,6 +699,15 @@ class GptExportTests(unittest.TestCase):
             self.assertTrue(
                 turn_contract["completion_phase"]["final_guidance_only_after_confirmation"]
             )
+            question_identity = turn_contract["question_identity"]
+            self.assertTrue(
+                question_identity["every_displayed_answer_option_has_visible_number"]
+            )
+            self.assertTrue(
+                question_identity[
+                    "enumerated_unknown_and_decline_follow_global_option_policy"
+                ]
+            )
             self.assertTrue(
                 revision["after_completion"]["require_completion_reconfirmation_after_recalculation"]
             )
