@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Audit every v0.2 grouped Primary Care expansion package against release gates."""
+"""Audit a Primary Care expansion queue against release gates."""
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -124,8 +125,8 @@ def audit_entry(
     }
 
 
-def run() -> dict[str, Any]:
-    queue = load(QUEUE)
+def run(queue_path: Path = QUEUE) -> dict[str, Any]:
+    queue = load(queue_path)
     catalog = {entry["id"]: entry for entry in load(CATALOG)["entries"]}
     packages = package_index()
     results = [audit_entry(entry, catalog, packages) for entry in queue["order"]]
@@ -134,7 +135,7 @@ def run() -> dict[str, Any]:
         and all(entry.get("state") == "implemented_unreviewed" for entry in queue["order"])
     )
     return {
-        "audit_id": "audit.primary-care-grouped-expansion-v0.2",
+        "audit_id": f"audit.{queue['id'].removeprefix('queue.')}",
         "queue_id": queue["id"],
         "queue_version": queue["version"],
         "queue_status": queue.get("status"),
@@ -145,6 +146,9 @@ def run() -> dict[str, Any]:
 
 
 if __name__ == "__main__":
-    report = run()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--queue", type=Path, default=QUEUE)
+    args = parser.parse_args()
+    report = run(args.queue)
     print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))
     sys.exit(0 if report["passed"] else 1)

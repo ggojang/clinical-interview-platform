@@ -518,6 +518,17 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/womens-health/menstrual-uterine-bleeding",
         "research_manifests": [ROOT / "sources/manifests/primary-care-menstrual-uterine-bleeding-research.json"],
     },
+    "breast_symptoms": {
+        "graph": ROOT / "knowledge/graph/primary-care-breast-symptoms.json",
+        "rules": ROOT / "rules/primary-care-breast-symptoms.json",
+        "sources": ROOT / "sources/manifests/primary-care-breast-symptoms.json",
+        "completion_policy": ROOT / "policies/primary-care-breast-symptoms-completion.json",
+        "output": ROOT / "packages/generated/primary-care-breast-symptoms-0.1.0.json",
+        "package_id": "package.primary-care-breast-symptoms", "package_version": "0.1.0",
+        "rfe": "rfe.breast_symptoms",
+        "simulation_root": ROOT / "simulation/patients/breast/breast-symptoms",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-breast-symptoms-research.json"],
+    },
     "kidney_function_ckd_follow_up": {
         "graph": ROOT / "knowledge/graph/primary-care-kidney-function-ckd-follow-up.json",
         "rules": ROOT / "rules/primary-care-kidney-function-ckd-follow-up.json",

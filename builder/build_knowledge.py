@@ -358,6 +358,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-menstrual-uterine-bleeding.json",
         "version": "0.1.0",
     },
+    "breast_symptoms": {
+        "base_graph": ROOT / "knowledge/base/primary-care-breast-symptoms.json",
+        "base_rules": ROOT / "rules/base/primary-care-breast-symptoms.json",
+        "fragment_root": ROOT / "knowledge/generated/breast/breast-symptoms",
+        "output_graph": ROOT / "knowledge/graph/primary-care-breast-symptoms.json",
+        "output_rules": ROOT / "rules/primary-care-breast-symptoms.json",
+        "version": "0.1.0",
+    },
     "kidney_function_ckd_follow_up": {
         "base_graph": ROOT / "knowledge/base/primary-care-kidney-function-ckd-follow-up.json",
         "base_rules": ROOT / "rules/base/primary-care-kidney-function-ckd-follow-up.json",

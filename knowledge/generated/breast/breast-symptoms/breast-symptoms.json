@@ -1,0 +1,2167 @@
+{
+  "id": "knowledge.generated.breast-symptoms",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-breast-symptoms-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-07-16",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-07-17",
+    "next_full_review_at": "2027-01-12",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.breast.routing",
+      "type": "ClinicalGroup",
+      "display": "routing"
+    },
+    {
+      "id": "group.breast.safety",
+      "type": "ClinicalGroup",
+      "display": "safety"
+    },
+    {
+      "id": "group.breast.site",
+      "type": "ClinicalGroup",
+      "display": "site"
+    },
+    {
+      "id": "group.breast.lump",
+      "type": "ClinicalGroup",
+      "display": "lump"
+    },
+    {
+      "id": "group.breast.pain",
+      "type": "ClinicalGroup",
+      "display": "pain"
+    },
+    {
+      "id": "group.breast.nipple",
+      "type": "ClinicalGroup",
+      "display": "nipple"
+    },
+    {
+      "id": "group.breast.skin",
+      "type": "ClinicalGroup",
+      "display": "skin"
+    },
+    {
+      "id": "group.breast.lactation",
+      "type": "ClinicalGroup",
+      "display": "lactation"
+    },
+    {
+      "id": "group.breast.risk",
+      "type": "ClinicalGroup",
+      "display": "risk"
+    },
+    {
+      "id": "group.breast.followup",
+      "type": "ClinicalGroup",
+      "display": "followup"
+    },
+    {
+      "id": "group.breast.function",
+      "type": "ClinicalGroup",
+      "display": "function"
+    }
+  ],
+  "group_hypothesis_edges": [],
+  "safety_rules": [
+    {
+      "id": "rule.breast-symptoms.safety.severe-systemic",
+      "priority": 1000,
+      "when": {
+        "fact": "breast.collapse_confusion_or_severe_breathing_with_illness",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.breast-symptoms.safety.uncontrolled-bleeding",
+      "priority": 1000,
+      "when": {
+        "fact": "breast.uncontrolled_bleeding_after_injury_or_procedure",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.breast-symptoms.safety.spreading-infection",
+      "priority": 990,
+      "when": {
+        "fact": "breast.rapid_spreading_redness_high_fever_or_shaking_chills",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.breast-symptoms.safety.abscess-warning",
+      "priority": 990,
+      "when": {
+        "fact": "breast.painful_warm_lump_with_fever_or_pus",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.breast-symptoms.safety.implant-trauma-warning",
+      "priority": 990,
+      "when": {
+        "fact": "breast.implant_or_trauma_rapid_swelling_deformity_or_severe_pain",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.breast-symptoms.safety.new-lump-warning",
+      "priority": 980,
+      "when": {
+        "fact": "breast.new_unexplained_breast_or_axillary_lump",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "clarify",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.breast-symptoms.safety.discharge-warning",
+      "priority": 980,
+      "when": {
+        "fact": "breast.spontaneous_unilateral_bloody_or_clear_discharge",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "clarify",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.breast-symptoms.safety.nipple-change-warning",
+      "priority": 980,
+      "when": {
+        "fact": "breast.new_nipple_retraction_ulcer_or_persistent_eczema",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "clarify",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.breast-symptoms.safety.skin-shape-warning",
+      "priority": 980,
+      "when": {
+        "fact": "breast.skin_dimpling_peau_orange_or_shape_change",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "clarify",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.breast-symptoms.safety.persistent-inflammation",
+      "priority": 990,
+      "when": {
+        "fact": "breast.inflammation_not_improving_after_treatment",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "breast.primary_group",
+        "display": "Primary Breast Concern",
+        "value_type": "coded",
+        "allowed_values": [
+          "lump_or_thickening",
+          "pain",
+          "nipple_discharge",
+          "nipple_or_skin_change",
+          "inflammation_or_lactation",
+          "injury_procedure_or_implant",
+          "prior_test_or_treatment_followup",
+          "other_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.breast-symptoms.primary-group",
+        "display": "Primary Breast Concern",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.primary-group",
+        "wording": "이번 방문은 유방·가슴의 멍울이나 단단한 부위, 통증, 유두 분비, 유두·피부·모양 변화, 붉음·열감·부기 또는 수유기 염증, 외상·수술·보형물 문제, 이전 검사·치료 추적 중 무엇에 가장 가깝나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 230,
+          "reason": "primary-group"
+        }
+      ],
+      "supports": [
+        "group.breast.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.collapse_confusion_or_severe_breathing_with_illness",
+        "display": "Severe Systemic Illness",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.breast-symptoms.severe-systemic",
+        "display": "Severe Systemic Illness",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.severe-systemic",
+        "wording": "유방의 통증·붉음·부기와 함께 쓰러짐, 의식 혼란, 심한 숨참 또는 깨우기 어려울 정도의 전신 악화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 229,
+          "reason": "severe-systemic"
+        }
+      ],
+      "supports": [
+        "group.breast.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.uncontrolled_bleeding_after_injury_or_procedure",
+        "display": "Uncontrolled Breast Bleeding",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.breast-symptoms.uncontrolled-bleeding",
+        "display": "Uncontrolled Breast Bleeding",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.uncontrolled-bleeding",
+        "wording": "유방·유두의 외상이나 시술 뒤 직접 압박해도 많은 출혈이 계속되거나 어지럽고 쓰러질 것 같은가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 228,
+          "reason": "uncontrolled-bleeding"
+        }
+      ],
+      "supports": [
+        "group.breast.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.rapid_spreading_redness_high_fever_or_shaking_chills",
+        "display": "Rapidly Progressive Breast Infection Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.breast-symptoms.spreading-infection",
+        "display": "Rapidly Progressive Breast Infection Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.spreading-infection",
+        "wording": "붉음·열감·부기가 빠르게 번지면서 고열, 심한 오한 또는 전신 상태 악화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 227,
+          "reason": "spreading-infection"
+        }
+      ],
+      "supports": [
+        "group.breast.safety",
+        "group.breast.skin"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.painful_warm_lump_with_fever_or_pus",
+        "display": "Breast Abscess Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.breast-symptoms.abscess-warning",
+        "display": "Breast Abscess Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.abscess-warning",
+        "wording": "매우 아프고 뜨거운 멍울·부기가 있으면서 열이 나거나 유두·상처에서 고름이 나오나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 226,
+          "reason": "abscess-warning"
+        }
+      ],
+      "supports": [
+        "group.breast.safety",
+        "group.breast.lump"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.implant_or_trauma_rapid_swelling_deformity_or_severe_pain",
+        "display": "Implant or Trauma Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.breast-symptoms.implant-trauma-warning",
+        "display": "Implant or Trauma Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.implant-trauma-warning",
+        "wording": "보형물이 있거나 유방을 다친 뒤 한쪽이 빠르게 붓고 모양이 변하거나 피부색 변화·참기 어려운 통증이 생겼나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 225,
+          "reason": "implant-trauma-warning"
+        }
+      ],
+      "supports": [
+        "group.breast.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.new_unexplained_breast_or_axillary_lump",
+        "display": "New Unexplained Breast or Axillary Lump",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "89164003"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.breast-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.breast-symptoms.new-lump-warning",
+        "display": "New Unexplained Breast or Axillary Lump",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.new-lump-warning",
+        "wording": "새로 생긴 원인 불명의 유방 멍울·단단한 부위 또는 겨드랑이 멍울이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 224,
+          "reason": "new-lump-warning"
+        }
+      ],
+      "supports": [
+        "group.breast.safety",
+        "group.breast.lump"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.spontaneous_unilateral_bloody_or_clear_discharge",
+        "display": "Concerning Nipple Discharge",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "54302000"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.breast-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.breast-symptoms.discharge-warning",
+        "display": "Concerning Nipple Discharge",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.discharge-warning",
+        "wording": "짜지 않았는데 한쪽 유두에서 피가 섞이거나 맑은 분비물이 저절로 나오나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 223,
+          "reason": "discharge-warning"
+        }
+      ],
+      "supports": [
+        "group.breast.safety",
+        "group.breast.nipple"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.new_nipple_retraction_ulcer_or_persistent_eczema",
+        "display": "New Nipple Change Warning",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "271955004"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.breast-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.breast-symptoms.nipple-change-warning",
+        "display": "New Nipple Change Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.nipple-change-warning",
+        "wording": "한쪽 유두가 새로 안으로 들어가거나 낫지 않는 습진·딱지·궤양·출혈이 생겼나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 222,
+          "reason": "nipple-change-warning"
+        }
+      ],
+      "supports": [
+        "group.breast.safety",
+        "group.breast.nipple"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.skin_dimpling_peau_orange_or_shape_change",
+        "display": "Breast Skin or Shape Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.breast-symptoms.skin-shape-warning",
+        "display": "Breast Skin or Shape Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.skin-shape-warning",
+        "wording": "피부가 움푹 패이거나 귤껍질처럼 변하고, 한쪽 유방의 크기·윤곽·모양이 새로 달라졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 221,
+          "reason": "skin-shape-warning"
+        }
+      ],
+      "supports": [
+        "group.breast.safety",
+        "group.breast.skin"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.inflammation_not_improving_after_treatment",
+        "display": "Persistent Inflammation after Treatment",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.breast-symptoms.persistent-inflammation",
+        "display": "Persistent Inflammation after Treatment",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.persistent-inflammation",
+        "wording": "염증 치료를 시작한 뒤 48시간이 지나도 호전되지 않거나 치료 중인데 더 악화하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 220,
+          "reason": "persistent-inflammation"
+        }
+      ],
+      "supports": [
+        "group.breast.safety",
+        "group.breast.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.information_source_and_reliability",
+        "display": "Information Source",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.breast-symptoms.information-source",
+        "display": "Information Source",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.information-source",
+        "wording": "누가 답변하고 있으며 본인 관찰, 보호자, 사진, 이전 진료기록 중 무엇에 근거하나요? 서로 다른 정보나 확실하지 않은 부분도 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 205,
+          "reason": "information-source"
+        }
+      ],
+      "supports": [
+        "group.breast.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.age_and_relevant_anatomy_context",
+        "display": "Age and Anatomy Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.breast-symptoms.age-anatomy",
+        "display": "Age and Anatomy Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.age-anatomy",
+        "wording": "만 나이와 현재 유방 조직·유두 관련 진료에 필요한 성별 또는 해부학적 정보를 답변 가능한 범위에서 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 204,
+          "reason": "age-anatomy"
+        }
+      ],
+      "supports": [
+        "group.breast.routing",
+        "group.breast.risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.reproductive_stage_and_menstrual_status",
+        "display": "Reproductive and Menstrual Stage",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.breast-symptoms.reproductive-stage",
+        "display": "Reproductive and Menstrual Stage",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.reproductive-stage",
+        "wording": "초경 전·가임기·임신·수유·산후·폐경 이행기·폐경 후 중 해당하는 상태와 마지막 생리 시작일을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 203,
+          "reason": "reproductive-stage"
+        }
+      ],
+      "supports": [
+        "group.breast.risk",
+        "group.breast.lactation"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.onset_duration_current_status_and_course",
+        "display": "Onset Duration and Course",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.breast-symptoms.onset-course",
+        "display": "Onset Duration and Course",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.onset-course",
+        "wording": "처음 발견한 날짜·상황, 지금도 있는지와 커짐·줄어듦·반복·빠른 변화 등 경과를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 202,
+          "reason": "onset-course"
+        }
+      ],
+      "supports": [
+        "group.breast.site"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.side_and_bilateral_status",
+        "display": "Breast Side",
+        "value_type": "coded",
+        "allowed_values": [
+          "left",
+          "right",
+          "bilateral",
+          "midline_or_chest_wall",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.breast-symptoms.side",
+        "display": "Breast Side",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.side",
+        "wording": "어느 쪽인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 201,
+          "reason": "side"
+        }
+      ],
+      "supports": [
+        "group.breast.site"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.exact_site_quadrant_clock_face_and_distance_from_nipple",
+        "display": "Exact Breast Site",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.breast-symptoms.exact-site",
+        "display": "Exact Breast Site",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.exact-site",
+        "wording": "유두·유륜·유방·겨드랑이 중 정확한 부위와 가능하면 위·아래/안쪽·바깥쪽 또는 시계방향, 유두에서의 거리를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 200,
+          "reason": "exact-site"
+        }
+      ],
+      "supports": [
+        "group.breast.site"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.number_and_distribution_of_areas",
+        "display": "Number and Distribution",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.breast-symptoms.number-distribution",
+        "display": "Number and Distribution",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.number-distribution",
+        "wording": "한 군데인지 여러 군데인지, 한쪽에 모여 있는지 양쪽에 흩어져 있는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 199,
+          "reason": "number-distribution"
+        }
+      ],
+      "supports": [
+        "group.breast.site",
+        "group.breast.lump"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.lump_or_thickening_present",
+        "display": "Breast Lump or Thickening Present",
+        "value_type": "boolean",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "89164003"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.breast-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.breast-symptoms.lump-present",
+        "display": "Breast Lump or Thickening Present",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.lump-present",
+        "wording": "직접 느껴지는 멍울, 결절 또는 주변과 다른 단단한 부위가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 195,
+          "reason": "lump-present"
+        }
+      ],
+      "supports": [
+        "group.breast.lump"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.lump_size_measurement_and_change",
+        "display": "Lump Size and Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.breast-symptoms.lump-size",
+        "display": "Lump Size and Change",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.lump-size",
+        "wording": "멍울의 대략적인 가로·세로 크기 또는 비교 가능한 크기와 처음보다 변했는지 알려주세요. 직접 측정하지 않았다면 그렇게 표시해주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 194,
+          "reason": "lump-size"
+        }
+      ],
+      "supports": [
+        "group.breast.lump"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.lump_patient_observed_texture_mobility_and_tenderness",
+        "display": "Patient-observed Lump Features",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.breast-symptoms.lump-features",
+        "display": "Patient-observed Lump Features",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.lump-features",
+        "wording": "본인이 느끼기에 단단함·말랑함, 잘 움직임·고정된 느낌, 누르면 아픔이 어떤가요? 이는 의료진 진찰 결과가 아니라 본인 관찰로 기록됩니다.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 193,
+          "reason": "lump-features"
+        }
+      ],
+      "supports": [
+        "group.breast.lump"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.axillary_or_supraclavicular_lump",
+        "display": "Axillary or Supraclavicular Lump",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.breast-symptoms.node-lump",
+        "display": "Axillary or Supraclavicular Lump",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.node-lump",
+        "wording": "겨드랑이 또는 쇄골 위에 새 멍울이 있으면 위치·크기·통증·지속기간을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 192,
+          "reason": "node-lump"
+        }
+      ],
+      "supports": [
+        "group.breast.lump",
+        "group.breast.risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.change_with_menstrual_cycle_pregnancy_or_lactation",
+        "display": "Hormonal or Lactation Relationship",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.breast-symptoms.hormonal-pattern",
+        "display": "Hormonal or Lactation Relationship",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.hormonal-pattern",
+        "wording": "생리 전후, 임신, 수유·유축, 단유와 증상 변화가 연관되어 보이나요? 반복 주기와 양쪽 여부를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 191,
+          "reason": "hormonal-pattern"
+        }
+      ],
+      "supports": [
+        "group.breast.lump",
+        "group.breast.pain",
+        "group.breast.lactation"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.pain_present",
+        "display": "Breast Pain Present",
+        "value_type": "boolean",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "53430007"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.breast-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.breast-symptoms.pain-present",
+        "display": "Breast Pain Present",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.pain-present",
+        "wording": "유방·유두·겨드랑이 또는 가슴벽 통증이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 187,
+          "reason": "pain-present"
+        }
+      ],
+      "supports": [
+        "group.breast.pain"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.pain_nrs",
+        "display": "Breast Pain NRS",
+        "value_type": "integer"
+      },
+      "target": {
+        "id": "target.breast-symptoms.pain-nrs",
+        "display": "Breast Pain NRS",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.pain-nrs",
+        "wording": "[필수] 통증이 있다면 현재 통증을 0부터 10까지 숫자로 알려주세요. 0은 통증 없음, 10은 상상할 수 있는 가장 심한 통증입니다.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 186,
+          "reason": "pain-nrs"
+        }
+      ],
+      "supports": [
+        "group.breast.pain"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.pain_focal_diffuse_cyclical_and_timing",
+        "display": "Breast Pain Pattern",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.breast-symptoms.pain-pattern",
+        "display": "Breast Pain Pattern",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.pain-pattern",
+        "wording": "통증이 한 점에 국한되는지 넓게 퍼지는지, 지속·간헐·생리 주기성인지와 하루 중 시기·지속시간을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 185,
+          "reason": "pain-pattern"
+        }
+      ],
+      "supports": [
+        "group.breast.pain"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.pain_character_radiation_and_trigger",
+        "display": "Breast Pain Character",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.breast-symptoms.pain-character",
+        "display": "Breast Pain Character",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.pain-character",
+        "wording": "찌름·화끈거림·묵직함 등 양상, 겨드랑이·팔·등으로 퍼짐과 누르기·움직임·운동·수유로 유발되는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 184,
+          "reason": "pain-character"
+        }
+      ],
+      "supports": [
+        "group.breast.pain"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.chest_wall_neck_shoulder_or_back_relation",
+        "display": "Chest Wall and Musculoskeletal Relation",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.breast-symptoms.musculoskeletal-relation",
+        "display": "Chest Wall and Musculoskeletal Relation",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.musculoskeletal-relation",
+        "wording": "목·어깨·등·갈비뼈 통증, 자세·팔 움직임·기침·깊은숨과 유방 통증의 관계가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 183,
+          "reason": "musculoskeletal-relation"
+        }
+      ],
+      "supports": [
+        "group.breast.pain"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.nipple_discharge_present",
+        "display": "Nipple Discharge Present",
+        "value_type": "boolean",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "54302000"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.breast-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.breast-symptoms.discharge-present",
+        "display": "Nipple Discharge Present",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.discharge-present",
+        "wording": "유두에서 모유 외 액체가 나오거나 묻어 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 178,
+          "reason": "discharge-present"
+        }
+      ],
+      "supports": [
+        "group.breast.nipple"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.discharge_spontaneous_or_expressed_and_laterality",
+        "display": "Discharge Trigger and Side",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.breast-symptoms.discharge-trigger",
+        "display": "Discharge Trigger and Side",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.discharge-trigger",
+        "wording": "분비물이 저절로 나오는지 눌렀을 때만 나오는지, 한쪽·양쪽과 한 구멍·여러 구멍 중 무엇인지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 177,
+          "reason": "discharge-trigger"
+        }
+      ],
+      "supports": [
+        "group.breast.nipple"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.discharge_color_amount_frequency_and_blood",
+        "display": "Discharge Appearance",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.breast-symptoms.discharge-appearance",
+        "display": "Discharge Appearance",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.discharge-appearance",
+        "wording": "색(맑음·흰색·노랑·초록·갈색·피), 양, 빈도, 속옷에 묻는지와 냄새를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 176,
+          "reason": "discharge-appearance"
+        }
+      ],
+      "supports": [
+        "group.breast.nipple"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.nipple_inversion_retraction_or_direction_change",
+        "display": "Nipple Retraction or Direction Change",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "271955004"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.breast-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.breast-symptoms.nipple-retraction",
+        "display": "Nipple Retraction or Direction Change",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.nipple-retraction",
+        "wording": "유두가 원래부터 들어가 있었는지 새로 들어가거나 방향이 변했는지, 한쪽·양쪽과 시작 시점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 175,
+          "reason": "nipple-retraction"
+        }
+      ],
+      "supports": [
+        "group.breast.nipple"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.nipple_rash_crust_fissure_ulcer_or_bleeding",
+        "display": "Nipple Skin Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.breast-symptoms.nipple-skin",
+        "display": "Nipple Skin Change",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.nipple-skin",
+        "wording": "유두·유륜의 발진, 가려움, 각질·딱지, 갈라짐·상처·궤양 또는 출혈의 위치와 지속기간을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 174,
+          "reason": "nipple-skin"
+        }
+      ],
+      "supports": [
+        "group.breast.nipple",
+        "group.breast.skin"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.redness_warmth_swelling_and_extent",
+        "display": "Breast Redness Warmth and Swelling",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.breast-symptoms.inflammation-local",
+        "display": "Breast Redness Warmth and Swelling",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.inflammation-local",
+        "wording": "붉음·열감·부기의 위치, 범위, 경계, 빠르게 번지는지와 피부색 때문에 붉음을 확인하기 어려운지도 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 169,
+          "reason": "inflammation-local"
+        }
+      ],
+      "supports": [
+        "group.breast.skin"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.fever_chills_aches_fatigue_and_measured_temperature",
+        "display": "Systemic Infection Features",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.breast-symptoms.infection-systemic",
+        "display": "Systemic Infection Features",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.infection-systemic",
+        "wording": "측정한 체온과 오한·몸살·피로·메스꺼움 등 전신 증상, 시작 시점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 168,
+          "reason": "infection-systemic"
+        }
+      ],
+      "supports": [
+        "group.breast.skin"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.skin_dimpling_thickening_orange_peel_and_shape",
+        "display": "Breast Skin and Shape Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.breast-symptoms.skin-shape",
+        "display": "Breast Skin and Shape Change",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.skin-shape",
+        "wording": "피부 함몰·두꺼워짐·귤껍질 모양, 정맥이 두드러짐 또는 유방 크기·윤곽·대칭 변화와 시작 시점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 167,
+          "reason": "skin-shape"
+        }
+      ],
+      "supports": [
+        "group.breast.skin",
+        "group.breast.risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.skin_wound_piercing_bite_or_dermatitis",
+        "display": "Breast Skin Barrier Injury",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.breast-symptoms.skin-barrier",
+        "display": "Breast Skin Barrier Injury",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.skin-barrier",
+        "wording": "최근 상처·긁힘·벌레물림·피어싱·면도·습진 등 피부 손상과 분비물·감염 징후가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 166,
+          "reason": "skin-barrier"
+        }
+      ],
+      "supports": [
+        "group.breast.skin"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.pregnancy_postpartum_lactation_and_weaning_dates",
+        "display": "Pregnancy and Lactation Status",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.breast-symptoms.lactation-status",
+        "display": "Pregnancy and Lactation Status",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.lactation-status",
+        "wording": "임신 주수, 출산일, 현재 수유·유축 여부, 단유 시점과 마지막 수유·유축 시각을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 161,
+          "reason": "lactation-status"
+        }
+      ],
+      "supports": [
+        "group.breast.lactation",
+        "group.breast.risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.feeding_pumping_pattern_affected_side_and_recent_change",
+        "display": "Feeding and Pumping Pattern",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.breast-symptoms.feeding-pattern",
+        "display": "Feeding and Pumping Pattern",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.feeding-pattern",
+        "wording": "직접수유·유축 빈도, 한쪽 선호·건너뜀, 최근 간격·양 변화, 과다분비 또는 젖이 남는 느낌을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 160,
+          "reason": "feeding-pattern"
+        }
+      ],
+      "supports": [
+        "group.breast.lactation"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.latch_nipple_trauma_and_infant_feeding_context",
+        "display": "Latch and Nipple Trauma",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.breast-symptoms.latch-trauma",
+        "display": "Latch and Nipple Trauma",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.latch-trauma",
+        "wording": "아기 물림·자세 문제, 유두 통증·상처·출혈과 아기의 수유 곤란·구강 문제를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 159,
+          "reason": "latch-trauma"
+        }
+      ],
+      "supports": [
+        "group.breast.lactation"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.prior_mastitis_abscess_recurrence_and_culture",
+        "display": "Prior Mastitis or Abscess",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "266579006"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.breast-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.breast-symptoms.prior-infection",
+        "display": "Prior Mastitis or Abscess",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.prior-infection",
+        "wording": "이전 유선염·농양의 횟수·쪽·시기, 배양검사·배농·입원 여부와 같은 부위 재발인지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 158,
+          "reason": "prior-infection"
+        }
+      ],
+      "supports": [
+        "group.breast.lactation",
+        "group.breast.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.personal_breast_ovarian_cancer_or_high_risk_lesion",
+        "display": "Personal Breast Cancer Risk History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.breast-symptoms.personal-risk",
+        "display": "Personal Breast Cancer Risk History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.personal-risk",
+        "wording": "유방암·난소암, 비정형증식·상피내암 등 고위험 병변 또는 흉부 방사선치료 병력을 진단 나이·쪽과 함께 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 152,
+          "reason": "personal-risk"
+        }
+      ],
+      "supports": [
+        "group.breast.risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.family_cancer_and_genetic_test_history",
+        "display": "Family and Genetic Risk",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.breast-symptoms.family-risk",
+        "display": "Family and Genetic Risk",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.family-risk",
+        "wording": "혈연가족의 유방암·난소암·췌장암·전립선암과 진단 나이·관계, BRCA 등 유전검사 결과를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 151,
+          "reason": "family-risk"
+        }
+      ],
+      "supports": [
+        "group.breast.risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.hormonal_psychotropic_and_discharge_related_medicines",
+        "display": "Breast-relevant Medicines",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.breast-symptoms.medicines",
+        "display": "Breast-relevant Medicines",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.medicines",
+        "wording": "피임약·호르몬치료, 항정신병약·항우울제 등 유즙분비 관련 약과 처방약·일반약·보충제의 이름·용량·최근 변경을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 150,
+          "reason": "medicines"
+        }
+      ],
+      "supports": [
+        "group.breast.risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.smoking_diabetes_immunosuppression_and_infection_risk",
+        "display": "Infection and Healing Risk",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.breast-symptoms.infection-risk",
+        "display": "Infection and Healing Risk",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.infection-risk",
+        "wording": "흡연·전자담배, 당뇨, 면역저하 질환·치료, 피부질환 등 감염·회복에 영향을 줄 수 있는 상태를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 149,
+          "reason": "infection-risk"
+        }
+      ],
+      "supports": [
+        "group.breast.risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.implant_type_side_date_and_known_complications",
+        "display": "Breast Implant Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.breast-symptoms.implant",
+        "display": "Breast Implant Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.implant",
+        "wording": "보형물·조직확장기·주입물의 종류, 삽입 날짜·쪽과 파열·구축·감염 등 이전 문제를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 148,
+          "reason": "implant"
+        }
+      ],
+      "supports": [
+        "group.breast.risk",
+        "group.breast.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.surgery_biopsy_procedure_radiation_and_pathology",
+        "display": "Breast Procedure History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.breast-symptoms.procedure-history",
+        "display": "Breast Procedure History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.procedure-history",
+        "wording": "유방·겨드랑이 수술, 생검·배농·성형·방사선치료의 날짜·쪽과 병리 결과를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 147,
+          "reason": "procedure-history"
+        }
+      ],
+      "supports": [
+        "group.breast.risk",
+        "group.breast.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.prior_examination_imaging_birads_and_date",
+        "display": "Prior Breast Assessment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.breast-symptoms.prior-assessment",
+        "display": "Prior Breast Assessment",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.prior-assessment",
+        "wording": "이전 의료진 진찰, 유방촬영·초음파·MRI의 날짜·쪽·주요 결과와 BI-RADS를 알면 알려주세요. 원본 유무도 표시해주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 146,
+          "reason": "prior-assessment"
+        }
+      ],
+      "supports": [
+        "group.breast.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.screening_history_result_and_followup_due",
+        "display": "Breast Screening History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.breast-symptoms.screening",
+        "display": "Breast Screening History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.screening",
+        "wording": "가장 최근 유방검진의 종류·날짜·결과와 추가검사 또는 추적 권고를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 145,
+          "reason": "screening"
+        }
+      ],
+      "supports": [
+        "group.breast.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.current_and_prior_treatment_response_and_adverse_effects",
+        "display": "Treatment and Response",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.breast-symptoms.treatment-response",
+        "display": "Treatment and Response",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.treatment-response",
+        "wording": "진통제·항생제·냉찜질·수유 조정·배농 등 시행한 치료의 시작일·효과·부작용과 악화 여부를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 144,
+          "reason": "treatment-response"
+        }
+      ],
+      "supports": [
+        "group.breast.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.work_sleep_activity_feeding_and_daily_impact",
+        "display": "Functional Impact",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.breast-symptoms.function",
+        "display": "Functional Impact",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.function",
+        "wording": "통증·분비·부기 때문에 수면, 일·학교, 팔 사용·운동, 수유·유축 또는 아기 돌봄에 어떤 영향이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "function"
+        }
+      ],
+      "supports": [
+        "group.breast.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "breast.patient_concern_goal_and_other_detail",
+        "display": "Patient Concern and Goal",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.breast-symptoms.other-detail",
+        "display": "Patient Concern and Goal",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.breast-symptoms.other-detail",
+        "wording": "질문에 없지만 의료진에게 꼭 전달할 내용, 가장 걱정하는 점과 이번 진료에서 원하는 도움을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 90,
+          "reason": "other-detail"
+        }
+      ],
+      "supports": [
+        "group.breast.routing",
+        "group.breast.followup"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nice.ng12.breast.2026",
+      "source.acr.palpable-breast-masses.current-2026",
+      "source.acr.nipple-discharge.2022",
+      "source.acr.breast-pain.current-2026",
+      "source.nhs.mastitis.2023",
+      "source.nhs.breast-abscess.2023",
+      "source.nhs.breast-pain.2023",
+      "source.nhs.nipple-discharge.2024",
+      "source.abm.mastitis-protocol-36.2022",
+      "source.stom.breast-symptoms.20260716"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

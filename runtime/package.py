@@ -52,6 +52,7 @@ PEDIATRIC_GROWTH_DEVELOPMENT_PACKAGE = ROOT / "packages/generated/primary-care-p
 TREMOR_MOVEMENT_CONCERN_PACKAGE = ROOT / "packages/generated/primary-care-tremor-movement-concern-0.1.0.json"
 NECK_PAIN_PACKAGE = ROOT / "packages/generated/primary-care-neck-pain-0.1.0.json"
 MENSTRUAL_UTERINE_BLEEDING_PACKAGE = ROOT / "packages/generated/primary-care-menstrual-uterine-bleeding-0.1.0.json"
+BREAST_SYMPTOMS_PACKAGE = ROOT / "packages/generated/primary-care-breast-symptoms-0.1.0.json"
 KIDNEY_FUNCTION_CKD_FOLLOW_UP_PACKAGE = ROOT / "packages/generated/primary-care-kidney-function-ckd-follow-up-0.1.0.json"
 LIVER_FUNCTION_CHRONIC_FOLLOW_UP_PACKAGE = ROOT / "packages/generated/primary-care-liver-function-chronic-follow-up-0.1.0.json"
 
