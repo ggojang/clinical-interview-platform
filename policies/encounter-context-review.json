@@ -1,6 +1,6 @@
 {
   "id": "policy.encounter-context-review",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "status": "research_only",
   "review_status": "unreviewed",
   "encounter_context": {
@@ -132,8 +132,10 @@
       "completed"
     ],
     "entry_commands": ["수정", "답변 수정", "edit answer"],
-    "menu_instruction_ko": "수정할 항목의 E번호를 '수정 E2'처럼 입력해 주세요.",
-    "edit_reference_format": "E{positive_integer}",
+    "menu_instruction_ko": "수정할 질문은 '수정 Q2'처럼 입력해 주세요. 질문 없이 제공한 정보는 U번호를 사용합니다.",
+    "edit_reference_format": "Q{positive_integer}",
+    "unprompted_fact_reference_format": "U{positive_integer}",
+    "legacy_edit_reference_accepted_but_not_displayed": "E{positive_integer}",
     "never_use_bare_question_option_number_as_edit_reference": true,
     "menu_item_fields": [
       "edit_reference",
@@ -393,6 +395,42 @@
     ],
     "on_validation_failure": "rewrite_stem_and_complete_option_set_before_sending",
     "provenance_marker": "출처: [공동 작업 지식] 질문-보기 정합성 정책 · [AI 표현] 문장"
+  },
+  "adaptive_interview_turn_contract": {
+    "reason_for_encounter_enters_interview_not_general_medical_consultation": true,
+    "knowledge_package_must_be_loaded_before_first_clinical_question": true,
+    "collecting_phase": {
+      "exactly_one_question_per_assistant_turn": true,
+      "one_question_may_contain_one_stem_and_its_answer_options": true,
+      "capture_all_explicit_facts_from_multi_fact_user_answer": true,
+      "ask_only_one_next_missing_fact": true,
+      "forbid_batched_question_stems": true,
+      "forbid_ranked_differential_or_most_likely_disease": true,
+      "forbid_management_exercise_self_test_imaging_or_treatment_advice": true,
+      "allow_only_brief_safety_action_and_rationale_when_time_sensitive": true
+    },
+    "question_identity": {
+      "display_format": "Q{positive_integer}",
+      "assign_on_first_display": true,
+      "monotonic_within_encounter": true,
+      "never_reset_after_answer": true,
+      "repeat_or_clarification_reuses_same_reference": true,
+      "answer_option_numbers_restart_within_each_question": true,
+      "bare_number_always_means_current_question_option": true,
+      "edit_command_uses_question_reference": "수정 Q{positive_integer}"
+    },
+    "completion_phase": {
+      "requires_explicit_completion_confirmation": true,
+      "final_guidance_only_after_confirmation": true,
+      "final_sections": [
+        "clinician_previsit_summary",
+        "safety_status_and_rationale",
+        "possible_differential_considerations_not_diagnosis",
+        "clinician_examination_or_test_topics",
+        "general_management_and_medication_information"
+      ],
+      "never_claim_diagnosis_or_certainty": true
+    }
   },
   "longitudinal_context_review": {
     "review_all_on_first_encounter": true,

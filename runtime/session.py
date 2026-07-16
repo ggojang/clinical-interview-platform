@@ -194,6 +194,8 @@ class InterviewSession:
     last_question_fact: str | None = None
     pending_edit_fact: str | None = None
     edit_reference_map: dict[str, str] = field(default_factory=dict)
+    question_reference_map: dict[str, str] = field(default_factory=dict)
+    unprompted_reference_map: dict[str, str] = field(default_factory=dict)
     amended_after_completion: bool = False
     clarification_counts: dict[str, int] = field(default_factory=dict)
     package: dict[str, Any] = field(init=False)
@@ -550,6 +552,13 @@ class InterviewSession:
         if self.last_question_fact:
             if self.last_question_fact not in self.asked:
                 self.asked.append(self.last_question_fact)
+            if self.last_question_fact not in self.question_reference_map:
+                self.question_reference_map[self.last_question_fact] = (
+                    f"Q{len(self.question_reference_map) + 1}"
+                )
+            question["question_ref"] = self.question_reference_map[
+                self.last_question_fact
+            ]
 
         stop_reason = None
         if safety["level"] in {"urgent", "emergency"}:
@@ -642,7 +651,7 @@ class InterviewSession:
         if stripped.lower() in {"수정", "답변 수정", "edit", "edit answer", "change answer"}:
             return ("menu", None, None)
         match = re.fullmatch(
-            r"(?:수정|edit)\s+([Ee]\d+|[A-Za-z][A-Za-z0-9_.-]*)(?:\s*[:=]\s*(.+))?",
+            r"(?:수정|edit)\s+([QqEeUu]\d+|[A-Za-z][A-Za-z0-9_.-]*)(?:\s*[:=]\s*(.+))?",
             stripped,
             re.IGNORECASE,
         )
@@ -656,8 +665,21 @@ class InterviewSession:
             fact_id for fact_id in ordered
             if self.memory.state(fact_id) in {"known", "unknown", "not_applicable", "conflicted"}
         ]
+        for fact_id in editable:
+            if (
+                fact_id not in self.question_reference_map
+                and fact_id not in self.unprompted_reference_map
+            ):
+                self.unprompted_reference_map[fact_id] = (
+                    f"U{len(self.unprompted_reference_map) + 1}"
+                )
         self.edit_reference_map = {
-            f"E{index}": fact_id for index, fact_id in enumerate(editable, 1)
+            (
+                self.question_reference_map[fact_id]
+                if fact_id in self.question_reference_map
+                else self.unprompted_reference_map[fact_id]
+            ): fact_id
+            for fact_id in editable
         }
         questions = self._questions_by_fact()
         items = []
@@ -678,7 +700,22 @@ class InterviewSession:
             return None
         if not self.edit_reference_map:
             self._editable_answers()
-        normalized = reference.upper() if re.fullmatch(r"[Ee]\d+", reference) else reference
+        normalized = (
+            reference.upper()
+            if re.fullmatch(r"[QqEeUu]\d+", reference)
+            else reference
+        )
+        if re.fullmatch(r"E\d+", normalized):
+            legacy_index = int(normalized[1:]) - 1
+            editable = list(self.edit_reference_map.values())
+            normalized = (
+                next(
+                    key for key, value in self.edit_reference_map.items()
+                    if value == editable[legacy_index]
+                )
+                if 0 <= legacy_index < len(editable)
+                else normalized
+            )
         target = self.edit_reference_map.get(normalized, normalized)
         return target if target in self.memory.facts else None
 
@@ -692,7 +729,10 @@ class InterviewSession:
         })
         state = self._current_state()
         state["edit_menu"] = {
-            "instruction_ko": "수정할 항목의 E번호를 '수정 E2'처럼 입력해 주세요.",
+            "instruction_ko": (
+                "수정할 질문은 '수정 Q2'처럼 입력해 주세요. "
+                "질문 없이 제공한 정보는 U번호를 사용합니다."
+            ),
             "items": items,
             "error": error,
         }

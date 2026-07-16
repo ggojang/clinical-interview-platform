@@ -397,7 +397,7 @@ def collect_patient_experience_questionnaire(root: Path) -> dict[str, dict[str, 
             "integer": "store QuestionnaireResponse answer.valueInteger within declared minValue and maxValue",
             "unknown": "retain unanswered state with dataAbsentReason=asked-unknown",
             "decline": "retain unanswered state with dataAbsentReason=asked-declined",
-            "edit_reference": "E{positive_integer}",
+            "edit_reference": "Q{positive_integer}",
         },
         "completion_policy": {
             "after_last_question": "show section summary and explicit completion handoff",
@@ -762,8 +762,11 @@ def build(root: Path, output: Path) -> dict[str, Any]:
             "official_submission_requires_source_appropriate_confirmation": True,
         },
         "numbering_policy": {
-            "display_question_sequence": False,
-            "question_tracking": "stable_question_id",
+            "display_question_sequence": True,
+            "question_reference_format": "Q{positive_integer}",
+            "question_tracking": "stable_monotonic_question_reference",
+            "question_reference_never_resets_within_encounter": True,
+            "clarification_reuses_question_reference": True,
             "numeric_input_reserved_for": "current_question_answer_options",
             "option_numbers_must_be_unique_within_question": True,
             "do_not_combine_independently_numbered_lists": True,
@@ -783,6 +786,9 @@ def build(root: Path, output: Path) -> dict[str, Any]:
             },
             "pre_send_validation": "all_displayed_option_numbers_are_unique",
         },
+        "adaptive_interview_turn_contract": encounter_policy[
+            "adaptive_interview_turn_contract"
+        ],
         "question_choice_semantic_alignment_policy": encounter_policy[
             "question_choice_semantic_alignment"
         ],

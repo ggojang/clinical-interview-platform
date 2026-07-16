@@ -1,4 +1,40 @@
 {
+  "adaptive_interview_turn_contract": {
+    "collecting_phase": {
+      "allow_only_brief_safety_action_and_rationale_when_time_sensitive": true,
+      "ask_only_one_next_missing_fact": true,
+      "capture_all_explicit_facts_from_multi_fact_user_answer": true,
+      "exactly_one_question_per_assistant_turn": true,
+      "forbid_batched_question_stems": true,
+      "forbid_management_exercise_self_test_imaging_or_treatment_advice": true,
+      "forbid_ranked_differential_or_most_likely_disease": true,
+      "one_question_may_contain_one_stem_and_its_answer_options": true
+    },
+    "completion_phase": {
+      "final_guidance_only_after_confirmation": true,
+      "final_sections": [
+        "clinician_previsit_summary",
+        "safety_status_and_rationale",
+        "possible_differential_considerations_not_diagnosis",
+        "clinician_examination_or_test_topics",
+        "general_management_and_medication_information"
+      ],
+      "never_claim_diagnosis_or_certainty": true,
+      "requires_explicit_completion_confirmation": true
+    },
+    "knowledge_package_must_be_loaded_before_first_clinical_question": true,
+    "question_identity": {
+      "answer_option_numbers_restart_within_each_question": true,
+      "assign_on_first_display": true,
+      "bare_number_always_means_current_question_option": true,
+      "display_format": "Q{positive_integer}",
+      "edit_command_uses_question_reference": "수정 Q{positive_integer}",
+      "monotonic_within_encounter": true,
+      "never_reset_after_answer": true,
+      "repeat_or_clarification_reuses_same_reference": true
+    },
+    "reason_for_encounter_enters_interview_not_general_medical_consultation": true
+  },
   "additional_comment_policy": {
     "current_question_remains_unanswered": true,
     "do_not_force_map_to_current_question": true,
@@ -61,13 +97,14 @@
       "prior_branch_answers_are_preserved_in_history": true,
       "prior_branch_answers_do_not_satisfy_new_branch": true
     },
-    "edit_reference_format": "E{positive_integer}",
+    "edit_reference_format": "Q{positive_integer}",
     "entry_commands": [
       "수정",
       "답변 수정",
       "edit answer"
     ],
-    "menu_instruction_ko": "수정할 항목의 E번호를 '수정 E2'처럼 입력해 주세요.",
+    "legacy_edit_reference_accepted_but_not_displayed": "E{positive_integer}",
+    "menu_instruction_ko": "수정할 질문은 '수정 Q2'처럼 입력해 주세요. 질문 없이 제공한 정보는 U번호를 사용합니다.",
     "menu_item_fields": [
       "edit_reference",
       "question_or_item_label",
@@ -81,6 +118,7 @@
       "new_urgent_or_emergency_result_interrupts_revision_flow": true,
       "reassessment_precedes_routine_resume": true
     },
+    "unprompted_fact_reference_format": "U{positive_integer}",
     "value_entry": {
       "binary_numeric_codes": {
         "1": "yes",
@@ -2407,7 +2445,8 @@
       "3": "unknown",
       "4": "decline"
     },
-    "display_question_sequence": false,
+    "clarification_reuses_question_reference": true,
+    "display_question_sequence": true,
     "do_not_combine_independently_numbered_lists": true,
     "enumerated_question_rule": {
       "decline": "next_number_after_unknown",
@@ -2420,7 +2459,9 @@
     "numeric_reply_scope": "immediately_preceding_question",
     "option_numbers_must_be_unique_within_question": true,
     "pre_send_validation": "all_displayed_option_numbers_are_unique",
-    "question_tracking": "stable_question_id"
+    "question_reference_format": "Q{positive_integer}",
+    "question_reference_never_resets_within_encounter": true,
+    "question_tracking": "stable_monotonic_question_reference"
   },
   "off_path_recovery_policy": {
     "data_absent_on_completion_after_detour": {
@@ -2507,7 +2548,7 @@
     "answer_policy": {
       "choice": "store QuestionnaireResponse answer.valueCoding from selected source option",
       "decline": "retain unanswered state with dataAbsentReason=asked-declined",
-      "edit_reference": "E{positive_integer}",
+      "edit_reference": "Q{positive_integer}",
       "integer": "store QuestionnaireResponse answer.valueInteger within declared minValue and maxValue",
       "unknown": "retain unanswered state with dataAbsentReason=asked-unknown"
     },
@@ -2869,7 +2910,7 @@
       "count": 26,
       "name": "questionnaires-patient-experience-5th-2025-metadata",
       "path": "/gpt/questionnaires/patient-experience-5th-2025/metadata.json",
-      "sha256": "11d1a7ae63a70ada8f4f7fc793ffeb98b7442559a60f00e069b956d13f67d934"
+      "sha256": "52e1c839b11d19796e9ca73d109f714be2a94eb3536d68241bd82d982eac869b"
     },
     {
       "count": 4,

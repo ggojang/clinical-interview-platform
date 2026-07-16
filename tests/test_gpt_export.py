@@ -22,6 +22,24 @@ def walk_keys(value):
 
 
 class GptExportTests(unittest.TestCase):
+    def test_adaptive_interview_turn_contract_regression_fixture(self):
+        fixture = json.loads(
+            (
+                ROOT
+                / "simulation/workflows/adaptive-interview-turn-contract-cases.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertFalse(fixture["contains_real_patient_data"])
+        case = fixture["cases"][0]
+        collecting = case["collecting_phase_expectations"]
+        self.assertEqual(collecting["maximum_question_stems_per_assistant_turn"], 1)
+        self.assertFalse(collecting["question_reference_resets_after_answer"])
+        self.assertFalse(collecting["ranked_differential_allowed"])
+        self.assertFalse(collecting["management_or_self_test_advice_allowed"])
+        completion = case["completion_phase_expectations"]
+        self.assertTrue(completion["requires_explicit_confirmation"])
+        self.assertFalse(completion["diagnosis_claim_allowed"])
+
     def test_export_is_deterministic_and_response_free(self):
         with tempfile.TemporaryDirectory() as first, tempfile.TemporaryDirectory() as second:
             first_path = Path(first)
@@ -556,7 +574,14 @@ class GptExportTests(unittest.TestCase):
                 ]
             )
             numbering = manifest["numbering_policy"]
-            self.assertFalse(numbering["display_question_sequence"])
+            self.assertTrue(numbering["display_question_sequence"])
+            self.assertEqual(
+                numbering["question_reference_format"], "Q{positive_integer}"
+            )
+            self.assertTrue(
+                numbering["question_reference_never_resets_within_encounter"]
+            )
+            self.assertTrue(numbering["clarification_reuses_question_reference"])
             self.assertTrue(numbering["option_numbers_must_be_unique_within_question"])
             self.assertEqual(
                 set(numbering["binary_question_only_codes"]), {"1", "2", "3", "4"}
@@ -639,7 +664,15 @@ class GptExportTests(unittest.TestCase):
                 completion_policy["completion_confirmation_is_not_consent"]
             )
             revision = manifest["answer_revision_policy"]
-            self.assertEqual(revision["edit_reference_format"], "E{positive_integer}")
+            self.assertEqual(revision["edit_reference_format"], "Q{positive_integer}")
+            self.assertEqual(
+                revision["unprompted_fact_reference_format"],
+                "U{positive_integer}",
+            )
+            self.assertEqual(
+                revision["legacy_edit_reference_accepted_but_not_displayed"],
+                "E{positive_integer}",
+            )
             self.assertTrue(
                 revision["never_use_bare_question_option_number_as_edit_reference"]
             )
@@ -651,6 +684,20 @@ class GptExportTests(unittest.TestCase):
             )
             self.assertTrue(
                 revision["conditional_branch_change"]["new_branch_facts_become_required_when_applicable"]
+            )
+            turn_contract = manifest["adaptive_interview_turn_contract"]
+            self.assertTrue(
+                turn_contract["collecting_phase"][
+                    "exactly_one_question_per_assistant_turn"
+                ]
+            )
+            self.assertTrue(
+                turn_contract["collecting_phase"][
+                    "forbid_ranked_differential_or_most_likely_disease"
+                ]
+            )
+            self.assertTrue(
+                turn_contract["completion_phase"]["final_guidance_only_after_confirmation"]
             )
             self.assertTrue(
                 revision["after_completion"]["require_completion_reconfirmation_after_recalculation"]

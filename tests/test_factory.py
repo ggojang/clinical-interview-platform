@@ -1210,6 +1210,37 @@ class ClinicalMemoryTests(unittest.TestCase):
 
 
 class PackageRuntimeTests(unittest.TestCase):
+    def test_question_references_are_monotonic_and_do_not_reset(self):
+        session = InterviewSession("stable-question-references")
+        first = session.process("기침이 4일째입니다")
+        self.assertEqual(first["selected_question"]["question_ref"], "Q1")
+        first_fact = first["selected_question"]["fact_id"]
+
+        clarification = session.process("무슨 뜻인지 애매해요")
+        self.assertEqual(
+            clarification["selected_question"]["question_ref"], "Q1"
+        )
+        self.assertEqual(clarification["selected_question"]["fact_id"], first_fact)
+
+        second = session.process("2")
+        self.assertEqual(second["selected_question"]["question_ref"], "Q2")
+        self.assertNotEqual(second["selected_question"]["fact_id"], first_fact)
+
+    def test_revision_menu_uses_question_references_and_unprompted_fact_refs(self):
+        session = InterviewSession("question-reference-revision")
+        first = session.process("I have had a cough for 4 days and no blood.")
+        prompted_fact = first["selected_question"]["fact_id"]
+        session.process("2")
+        menu = session.process("수정")
+        references = {
+            item["fact_id"]: item["edit_ref"]
+            for item in menu["edit_menu"]["items"]
+        }
+        self.assertTrue(references[prompted_fact].startswith("Q"))
+        self.assertTrue(references["symptom.hemoptysis"].startswith("U"))
+        self.assertNotIn("E", "".join(references.values()))
+        self.assertIn("수정 Q2", menu["edit_menu"]["instruction_ko"])
+
     def test_answer_revision_menu_preserves_unanswered_question_and_history(self):
         session = InterviewSession("answer-revision")
         first = session.process("I have had a cough for 4 days and no blood.")
