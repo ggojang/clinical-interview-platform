@@ -350,6 +350,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-neck-pain.json",
         "version": "0.1.0",
     },
+    "menstrual_uterine_bleeding": {
+        "base_graph": ROOT / "knowledge/base/primary-care-menstrual-uterine-bleeding.json",
+        "base_rules": ROOT / "rules/base/primary-care-menstrual-uterine-bleeding.json",
+        "fragment_root": ROOT / "knowledge/generated/womens-health/menstrual-uterine-bleeding",
+        "output_graph": ROOT / "knowledge/graph/primary-care-menstrual-uterine-bleeding.json",
+        "output_rules": ROOT / "rules/primary-care-menstrual-uterine-bleeding.json",
+        "version": "0.1.0",
+    },
     "kidney_function_ckd_follow_up": {
         "base_graph": ROOT / "knowledge/base/primary-care-kidney-function-ckd-follow-up.json",
         "base_rules": ROOT / "rules/base/primary-care-kidney-function-ckd-follow-up.json",

@@ -1,0 +1,2060 @@
+{
+  "id": "knowledge.generated.menstrual-uterine-bleeding",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-menstrual-uterine-bleeding-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-07-16",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-07-17",
+    "next_full_review_at": "2027-01-12",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.menstrual.routing",
+      "type": "ClinicalGroup",
+      "display": "routing"
+    },
+    {
+      "id": "group.menstrual.safety",
+      "type": "ClinicalGroup",
+      "display": "safety"
+    },
+    {
+      "id": "group.menstrual.pattern",
+      "type": "ClinicalGroup",
+      "display": "pattern"
+    },
+    {
+      "id": "group.menstrual.pain",
+      "type": "ClinicalGroup",
+      "display": "pain"
+    },
+    {
+      "id": "group.menstrual.obstetric",
+      "type": "ClinicalGroup",
+      "display": "obstetric"
+    },
+    {
+      "id": "group.menstrual.bleeding",
+      "type": "ClinicalGroup",
+      "display": "bleeding"
+    },
+    {
+      "id": "group.menstrual.context",
+      "type": "ClinicalGroup",
+      "display": "context"
+    },
+    {
+      "id": "group.menstrual.followup",
+      "type": "ClinicalGroup",
+      "display": "followup"
+    },
+    {
+      "id": "group.menstrual.function",
+      "type": "ClinicalGroup",
+      "display": "function"
+    }
+  ],
+  "group_hypothesis_edges": [],
+  "safety_rules": [
+    {
+      "id": "rule.menstrual-uterine-bleeding.safety.heavy-instability",
+      "priority": 1000,
+      "when": {
+        "fact": "menstrual.hourly_saturation_with_cardiorespiratory_or_presyncope",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.menstrual-uterine-bleeding.safety.shock-warning",
+      "priority": 1000,
+      "when": {
+        "fact": "menstrual.faint_confused_clammy_or_unable_to_stand",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.menstrual-uterine-bleeding.safety.ectopic-warning",
+      "priority": 1000,
+      "when": {
+        "fact": "menstrual.possible_pregnancy_unilateral_pain_shoulder_tip_or_syncope",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.menstrual-uterine-bleeding.safety.pregnancy-heavy",
+      "priority": 1000,
+      "when": {
+        "fact": "menstrual.known_pregnancy_heavy_bleeding_severe_pain_or_tissue",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.menstrual-uterine-bleeding.safety.antithrombotic-warning",
+      "priority": 990,
+      "when": {
+        "fact": "menstrual.anticoagulant_or_bleeding_disorder_uncontrolled_bleeding",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.menstrual-uterine-bleeding.safety.infection-warning",
+      "priority": 990,
+      "when": {
+        "fact": "menstrual.fever_severe_pelvic_pain_foul_discharge_or_recent_procedure",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.menstrual-uterine-bleeding.safety.anemia-warning",
+      "priority": 1000,
+      "when": {
+        "fact": "menstrual.severe_anemia_chest_pain_dyspnea_or_resting_palpitations",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.menstrual-uterine-bleeding.safety.postmenopausal-warning",
+      "priority": 990,
+      "when": {
+        "fact": "menstrual.postmenopausal_new_or_recurrent_bleeding",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.menstrual-uterine-bleeding.safety.prepubertal-warning",
+      "priority": 990,
+      "when": {
+        "fact": "menstrual.prepubertal_bleeding_or_uncertain_source",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.menstrual-uterine-bleeding.safety.safeguarding-warning",
+      "priority": 1000,
+      "when": {
+        "fact": "menstrual.unwanted_sexual_contact_injury_or_not_safe",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.menstrual-uterine-bleeding.safety.mass-pressure-warning",
+      "priority": 990,
+      "when": {
+        "fact": "menstrual.rapidly_worsening_pelvic_mass_pressure_or_urinary_bowel_obstruction",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "menstrual.primary_group",
+        "display": "Primary Menstrual or Uterine Bleeding Concern",
+        "value_type": "coded",
+        "allowed_values": [
+          "heavy_or_prolonged_menses",
+          "irregular_infrequent_or_absent_menses",
+          "intermenstrual_or_postcoital_bleeding",
+          "dysmenorrhea_or_pelvic_pain",
+          "postmenopausal_bleeding",
+          "possible_pregnancy_related_bleeding",
+          "treatment_or_procedure_followup",
+          "other_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.primary-group",
+        "display": "Primary Menstrual or Uterine Bleeding Concern",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.primary-group",
+        "wording": "이번 방문은 생리량·기간 증가, 불규칙하거나 건너뛰는 생리, 생리 사이·성관계 후 출혈, 생리통·골반통, 폐경 후 출혈, 임신 가능성이 있는 출혈, 치료 후 추적 중 무엇에 가장 가깝나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 230,
+          "reason": "primary-group"
+        }
+      ],
+      "supports": [
+        "group.menstrual.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.hourly_saturation_with_cardiorespiratory_or_presyncope",
+        "display": "Heavy Bleeding with Instability Symptoms",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.heavy-instability",
+        "display": "Heavy Bleeding with Instability Symptoms",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.heavy-instability",
+        "wording": "패드·탐폰이 1시간마다 흠뻑 젖는 출혈이 2시간 넘게 이어지면서 흉통, 숨참, 심한 어지럼 또는 쓰러질 듯함이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 229,
+          "reason": "heavy-instability"
+        }
+      ],
+      "supports": [
+        "group.menstrual.safety",
+        "group.menstrual.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.faint_confused_clammy_or_unable_to_stand",
+        "display": "Haemodynamic Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.shock-warning",
+        "display": "Haemodynamic Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.shock-warning",
+        "wording": "출혈과 함께 실신, 의식 혼란, 창백함·식은땀, 매우 심한 쇠약 또는 서 있기 어려움이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 228,
+          "reason": "shock-warning"
+        }
+      ],
+      "supports": [
+        "group.menstrual.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.possible_pregnancy_unilateral_pain_shoulder_tip_or_syncope",
+        "display": "Possible Ectopic Pregnancy Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.ectopic-warning",
+        "display": "Possible Ectopic Pregnancy Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.ectopic-warning",
+        "wording": "임신 가능성 또는 양성 임신검사가 있으면서 한쪽 심한 아랫배 통증, 어깨끝 통증, 어지럼·실신이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 227,
+          "reason": "ectopic-warning"
+        }
+      ],
+      "supports": [
+        "group.menstrual.safety",
+        "group.menstrual.obstetric"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.known_pregnancy_heavy_bleeding_severe_pain_or_tissue",
+        "display": "Pregnancy Bleeding Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.pregnancy-heavy",
+        "display": "Pregnancy Bleeding Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.pregnancy-heavy",
+        "wording": "임신 중이며 많은 출혈, 심해지는 복통·골반통, 큰 혈전·조직 같은 것이 나오거나 상태가 빠르게 나빠지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 226,
+          "reason": "pregnancy-heavy"
+        }
+      ],
+      "supports": [
+        "group.menstrual.safety",
+        "group.menstrual.obstetric"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.anticoagulant_or_bleeding_disorder_uncontrolled_bleeding",
+        "display": "Antithrombotic or Bleeding Disorder Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.antithrombotic-warning",
+        "display": "Antithrombotic or Bleeding Disorder Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.antithrombotic-warning",
+        "wording": "항응고제·항혈소판제를 사용하거나 출혈질환이 있는데 많은 출혈이 멈추지 않거나 반복되나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 225,
+          "reason": "antithrombotic-warning"
+        }
+      ],
+      "supports": [
+        "group.menstrual.safety",
+        "group.menstrual.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.fever_severe_pelvic_pain_foul_discharge_or_recent_procedure",
+        "display": "Pelvic Infection Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.infection-warning",
+        "display": "Pelvic Infection Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.infection-warning",
+        "wording": "고열, 심한 골반통, 악취 나는 분비물이 있거나 최근 출산·유산·자궁 시술 뒤 통증과 출혈이 악화하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 224,
+          "reason": "infection-warning"
+        }
+      ],
+      "supports": [
+        "group.menstrual.safety",
+        "group.menstrual.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.severe_anemia_chest_pain_dyspnea_or_resting_palpitations",
+        "display": "Severe Anaemia Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.anemia-warning",
+        "display": "Severe Anaemia Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.anemia-warning",
+        "wording": "출혈과 함께 가만히 있어도 숨이 차거나 두근거림, 흉통, 실신에 가까운 어지럼 또는 일상생활이 불가능한 쇠약이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 223,
+          "reason": "anemia-warning"
+        }
+      ],
+      "supports": [
+        "group.menstrual.safety",
+        "group.menstrual.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.postmenopausal_new_or_recurrent_bleeding",
+        "display": "Postmenopausal Bleeding",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "76742009"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.menstrual-uterine-bleeding",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.postmenopausal-warning",
+        "display": "Postmenopausal Bleeding",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.postmenopausal-warning",
+        "wording": "12개월 이상 생리가 없다가 새로 피가 비치거나 출혈이 반복되나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 222,
+          "reason": "postmenopausal-warning"
+        }
+      ],
+      "supports": [
+        "group.menstrual.safety",
+        "group.menstrual.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.prepubertal_bleeding_or_uncertain_source",
+        "display": "Prepubertal Bleeding",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.prepubertal-warning",
+        "display": "Prepubertal Bleeding",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.prepubertal-warning",
+        "wording": "초경 전 아이에게 질 출혈이 있거나 피가 질·소변·대변·상처 중 어디에서 나온 것인지 불분명한가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 221,
+          "reason": "prepubertal-warning"
+        }
+      ],
+      "supports": [
+        "group.menstrual.safety",
+        "group.menstrual.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.unwanted_sexual_contact_injury_or_not_safe",
+        "display": "Safeguarding Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.safeguarding-warning",
+        "display": "Safeguarding Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.safeguarding-warning",
+        "wording": "원치 않은 성적 접촉·폭력·생식기 손상 가능성이 있거나 지금 안전하지 않나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 220,
+          "reason": "safeguarding-warning"
+        }
+      ],
+      "supports": [
+        "group.menstrual.safety",
+        "group.menstrual.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.rapidly_worsening_pelvic_mass_pressure_or_urinary_bowel_obstruction",
+        "display": "Rapid Pelvic Pressure Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.mass-pressure-warning",
+        "display": "Rapid Pelvic Pressure Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.mass-pressure-warning",
+        "wording": "빠르게 커지는 아랫배 덩이·팽만과 심한 압박감, 소변이 안 나오거나 대변이 막히는 증상이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 219,
+          "reason": "mass-pressure-warning"
+        }
+      ],
+      "supports": [
+        "group.menstrual.safety",
+        "group.menstrual.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.information_source_calendar_app_proxy_and_reliability",
+        "display": "Information Source",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.information-source",
+        "display": "Information Source",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.information-source",
+        "wording": "누가 답변하고 있으며 본인 기억, 생리 달력·앱, 보호자 관찰, 사진 또는 의료기록 중 무엇에 근거하나요? 서로 다른 기록도 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 205,
+          "reason": "information-source"
+        }
+      ],
+      "supports": [
+        "group.menstrual.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.age_menarche_and_reproductive_stage",
+        "display": "Age Menarche and Reproductive Stage",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.age-stage",
+        "display": "Age Menarche and Reproductive Stage",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.age-stage",
+        "wording": "만 나이, 초경 나이와 현재 초경 전·가임기·폐경 이행기·폐경 후 중 어디에 해당하는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 204,
+          "reason": "age-stage"
+        }
+      ],
+      "supports": [
+        "group.menstrual.routing",
+        "group.menstrual.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.last_normal_period_start_and_certainty",
+        "display": "Last Normal Menstrual Period",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.lmp",
+        "display": "Last Normal Menstrual Period",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.lmp",
+        "wording": "마지막 정상 생리 시작일과 종료일을 알려주세요. 정확한 기록인지 추정인지도 표시해주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 203,
+          "reason": "lmp"
+        }
+      ],
+      "supports": [
+        "group.menstrual.pattern",
+        "group.menstrual.obstetric"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.current_bleeding_start_end_and_status",
+        "display": "Current Bleeding Episode",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.current-episode",
+        "display": "Current Bleeding Episode",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.current-episode",
+        "wording": "현재 출혈의 시작 날짜·시각, 지금도 계속되는지와 가장 최근 확인 시각을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 202,
+          "reason": "current-episode"
+        }
+      ],
+      "supports": [
+        "group.menstrual.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.cycle_interval_regularity_and_change_from_baseline",
+        "display": "Cycle Interval and Regularity",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "80182007"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.menstrual-uterine-bleeding",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.cycle",
+        "display": "Cycle Interval and Regularity",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.cycle",
+        "wording": "보통 생리 시작일부터 다음 시작일까지 며칠이며 규칙적인지, 최근 주기 변화와 시작 시점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 201,
+          "reason": "cycle"
+        }
+      ],
+      "supports": [
+        "group.menstrual.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.bleeding_duration_days_and_longest_episode",
+        "display": "Bleeding Duration",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.duration",
+        "display": "Bleeding Duration",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.duration",
+        "wording": "보통 출혈 일수, 이번 출혈 일수와 가장 길었던 기간을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 200,
+          "reason": "duration"
+        }
+      ],
+      "supports": [
+        "group.menstrual.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.skipped_cycles_amenorrhea_and_longest_gap",
+        "display": "Skipped Cycles",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.skipped-cycles",
+        "display": "Skipped Cycles",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.skipped-cycles",
+        "wording": "생리를 건너뛴 횟수와 가장 길게 없었던 기간, 그 전후 변화를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 199,
+          "reason": "skipped-cycles"
+        }
+      ],
+      "supports": [
+        "group.menstrual.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.pad_tampon_cup_type_saturation_and_change_interval",
+        "display": "Menstrual Product Quantification",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "386692008"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.menstrual-uterine-bleeding",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.product-quantification",
+        "display": "Menstrual Product Quantification",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.product-quantification",
+        "wording": "가장 많은 날 사용하는 패드·탐폰·생리컵의 종류·크기, 흠뻑 젖는 정도와 교체 간격을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 198,
+          "reason": "product-quantification"
+        }
+      ],
+      "supports": [
+        "group.menstrual.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.flooding_gushing_double_protection_and_leakage",
+        "display": "Flooding and Leakage",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.flooding",
+        "display": "Flooding and Leakage",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.flooding",
+        "wording": "갑자기 쏟아지는 느낌, 이중 생리용품 사용, 밤중 교체 또는 옷·침구까지 새는 일이 얼마나 자주 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 197,
+          "reason": "flooding"
+        }
+      ],
+      "supports": [
+        "group.menstrual.pattern",
+        "group.menstrual.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.clot_size_frequency_and_tissue",
+        "display": "Clots and Tissue",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.clots",
+        "display": "Clots and Tissue",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.clots",
+        "wording": "혈전의 가장 큰 크기를 동전·포도알 등과 비교하고 빈도, 조직처럼 보이는 것이 있었는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 196,
+          "reason": "clots"
+        }
+      ],
+      "supports": [
+        "group.menstrual.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.intermenstrual_postcoital_or_unexpected_bleeding",
+        "display": "Bleeding Outside Expected Menses",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.unexpected-bleeding",
+        "display": "Bleeding Outside Expected Menses",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.unexpected-bleeding",
+        "wording": "생리 사이, 성관계 후, 운동 후 또는 예상하지 못한 때 피가 비치는 빈도·양·지속을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 195,
+          "reason": "unexpected-bleeding"
+        }
+      ],
+      "supports": [
+        "group.menstrual.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.pelvic_pain_present",
+        "display": "Pelvic or Menstrual Pain Present",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.pain-present",
+        "display": "Pelvic or Menstrual Pain Present",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.pain-present",
+        "wording": "이번 문제와 함께 생리통 또는 아랫배·골반 통증이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 190,
+          "reason": "pain-present"
+        }
+      ],
+      "supports": [
+        "group.menstrual.pain"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.pelvic_pain_nrs",
+        "display": "Pelvic Pain NRS",
+        "value_type": "integer"
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.pain-nrs",
+        "display": "Pelvic Pain NRS",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.pain-nrs",
+        "wording": "[필수] 통증이 있다면 현재 통증을 0부터 10까지 숫자로 알려주세요. 0은 통증 없음, 10은 상상할 수 있는 가장 심한 통증입니다.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 189,
+          "reason": "pain-nrs"
+        }
+      ],
+      "supports": [
+        "group.menstrual.pain"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.pain_timing_site_laterality_and_course",
+        "display": "Pain Pattern",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "266599000"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.menstrual-uterine-bleeding",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.pain-pattern",
+        "display": "Pain Pattern",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.pain-pattern",
+        "wording": "통증이 생리 전·중·후 언제 시작하고, 아랫배·골반·허리의 정확한 부위와 좌우, 지속·진행 양상을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 188,
+          "reason": "pain-pattern"
+        }
+      ],
+      "supports": [
+        "group.menstrual.pain"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.pain_with_sex_bowel_movement_urination_or_activity",
+        "display": "Pain Associations",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.pain-associations",
+        "display": "Pain Associations",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.pain-associations",
+        "wording": "성관계, 배변, 소변, 운동 또는 자세와 통증의 관계를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 187,
+          "reason": "pain-associations"
+        }
+      ],
+      "supports": [
+        "group.menstrual.pain"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.pelvic_pressure_fullness_abdominal_distension_or_mass",
+        "display": "Pelvic Pressure or Mass Symptoms",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.pressure-mass",
+        "display": "Pelvic Pressure or Mass Symptoms",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.pressure-mass",
+        "wording": "아랫배 압박감·묵직함·팽만, 만져지는 덩이 또는 소변·대변 횟수 변화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 186,
+          "reason": "pressure-mass"
+        }
+      ],
+      "supports": [
+        "group.menstrual.pain",
+        "group.menstrual.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.discharge_odor_itch_fever_and_genital_symptoms",
+        "display": "Associated Genital Symptoms",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.genital-associated",
+        "display": "Associated Genital Symptoms",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.genital-associated",
+        "wording": "분비물의 색·냄새 변화, 가려움·통증, 발열 또는 외음부·질 증상이 함께 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 185,
+          "reason": "genital-associated"
+        }
+      ],
+      "supports": [
+        "group.menstrual.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.pregnancy_possibility_test_result_and_test_date",
+        "display": "Pregnancy Possibility and Test",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.pregnancy-test",
+        "display": "Pregnancy Possibility and Test",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.pregnancy-test",
+        "wording": "임신 가능성, 최근 임신검사 결과·검사일과 임신 가능성이 없다고 판단한 근거를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 180,
+          "reason": "pregnancy-test"
+        }
+      ],
+      "supports": [
+        "group.menstrual.obstetric"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.gravida_para_term_preterm_abortion_living",
+        "display": "Obstetric Summary",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.obstetric-summary",
+        "display": "Obstetric Summary",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.obstetric-summary",
+        "wording": "산과력을 임신 횟수(G), 출산 횟수(P), 만삭·조산·유산/중절·현재 생존 자녀 수로 알려주세요. 모르면 각각 설명해도 됩니다.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 179,
+          "reason": "obstetric-summary"
+        }
+      ],
+      "supports": [
+        "group.menstrual.obstetric"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.prior_ectopic_miscarriage_and_pregnancy_complications",
+        "display": "Prior Pregnancy Complications",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.pregnancy-history",
+        "display": "Prior Pregnancy Complications",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.pregnancy-history",
+        "wording": "자궁외임신, 자연유산·중절, 임신·분만 합병증의 횟수·시기와 치료를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 178,
+          "reason": "pregnancy-history"
+        }
+      ],
+      "supports": [
+        "group.menstrual.obstetric"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.delivery_modes_postpartum_hemorrhage_and_last_delivery",
+        "display": "Delivery and Postpartum Bleeding History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.delivery-history",
+        "display": "Delivery and Postpartum Bleeding History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.delivery-history",
+        "wording": "질식분만·제왕절개 횟수, 마지막 분만일과 분만 후 과다출혈·수혈 경험을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 177,
+          "reason": "delivery-history"
+        }
+      ],
+      "supports": [
+        "group.menstrual.obstetric",
+        "group.menstrual.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.fertility_goals_and_future_pregnancy_preference",
+        "display": "Fertility Goals",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.fertility-goals",
+        "display": "Fertility Goals",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.fertility-goals",
+        "wording": "현재 피임 또는 임신 계획과 향후 임신 가능성을 보존하는 것이 치료 선택에서 얼마나 중요한지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 176,
+          "reason": "fertility-goals"
+        }
+      ],
+      "supports": [
+        "group.menstrual.obstetric",
+        "group.menstrual.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.fatigue_dyspnea_dizziness_palpitations_and_pica",
+        "display": "Anaemia Symptoms",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.anemia-symptoms",
+        "display": "Anaemia Symptoms",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.anemia-symptoms",
+        "wording": "피로·창백함, 활동 시 숨참, 어지럼·두근거림, 얼음 등 비음식물을 찾는 증상이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 170,
+          "reason": "anemia-symptoms"
+        }
+      ],
+      "supports": [
+        "group.menstrual.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.anemia_iron_treatment_transfusion_and_recent_results",
+        "display": "Anaemia and Blood Results",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.anemia-results",
+        "display": "Anaemia and Blood Results",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.anemia-results",
+        "wording": "빈혈·철결핍 진단, 철분 치료·수혈 경험과 최근 혈색소·혈소판·철 관련 검사값·검사일을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 169,
+          "reason": "anemia-results"
+        }
+      ],
+      "supports": [
+        "group.menstrual.bleeding",
+        "group.menstrual.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.heavy_since_menarche_and_other_mucocutaneous_bleeding",
+        "display": "Bleeding Disorder Features",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.bleeding-features",
+        "display": "Bleeding Disorder Features",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.bleeding-features",
+        "wording": "초경 때부터 많은 생리였는지와 이유 없는 코피·잇몸출혈, 쉽게 드는 멍 또는 작은 상처 출혈을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 168,
+          "reason": "bleeding-features"
+        }
+      ],
+      "supports": [
+        "group.menstrual.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.bleeding_after_dental_surgery_delivery_or_miscarriage",
+        "display": "Bleeding after Haemostatic Challenges",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.challenge-bleeding",
+        "display": "Bleeding after Haemostatic Challenges",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.challenge-bleeding",
+        "wording": "발치·수술·출산·유산 뒤 예상보다 오래 출혈하거나 추가 처치·수혈이 필요했던 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 167,
+          "reason": "challenge-bleeding"
+        }
+      ],
+      "supports": [
+        "group.menstrual.bleeding",
+        "group.menstrual.obstetric"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.family_bleeding_disorder_or_heavy_menses",
+        "display": "Family Bleeding History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.family-bleeding",
+        "display": "Family Bleeding History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.family-bleeding",
+        "wording": "가족의 출혈질환 진단, 많은 생리, 수술·출산 후 과다출혈이 있으면 관계를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 166,
+          "reason": "family-bleeding"
+        }
+      ],
+      "supports": [
+        "group.menstrual.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.contraception_iud_hormone_therapy_and_adherence",
+        "display": "Contraception and Hormone Use",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.contraception",
+        "display": "Contraception and Hormone Use",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.contraception",
+        "wording": "피임약·주사·임플란트·자궁내장치, 폐경 호르몬치료의 종류·시작일·실제 사용과 출혈 변화를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 160,
+          "reason": "contraception"
+        }
+      ],
+      "supports": [
+        "group.menstrual.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.anticoagulant_antiplatelet_nsaid_and_other_medicines",
+        "display": "Bleeding-relevant Medicines",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.medicines",
+        "display": "Bleeding-relevant Medicines",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.medicines",
+        "wording": "항응고제·항혈소판제, 소염진통제와 처방약·일반약·한약·보충제의 이름·용량·횟수·최근 변경을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 159,
+          "reason": "medicines"
+        }
+      ],
+      "supports": [
+        "group.menstrual.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.gynecologic_endocrine_and_systemic_history",
+        "display": "Relevant Medical History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.medical-history",
+        "display": "Relevant Medical History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.medical-history",
+        "wording": "자궁근종·선근증·자궁내막증·다낭성난소, 갑상선·간·신장·혈액질환 또는 암 관련 진단을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 158,
+          "reason": "medical-history"
+        }
+      ],
+      "supports": [
+        "group.menstrual.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.gynecologic_procedure_surgery_and_pathology_history",
+        "display": "Gynecologic Procedure History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.procedure-history",
+        "display": "Gynecologic Procedure History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.procedure-history",
+        "wording": "자궁경·소파술·근종수술·자궁내막 시술·제왕절개 등 수술·시술 날짜와 병리 결과를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 157,
+          "reason": "procedure-history"
+        }
+      ],
+      "supports": [
+        "group.menstrual.context",
+        "group.menstrual.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.cervical_screening_result_and_date",
+        "display": "Cervical Screening Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.cervical-screening",
+        "display": "Cervical Screening Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.cervical-screening",
+        "wording": "최근 자궁경부검사 종류·날짜·결과와 이상 결과 후 추가검사를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 156,
+          "reason": "cervical-screening"
+        }
+      ],
+      "supports": [
+        "group.menstrual.context",
+        "group.menstrual.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.weight_change_acne_hair_growth_galactorrhea_or_thyroid_symptoms",
+        "display": "Endocrine Features",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.endocrine-features",
+        "display": "Endocrine Features",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.endocrine-features",
+        "wording": "체중 변화, 여드름·털 증가, 유즙 분비, 더위·추위 민감, 떨림·변비 등 호르몬 관련 증상이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 155,
+          "reason": "endocrine-features"
+        }
+      ],
+      "supports": [
+        "group.menstrual.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.sexual_contact_sti_and_source_of_bleeding_context",
+        "display": "Sexual and Bleeding-source Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.sexual-context",
+        "display": "Sexual and Bleeding-source Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.sexual-context",
+        "wording": "답변 가능한 범위에서 최근 성접촉·성매개감염 위험, 성관계 후 출혈과 피가 질·소변·대변 중 어디에서 나온 것 같은지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 154,
+          "reason": "sexual-context"
+        }
+      ],
+      "supports": [
+        "group.menstrual.context",
+        "group.menstrual.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.prior_examination_ultrasound_hysteroscopy_and_pathology",
+        "display": "Prior Assessment and Imaging",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.prior-assessment",
+        "display": "Prior Assessment and Imaging",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.prior-assessment",
+        "wording": "이전 골반진찰·초음파·자궁경·조직검사의 날짜와 주요 결과, 원본 유무를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 145,
+          "reason": "prior-assessment"
+        }
+      ],
+      "supports": [
+        "group.menstrual.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.prior_treatment_dose_duration_response_and_adverse_effects",
+        "display": "Treatment Response",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.treatment-response",
+        "display": "Treatment Response",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.treatment-response",
+        "wording": "철분, 진통제·지혈제·호르몬약, 자궁내장치 또는 시술의 용량·기간·효과·부작용과 중단 이유를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 144,
+          "reason": "treatment-response"
+        }
+      ],
+      "supports": [
+        "group.menstrual.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.work_school_sleep_activity_and_material_impact",
+        "display": "Functional and Material Impact",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.function",
+        "display": "Functional and Material Impact",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.function",
+        "wording": "출혈·통증 때문에 결석·결근, 수면·운동·외출 제한, 생리용품 부담 또는 옷·침구 교체가 얼마나 생기나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 135,
+          "reason": "function"
+        }
+      ],
+      "supports": [
+        "group.menstrual.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "menstrual.patient_concern_goal_and_other_detail",
+        "display": "Patient Concern and Goal",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.menstrual-uterine-bleeding.other-detail",
+        "display": "Patient Concern and Goal",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.menstrual-uterine-bleeding.other-detail",
+        "wording": "질문에 없지만 의료진에게 꼭 전달할 내용, 가장 걱정하는 점과 이번 진료에서 원하는 도움을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 90,
+          "reason": "other-detail"
+        }
+      ],
+      "supports": [
+        "group.menstrual.routing",
+        "group.menstrual.followup"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nice.ng88.hmb.2024",
+      "source.nice.ng126.early-pregnancy-bleeding.2026",
+      "source.acog.aub.557.reaffirmed-2026",
+      "source.acog.adolescent-hmb.785.reaffirmed-2023",
+      "source.cdc.female-bleeding-disorders.2024",
+      "source.stom.menstrual-bleeding.20260716"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

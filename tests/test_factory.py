@@ -20,7 +20,7 @@ from runtime.package import (
     ABDOMINAL_PAIN_PACKAGE, BACK_PAIN_PACKAGE, BOWEL_SYMPTOMS_PACKAGE, CHEST_PAIN_PACKAGE, DEFAULT_PACKAGE,
     DIZZINESS_SYNCOPE_PACKAGE, DYSPNEA_PACKAGE, FEVER_PACKAGE, HEADACHE_PACKAGE,
     DIABETES_FOLLOW_UP_PACKAGE, EAR_HEARING_SYMPTOMS_PACKAGE, EDEMA_PACKAGE, EYE_SYMPTOMS_PACKAGE, FATIGUE_PACKAGE, FOCAL_WEAKNESS_NUMBNESS_PACKAGE, HYPERTENSION_FOLLOW_UP_PACKAGE, JOINT_LIMB_COMPLAINT_PACKAGE, MEDICATION_REVIEW_PACKAGE, MENTAL_HEALTH_SLEEP_PACKAGE, PALPITATIONS_PACKAGE, REPRODUCTIVE_GENITAL_SYMPTOMS_PACKAGE, SKIN_COMPLAINT_PACKAGE,
-    ALLERGY_CONCERN_PACKAGE, ANEMIA_CONCERN_FOLLOW_UP_PACKAGE, ASTHMA_COPD_FOLLOW_UP_PACKAGE, DYSPEPSIA_REFLUX_PACKAGE, THYROID_CONCERN_FOLLOW_UP_PACKAGE, KIDNEY_FUNCTION_CKD_FOLLOW_UP_PACKAGE, LIVER_FUNCTION_CHRONIC_FOLLOW_UP_PACKAGE, EPISTAXIS_PACKAGE, GAIT_FALLS_CONCERN_PACKAGE, LUMP_LYMPH_NODE_PACKAGE, MEMORY_COGNITIVE_CONCERN_PACKAGE, NECK_PAIN_PACKAGE, ORAL_DENTAL_SYMPTOMS_PACKAGE, PEDIATRIC_GROWTH_DEVELOPMENT_PACKAGE, PREGNANCY_POSTPARTUM_CONCERN_PACKAGE, SEIZURE_EVENT_FOLLOW_UP_PACKAGE, TREMOR_MOVEMENT_CONCERN_PACKAGE, WOUND_MINOR_INJURY_PACKAGE, UPPER_RESPIRATORY_SYMPTOMS_PACKAGE, URINARY_SYMPTOMS_PACKAGE, WEIGHT_CONSTITUTIONAL_CHANGE_PACKAGE,
+    ALLERGY_CONCERN_PACKAGE, ANEMIA_CONCERN_FOLLOW_UP_PACKAGE, ASTHMA_COPD_FOLLOW_UP_PACKAGE, DYSPEPSIA_REFLUX_PACKAGE, THYROID_CONCERN_FOLLOW_UP_PACKAGE, KIDNEY_FUNCTION_CKD_FOLLOW_UP_PACKAGE, LIVER_FUNCTION_CHRONIC_FOLLOW_UP_PACKAGE, EPISTAXIS_PACKAGE, GAIT_FALLS_CONCERN_PACKAGE, LUMP_LYMPH_NODE_PACKAGE, MEMORY_COGNITIVE_CONCERN_PACKAGE, MENSTRUAL_UTERINE_BLEEDING_PACKAGE, NECK_PAIN_PACKAGE, ORAL_DENTAL_SYMPTOMS_PACKAGE, PEDIATRIC_GROWTH_DEVELOPMENT_PACKAGE, PREGNANCY_POSTPARTUM_CONCERN_PACKAGE, SEIZURE_EVENT_FOLLOW_UP_PACKAGE, TREMOR_MOVEMENT_CONCERN_PACKAGE, WOUND_MINOR_INJURY_PACKAGE, UPPER_RESPIRATORY_SYMPTOMS_PACKAGE, URINARY_SYMPTOMS_PACKAGE, WEIGHT_CONSTITUTIONAL_CHANGE_PACKAGE,
     VOMITING_DIARRHEA_PACKAGE,
     PackageLoadError, load_package,
 )
@@ -80,6 +80,10 @@ class CompilerTests(unittest.TestCase):
             next(item for item in queue["order"] if item["rfe"] == "rfe.neck_pain")["state"],
             "implemented_unreviewed",
         )
+        self.assertEqual(
+            next(item for item in queue["order"] if item["rfe"] == "rfe.menstrual_uterine_bleeding")["state"],
+            "implemented_unreviewed",
+        )
         self.assertIn(
             "clinician handoff includes collected required missing and conflicting package Facts",
             queue["definition_of_done"],
@@ -137,6 +141,7 @@ class CompilerTests(unittest.TestCase):
             "pediatric_growth_development",
             "tremor_movement_concern",
             "neck_pain",
+            "menstrual_uterine_bleeding",
             "kidney_function_ckd_follow_up",
             "liver_function_chronic_follow_up",
         ):
@@ -1134,6 +1139,26 @@ class CompilerTests(unittest.TestCase):
         self.assertFalse(mapping["neck_semantics"]["diagnosis_inferred"])
         self.assertFalse(mapping["neck_semantics"]["runtime_terminology_query_required"])
         self.assertTrue(NECK_PAIN_PACKAGE.exists())
+
+    def test_menstrual_uterine_bleeding_package_is_complete(self):
+        package = compile_package(profile="menstrual_uterine_bleeding")
+        facts = {node["id"] for node in package["knowledge_graph"]["nodes"] if node["type"] == "Fact"}
+        self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
+        self.assertGreaterEqual(len(facts), 50)
+        self.assertEqual(package["coverage"]["total_safety_rules"], 11)
+        self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 11)
+        self.assertEqual(package["coverage"]["uncovered_safety_rules"], [])
+        self.assertEqual(package["coverage"]["data_absent_reason_simulations"], 1)
+        conditional = package["interview_completion_policy"]["conditional_required_facts"][0]
+        self.assertEqual(conditional["selector_fact"], "menstrual.primary_group")
+        self.assertEqual(set(conditional["cases"]), {"heavy_or_prolonged_menses", "irregular_infrequent_or_absent_menses", "intermenstrual_or_postcoital_bleeding", "dysmenorrhea_or_pelvic_pain", "postmenopausal_bleeding", "possible_pregnancy_related_bleeding", "treatment_or_procedure_followup", "other_unclear"})
+        self.assertIn("menstrual.pelvic_pain_nrs", package["interview_completion_policy"]["must_be_known_facts"])
+        mapping = json.loads((Path(__file__).resolve().parents[1] / "mappings/terminology/snomed-mrcm-menstrual-uterine-bleeding.json").read_text(encoding="utf-8"))
+        self.assertEqual(len(mapping["focus_concepts"]), 4)
+        self.assertFalse(mapping["validation"]["clinical_rule_authority"])
+        self.assertFalse(mapping["bleeding_semantics"]["diagnosis_inferred"])
+        self.assertFalse(mapping["bleeding_semantics"]["pregnancy_status_inferred"])
+        self.assertTrue(MENSTRUAL_UTERINE_BLEEDING_PACKAGE.exists())
 
     def test_kidney_function_ckd_follow_up_package_is_complete(self):
         package = compile_package(profile="kidney_function_ckd_follow_up")

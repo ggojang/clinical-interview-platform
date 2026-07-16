@@ -507,6 +507,17 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/musculoskeletal/neck-pain",
         "research_manifests": [ROOT / "sources/manifests/primary-care-neck-pain-research.json"],
     },
+    "menstrual_uterine_bleeding": {
+        "graph": ROOT / "knowledge/graph/primary-care-menstrual-uterine-bleeding.json",
+        "rules": ROOT / "rules/primary-care-menstrual-uterine-bleeding.json",
+        "sources": ROOT / "sources/manifests/primary-care-menstrual-uterine-bleeding.json",
+        "completion_policy": ROOT / "policies/primary-care-menstrual-uterine-bleeding-completion.json",
+        "output": ROOT / "packages/generated/primary-care-menstrual-uterine-bleeding-0.1.0.json",
+        "package_id": "package.primary-care-menstrual-uterine-bleeding", "package_version": "0.1.0",
+        "rfe": "rfe.menstrual_uterine_bleeding",
+        "simulation_root": ROOT / "simulation/patients/womens-health/menstrual-uterine-bleeding",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-menstrual-uterine-bleeding-research.json"],
+    },
     "kidney_function_ckd_follow_up": {
         "graph": ROOT / "knowledge/graph/primary-care-kidney-function-ckd-follow-up.json",
         "rules": ROOT / "rules/primary-care-kidney-function-ckd-follow-up.json",
