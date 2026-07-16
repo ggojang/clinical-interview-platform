@@ -334,6 +334,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-pediatric-growth-development.json",
         "version": "0.1.0",
     },
+    "tremor_movement_concern": {
+        "base_graph": ROOT / "knowledge/base/primary-care-tremor-movement-concern.json",
+        "base_rules": ROOT / "rules/base/primary-care-tremor-movement-concern.json",
+        "fragment_root": ROOT / "knowledge/generated/neurology/tremor-movement-concern",
+        "output_graph": ROOT / "knowledge/graph/primary-care-tremor-movement-concern.json",
+        "output_rules": ROOT / "rules/primary-care-tremor-movement-concern.json",
+        "version": "0.1.0",
+    },
     "kidney_function_ckd_follow_up": {
         "base_graph": ROOT / "knowledge/base/primary-care-kidney-function-ckd-follow-up.json",
         "base_rules": ROOT / "rules/base/primary-care-kidney-function-ckd-follow-up.json",

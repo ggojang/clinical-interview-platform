@@ -114,6 +114,7 @@ class GptExportTests(unittest.TestCase):
                 "rfe-gait_falls_concern-facts", "rfe-gait_falls_concern-questions", "rfe-gait_falls_concern-rules",
                 "rfe-epistaxis-facts", "rfe-epistaxis-questions", "rfe-epistaxis-rules",
                 "rfe-pediatric_growth_development-facts", "rfe-pediatric_growth_development-questions", "rfe-pediatric_growth_development-rules",
+                "rfe-tremor_movement_concern-facts", "rfe-tremor_movement_concern-questions", "rfe-tremor_movement_concern-rules",
                 "rfe-kidney_function_ckd_follow_up-facts", "rfe-kidney_function_ckd_follow_up-questions", "rfe-kidney_function_ckd_follow_up-rules",
                 "rfe-liver_function_chronic_follow_up-facts", "rfe-liver_function_chronic_follow_up-questions", "rfe-liver_function_chronic_follow_up-rules",
                 "questionnaires-patient-experience-5th-2025-metadata",
@@ -244,6 +245,7 @@ class GptExportTests(unittest.TestCase):
         self.assertIn("gait_falls_concern", schema)
         self.assertIn("epistaxis", schema)
         self.assertIn("pediatric_growth_development", schema)
+        self.assertIn("tremor_movement_concern", schema)
         self.assertIn("kidney_function_ckd_follow_up", schema)
         self.assertIn("liver_function_chronic_follow_up", schema)
         self.assertIn("operationId: getReasonForEncounterRulePartition", schema)
@@ -378,7 +380,7 @@ class GptExportTests(unittest.TestCase):
                 {
                     "abdominal_pain", "back_pain", "bowel_symptoms", "chest_pain", "cough", "diabetes_follow_up", "dizziness_syncope",
                     "dyspnea", "ear_hearing_symptoms", "edema", "eye_symptoms", "fatigue", "fever", "focal_weakness_numbness", "headache", "hypertension_follow_up", "joint_limb_complaint", "medication_review", "mental_health_sleep",
-                    "allergy_concern", "anemia_concern_follow_up", "asthma_copd_follow_up", "dyspepsia_reflux", "thyroid_concern_follow_up", "kidney_function_ckd_follow_up", "liver_function_chronic_follow_up", "epistaxis", "gait_falls_concern", "lump_lymph_node", "memory_cognitive_concern", "oral_dental_symptoms", "palpitations", "pediatric_growth_development", "pregnancy_postpartum_concern", "reproductive_genital_symptoms", "seizure_event_follow_up", "skin_complaint", "upper_respiratory_symptoms", "urinary_symptoms", "wound_minor_injury",
+                    "allergy_concern", "anemia_concern_follow_up", "asthma_copd_follow_up", "dyspepsia_reflux", "thyroid_concern_follow_up", "kidney_function_ckd_follow_up", "liver_function_chronic_follow_up", "epistaxis", "gait_falls_concern", "lump_lymph_node", "memory_cognitive_concern", "oral_dental_symptoms", "palpitations", "pediatric_growth_development", "pregnancy_postpartum_concern", "reproductive_genital_symptoms", "seizure_event_follow_up", "skin_complaint", "tremor_movement_concern", "upper_respiratory_symptoms", "urinary_symptoms", "wound_minor_injury",
                     "vomiting_diarrhea", "weight_constitutional_change",
                 },
             )
@@ -386,9 +388,7 @@ class GptExportTests(unittest.TestCase):
                 entry["id"] for entry in catalog["entries"]
                 if entry.get("implementation_status") == "planned"
             }
-            self.assertEqual(planned, {
-                "rfe.tremor_movement_concern",
-            })
+            self.assertEqual(planned, set())
             self.assertTrue(all(
                 "package_id" not in entry
                 for entry in catalog["entries"]

@@ -485,6 +485,17 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/pediatrics/growth-development",
         "research_manifests": [ROOT / "sources/manifests/primary-care-pediatric-growth-development-research.json"],
     },
+    "tremor_movement_concern": {
+        "graph": ROOT / "knowledge/graph/primary-care-tremor-movement-concern.json",
+        "rules": ROOT / "rules/primary-care-tremor-movement-concern.json",
+        "sources": ROOT / "sources/manifests/primary-care-tremor-movement-concern.json",
+        "completion_policy": ROOT / "policies/primary-care-tremor-movement-concern-completion.json",
+        "output": ROOT / "packages/generated/primary-care-tremor-movement-concern-0.1.0.json",
+        "package_id": "package.primary-care-tremor-movement-concern", "package_version": "0.1.0",
+        "rfe": "rfe.tremor_movement_concern",
+        "simulation_root": ROOT / "simulation/patients/neurology/tremor-movement-concern",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-tremor-movement-concern-research.json"],
+    },
     "kidney_function_ckd_follow_up": {
         "graph": ROOT / "knowledge/graph/primary-care-kidney-function-ckd-follow-up.json",
         "rules": ROOT / "rules/primary-care-kidney-function-ckd-follow-up.json",

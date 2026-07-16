@@ -1,0 +1,2246 @@
+{
+  "id": "knowledge.generated.tremor-movement-concern",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-tremor-movement-concern-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-07-14",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-07-15",
+    "next_full_review_at": "2027-01-10",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.movement.routing",
+      "type": "ClinicalGroup",
+      "display": "routing"
+    },
+    {
+      "id": "group.movement.safety",
+      "type": "ClinicalGroup",
+      "display": "safety"
+    },
+    {
+      "id": "group.movement.phenomenology",
+      "type": "ClinicalGroup",
+      "display": "phenomenology"
+    },
+    {
+      "id": "group.movement.associated",
+      "type": "ClinicalGroup",
+      "display": "associated"
+    },
+    {
+      "id": "group.movement.context",
+      "type": "ClinicalGroup",
+      "display": "context"
+    },
+    {
+      "id": "group.movement.function",
+      "type": "ClinicalGroup",
+      "display": "function"
+    },
+    {
+      "id": "group.movement.followup",
+      "type": "ClinicalGroup",
+      "display": "followup"
+    }
+  ],
+  "group_hypothesis_edges": [],
+  "safety_rules": [
+    {
+      "id": "rule.tremor-movement-concern.safety.focal-neurologic",
+      "priority": 1000,
+      "when": {
+        "fact": "movement.sudden_focal_neurologic_deficit",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.tremor-movement-concern.safety.acute-ataxia",
+      "priority": 1000,
+      "when": {
+        "fact": "movement.sudden_severe_ataxia_or_unable_to_walk",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.tremor-movement-concern.safety.seizure-consciousness",
+      "priority": 1000,
+      "when": {
+        "fact": "movement.seizure_reduced_consciousness_or_unresponsiveness",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.tremor-movement-concern.safety.airway-swallow",
+      "priority": 1000,
+      "when": {
+        "fact": "movement.airway_swallowing_or_breathing_compromise",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.tremor-movement-concern.safety.rigidity-fever",
+      "priority": 1000,
+      "when": {
+        "fact": "movement.fever_severe_rigidity_confusion_or_autonomic_instability",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.tremor-movement-concern.safety.toxic-metabolic",
+      "priority": 1000,
+      "when": {
+        "fact": "movement.possible_poisoning_overdose_withdrawal_or_hypoglycemia",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.tremor-movement-concern.safety.rapid-mental-change",
+      "priority": 990,
+      "when": {
+        "fact": "movement.rapid_progression_with_confusion_behavior_or_cognitive_change",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.tremor-movement-concern.safety.injury-risk",
+      "priority": 990,
+      "when": {
+        "fact": "movement.repeated_falls_injury_or_cannot_remain_safe",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.tremor-movement-concern.safety.pregnancy-warning",
+      "priority": 1000,
+      "when": {
+        "fact": "movement.pregnancy_postpartum_neurologic_or_hypertensive_warning",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.tremor-movement-concern.safety.child-regression",
+      "priority": 990,
+      "when": {
+        "fact": "movement.child_acute_regression_or_new_ataxia",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.tremor-movement-concern.safety.sudden-involuntary",
+      "priority": 990,
+      "when": {
+        "fact": "movement.sudden_persistent_severe_involuntary_movement",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.tremor-movement-concern.safety.behavioral-danger",
+      "priority": 1000,
+      "when": {
+        "fact": "movement.immediate_self_harm_harm_to_others_or_behavioral_danger",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "movement.primary_group",
+        "display": "Primary Movement Concern",
+        "value_type": "coded",
+        "allowed_values": [
+          "isolated_tremor",
+          "slowness_stiffness_or_parkinsonian_features",
+          "dystonia_or_abnormal_posture",
+          "jerks_chorea_tics_or_other_involuntary_movement",
+          "medicine_substance_or_metabolic_context",
+          "established_movement_disorder_followup",
+          "other_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.primary-group",
+        "display": "Primary Movement Concern",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.primary-group",
+        "wording": "이번 방문은 떨림, 느려짐·경직, 반복되는 비틀림·이상 자세, 갑작스러운 움찔거림, 춤추듯 불규칙한 움직임, 틱·억제 가능한 움직임, 이미 진단된 운동질환 추적 중 무엇에 가깝나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 210,
+          "reason": "primary-group"
+        }
+      ],
+      "supports": [
+        "group.movement.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.sudden_focal_neurologic_deficit",
+        "display": "Sudden Focal Neurologic Deficit",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.focal-neurologic",
+        "display": "Sudden Focal Neurologic Deficit",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.focal-neurologic",
+        "wording": "움직임 변화와 함께 갑자기 한쪽 힘 빠짐·감각 저하, 얼굴 처짐, 말이 어눌함 또는 시야 변화가 생겼나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 209,
+          "reason": "focal-neurologic"
+        }
+      ],
+      "supports": [
+        "group.movement.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.sudden_severe_ataxia_or_unable_to_walk",
+        "display": "Sudden Severe Ataxia",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.acute-ataxia",
+        "display": "Sudden Severe Ataxia",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.acute-ataxia",
+        "wording": "갑자기 심하게 비틀거리거나 서거나 걷지 못하게 되었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 208,
+          "reason": "acute-ataxia"
+        }
+      ],
+      "supports": [
+        "group.movement.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.seizure_reduced_consciousness_or_unresponsiveness",
+        "display": "Seizure or Reduced Consciousness",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.seizure-consciousness",
+        "display": "Seizure or Reduced Consciousness",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.seizure-consciousness",
+        "wording": "지금 경련, 의식 저하, 깨우기 어려움 또는 평소와 달리 반응하지 않는 상태가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 207,
+          "reason": "seizure-consciousness"
+        }
+      ],
+      "supports": [
+        "group.movement.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.airway_swallowing_or_breathing_compromise",
+        "display": "Airway or Swallowing Compromise",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.airway-swallow",
+        "display": "Airway or Swallowing Compromise",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.airway-swallow",
+        "wording": "목·턱이 비틀리거나 굳으면서 숨쉬기 어렵거나 침도 삼키지 못하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 206,
+          "reason": "airway-swallow"
+        }
+      ],
+      "supports": [
+        "group.movement.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.fever_severe_rigidity_confusion_or_autonomic_instability",
+        "display": "Fever Rigidity and Confusion",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.rigidity-fever",
+        "display": "Fever Rigidity and Confusion",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.rigidity-fever",
+        "wording": "최근 약을 시작·증량·중단한 뒤 고열, 심한 전신 경직, 혼란, 땀·맥박·혈압의 큰 변화가 함께 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 205,
+          "reason": "rigidity-fever"
+        }
+      ],
+      "supports": [
+        "group.movement.safety",
+        "group.movement.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.possible_poisoning_overdose_withdrawal_or_hypoglycemia",
+        "display": "Toxic or Metabolic Emergency",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.toxic-metabolic",
+        "display": "Toxic or Metabolic Emergency",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.toxic-metabolic",
+        "wording": "약·물질 과량, 갑작스러운 술·진정제 중단 또는 저혈당 가능성과 함께 떨림·행동·의식이 급격히 변했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 204,
+          "reason": "toxic-metabolic"
+        }
+      ],
+      "supports": [
+        "group.movement.safety",
+        "group.movement.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.rapid_progression_with_confusion_behavior_or_cognitive_change",
+        "display": "Rapid Progression with Mental Change",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.rapid-mental-change",
+        "display": "Rapid Progression with Mental Change",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.rapid-mental-change",
+        "wording": "며칠~몇 주 사이 움직임이 빠르게 악화하면서 혼란, 성격·행동 또는 기억 변화가 동반되나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 203,
+          "reason": "rapid-mental-change"
+        }
+      ],
+      "supports": [
+        "group.movement.safety",
+        "group.movement.associated"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.repeated_falls_injury_or_cannot_remain_safe",
+        "display": "Immediate Injury Risk",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.injury-risk",
+        "display": "Immediate Injury Risk",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.injury-risk",
+        "wording": "움직임 때문에 반복해서 넘어지거나 다쳤고 지금 혼자 안전을 유지하기 어렵나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 202,
+          "reason": "injury-risk"
+        }
+      ],
+      "supports": [
+        "group.movement.safety",
+        "group.movement.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.pregnancy_postpartum_neurologic_or_hypertensive_warning",
+        "display": "Pregnancy or Postpartum Neurologic Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.pregnancy-warning",
+        "display": "Pregnancy or Postpartum Neurologic Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.pregnancy-warning",
+        "wording": "임신 중이거나 출산 후 6주 이내이며 심한 두통·시야 변화·경련·한쪽 증상 또는 매우 높은 혈압과 함께 새 떨림·움직임이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 201,
+          "reason": "pregnancy-warning"
+        }
+      ],
+      "supports": [
+        "group.movement.safety",
+        "group.movement.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.child_acute_regression_or_new_ataxia",
+        "display": "Child Acute Regression",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.child-regression",
+        "display": "Child Acute Regression",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.child-regression",
+        "wording": "아이에게 갑자기 걷기·말·손 사용 능력 퇴행, 심한 비틀거림 또는 의식·행동 변화가 생겼나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 200,
+          "reason": "child-regression"
+        }
+      ],
+      "supports": [
+        "group.movement.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.sudden_persistent_severe_involuntary_movement",
+        "display": "Sudden Persistent Involuntary Movement",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.sudden-involuntary",
+        "display": "Sudden Persistent Involuntary Movement",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.sudden-involuntary",
+        "wording": "갑자기 시작된 심한 불수의운동이 계속되어 먹기·걷기·잠자기 또는 일상생활이 불가능한가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 199,
+          "reason": "sudden-involuntary"
+        }
+      ],
+      "supports": [
+        "group.movement.safety",
+        "group.movement.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.immediate_self_harm_harm_to_others_or_behavioral_danger",
+        "display": "Immediate Behavioural Danger",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.behavioral-danger",
+        "display": "Immediate Behavioural Danger",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.behavioral-danger",
+        "wording": "충동·환각·혼란과 함께 자신이나 다른 사람을 해칠 위험이 있거나 보호자가 안전을 유지할 수 없나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 198,
+          "reason": "behavioral-danger"
+        }
+      ],
+      "supports": [
+        "group.movement.safety",
+        "group.movement.associated"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.information_source_witness_video_and_reliability",
+        "display": "Information Source and Video",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.information-source",
+        "display": "Information Source and Video",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.information-source",
+        "wording": "누가 답변하고 누가 움직임을 보았나요? 가능하면 촬영 시각·상황이 확인되는 영상 유무와 서로 다른 관찰도 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 188,
+          "reason": "information-source"
+        }
+      ],
+      "supports": [
+        "group.movement.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.age_and_dominant_hand",
+        "display": "Age and Dominant Hand",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.age-handedness",
+        "display": "Age and Dominant Hand",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.age-handedness",
+        "wording": "만 나이와 주로 사용하는 손을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 187,
+          "reason": "age-handedness"
+        }
+      ],
+      "supports": [
+        "group.movement.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.main_concern_onset_date_time_and_speed",
+        "display": "Onset and Speed",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.onset",
+        "display": "Onset and Speed",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.onset",
+        "wording": "가장 걱정되는 움직임이 무엇이며 처음 시작한 날짜·시각과 갑자기 또는 서서히 시작했는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 186,
+          "reason": "onset"
+        }
+      ],
+      "supports": [
+        "group.movement.phenomenology"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.course_progression_frequency_and_episode_duration",
+        "display": "Course and Episodes",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.course",
+        "display": "Course and Episodes",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.course",
+        "wording": "계속되는지 간헐적인지, 한 번에 얼마나 지속되는지, 빈도와 호전·악화·변동 경과를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 185,
+          "reason": "course"
+        }
+      ],
+      "supports": [
+        "group.movement.phenomenology"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.body_sites_laterality_and_spread",
+        "display": "Body Site Laterality and Spread",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "26079004"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.tremor-movement-concern",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.site-side",
+        "display": "Body Site Laterality and Spread",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.site-side",
+        "wording": "손·팔·다리·머리·턱·얼굴·몸통·목소리 중 어디에 나타나며 왼쪽·오른쪽·양쪽 차이와 퍼진 순서를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 184,
+          "reason": "site-side"
+        }
+      ],
+      "supports": [
+        "group.movement.phenomenology"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.rest_posture_action_intention_and_task_relationship",
+        "display": "Activation Condition",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.activation",
+        "display": "Activation Condition",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.activation",
+        "wording": "완전히 쉬고 있을 때, 팔을 뻗고 있을 때, 물건을 잡거나 목표에 손을 뻗을 때, 특정 작업 중 언제 나타나거나 심해지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 183,
+          "reason": "activation"
+        }
+      ],
+      "supports": [
+        "group.movement.phenomenology"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.rhythm_speed_amplitude_and_regular_or_irregular",
+        "display": "Movement Appearance",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.appearance",
+        "display": "Movement Appearance",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.appearance",
+        "wording": "움직임의 빠르기·크기·리듬이 규칙적인지 불규칙한지, 시간이 지나며 어떻게 달라지는지 설명해주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 182,
+          "reason": "appearance"
+        }
+      ],
+      "supports": [
+        "group.movement.phenomenology"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.distractibility_entrainment_suppressibility_and_premonitory_urge",
+        "display": "Modifiability and Urge",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.modifiability",
+        "display": "Modifiability and Urge",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.modifiability",
+        "wording": "다른 일에 집중하거나 일정 박자에 맞출 때 달라지는지, 잠시 억제할 수 있는지, 움직이기 전 참기 어려운 느낌이 있는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 181,
+          "reason": "modifiability"
+        }
+      ],
+      "supports": [
+        "group.movement.phenomenology"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.triggers_stress_sleep_fatigue_cold_hunger_and_exercise",
+        "display": "Common Triggers",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.triggers",
+        "display": "Common Triggers",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.triggers",
+        "wording": "스트레스, 수면 부족, 피로, 추위, 공복, 운동, 통증·질병 중 악화 요인과 재현 가능성을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 180,
+          "reason": "triggers"
+        }
+      ],
+      "supports": [
+        "group.movement.phenomenology",
+        "group.movement.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.relief_rest_support_alcohol_or_sensory_trick",
+        "display": "Relieving Factors",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.relief",
+        "display": "Relieving Factors",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.relief",
+        "wording": "휴식·팔 지지·자세 변경·특정 부위 만지기 또는 음주 후 달라지는지와 지속 시간을 알려주세요. 증상 완화를 위해 음주를 권하지는 않습니다.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 179,
+          "reason": "relief"
+        }
+      ],
+      "supports": [
+        "group.movement.phenomenology"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.handwriting_spiral_cup_utensil_button_and_device_examples",
+        "display": "Task Examples",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.task-examples",
+        "display": "Task Examples",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.task-examples",
+        "wording": "글씨·그림, 컵 들기, 수저·단추·면도·화장·휴대전화 사용 중 어떤 동작이 어렵고 실제 예시나 변화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 178,
+          "reason": "task-examples"
+        }
+      ],
+      "supports": [
+        "group.movement.phenomenology",
+        "group.movement.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.slowness_stiffness_reduced_arm_swing_or_freezing",
+        "display": "Slowness and Stiffness",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.slowness-stiffness",
+        "display": "Slowness and Stiffness",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.slowness-stiffness",
+        "wording": "동작이 느려짐, 몸이 뻣뻣함, 팔 흔들림 감소, 발이 바닥에 붙는 듯 멈춤이 있나요? 시작 시기와 좌우 차이를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 170,
+          "reason": "slowness-stiffness"
+        }
+      ],
+      "supports": [
+        "group.movement.associated"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.gait_balance_near_falls_and_falls",
+        "display": "Gait and Falls",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.gait-falls",
+        "display": "Gait and Falls",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.gait-falls",
+        "wording": "걷기·방향 전환·균형 변화, 거의 넘어질 뻔함과 실제 낙상의 횟수·손상을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 169,
+          "reason": "gait-falls"
+        }
+      ],
+      "supports": [
+        "group.movement.associated",
+        "group.movement.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.abnormal_posture_twisting_cramp_or_task_specific_spasm",
+        "display": "Dystonic Features",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "15802004"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.tremor-movement-concern",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.dystonia-features",
+        "display": "Dystonic Features",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.dystonia-features",
+        "wording": "목·턱·손발이 비틀리거나 이상 자세로 굳음, 쥐가 남 또는 글씨·악기 같은 특정 동작에서 경련이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 168,
+          "reason": "dystonia-features"
+        }
+      ],
+      "supports": [
+        "group.movement.associated"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.jerks_dance_like_movements_tics_or_restlessness",
+        "display": "Other Involuntary Movements",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.other-movements",
+        "display": "Other Involuntary Movements",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.other-movements",
+        "wording": "갑작스런 움찔거림, 춤추듯 불규칙한 움직임, 반복 소리·동작, 가만히 있기 힘든 움직임이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 167,
+          "reason": "other-movements"
+        }
+      ],
+      "supports": [
+        "group.movement.associated"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.weakness_numbness_coordination_or_sensory_change",
+        "display": "Other Neurologic Symptoms",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.neurologic",
+        "display": "Other Neurologic Symptoms",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.neurologic",
+        "wording": "힘 빠짐, 저림·감각 변화, 물건을 자주 떨어뜨림, 정확히 목표에 닿기 어려움이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 166,
+          "reason": "neurologic"
+        }
+      ],
+      "supports": [
+        "group.movement.associated"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.speech_voice_swallowing_drooling_or_breathing_change",
+        "display": "Bulbar and Voice Symptoms",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.speech-swallow",
+        "display": "Bulbar and Voice Symptoms",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.speech-swallow",
+        "wording": "말이 작거나 어눌해짐, 목소리 떨림, 삼킴 곤란·사레, 침 흘림 또는 호흡 변화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 165,
+          "reason": "speech-swallow"
+        }
+      ],
+      "supports": [
+        "group.movement.associated"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.smell_constipation_urinary_orthostatic_and_sexual_symptoms",
+        "display": "Autonomic and Smell Symptoms",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.nonmotor-autonomic",
+        "display": "Autonomic and Smell Symptoms",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.nonmotor-autonomic",
+        "wording": "후각 저하, 변비, 소변·성기능 변화, 일어설 때 어지럼이나 실신이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 164,
+          "reason": "nonmotor-autonomic"
+        }
+      ],
+      "supports": [
+        "group.movement.associated"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.sleep_rem_behavior_daytime_sleepiness_and_restless_legs",
+        "display": "Sleep Symptoms",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.sleep",
+        "display": "Sleep Symptoms",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.sleep",
+        "wording": "잠꼬대하며 몸을 크게 움직임, 낮 졸림, 불면 또는 다리를 움직이고 싶은 불편감이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 163,
+          "reason": "sleep"
+        }
+      ],
+      "supports": [
+        "group.movement.associated"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.cognition_mood_anxiety_hallucinations_and_impulse_control",
+        "display": "Cognitive and Psychiatric Symptoms",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.mental",
+        "display": "Cognitive and Psychiatric Symptoms",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.mental",
+        "wording": "기억·집중 변화, 우울·불안, 환각·망상 또는 도박·쇼핑·성행동·과식 같은 충동 변화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 162,
+          "reason": "mental"
+        }
+      ],
+      "supports": [
+        "group.movement.associated"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.pain_cramp_fatigue_weight_fever_or_systemic_symptoms",
+        "display": "Systemic Symptoms",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.systemic",
+        "display": "Systemic Symptoms",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.systemic",
+        "wording": "통증·쥐·피로, 체중 변화, 발열·식은땀 또는 전신 질환 증상이 함께 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 161,
+          "reason": "systemic"
+        }
+      ],
+      "supports": [
+        "group.movement.associated"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.current_medicines_doses_schedule_and_adherence",
+        "display": "Current Medicines",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.medicines",
+        "display": "Current Medicines",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.medicines",
+        "wording": "처방약·일반약·주사·한약·보충제의 이름, 용량, 복용 시각과 실제 복용 상태를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 155,
+          "reason": "medicines"
+        }
+      ],
+      "supports": [
+        "group.movement.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.recent_started_stopped_or_changed_medicines",
+        "display": "Recent Medicine Changes",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.medicine-change",
+        "display": "Recent Medicine Changes",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.medicine-change",
+        "wording": "증상 전후 새로 시작·중단·증량·감량한 약과 날짜, 변화 후 증상 반응을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 154,
+          "reason": "medicine-change"
+        }
+      ],
+      "supports": [
+        "group.movement.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.dopamine_blocker_stimulant_lithium_valproate_antidepressant_bronchodilator_or_thyroid_medicine",
+        "display": "Movement-relevant Medicines",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.medicine-classes",
+        "display": "Movement-relevant Medicines",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.medicine-classes",
+        "wording": "항정신병·구토약, 자극제, 리튬·발프로산, 항우울제, 기관지확장제, 갑상선약 또는 파킨슨병 약 사용 여부와 이름을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 153,
+          "reason": "medicine-classes"
+        }
+      ],
+      "supports": [
+        "group.movement.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.caffeine_nicotine_energy_drink_and_other_stimulants",
+        "display": "Stimulant Exposure",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.stimulants",
+        "display": "Stimulant Exposure",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.stimulants",
+        "wording": "커피·차·에너지음료, 니코틴과 기타 각성 물질의 종류·하루 양·최근 변화를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 152,
+          "reason": "stimulants"
+        }
+      ],
+      "supports": [
+        "group.movement.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.alcohol_amount_pattern_last_use_relief_and_withdrawal",
+        "display": "Alcohol Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.alcohol",
+        "display": "Alcohol Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.alcohol",
+        "wording": "음주 종류·양·빈도·마지막 음주, 음주 후 떨림 변화와 줄이거나 끊을 때 악화 여부를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 151,
+          "reason": "alcohol"
+        }
+      ],
+      "supports": [
+        "group.movement.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.recreational_substances_toxins_and_withdrawal",
+        "display": "Substances and Withdrawal",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.substances",
+        "display": "Substances and Withdrawal",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.substances",
+        "wording": "기타 물질 사용, 중독 가능 노출 또는 최근 중단·금단 가능성을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 150,
+          "reason": "substances"
+        }
+      ],
+      "supports": [
+        "group.movement.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.fasting_glucose_thyroid_liver_kidney_and_electrolyte_context",
+        "display": "Metabolic Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.metabolic",
+        "display": "Metabolic Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.metabolic",
+        "wording": "공복·저혈당과의 관계, 갑상선·간·신장·전해질 질환 또는 최근 관련 검사 결과를 날짜와 함께 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 149,
+          "reason": "metabolic"
+        }
+      ],
+      "supports": [
+        "group.movement.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.neurologic_medical_psychiatric_and_surgical_history",
+        "display": "Medical and Neurologic History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.medical-history",
+        "display": "Medical and Neurologic History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.medical-history",
+        "wording": "뇌졸중·발작·머리 손상·감염, 신경·정신·내과 질환과 수술·입원력을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 148,
+          "reason": "medical-history"
+        }
+      ],
+      "supports": [
+        "group.movement.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.family_history_tremor_parkinsonism_dystonia_or_other_movement",
+        "display": "Family History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.family-history",
+        "display": "Family History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.family-history",
+        "wording": "가족 중 떨림, 파킨슨병·느려짐, 비틀림·틱·기타 불수의운동이 있는 사람과 발병 나이를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 147,
+          "reason": "family-history"
+        }
+      ],
+      "supports": [
+        "group.movement.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.occupation_hobbies_repetitive_task_and_functional_demand",
+        "display": "Occupation and Task Demand",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.occupation",
+        "display": "Occupation and Task Demand",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.occupation",
+        "wording": "직업·학업·취미와 정밀 손동작, 악기, 필기, 기계·고소 작업 등 증상에 영향을 받는 활동을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 146,
+          "reason": "occupation"
+        }
+      ],
+      "supports": [
+        "group.movement.context",
+        "group.movement.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.toxin_pesticide_solvent_metal_or_carbon_monoxide_exposure",
+        "display": "Occupational or Environmental Exposure",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.toxin-exposure",
+        "display": "Occupational or Environmental Exposure",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.toxin-exposure",
+        "wording": "농약, 용제, 금속·망간, 일산화탄소 등 직업·환경 노출과 보호구·노출 시기를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 145,
+          "reason": "toxin-exposure"
+        }
+      ],
+      "supports": [
+        "group.movement.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.pregnancy_postpartum_and_hormonal_context",
+        "display": "Pregnancy and Hormonal Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.pregnancy-context",
+        "display": "Pregnancy and Hormonal Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.pregnancy-context",
+        "wording": "임신 가능성·임신 주수·출산 후 경과 또는 월경·호르몬 변화와 증상의 관계를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 144,
+          "reason": "pregnancy-context"
+        }
+      ],
+      "supports": [
+        "group.movement.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.prior_examination_diagnosis_and_specialist_assessment",
+        "display": "Prior Clinical Assessment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.prior-assessment",
+        "display": "Prior Clinical Assessment",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.prior-assessment",
+        "wording": "이전에 진찰받은 기관·진료과·날짜, 들은 진단 또는 미확정 설명을 그대로 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 138,
+          "reason": "prior-assessment"
+        }
+      ],
+      "supports": [
+        "group.movement.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.prior_laboratory_imaging_or_neurophysiology_results",
+        "display": "Prior Test Results",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.prior-tests",
+        "display": "Prior Test Results",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.prior-tests",
+        "wording": "혈액검사, 뇌 영상, 근전도·신경검사 등 검사명·날짜·주요 결과와 원본 유무를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 137,
+          "reason": "prior-tests"
+        }
+      ],
+      "supports": [
+        "group.movement.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.prior_treatment_response_adverse_effects_and_wearing_off",
+        "display": "Treatment Response",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.treatment-response",
+        "display": "Treatment Response",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.treatment-response",
+        "wording": "사용한 약·시술·재활·생활조정의 용량·기간·효과·부작용과 약효가 떨어지는 시간대를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 136,
+          "reason": "treatment-response"
+        }
+      ],
+      "supports": [
+        "group.movement.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.db_surgery_device_and_programming_context",
+        "display": "Device or Procedure Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.device",
+        "display": "Device or Procedure Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.device",
+        "wording": "뇌심부자극술·펌프·주사 등 기기·시술이 있다면 종류·시행일·최근 조정과 현재 문제를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 135,
+          "reason": "device"
+        }
+      ],
+      "supports": [
+        "group.movement.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.eating_drinking_dressing_hygiene_and_writing_function",
+        "display": "Activities of Daily Living",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.daily-function",
+        "display": "Activities of Daily Living",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.daily-function",
+        "wording": "식사·물 마시기, 옷 입기·씻기, 글씨 쓰기에서 혼자 가능한 정도와 필요한 도움을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "daily-function"
+        }
+      ],
+      "supports": [
+        "group.movement.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.walking_transfer_stairs_and_mobility_aid_function",
+        "display": "Mobility Function",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.mobility",
+        "display": "Mobility Function",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.mobility",
+        "wording": "일어나기·이동·걷기·계단과 지팡이·보행기 사용에서 필요한 도움과 최근 변화를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 127,
+          "reason": "mobility"
+        }
+      ],
+      "supports": [
+        "group.movement.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.work_school_social_participation_and_embarrassment",
+        "display": "Participation Impact",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.participation",
+        "display": "Participation Impact",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.participation",
+        "wording": "직장·학교·대인관계·외출을 얼마나 제한하며 당황·낙인 우려가 어떤 영향을 주나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 126,
+          "reason": "participation"
+        }
+      ],
+      "supports": [
+        "group.movement.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.driving_machine_height_heat_and_water_safety",
+        "display": "Driving and Hazard Safety",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.hazard-safety",
+        "display": "Driving and Hazard Safety",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.hazard-safety",
+        "wording": "운전, 기계·칼·불·뜨거운 물, 높은 곳 또는 물가에서 위험하거나 중단한 활동이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 125,
+          "reason": "hazard-safety"
+        }
+      ],
+      "supports": [
+        "group.movement.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.living_arrangement_caregiver_support_and_fall_plan",
+        "display": "Support and Safety Plan",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.support",
+        "display": "Support and Safety Plan",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.support",
+        "wording": "혼자 사는지, 도움을 줄 사람·연락 방법과 넘어짐·증상 악화 시 안전 계획이 있는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 124,
+          "reason": "support"
+        }
+      ],
+      "supports": [
+        "group.movement.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "movement.patient_concern_goal_and_other_detail",
+        "display": "Patient Goal and Additional Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tremor-movement-concern.other-detail",
+        "display": "Patient Goal and Additional Detail",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.tremor-movement-concern.other-detail",
+        "wording": "질문에 없지만 의료진에게 꼭 전달할 내용, 가장 걱정하는 원인과 이번 진료에서 원하는 도움을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 90,
+          "reason": "other-detail"
+        }
+      ],
+      "supports": [
+        "group.movement.routing",
+        "group.movement.followup"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nice.ng127.tremor",
+      "source.nice.ng71.parkinson",
+      "source.mds.tremor-consensus.2018",
+      "source.ninds.tremor.2025",
+      "source.stom.tremor.20260716"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

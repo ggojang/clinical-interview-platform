@@ -20,7 +20,7 @@ from runtime.package import (
     ABDOMINAL_PAIN_PACKAGE, BACK_PAIN_PACKAGE, BOWEL_SYMPTOMS_PACKAGE, CHEST_PAIN_PACKAGE, DEFAULT_PACKAGE,
     DIZZINESS_SYNCOPE_PACKAGE, DYSPNEA_PACKAGE, FEVER_PACKAGE, HEADACHE_PACKAGE,
     DIABETES_FOLLOW_UP_PACKAGE, EAR_HEARING_SYMPTOMS_PACKAGE, EDEMA_PACKAGE, EYE_SYMPTOMS_PACKAGE, FATIGUE_PACKAGE, FOCAL_WEAKNESS_NUMBNESS_PACKAGE, HYPERTENSION_FOLLOW_UP_PACKAGE, JOINT_LIMB_COMPLAINT_PACKAGE, MEDICATION_REVIEW_PACKAGE, MENTAL_HEALTH_SLEEP_PACKAGE, PALPITATIONS_PACKAGE, REPRODUCTIVE_GENITAL_SYMPTOMS_PACKAGE, SKIN_COMPLAINT_PACKAGE,
-    ALLERGY_CONCERN_PACKAGE, ANEMIA_CONCERN_FOLLOW_UP_PACKAGE, ASTHMA_COPD_FOLLOW_UP_PACKAGE, DYSPEPSIA_REFLUX_PACKAGE, THYROID_CONCERN_FOLLOW_UP_PACKAGE, KIDNEY_FUNCTION_CKD_FOLLOW_UP_PACKAGE, LIVER_FUNCTION_CHRONIC_FOLLOW_UP_PACKAGE, EPISTAXIS_PACKAGE, GAIT_FALLS_CONCERN_PACKAGE, LUMP_LYMPH_NODE_PACKAGE, MEMORY_COGNITIVE_CONCERN_PACKAGE, ORAL_DENTAL_SYMPTOMS_PACKAGE, PEDIATRIC_GROWTH_DEVELOPMENT_PACKAGE, PREGNANCY_POSTPARTUM_CONCERN_PACKAGE, SEIZURE_EVENT_FOLLOW_UP_PACKAGE, WOUND_MINOR_INJURY_PACKAGE, UPPER_RESPIRATORY_SYMPTOMS_PACKAGE, URINARY_SYMPTOMS_PACKAGE, WEIGHT_CONSTITUTIONAL_CHANGE_PACKAGE,
+    ALLERGY_CONCERN_PACKAGE, ANEMIA_CONCERN_FOLLOW_UP_PACKAGE, ASTHMA_COPD_FOLLOW_UP_PACKAGE, DYSPEPSIA_REFLUX_PACKAGE, THYROID_CONCERN_FOLLOW_UP_PACKAGE, KIDNEY_FUNCTION_CKD_FOLLOW_UP_PACKAGE, LIVER_FUNCTION_CHRONIC_FOLLOW_UP_PACKAGE, EPISTAXIS_PACKAGE, GAIT_FALLS_CONCERN_PACKAGE, LUMP_LYMPH_NODE_PACKAGE, MEMORY_COGNITIVE_CONCERN_PACKAGE, ORAL_DENTAL_SYMPTOMS_PACKAGE, PEDIATRIC_GROWTH_DEVELOPMENT_PACKAGE, PREGNANCY_POSTPARTUM_CONCERN_PACKAGE, SEIZURE_EVENT_FOLLOW_UP_PACKAGE, TREMOR_MOVEMENT_CONCERN_PACKAGE, WOUND_MINOR_INJURY_PACKAGE, UPPER_RESPIRATORY_SYMPTOMS_PACKAGE, URINARY_SYMPTOMS_PACKAGE, WEIGHT_CONSTITUTIONAL_CHANGE_PACKAGE,
     VOMITING_DIARRHEA_PACKAGE,
     PackageLoadError, load_package,
 )
@@ -70,6 +70,10 @@ class CompilerTests(unittest.TestCase):
         )
         self.assertEqual(
             next(item for item in queue["order"] if item["rfe"] == "rfe.pediatric_growth_development")["state"],
+            "implemented_unreviewed",
+        )
+        self.assertEqual(
+            next(item for item in queue["order"] if item["rfe"] == "rfe.tremor_movement_concern")["state"],
             "implemented_unreviewed",
         )
         self.assertIn(
@@ -127,6 +131,7 @@ class CompilerTests(unittest.TestCase):
             "gait_falls_concern",
             "epistaxis",
             "pediatric_growth_development",
+            "tremor_movement_concern",
             "kidney_function_ckd_follow_up",
             "liver_function_chronic_follow_up",
         ):
@@ -1087,6 +1092,24 @@ class CompilerTests(unittest.TestCase):
         self.assertFalse(mapping["validation"]["clinical_rule_authority"])
         self.assertFalse(mapping["screening_semantics"]["age_norm_interpreted_by_runtime"])
         self.assertFalse(mapping["screening_semantics"]["licensed_tool_reproduced"])
+
+    def test_tremor_movement_concern_package_is_complete(self):
+        package = compile_package(profile="tremor_movement_concern")
+        facts = {node["id"] for node in package["knowledge_graph"]["nodes"] if node["type"] == "Fact"}
+        self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
+        self.assertGreaterEqual(len(facts), 55)
+        self.assertEqual(package["coverage"]["total_safety_rules"], 12)
+        self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 12)
+        self.assertEqual(package["coverage"]["uncovered_safety_rules"], [])
+        self.assertEqual(package["coverage"]["data_absent_reason_simulations"], 1)
+        conditional = package["interview_completion_policy"]["conditional_required_facts"][0]
+        self.assertEqual(conditional["selector_fact"], "movement.primary_group")
+        self.assertEqual(set(conditional["cases"]), {"isolated_tremor", "slowness_stiffness_or_parkinsonian_features", "dystonia_or_abnormal_posture", "jerks_chorea_tics_or_other_involuntary_movement", "medicine_substance_or_metabolic_context", "established_movement_disorder_followup", "other_unclear"})
+        mapping = json.loads((Path(__file__).resolve().parents[1] / "mappings/terminology/snomed-mrcm-tremor-movement-concern.json").read_text(encoding="utf-8"))
+        self.assertEqual(len(mapping["focus_concepts"]), 5)
+        self.assertFalse(mapping["validation"]["clinical_rule_authority"])
+        self.assertFalse(mapping["movement_semantics"]["diagnosis_inferred"])
+        self.assertFalse(mapping["movement_semantics"]["patient_video_interpreted_by_runtime"])
 
     def test_kidney_function_ckd_follow_up_package_is_complete(self):
         package = compile_package(profile="kidney_function_ckd_follow_up")
