@@ -137,6 +137,19 @@ async function grouped(db, column, since) {
   return result.results || [];
 }
 
+export function normalizeSummary(summary) {
+  const normalized = {
+    submissions: Number(summary?.submissions || 0),
+    average_turn_count: summary?.average_turn_count ?? null,
+    average_rating: summary?.average_rating ?? null,
+    completed: Number(summary?.completed || 0),
+  };
+  normalized.completion_rate_percent = normalized.submissions
+    ? Math.round((normalized.completed / normalized.submissions) * 1000) / 10
+    : null;
+  return normalized;
+}
+
 async function stats(request, env) {
   if (!authorized(request, env.FEEDBACK_ADMIN_KEY, "X-Admin-Key")) return json({error: "unauthorized"}, 401);
   const requestedDays = Number.parseInt(new URL(request.url).searchParams.get("days") || "30", 10);
@@ -145,10 +158,7 @@ async function stats(request, env) {
   const summary = await env.DB.prepare(`SELECT COUNT(*) AS submissions, ROUND(AVG(turn_count), 1) AS average_turn_count, ROUND(AVG(rating), 2) AS average_rating, SUM(CASE WHEN completion_status = 'completed' THEN 1 ELSE 0 END) AS completed FROM feedback_submissions WHERE created_at >= ?`).bind(since).first();
   const rfe = await env.DB.prepare(`SELECT value AS rfe_id, COUNT(*) AS count FROM feedback_submissions, json_each(rfe_ids_json) WHERE created_at >= ? GROUP BY value ORDER BY count DESC`).bind(since).all();
   const issues = await env.DB.prepare(`SELECT value AS issue_tag, COUNT(*) AS count FROM feedback_submissions, json_each(issue_tags_json) WHERE created_at >= ? GROUP BY value ORDER BY count DESC`).bind(since).all();
-  const normalizedSummary = summary || {submissions: 0, completed: 0, average_turn_count: null, average_rating: null};
-  normalizedSummary.completion_rate_percent = normalizedSummary.submissions
-    ? Math.round((normalizedSummary.completed / normalizedSummary.submissions) * 1000) / 10
-    : null;
+  const normalizedSummary = normalizeSummary(summary);
   return json({
     generated_at: new Date().toISOString(), days, since,
     summary: normalizedSummary,

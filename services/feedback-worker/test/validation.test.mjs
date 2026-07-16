@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import worker, {validateSubmission} from "../src/index.js";
+import worker, {normalizeSummary, validateSubmission} from "../src/index.js";
 
 function valid() {
   return {
@@ -87,4 +87,19 @@ test("write endpoint persists only the fixed normalized columns", async () => {
   assert.equal(captured[6], '["rfe.cough"]');
   assert.equal(captured[18], "[]");
   assert.equal(captured.some((value) => typeof value === "object"), false);
+});
+
+test("empty aggregate summary uses zero counts instead of null", () => {
+  assert.deepEqual(normalizeSummary({
+    submissions: 0,
+    average_turn_count: null,
+    average_rating: null,
+    completed: null,
+  }), {
+    submissions: 0,
+    average_turn_count: null,
+    average_rating: null,
+    completed: 0,
+    completion_rate_percent: null,
+  });
 });

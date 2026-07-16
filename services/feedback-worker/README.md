@@ -4,6 +4,8 @@ This optional Cloudflare Worker receives only explicitly consented, structured e
 
 The existing GitHub Pages Knowledge Action remains read-only. This service is a separate write boundary with separate authentication, retention, and privacy controls.
 
+The current research deployment is `https://clinical-interview-feedback.seungjong-yu.workers.dev`. The Custom GPT Action was installed and saved on 2026-07-16. Collection begins only for new explicitly consented end-of-session submissions; earlier chats are not recoverable.
+
 ## Deploy
 
 Prerequisites are a Cloudflare account, Wrangler, and a Workers/D1-capable project.
@@ -38,10 +40,10 @@ Import the rendered schema as a separate Custom GPT Action, set API-key authenti
 ## Read statistics
 
 ```bash
-export FEEDBACK_API_BASE_URL=https://your-worker-host
-export FEEDBACK_ADMIN_KEY=your-admin-secret
-python tools/feedback/fetch_stats.py --days 30
+python3 tools/feedback/fetch_stats.py --days 30
 ```
+
+The deployed local setup reads the administrator key from `~/.config/clinical-interview-platform/feedback-admin-key`, which must remain mode `0600`. `FEEDBACK_API_BASE_URL`, `FEEDBACK_ADMIN_KEY`, and `FEEDBACK_ADMIN_KEY_FILE` remain available as explicit overrides. Never commit the key file.
 
 Statistics cover only submissions made after an explicit end-of-session agreement. Browser closure and other abandoned sessions are intentionally not tracked, so ChatGPT's coarse `Chats` count remains the only available approximate denominator.
 

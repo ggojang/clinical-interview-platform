@@ -70,6 +70,17 @@ class FeedbackCollectionTests(unittest.TestCase):
         for forbidden in ("ip_address", "user_agent", "transcript", "raw_text"):
             self.assertNotIn(forbidden, migration.lower())
 
+    def test_stats_client_uses_live_endpoint_and_non_default_user_agent(self):
+        client = (ROOT / "tools/feedback/fetch_stats.py").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(
+            "https://clinical-interview-feedback.seungjong-yu.workers.dev",
+            client,
+        )
+        self.assertIn("ClinicalInterviewResearchStats/1.0", client)
+        self.assertIn("feedback-admin-key", client)
+
     def test_privacy_notice_discloses_retention_and_non_collection(self):
         notice = (ROOT / "docs/gpt/privacy-policy.html").read_text(
             encoding="utf-8"
