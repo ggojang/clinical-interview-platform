@@ -342,6 +342,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-tremor-movement-concern.json",
         "version": "0.1.0",
     },
+    "neck_pain": {
+        "base_graph": ROOT / "knowledge/base/primary-care-neck-pain.json",
+        "base_rules": ROOT / "rules/base/primary-care-neck-pain.json",
+        "fragment_root": ROOT / "knowledge/generated/musculoskeletal/neck-pain",
+        "output_graph": ROOT / "knowledge/graph/primary-care-neck-pain.json",
+        "output_rules": ROOT / "rules/primary-care-neck-pain.json",
+        "version": "0.1.0",
+    },
     "kidney_function_ckd_follow_up": {
         "base_graph": ROOT / "knowledge/base/primary-care-kidney-function-ckd-follow-up.json",
         "base_rules": ROOT / "rules/base/primary-care-kidney-function-ckd-follow-up.json",

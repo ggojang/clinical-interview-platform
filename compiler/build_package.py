@@ -496,6 +496,17 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/neurology/tremor-movement-concern",
         "research_manifests": [ROOT / "sources/manifests/primary-care-tremor-movement-concern-research.json"],
     },
+    "neck_pain": {
+        "graph": ROOT / "knowledge/graph/primary-care-neck-pain.json",
+        "rules": ROOT / "rules/primary-care-neck-pain.json",
+        "sources": ROOT / "sources/manifests/primary-care-neck-pain.json",
+        "completion_policy": ROOT / "policies/primary-care-neck-pain-completion.json",
+        "output": ROOT / "packages/generated/primary-care-neck-pain-0.1.0.json",
+        "package_id": "package.primary-care-neck-pain", "package_version": "0.1.0",
+        "rfe": "rfe.neck_pain",
+        "simulation_root": ROOT / "simulation/patients/musculoskeletal/neck-pain",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-neck-pain-research.json"],
+    },
     "kidney_function_ckd_follow_up": {
         "graph": ROOT / "knowledge/graph/primary-care-kidney-function-ckd-follow-up.json",
         "rules": ROOT / "rules/primary-care-kidney-function-ckd-follow-up.json",

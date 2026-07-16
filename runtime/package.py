@@ -50,6 +50,7 @@ GAIT_FALLS_CONCERN_PACKAGE = ROOT / "packages/generated/primary-care-gait-falls-
 EPISTAXIS_PACKAGE = ROOT / "packages/generated/primary-care-epistaxis-0.1.0.json"
 PEDIATRIC_GROWTH_DEVELOPMENT_PACKAGE = ROOT / "packages/generated/primary-care-pediatric-growth-development-0.1.0.json"
 TREMOR_MOVEMENT_CONCERN_PACKAGE = ROOT / "packages/generated/primary-care-tremor-movement-concern-0.1.0.json"
+NECK_PAIN_PACKAGE = ROOT / "packages/generated/primary-care-neck-pain-0.1.0.json"
 KIDNEY_FUNCTION_CKD_FOLLOW_UP_PACKAGE = ROOT / "packages/generated/primary-care-kidney-function-ckd-follow-up-0.1.0.json"
 LIVER_FUNCTION_CHRONIC_FOLLOW_UP_PACKAGE = ROOT / "packages/generated/primary-care-liver-function-chronic-follow-up-0.1.0.json"
 
