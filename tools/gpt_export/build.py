@@ -747,6 +747,7 @@ def build(root: Path, output: Path) -> dict[str, Any]:
             "status": "content_free_start_event",
             "record_operation": "recordAnonymousTestSessionStart",
             "trigger": "once_after_first_user_message",
+            "is_consequential": False,
             "notice_required_before_call": True,
             "reuse_session_id_for_consented_end_feedback": True,
             "retention_days": 90,

@@ -11,6 +11,7 @@ paths:
       operationId: recordAnonymousTestSessionStart
       summary: Record one anonymous test start after the user's first message
       description: Call once per conversation after showing the anonymous-analytics notice. This records no prompt, answer, Reason for Encounter, demographic, identifier, network identity, or free text. Opening the GPT page without sending a message cannot be observed.
+      x-openai-isConsequential: false
       security:
         - FeedbackApiKey: []
       requestBody:
@@ -37,6 +38,7 @@ paths:
       operationId: submitAnonymousTestFeedback
       summary: Submit structured end-of-test metrics only after the user explicitly agrees
       description: This operation is optional and consequential. Do not call it without a current affirmative answer to the exact consent prompt.
+      x-openai-isConsequential: true
       security:
         - FeedbackApiKey: []
       requestBody:

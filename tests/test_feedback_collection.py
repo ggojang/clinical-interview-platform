@@ -31,6 +31,7 @@ class FeedbackCollectionTests(unittest.TestCase):
         policy = config["anonymous_test_session_analytics"]
         self.assertEqual(policy["operation"], "recordAnonymousTestSessionStart")
         self.assertEqual(policy["trigger"], "once_after_first_user_message")
+        self.assertFalse(policy["is_consequential"])
         self.assertTrue(policy["notice_required_before_call"])
         self.assertFalse(policy["literal_page_open_observable"])
         self.assertFalse(policy["contains_user_message"])
@@ -56,6 +57,8 @@ class FeedbackCollectionTests(unittest.TestCase):
         self.assertIn("consent: {type: boolean, const: true}", schema)
         self.assertIn("operationId: recordAnonymousTestSessionStart", schema)
         self.assertIn("event_type: {type: string, const: session_started}", schema)
+        self.assertIn("x-openai-isConsequential: false", schema)
+        self.assertIn("x-openai-isConsequential: true", schema)
 
     def test_openapi_renderer_requires_and_applies_https_origin(self):
         with tempfile.TemporaryDirectory() as directory:
