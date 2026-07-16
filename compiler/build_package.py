@@ -474,6 +474,17 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/ent/epistaxis",
         "research_manifests": [ROOT / "sources/manifests/primary-care-epistaxis-research.json"],
     },
+    "pediatric_growth_development": {
+        "graph": ROOT / "knowledge/graph/primary-care-pediatric-growth-development.json",
+        "rules": ROOT / "rules/primary-care-pediatric-growth-development.json",
+        "sources": ROOT / "sources/manifests/primary-care-pediatric-growth-development.json",
+        "completion_policy": ROOT / "policies/primary-care-pediatric-growth-development-completion.json",
+        "output": ROOT / "packages/generated/primary-care-pediatric-growth-development-0.1.0.json",
+        "package_id": "package.primary-care-pediatric-growth-development", "package_version": "0.1.0",
+        "rfe": "rfe.pediatric_growth_development",
+        "simulation_root": ROOT / "simulation/patients/pediatrics/growth-development",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-pediatric-growth-development-research.json"],
+    },
     "kidney_function_ckd_follow_up": {
         "graph": ROOT / "knowledge/graph/primary-care-kidney-function-ckd-follow-up.json",
         "rules": ROOT / "rules/primary-care-kidney-function-ckd-follow-up.json",

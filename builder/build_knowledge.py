@@ -326,6 +326,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-epistaxis.json",
         "version": "0.1.0",
     },
+    "pediatric_growth_development": {
+        "base_graph": ROOT / "knowledge/base/primary-care-pediatric-growth-development.json",
+        "base_rules": ROOT / "rules/base/primary-care-pediatric-growth-development.json",
+        "fragment_root": ROOT / "knowledge/generated/pediatrics/growth-development",
+        "output_graph": ROOT / "knowledge/graph/primary-care-pediatric-growth-development.json",
+        "output_rules": ROOT / "rules/primary-care-pediatric-growth-development.json",
+        "version": "0.1.0",
+    },
     "kidney_function_ckd_follow_up": {
         "base_graph": ROOT / "knowledge/base/primary-care-kidney-function-ckd-follow-up.json",
         "base_rules": ROOT / "rules/base/primary-care-kidney-function-ckd-follow-up.json",

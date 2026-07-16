@@ -1,0 +1,2430 @@
+{
+  "id": "knowledge.generated.pediatric-growth-development",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-pediatric-growth-development-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-07-14",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-07-15",
+    "next_full_review_at": "2027-01-10",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.pediatric.routing",
+      "type": "ClinicalGroup",
+      "display": "routing"
+    },
+    {
+      "id": "group.pediatric.safety",
+      "type": "ClinicalGroup",
+      "display": "safety"
+    },
+    {
+      "id": "group.pediatric.growth",
+      "type": "ClinicalGroup",
+      "display": "growth"
+    },
+    {
+      "id": "group.pediatric.development",
+      "type": "ClinicalGroup",
+      "display": "development"
+    },
+    {
+      "id": "group.pediatric.feeding",
+      "type": "ClinicalGroup",
+      "display": "feeding"
+    },
+    {
+      "id": "group.pediatric.context",
+      "type": "ClinicalGroup",
+      "display": "context"
+    },
+    {
+      "id": "group.pediatric.followup",
+      "type": "ClinicalGroup",
+      "display": "followup"
+    }
+  ],
+  "group_hypothesis_edges": [],
+  "safety_rules": [
+    {
+      "id": "rule.pediatric-growth-development.safety.acute-regression",
+      "priority": 990,
+      "when": {
+        "fact": "pediatric.acute_loss_of_skills_or_rapid_regression",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.pediatric-growth-development.safety.seizure-consciousness",
+      "priority": 1000,
+      "when": {
+        "fact": "pediatric.current_seizure_reduced_consciousness_or_unresponsiveness",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.pediatric-growth-development.safety.focal-neurologic",
+      "priority": 1000,
+      "when": {
+        "fact": "pediatric.new_focal_weakness_ataxia_or_inability_to_walk",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.pediatric-growth-development.safety.airway-feeding",
+      "priority": 1000,
+      "when": {
+        "fact": "pediatric.breathing_choking_cyanosis_or_unsafe_swallow",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.pediatric-growth-development.safety.dehydration",
+      "priority": 1000,
+      "when": {
+        "fact": "pediatric.severe_dehydration_or_unable_to_take_fluids",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.pediatric-growth-development.safety.head-warning",
+      "priority": 1000,
+      "when": {
+        "fact": "pediatric.bulging_fontanelle_repeated_vomiting_or_head_warning",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.pediatric-growth-development.safety.young-infant",
+      "priority": 1000,
+      "when": {
+        "fact": "pediatric.infant_under_three_months_fever_or_seriously_unwell",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.pediatric-growth-development.safety.severe-nutrition",
+      "priority": 990,
+      "when": {
+        "fact": "pediatric.rapid_weight_loss_or_prolonged_near_zero_intake",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.pediatric-growth-development.safety.toxic-metabolic",
+      "priority": 1000,
+      "when": {
+        "fact": "pediatric.possible_poisoning_overdose_or_hypoglycemia",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.pediatric-growth-development.safety.safeguarding",
+      "priority": 990,
+      "when": {
+        "fact": "pediatric.safeguarding_injury_neglect_or_unsafe_environment",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.pediatric-growth-development.safety.behavioral-danger",
+      "priority": 1000,
+      "when": {
+        "fact": "pediatric.immediate_self_harm_harm_to_others_or_extreme_behavioral_danger",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.pediatric-growth-development.safety.sensory-loss",
+      "priority": 990,
+      "when": {
+        "fact": "pediatric.sudden_hearing_or_vision_loss",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "pediatric.primary_group",
+        "display": "Primary Growth or Development Concern",
+        "value_type": "coded",
+        "allowed_values": [
+          "growth_trajectory",
+          "global_development",
+          "speech_language",
+          "motor_coordination",
+          "social_behavioral",
+          "learning_school",
+          "established_condition_followup",
+          "other_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.primary-group",
+        "display": "Primary Growth or Development Concern",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.primary-group",
+        "wording": "이번 방문은 키·체중·머리둘레 성장, 전반적 발달, 말·언어, 운동, 사회성·행동, 학습·학교생활, 이미 진단·치료 중인 발달문제 추적 중 무엇에 가깝나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 200,
+          "reason": "primary-group"
+        }
+      ],
+      "supports": [
+        "group.pediatric.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.acute_loss_of_skills_or_rapid_regression",
+        "display": "Acute Developmental Regression",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.acute-regression",
+        "display": "Acute Developmental Regression",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.acute-regression",
+        "wording": "며칠~몇 주 사이에 이전에 하던 말·걷기·손 사용·사람 반응 같은 기술을 갑자기 잃거나 빠르게 나빠졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 199,
+          "reason": "acute-regression"
+        }
+      ],
+      "supports": [
+        "group.pediatric.safety",
+        "group.pediatric.development"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.current_seizure_reduced_consciousness_or_unresponsiveness",
+        "display": "Seizure or Reduced Consciousness",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.seizure-consciousness",
+        "display": "Seizure or Reduced Consciousness",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.seizure-consciousness",
+        "wording": "지금 경련, 깨우기 어려움, 의식 저하 또는 평소와 달리 반응하지 않는 상태가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 198,
+          "reason": "seizure-consciousness"
+        }
+      ],
+      "supports": [
+        "group.pediatric.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.new_focal_weakness_ataxia_or_inability_to_walk",
+        "display": "Acute Neurologic Deficit",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.focal-neurologic",
+        "display": "Acute Neurologic Deficit",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.focal-neurologic",
+        "wording": "새 한쪽 힘 빠짐·얼굴 처짐, 심한 비틀거림 또는 이전에 걷던 아이가 갑자기 걷지 못하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 197,
+          "reason": "focal-neurologic"
+        }
+      ],
+      "supports": [
+        "group.pediatric.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.breathing_choking_cyanosis_or_unsafe_swallow",
+        "display": "Breathing or Swallowing Compromise",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.airway-feeding",
+        "display": "Breathing or Swallowing Compromise",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.airway-feeding",
+        "wording": "먹거나 마실 때 숨을 못 쉬거나 반복 질식, 입술이 파래짐 또는 침도 삼키지 못하는 상태가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 196,
+          "reason": "airway-feeding"
+        }
+      ],
+      "supports": [
+        "group.pediatric.safety",
+        "group.pediatric.feeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.severe_dehydration_or_unable_to_take_fluids",
+        "display": "Severe Dehydration or Intake Failure",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.dehydration",
+        "display": "Severe Dehydration or Intake Failure",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.dehydration",
+        "wording": "거의 마시지 못하고 소변이 현저히 줄었거나 입이 매우 마름·눈물 없음·축 처짐이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 195,
+          "reason": "dehydration"
+        }
+      ],
+      "supports": [
+        "group.pediatric.safety",
+        "group.pediatric.feeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.bulging_fontanelle_repeated_vomiting_or_head_warning",
+        "display": "Raised Intracranial Pressure Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.head-warning",
+        "display": "Raised Intracranial Pressure Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.head-warning",
+        "wording": "영아의 대천문이 팽팽하게 불룩하거나 반복 구토·심한 두통·의식 변화와 함께 머리 크기나 상태가 급격히 달라졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 194,
+          "reason": "head-warning"
+        }
+      ],
+      "supports": [
+        "group.pediatric.safety",
+        "group.pediatric.growth"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.infant_under_three_months_fever_or_seriously_unwell",
+        "display": "Young Infant Serious Illness",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.young-infant",
+        "display": "Young Infant Serious Illness",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.young-infant",
+        "wording": "생후 3개월 미만이며 38°C 이상 발열 또는 수유 저하·축 처짐·호흡 이상으로 많이 아파 보이나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 193,
+          "reason": "young-infant"
+        }
+      ],
+      "supports": [
+        "group.pediatric.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.rapid_weight_loss_or_prolonged_near_zero_intake",
+        "display": "Severe Nutrition Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.severe-nutrition",
+        "display": "Severe Nutrition Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.severe-nutrition",
+        "wording": "빠른 체중 감소가 있거나 하루 이상 거의 먹고 마시지 못하면서 상태가 나빠지고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 192,
+          "reason": "severe-nutrition"
+        }
+      ],
+      "supports": [
+        "group.pediatric.safety",
+        "group.pediatric.growth",
+        "group.pediatric.feeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.possible_poisoning_overdose_or_hypoglycemia",
+        "display": "Toxic or Metabolic Emergency",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.toxic-metabolic",
+        "display": "Toxic or Metabolic Emergency",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.toxic-metabolic",
+        "wording": "약·화학물질을 먹었을 가능성, 과량 투여 또는 저혈당 의심과 함께 발달·행동·의식이 갑자기 변했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 191,
+          "reason": "toxic-metabolic"
+        }
+      ],
+      "supports": [
+        "group.pediatric.safety",
+        "group.pediatric.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.safeguarding_injury_neglect_or_unsafe_environment",
+        "display": "Safeguarding Concern",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.safeguarding",
+        "display": "Safeguarding Concern",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.safeguarding",
+        "wording": "설명되지 않는 손상, 학대·방임 가능성, 돌봄 공백 또는 아이가 집에 돌아가면 안전하지 않을 우려가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 190,
+          "reason": "safeguarding"
+        }
+      ],
+      "supports": [
+        "group.pediatric.safety",
+        "group.pediatric.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.immediate_self_harm_harm_to_others_or_extreme_behavioral_danger",
+        "display": "Immediate Behavioural Safety Risk",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.behavioral-danger",
+        "display": "Immediate Behavioural Safety Risk",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.behavioral-danger",
+        "wording": "아이·청소년이 지금 자신이나 다른 사람을 해칠 생각·행동이 있거나 보호자가 안전을 유지할 수 없나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 189,
+          "reason": "behavioral-danger"
+        }
+      ],
+      "supports": [
+        "group.pediatric.safety",
+        "group.pediatric.development"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.sudden_hearing_or_vision_loss",
+        "display": "Sudden Sensory Loss",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.sensory-loss",
+        "display": "Sudden Sensory Loss",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.sensory-loss",
+        "wording": "갑자기 듣지 못하거나 보지 못하는 변화가 생겼나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 188,
+          "reason": "sensory-loss"
+        }
+      ],
+      "supports": [
+        "group.pediatric.safety",
+        "group.pediatric.development"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.information_source_observers_and_reliability",
+        "display": "Information Sources and Observers",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.information-source",
+        "display": "Information Sources and Observers",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.information-source",
+        "wording": "누가 답변하며 부모·보호자, 아이 본인, 교사·보육자 중 누가 어떤 상황에서 관찰했나요? 서로 다른 의견도 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 178,
+          "reason": "information-source"
+        }
+      ],
+      "supports": [
+        "group.pediatric.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.chronological_age_birth_date_and_corrected_age",
+        "display": "Age and Corrected Age Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.age-context",
+        "display": "Age and Corrected Age Context",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.age-context",
+        "wording": "현재 만 나이와 개월 수, 미숙아라면 출생 주수와 교정연령을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 177,
+          "reason": "age-context"
+        }
+      ],
+      "supports": [
+        "group.pediatric.routing",
+        "group.pediatric.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.main_concern_onset_course_and_trigger",
+        "display": "Main Concern and Course",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.concern-course",
+        "display": "Main Concern and Course",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.concern-course",
+        "wording": "가장 걱정되는 변화가 무엇이며 언제 처음 알아차렸고 지속·호전·악화·변동하는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 176,
+          "reason": "concern-course"
+        }
+      ],
+      "supports": [
+        "group.pediatric.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.skills_never_acquired_versus_lost",
+        "display": "Delayed versus Lost Skills",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "248290002"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.pediatric-growth-development",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.acquired-lost",
+        "display": "Delayed versus Lost Skills",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.acquired-lost",
+        "wording": "아직 배우지 못한 기술인지, 이전에 하다가 잃은 기술인지와 마지막으로 확실히 했던 시기를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 175,
+          "reason": "acquired-lost"
+        }
+      ],
+      "supports": [
+        "group.pediatric.development"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.variability_across_home_school_and_people",
+        "display": "Cross-setting Variability",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.setting-variability",
+        "display": "Cross-setting Variability",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.setting-variability",
+        "wording": "집·어린이집·학교와 익숙한 사람·낯선 사람 앞에서 능력이나 행동이 어떻게 다른가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 174,
+          "reason": "setting-variability"
+        }
+      ],
+      "supports": [
+        "group.pediatric.development"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.birth_weight_length_and_head_circumference",
+        "display": "Birth Measurements",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.birth-measures",
+        "display": "Birth Measurements",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.birth-measures",
+        "wording": "출생 체중·키·머리둘레와 측정 기록의 출처를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 170,
+          "reason": "birth-measures"
+        }
+      ],
+      "supports": [
+        "group.pediatric.growth",
+        "group.pediatric.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.current_weight_date_method_and_clothing",
+        "display": "Current Weight",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.current-weight",
+        "display": "Current Weight",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.current-weight",
+        "wording": "최근 체중, 측정 날짜·저울·옷이나 기저귀 상태를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 169,
+          "reason": "current-weight"
+        }
+      ],
+      "supports": [
+        "group.pediatric.growth"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.current_length_or_height_date_and_method",
+        "display": "Current Length or Height",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.current-height",
+        "display": "Current Length or Height",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.current-height",
+        "wording": "최근 누운 키 또는 선 키, 측정 날짜와 방법을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 168,
+          "reason": "current-height"
+        }
+      ],
+      "supports": [
+        "group.pediatric.growth"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.current_head_circumference_date_and_method",
+        "display": "Current Head Circumference",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.head-circumference",
+        "display": "Current Head Circumference",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.head-circumference",
+        "wording": "해당 연령이면 최근 머리둘레, 측정 날짜와 방법을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 167,
+          "reason": "head-circumference"
+        }
+      ],
+      "supports": [
+        "group.pediatric.growth"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.previous_growth_measurements_and_trajectory",
+        "display": "Growth Trajectory",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.growth-trajectory",
+        "display": "Growth Trajectory",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.growth-trajectory",
+        "wording": "이전 체중·키·머리둘레의 날짜별 기록과 성장곡선 백분위 또는 z점수 변화가 있으면 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 166,
+          "reason": "growth-trajectory"
+        }
+      ],
+      "supports": [
+        "group.pediatric.growth"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.weight_loss_or_centile_crossing_context",
+        "display": "Growth Change Concern",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "36440009"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.pediatric-growth-development",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.growth-change",
+        "display": "Growth Change Concern",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.growth-change",
+        "wording": "실제 체중 감소나 성장선 하락을 언제 지적받았고 당시 질병·식사 변화가 있었는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 165,
+          "reason": "growth-change"
+        }
+      ],
+      "supports": [
+        "group.pediatric.growth"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.bmi_or_weight_for_length_if_recorded",
+        "display": "BMI or Weight-for-length",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.bmi",
+        "display": "BMI or Weight-for-length",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.bmi",
+        "wording": "의료기관에서 계산한 BMI 또는 키 대비 체중 지표와 날짜·사용 성장차트를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 164,
+          "reason": "bmi"
+        }
+      ],
+      "supports": [
+        "group.pediatric.growth"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.biological_parent_heights_and_puberty_timing",
+        "display": "Family Growth Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.parent-heights",
+        "display": "Family Growth Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.parent-heights",
+        "wording": "가능하면 생물학적 부모의 키와 가족의 성장·사춘기 시작 시기, 아이의 현재 사춘기 변화를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 163,
+          "reason": "parent-heights"
+        }
+      ],
+      "supports": [
+        "group.pediatric.growth",
+        "group.pediatric.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.growth_measurement_conflicts_and_source",
+        "display": "Growth Measurement Conflicts",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.measure-conflict",
+        "display": "Growth Measurement Conflicts",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.measure-conflict",
+        "wording": "가정·검진·병원 측정값이 다르다면 각각의 값·날짜·방법을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 162,
+          "reason": "measure-conflict"
+        }
+      ],
+      "supports": [
+        "group.pediatric.growth"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.gross_motor_skills_and_mobility",
+        "display": "Gross Motor Development",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.gross-motor",
+        "display": "Gross Motor Development",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.gross-motor",
+        "wording": "고개 가누기, 앉기, 서기, 걷기·달리기·계단·점프 등 현재 가능한 큰 운동과 어려운 동작을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 158,
+          "reason": "gross-motor"
+        }
+      ],
+      "supports": [
+        "group.pediatric.development"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.fine_motor_hand_use_and_laterality",
+        "display": "Fine Motor and Hand Use",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.fine-motor",
+        "display": "Fine Motor and Hand Use",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.fine-motor",
+        "wording": "물건 잡기·옮기기, 손가락 사용, 그림·쓰기·도구 사용과 양손 차이 또는 뚜렷한 한쪽 손만 쓰는 시기를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 157,
+          "reason": "fine-motor"
+        }
+      ],
+      "supports": [
+        "group.pediatric.development"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.receptive_language_and_following_directions",
+        "display": "Receptive Language",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.receptive-language",
+        "display": "Receptive Language",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.receptive-language",
+        "wording": "이름·말·지시를 얼마나 이해하고 한 단계 또는 여러 단계 지시를 어떻게 따르나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 156,
+          "reason": "receptive-language"
+        }
+      ],
+      "supports": [
+        "group.pediatric.development"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.expressive_language_words_sentences_and_intelligibility",
+        "display": "Expressive Language",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.expressive-language",
+        "display": "Expressive Language",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.expressive-language",
+        "wording": "소리·몸짓·단어·문장으로 무엇을 표현하며 가족과 낯선 사람이 말의 어느 정도를 알아듣나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 155,
+          "reason": "expressive-language"
+        }
+      ],
+      "supports": [
+        "group.pediatric.development"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.social_attention_eye_contact_joint_attention_and_play",
+        "display": "Social Communication and Play",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.social-play",
+        "display": "Social Communication and Play",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.social-play",
+        "wording": "눈맞춤, 이름 반응, 관심 공유·가리키기, 모방, 또래 놀이와 상상놀이 모습을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 154,
+          "reason": "social-play"
+        }
+      ],
+      "supports": [
+        "group.pediatric.development"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.cognitive_problem_solving_and_learning",
+        "display": "Cognitive and Learning Skills",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.cognitive",
+        "display": "Cognitive and Learning Skills",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.cognitive",
+        "wording": "물건 찾기·원인결과 이해·문제해결, 색·숫자·글자·기억·새 학습에서 가능한 것과 어려움을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 153,
+          "reason": "cognitive"
+        }
+      ],
+      "supports": [
+        "group.pediatric.development"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.adaptive_self_care_and_daily_living",
+        "display": "Adaptive Daily Living",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.adaptive",
+        "display": "Adaptive Daily Living",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.adaptive",
+        "wording": "먹기·옷 입기·씻기·화장실·안전 인식·간단한 집안일에서 혼자 하는 정도를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 152,
+          "reason": "adaptive"
+        }
+      ],
+      "supports": [
+        "group.pediatric.development"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.behavior_emotion_attention_and_regulation",
+        "display": "Behaviour and Emotional Regulation",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.behavior",
+        "display": "Behaviour and Emotional Regulation",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.behavior",
+        "wording": "주의집중, 과잉활동, 불안·기분, 짜증·폭발, 변화 적응과 스스로 진정하는 모습을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 151,
+          "reason": "behavior"
+        }
+      ],
+      "supports": [
+        "group.pediatric.development"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.repetitive_behavior_sensory_preferences_and_rigidity",
+        "display": "Repetitive and Sensory Features",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.sensory-behavior",
+        "display": "Repetitive and Sensory Features",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.sensory-behavior",
+        "wording": "반복 움직임·말·놀이, 강한 고집·일과 변화 어려움과 소리·빛·촉감·냄새·음식 감각 반응을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 150,
+          "reason": "sensory-behavior"
+        }
+      ],
+      "supports": [
+        "group.pediatric.development"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.hearing_screen_response_and_ear_history",
+        "display": "Hearing Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.hearing",
+        "display": "Hearing Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.hearing",
+        "wording": "신생아·최근 청력검사 결과, 소리·이름 반응, 반복 중이염이나 보청기 사용을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 149,
+          "reason": "hearing"
+        }
+      ],
+      "supports": [
+        "group.pediatric.development",
+        "group.pediatric.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.vision_screen_alignment_and_visual_function",
+        "display": "Vision Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.vision",
+        "display": "Vision Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.vision",
+        "wording": "시력검사, 사시·눈 떨림·물체 추적·가까이 보기와 안경 사용을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 148,
+          "reason": "vision"
+        }
+      ],
+      "supports": [
+        "group.pediatric.development",
+        "group.pediatric.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.sleep_pattern_snoring_and_daytime_effect",
+        "display": "Sleep Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.sleep",
+        "display": "Sleep Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.sleep",
+        "wording": "잠드는 시각·총 수면·야간 각성, 코골이·무호흡 의심과 낮 기능 영향을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 147,
+          "reason": "sleep"
+        }
+      ],
+      "supports": [
+        "group.pediatric.development",
+        "group.pediatric.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.toileting_bowel_bladder_and_regression",
+        "display": "Toileting and Elimination",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.toileting",
+        "display": "Toileting and Elimination",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.toileting",
+        "wording": "배변·배뇨 훈련 상태, 변비·실금·야뇨와 이미 익힌 배변기술이 퇴행했는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 146,
+          "reason": "toileting"
+        }
+      ],
+      "supports": [
+        "group.pediatric.development",
+        "group.pediatric.feeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.feeding_method_schedule_and_amount",
+        "display": "Feeding Pattern",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.feeding-pattern",
+        "display": "Feeding Pattern",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.feeding-pattern",
+        "wording": "모유·분유·이유식·일반식 종류, 횟수·양·식사 시간과 최근 변화를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 140,
+          "reason": "feeding-pattern"
+        }
+      ],
+      "supports": [
+        "group.pediatric.feeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.appetite_selectivity_texture_and_mealtime_behavior",
+        "display": "Appetite and Mealtime Behaviour",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.mealtime",
+        "display": "Appetite and Mealtime Behaviour",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.mealtime",
+        "wording": "식욕, 음식 종류·질감 제한, 식사 거부·구토 유도와 식사 중 보호자-아이 상호작용을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 139,
+          "reason": "mealtime"
+        }
+      ],
+      "supports": [
+        "group.pediatric.feeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.chewing_swallowing_coughing_and_feeding_fatigue",
+        "display": "Oral Motor and Swallowing",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.swallowing",
+        "display": "Oral Motor and Swallowing",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.swallowing",
+        "wording": "씹기·삼키기 어려움, 먹을 때 기침·사레·젖은 목소리, 숨참·쉽게 지침이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 138,
+          "reason": "swallowing"
+        }
+      ],
+      "supports": [
+        "group.pediatric.feeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.vomiting_diarrhea_constipation_abdominal_or_stool_change",
+        "display": "Gastrointestinal Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.gi-context",
+        "display": "Gastrointestinal Context",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.gi-context",
+        "wording": "구토·설사·변비·복통, 혈변·기름진 변 등 대변 변화와 성장 문제의 관계를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 137,
+          "reason": "gi-context"
+        }
+      ],
+      "supports": [
+        "group.pediatric.feeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.food_allergy_intolerance_and_dietary_restriction",
+        "display": "Dietary Restriction",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.diet-restriction",
+        "display": "Dietary Restriction",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.diet-restriction",
+        "wording": "음식 알레르기·불내성, 채식·제한식과 부족할 수 있는 식품군·보충제를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 136,
+          "reason": "diet-restriction"
+        }
+      ],
+      "supports": [
+        "group.pediatric.feeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.feeding_diary_observation_and_support",
+        "display": "Feeding Observation and Support",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.feeding-support",
+        "display": "Feeding Observation and Support",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.feeding-support",
+        "wording": "식사일지·영상·직접 관찰 결과와 영양·수유 상담 또는 치료 경험을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 135,
+          "reason": "feeding-support"
+        }
+      ],
+      "supports": [
+        "group.pediatric.feeding",
+        "group.pediatric.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.pregnancy_exposures_infections_and_complications",
+        "display": "Pregnancy History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.pregnancy-history",
+        "display": "Pregnancy History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.pregnancy-history",
+        "wording": "임신 중 질환·감염·약물·음주·흡연·물질 노출과 태아 성장 문제를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "pregnancy-history"
+        }
+      ],
+      "supports": [
+        "group.pediatric.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.gestation_delivery_resuscitation_and_nicu",
+        "display": "Birth and Neonatal Course",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.birth-history",
+        "display": "Birth and Neonatal Course",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.birth-history",
+        "wording": "재태주수, 분만 방법·합병증, 출생 직후 소생술·신생아중환자실 치료와 기간을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "birth-history"
+        }
+      ],
+      "supports": [
+        "group.pediatric.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.newborn_metabolic_hearing_and_other_screen_results",
+        "display": "Newborn Screening",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.newborn-screen",
+        "display": "Newborn Screening",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.newborn-screen",
+        "wording": "신생아 대사·청력 등 선별검사 결과와 재검·확진 여부를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "newborn-screen"
+        }
+      ],
+      "supports": [
+        "group.pediatric.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.conditions_hospitalizations_surgeries_and_medicines",
+        "display": "Medical History and Medicines",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.medical-history",
+        "display": "Medical History and Medicines",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.medical-history",
+        "wording": "진단받은 질환, 입원·수술·큰 감염·머리 손상과 현재 약·보충제 이름·용량을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 127,
+          "reason": "medical-history"
+        }
+      ],
+      "supports": [
+        "group.pediatric.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.family_growth_development_learning_genetic_history",
+        "display": "Family Developmental History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.family-history",
+        "display": "Family Developmental History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.family-history",
+        "wording": "가족의 성장·말·학습·발달·자폐·주의력·신경근육·유전질환과 혈연관계를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 126,
+          "reason": "family-history"
+        }
+      ],
+      "supports": [
+        "group.pediatric.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.home_languages_communication_and_interpreter_needs",
+        "display": "Language and Communication Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.language-context",
+        "display": "Language and Communication Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.language-context",
+        "wording": "집과 교육기관에서 쓰는 언어·수어, 아이가 각 언어에 노출된 시기와 통역·의사소통 지원 필요를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 125,
+          "reason": "language-context"
+        }
+      ],
+      "supports": [
+        "group.pediatric.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.household_caregivers_stability_and_social_needs",
+        "display": "Household and Social Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.social-context",
+        "display": "Household and Social Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.social-context",
+        "wording": "함께 사는 사람과 주 돌봄자, 최근 돌봄·주거 변화, 식품·교통·경제·양육 지원 필요를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 124,
+          "reason": "social-context"
+        }
+      ],
+      "supports": [
+        "group.pediatric.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.daycare_school_grade_attendance_and_teacher_concerns",
+        "display": "Education Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.education",
+        "display": "Education Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.education",
+        "wording": "어린이집·학교·학년, 출석, 교사 우려, 학업·또래 관계와 필요한 지원을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 123,
+          "reason": "education"
+        }
+      ],
+      "supports": [
+        "group.pediatric.context",
+        "group.pediatric.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.screen_time_physical_activity_and_play_opportunities",
+        "display": "Activity and Play Opportunities",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.activity",
+        "display": "Activity and Play Opportunities",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.activity",
+        "wording": "하루 화면 사용, 신체활동·야외활동·책 읽기·대화·놀이 기회를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 122,
+          "reason": "activity"
+        }
+      ],
+      "supports": [
+        "group.pediatric.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.standardized_developmental_screen_name_date_and_result",
+        "display": "Developmental Screening Record",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.developmental-screen",
+        "display": "Developmental Screening Record",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.developmental-screen",
+        "wording": "발달 선별검사의 정확한 이름·시행일·연령·원점수 또는 결과·시행기관을 알려주세요. 선별검사는 진단이 아닙니다.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 115,
+          "reason": "developmental-screen"
+        }
+      ],
+      "supports": [
+        "group.pediatric.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.autism_specific_screen_name_date_and_result",
+        "display": "Autism-specific Screening Record",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.autism-screen",
+        "display": "Autism-specific Screening Record",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.autism-screen",
+        "wording": "자폐 관련 선별검사를 받았다면 검사명·시행일·결과와 후속 평가 여부를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 114,
+          "reason": "autism-screen"
+        }
+      ],
+      "supports": [
+        "group.pediatric.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.prior_specialist_assessment_tests_and_results",
+        "display": "Prior Specialist Assessment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.specialist-assessment",
+        "display": "Prior Specialist Assessment",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.specialist-assessment",
+        "wording": "소아과·발달·신경·유전·재활·청각·안과 평가와 검사 날짜·주요 결과를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 113,
+          "reason": "specialist-assessment"
+        }
+      ],
+      "supports": [
+        "group.pediatric.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.early_intervention_therapy_education_plan_and_response",
+        "display": "Intervention and Education Plan",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.intervention",
+        "display": "Intervention and Education Plan",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.intervention",
+        "wording": "언어·작업·물리·행동치료, 조기중재·특수교육 계획의 빈도·목표·반응과 중단 이유를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 112,
+          "reason": "intervention"
+        }
+      ],
+      "supports": [
+        "group.pediatric.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.functional_participation_strengths_and_interests",
+        "display": "Function, Strengths and Interests",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.strengths-function",
+        "display": "Function, Strengths and Interests",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.strengths-function",
+        "wording": "가정·학교·지역활동 참여에서 도움이 필요한 부분과 아이의 강점·관심·잘하는 것을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 111,
+          "reason": "strengths-function"
+        }
+      ],
+      "supports": [
+        "group.pediatric.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pediatric.caregiver_goal_priority_and_other_detail",
+        "display": "Caregiver and Child Priority",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.pediatric-growth-development.other-detail",
+        "display": "Caregiver and Child Priority",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.pediatric-growth-development.other-detail",
+        "wording": "질문에 없지만 의료진에게 꼭 전달할 내용과 아이·보호자가 이번 진료에서 가장 원하는 도움을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 80,
+          "reason": "other-detail"
+        }
+      ],
+      "supports": [
+        "group.pediatric.routing",
+        "group.pediatric.followup"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.aap.developmental-surveillance.2020",
+      "source.cdc.act-early.2026",
+      "source.nice.ng75.2017",
+      "source.who.child-growth-standards",
+      "source.stom.pediatric-growth.20260716"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}
