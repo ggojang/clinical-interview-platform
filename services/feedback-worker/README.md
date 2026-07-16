@@ -1,10 +1,10 @@
 # Anonymous Research Feedback Worker
 
-This optional Cloudflare Worker receives only explicitly consented, structured end-of-test metrics from the Custom GPT. It never accepts interview answers, transcripts, files, free text, direct identifiers, demographics, network identifiers, or contact data.
+This optional Cloudflare Worker records one content-free anonymous start event after the first user message and receives explicitly consented structured end-of-test metrics. It never accepts interview answers, transcripts, files, free text, direct identifiers, demographics, network identifiers, or contact data.
 
 The existing GitHub Pages Knowledge Action remains read-only. This service is a separate write boundary with separate authentication, retention, and privacy controls.
 
-The current research deployment is `https://clinical-interview-feedback.seungjong-yu.workers.dev`. The Custom GPT Action was installed and saved on 2026-07-16. Collection begins only for new explicitly consented end-of-session submissions; earlier chats are not recoverable.
+The current research deployment is `https://clinical-interview-feedback.seungjong-yu.workers.dev`. Earlier chats are not recoverable. A page view without a user message cannot invoke a Custom GPT Action; the earliest observable event is the first message. Detailed end-of-session feedback remains separately consented.
 
 ## Deploy
 
@@ -45,7 +45,7 @@ python3 tools/feedback/fetch_stats.py --days 30
 
 The deployed local setup reads the administrator key from `~/.config/clinical-interview-platform/feedback-admin-key`, which must remain mode `0600`. `FEEDBACK_API_BASE_URL`, `FEEDBACK_ADMIN_KEY`, and `FEEDBACK_ADMIN_KEY_FILE` remain available as explicit overrides. Never commit the key file.
 
-Statistics cover only submissions made after an explicit end-of-session agreement. Browser closure and other abandoned sessions are intentionally not tracked, so ChatGPT's coarse `Chats` count remains the only available approximate denominator.
+Statistics report anonymous sessions started after a first message, separately consented detailed submissions, and the submission rate. A session abandoned after the first message remains visible as a start count. A browser view with no message is not observable through the Action, so ChatGPT's coarse `Chats` count remains the only approximate page-level measure.
 
 ## Retention and deletion
 

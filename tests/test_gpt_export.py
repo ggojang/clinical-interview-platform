@@ -562,9 +562,15 @@ class GptExportTests(unittest.TestCase):
             policy = manifest["anonymous_test_feedback_policy"]
             self.assertEqual(policy["consent_version"], "feedback-consent.v1")
             self.assertTrue(policy["completion_confirmation_is_not_feedback_consent"])
-            self.assertFalse(policy["abandoned_sessions_observable"])
+            self.assertTrue(policy["abandoned_after_first_message_observable_as_start_only"])
+            self.assertFalse(policy["literal_page_open_observable"])
             self.assertIn("transcript", policy["forbidden_payloads"])
             self.assertIn("free_text", policy["forbidden_payloads"])
+            start_policy = manifest["anonymous_test_session_analytics_policy"]
+            self.assertEqual(start_policy["record_operation"], "recordAnonymousTestSessionStart")
+            self.assertEqual(start_policy["trigger"], "once_after_first_user_message")
+            self.assertIn("reason_for_encounter", start_policy["forbidden_payloads"])
+            self.assertIn("ip_address", start_policy["forbidden_payloads"])
 
     def test_additional_comment_is_structured_and_upgrade_aware(self):
         with tempfile.TemporaryDirectory() as output:

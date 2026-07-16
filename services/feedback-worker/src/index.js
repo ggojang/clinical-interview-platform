@@ -1,4 +1,7 @@
 const CONSENT_VERSION = "feedback-consent.v1";
+const SESSION_START_KEYS = new Set([
+  "client_session_id", "event_type", "gpt_config_version",
+]);
 const ALLOWED_KEYS = new Set([
   "client_event_id", "consent", "consent_version", "gpt_config_version",
   "package_version", "rfe_ids", "flow_type", "completion_status",
@@ -19,6 +22,29 @@ const ISSUE_TAGS = new Set([
   "misunderstood_question", "routing_error", "source_load_failure",
   "terminology_failure", "usage_limit", "too_long", "other_structured",
 ]);
+
+export function validateSessionStart(input) {
+  if (!input || typeof input !== "object" || Array.isArray(input)) {
+    throw new Error("body must be an object");
+  }
+  for (const key of Object.keys(input)) {
+    if (!SESSION_START_KEYS.has(key)) throw new Error(`unsupported field: ${key}`);
+  }
+  if (input.event_type !== "session_started") {
+    throw new Error("event_type must be session_started");
+  }
+  if (!/^[0-9a-f]{8}-[0-9a-f-]{27,36}$/i.test(input.client_session_id || "")) {
+    throw new Error("client_session_id must be a UUID");
+  }
+  if (!/^\d+\.\d+\.\d+$/.test(input.gpt_config_version || "")) {
+    throw new Error("gpt_config_version must be semantic version text");
+  }
+  return {
+    client_session_id: input.client_session_id.toLowerCase(),
+    event_type: "session_started",
+    gpt_config_version: input.gpt_config_version,
+  };
+}
 
 function integer(value, name, maximum = 500) {
   if (!Number.isInteger(value) || value < 0 || value > maximum) {
@@ -132,6 +158,35 @@ async function submit(request, env) {
   return json({accepted: true, receipt_id: id, retained_for_days: Number(env.RETENTION_DAYS || 90)}, 201);
 }
 
+async function recordSessionStart(request, env) {
+  if (!authorized(request, env.FEEDBACK_WRITE_KEY, "X-Feedback-Key")) return json({error: "unauthorized"}, 401);
+  const declaredLength = Number(request.headers.get("content-length") || "0");
+  if (declaredLength > 2048) return json({error: "request_too_large"}, 413);
+  let value;
+  try {
+    const raw = await request.text();
+    if (new TextEncoder().encode(raw).byteLength > 2048) {
+      return json({error: "request_too_large"}, 413);
+    }
+    value = validateSessionStart(JSON.parse(raw));
+  }
+  catch (error) { return json({error: "invalid_session_start", detail: error.message}, 400); }
+  const id = crypto.randomUUID();
+  const createdAt = new Date().toISOString();
+  try {
+    await env.DB.prepare(`INSERT INTO test_session_starts (
+      id, client_session_id, created_at, event_type, gpt_config_version
+    ) VALUES (?, ?, ?, ?, ?)`).bind(
+      id, value.client_session_id, createdAt, value.event_type,
+      value.gpt_config_version,
+    ).run();
+  } catch (error) {
+    if (String(error).toLowerCase().includes("unique")) return json({accepted: true, duplicate: true});
+    return json({error: "storage_failure"}, 500);
+  }
+  return json({accepted: true, receipt_id: id, retained_for_days: Number(env.RETENTION_DAYS || 90)}, 201);
+}
+
 async function grouped(db, column, since) {
   const result = await db.prepare(`SELECT ${column} AS value, COUNT(*) AS count FROM feedback_submissions WHERE created_at >= ? GROUP BY ${column} ORDER BY count DESC`).bind(since).all();
   return result.results || [];
@@ -139,6 +194,7 @@ async function grouped(db, column, since) {
 
 export function normalizeSummary(summary) {
   const normalized = {
+    started_sessions: Number(summary?.started_sessions || 0),
     submissions: Number(summary?.submissions || 0),
     average_turn_count: summary?.average_turn_count ?? null,
     average_rating: summary?.average_rating ?? null,
@@ -146,6 +202,9 @@ export function normalizeSummary(summary) {
   };
   normalized.completion_rate_percent = normalized.submissions
     ? Math.round((normalized.completed / normalized.submissions) * 1000) / 10
+    : null;
+  normalized.feedback_submission_rate_percent = normalized.started_sessions
+    ? Math.round((normalized.submissions / normalized.started_sessions) * 1000) / 10
     : null;
   return normalized;
 }
@@ -155,13 +214,16 @@ async function stats(request, env) {
   const requestedDays = Number.parseInt(new URL(request.url).searchParams.get("days") || "30", 10);
   const days = Number.isFinite(requestedDays) ? Math.min(365, Math.max(1, requestedDays)) : 30;
   const since = new Date(Date.now() - days * 86400000).toISOString();
-  const summary = await env.DB.prepare(`SELECT COUNT(*) AS submissions, ROUND(AVG(turn_count), 1) AS average_turn_count, ROUND(AVG(rating), 2) AS average_rating, SUM(CASE WHEN completion_status = 'completed' THEN 1 ELSE 0 END) AS completed FROM feedback_submissions WHERE created_at >= ?`).bind(since).first();
+  const feedbackSummary = await env.DB.prepare(`SELECT COUNT(*) AS submissions, ROUND(AVG(turn_count), 1) AS average_turn_count, ROUND(AVG(rating), 2) AS average_rating, SUM(CASE WHEN completion_status = 'completed' THEN 1 ELSE 0 END) AS completed FROM feedback_submissions WHERE created_at >= ?`).bind(since).first();
+  const sessionSummary = await env.DB.prepare(`SELECT COUNT(*) AS started_sessions FROM test_session_starts WHERE created_at >= ?`).bind(since).first();
   const rfe = await env.DB.prepare(`SELECT value AS rfe_id, COUNT(*) AS count FROM feedback_submissions, json_each(rfe_ids_json) WHERE created_at >= ? GROUP BY value ORDER BY count DESC`).bind(since).all();
   const issues = await env.DB.prepare(`SELECT value AS issue_tag, COUNT(*) AS count FROM feedback_submissions, json_each(issue_tags_json) WHERE created_at >= ? GROUP BY value ORDER BY count DESC`).bind(since).all();
-  const normalizedSummary = normalizeSummary(summary);
+  const normalizedSummary = normalizeSummary({...feedbackSummary, ...sessionSummary});
+  const startVersions = await env.DB.prepare(`SELECT gpt_config_version AS value, COUNT(*) AS count FROM test_session_starts WHERE created_at >= ? GROUP BY gpt_config_version ORDER BY count DESC`).bind(since).all();
   return json({
     generated_at: new Date().toISOString(), days, since,
     summary: normalizedSummary,
+    started_by_gpt_config_version: startVersions.results || [],
     by_flow_type: await grouped(env.DB, "flow_type", since),
     by_completion_status: await grouped(env.DB, "completion_status", since),
     by_safety_level: await grouped(env.DB, "safety_level", since),
@@ -170,7 +232,7 @@ async function stats(request, env) {
     by_terminology_status: await grouped(env.DB, "terminology_status", since),
     by_knowledge_load_status: await grouped(env.DB, "knowledge_load_status", since),
     by_rfe: rfe.results || [], by_issue_tag: issues.results || [],
-    limitations: ["Only explicitly consented end-of-session submissions are counted.", "Abandoned sessions are not observable.", "No raw answer, transcript, direct identifier, age, sex, or contact field is collected."],
+    limitations: ["A session start is observable only after the user sends a first message; opening the GPT page without a message is not observable.", "Detailed end-of-session feedback is counted only after explicit consent.", "No raw answer, transcript, direct identifier, age, sex, contact field, IP address, or user-agent value is collected."],
   });
 }
 
@@ -178,6 +240,7 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (request.method === "GET" && url.pathname === "/health") return json({status: "ok", privacy_mode: "structured_metrics_only"});
+    if (request.method === "POST" && url.pathname === "/v1/session-start") return recordSessionStart(request, env);
     if (request.method === "POST" && url.pathname === "/v1/feedback") return submit(request, env);
     if (request.method === "GET" && url.pathname === "/v1/admin/stats") return stats(request, env);
     return json({error: "not_found"}, 404);
@@ -186,5 +249,6 @@ export default {
     const days = Math.min(365, Math.max(1, Number(env.RETENTION_DAYS || 90)));
     const cutoff = new Date(Date.now() - days * 86400000).toISOString();
     await env.DB.prepare("DELETE FROM feedback_submissions WHERE created_at < ?").bind(cutoff).run();
+    await env.DB.prepare("DELETE FROM test_session_starts WHERE created_at < ?").bind(cutoff).run();
   },
 };

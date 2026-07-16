@@ -1,11 +1,37 @@
 openapi: 3.1.0
 info:
   title: Clinical Interview Anonymous Research Feedback
-  version: 1.0.0
-  description: Submit only explicitly consented structured test metrics. Never send answers, transcripts, files, demographic data, contact data, or free text.
+  version: 1.1.0
+  description: Record a content-free anonymous test start after the first user message, and submit detailed structured metrics only after explicit end-of-test consent. Never send answers, transcripts, files, demographic data, contact data, or free text.
 servers:
   - url: https://FEEDBACK_API_HOST
 paths:
+  /v1/session-start:
+    post:
+      operationId: recordAnonymousTestSessionStart
+      summary: Record one anonymous test start after the user's first message
+      description: Call once per conversation after showing the anonymous-analytics notice. This records no prompt, answer, Reason for Encounter, demographic, identifier, network identity, or free text. Opening the GPT page without sending a message cannot be observed.
+      security:
+        - FeedbackApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionStart'
+      responses:
+        '201':
+          description: Anonymous test start accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accepted: {type: boolean}
+                  receipt_id: {type: string}
+                  retained_for_days: {type: integer}
+        '400': {description: Invalid or privacy-unsafe event}
+        '401': {description: Action authentication failed}
   /v1/feedback:
     post:
       operationId: submitAnonymousTestFeedback
@@ -39,6 +65,14 @@ components:
       in: header
       name: X-Feedback-Key
   schemas:
+    SessionStart:
+      type: object
+      additionalProperties: false
+      required: [client_session_id, event_type, gpt_config_version]
+      properties:
+        client_session_id: {type: string, format: uuid}
+        event_type: {type: string, const: session_started}
+        gpt_config_version: {type: string, pattern: '^\d+\.\d+\.\d+$'}
     FeedbackSubmission:
       type: object
       additionalProperties: false

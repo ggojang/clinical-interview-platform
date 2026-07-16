@@ -24,6 +24,20 @@ class FeedbackCollectionTests(unittest.TestCase):
         self.assertFalse(policy["contains_free_text"])
         self.assertTrue(policy["requires_editor_action_install_and_save"])
 
+    def test_session_start_analytics_is_content_free_and_first_message_only(self):
+        config = json.loads(
+            (ROOT / "docs/gpt/custom-gpt-config.json").read_text(encoding="utf-8")
+        )
+        policy = config["anonymous_test_session_analytics"]
+        self.assertEqual(policy["operation"], "recordAnonymousTestSessionStart")
+        self.assertEqual(policy["trigger"], "once_after_first_user_message")
+        self.assertTrue(policy["notice_required_before_call"])
+        self.assertFalse(policy["literal_page_open_observable"])
+        self.assertFalse(policy["contains_user_message"])
+        self.assertFalse(policy["contains_reason_for_encounter"])
+        self.assertFalse(policy["contains_demographics_or_identifiers"])
+        self.assertFalse(policy["contains_network_identity"])
+
     def test_openapi_schema_has_no_free_text_or_patient_payload(self):
         schema = (
             ROOT / "services/feedback-worker/openapi.template.yaml"
@@ -40,6 +54,8 @@ class FeedbackCollectionTests(unittest.TestCase):
             self.assertNotIn(forbidden, property_lines)
         self.assertIn("additionalProperties: false", schema)
         self.assertIn("consent: {type: boolean, const: true}", schema)
+        self.assertIn("operationId: recordAnonymousTestSessionStart", schema)
+        self.assertIn("event_type: {type: string, const: session_started}", schema)
 
     def test_openapi_renderer_requires_and_applies_https_origin(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -63,9 +79,10 @@ class FeedbackCollectionTests(unittest.TestCase):
         worker = (ROOT / "services/feedback-worker/src/index.js").read_text(
             encoding="utf-8"
         )
-        migration = (
-            ROOT / "services/feedback-worker/migrations/0001_feedback.sql"
-        ).read_text(encoding="utf-8")
+        migration = "\n".join(
+            path.read_text(encoding="utf-8")
+            for path in sorted((ROOT / "services/feedback-worker/migrations").glob("*.sql"))
+        )
         self.assertNotIn("console.", worker)
         for forbidden in ("ip_address", "user_agent", "transcript", "raw_text"):
             self.assertNotIn(forbidden, migration.lower())
@@ -89,6 +106,8 @@ class FeedbackCollectionTests(unittest.TestCase):
         self.assertIn("90 days", notice)
         self.assertIn("does not accept answers", notice)
         self.assertIn("abandoned", notice)
+        self.assertIn("first user message", notice)
+        self.assertIn("without sending a message is not observable", notice)
 
 
 if __name__ == "__main__":

@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "1.41.0"
+VERSION = "1.42.0"
 GENERATED_AT = "2026-07-16T00:00:00Z"
 PRIVATE_KEYS = {
     "raw_text", "raw_input", "patient_response", "patient_responses",
@@ -740,7 +740,25 @@ def build(root: Path, output: Path) -> dict[str, Any]:
                 "contact_information", "direct_identifiers", "patient_profile",
             ],
             "action_unavailable_behavior": "do_not_claim_submission",
-            "abandoned_sessions_observable": False,
+            "abandoned_after_first_message_observable_as_start_only": True,
+            "literal_page_open_observable": False,
+        },
+        "anonymous_test_session_analytics_policy": {
+            "status": "content_free_start_event",
+            "record_operation": "recordAnonymousTestSessionStart",
+            "trigger": "once_after_first_user_message",
+            "notice_required_before_call": True,
+            "reuse_session_id_for_consented_end_feedback": True,
+            "retention_days": 90,
+            "allowed_payloads": [
+                "client_session_id", "event_type", "gpt_config_version",
+            ],
+            "forbidden_payloads": [
+                "user_message", "reason_for_encounter", "answers", "transcript",
+                "files", "free_text", "demographics", "contact_information",
+                "direct_identifiers", "patient_profile", "ip_address", "user_agent",
+            ],
+            "literal_page_open_observable": False,
         },
         "patient_experience_questionnaire_policy": resources[
             "questionnaires/patient-experience-5th-2025/metadata.json"
