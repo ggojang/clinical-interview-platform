@@ -394,6 +394,7 @@ class GptExportTests(unittest.TestCase):
                 for entry in catalog["entries"]
                 if entry["id"] in planned
             ))
+
             dysphagia = next(
                 entry for entry in catalog["entries"]
                 if entry["id"] == "rfe.dyspepsia_reflux"
@@ -511,6 +512,17 @@ class GptExportTests(unittest.TestCase):
                             "clinical_sources_are_compiled_not_queried_live"
                         ]
                     )
+
+    def test_manifest_declares_optional_consent_gated_feedback_boundary(self):
+        with tempfile.TemporaryDirectory() as output:
+            output_path = Path(output)
+            manifest = build(ROOT, output_path)
+            policy = manifest["anonymous_test_feedback_policy"]
+            self.assertEqual(policy["consent_version"], "feedback-consent.v1")
+            self.assertTrue(policy["completion_confirmation_is_not_feedback_consent"])
+            self.assertFalse(policy["abandoned_sessions_observable"])
+            self.assertIn("transcript", policy["forbidden_payloads"])
+            self.assertIn("free_text", policy["forbidden_payloads"])
 
     def test_additional_comment_is_structured_and_upgrade_aware(self):
         with tempfile.TemporaryDirectory() as output:

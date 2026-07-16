@@ -10,8 +10,8 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "1.40.0"
-GENERATED_AT = "2026-07-15T00:00:00Z"
+VERSION = "1.41.0"
+GENERATED_AT = "2026-07-16T00:00:00Z"
 PRIVATE_KEYS = {
     "raw_text", "raw_input", "patient_response", "patient_responses",
     "questionnaire_response", "conversation", "transcript", "evidence",
@@ -724,6 +724,23 @@ def build(root: Path, output: Path) -> dict[str, Any]:
             "resolution_includes_service_improvement": True,
             "report_resolved_and_unresolved_separately": True,
             "never_publish_raw_response": True,
+        },
+        "anonymous_test_feedback_policy": {
+            "status": "optional_separate_action",
+            "consent_version": "feedback-consent.v1",
+            "offer_timing": "after_explicit_interview_end_and_final_result",
+            "completion_confirmation_is_not_feedback_consent": True,
+            "decline_has_no_effect": True,
+            "submit_operation": "submitAnonymousTestFeedback",
+            "structured_metrics_only": True,
+            "max_rfe_ids": 3,
+            "optional_rating_range": [1, 5],
+            "forbidden_payloads": [
+                "answers", "transcript", "files", "free_text", "demographics",
+                "contact_information", "direct_identifiers", "patient_profile",
+            ],
+            "action_unavailable_behavior": "do_not_claim_submission",
+            "abandoned_sessions_observable": False,
         },
         "patient_experience_questionnaire_policy": resources[
             "questionnaires/patient-experience-5th-2025/metadata.json"

@@ -228,6 +228,22 @@ Raw patient responses and direct identifiers never enter the repository. Regress
 
 ---
 
+# Consented Research Test Metrics
+
+The public Custom GPT may optionally use a separate write-only feedback service after an interview has reached an explicit end state.
+
+The service may receive only a fixed structured minimum dataset after the user gives separate current-session consent. Completion confirmation is not feedback consent.
+
+Allowed fields include package and GPT configuration versions, up to three Reason for Encounter identifiers, flow and completion status, safety level, bounded event counts, terminology and Knowledge-load status, fixed issue tags, and an optional one-to-five rating.
+
+The service must reject free text, answers, transcripts, files, demographics, contact data, direct identifiers, unexpected fields, and a request without current consent. It must use separate write and administrator credentials, bounded retention, server timestamps, idempotency, no request-body logging, and aggregate-only administrator reporting.
+
+An explicitly declined submission causes no loss of interview function. Sessions closed before the end-of-session choice are not tracked, and the service must disclose that its completion statistics therefore exclude abandoned sessions.
+
+Collected metrics remain feedback evidence. They never mutate active Runtime knowledge and never become Knowledge without privacy-safe generalization, reproduction, source review, Simulation, Evaluation and Compilation.
+
+---
+
 # Knowledge Deprecation
 
 Knowledge may become

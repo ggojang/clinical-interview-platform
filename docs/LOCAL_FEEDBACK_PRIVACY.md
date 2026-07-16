@@ -29,6 +29,8 @@ Synthetic simulation fixtures are permitted in `simulation/` and `examples/` onl
 
 ## Custom GPT boundary
 
-The public GPT Action only reads static Knowledge, Fact, question-group, and safety-rule resources from GitHub Pages. It has no endpoint for submitting responses. GitHub therefore receives no interview answers through this Action.
+The public Knowledge GPT Action only reads static Knowledge, Fact, question-group, and safety-rule resources from GitHub Pages. GitHub receives no interview answers through this Action.
+
+An optional separately hosted feedback Action may receive structured end-of-test metrics only after a separate explicit agreement. It rejects raw answers, free text, transcripts, uploaded material, demographics, contact information, direct identifiers and unexpected fields. It does not receive data when the user declines, and it does not observe abandoned sessions. Its write credential and administrator credential are separate secrets, and row-level retention is bounded.
 
 The ChatGPT conversation itself is outside this repository. Test users must be told not to enter directly identifying information and must follow the privacy terms applicable to their ChatGPT account.

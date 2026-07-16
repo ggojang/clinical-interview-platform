@@ -22,9 +22,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
       - run: python tools/privacy/check_repository.py
       - run: python tools/validator/validate.py
       - run: python tools/gpt_export/build.py
+      - run: npm test
+        working-directory: services/feedback-worker
       - run: python -m unittest discover -s tests -p 'test_*.py'
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

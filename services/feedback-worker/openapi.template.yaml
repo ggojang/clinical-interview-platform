@@ -1,0 +1,73 @@
+openapi: 3.1.0
+info:
+  title: Clinical Interview Anonymous Research Feedback
+  version: 1.0.0
+  description: Submit only explicitly consented structured test metrics. Never send answers, transcripts, files, demographic data, contact data, or free text.
+servers:
+  - url: https://FEEDBACK_API_HOST
+paths:
+  /v1/feedback:
+    post:
+      operationId: submitAnonymousTestFeedback
+      summary: Submit structured end-of-test metrics only after the user explicitly agrees
+      description: This operation is optional and consequential. Do not call it without a current affirmative answer to the exact consent prompt.
+      security:
+        - FeedbackApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeedbackSubmission'
+      responses:
+        '201':
+          description: Feedback accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accepted: {type: boolean}
+                  receipt_id: {type: string}
+                  retained_for_days: {type: integer}
+        '400': {description: Invalid or privacy-unsafe submission}
+        '401': {description: Action authentication failed}
+components:
+  securitySchemes:
+    FeedbackApiKey:
+      type: apiKey
+      in: header
+      name: X-Feedback-Key
+  schemas:
+    FeedbackSubmission:
+      type: object
+      additionalProperties: false
+      required: [client_event_id, consent, consent_version, gpt_config_version, rfe_ids, flow_type, completion_status, safety_level, turn_count, answered_fact_count, data_absent_count, clarification_count, revision_count, additional_comment_count, terminology_status, knowledge_load_status, issue_tags]
+      properties:
+        client_event_id: {type: string, format: uuid}
+        consent: {type: boolean, const: true}
+        consent_version: {type: string, const: feedback-consent.v1}
+        gpt_config_version: {type: string, pattern: '^\d+\.\d+\.\d+$'}
+        package_version: {type: [string, 'null'], pattern: '^\d+\.\d+\.\d+$'}
+        rfe_ids:
+          type: array
+          maxItems: 3
+          items: {type: string, pattern: '^rfe\.[a-z0-9_]{1,80}$'}
+        flow_type: {type: string, enum: [dynamic_rfe, fixed_questionnaire, hira_assessment, preventive, other]}
+        completion_status: {type: string, enum: [completed, user_ended, limit_reached, technical_failure, safety_handoff, off_path_ended]}
+        safety_level: {type: string, enum: [routine, urgent, emergency, unknown]}
+        turn_count: {$ref: '#/components/schemas/Count'}
+        answered_fact_count: {$ref: '#/components/schemas/Count'}
+        data_absent_count: {$ref: '#/components/schemas/Count'}
+        clarification_count: {$ref: '#/components/schemas/Count'}
+        revision_count: {$ref: '#/components/schemas/Count'}
+        additional_comment_count: {$ref: '#/components/schemas/Count'}
+        terminology_status: {type: string, enum: [not_used, success, partial, failed]}
+        knowledge_load_status: {type: string, enum: [success, partial, failed, not_applicable]}
+        issue_tags:
+          type: array
+          maxItems: 8
+          uniqueItems: true
+          items: {type: string, enum: [duplicate_numbering, wrong_option_set, question_mismatch, missing_history, missing_required_fact, repeated_question, misunderstood_question, routing_error, source_load_failure, terminology_failure, usage_limit, too_long, other_structured]}
+        rating: {type: [integer, 'null'], minimum: 1, maximum: 5}
+    Count: {type: integer, minimum: 0, maximum: 500}

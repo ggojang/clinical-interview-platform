@@ -24,6 +24,8 @@ This directory is a static, read-only knowledge API for a Custom GPT test chatbo
 - `GPT_INSTRUCTIONS.md`: instructions to paste into GPT Builder
 - `privacy-policy.html`: public privacy notice required for a shared GPT Action
 
+The optional feedback Action is implemented separately under `services/feedback-worker/`. It is not hosted by GitHub Pages and is not activated merely by publishing this directory. Deploy it, render its OpenAPI schema with the actual HTTPS origin, configure its write API key in the GPT editor, and save/update the GPT. It accepts only explicitly consented structured end-of-test metrics and provides aggregate statistics through a separate administrator key.
+
 Run `python3 tools/gpt_export/build.py` after changing Knowledge or Facts. The generated resources are deterministic and contain no simulation or response data.
 
 ## Custom GPT start screen
