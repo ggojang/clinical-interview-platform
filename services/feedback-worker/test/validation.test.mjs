@@ -136,6 +136,36 @@ test("write endpoint persists only the fixed normalized columns", async () => {
   assert.equal(captured.some((value) => typeof value === "object"), false);
 });
 
+test("tracked test entry stores only a generated event and redirects without cookies", async () => {
+  const captured = [];
+  const db = {
+    prepare() {
+      return {
+        bind(...values) {
+          captured.push(...values);
+          return {async run() { return {success: true}; }};
+        },
+      };
+    },
+  };
+  const target = "https://chatgpt.com/g/test-gpt";
+  const response = await worker.fetch(
+    new Request("https://feedback.test/test", {
+      headers: {"user-agent": "must-not-be-stored", cookie: "must-not-be-stored"},
+    }),
+    {DB: db, TEST_GPT_URL: target},
+  );
+  const body = await response.text();
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("x-test-access-recorded"), "true");
+  assert.equal(response.headers.get("set-cookie"), null);
+  assert.equal(captured.length, 3);
+  assert.equal(captured[2], "tracked_entry_opened");
+  assert.equal(captured.includes("must-not-be-stored"), false);
+  assert.match(body, new RegExp(target));
+  assert.match(body, /IP 주소, 브라우저 정보, 쿠키, 입력 내용과 문진 답변은 저장하지 않습니다/);
+});
+
 test("empty aggregate summary uses zero counts instead of null", () => {
   assert.deepEqual(normalizeSummary({
     submissions: 0,
@@ -143,6 +173,7 @@ test("empty aggregate summary uses zero counts instead of null", () => {
     average_rating: null,
     completed: null,
   }), {
+    tracked_accesses: 0,
     started_sessions: 0,
     submissions: 0,
     average_turn_count: null,
@@ -150,6 +181,7 @@ test("empty aggregate summary uses zero counts instead of null", () => {
     completed: 0,
     completion_rate_percent: null,
     feedback_submission_rate_percent: null,
+    access_to_started_session_rate_percent: null,
   });
 });
 
@@ -157,4 +189,10 @@ test("summary reports start-to-feedback submission rate", () => {
   const summary = normalizeSummary({started_sessions: 8, submissions: 2, completed: 1});
   assert.equal(summary.feedback_submission_rate_percent, 25);
   assert.equal(summary.completion_rate_percent, 50);
+});
+
+test("summary reports tracked-access to first-message start rate", () => {
+  const summary = normalizeSummary({tracked_accesses: 10, started_sessions: 4, submissions: 1});
+  assert.equal(summary.access_to_started_session_rate_percent, 40);
+  assert.equal(summary.feedback_submission_rate_percent, 25);
 });

@@ -37,6 +37,16 @@ This repository is organized for both AI agents and human reviewers. The source-
 
 Runtime is one consumer of the knowledge produced by this repository. Knowledge is the product.
 
+## Public research test
+
+Use the tracked entry URL when asking others to test the Custom GPT:
+
+```text
+https://clinical-interview-feedback.seungjong-yu.workers.dev/test
+```
+
+It records a content-free page-open count and then opens the public GPT. Direct GPT links bypass the counter. The count is not a unique-user count and may include reloads or automated traffic; the application stores no IP address, user-agent value, cookie, input, or interview answer for this event.
+
 ## Version 0.1 vertical slice
 
 The first end-to-end slice covers:

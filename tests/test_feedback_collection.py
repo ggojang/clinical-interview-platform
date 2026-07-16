@@ -39,6 +39,21 @@ class FeedbackCollectionTests(unittest.TestCase):
         self.assertFalse(policy["contains_demographics_or_identifiers"])
         self.assertFalse(policy["contains_network_identity"])
 
+    def test_tracked_entry_counts_page_opens_without_identity(self):
+        config = json.loads(
+            (ROOT / "docs/gpt/custom-gpt-config.json").read_text(encoding="utf-8")
+        )
+        policy = config["anonymous_test_entry_analytics"]
+        self.assertEqual(
+            policy["url"],
+            "https://clinical-interview-feedback.seungjong-yu.workers.dev/test",
+        )
+        self.assertEqual(policy["event_type"], "tracked_entry_opened")
+        self.assertTrue(policy["counts_page_opens_not_unique_people"])
+        self.assertFalse(policy["direct_gpt_page_open_observable"])
+        self.assertFalse(policy["contains_user_input_or_answers"])
+        self.assertFalse(policy["contains_network_identity_or_cookie"])
+
     def test_openapi_schema_has_no_free_text_or_patient_payload(self):
         schema = (
             ROOT / "services/feedback-worker/openapi.template.yaml"
@@ -89,6 +104,8 @@ class FeedbackCollectionTests(unittest.TestCase):
         self.assertNotIn("console.", worker)
         for forbidden in ("ip_address", "user_agent", "transcript", "raw_text"):
             self.assertNotIn(forbidden, migration.lower())
+        self.assertIn('url.pathname === "/test"', worker)
+        self.assertIn("tracked_entry_opened", worker)
 
     def test_stats_client_uses_live_endpoint_and_non_default_user_agent(self):
         client = (ROOT / "tools/feedback/fetch_stats.py").read_text(
@@ -110,7 +127,8 @@ class FeedbackCollectionTests(unittest.TestCase):
         self.assertIn("does not accept answers", notice)
         self.assertIn("abandoned", notice)
         self.assertIn("first user message", notice)
-        self.assertIn("without sending a message is not observable", notice)
+        self.assertIn("dedicated research-test entry page", notice)
+        self.assertIn("Opening the direct GPT URL bypasses this counter", notice)
 
 
 if __name__ == "__main__":

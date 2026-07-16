@@ -761,6 +761,18 @@ def build(root: Path, output: Path) -> dict[str, Any]:
             ],
             "literal_page_open_observable": False,
         },
+        "anonymous_test_entry_analytics_policy": {
+            "url": "https://clinical-interview-feedback.seungjong-yu.workers.dev/test",
+            "event_type": "tracked_entry_opened",
+            "counts_page_opens_not_unique_people": True,
+            "direct_gpt_page_open_observable": False,
+            "retention_days": 90,
+            "forbidden_payloads": [
+                "user_input", "answers", "transcript", "files", "free_text",
+                "demographics", "contact_information", "direct_identifiers",
+                "ip_address", "user_agent", "cookie",
+            ],
+        },
         "patient_experience_questionnaire_policy": resources[
             "questionnaires/patient-experience-5th-2025/metadata.json"
         ],

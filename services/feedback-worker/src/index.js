@@ -115,6 +115,44 @@ function json(body, status = 200) {
   });
 }
 
+function html(body, status = 200, extraHeaders = {}) {
+  return new Response(body, {
+    status,
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "no-store",
+      "content-security-policy": "default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
+      "referrer-policy": "no-referrer",
+      "x-robots-tag": "noindex, nofollow",
+      ...extraHeaders,
+    },
+  });
+}
+
+function publicGptUrl(env) {
+  const candidate = String(env.TEST_GPT_URL || "");
+  return /^https:\/\/chatgpt\.com\/g\/[a-zA-Z0-9_-]+/.test(candidate)
+    ? candidate
+    : "https://chatgpt.com/g/g-6a559ef4c77c8191a8d18a03ab76af33-clinical-interview-research-test";
+}
+
+async function testEntry(env) {
+  const createdAt = new Date().toISOString();
+  let recorded = false;
+  try {
+    await env.DB.prepare(`INSERT INTO test_access_events (
+      id, created_at, event_type
+    ) VALUES (?, ?, ?)`).bind(
+      crypto.randomUUID(), createdAt, "tracked_entry_opened",
+    ).run();
+    recorded = true;
+  } catch (_error) {
+    // Access to the test must continue even when anonymous counting is unavailable.
+  }
+  const target = publicGptUrl(env);
+  return html(`<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="2;url=${target}"><title>Clinical Interview Research Test</title><style>body{font-family:system-ui,sans-serif;max-width:42rem;margin:4rem auto;padding:0 1rem;line-height:1.6}a{display:inline-block;margin-top:1rem}</style></head><body><h1>Clinical Interview Research Test</h1><p>익명 테스트 접속 ${recorded ? "1건이 기록되었습니다" : "통계를 기록하지 못했지만 테스트는 계속할 수 있습니다"}. IP 주소, 브라우저 정보, 쿠키, 입력 내용과 문진 답변은 저장하지 않습니다.</p><p>잠시 후 ChatGPT 테스트로 이동합니다.</p><a href="${target}" rel="noreferrer">바로 시작하기</a></body></html>`, 200, {"x-test-access-recorded": recorded ? "true" : "false"});
+}
+
 function authorized(request, expected, header) {
   const supplied = request.headers.get(header);
   return typeof expected === "string" && expected.length >= 24 && supplied === expected;
@@ -194,6 +232,7 @@ async function grouped(db, column, since) {
 
 export function normalizeSummary(summary) {
   const normalized = {
+    tracked_accesses: Number(summary?.tracked_accesses || 0),
     started_sessions: Number(summary?.started_sessions || 0),
     submissions: Number(summary?.submissions || 0),
     average_turn_count: summary?.average_turn_count ?? null,
@@ -206,6 +245,9 @@ export function normalizeSummary(summary) {
   normalized.feedback_submission_rate_percent = normalized.started_sessions
     ? Math.round((normalized.submissions / normalized.started_sessions) * 1000) / 10
     : null;
+  normalized.access_to_started_session_rate_percent = normalized.tracked_accesses
+    ? Math.round((normalized.started_sessions / normalized.tracked_accesses) * 1000) / 10
+    : null;
   return normalized;
 }
 
@@ -216,9 +258,10 @@ async function stats(request, env) {
   const since = new Date(Date.now() - days * 86400000).toISOString();
   const feedbackSummary = await env.DB.prepare(`SELECT COUNT(*) AS submissions, ROUND(AVG(turn_count), 1) AS average_turn_count, ROUND(AVG(rating), 2) AS average_rating, SUM(CASE WHEN completion_status = 'completed' THEN 1 ELSE 0 END) AS completed FROM feedback_submissions WHERE created_at >= ?`).bind(since).first();
   const sessionSummary = await env.DB.prepare(`SELECT COUNT(*) AS started_sessions FROM test_session_starts WHERE created_at >= ?`).bind(since).first();
+  const accessSummary = await env.DB.prepare(`SELECT COUNT(*) AS tracked_accesses FROM test_access_events WHERE created_at >= ?`).bind(since).first();
   const rfe = await env.DB.prepare(`SELECT value AS rfe_id, COUNT(*) AS count FROM feedback_submissions, json_each(rfe_ids_json) WHERE created_at >= ? GROUP BY value ORDER BY count DESC`).bind(since).all();
   const issues = await env.DB.prepare(`SELECT value AS issue_tag, COUNT(*) AS count FROM feedback_submissions, json_each(issue_tags_json) WHERE created_at >= ? GROUP BY value ORDER BY count DESC`).bind(since).all();
-  const normalizedSummary = normalizeSummary({...feedbackSummary, ...sessionSummary});
+  const normalizedSummary = normalizeSummary({...feedbackSummary, ...sessionSummary, ...accessSummary});
   const startVersions = await env.DB.prepare(`SELECT gpt_config_version AS value, COUNT(*) AS count FROM test_session_starts WHERE created_at >= ? GROUP BY gpt_config_version ORDER BY count DESC`).bind(since).all();
   return json({
     generated_at: new Date().toISOString(), days, since,
@@ -232,7 +275,7 @@ async function stats(request, env) {
     by_terminology_status: await grouped(env.DB, "terminology_status", since),
     by_knowledge_load_status: await grouped(env.DB, "knowledge_load_status", since),
     by_rfe: rfe.results || [], by_issue_tag: issues.results || [],
-    limitations: ["A session start is observable only after the user sends a first message; opening the GPT page without a message is not observable.", "Detailed end-of-session feedback is counted only after explicit consent.", "No raw answer, transcript, direct identifier, age, sex, contact field, IP address, or user-agent value is collected."],
+    limitations: ["Tracked access counts include only the dedicated /test entry URL; direct GPT page opens are not observable.", "Access counts are page opens, not unique people, and can include reloads or automated traffic.", "First-message session-start Action calls are best-effort and are not guaranteed by the Custom GPT runtime.", "Detailed end-of-session feedback is counted only after explicit consent.", "No raw answer, transcript, direct identifier, age, sex, contact field, IP address, user-agent value, or cookie is collected."],
   });
 }
 
@@ -240,6 +283,7 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (request.method === "GET" && url.pathname === "/health") return json({status: "ok", privacy_mode: "structured_metrics_only"});
+    if (request.method === "GET" && url.pathname === "/test") return testEntry(env);
     if (request.method === "POST" && url.pathname === "/v1/session-start") return recordSessionStart(request, env);
     if (request.method === "POST" && url.pathname === "/v1/feedback") return submit(request, env);
     if (request.method === "GET" && url.pathname === "/v1/admin/stats") return stats(request, env);
@@ -250,5 +294,6 @@ export default {
     const cutoff = new Date(Date.now() - days * 86400000).toISOString();
     await env.DB.prepare("DELETE FROM feedback_submissions WHERE created_at < ?").bind(cutoff).run();
     await env.DB.prepare("DELETE FROM test_session_starts WHERE created_at < ?").bind(cutoff).run();
+    await env.DB.prepare("DELETE FROM test_access_events WHERE created_at < ?").bind(cutoff).run();
   },
 };
