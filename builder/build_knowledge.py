@@ -318,6 +318,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-gait-falls-concern.json",
         "version": "0.1.0",
     },
+    "epistaxis": {
+        "base_graph": ROOT / "knowledge/base/primary-care-epistaxis.json",
+        "base_rules": ROOT / "rules/base/primary-care-epistaxis.json",
+        "fragment_root": ROOT / "knowledge/generated/ent/epistaxis",
+        "output_graph": ROOT / "knowledge/graph/primary-care-epistaxis.json",
+        "output_rules": ROOT / "rules/primary-care-epistaxis.json",
+        "version": "0.1.0",
+    },
     "kidney_function_ckd_follow_up": {
         "base_graph": ROOT / "knowledge/base/primary-care-kidney-function-ckd-follow-up.json",
         "base_rules": ROOT / "rules/base/primary-care-kidney-function-ckd-follow-up.json",

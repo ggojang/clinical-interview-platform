@@ -463,6 +463,17 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/neurology/gait-falls-concern",
         "research_manifests": [ROOT / "sources/manifests/primary-care-gait-falls-concern-research.json"],
     },
+    "epistaxis": {
+        "graph": ROOT / "knowledge/graph/primary-care-epistaxis.json",
+        "rules": ROOT / "rules/primary-care-epistaxis.json",
+        "sources": ROOT / "sources/manifests/primary-care-epistaxis.json",
+        "completion_policy": ROOT / "policies/primary-care-epistaxis-completion.json",
+        "output": ROOT / "packages/generated/primary-care-epistaxis-0.1.0.json",
+        "package_id": "package.primary-care-epistaxis", "package_version": "0.1.0",
+        "rfe": "rfe.epistaxis",
+        "simulation_root": ROOT / "simulation/patients/ent/epistaxis",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-epistaxis-research.json"],
+    },
     "kidney_function_ckd_follow_up": {
         "graph": ROOT / "knowledge/graph/primary-care-kidney-function-ckd-follow-up.json",
         "rules": ROOT / "rules/primary-care-kidney-function-ckd-follow-up.json",

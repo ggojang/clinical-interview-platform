@@ -1,0 +1,1808 @@
+{
+  "id": "knowledge.generated.epistaxis",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-epistaxis-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-07-14",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-07-15",
+    "next_full_review_at": "2027-01-10",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.epistaxis.routing",
+      "type": "ClinicalGroup",
+      "display": "routing"
+    },
+    {
+      "id": "group.epistaxis.safety",
+      "type": "ClinicalGroup",
+      "display": "safety"
+    },
+    {
+      "id": "group.epistaxis.episode",
+      "type": "ClinicalGroup",
+      "display": "episode"
+    },
+    {
+      "id": "group.epistaxis.local",
+      "type": "ClinicalGroup",
+      "display": "local"
+    },
+    {
+      "id": "group.epistaxis.bleeding",
+      "type": "ClinicalGroup",
+      "display": "bleeding"
+    },
+    {
+      "id": "group.epistaxis.followup",
+      "type": "ClinicalGroup",
+      "display": "followup"
+    }
+  ],
+  "group_hypothesis_edges": [],
+  "safety_rules": [
+    {
+      "id": "rule.epistaxis.safety.airway",
+      "priority": 1000,
+      "when": {
+        "fact": "epistaxis.airway_difficulty_or_cannot_handle_blood",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.epistaxis.safety.persistent-heavy",
+      "priority": 1000,
+      "when": {
+        "fact": "epistaxis.heavy_active_after_correct_continuous_pressure",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.epistaxis.safety.shock",
+      "priority": 1000,
+      "when": {
+        "fact": "epistaxis.weak_faint_confused_or_shock_features",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.epistaxis.safety.major-trauma",
+      "priority": 1000,
+      "when": {
+        "fact": "epistaxis.major_head_or_facial_trauma",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.epistaxis.safety.swallowed-vomit",
+      "priority": 1000,
+      "when": {
+        "fact": "epistaxis.large_swallowed_blood_repeated_vomiting",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.epistaxis.safety.anticoagulant",
+      "priority": 990,
+      "when": {
+        "fact": "epistaxis.anticoagulant_with_uncontrolled_or_recurrent_bleeding",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.epistaxis.safety.multisite",
+      "priority": 990,
+      "when": {
+        "fact": "epistaxis.multisite_bleeding_or_extensive_petechiae",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.epistaxis.safety.under-two",
+      "priority": 990,
+      "when": {
+        "fact": "epistaxis.child_under_two_unexplained",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.epistaxis.safety.foreign-body",
+      "priority": 1000,
+      "when": {
+        "fact": "epistaxis.suspected_button_battery_or_hazardous_foreign_body",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.epistaxis.safety.packing-complication",
+      "priority": 990,
+      "when": {
+        "fact": "epistaxis.packing_complication_fever_pain_or_rebleeding",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "epistaxis.primary_group",
+        "display": "Primary Epistaxis Presentation",
+        "value_type": "coded",
+        "allowed_values": [
+          "active_current_bleeding",
+          "single_resolved_episode",
+          "recurrent_episodes",
+          "post_trauma_or_procedure",
+          "antithrombotic_or_bleeding_risk",
+          "post_treatment_followup",
+          "other_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.epistaxis.primary-group",
+        "display": "Primary Epistaxis Presentation",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.primary-group",
+        "wording": "이번 방문은 지금 계속되는 코피, 멈춘 한 번의 코피, 반복되는 코피, 외상·시술 후 코피, 항응고제·출혈질환 관련 상담, 이전 치료 후 추적 중 무엇에 가깝나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 190,
+          "reason": "primary-group"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.airway_difficulty_or_cannot_handle_blood",
+        "display": "Airway or Blood Handling Compromise",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.epistaxis.airway",
+        "display": "Airway or Blood Handling Compromise",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.airway",
+        "wording": "지금 숨쉬기 어렵거나 목 뒤로 많은 피가 넘어가 뱉어내지 못하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 189,
+          "reason": "airway"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.heavy_active_after_correct_continuous_pressure",
+        "display": "Persistent Heavy Bleeding",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.epistaxis.persistent-heavy",
+        "display": "Persistent Heavy Bleeding",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.persistent-heavy",
+        "wording": "앞으로 숙여 코의 말랑한 부분을 10~15분 연속 눌렀는데도 많은 피가 계속 나오나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 188,
+          "reason": "persistent-heavy"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.safety",
+        "group.epistaxis.episode"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.weak_faint_confused_or_shock_features",
+        "display": "Haemodynamic Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.epistaxis.shock",
+        "display": "Haemodynamic Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.shock",
+        "wording": "코피와 함께 쓰러질 듯함·실신, 심한 어지럼·쇠약, 창백함·식은땀 또는 의식 혼란이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 187,
+          "reason": "shock"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.major_head_or_facial_trauma",
+        "display": "Major Trauma Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.epistaxis.major-trauma",
+        "display": "Major Trauma Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.major-trauma",
+        "wording": "교통사고·높은 곳 낙상·강한 얼굴 충격 뒤 코피가 났거나 코 변형·맑은 물 같은 분비물이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 186,
+          "reason": "major-trauma"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.safety",
+        "group.epistaxis.local"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.large_swallowed_blood_repeated_vomiting",
+        "display": "Large Swallowed Blood or Vomiting",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.epistaxis.swallowed-vomit",
+        "display": "Large Swallowed Blood or Vomiting",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.swallowed-vomit",
+        "wording": "많은 피를 삼켜 반복해서 피를 토하거나 구토가 계속되나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 185,
+          "reason": "swallowed-vomit"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.anticoagulant_with_uncontrolled_or_recurrent_bleeding",
+        "display": "Anticoagulant Bleeding Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.epistaxis.anticoagulant",
+        "display": "Anticoagulant Bleeding Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.anticoagulant",
+        "wording": "항응고제·항혈소판제를 복용 중이며 코피가 멈추지 않거나 짧은 시간 안에 반복되나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 184,
+          "reason": "anticoagulant"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.safety",
+        "group.epistaxis.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.multisite_bleeding_or_extensive_petechiae",
+        "display": "Systemic Bleeding Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.epistaxis.multisite",
+        "display": "Systemic Bleeding Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.multisite",
+        "wording": "코피와 함께 잇몸·소변·대변 등 다른 부위 출혈이나 갑자기 많은 멍·점상출혈이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 183,
+          "reason": "multisite"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.safety",
+        "group.epistaxis.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.child_under_two_unexplained",
+        "display": "Epistaxis under Two Years",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.epistaxis.under-two",
+        "display": "Epistaxis under Two Years",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.under-two",
+        "wording": "만 2세 미만 아이에게 뚜렷한 가벼운 외상 없이 코피가 났나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 182,
+          "reason": "under-two"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.safety",
+        "group.epistaxis.local"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.suspected_button_battery_or_hazardous_foreign_body",
+        "display": "Hazardous Nasal Foreign Body",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.epistaxis.foreign-body",
+        "display": "Hazardous Nasal Foreign Body",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.foreign-body",
+        "wording": "코 안에 단추형 건전지·자석·화학물질 또는 위험한 이물이 들어갔을 가능성이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 181,
+          "reason": "foreign-body"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.safety",
+        "group.epistaxis.local"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.packing_complication_fever_pain_or_rebleeding",
+        "display": "Nasal Packing Complication",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.epistaxis.packing-complication",
+        "display": "Nasal Packing Complication",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.packing-complication",
+        "wording": "현재 코 패킹·지혈재가 있으며 심한 재출혈, 호흡곤란, 고열·심해지는 통증 또는 패킹 이탈이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 180,
+          "reason": "packing-complication"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.safety",
+        "group.epistaxis.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.information_source_and_reliability",
+        "display": "Information Source",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.epistaxis.information-source",
+        "display": "Information Source",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.information-source",
+        "wording": "내용은 본인 관찰, 보호자·목격자 설명, 사진·영상 또는 의료기록 중 무엇에 근거하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 169,
+          "reason": "information-source"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.episode"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.current_bleeding_status_and_last_seen",
+        "display": "Current Bleeding Status",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "249366005"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.epistaxis",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.epistaxis.current-status",
+        "display": "Current Bleeding Status",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.current-status",
+        "wording": "지금 피가 나는지, 완전히 멈췄는지, 마지막으로 확인한 시각을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 168,
+          "reason": "current-status"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.episode"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.onset_date_time_and_activity",
+        "display": "Episode Onset",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.epistaxis.onset",
+        "display": "Episode Onset",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.onset",
+        "wording": "이번 코피가 시작된 날짜·시각과 당시 자고 있었는지, 운동·목욕·코를 만지거나 풀었는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 167,
+          "reason": "onset"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.episode"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.duration_timed_and_longest_episode",
+        "display": "Episode Duration",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.epistaxis.duration",
+        "display": "Episode Duration",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.duration",
+        "wording": "이번 출혈과 가장 길었던 출혈이 각각 몇 분이었나요? 시계로 잰 것인지 추정인지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 166,
+          "reason": "duration"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.episode"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.first_aid_method_pressure_site_and_duration",
+        "display": "First Aid Technique",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.epistaxis.first-aid",
+        "display": "First Aid Technique",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.first-aid",
+        "wording": "앉아 앞으로 숙이고 코의 말랑한 부분을 놓지 않고 눌렀나요? 누른 시간과 중간에 확인했는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 165,
+          "reason": "first-aid"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.episode"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.response_to_pressure_and_other_measures",
+        "display": "Response to First Aid",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.epistaxis.response",
+        "display": "Response to First Aid",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.response",
+        "wording": "압박 전후 출혈이 멈춤·감소·변화 없음 중 어떻게 달라졌고 다른 조치를 했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 164,
+          "reason": "response"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.episode"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.estimated_amount_and_estimation_method",
+        "display": "Estimated Bleeding Amount",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.epistaxis.amount",
+        "display": "Estimated Bleeding Amount",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.amount",
+        "wording": "피의 양을 휴지·거즈 수, 용기, 옷이나 침구 젖음 등 관찰 가능한 방식으로 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 163,
+          "reason": "amount"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.episode"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.laterality_and_apparent_source",
+        "display": "Laterality and Apparent Source",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.epistaxis.laterality",
+        "display": "Laterality and Apparent Source",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.laterality",
+        "wording": "왼쪽·오른쪽·양쪽 중 어디에서 시작했고 늘 같은 쪽인지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 162,
+          "reason": "laterality"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.episode",
+        "group.epistaxis.local"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.posterior_flow_clots_and_swallowed_blood",
+        "display": "Posterior Flow and Clots",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.epistaxis.posterior-flow",
+        "display": "Posterior Flow and Clots",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.posterior-flow",
+        "wording": "목 뒤로 피가 넘어감, 큰 혈전, 삼킨 피와 메스꺼움·구토 여부를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 161,
+          "reason": "posterior-flow"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.episode"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.episode_frequency_and_time_pattern",
+        "display": "Episode Frequency",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "12441001"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.epistaxis",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.epistaxis.frequency",
+        "display": "Episode Frequency",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.frequency",
+        "wording": "처음인지, 최근 일주일·한 달·1년 동안 몇 번인지와 시간대·계절 등 반복 양상을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 160,
+          "reason": "frequency"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.episode"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.prior_severe_episode_ed_admission_or_transfusion",
+        "display": "Prior Severe Epistaxis",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.epistaxis.prior-severe",
+        "display": "Prior Severe Epistaxis",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.prior-severe",
+        "wording": "이전 코피로 응급실 방문·입원·수혈을 받았거나 빈혈 진단을 받은 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 159,
+          "reason": "prior-severe"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.episode",
+        "group.epistaxis.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.nose_picking_rubbing_blowing_and_minor_trauma",
+        "display": "Minor Nasal Trauma",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.epistaxis.minor-trauma",
+        "display": "Minor Nasal Trauma",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.minor-trauma",
+        "wording": "코 파기·비비기·세게 풀기, 재채기 또는 가벼운 충격과 출혈의 관계를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 150,
+          "reason": "minor-trauma"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.local"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.nasal_dryness_crusting_and_environment",
+        "display": "Nasal Dryness",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.epistaxis.dryness",
+        "display": "Nasal Dryness",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.dryness",
+        "wording": "코 안 건조·갈라짐·딱지와 난방·냉방·건조한 공기 노출을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 149,
+          "reason": "dryness"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.local"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.rhinitis_uri_congestion_and_sneezing",
+        "display": "Rhinitis or Infection Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.epistaxis.rhinitis",
+        "display": "Rhinitis or Infection Context",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.rhinitis",
+        "wording": "코막힘·콧물·재채기·가려움, 감기·발열 또는 알레르기 증상이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 148,
+          "reason": "rhinitis"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.local"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.unilateral_obstruction_foul_discharge_or_smell_change",
+        "display": "Unilateral Nasal Warning Features",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.epistaxis.unilateral-local",
+        "display": "Unilateral Nasal Warning Features",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.unilateral-local",
+        "wording": "한쪽 코막힘, 악취 나는 분비물, 냄새 변화 또는 한쪽에 보이거나 만져지는 것이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 147,
+          "reason": "unilateral-local"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.local"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.nasal_foreign_body_or_intranasal_substance",
+        "display": "Nasal Foreign Body or Substance",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.epistaxis.foreign-substance",
+        "display": "Nasal Foreign Body or Substance",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.foreign-substance",
+        "wording": "코 안 이물 가능성, 비강 약물·스프레이·산소관 또는 코로 흡입한 물질 사용을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 146,
+          "reason": "foreign-substance"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.local"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.recent_nasal_dental_facial_procedure_or_surgery",
+        "display": "Recent Procedure or Surgery",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.epistaxis.procedure",
+        "display": "Recent Procedure or Surgery",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.procedure",
+        "wording": "최근 코·부비동·치과·얼굴 시술·수술, 소작·패킹과 날짜 및 이후 출혈을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 145,
+          "reason": "procedure"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.local",
+        "group.epistaxis.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.nasal_pain_tenderness_deformity_and_breathing",
+        "display": "Local Pain and Nasal Function",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.epistaxis.local-function",
+        "display": "Local Pain and Nasal Function",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.local-function",
+        "wording": "코 통증·압통·부기·변형과 코로 숨쉬기 어려움이 있는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 144,
+          "reason": "local-function"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.local"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.anticoagulant_antiplatelet_name_dose_last_use",
+        "display": "Antithrombotic Medicines",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.epistaxis.antithrombotic",
+        "display": "Antithrombotic Medicines",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.antithrombotic",
+        "wording": "항응고제·항혈소판제의 이름·용량·복용 횟수·마지막 복용 시각과 최근 변경을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 140,
+          "reason": "antithrombotic"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.nsaid_nasal_steroid_otc_herbal_and_supplements",
+        "display": "Other Medicines and Products",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.epistaxis.other-medicines",
+        "display": "Other Medicines and Products",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.other-medicines",
+        "wording": "진통소염제, 비강 스테로이드, 일반약·한약·보충제의 이름과 사용 방법을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 139,
+          "reason": "other-medicines"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.bleeding",
+        "group.epistaxis.local"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.known_bleeding_platelet_liver_kidney_or_blood_disorder",
+        "display": "Bleeding-related Conditions",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "64779008"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.epistaxis",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.epistaxis.bleeding-conditions",
+        "display": "Bleeding-related Conditions",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.bleeding-conditions",
+        "wording": "혈우병·폰빌레브란트병·혈소판 감소, 간·신장·혈액질환 등 출혈 관련 진단을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 138,
+          "reason": "bleeding-conditions"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.easy_bruising_gum_bleeding_and_other_sites",
+        "display": "Other Bleeding Symptoms",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.epistaxis.other-bleeding",
+        "display": "Other Bleeding Symptoms",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.other-bleeding",
+        "wording": "쉽게 드는 멍, 잇몸 출혈, 혈뇨·혈변 또는 해당되면 과다월경이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 137,
+          "reason": "other-bleeding"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.prolonged_bleeding_after_cuts_dental_or_surgery",
+        "display": "Bleeding after Challenges",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.epistaxis.challenge-bleeding",
+        "display": "Bleeding after Challenges",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.challenge-bleeding",
+        "wording": "작은 상처, 발치·치과치료, 수술·출산 뒤 예상보다 오래 출혈한 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 136,
+          "reason": "challenge-bleeding"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.family_history_bleeding_or_hht_features",
+        "display": "Family Bleeding and HHT Context",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "21877004"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.epistaxis",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.epistaxis.family",
+        "display": "Family Bleeding and HHT Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.family",
+        "wording": "가족의 반복 코피·출혈질환과 본인·가족의 입술·입안·손가락 붉은 혈관점 또는 폐·뇌 혈관기형을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 135,
+          "reason": "family"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.blood_pressure_hypertension_and_measurement_context",
+        "display": "Blood Pressure Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.epistaxis.blood-pressure",
+        "display": "Blood Pressure Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.blood-pressure",
+        "wording": "고혈압 진단과 최근 혈압 수치·측정 시각·측정 상황을 알려주세요. 혈압만으로 코피 원인을 단정하지 않습니다.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 134,
+          "reason": "blood-pressure"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.anemia_symptoms_and_recent_cbc",
+        "display": "Anaemia Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.epistaxis.anemia",
+        "display": "Anaemia Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.anemia",
+        "wording": "창백함·피로·두근거림·숨참과 최근 혈색소·혈소판 등 혈액검사 결과가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 133,
+          "reason": "anemia"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.pregnancy_postpartum_context",
+        "display": "Pregnancy or Postpartum Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.epistaxis.pregnancy",
+        "display": "Pregnancy or Postpartum Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.pregnancy",
+        "wording": "해당되면 임신 주수 또는 산후 시기와 다른 출혈·혈압 문제를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 132,
+          "reason": "pregnancy"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.previous_examination_endoscopy_tests_and_results",
+        "display": "Previous Assessment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.epistaxis.previous-assessment",
+        "display": "Previous Assessment",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.previous-assessment",
+        "wording": "이전 코 진찰·내시경, 혈액검사·영상검사의 날짜와 주요 결과를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 125,
+          "reason": "previous-assessment"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.previous_treatment_cautery_packing_and_response",
+        "display": "Previous Treatment Response",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.epistaxis.previous-treatment",
+        "display": "Previous Treatment Response",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.previous-treatment",
+        "wording": "보습·연고·스프레이, 소작·패킹·수술 등 이전 치료와 효과·부작용·재발 시점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 124,
+          "reason": "previous-treatment"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.current_packing_type_date_and_followup_plan",
+        "display": "Current Packing and Follow-up",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.epistaxis.packing",
+        "display": "Current Packing and Follow-up",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.packing",
+        "wording": "현재 패킹·지혈재가 있다면 종류, 넣은 날짜, 제거·재진 계획과 받은 주의사항을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 123,
+          "reason": "packing"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.smoking_vaping_occupation_and_irritant_exposure",
+        "display": "Exposure Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.epistaxis.exposure",
+        "display": "Exposure Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.exposure",
+        "wording": "흡연·전자담배와 분진·화학물질·건조 공기 등 직업·환경 노출을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 122,
+          "reason": "exposure"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.sleep_work_school_and_activity_impact",
+        "display": "Functional Impact",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.epistaxis.function",
+        "display": "Functional Impact",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.function",
+        "wording": "코피 때문에 수면·학교·업무·운동·외출 또는 불안이 얼마나 달라졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 121,
+          "reason": "function"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.patient_priority_and_other_detail",
+        "display": "Patient Priority and Other Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.epistaxis.other-detail",
+        "display": "Patient Priority and Other Detail",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.other-detail",
+        "wording": "질문에 없지만 의료진에게 꼭 전달할 내용, 가장 걱정되는 점과 원하는 도움을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 80,
+          "reason": "other-detail"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.routing",
+        "group.epistaxis.followup"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.aao-hnsf.epistaxis.2020",
+      "source.nhs.epistaxis.2023",
+      "source.rch.epistaxis.2026",
+      "source.stom.epistaxis.20260716"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

@@ -47,6 +47,7 @@ THYROID_CONCERN_FOLLOW_UP_PACKAGE = ROOT / "packages/generated/primary-care-thyr
 ANEMIA_CONCERN_FOLLOW_UP_PACKAGE = ROOT / "packages/generated/primary-care-anemia-concern-follow-up-0.1.0.json"
 SEIZURE_EVENT_FOLLOW_UP_PACKAGE = ROOT / "packages/generated/primary-care-seizure-event-follow-up-0.1.0.json"
 GAIT_FALLS_CONCERN_PACKAGE = ROOT / "packages/generated/primary-care-gait-falls-concern-0.1.0.json"
+EPISTAXIS_PACKAGE = ROOT / "packages/generated/primary-care-epistaxis-0.1.0.json"
 KIDNEY_FUNCTION_CKD_FOLLOW_UP_PACKAGE = ROOT / "packages/generated/primary-care-kidney-function-ckd-follow-up-0.1.0.json"
 LIVER_FUNCTION_CHRONIC_FOLLOW_UP_PACKAGE = ROOT / "packages/generated/primary-care-liver-function-chronic-follow-up-0.1.0.json"
 

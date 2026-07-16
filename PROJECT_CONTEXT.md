@@ -676,7 +676,7 @@ A presentation may not exist for vaccination, health checks, medication review o
 
 # 25. Current Repository State
 
-The current implementation is an early multi-RFE executable Knowledge Factory with forty independently compiled Primary Care Knowledge Package profiles. The gait and falls profile distinguishes an acute fall, recurrent falls, gait or balance change, fear or near-falls, post-injury follow-up and known mobility-condition follow-up. It preserves event mechanism, head impact, loss of consciousness, ability to rise, floor time, injury and mandatory NRS when pain applies, baseline and current mobility, medicines, multisystem contributors, home hazards and support for clinician pre-visit handoff. It does not calculate a predictive fall-risk score or infer a diagnosis.
+The current implementation is an early multi-RFE executable Knowledge Factory with forty-one independently compiled Primary Care Knowledge Package profiles. The gait and falls profile distinguishes an acute fall, recurrent falls, gait or balance change, fear or near-falls, post-injury follow-up and known mobility-condition follow-up. The epistaxis profile records current bleeding, correctly timed continuous pressure and response, observable amount, duration, frequency, laterality, posterior flow, trauma and local symptoms, antithrombotic and bleeding history, previous treatment and clinician follow-up. Neither package calculates a predictive score, attributes causality to blood pressure or infers a diagnosis.
 
 It includes a profile-driven deterministic Builder, a Primary Care Reason for Encounter catalog, complete Fact-to-Question linkage within every package, shared Fact identity, versioned Source Manifests, source-specific refresh scheduling, deterministic Compiler, integrity-checked draft Knowledge Packages, evidence-preserving Clinical Memory with coded `dataAbsentReason`, package-driven and conditionally branched multi-turn Runtime, multi-domain warning-feature examples, limited English and Korean extraction, synthetic JSON Simulations, Evaluation, computed Coverage and automated validation. Pregnancy and postpartum history includes professional obstetric history and outcome details while preserving source notation and jurisdictional uncertainty. Every compiled package also contains a research-only USCDI v6 interoperability Coverage result and applicable USCDI+ domain overlays. These overlays identify exchange gaps but never control clinical questions, completion or Safety Rules, and they do not replace Korean SNOMED CT, LOINC, KCD or HIRA bindings.
 
@@ -688,7 +688,7 @@ Known gaps include:
 
 - no live external Knowledge Acquisition connector or complete multi-domain Builder pipeline;
 - no persistent graph database or general-purpose graph authoring workflow;
-- Compiler and Knowledge Packages currently cover forty materialized Primary Care profiles and not the full Primary Care scope;
+- Compiler and Knowledge Packages currently cover forty-one materialized Primary Care profiles and not the full Primary Care scope;
 - no signed or production-approved Knowledge Package;
 - Clinical Memory merge supports evidence and conflict but not the complete longitudinal policy;
 - Runtime provenance is present but not yet production-grade;
