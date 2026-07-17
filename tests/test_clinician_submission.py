@@ -111,6 +111,16 @@ class ClinicianSubmissionContextTest(unittest.TestCase):
         self.assertIn("history.condition.current", state["completion_status"]["required_facts"])
         self.assertIn("patient.alcohol.pattern", state["completion_status"]["required_facts"])
 
+    def test_initial_proxy_statement_preserves_age_and_additional_request(self):
+        session = self._session()
+        text = (
+            "78세 아버지가 숨이 차고 기침도 해서 보호자가 대신 답합니다. "
+            "회사 제출 서류 문의도 있습니다."
+        )
+        session.process(text)
+        self.assertEqual(session.memory.value("patient.age_years"), 78)
+        self.assertEqual(session.memory.value("interview.additional_comment"), text)
+
     def test_handoff_preserves_data_absent_reason_and_not_asked(self):
         session = self._session()
         session.memory.mark_absent(

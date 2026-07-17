@@ -52,6 +52,23 @@ def extract(text: str, turn: int, expected_fact: str | None = None) -> dict[str,
     low_normalized = low.rstrip(".!?")
     out: dict[str, dict[str, Any]] = {}
 
+    age_match_ko = re.search(r"(?:만\s*)?(\d{1,3})\s*세", text)
+    age_match_en = re.search(
+        r"\b(\d{1,3})(?:-|\s+)(?:year|yr)s?(?:-|\s+)old\b", low
+    )
+    age_match = age_match_ko or age_match_en
+    if age_match:
+        age_years = int(age_match.group(1))
+        if 0 < age_years <= 130:
+            out["patient.age_years"] = fact(age_years, text, turn, .96)
+
+    explicit_additional_request_markers = (
+        "추가로", "별도로", "문의도", "질문에 없", "그 밖에",
+        "also need", "another concern", "separate request", "in addition",
+    )
+    if any(marker in low for marker in explicit_additional_request_markers):
+        out["interview.additional_comment"] = fact(text.strip(), text, turn, .84)
+
     temperature = re.search(r"(\d{2}(?:\.\d+)?)\s*(?:°\s*)?(c|f|도)", low)
     if temperature:
         unit = "Cel" if temperature.group(2) in {"c", "도"} else "[degF]"
