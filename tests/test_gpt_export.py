@@ -481,7 +481,7 @@ class GptExportTests(unittest.TestCase):
                     encoding="utf-8"
                 )
             )
-            self.assertEqual(vomiting_diarrhea["count"], 30)
+            self.assertEqual(vomiting_diarrhea["count"], 74)
             urinary = json.loads(
                 (output_path / "rfe/urinary_symptoms/facts.json").read_text(
                     encoding="utf-8"
@@ -1031,6 +1031,9 @@ class GptExportTests(unittest.TestCase):
             )
             self.assertEqual(fact_index["payload_role"], "legacy_discovery_index")
             self.assertTrue(all("id" in item for item in fact_index["items"]))
+            self.assertEqual(fact_index["returned_count"], len(fact_index["items"]))
+            self.assertEqual(fact_index["truncated"], fact_index["returned_count"] < fact_index["count"])
+            self.assertEqual(fact_index["complete_fact_payloads"], "/gpt/rfe/{rfe}/facts.json")
             questions = json.loads(
                 (output_path / "question-groups.json").read_text(encoding="utf-8")
             )

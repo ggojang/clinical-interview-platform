@@ -471,10 +471,10 @@ class CompilerTests(unittest.TestCase):
             node["id"] for node in first["knowledge_graph"]["nodes"]
             if node["type"] == "Fact"
         }
-        self.assertEqual(len(facts), 30)
+        self.assertEqual(len(facts), 74)
         self.assertEqual(facts, set(first["indexes"]["questions_by_fact"]))
-        self.assertEqual(first["coverage"]["total_safety_rules"], 12)
-        self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 12)
+        self.assertEqual(first["coverage"]["total_safety_rules"], 16)
+        self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 16)
         self.assertEqual(first["coverage"]["uncovered_safety_rules"], [])
 
     def test_vomiting_diarrhea_mrcm_is_build_time_metadata_only(self):
@@ -1645,8 +1645,8 @@ class PackageRuntimeTests(unittest.TestCase):
     def test_vomiting_diarrhea_simulation_evaluation_passes(self):
         report = run_evaluation(VOMITING_DIARRHEA_PACKAGE)
         self.assertTrue(report["passed"])
-        self.assertEqual(report["case_count"], 13)
-        self.assertLessEqual(max(item["turns"] for item in report["results"]), 31)
+        self.assertEqual(report["case_count"], 23)
+        self.assertLessEqual(max(item["turns"] for item in report["results"]), 45)
 
     def test_vomiting_diarrhea_runtime_uses_combined_rfe(self):
         session = InterviewSession(

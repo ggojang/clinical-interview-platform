@@ -1,53 +1,2953 @@
 {
-  "id":"knowledge.generated.gastrointestinal.vomiting-diarrhea","version":"0.1.0","status":"research_only","usage_modes":["research_test","simulation"],"source_manifest":"source-manifest.primary-care-vomiting-diarrhea-research",
-  "default_refresh":{"class":"clinical_guideline","last_assessed_at":"2026-07-14","monitor_interval_days":1,"full_review_interval_days":180,"next_monitor_at":"2026-07-15","next_full_review_at":"2027-01-10","policy_id":"policy.knowledge-refresh","overdue_behavior":{"production":"exclude_or_require_review","research_test":"allow_with_warning"}},
-  "extra_nodes":[{"id":"group.vomiting-diarrhea.immediate-safety","type":"ClinicalGroup","display":"Immediate Gastrointestinal Safety"},{"id":"group.vomiting-diarrhea.dehydration","type":"ClinicalGroup","display":"Dehydration Features"},{"id":"group.vomiting-diarrhea.characterization","type":"ClinicalGroup","display":"Vomiting and Diarrhea Characterization"},{"id":"group.vomiting-diarrhea.infectious-exposure","type":"ClinicalGroup","display":"Infectious and Exposure Features"},{"id":"group.vomiting-diarrhea.persistence","type":"ClinicalGroup","display":"Persistent and Constitutional Features"},{"id":"group.vomiting-diarrhea.background","type":"ClinicalGroup","display":"High-risk Background"},{"id":"hypothesis.vomiting-diarrhea.immediate-safety","type":"Hypothesis","display":"Immediate Assessment Warning Features"},{"id":"hypothesis.vomiting-diarrhea.dehydration","type":"Hypothesis","display":"Possible Dehydration Pattern"},{"id":"hypothesis.vomiting-diarrhea.infectious","type":"Hypothesis","display":"Possible Infectious Exposure Pattern"},{"id":"hypothesis.vomiting-diarrhea.persistence","type":"Hypothesis","display":"Persistent Warning Pattern"}],
-  "group_hypothesis_edges":[["group.vomiting-diarrhea.immediate-safety","hypothesis.vomiting-diarrhea.immediate-safety"],["group.vomiting-diarrhea.dehydration","hypothesis.vomiting-diarrhea.dehydration"],["group.vomiting-diarrhea.infectious-exposure","hypothesis.vomiting-diarrhea.infectious"],["group.vomiting-diarrhea.persistence","hypothesis.vomiting-diarrhea.persistence"]],
-  "safety_rules":[
-    {"id":"rule.vomiting-diarrhea.safety.hematemesis","priority":1000,"when":{"fact":"symptom.hematemesis","equals":true},"then":{"safety_level":"emergency","action":"human_handoff","suppress_routine":true}},
-    {"id":"rule.vomiting-diarrhea.safety.green-vomit","priority":1000,"when":{"fact":"symptom.green_vomit","equals":true},"then":{"safety_level":"emergency","action":"human_handoff","suppress_routine":true}},
-    {"id":"rule.vomiting-diarrhea.safety.possible-poisoning","priority":1000,"when":{"fact":"exposure.possible_poisoning","equals":true},"then":{"safety_level":"emergency","action":"human_handoff","suppress_routine":true}},
-    {"id":"rule.vomiting-diarrhea.safety.sudden-severe-abdominal-pain","priority":1000,"when":{"fact":"symptom.sudden_severe_abdominal_pain","equals":true},"then":{"safety_level":"emergency","action":"human_handoff","suppress_routine":true}},
-    {"id":"rule.vomiting-diarrhea.safety.confusion","priority":1000,"when":{"fact":"symptom.confusion","equals":true},"then":{"safety_level":"emergency","action":"human_handoff","suppress_routine":true}},
-    {"id":"rule.vomiting-diarrhea.safety.severe-dyspnea","priority":1000,"when":{"fact":"symptom.dyspnea","equals":"severe"},"then":{"safety_level":"emergency","action":"human_handoff","suppress_routine":true}},
-    {"id":"rule.vomiting-diarrhea.safety.bloody-diarrhea","priority":900,"when":{"fact":"symptom.bloody_diarrhea","equals":true},"then":{"safety_level":"urgent","action":"human_handoff","suppress_routine":true}},
-    {"id":"rule.vomiting-diarrhea.safety.cannot-keep-fluids","priority":900,"when":{"fact":"symptom.unable_to_keep_fluids","equals":true},"then":{"safety_level":"urgent","action":"human_handoff","suppress_routine":true}},
-    {"id":"rule.vomiting-diarrhea.safety.dehydration-low-urine","priority":900,"when":{"all":[{"fact":"symptom.dehydration_signs","equals":true},{"fact":"symptom.reduced_urine_output","equals":true}]},"then":{"safety_level":"urgent","action":"human_handoff","suppress_routine":true}},
-    {"id":"rule.vomiting-diarrhea.safety.vomiting-over-two-days","priority":900,"when":{"fact":"symptom.vomiting_over_two_days","equals":true},"then":{"safety_level":"urgent","action":"human_handoff","suppress_routine":true}},
-    {"id":"rule.vomiting-diarrhea.safety.diarrhea-over-seven-days","priority":900,"when":{"fact":"symptom.diarrhea_over_seven_days","equals":true},"then":{"safety_level":"urgent","action":"human_handoff","suppress_routine":true}},
-    {"id":"rule.vomiting-diarrhea.safety.pregnancy-fever","priority":900,"when":{"all":[{"fact":"pregnancy.possible","equals":"possible"},{"fact":"symptom.fever","equals":true}]},"then":{"safety_level":"urgent","action":"human_handoff","suppress_routine":true}}
+  "id": "knowledge.generated.gastrointestinal.vomiting-diarrhea",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
   ],
-  "entries":[
-    {"fact":{"id":"symptom.vomiting_diarrhea.presentation","display":"Vomiting or Diarrhea Presentation","value_type":"coded","allowed_values":["vomiting","diarrhea","both"]},"target":{"id":"target.vomiting-diarrhea.determine-presentation","display":"Determine Presentation","intents":["intent.characterize_symptom"]},"question":{"id":"question.vomiting-diarrhea.presentation","wording":"주된 증상은 구토, 설사, 둘 다 중 무엇인가요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":130,"reason":"route_presentation"}],"supports":["group.vomiting-diarrhea.characterization"]},
-    {"reuse_existing":true,"fact":{"id":"symptom.duration","display":"Symptom Duration","value_type":"quantity"},"target":{"id":"target.vomiting-diarrhea.determine-duration","display":"Determine Duration","intents":["intent.characterize_symptom"]},"question":{"id":"question.vomiting-diarrhea.duration","wording":"증상은 언제부터 시작했나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":100,"reason":"characterize_duration"}],"supports":["group.vomiting-diarrhea.characterization"]},
-    {"fact":{"id":"symptom.vomiting.present","display":"Vomiting Present","value_type":"boolean","terminology_binding":{"system":"http://snomed.info/sct","code":"422400008"}},"target":{"id":"target.vomiting-diarrhea.determine-vomiting","display":"Determine Vomiting","intents":["intent.characterize_symptom"]},"question":{"id":"question.vomiting-diarrhea.vomiting","wording":"실제로 토한 적이 있나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":105,"reason":"characterize_vomiting"}],"supports":["group.vomiting-diarrhea.characterization"]},
-    {"fact":{"id":"symptom.vomiting.severity","display":"Vomiting Severity","value_type":"coded","allowed_values":["mild","moderate","severe"],"terminology_binding":{"system":"http://snomed.info/sct","focus_code":"422400008","attribute_code":"246112005"},"mrcm_validation":{"ref":"mapping.snomed-mrcm.vomiting-diarrhea","status":"provisional_pass"}},"target":{"id":"target.vomiting-diarrhea.determine-vomiting-severity","display":"Determine Vomiting Severity","intents":["intent.characterize_symptom","intent.risk_assessment"]},"question":{"id":"question.vomiting-diarrhea.vomiting-severity","wording":"구토는 가벼움, 반복되지만 일부 섭취 가능, 매우 잦음 중 어디에 가깝나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":104,"reason":"characterize_vomiting"}],"supports":["group.vomiting-diarrhea.characterization","group.vomiting-diarrhea.dehydration"]},
-    {"fact":{"id":"symptom.vomiting.count_24h","display":"Vomiting Count in 24 Hours","value_type":"integer"},"target":{"id":"target.vomiting-diarrhea.determine-vomiting-count","display":"Determine Vomiting Frequency","intents":["intent.characterize_symptom"]},"question":{"id":"question.vomiting-diarrhea.vomiting-count","wording":"지난 24시간 동안 몇 번 토했나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":90,"reason":"frequency"}],"supports":["group.vomiting-diarrhea.characterization"]},
-    {"fact":{"id":"symptom.diarrhea.present","display":"Diarrhea Present","value_type":"boolean","terminology_binding":{"system":"http://snomed.info/sct","code":"62315008"}},"target":{"id":"target.vomiting-diarrhea.determine-diarrhea","display":"Determine Diarrhea","intents":["intent.characterize_symptom"]},"question":{"id":"question.vomiting-diarrhea.diarrhea","wording":"평소보다 묽거나 물 같은 변을 보고 있나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":103,"reason":"characterize_diarrhea"}],"supports":["group.vomiting-diarrhea.characterization"]},
-    {"fact":{"id":"symptom.diarrhea.severity","display":"Diarrhea Severity","value_type":"coded","allowed_values":["mild","moderate","severe"],"terminology_binding":{"system":"http://snomed.info/sct","focus_code":"62315008","attribute_code":"246112005"},"mrcm_validation":{"ref":"mapping.snomed-mrcm.vomiting-diarrhea","status":"provisional_pass"}},"target":{"id":"target.vomiting-diarrhea.determine-diarrhea-severity","display":"Determine Diarrhea Severity","intents":["intent.characterize_symptom","intent.risk_assessment"]},"question":{"id":"question.vomiting-diarrhea.diarrhea-severity","wording":"설사는 가벼움, 반복됨, 매우 잦아 일상생활이 어려움 중 어디에 가깝나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":102,"reason":"characterize_diarrhea"}],"supports":["group.vomiting-diarrhea.characterization","group.vomiting-diarrhea.dehydration"]},
-    {"fact":{"id":"symptom.diarrhea.count_24h","display":"Diarrhea Count in 24 Hours","value_type":"integer"},"target":{"id":"target.vomiting-diarrhea.determine-diarrhea-count","display":"Determine Diarrhea Frequency","intents":["intent.characterize_symptom"]},"question":{"id":"question.vomiting-diarrhea.diarrhea-count","wording":"지난 24시간 동안 묽은 변을 몇 번 봤나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":89,"reason":"frequency"}],"supports":["group.vomiting-diarrhea.characterization"]},
-    {"fact":{"id":"symptom.hematemesis","display":"Vomiting Blood or Coffee-ground Material","value_type":"boolean","safety_relevant":true},"target":{"id":"target.vomiting-diarrhea.determine-hematemesis","display":"Determine Hematemesis","intents":["intent.screen_red_flags"]},"question":{"id":"question.vomiting-diarrhea.hematemesis","wording":"피를 토했거나 구토물이 커피 찌꺼기처럼 보였나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":129,"reason":"bleeding_safety_gate"}],"supports":["group.vomiting-diarrhea.immediate-safety"]},
-    {"fact":{"id":"symptom.green_vomit","display":"Green Vomit","value_type":"boolean","safety_relevant":true},"target":{"id":"target.vomiting-diarrhea.determine-green-vomit","display":"Determine Green Vomit","intents":["intent.screen_red_flags"]},"question":{"id":"question.vomiting-diarrhea.green-vomit","wording":"구토물이 선명한 초록색이었나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":128,"reason":"immediate_safety_gate"}],"supports":["group.vomiting-diarrhea.immediate-safety"]},
-    {"fact":{"id":"exposure.possible_poisoning","display":"Possible Poisoning or Toxic Ingestion","value_type":"boolean","safety_relevant":true},"target":{"id":"target.vomiting-diarrhea.determine-poisoning","display":"Determine Possible Poisoning","intents":["intent.screen_red_flags"]},"question":{"id":"question.vomiting-diarrhea.poisoning","wording":"약물, 세제, 화학물질, 독성 식물 등 해로운 물질을 삼켰을 가능성이 있나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":127,"reason":"immediate_safety_gate"}],"supports":["group.vomiting-diarrhea.immediate-safety"]},
-    {"fact":{"id":"symptom.sudden_severe_abdominal_pain","display":"Sudden Severe Abdominal Pain","value_type":"boolean","safety_relevant":true},"target":{"id":"target.vomiting-diarrhea.determine-severe-pain","display":"Determine Sudden Severe Abdominal Pain","intents":["intent.screen_red_flags"]},"question":{"id":"question.vomiting-diarrhea.severe-pain","wording":"갑자기 시작한 참기 어려운 복통이 있나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":126,"reason":"immediate_safety_gate"}],"supports":["group.vomiting-diarrhea.immediate-safety"]},
-    {"reuse_existing":true,"fact":{"id":"symptom.confusion","display":"Confusion or Abnormal Responsiveness","value_type":"boolean","safety_relevant":true},"target":{"id":"target.vomiting-diarrhea.determine-confusion","display":"Determine Confusion","intents":["intent.screen_red_flags"]},"question":{"id":"question.vomiting-diarrhea.confusion","wording":"평소와 다르게 혼란스럽거나 심하게 처지거나 반응이 둔한가요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":125,"reason":"immediate_safety_gate"}],"supports":["group.vomiting-diarrhea.immediate-safety","group.vomiting-diarrhea.dehydration"]},
-    {"reuse_existing":true,"fact":{"id":"symptom.dyspnea","display":"Breathing Difficulty","value_type":"severity","safety_relevant":true},"target":{"id":"target.vomiting-diarrhea.determine-dyspnea","display":"Determine Breathing Difficulty","intents":["intent.screen_red_flags"]},"question":{"id":"question.vomiting-diarrhea.dyspnea","wording":"숨쉬기가 힘든가요? 가벼움, 중간, 심함으로 답해도 됩니다.","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":124,"reason":"immediate_safety_gate"}],"supports":["group.vomiting-diarrhea.immediate-safety"]},
-    {"fact":{"id":"symptom.bloody_diarrhea","display":"Bloody Diarrhea or Rectal Bleeding","value_type":"boolean","safety_relevant":true},"target":{"id":"target.vomiting-diarrhea.determine-bloody-diarrhea","display":"Determine Bloody Diarrhea","intents":["intent.screen_red_flags"]},"question":{"id":"question.vomiting-diarrhea.bloody-diarrhea","wording":"설사에 피가 섞였거나 항문에서 피가 나왔나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":123,"reason":"bleeding_safety_gate"}],"supports":["group.vomiting-diarrhea.immediate-safety"]},
-    {"fact":{"id":"symptom.unable_to_keep_fluids","display":"Unable to Keep Fluids Down","value_type":"boolean","safety_relevant":true},"target":{"id":"target.vomiting-diarrhea.determine-fluid-tolerance","display":"Determine Fluid Tolerance","intents":["intent.screen_red_flags"]},"question":{"id":"question.vomiting-diarrhea.fluid-tolerance","wording":"물을 조금씩 마셔도 계속 토해서 전혀 유지할 수 없나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":122,"reason":"dehydration_safety_gate"}],"supports":["group.vomiting-diarrhea.dehydration"]},
-    {"fact":{"id":"symptom.dehydration_signs","display":"Dehydration Symptoms","value_type":"boolean","safety_relevant":true},"target":{"id":"target.vomiting-diarrhea.determine-dehydration","display":"Determine Dehydration Symptoms","intents":["intent.screen_red_flags"]},"question":{"id":"question.vomiting-diarrhea.dehydration","wording":"입이 매우 마르거나 심하게 갈증이 나거나 일어설 때 어지럽나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":121,"reason":"dehydration_safety_gate"}],"supports":["group.vomiting-diarrhea.dehydration"]},
-    {"fact":{"id":"symptom.reduced_urine_output","display":"Reduced Urine Output","value_type":"boolean","safety_relevant":true},"target":{"id":"target.vomiting-diarrhea.determine-urine-output","display":"Determine Urine Output","intents":["intent.screen_red_flags"]},"question":{"id":"question.vomiting-diarrhea.urine-output","wording":"소변 양이나 횟수가 평소보다 뚜렷하게 줄었거나 매우 진해졌나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":120,"reason":"dehydration_safety_gate"}],"supports":["group.vomiting-diarrhea.dehydration"]},
-    {"fact":{"id":"symptom.vomiting_over_two_days","display":"Vomiting Longer Than Two Days","value_type":"boolean","safety_relevant":true},"target":{"id":"target.vomiting-diarrhea.determine-vomiting-persistence","display":"Determine Vomiting Persistence","intents":["intent.screen_red_flags","intent.risk_assessment"]},"question":{"id":"question.vomiting-diarrhea.vomiting-persistence","wording":"구토가 2일 넘게 계속되고 있나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":119,"reason":"persistence_safety_gate"}],"supports":["group.vomiting-diarrhea.persistence"]},
-    {"fact":{"id":"symptom.diarrhea_over_seven_days","display":"Diarrhea Longer Than Seven Days","value_type":"boolean","safety_relevant":true},"target":{"id":"target.vomiting-diarrhea.determine-diarrhea-persistence","display":"Determine Diarrhea Persistence","intents":["intent.screen_red_flags","intent.risk_assessment"]},"question":{"id":"question.vomiting-diarrhea.diarrhea-persistence","wording":"설사가 7일 넘게 계속되고 있나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":118,"reason":"persistence_safety_gate"}],"supports":["group.vomiting-diarrhea.persistence"]},
-    {"reuse_existing":true,"fact":{"id":"symptom.fever","display":"Fever","value_type":"boolean"},"target":{"id":"target.vomiting-diarrhea.determine-fever","display":"Determine Fever","intents":["intent.risk_assessment"]},"question":{"id":"question.vomiting-diarrhea.fever","wording":"열이나 오한이 있나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":96,"reason":"infection_and_pregnancy_context"}],"supports":["group.vomiting-diarrhea.infectious-exposure"]},
-    {"fact":{"id":"exposure.sick_contact_gastrointestinal","display":"Contact with Vomiting or Diarrhea","value_type":"boolean"},"target":{"id":"target.vomiting-diarrhea.determine-sick-contact","display":"Determine Ill Contact","intents":["intent.differentiate_common_causes"]},"question":{"id":"question.vomiting-diarrhea.sick-contact","wording":"가족, 직장, 학교 등 주변에 비슷한 구토나 설사를 한 사람이 있나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":85,"reason":"infectious_exposure"}],"supports":["group.vomiting-diarrhea.infectious-exposure"]},
-    {"fact":{"id":"exposure.suspect_food_or_water","display":"Suspect Food or Water Exposure","value_type":"boolean"},"target":{"id":"target.vomiting-diarrhea.determine-food-exposure","display":"Determine Food or Water Exposure","intents":["intent.differentiate_common_causes"]},"question":{"id":"question.vomiting-diarrhea.food-exposure","wording":"증상 전에 상했을 수 있는 음식, 덜 익힌 음식, 비살균 식품 또는 의심되는 물을 먹거나 마셨나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":84,"reason":"foodborne_exposure"}],"supports":["group.vomiting-diarrhea.infectious-exposure"]},
-    {"fact":{"id":"exposure.recent_international_travel","display":"Recent International Travel","value_type":"boolean"},"target":{"id":"target.vomiting-diarrhea.determine-travel","display":"Determine Recent Travel","intents":["intent.differentiate_common_causes"]},"question":{"id":"question.vomiting-diarrhea.travel","wording":"최근 해외여행이나 위생 환경이 다른 지역 방문이 있었나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":83,"reason":"travel_exposure"}],"supports":["group.vomiting-diarrhea.infectious-exposure"]},
-    {"fact":{"id":"medication.recent_antibiotics","display":"Recent Antibiotic Use","value_type":"boolean"},"target":{"id":"target.vomiting-diarrhea.determine-antibiotics","display":"Determine Recent Antibiotics","intents":["intent.risk_assessment"]},"question":{"id":"question.vomiting-diarrhea.antibiotics","wording":"최근 3개월 안에 항생제를 복용했거나 입원한 적이 있나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":88,"reason":"healthcare_associated_context"}],"supports":["group.vomiting-diarrhea.background"]},
-    {"fact":{"id":"pregnancy.possible","display":"Pregnancy Possible","value_type":"coded","allowed_values":["possible","not_possible","unknown","not_applicable"],"safety_relevant":true},"target":{"id":"target.vomiting-diarrhea.determine-pregnancy","display":"Determine Pregnancy Possibility","intents":["intent.screen_red_flags","intent.risk_assessment"]},"question":{"id":"question.vomiting-diarrhea.pregnancy","wording":"현재 임신 중이거나 임신 가능성이 있나요? 해당되지 않으면 그렇게 답해 주세요.","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":97,"reason":"pregnancy_risk_context"}],"supports":["group.vomiting-diarrhea.background"]},
-    {"reuse_existing":true,"fact":{"id":"patient.immunocompromised","display":"Immunocompromised","value_type":"boolean"},"target":{"id":"target.vomiting-diarrhea.determine-immunocompromise","display":"Determine Immune Status","intents":["intent.risk_assessment"]},"question":{"id":"question.vomiting-diarrhea.immunocompromise","wording":"면역을 낮추는 약을 사용하거나 면역이 약해지는 질환·치료를 받고 있나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":87,"reason":"high_risk_context"}],"supports":["group.vomiting-diarrhea.background"]},
-    {"fact":{"id":"patient.age_65_or_older","display":"Age 65 or Older","value_type":"boolean"},"target":{"id":"target.vomiting-diarrhea.determine-older-age","display":"Determine Older Age Risk","intents":["intent.risk_assessment"]},"question":{"id":"question.vomiting-diarrhea.older-age","wording":"만 65세 이상인가요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":82,"reason":"high_risk_context"}],"supports":["group.vomiting-diarrhea.background"]},
-    {"fact":{"id":"symptom.unintentional_weight_loss","display":"Unintentional Weight Loss","value_type":"boolean"},"target":{"id":"target.vomiting-diarrhea.determine-weight-loss","display":"Determine Weight Loss","intents":["intent.risk_assessment"]},"question":{"id":"question.vomiting-diarrhea.weight-loss","wording":"최근 의도하지 않았는데 체중이 줄었나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":81,"reason":"persistent_warning_context"}],"supports":["group.vomiting-diarrhea.persistence"]},
-    {"fact":{"id":"symptom.persistent_abdominal_or_back_pain","display":"Persistent Abdominal or Back Pain","value_type":"boolean"},"target":{"id":"target.vomiting-diarrhea.determine-persistent-pain","display":"Determine Persistent Pain","intents":["intent.risk_assessment"]},"question":{"id":"question.vomiting-diarrhea.persistent-pain","wording":"계속되거나 반복되는 복통 또는 등 통증이 함께 있나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":80,"reason":"persistent_warning_context"}],"supports":["group.vomiting-diarrhea.persistence"]}
+  "source_manifest": "source-manifest.primary-care-vomiting-diarrhea-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-07-17",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-07-18",
+    "next_full_review_at": "2027-01-13",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.vomiting_diarrhea.routing",
+      "type": "ClinicalGroup",
+      "display": "routing"
+    },
+    {
+      "id": "group.vomiting_diarrhea.safety",
+      "type": "ClinicalGroup",
+      "display": "safety"
+    },
+    {
+      "id": "group.vomiting_diarrhea.course",
+      "type": "ClinicalGroup",
+      "display": "course"
+    },
+    {
+      "id": "group.vomiting_diarrhea.vomit",
+      "type": "ClinicalGroup",
+      "display": "vomit"
+    },
+    {
+      "id": "group.vomiting_diarrhea.stool",
+      "type": "ClinicalGroup",
+      "display": "stool"
+    },
+    {
+      "id": "group.vomiting_diarrhea.pain",
+      "type": "ClinicalGroup",
+      "display": "pain"
+    },
+    {
+      "id": "group.vomiting_diarrhea.hydration",
+      "type": "ClinicalGroup",
+      "display": "hydration"
+    },
+    {
+      "id": "group.vomiting_diarrhea.exposure",
+      "type": "ClinicalGroup",
+      "display": "exposure"
+    },
+    {
+      "id": "group.vomiting_diarrhea.child",
+      "type": "ClinicalGroup",
+      "display": "child"
+    },
+    {
+      "id": "group.vomiting_diarrhea.pregnancy",
+      "type": "ClinicalGroup",
+      "display": "pregnancy"
+    },
+    {
+      "id": "group.vomiting_diarrhea.history",
+      "type": "ClinicalGroup",
+      "display": "history"
+    },
+    {
+      "id": "group.vomiting_diarrhea.treatment",
+      "type": "ClinicalGroup",
+      "display": "treatment"
+    },
+    {
+      "id": "group.vomiting_diarrhea.handoff",
+      "type": "ClinicalGroup",
+      "display": "handoff"
+    }
   ],
-  "provenance":{"created_by":{"type":"ai","id":"codex-gpt5"},"created_at":"2026-07-14T00:00:00Z","source_refs":["source.nhs.diarrhoea-vomiting.2026","source.nhs.dehydration.2026","source.cdc.food-poisoning.2025","source.nice.ng12.vomiting-diarrhea.2026","source.stom.mrcm.vomiting-diarrhea.20260714"],"review_status":"unreviewed","version":"0.1.0"}
+  "group_hypothesis_edges": [],
+  "safety_rules": [
+    {
+      "id": "rule.vomiting_diarrhea.safety.collapse",
+      "priority": 1000,
+      "when": {
+        "fact": "vomiting_diarrhea.collapse_shock_or_unresponsive",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.vomiting_diarrhea.safety.hematemesis",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.hematemesis",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.vomiting_diarrhea.safety.green-vomit",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.green_vomit",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.vomiting_diarrhea.safety.poisoning",
+      "priority": 1000,
+      "when": {
+        "fact": "exposure.possible_poisoning",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.vomiting_diarrhea.safety.severe-pain",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.sudden_severe_abdominal_pain",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.vomiting_diarrhea.safety.major-stool-bleeding",
+      "priority": 1000,
+      "when": {
+        "fact": "vomiting_diarrhea.black_stool_or_large_rectal_bleeding",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.vomiting_diarrhea.safety.confusion",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.confusion",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.vomiting_diarrhea.safety.neuro-warning",
+      "priority": 1000,
+      "when": {
+        "fact": "vomiting_diarrhea.neck_stiffness_rash_or_severe_headache",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.vomiting_diarrhea.safety.child-abdomen-warning",
+      "priority": 1000,
+      "when": {
+        "fact": "vomiting_diarrhea.child_bilious_vomit_distension_or_severe_local_pain",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.vomiting_diarrhea.safety.pregnancy-warning",
+      "priority": 1000,
+      "when": {
+        "fact": "vomiting_diarrhea.pregnancy_postpartum_bleeding_severe_pain_or_collapse",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.vomiting_diarrhea.safety.bloody-diarrhea",
+      "priority": 950,
+      "when": {
+        "fact": "symptom.bloody_diarrhea",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.vomiting_diarrhea.safety.unable-fluids",
+      "priority": 950,
+      "when": {
+        "fact": "symptom.unable_to_keep_fluids",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.vomiting_diarrhea.safety.high-risk-dehydration",
+      "priority": 950,
+      "when": {
+        "fact": "vomiting_diarrhea.rapid_worsening_or_high_risk_dehydration",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.vomiting_diarrhea.safety.vomiting-persistent",
+      "priority": 950,
+      "when": {
+        "fact": "symptom.vomiting_over_two_days",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.vomiting_diarrhea.safety.diarrhea-persistent",
+      "priority": 950,
+      "when": {
+        "fact": "symptom.diarrhea_over_seven_days",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.vomiting_diarrhea.safety.dehydration-low-urine",
+      "priority": 960,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.dehydration_signs",
+            "equals": true
+          },
+          {
+            "fact": "symptom.reduced_urine_output",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.primary_group",
+        "display": "Primary Vomiting or Diarrhoea Context",
+        "value_type": "coded",
+        "allowed_values": [
+          "vomiting_predominant",
+          "diarrhea_predominant",
+          "both_acute",
+          "persistent_or_recurrent",
+          "travel_food_or_cluster",
+          "post_antibiotic_or_healthcare",
+          "pregnancy_postpartum",
+          "infant_child_caregiver",
+          "condition_or_medicine_followup",
+          "other_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.primary-group",
+        "display": "Primary Vomiting or Diarrhoea Context",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.primary-group",
+        "wording": "이번 문제는 구토가 주된 경우, 설사가 주된 경우, 둘 다 있는 경우, 반복·지속되는 경우, 여행·음식 노출 뒤 발생, 항생제·의료기관 이용 뒤 발생, 임신·산후 관련, 영유아·소아 보호자 문진, 기존 질환·약물 추적, 그 밖의 불분명한 경우 중 무엇에 가장 가깝나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 260,
+          "reason": "primary-group"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.vomiting_diarrhea.presentation",
+        "display": "Presentation",
+        "value_type": "coded",
+        "allowed_values": [
+          "vomiting_only",
+          "diarrhea_only",
+          "both"
+        ]
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.presentation",
+        "display": "Presentation",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.presentation",
+        "wording": "구토만, 설사만, 구토와 설사 모두 중 어느 것인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 259,
+          "reason": "presentation"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.routing"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.collapse_shock_or_unresponsive",
+        "display": "Collapse Shock or Unresponsive",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.collapse",
+        "display": "Collapse Shock or Unresponsive",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.collapse",
+        "wording": "쓰러짐·실신, 깨우기 어려움, 심한 혼란, 차갑고 얼룩진 피부 또는 매우 축 늘어진 상태가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 258,
+          "reason": "collapse"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.hematemesis",
+        "display": "Blood or Coffee Ground Vomit",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.hematemesis",
+        "display": "Blood or Coffee Ground Vomit",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.hematemesis",
+        "wording": "피를 토했거나 토사물이 커피 찌꺼기처럼 보이나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 257,
+          "reason": "hematemesis"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.green_vomit",
+        "display": "Green Bilious Vomit",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.green-vomit",
+        "display": "Green Bilious Vomit",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.green-vomit",
+        "wording": "토사물이 분명한 초록색인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 256,
+          "reason": "green-vomit"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "exposure.possible_poisoning",
+        "display": "Possible Poisoning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.poisoning",
+        "display": "Possible Poisoning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.poisoning",
+        "wording": "약·세제·농약·화학물질·독버섯 등 독성 물질을 잘못 먹었을 가능성이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 255,
+          "reason": "poisoning"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.sudden_severe_abdominal_pain",
+        "display": "Sudden Severe Abdominal Pain",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.severe-pain",
+        "display": "Sudden Severe Abdominal Pain",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.severe-pain",
+        "wording": "배가 갑자기 매우 심하게 아프거나 단단하게 붓고 만지기 힘든가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 254,
+          "reason": "severe-pain"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.black_stool_or_large_rectal_bleeding",
+        "display": "Black Stool or Large Rectal Bleeding",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.major-stool-bleeding",
+        "display": "Black Stool or Large Rectal Bleeding",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.major-stool-bleeding",
+        "wording": "검고 끈적한 변을 보았거나 많은 피·혈괴가 항문으로 나왔나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 253,
+          "reason": "major-stool-bleeding"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.confusion",
+        "display": "Confusion",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.confusion",
+        "display": "Confusion",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.confusion",
+        "wording": "새로 혼란스럽거나 반응이 평소와 다른가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 252,
+          "reason": "confusion"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.dyspnea",
+        "display": "Breathing Difficulty",
+        "value_type": "severity",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.dyspnea",
+        "display": "Breathing Difficulty",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.dyspnea",
+        "wording": "숨참은 없음·가벼움·중간·심함 중 어느 정도인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 251,
+          "reason": "dyspnea"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.neck_stiffness_rash_or_severe_headache",
+        "display": "Neurologic or Rash Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.neuro-warning",
+        "display": "Neurologic or Rash Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.neuro-warning",
+        "wording": "심한 두통과 목이 뻣뻣함, 빛에 심하게 예민함, 눌러도 사라지지 않는 붉거나 보라색 발진이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 250,
+          "reason": "neuro-warning"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.child_bilious_vomit_distension_or_severe_local_pain",
+        "display": "Child Bilious Vomit or Acute Abdomen Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.child-abdomen-warning",
+        "display": "Child Bilious Vomit or Acute Abdomen Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.child-abdomen-warning",
+        "wording": "소아라면 초록색 구토, 심한 국소 복통, 배가 심하게 붓거나 만지면 크게 아파하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 249,
+          "reason": "child-abdomen-warning"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.pregnancy_postpartum_bleeding_severe_pain_or_collapse",
+        "display": "Pregnancy Postpartum Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.pregnancy-warning",
+        "display": "Pregnancy Postpartum Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.pregnancy-warning",
+        "wording": "임신 중이거나 출산·유산·임신종결 뒤이며 질출혈, 한쪽 또는 심한 복통, 어깨끝 통증, 실신이 함께 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 248,
+          "reason": "pregnancy-warning"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.bloody_diarrhea",
+        "display": "Bloody Diarrhoea",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.bloody-diarrhea",
+        "display": "Bloody Diarrhoea",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.bloody-diarrhea",
+        "wording": "묽은 변에 선명한 피나 피 섞인 점액이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 247,
+          "reason": "bloody-diarrhea"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.unable_to_keep_fluids",
+        "display": "Unable to Keep Fluids",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.unable-fluids",
+        "display": "Unable to Keep Fluids",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.unable-fluids",
+        "wording": "물을 조금씩 마셔도 계속 토해서 거의 유지할 수 없나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 246,
+          "reason": "unable-fluids"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.dehydration_signs",
+        "display": "Dehydration Symptoms",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.dehydration",
+        "display": "Dehydration Symptoms",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.dehydration",
+        "wording": "심한 갈증·입마름, 일어설 때 어지럼, 눈물이 안 남, 눈이 들어가 보임 등 탈수 증상이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 245,
+          "reason": "dehydration"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.hydration"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.reduced_urine_output",
+        "display": "Reduced Urine Output",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.reduced-urine",
+        "display": "Reduced Urine Output",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.reduced-urine",
+        "wording": "소변이 평소보다 크게 줄었거나 매우 진하고, 영유아라면 젖은 기저귀 수가 줄었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 244,
+          "reason": "reduced-urine"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.hydration"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.rapid_worsening_or_high_risk_dehydration",
+        "display": "Rapid Worsening or High Risk Dehydration",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.high-risk-dehydration",
+        "display": "Rapid Worsening or High Risk Dehydration",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.high-risk-dehydration",
+        "wording": "영유아·고령·허약·면역저하 상태에서 빠르게 처지거나 수분 섭취와 소변량이 계속 줄고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 243,
+          "reason": "high-risk-dehydration"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.vomiting_over_two_days",
+        "display": "Vomiting Over Two Days",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.vomiting-persistent",
+        "display": "Vomiting Over Two Days",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.vomiting-persistent",
+        "wording": "성인 기준 구토가 2일을 넘겨 계속되나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 242,
+          "reason": "vomiting-persistent"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.course"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.diarrhea_over_seven_days",
+        "display": "Diarrhoea Over Seven Days",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.diarrhea-persistent",
+        "display": "Diarrhoea Over Seven Days",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.diarrhea-persistent",
+        "wording": "설사가 7일을 넘겨 계속되나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 241,
+          "reason": "diarrhea-persistent"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.course"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.information_source_proxy_reliability_and_conflict",
+        "display": "Information Source and Reliability",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.information-source",
+        "display": "Information Source and Reliability",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.information-source",
+        "wording": "누가 답변하며 본인 느낌, 보호자 관찰, 체온·체중 기록, 검사결과 중 무엇에 근거하나요? 불확실하거나 서로 다른 정보도 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 230,
+          "reason": "information-source"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.age_life_stage_baseline_and_frailty",
+        "display": "Age Life Stage and Baseline",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.age-baseline",
+        "display": "Age Life Stage and Baseline",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.age-baseline",
+        "wording": "만 나이, 영유아·소아·고령·임신·산후 여부와 평소 식사·배변·활동·인지 상태를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 229,
+          "reason": "age-baseline"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.duration",
+        "display": "Overall Duration",
+        "value_type": "quantity"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.duration",
+        "display": "Overall Duration",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.duration",
+        "wording": "처음 증상이 시작된 뒤 지금까지의 기간을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 228,
+          "reason": "duration"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.course"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.onset_date_time_first_symptom_and_speed",
+        "display": "Onset Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.onset-detail",
+        "display": "Onset Detail",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.onset-detail",
+        "wording": "시작 날짜·시각, 구토·설사·통증 중 무엇이 먼저였고 갑자기 또는 서서히 시작했는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 227,
+          "reason": "onset-detail"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.course"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.continuous_episodic_frequency_trend_and_baseline",
+        "display": "Course and Trend",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.course-trend",
+        "display": "Course and Trend",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.course-trend",
+        "wording": "계속되는지 반복되는지, 빈도·한 번의 지속시간·호전/악화 추세와 사이에 정상으로 돌아오는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 226,
+          "reason": "course-trend"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.course"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.vomiting.present",
+        "display": "Vomiting Present",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.vomiting-present",
+        "display": "Vomiting Present",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.vomiting-present",
+        "wording": "구토가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 225,
+          "reason": "vomiting-present"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.vomit"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.vomiting.count_24h",
+        "display": "Vomiting Count 24 Hours",
+        "value_type": "integer"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.vomiting-count",
+        "display": "Vomiting Count 24 Hours",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.vomiting-count",
+        "wording": "최근 24시간 구토 횟수는 몇 회인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 224,
+          "reason": "vomiting-count"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.vomit"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.vomiting.severity",
+        "display": "Vomiting Severity",
+        "value_type": "coded",
+        "allowed_values": [
+          "mild",
+          "moderate",
+          "severe"
+        ]
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.vomiting-severity",
+        "display": "Vomiting Severity",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.vomiting-severity",
+        "wording": "구토는 가벼움·중간·심함 중 어느 정도인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 223,
+          "reason": "vomiting-severity"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.vomit"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.vomit_timing_meal_relation_volume_and_content",
+        "display": "Vomit Timing Volume and Content",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.vomit-detail",
+        "display": "Vomit Timing Volume and Content",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.vomit-detail",
+        "wording": "구토 시각과 식사·약 복용과의 관계, 대략적인 양, 음식물·맑은 액체·담즙 같은 내용물을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 222,
+          "reason": "vomit-detail"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.vomit"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.projectile_effortless_regurgitation_and_retching",
+        "display": "Vomiting Mechanism Description",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.vomit-mechanism",
+        "display": "Vomiting Mechanism Description",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.vomit-mechanism",
+        "wording": "분수처럼 뿜는지, 구역질 뒤 토하는지, 힘들이지 않고 음식이 올라오는지와 메스꺼움·헛구역질을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 221,
+          "reason": "vomit-mechanism"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.vomit"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.vomit_blood_color_amount_and_coffee_ground_detail",
+        "display": "Vomit Blood Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.vomit-blood-detail",
+        "display": "Vomit Blood Detail",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.vomit-blood-detail",
+        "wording": "피 또는 커피 찌꺼기 같은 구토가 있다면 색·양·횟수와 마지막 시각을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 220,
+          "reason": "vomit-blood-detail"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.vomit"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.diarrhea.present",
+        "display": "Diarrhoea Present",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.diarrhea-present",
+        "display": "Diarrhoea Present",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.diarrhea-present",
+        "wording": "묽거나 물 같은 설사가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 219,
+          "reason": "diarrhea-present"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.stool"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.diarrhea.count_24h",
+        "display": "Stool Count 24 Hours",
+        "value_type": "integer"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.stool-count",
+        "display": "Stool Count 24 Hours",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.stool-count",
+        "wording": "최근 24시간 묽은 변 횟수는 몇 회인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 218,
+          "reason": "stool-count"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.stool"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.diarrhea.severity",
+        "display": "Diarrhoea Severity",
+        "value_type": "coded",
+        "allowed_values": [
+          "mild",
+          "moderate",
+          "severe"
+        ]
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.diarrhea-severity",
+        "display": "Diarrhoea Severity",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.diarrhea-severity",
+        "wording": "설사는 가벼움·중간·심함 중 어느 정도인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 217,
+          "reason": "diarrhea-severity"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.stool"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.baseline_bowel_pattern_and_current_consistency",
+        "display": "Baseline and Current Stool",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.stool-baseline",
+        "display": "Baseline and Current Stool",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.stool-baseline",
+        "wording": "평소 배변 횟수·모양과 비교해 현재 변이 물 같음·묽음·기름짐·그 밖의 형태 중 어떻게 달라졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 216,
+          "reason": "stool-baseline"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.stool"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.stool_blood_mucus_black_color_amount_and_photo_source",
+        "display": "Stool Blood and Mucus Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.stool-blood-detail",
+        "display": "Stool Blood and Mucus Detail",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.stool-blood-detail",
+        "wording": "피·점액·검은 변이 있다면 색·양·횟수와 사진·검사자료 등 정보 출처를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 215,
+          "reason": "stool-blood-detail"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.stool"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.nocturnal_urgency_incontinence_or_tenesmus",
+        "display": "Nocturnal Urgency Incontinence or Tenesmus",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.stool-pattern",
+        "display": "Nocturnal Urgency Incontinence or Tenesmus",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.stool-pattern",
+        "wording": "밤에 자다가 설사하는지, 참기 어려운 급박감·실금·보고 나도 남은 느낌이나 통증이 있는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 214,
+          "reason": "stool-pattern"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.stool"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.abdominal_pain_present",
+        "display": "Abdominal Pain Present",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.pain-present",
+        "display": "Abdominal Pain Present",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.pain-present",
+        "wording": "복통이나 반복되는 배 경련이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 213,
+          "reason": "pain-present"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.pain"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.abdominal_pain_nrs",
+        "display": "Abdominal Pain NRS",
+        "value_type": "integer"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.pain-nrs",
+        "display": "Abdominal Pain NRS",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.pain-nrs",
+        "wording": "[필수] 복통이 있다면 현재 통증을 0부터 10까지 숫자로 알려주세요. 0은 통증 없음, 10은 상상할 수 있는 가장 심한 통증입니다.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 212,
+          "reason": "pain-nrs"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.pain"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.pain_site_radiation_character_timing_and_relations",
+        "display": "Abdominal Pain Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.pain-detail",
+        "display": "Abdominal Pain Detail",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.pain-detail",
+        "wording": "복통의 정확한 부위·퍼지는 곳·양상·지속시간과 식사·배변·구토·움직임과의 관계를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 211,
+          "reason": "pain-detail"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.pain"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.persistent_abdominal_or_back_pain",
+        "display": "Persistent Abdominal or Back Pain",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.persistent-pain",
+        "display": "Persistent Abdominal or Back Pain",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.persistent-pain",
+        "wording": "복통이나 등 통증이 지속되거나 반복되나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 210,
+          "reason": "persistent-pain"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.pain"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.abdominal_distension_flatus_and_bowel_change",
+        "display": "Distension and Flatus",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.distension",
+        "display": "Distension and Flatus",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.distension",
+        "wording": "배가 붓는 정도, 방귀·대변이 나오는지, 평소보다 배가 단단하거나 커졌는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 209,
+          "reason": "distension"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.pain"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.oral_intake_type_amount_last_kept_down_and_thirst",
+        "display": "Oral Intake and Thirst",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.oral-intake",
+        "display": "Oral Intake and Thirst",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.oral-intake",
+        "wording": "최근 마신 물·수분보충액·모유·분유와 먹은 음식의 종류·양, 마지막으로 토하지 않고 유지한 시각과 갈증을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 208,
+          "reason": "oral-intake"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.hydration"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.last_urine_time_frequency_color_and_diaper_count",
+        "display": "Urine and Diaper Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.urine-detail",
+        "display": "Urine and Diaper Detail",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.urine-detail",
+        "wording": "마지막 소변 시각, 최근 횟수·양·색과 영유아라면 24시간 젖은 기저귀 수를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 207,
+          "reason": "urine-detail"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.hydration"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.weight_before_current_change_and_measurement_source",
+        "display": "Weight Change and Source",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.weight",
+        "display": "Weight Change and Source",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.weight",
+        "wording": "증상 전후 체중과 측정 날짜·기기, 의도하지 않은 체중감소가 있다면 그 양을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 206,
+          "reason": "weight"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.hydration"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.unintentional_weight_loss",
+        "display": "Unintentional Weight Loss",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.weight-loss",
+        "display": "Unintentional Weight Loss",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.weight-loss",
+        "wording": "의도하지 않은 체중감소가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 205,
+          "reason": "weight-loss"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.history"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.fever",
+        "display": "Fever",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.fever",
+        "display": "Fever",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.fever",
+        "wording": "측정된 발열이나 열감·오한이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 204,
+          "reason": "fever"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.history"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.temperature_value_site_device_time_and_trend",
+        "display": "Temperature Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.temperature",
+        "display": "Temperature Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.temperature",
+        "wording": "체온을 쟀다면 최고값·측정 시각·부위·기기와 변화 추세를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 203,
+          "reason": "temperature"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.associated_headache_rash_respiratory_urinary_or_jaundice",
+        "display": "Associated System Symptoms",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.associated",
+        "display": "Associated System Symptoms",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.associated",
+        "wording": "두통·발진·기침·숨참·소변통·옆구리통증·피부나 눈의 황달 등 함께 있는 증상을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 202,
+          "reason": "associated"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.eating_drinking_sleep_work_school_selfcare_impact",
+        "display": "Functional Impact",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.function",
+        "display": "Functional Impact",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.function",
+        "wording": "먹기·마시기·수면·화장실 이용·자가관리·직장·학교에 어느 정도 영향을 주는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 201,
+          "reason": "function"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "exposure.sick_contact_gastrointestinal",
+        "display": "Gastrointestinal Sick Contact",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.sick-contact",
+        "display": "Gastrointestinal Sick Contact",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.sick-contact",
+        "wording": "주변에 비슷한 구토·설사를 하는 사람이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 190,
+          "reason": "sick-contact"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.exposure"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "exposure.suspect_food_or_water",
+        "display": "Suspect Food or Water",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.food-water",
+        "display": "Suspect Food or Water",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.food-water",
+        "wording": "증상 전 의심되는 음식·물·공동식사가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 189,
+          "reason": "food-water"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.exposure"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.food_water_meal_place_preparation_and_cluster_detail",
+        "display": "Food Water and Cluster Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.food-detail",
+        "display": "Food Water and Cluster Detail",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.food-detail",
+        "wording": "먹은 음식·물, 장소·조리상태·시각과 함께 먹은 사람 중 아픈 사람의 수와 증상 시작 시각을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 188,
+          "reason": "food-detail"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.exposure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "exposure.recent_international_travel",
+        "display": "Recent International Travel",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.travel",
+        "display": "Recent International Travel",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.travel",
+        "wording": "최근 해외여행이나 해외 체류가 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 187,
+          "reason": "travel"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.exposure"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.travel_destination_dates_food_water_healthcare_and_onset",
+        "display": "Travel Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.travel-detail",
+        "display": "Travel Detail",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.travel-detail",
+        "wording": "여행지·출발/귀국일, 현지 음식·물·수영·동물·의료기관 노출과 증상 시작일을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 186,
+          "reason": "travel-detail"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.exposure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.childcare_care_facility_healthcare_animal_or_freshwater_exposure",
+        "display": "Institutional Animal or Freshwater Exposure",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.other-exposure",
+        "display": "Institutional Animal or Freshwater Exposure",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.other-exposure",
+        "wording": "어린이집·학교·요양시설·의료기관, 동물 접촉, 수영장·계곡·호수 노출과 날짜를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 185,
+          "reason": "other-exposure"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.exposure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.recent_antibiotics",
+        "display": "Recent Antibiotics",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.recent-antibiotics",
+        "display": "Recent Antibiotics",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.recent-antibiotics",
+        "wording": "최근 항생제를 복용하거나 주사로 맞았나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 184,
+          "reason": "recent-antibiotics"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.treatment"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.antibiotic_name_route_start_stop_and_diarrhea_relation",
+        "display": "Antibiotic Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.antibiotic-detail",
+        "display": "Antibiotic Detail",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.antibiotic-detail",
+        "wording": "항생제 이름·투여경로·시작/종료일과 설사 시작 시각의 관계를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 183,
+          "reason": "antibiotic-detail"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.treatment"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.current_medicines_recent_changes_laxative_glp1_metformin_and_supplements",
+        "display": "Medicines and Recent Changes",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.medicines",
+        "display": "Medicines and Recent Changes",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.medicines",
+        "wording": "현재 약과 최근 시작·증량·중단한 약, 변비약·메트포르민·GLP-1 계열 주사·건강기능식품이 있다면 이름·용량·날짜를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 182,
+          "reason": "medicines"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.treatment"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.medicine_food_allergies_and_reactions",
+        "display": "Allergies and Reactions",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.allergies",
+        "display": "Allergies and Reactions",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.allergies",
+        "wording": "약·음식 알레르기와 실제 나타난 반응을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 181,
+          "reason": "allergies"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.gi_conditions_surgery_stoma_feeding_tube_and_baseline",
+        "display": "GI History Surgery and Devices",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.gi-history",
+        "display": "GI History Surgery and Devices",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.gi-history",
+        "wording": "염증성장질환·셀리악병·흡수장애·간담췌 질환, 복부수술, 장루·영양관과 평소 상태를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 180,
+          "reason": "gi-history"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.diabetes_kidney_adrenal_immunocompromise_and_frailty",
+        "display": "High Risk Conditions",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.high-risk-history",
+        "display": "High Risk Conditions",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.high-risk-history",
+        "wording": "당뇨·신장·부신 질환, 암치료·이식·면역억제, 허약·영양실조 등 탈수 위험을 높일 수 있는 상태를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 179,
+          "reason": "high-risk-history"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "patient.immunocompromised",
+        "display": "Immunocompromised",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.immunocompromised",
+        "display": "Immunocompromised",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.immunocompromised",
+        "wording": "면역저하 상태인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 178,
+          "reason": "immunocompromised"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.history"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "patient.age_65_or_older",
+        "display": "Age 65 or Older",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.older-age",
+        "display": "Age 65 or Older",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.older-age",
+        "wording": "만 65세 이상인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 177,
+          "reason": "older-age"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.history"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "pregnancy.possible",
+        "display": "Possible Pregnancy",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.pregnancy-possible",
+        "display": "Possible Pregnancy",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.pregnancy-possible",
+        "wording": "임신 가능성이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 176,
+          "reason": "pregnancy-possible"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.pregnancy"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.pregnancy_gestation_lmp_postpartum_date_feeding_and_obstetric_symptoms",
+        "display": "Pregnancy and Postpartum Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.pregnancy-detail",
+        "display": "Pregnancy and Postpartum Detail",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.pregnancy-detail",
+        "wording": "임신 주수·마지막 월경일 또는 출산·유산·임신종결 날짜, 수유 여부와 질출혈·골반통 등 산과 증상을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 175,
+          "reason": "pregnancy-detail"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.pregnancy"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.child_age_weight_birth_history_feeding_and_baseline",
+        "display": "Child Baseline",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.child-baseline",
+        "display": "Child Baseline",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.child-baseline",
+        "wording": "소아의 정확한 나이·현재/평소 체중, 미숙아·저체중 출생 여부, 모유·분유·이유식과 평소 활동을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 174,
+          "reason": "child-baseline"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.child"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.child_responsiveness_tears_fontanelle_skin_color_and_extremities",
+        "display": "Child Dehydration Observation",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.child-observation",
+        "display": "Child Dehydration Observation",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.child-observation",
+        "wording": "아이의 반응·보챔·처짐, 눈물, 눈·숨구멍이 들어가 보임, 피부색·손발 온도 변화를 보호자가 관찰한 대로 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 173,
+          "reason": "child-observation"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.child"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.child_stool_vomit_counts_feeding_and_diapers_24h",
+        "display": "Child 24 Hour Intake Output",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.child-intake-output",
+        "display": "Child 24 Hour Intake Output",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.child-intake-output",
+        "wording": "최근 24시간 구토·설사 횟수, 먹인 수분·모유·분유의 양과 젖은 기저귀 수를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 172,
+          "reason": "child-intake-output"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.child"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.prior_similar_episodes_previous_diagnosis_and_admissions",
+        "display": "Prior Episodes",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.prior-episodes",
+        "display": "Prior Episodes",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.prior-episodes",
+        "wording": "이전 비슷한 증상의 횟수·시기, 들은 진단과 응급실·입원 경험을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 160,
+          "reason": "prior-episodes"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.prior_assessment_tests_results_and_source",
+        "display": "Prior Assessment and Tests",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.prior-tests",
+        "display": "Prior Assessment and Tests",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.prior-tests",
+        "wording": "이번 증상으로 이미 진료·검사를 받았다면 날짜·기관, 혈액·대변·영상 결과와 원본 또는 전달받은 설명을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 159,
+          "reason": "prior-tests"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.oral_rehydration_antiemetic_antidiarrheal_antibiotic_and_response",
+        "display": "Treatment and Response",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.treatment-response",
+        "display": "Treatment and Response",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.treatment-response",
+        "wording": "수분보충액·구토약·지사제·항생제 등 시행한 조치의 이름·용량·시각과 효과·부작용을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 158,
+          "reason": "treatment-response"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.treatment"
+      ]
+    },
+    {
+      "fact": {
+        "id": "vomiting_diarrhea.patient_concern_goal_and_additional_comment",
+        "display": "Patient Concern Goal and Other Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.vomiting_diarrhea.concern-goal",
+        "display": "Patient Concern Goal and Other Detail",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.vomiting_diarrhea.concern-goal",
+        "wording": "가장 걱정되는 점, 의료진에게 원하는 도움과 질문에 없지만 전달할 내용을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 157,
+          "reason": "concern-goal"
+        }
+      ],
+      "supports": [
+        "group.vomiting_diarrhea.handoff"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nhs.diarrhoea-vomiting.2026",
+      "source.nhs.dehydration.2026",
+      "source.cdc.food-poisoning.2025",
+      "source.cdc.yellow-book.travelers-diarrhea.2026",
+      "source.cdc.c-diff.2026",
+      "source.nice.cg84.gastroenteritis-under-5",
+      "source.nice.ng12.vomiting-diarrhea.2026",
+      "source.stom.mrcm.vomiting-diarrhea.20260714"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
 }

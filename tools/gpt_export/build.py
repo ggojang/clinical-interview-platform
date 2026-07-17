@@ -597,6 +597,16 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
     aggregate_facts["items"] = [
         compact_fact_index(item) for item in aggregate_facts["items"]
     ]
+    # The aggregate endpoint is retained only for legacy discovery. It cannot
+    # grow without bound because ChatGPT Actions reject responses around
+    # 100 kB. Complete, non-truncated Fact payloads are already partitioned by
+    # Reason for Encounter, so publish a deterministic prefix here and expose
+    # its cardinality explicitly instead of silently crossing that limit.
+    complete_fact_count = len(aggregate_facts["items"])
+    aggregate_facts["items"] = aggregate_facts["items"][:1500]
+    aggregate_facts["count"] = complete_fact_count
+    aggregate_facts["returned_count"] = len(aggregate_facts["items"])
+    aggregate_facts["truncated"] = aggregate_facts["returned_count"] < complete_fact_count
     # This backward-compatible resource is only an identifier index. Repeated
     # package-level lifecycle metadata is available in the manifest and each
     # RFE resource, so omit it here to keep the Action response below 100 kB as
