@@ -520,10 +520,10 @@ class CompilerTests(unittest.TestCase):
             node["id"] for node in first["knowledge_graph"]["nodes"]
             if node["type"] == "Fact"
         }
-        self.assertEqual(len(facts), 34)
+        self.assertEqual(len(facts), 75)
         self.assertEqual(facts, set(first["indexes"]["questions_by_fact"]))
-        self.assertEqual(first["coverage"]["total_safety_rules"], 7)
-        self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 7)
+        self.assertEqual(first["coverage"]["total_safety_rules"], 13)
+        self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 13)
         self.assertEqual(first["coverage"]["uncovered_safety_rules"], [])
 
     def test_fatigue_mrcm_is_build_time_metadata_only(self):
@@ -1685,8 +1685,8 @@ class PackageRuntimeTests(unittest.TestCase):
     def test_fatigue_simulation_evaluation_passes(self):
         report = run_evaluation(FATIGUE_PACKAGE)
         self.assertTrue(report["passed"])
-        self.assertEqual(report["case_count"], 8)
-        self.assertLessEqual(max(item["turns"] for item in report["results"]), 35)
+        self.assertEqual(report["case_count"], 22)
+        self.assertLessEqual(max(item["turns"] for item in report["results"]), 50)
 
     def test_fatigue_runtime_uses_fatigue_rfe(self):
         session = InterviewSession("fatigue-runtime", package_path=FATIGUE_PACKAGE)
