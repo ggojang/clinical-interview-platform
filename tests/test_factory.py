@@ -306,11 +306,23 @@ class CompilerTests(unittest.TestCase):
             node["id"] for node in first["knowledge_graph"]["nodes"]
             if node["type"] == "Fact"
         }
-        self.assertEqual(len(facts), 24)
+        self.assertEqual(len(facts), 74)
         self.assertEqual(facts, set(first["indexes"]["questions_by_fact"]))
-        self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 8)
-        self.assertEqual(first["coverage"]["total_safety_rules"], 8)
+        self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 13)
+        self.assertEqual(first["coverage"]["total_safety_rules"], 13)
         self.assertEqual(first["coverage"]["uncovered_safety_rules"], [])
+        self.assertEqual(first["coverage"]["data_absent_reason_simulations"], 1)
+
+        mapping = json.loads(
+            (Path(__file__).resolve().parents[1]
+             / "mappings/terminology/snomed-mrcm-dyspnea.json")
+            .read_text(encoding="utf-8")
+        )
+        self.assertEqual(len(mapping["focus_concepts"]), 4)
+        self.assertFalse(mapping["validation"]["clinical_rule_authority"])
+        self.assertFalse(mapping["dyspnea_semantics"]["diagnosis_inferred"])
+        self.assertFalse(mapping["dyspnea_semantics"]["wells_score_calculated"])
+        self.assertFalse(mapping["dyspnea_semantics"]["runtime_terminology_query_required"])
 
     def test_dyspnea_reuses_cross_package_fact_identity(self):
         cough = compile_package()
@@ -1327,6 +1339,15 @@ class PackageRuntimeTests(unittest.TestCase):
         self.assertEqual(record["status"], "unknown")
         self.assertEqual(record["dataAbsentReason"]["code"], "not-performed")
 
+    def test_not_measured_overrides_provisional_string_extraction(self):
+        session = InterviewSession("not-performed-oximetry", package_path=DYSPNEA_PACKAGE)
+        fact_id = "dyspnea.oxygen_saturation_device_time_oxygen_and_reliability"
+        session.last_question_fact = fact_id
+        session.process("측정하지 않았어요.")
+        record = session.memory.facts[fact_id]
+        self.assertEqual(record["status"], "unknown")
+        self.assertEqual(record["dataAbsentReason"]["code"], "not-performed")
+
     def test_question_references_are_monotonic_and_do_not_reset(self):
         session = InterviewSession("stable-question-references")
         first = session.process("기침이 4일째입니다")
@@ -1535,8 +1556,8 @@ class PackageRuntimeTests(unittest.TestCase):
     def test_dyspnea_package_simulation_evaluation_passes(self):
         report = run_evaluation(DYSPNEA_PACKAGE)
         self.assertTrue(report["passed"])
-        self.assertEqual(report["case_count"], 11)
-        self.assertLessEqual(max(item["turns"] for item in report["results"]), 18)
+        self.assertEqual(report["case_count"], 20)
+        self.assertLessEqual(max(item["turns"] for item in report["results"]), 80)
 
     def test_dyspnea_runtime_uses_dyspnea_rfe(self):
         session = InterviewSession("dyspnea-runtime", package_path=DYSPNEA_PACKAGE)

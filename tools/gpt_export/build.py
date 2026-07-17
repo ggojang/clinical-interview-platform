@@ -597,6 +597,15 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
     aggregate_facts["items"] = [
         compact_fact_index(item) for item in aggregate_facts["items"]
     ]
+    # This backward-compatible resource is only an identifier index. Repeated
+    # package-level lifecycle metadata is available in the manifest and each
+    # RFE resource, so omit it here to keep the Action response below 100 kB as
+    # the number of implemented professional Facts grows.
+    for key in (
+        "generated_at", "status", "review_status", "usage_modes", "version",
+        "contains_patient_responses",
+    ):
+        aggregate_facts.pop(key, None)
     aggregate_facts["payload_role"] = "legacy_discovery_index"
     aggregate_facts["complete_fact_payloads"] = "/gpt/rfe/{rfe}/facts.json"
     aggregate_questions["items"] = [compact(item) for item in aggregate_questions["items"]]

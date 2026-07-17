@@ -437,6 +437,23 @@ class InterviewSession:
             for candidate in additions.values():
                 candidate["correction"] = True
         merge_results: dict[str, str] = {}
+        # Explicit absence phrases are semantic answers, not free-text values.
+        # String Facts otherwise accept any text during extraction, which used
+        # to make phrases such as "측정하지 않았어요" unreachable by the
+        # dataAbsentReason handler below. Remove only the expected Fact's
+        # provisional extraction so the canonical absence path can run.
+        explicit_absence_phrases = {
+            "i am not sure", "i'm not sure", "not sure",
+            "모르겠어요", "잘 모르겠어요",
+            "i prefer not to answer", "i'd rather not answer",
+            "prefer not to say", "답하고 싶지 않아요", "말하고 싶지 않아요",
+            "not applicable", "does not apply", "해당되지 않아요",
+            "not measured", "it was not measured", "was not measured",
+            "측정하지 않았어요", "측정하지 않았습니다", "재지 않았어요",
+            "재지 않았습니다",
+        }
+        if expected_fact and low_normalized in explicit_absence_phrases:
+            additions.pop(expected_fact, None)
         allowed_facts = {node["id"] for node in self._fact_nodes()}
         for fact_id, candidate in additions.items():
             if fact_id in allowed_facts:

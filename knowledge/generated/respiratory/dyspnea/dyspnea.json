@@ -1,74 +1,2881 @@
 {
-  "id": "generated.primary-care-dyspnea",
+  "id": "knowledge.generated.respiratory.dyspnea",
   "version": "0.1.0",
   "status": "research_only",
-  "usage_modes": ["research_test", "simulation"],
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
   "source_manifest": "source-manifest.primary-care-dyspnea-research",
   "default_refresh": {
     "class": "clinical_guideline",
-    "last_assessed_at": "2026-07-14",
-    "next_monitor_at": "2026-07-15",
-    "next_full_review_at": "2026-10-12",
+    "last_assessed_at": "2026-07-17",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-07-18",
+    "next_full_review_at": "2027-01-13",
     "policy_id": "policy.knowledge-refresh",
-    "overdue_behavior": {"production": "exclude_or_require_review", "research_test": "allow_with_warning"}
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
   },
   "extra_nodes": [
-    {"id": "group.dyspnea_severity", "type": "ClinicalGroup", "display": "Immediate Severity and Functional Impact"},
-    {"id": "group.dyspnea_airway", "type": "ClinicalGroup", "display": "Airway and Respiratory Features"},
-    {"id": "group.dyspnea_congestion", "type": "ClinicalGroup", "display": "Congestion-associated Features"},
-    {"id": "group.dyspnea_thromboembolic", "type": "ClinicalGroup", "display": "Thromboembolic Warning Features"},
-    {"id": "group.dyspnea_context", "type": "ClinicalGroup", "display": "Exposure and Background Context"},
-    {"id": "hypothesis.dyspnea_immediate_safety", "type": "Hypothesis", "display": "Immediate Breathing Safety Features"},
-    {"id": "hypothesis.dyspnea_airway_features", "type": "Hypothesis", "display": "Airway-associated Features"},
-    {"id": "hypothesis.dyspnea_congestion_features", "type": "Hypothesis", "display": "Congestion-associated Features"},
-    {"id": "hypothesis.dyspnea_thromboembolic_warning", "type": "Hypothesis", "display": "Thromboembolic Warning Features"}
+    {
+      "id": "group.dyspnea.routing",
+      "type": "ClinicalGroup",
+      "display": "routing"
+    },
+    {
+      "id": "group.dyspnea.safety",
+      "type": "ClinicalGroup",
+      "display": "safety"
+    },
+    {
+      "id": "group.dyspnea.course",
+      "type": "ClinicalGroup",
+      "display": "course"
+    },
+    {
+      "id": "group.dyspnea.function",
+      "type": "ClinicalGroup",
+      "display": "function"
+    },
+    {
+      "id": "group.dyspnea.airway",
+      "type": "ClinicalGroup",
+      "display": "airway"
+    },
+    {
+      "id": "group.dyspnea.infection",
+      "type": "ClinicalGroup",
+      "display": "infection"
+    },
+    {
+      "id": "group.dyspnea.cardiac",
+      "type": "ClinicalGroup",
+      "display": "cardiac"
+    },
+    {
+      "id": "group.dyspnea.thromboembolic",
+      "type": "ClinicalGroup",
+      "display": "thromboembolic"
+    },
+    {
+      "id": "group.dyspnea.risk",
+      "type": "ClinicalGroup",
+      "display": "risk"
+    },
+    {
+      "id": "group.dyspnea.exposure",
+      "type": "ClinicalGroup",
+      "display": "exposure"
+    },
+    {
+      "id": "group.dyspnea.followup",
+      "type": "ClinicalGroup",
+      "display": "followup"
+    }
   ],
-  "group_hypothesis_edges": [
-    ["group.dyspnea_severity", "hypothesis.dyspnea_immediate_safety"],
-    ["group.dyspnea_airway", "hypothesis.dyspnea_airway_features"],
-    ["group.dyspnea_congestion", "hypothesis.dyspnea_congestion_features"],
-    ["group.dyspnea_thromboembolic", "hypothesis.dyspnea_thromboembolic_warning"]
-  ],
+  "group_hypothesis_edges": [],
   "safety_rules": [
-    {"id": "rule.dyspnea.safety.severe_breathing_difficulty", "priority": 1000, "when": {"fact": "symptom.dyspnea", "equals": "severe"}, "then": {"safety_level": "emergency", "action": "human_handoff", "suppress_routine": true}},
-    {"id": "rule.dyspnea.safety.cyanosis", "priority": 1000, "when": {"fact": "symptom.cyanosis", "equals": true}, "then": {"safety_level": "emergency", "action": "human_handoff", "suppress_routine": true}},
-    {"id": "rule.dyspnea.safety.confusion", "priority": 1000, "when": {"fact": "symptom.confusion", "equals": true}, "then": {"safety_level": "emergency", "action": "human_handoff", "suppress_routine": true}},
-    {"id": "rule.dyspnea.safety.stridor", "priority": 1000, "when": {"fact": "symptom.stridor", "equals": true}, "then": {"safety_level": "emergency", "action": "human_handoff", "suppress_routine": true}},
-    {"id": "rule.dyspnea.safety.syncope", "priority": 900, "when": {"fact": "symptom.syncope", "equals": true}, "then": {"safety_level": "urgent", "action": "human_handoff", "suppress_routine": true}},
-    {"id": "rule.dyspnea.safety.hemoptysis", "priority": 900, "when": {"fact": "symptom.hemoptysis", "equals": true}, "then": {"safety_level": "urgent", "action": "human_handoff", "suppress_routine": true}},
-    {"id": "rule.dyspnea.safety.chest_pain", "priority": 900, "when": {"fact": "symptom.chest_pain", "equals": true}, "then": {"safety_level": "urgent", "action": "human_handoff", "suppress_routine": true}},
-    {"id": "rule.dyspnea.safety.sudden_with_unilateral_leg_features", "priority": 920, "when": {"all": [{"fact": "symptom.dyspnea_onset", "equals": "sudden"}, {"fact": "symptom.unilateral_leg_pain_swelling", "equals": true}]}, "then": {"safety_level": "urgent", "action": "human_handoff", "suppress_routine": true}}
+    {
+      "id": "rule.dyspnea.safety.severe",
+      "priority": 1000,
+      "when": {
+        "fact": "dyspnea.severe_breathing_distress",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.dyspnea.safety.unable-to-speak",
+      "priority": 1000,
+      "when": {
+        "fact": "dyspnea.inability_to_speak_gasping_or_exhaustion",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.dyspnea.safety.cyanosis",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.cyanosis",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.dyspnea.safety.confusion",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.confusion",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.dyspnea.safety.collapse-warning",
+      "priority": 1000,
+      "when": {
+        "fact": "dyspnea.collapse_clammy_or_circulatory_warning",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.dyspnea.safety.airway-warning",
+      "priority": 1000,
+      "when": {
+        "fact": "dyspnea.stridor_choking_or_airway_swelling",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.dyspnea.safety.cardiac-warning",
+      "priority": 1000,
+      "when": {
+        "fact": "dyspnea.chest_pressure_radiation_or_sweating",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.dyspnea.safety.hemoptysis",
+      "priority": 990,
+      "when": {
+        "fact": "symptom.hemoptysis",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.dyspnea.safety.vte-warning",
+      "priority": 990,
+      "when": {
+        "fact": "dyspnea.sudden_with_unilateral_leg_or_vte_warning",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.dyspnea.safety.pregnancy-warning",
+      "priority": 1000,
+      "when": {
+        "fact": "dyspnea.pregnancy_postpartum_chest_pain_or_collapse",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.dyspnea.safety.rescue-failure",
+      "priority": 1000,
+      "when": {
+        "fact": "dyspnea.rescue_treatment_not_helping_or_rapid_worsening",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.dyspnea.safety.child-warning",
+      "priority": 1000,
+      "when": {
+        "fact": "dyspnea.child_retractions_grunting_or_limp",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.dyspnea.safety.syncope",
+      "priority": 990,
+      "when": {
+        "fact": "symptom.syncope",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
   ],
   "entries": [
-    {"reuse_existing": true, "fact": {"id": "symptom.dyspnea", "display": "Breathing Difficulty Severity", "value_type": "severity"}, "target": {"id": "target.dyspnea.determine_severity", "display": "Determine Breathing Difficulty Severity", "intents": ["intent.screen_red_flags", "intent.characterize_symptom"]}, "question": {"id": "question.dyspnea.severity", "wording": "How difficult is it to breathe right now, and can you speak in full sentences?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 130, "reason": "immediate_respiration_safety_gate"}], "supports": ["group.dyspnea_severity"]},
-    {"reuse_existing": true, "fact": {"id": "symptom.duration", "display": "Breathing Difficulty Duration", "value_type": "quantity"}, "target": {"id": "target.dyspnea.determine_duration", "display": "Determine Duration", "intents": ["intent.characterize_symptom"]}, "question": {"id": "question.dyspnea.duration", "wording": "How long have you been short of breath?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 125, "reason": "characterize_course"}], "supports": ["group.dyspnea_severity"]},
-    {"fact": {"id": "symptom.dyspnea_onset", "display": "Breathing Difficulty Onset", "value_type": "coded", "allowed_values": ["sudden", "gradual"]}, "target": {"id": "target.dyspnea.determine_onset", "display": "Determine Onset", "intents": ["intent.characterize_symptom", "intent.screen_red_flags"]}, "question": {"id": "question.dyspnea.onset", "wording": "Did the breathing difficulty start suddenly or gradually?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 124, "reason": "onset_safety_characterization"}], "supports": ["group.dyspnea_severity", "group.dyspnea_thromboembolic"]},
-    {"fact": {"id": "symptom.dyspnea_at_rest", "display": "Breathing Difficulty at Rest", "value_type": "boolean", "extraction_cues": ["short of breath at rest", "while sitting", "가만히 있어도 숨"]}, "target": {"id": "target.dyspnea.determine_at_rest", "display": "Determine Symptoms at Rest", "intents": ["intent.characterize_symptom", "intent.screen_red_flags"]}, "question": {"id": "question.dyspnea.at_rest", "wording": "Are you short of breath even while resting?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 122, "reason": "functional_severity"}], "supports": ["group.dyspnea_severity"]},
-    {"fact": {"id": "symptom.exertional_dyspnea", "display": "Breathing Difficulty with Activity", "value_type": "boolean", "extraction_cues": ["on exertion", "walking uphill", "climbing stairs", "계단에서 숨"]}, "target": {"id": "target.dyspnea.determine_exertional", "display": "Determine Activity Association", "intents": ["intent.characterize_symptom"]}, "question": {"id": "question.dyspnea.exertional", "wording": "Does activity such as walking or climbing stairs bring it on or make it worse?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 118, "reason": "functional_characterization"}], "supports": ["group.dyspnea_severity"]},
-    {"fact": {"id": "symptom.cyanosis", "display": "Blue or Grey Lips or Skin", "value_type": "boolean", "extraction_cues": ["blue lips", "grey lips", "blue skin", "lips have turned blue", "입술이 파래"]}, "target": {"id": "target.dyspnea.determine_cyanosis", "display": "Determine Colour Change", "intents": ["intent.screen_red_flags"]}, "question": {"id": "question.dyspnea.cyanosis", "wording": "Have your lips or skin looked unusually pale, blue, or grey?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 117, "reason": "immediate_safety_gate"}], "supports": ["group.dyspnea_severity"]},
-    {"reuse_existing": true, "fact": {"id": "symptom.confusion", "display": "New Confusion or Disorientation", "value_type": "boolean"}, "target": {"id": "target.dyspnea.determine_confusion", "display": "Determine New Confusion", "intents": ["intent.screen_red_flags"]}, "question": {"id": "question.dyspnea.confusion", "wording": "Have you or someone with you noticed new confusion or unusual drowsiness?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 116, "reason": "immediate_safety_gate"}], "supports": ["group.dyspnea_severity"]},
-    {"fact": {"id": "symptom.stridor", "display": "Noisy Breathing on Inspiration", "value_type": "boolean", "extraction_cues": ["stridor", "noisy breathing in", "숨 들이쉴 때 소리"]}, "target": {"id": "target.dyspnea.determine_stridor", "display": "Determine Upper Airway Noise", "intents": ["intent.screen_red_flags"]}, "question": {"id": "question.dyspnea.stridor", "wording": "Is there a harsh or noisy sound when you breathe in, or a choking sensation?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 115, "reason": "upper_airway_safety_gate"}], "supports": ["group.dyspnea_severity", "group.dyspnea_airway"]},
-    {"fact": {"id": "symptom.syncope", "display": "Fainting or Near-fainting", "value_type": "boolean", "extraction_cues": ["fainted", "passed out", "near faint", "실신", "기절"]}, "target": {"id": "target.dyspnea.determine_syncope", "display": "Determine Fainting", "intents": ["intent.screen_red_flags"]}, "question": {"id": "question.dyspnea.syncope", "wording": "Have you fainted, nearly fainted, or felt you might pass out?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 114, "reason": "circulatory_safety_gate"}], "supports": ["group.dyspnea_severity"]},
-    {"reuse_existing": true, "fact": {"id": "symptom.chest_pain", "display": "Chest Pain or Pressure", "value_type": "boolean"}, "target": {"id": "target.dyspnea.determine_chest_pain", "display": "Determine Chest Pain", "intents": ["intent.screen_red_flags"]}, "question": {"id": "question.dyspnea.chest_pain", "wording": "Do you have chest pain, pressure, tightness, or heaviness?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 113, "reason": "chest_safety_gate"}], "supports": ["group.dyspnea_severity", "group.dyspnea_thromboembolic"]},
-    {"fact": {"id": "symptom.pleuritic_chest_pain", "display": "Pain Worse with Breathing", "value_type": "boolean", "extraction_cues": ["pain worse breathing", "pain on breathing", "숨쉴 때 가슴 통증"]}, "target": {"id": "target.dyspnea.determine_pleuritic_pain", "display": "Determine Breathing-related Pain", "intents": ["intent.screen_red_flags", "intent.characterize_symptom"]}, "question": {"id": "question.dyspnea.pleuritic_pain", "wording": "Is any chest pain sharp or worse when you breathe in?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 108, "reason": "thromboembolic_warning_feature"}], "supports": ["group.dyspnea_thromboembolic"]},
-    {"reuse_existing": true, "fact": {"id": "symptom.hemoptysis", "display": "Coughing Up Blood", "value_type": "boolean"}, "target": {"id": "target.dyspnea.determine_hemoptysis", "display": "Determine Coughing Up Blood", "intents": ["intent.screen_red_flags"]}, "question": {"id": "question.dyspnea.hemoptysis", "wording": "Have you coughed up any blood?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 112, "reason": "thromboembolic_warning_feature"}], "supports": ["group.dyspnea_thromboembolic"]},
-    {"fact": {"id": "symptom.unilateral_leg_pain_swelling", "display": "One-sided Leg Pain or Swelling", "value_type": "boolean", "extraction_cues": ["one leg swollen", "one leg pain", "한쪽 다리가 붓"]}, "target": {"id": "target.dyspnea.determine_unilateral_leg_features", "display": "Determine One-sided Leg Symptoms", "intents": ["intent.screen_red_flags", "intent.risk_assessment"]}, "question": {"id": "question.dyspnea.unilateral_leg", "wording": "Do you have new pain or swelling in one leg?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 111, "reason": "thromboembolic_warning_feature"}], "supports": ["group.dyspnea_thromboembolic"]},
-    {"fact": {"id": "risk.recent_immobility_or_surgery", "display": "Recent Immobility or Surgery", "value_type": "boolean", "extraction_cues": ["recent surgery", "bed rest", "immobile", "최근 수술", "오래 누워"]}, "target": {"id": "target.dyspnea.determine_immobility_surgery", "display": "Determine Recent Immobility or Surgery", "intents": ["intent.risk_assessment"]}, "question": {"id": "question.dyspnea.immobility_surgery", "wording": "Have you had surgery recently or been unable to move around for several days?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 104, "reason": "thromboembolic_risk_context"}], "supports": ["group.dyspnea_thromboembolic", "group.dyspnea_context"]},
-    {"fact": {"id": "history.venous_thromboembolism", "display": "Previous DVT or Pulmonary Embolism", "value_type": "boolean", "extraction_cues": ["previous dvt", "previous pulmonary embolism", "blood clot before", "혈전 병력"]}, "target": {"id": "target.dyspnea.determine_vte_history", "display": "Determine Previous Venous Thromboembolism", "intents": ["intent.risk_assessment"]}, "question": {"id": "question.dyspnea.vte_history", "wording": "Have you ever had a blood clot in a leg or lung?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 103, "reason": "thromboembolic_risk_context"}], "supports": ["group.dyspnea_thromboembolic", "group.dyspnea_context"]},
-    {"fact": {"id": "symptom.palpitations", "display": "Palpitations", "value_type": "boolean", "extraction_cues": ["palpitations", "heart racing", "fluttering", "두근거"]}, "target": {"id": "target.dyspnea.determine_palpitations", "display": "Determine Palpitations", "intents": ["intent.differentiate_common_causes"]}, "question": {"id": "question.dyspnea.palpitations", "wording": "Have you noticed your heart racing, skipping, or fluttering?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 98, "reason": "cardiac_feature_localization"}], "supports": ["group.dyspnea_context"]},
-    {"fact": {"id": "symptom.orthopnea", "display": "Breathing Worse Lying Flat", "value_type": "boolean", "extraction_cues": ["worse lying flat", "sleep propped up", "누우면 숨"]}, "target": {"id": "target.dyspnea.determine_orthopnea", "display": "Determine Positional Breathlessness", "intents": ["intent.differentiate_common_causes"]}, "question": {"id": "question.dyspnea.orthopnea", "wording": "Is your breathing worse when lying flat, or do you need extra pillows to breathe comfortably?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 97, "reason": "congestion_feature_localization"}], "supports": ["group.dyspnea_congestion"]},
-    {"fact": {"id": "symptom.paroxysmal_nocturnal_dyspnea", "display": "Waking at Night Short of Breath", "value_type": "boolean", "extraction_cues": ["wake up short of breath", "wake gasping", "자다가 숨이 차"]}, "target": {"id": "target.dyspnea.determine_nocturnal", "display": "Determine Nocturnal Breathlessness", "intents": ["intent.differentiate_common_causes"]}, "question": {"id": "question.dyspnea.nocturnal", "wording": "Do you wake from sleep short of breath or gasping?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 96, "reason": "nocturnal_feature_localization"}], "supports": ["group.dyspnea_congestion", "group.dyspnea_airway"]},
-    {"fact": {"id": "symptom.ankle_swelling", "display": "Ankle Swelling", "value_type": "boolean", "extraction_cues": ["swollen ankles", "ankle swelling", "발목이 붓"]}, "target": {"id": "target.dyspnea.determine_ankle_swelling", "display": "Determine Ankle Swelling", "intents": ["intent.differentiate_common_causes"]}, "question": {"id": "question.dyspnea.ankle_swelling", "wording": "Have your ankles or lower legs become swollen?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 95, "reason": "congestion_feature_localization"}], "supports": ["group.dyspnea_congestion"]},
-    {"reuse_existing": true, "fact": {"id": "symptom.wheeze", "display": "Wheeze", "value_type": "boolean"}, "target": {"id": "target.dyspnea.determine_wheeze", "display": "Determine Wheeze", "intents": ["intent.differentiate_common_causes"]}, "question": {"id": "question.dyspnea.wheeze", "wording": "Have you noticed wheezing or a whistling sound when breathing?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 92, "reason": "airway_feature_localization"}], "supports": ["group.dyspnea_airway"]},
-    {"reuse_existing": true, "fact": {"id": "symptom.cough", "display": "Cough", "value_type": "boolean"}, "target": {"id": "target.dyspnea.determine_cough", "display": "Determine Cough", "intents": ["intent.differentiate_common_causes"]}, "question": {"id": "question.dyspnea.cough", "wording": "Do you also have a cough?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 90, "reason": "respiratory_feature_localization"}], "supports": ["group.dyspnea_airway"]},
-    {"reuse_existing": true, "fact": {"id": "symptom.sputum", "display": "Sputum Production", "value_type": "boolean"}, "target": {"id": "target.dyspnea.determine_sputum", "display": "Determine Sputum", "intents": ["intent.differentiate_common_causes"]}, "question": {"id": "question.dyspnea.sputum", "wording": "Are you bringing up sputum or phlegm?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 88, "reason": "respiratory_feature_localization"}], "supports": ["group.dyspnea_airway"]},
-    {"reuse_existing": true, "fact": {"id": "symptom.fever", "display": "Fever", "value_type": "boolean"}, "target": {"id": "target.dyspnea.determine_fever", "display": "Determine Fever", "intents": ["intent.differentiate_common_causes"]}, "question": {"id": "question.dyspnea.fever", "wording": "Have you had fever or felt feverish?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 86, "reason": "infectious_feature_localization"}], "supports": ["group.dyspnea_airway"]},
-    {"reuse_existing": true, "fact": {"id": "patient.smoking.status", "display": "Smoking Status", "value_type": "coded"}, "target": {"id": "target.dyspnea.determine_smoking", "display": "Determine Smoking Status", "intents": ["intent.risk_assessment"]}, "question": {"id": "question.dyspnea.smoking", "wording": "Do you currently smoke, did you smoke in the past, or have you never smoked?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 78, "reason": "respiratory_risk_context"}], "supports": ["group.dyspnea_context"]}
+    {
+      "fact": {
+        "id": "dyspnea.primary_group",
+        "display": "Primary Dyspnea Context",
+        "value_type": "coded",
+        "allowed_values": [
+          "acute_sudden",
+          "acute_progressive_or_infectious",
+          "exertional_or_functional",
+          "positional_nocturnal_or_edema",
+          "airway_wheeze_or_cough",
+          "vte_or_post_immobility",
+          "known_cardiopulmonary_followup",
+          "pregnancy_postpartum",
+          "exposure_altitude_or_toxic",
+          "other_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.dyspnea.primary-group",
+        "display": "Primary Dyspnea Context",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.primary-group",
+        "wording": "이번 숨참은 갑자기 시작, 감염 증상과 함께 악화, 활동할 때 주로 발생, 누울 때·밤에 악화하거나 부종 동반, 쌕쌕거림·기침 동반, 수술·장기부동·한쪽 다리 증상 뒤 발생, 기존 심장·폐질환 추적, 임신·산후, 연기·가스·고도 등 노출, 그 밖의 불분명한 경우 중 무엇에 가장 가깝나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 250,
+          "reason": "primary-group"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.dyspnea",
+        "display": "Breathing Difficulty Severity",
+        "value_type": "severity"
+      },
+      "target": {
+        "id": "target.dyspnea.severity",
+        "display": "Breathing Difficulty Severity",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.severity",
+        "wording": "지금 숨참은 없음·가벼움·중간·심함 중 어느 정도인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 249,
+          "reason": "severity"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.safety",
+        "group.dyspnea.course"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "dyspnea.severe_breathing_distress",
+        "display": "Severe Breathing Distress",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.dyspnea.severe-distress",
+        "display": "Severe Breathing Distress",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.severe-distress",
+        "wording": "지금 숨을 쉬는 것 자체가 매우 힘들거나 평소와 달리 심각한 호흡곤란 상태인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 249,
+          "reason": "severe-distress"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.inability_to_speak_gasping_or_exhaustion",
+        "display": "Unable to Speak Gasping or Exhausted",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.dyspnea.unable-to-speak",
+        "display": "Unable to Speak Gasping or Exhausted",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.unable-to-speak",
+        "wording": "숨이 너무 차서 문장을 끝까지 말하기 어렵거나 헐떡임·질식감·심한 탈진이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 248,
+          "reason": "unable-to-speak"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.cyanosis",
+        "display": "Blue Grey or Very Pale Colour",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.dyspnea.cyanosis",
+        "display": "Blue Grey or Very Pale Colour",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.cyanosis",
+        "wording": "입술·혀·피부가 갑자기 파랗거나 회색 또는 매우 창백해 보이나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 247,
+          "reason": "cyanosis"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.confusion",
+        "display": "New Confusion or Reduced Alertness",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.dyspnea.confusion",
+        "display": "New Confusion or Reduced Alertness",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.confusion",
+        "wording": "새로 혼란스럽거나 깨우기 어렵고 평소와 다른 반응이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 246,
+          "reason": "confusion"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "dyspnea.collapse_clammy_or_circulatory_warning",
+        "display": "Collapse or Circulatory Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.dyspnea.collapse-warning",
+        "display": "Collapse or Circulatory Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.collapse-warning",
+        "wording": "쓰러짐·실신, 차갑고 축축한 피부, 심한 어지럼 또는 곧 쓰러질 듯한 상태가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 245,
+          "reason": "collapse-warning"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.safety",
+        "group.dyspnea.cardiac"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.stridor_choking_or_airway_swelling",
+        "display": "Stridor Choking or Airway Swelling",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.dyspnea.airway-warning",
+        "display": "Stridor Choking or Airway Swelling",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.airway-warning",
+        "wording": "숨 들이쉴 때 거친 소리, 갑작스러운 질식, 목·혀·입술 부종 또는 침도 삼키기 어려움이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 244,
+          "reason": "airway-warning"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.safety",
+        "group.dyspnea.airway"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.chest_pressure_radiation_or_sweating",
+        "display": "Cardiac Chest Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.dyspnea.cardiac-warning",
+        "display": "Cardiac Chest Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.cardiac-warning",
+        "wording": "가슴이 조이거나 무겁고, 팔·등·목·턱으로 퍼지는 통증 또는 식은땀이 숨참과 함께 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 243,
+          "reason": "cardiac-warning"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.safety",
+        "group.dyspnea.cardiac"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.hemoptysis",
+        "display": "Coughing Up Blood",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.dyspnea.hemoptysis",
+        "display": "Coughing Up Blood",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.hemoptysis",
+        "wording": "선명한 피를 기침으로 뱉었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 242,
+          "reason": "hemoptysis"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.safety",
+        "group.dyspnea.thromboembolic"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "dyspnea.sudden_with_unilateral_leg_or_vte_warning",
+        "display": "Sudden Dyspnea with VTE Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.dyspnea.vte-warning",
+        "display": "Sudden Dyspnea with VTE Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.vte-warning",
+        "wording": "숨참이 갑자기 시작하면서 한쪽 다리가 새로 붓거나 아프거나, 최근 수술·장기부동·혈전 병력이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 241,
+          "reason": "vte-warning"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.safety",
+        "group.dyspnea.thromboembolic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.pregnancy_postpartum_chest_pain_or_collapse",
+        "display": "Pregnancy or Postpartum Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.dyspnea.pregnancy-warning",
+        "display": "Pregnancy or Postpartum Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.pregnancy-warning",
+        "wording": "임신 중이거나 출산·유산·임신종결 후 6주 이내이며 숨참과 함께 흉통·실신·심한 두근거림·한쪽 다리 부종이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 240,
+          "reason": "pregnancy-warning"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.safety",
+        "group.dyspnea.risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.rescue_treatment_not_helping_or_rapid_worsening",
+        "display": "Rescue Treatment Failure or Rapid Worsening",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.dyspnea.rescue-failure",
+        "display": "Rescue Treatment Failure or Rapid Worsening",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.rescue-failure",
+        "wording": "처방받은 응급 흡입제·분무·산소를 사용해도 호전되지 않거나 숨참이 빠르게 심해지고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 239,
+          "reason": "rescue-failure"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.safety",
+        "group.dyspnea.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.child_retractions_grunting_or_limp",
+        "display": "Child Respiratory Distress Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.dyspnea.child-warning",
+        "display": "Child Respiratory Distress Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.child-warning",
+        "wording": "소아라면 갈비뼈 사이·목 아래가 들어가게 숨쉬거나 끙끙거림, 축 늘어짐, 깨우기 어려움이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 238,
+          "reason": "child-warning"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.safety",
+        "group.dyspnea.risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.chest_pain",
+        "display": "Chest Pain or Pressure",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.dyspnea.chest-pain",
+        "display": "Chest Pain or Pressure",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.chest-pain",
+        "wording": "숨참과 함께 가슴 통증·압박감·조임이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 237,
+          "reason": "chest-pain"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.safety",
+        "group.dyspnea.cardiac"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.syncope",
+        "display": "Syncope or Near-syncope",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.dyspnea.syncope",
+        "display": "Syncope or Near-syncope",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.syncope",
+        "wording": "숨참 전후로 실제로 의식을 잃었거나 거의 실신했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 236,
+          "reason": "syncope"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.safety",
+        "group.dyspnea.cardiac"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.information_source_proxy_and_reliability",
+        "display": "Information Source and Reliability",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.information-source",
+        "display": "Information Source and Reliability",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.information-source",
+        "wording": "누가 답변하며 본인 느낌, 보호자 관찰, 산소포화도계, 진료기록·검사결과 중 무엇에 근거하나요? 확실하지 않거나 서로 다른 정보도 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 220,
+          "reason": "information-source"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.age_life_stage_and_baseline",
+        "display": "Age Life Stage and Baseline",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.age-baseline",
+        "display": "Age Life Stage and Baseline",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.age-baseline",
+        "wording": "만 나이, 소아·고령·임신·산후 여부와 평소 호흡·활동·산소 사용 상태를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 219,
+          "reason": "age-baseline"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.duration",
+        "display": "Dyspnea Duration",
+        "value_type": "quantity"
+      },
+      "target": {
+        "id": "target.dyspnea.duration",
+        "display": "Dyspnea Duration",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.duration",
+        "wording": "숨참이 처음 시작된 뒤 지금까지의 기간을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 218,
+          "reason": "duration"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.course"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.dyspnea_onset",
+        "display": "Dyspnea Onset Speed",
+        "value_type": "coded",
+        "allowed_values": [
+          "sudden",
+          "gradual"
+        ]
+      },
+      "target": {
+        "id": "target.dyspnea.onset-speed",
+        "display": "Dyspnea Onset Speed",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.onset-speed",
+        "wording": "숨참은 갑자기 시작했나요, 서서히 시작했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 217,
+          "reason": "onset-speed"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.course"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.onset_date_time_activity_and_circumstance",
+        "display": "Onset Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.onset-context",
+        "display": "Onset Context",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.onset-context",
+        "wording": "처음 시작한 날짜·시각과 당시 활동·자세·수면·식사·노출·시술 등 상황을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 216,
+          "reason": "onset-context"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.course"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.episode_frequency_duration_trend_and_between_episode_baseline",
+        "display": "Episode Pattern and Trend",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.episode-pattern",
+        "display": "Episode Pattern and Trend",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.episode-pattern",
+        "wording": "계속 숨찬지 반복되는지, 반복한다면 빈도·지속시간·호전/악화 추세와 사이사이 정상으로 돌아오는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 215,
+          "reason": "episode-pattern"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.course"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.dyspnea_at_rest",
+        "display": "Dyspnea at Rest",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.dyspnea.at-rest",
+        "display": "Dyspnea at Rest",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.at-rest",
+        "wording": "가만히 앉거나 누워 있을 때도 숨이 차나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 214,
+          "reason": "at-rest"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.exertional_dyspnea",
+        "display": "Exertional Dyspnea",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.dyspnea.exertional",
+        "display": "Exertional Dyspnea",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.exertional",
+        "wording": "걷기·계단·일 등 활동할 때 숨참이 생기거나 심해지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 213,
+          "reason": "exertional"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.exertional_threshold_and_change_from_baseline",
+        "display": "Exertional Threshold",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.exertional-threshold",
+        "display": "Exertional Threshold",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.exertional-threshold",
+        "wording": "몇 m 걷기·몇 층 계단·어떤 일에서 멈추게 되며, 평소 가능한 활동과 비교해 얼마나 줄었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 212,
+          "reason": "exertional-threshold"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.speaking_eating_sleep_selfcare_and_mobility_impact",
+        "display": "Daily Function Impact",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.function-impact",
+        "display": "Daily Function Impact",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.function-impact",
+        "wording": "말하기, 먹기, 잠자기, 씻기·옷입기, 화장실 가기와 이동이 숨참 때문에 어떻게 제한되나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 211,
+          "reason": "function-impact"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.respiratory_pattern_accessory_muscle_and_position",
+        "display": "Observed Breathing Pattern",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.breathing-pattern",
+        "display": "Observed Breathing Pattern",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.breathing-pattern",
+        "wording": "호흡수, 얕거나 불규칙한 호흡, 갈비뼈 사이가 들어감, 앞으로 기대는 자세를 관찰했다면 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 210,
+          "reason": "breathing-pattern"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.oxygen_saturation_device_time_oxygen_and_reliability",
+        "display": "Oxygen Saturation Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.oxygen-saturation",
+        "display": "Oxygen Saturation Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.oxygen-saturation",
+        "wording": "산소포화도를 쟀다면 값·시각·기기·손가락 상태와 산소 사용 여부·유량을 알려주세요. 측정하지 않았거나 신뢰하기 어렵다면 그렇게 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 209,
+          "reason": "oxygen-saturation"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.orthopnea",
+        "display": "Orthopnea",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.dyspnea.orthopnea",
+        "display": "Orthopnea",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.orthopnea",
+        "wording": "누우면 숨이 더 차거나 상체를 세워야 편한가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 195,
+          "reason": "orthopnea"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.cardiac"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.orthopnea_pillow_count_and_position_detail",
+        "display": "Orthopnea Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.orthopnea-detail",
+        "display": "Orthopnea Detail",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.orthopnea-detail",
+        "wording": "평소와 지금 베개 개수, 앉아서 자는지, 어느 정도 누우면 숨찬지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 194,
+          "reason": "orthopnea-detail"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.cardiac"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.paroxysmal_nocturnal_dyspnea",
+        "display": "Paroxysmal Nocturnal Dyspnea",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.dyspnea.nocturnal",
+        "display": "Paroxysmal Nocturnal Dyspnea",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.nocturnal",
+        "wording": "자다가 숨이 차서 깨거나 일어나 앉아야 하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 193,
+          "reason": "nocturnal"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.cardiac"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.nocturnal_episode_sleep_and_recovery_detail",
+        "display": "Nocturnal Episode Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.nocturnal-detail",
+        "display": "Nocturnal Episode Detail",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.nocturnal-detail",
+        "wording": "잠든 뒤 몇 시간 만에 깨고 자세를 바꾼 뒤 회복까지 얼마나 걸리며 코골이·무호흡·쌕쌕거림이 동반되나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 192,
+          "reason": "nocturnal-detail"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.cardiac"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.chest_pain_nrs",
+        "display": "Chest Pain NRS",
+        "value_type": "integer"
+      },
+      "target": {
+        "id": "target.dyspnea.chest-pain-nrs",
+        "display": "Chest Pain NRS",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.chest-pain-nrs",
+        "wording": "[필수] 흉통이 있다면 현재 통증을 0부터 10까지 숫자로 알려주세요. 0은 통증 없음, 10은 상상할 수 있는 가장 심한 통증입니다.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 191,
+          "reason": "chest-pain-nrs"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.cardiac"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.chest_pain_location_character_radiation_trigger_and_duration",
+        "display": "Chest Pain Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.chest-pain-detail",
+        "display": "Chest Pain Detail",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.chest-pain-detail",
+        "wording": "가슴 통증의 위치·양상·퍼지는 곳·지속시간과 호흡·활동·식사·자세와의 관계를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 190,
+          "reason": "chest-pain-detail"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.cardiac"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.pleuritic_chest_pain",
+        "display": "Pleuritic Chest Pain",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.dyspnea.pleuritic-chest-pain",
+        "display": "Pleuritic Chest Pain",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.pleuritic-chest-pain",
+        "wording": "가슴 통증이 숨을 깊이 들이쉬거나 기침할 때 더 심해지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 190,
+          "reason": "pleuritic-chest-pain"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.thromboembolic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.palpitations",
+        "display": "Palpitations",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.dyspnea.palpitations",
+        "display": "Palpitations",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.palpitations",
+        "wording": "심장이 빠르거나 불규칙하게 뛰고 두근거리는 느낌이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 189,
+          "reason": "palpitations"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.cardiac"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.palpitations_rate_rhythm_and_relation_to_breathlessness",
+        "display": "Palpitation Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.palpitation-detail",
+        "display": "Palpitation Detail",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.palpitation-detail",
+        "wording": "두근거림의 시작·종료, 규칙성, 측정 맥박과 숨참·어지럼·흉통의 시간 관계를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 188,
+          "reason": "palpitation-detail"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.cardiac"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.syncope_presyncope_dizziness_and_recovery_detail",
+        "display": "Syncope Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.syncope-detail",
+        "display": "Syncope Detail",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.syncope-detail",
+        "wording": "실신·실신 직전·어지럼이 있다면 자세·전조·의식소실 시간·다친 곳·회복 과정을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 187,
+          "reason": "syncope-detail"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.cardiac"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.edema_weight_gain_nocturia_and_abdominal_swelling",
+        "display": "Fluid Retention Features",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.fluid-features",
+        "display": "Fluid Retention Features",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.fluid-features",
+        "wording": "양쪽 발·발목 부종, 최근 체중 증가, 밤중 소변 증가 또는 배가 붓는 느낌의 시작과 변화를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 186,
+          "reason": "fluid-features"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.cardiac"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.cough",
+        "display": "Cough",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.dyspnea.cough",
+        "display": "Cough",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.cough",
+        "wording": "기침이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 180,
+          "reason": "cough"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.airway"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.sputum",
+        "display": "Sputum",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.dyspnea.sputum",
+        "display": "Sputum",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.sputum",
+        "wording": "가래가 나오나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 180,
+          "reason": "sputum"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.airway"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "dyspnea.cough_sputum_color_volume_blood_and_change",
+        "display": "Cough and Sputum Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.cough-sputum-detail",
+        "display": "Cough and Sputum Detail",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.cough-sputum-detail",
+        "wording": "기침과 가래의 시작, 마른기침 여부, 가래 양·색·냄새·피와 평소 대비 변화를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 179,
+          "reason": "cough-sputum-detail"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.airway"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.fever",
+        "display": "Fever",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.dyspnea.fever",
+        "display": "Fever",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.fever",
+        "wording": "측정된 발열이나 열감·오한이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 178,
+          "reason": "fever"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.infection"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "dyspnea.fever_infection_contact_and_recent_respiratory_illness",
+        "display": "Infection Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.infection-context",
+        "display": "Infection Context",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.infection-context",
+        "wording": "체온·오한, 콧물·인후통, 아픈 사람 접촉, 최근 호흡기 감염과 날짜를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 177,
+          "reason": "infection-context"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.infection"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.wheeze",
+        "display": "Wheeze",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.dyspnea.wheeze",
+        "display": "Wheeze",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.wheeze",
+        "wording": "숨을 내쉴 때 쌕쌕거리거나 휘파람 같은 소리가 나나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 176,
+          "reason": "wheeze"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.airway"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "dyspnea.wheeze_stridor_voice_swallowing_and_choking_detail",
+        "display": "Airway Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.airway-detail",
+        "display": "Airway Detail",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.airway-detail",
+        "wording": "쌕쌕거림·들이쉴 때 소리·목소리 변화·삼킴 문제·사레·질식의 시작과 유발 상황을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 175,
+          "reason": "airway-detail"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.airway"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.unilateral_leg_pain_swelling",
+        "display": "Unilateral Leg Pain or Swelling",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.dyspnea.unilateral-leg",
+        "display": "Unilateral Leg Pain or Swelling",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.unilateral-leg",
+        "wording": "한쪽 다리에 새 통증·부종이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 170,
+          "reason": "unilateral-leg"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.thromboembolic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.leg_side_swelling_pain_redness_and_onset",
+        "display": "Unilateral Leg Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.leg-detail",
+        "display": "Unilateral Leg Detail",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.leg-detail",
+        "wording": "어느 쪽 다리의 어느 부위가 언제부터 붓고 아픈지, 붉음·열감과 둘레 차이를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 169,
+          "reason": "leg-detail"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.thromboembolic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.vte_risk_surgery_immobility_cancer_prior_vte_estrogen_pregnancy",
+        "display": "VTE Risk Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.vte-risk-detail",
+        "display": "VTE Risk Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.vte-risk-detail",
+        "wording": "최근 수술·입원·3일 이상 거동 제한·장거리 이동, 활동성 암, 이전 혈전, 에스트로겐 약, 임신·산후 여부와 날짜를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 168,
+          "reason": "vte-risk-detail"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.thromboembolic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "risk.recent_immobility_or_surgery",
+        "display": "Recent Immobility or Surgery",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.dyspnea.immobility-surgery",
+        "display": "Recent Immobility or Surgery",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.immobility-surgery",
+        "wording": "최근 수술 또는 3일 이상 거의 움직이지 못한 기간이 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 167,
+          "reason": "immobility-surgery"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.thromboembolic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "history.venous_thromboembolism",
+        "display": "Previous DVT or Pulmonary Embolism",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.dyspnea.vte-history",
+        "display": "Previous DVT or Pulmonary Embolism",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.vte-history",
+        "wording": "이전에 다리 심부정맥혈전이나 폐색전증 진단을 받은 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 166,
+          "reason": "vte-history"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.thromboembolic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.pulmonary_history_and_baseline",
+        "display": "Pulmonary History and Baseline",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.pulmonary-history",
+        "display": "Pulmonary History and Baseline",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.pulmonary-history",
+        "wording": "천식·COPD·기관지확장증·간질성폐질환·결핵·수면무호흡 등 폐질환, 평소 숨참·산소·흡입제 사용을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 155,
+          "reason": "pulmonary-history"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.cardiac_history_and_baseline",
+        "display": "Cardiac History and Baseline",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.cardiac-history",
+        "display": "Cardiac History and Baseline",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.cardiac-history",
+        "wording": "심부전·관상동맥질환·판막질환·부정맥·선천성심장질환과 평소 부종·체중·활동 수준을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 154,
+          "reason": "cardiac-history"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.anemia_bleeding_and_recent_hemoglobin_context",
+        "display": "Anemia and Bleeding Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.anemia-context",
+        "display": "Anemia and Bleeding Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.anemia-context",
+        "wording": "빈혈, 최근 출혈·검은변·과다월경, 수혈·철분치료와 최근 헤모글로빈 결과가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 153,
+          "reason": "anemia-context"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.renal_liver_fluid_and_recent_weight_context",
+        "display": "Renal Liver and Fluid Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.renal-liver-context",
+        "display": "Renal Liver and Fluid Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.renal-liver-context",
+        "wording": "신장·간 질환, 투석·이뇨제, 소변 변화와 최근 체중·부종 변화를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 152,
+          "reason": "renal-liver-context"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.neuromuscular_weakness_swallowing_and_cough_strength",
+        "display": "Neuromuscular Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.neuromuscular-context",
+        "display": "Neuromuscular Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.neuromuscular-context",
+        "wording": "근육·신경 질환, 새 전신 약화, 목 가누기·삼킴·기침 힘 저하가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 151,
+          "reason": "neuromuscular-context"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.pregnancy_postpartum_gestation_delivery_and_complications",
+        "display": "Pregnancy and Postpartum Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.pregnancy-context",
+        "display": "Pregnancy and Postpartum Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.pregnancy-context",
+        "wording": "임신 주수 또는 출산·유산·임신종결 날짜, 분만 방법, 출혈·고혈압·감염·혈전 등 합병증을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 150,
+          "reason": "pregnancy-context"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.current_medicines_inhalers_oxygen_sedatives_opioids_and_changes",
+        "display": "Medicines Oxygen and Recent Changes",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.medicines",
+        "display": "Medicines Oxygen and Recent Changes",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.medicines",
+        "wording": "현재 약·흡입제·산소의 이름·용량·사용법과 최근 시작·중단·변경한 진정제·수면제·마약성진통제 등을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 149,
+          "reason": "medicines"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.rescue_inhaler_nebulizer_oxygen_use_dose_time_and_response",
+        "display": "Rescue Treatment and Response",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.rescue-response",
+        "display": "Rescue Treatment and Response",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.rescue-response",
+        "wording": "응급 흡입제·분무·산소를 사용했다면 이름·횟수·마지막 시각·용량/유량과 전후 변화를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 148,
+          "reason": "rescue-response"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.inhaler_adherence_technique_spacer_and_action_plan",
+        "display": "Inhaler Technique and Action Plan",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.inhaler-technique",
+        "display": "Inhaler Technique and Action Plan",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.inhaler-technique",
+        "wording": "평소 흡입제 누락, 흡입 방법·스페이서 사용, 개인 행동계획과 최대호기유량 기준을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 147,
+          "reason": "inhaler-technique"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.medicine_allergies_and_adverse_reactions",
+        "display": "Medicine Allergies and Reactions",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.medicine-allergies",
+        "display": "Medicine Allergies and Reactions",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.medicine-allergies",
+        "wording": "약물·조영제 알레르기와 실제 발생한 반응을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 146,
+          "reason": "medicine-allergies"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "patient.smoking.status",
+        "display": "Smoking Status",
+        "value_type": "coded",
+        "allowed_values": [
+          "current",
+          "former",
+          "never"
+        ]
+      },
+      "target": {
+        "id": "target.dyspnea.smoking-status",
+        "display": "Smoking Status",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.smoking-status",
+        "wording": "현재 흡연, 과거 흡연, 비흡연 중 어디에 해당하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 145,
+          "reason": "smoking-status"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.exposure"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "dyspnea.smoking_vaping_pack_years_passive_exposure_and_change",
+        "display": "Tobacco and Vaping Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.smoking-detail",
+        "display": "Tobacco and Vaping Detail",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.smoking-detail",
+        "wording": "담배·전자담배 종류, 하루 양·기간·갑년, 금연 시점과 간접흡연을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 144,
+          "reason": "smoking-detail"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.exposure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.occupation_home_pollution_fume_dust_mold_and_animal_exposure",
+        "display": "Occupational and Home Exposure",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.occupation-exposure",
+        "display": "Occupational and Home Exposure",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.occupation-exposure",
+        "wording": "직업·취미·주거에서 분진·가스·연기·화학물질·곰팡이·새/동물 노출과 보호구, 증상과의 시간 관계를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 143,
+          "reason": "occupation-exposure"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.exposure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.travel_flight_altitude_diving_and_recent_infection_exposure",
+        "display": "Travel Altitude Diving and Exposure",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.travel-exposure",
+        "display": "Travel Altitude Diving and Exposure",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.travel-exposure",
+        "wording": "최근 장거리 이동·비행, 고도 상승, 잠수와 여행지·날짜, 감염자 접촉을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 142,
+          "reason": "travel-exposure"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.exposure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.anxiety_panic_context_after_medical_warning_screen",
+        "display": "Anxiety or Panic Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.anxiety-context",
+        "display": "Anxiety or Panic Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.anxiety-context",
+        "wording": "의학적 위험 신호를 먼저 확인한 뒤, 불안·공황·과호흡과의 시간 관계, 이전 유사 경험과 진정 후 변화를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 141,
+          "reason": "anxiety-context"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.sleep_snoring_apnea_daytime_sleepiness_and_pap_use",
+        "display": "Sleep Breathing Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.sleep-context",
+        "display": "Sleep Breathing Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.sleep-context",
+        "wording": "코골이·목격된 무호흡·야간 질식감·주간 졸림과 양압기 사용·순응도를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 140,
+          "reason": "sleep-context"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.airway"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.spirometry_peak_flow_baseline_personal_best_and_date",
+        "display": "Spirometry and Peak Flow",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.lung-function",
+        "display": "Spirometry and Peak Flow",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.lung-function",
+        "wording": "폐기능검사·최대호기유량이 있다면 날짜·수치·개인 최고치·측정 조건과 원본 유무를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "lung-function"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.ecg_imaging_labs_and_result_source",
+        "display": "Prior Tests and Source",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.prior-tests",
+        "display": "Prior Tests and Source",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.prior-tests",
+        "wording": "이번 증상 관련 심전도, 흉부영상, 혈액검사, D-dimer·BNP 등이 있다면 날짜·결과·자료 출처를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "prior-tests"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.prior_assessment_diagnosis_and_followup_plan",
+        "display": "Prior Assessment and Plan",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.prior-assessment",
+        "display": "Prior Assessment and Plan",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.prior-assessment",
+        "wording": "이미 진료받았다면 의료기관·날짜, 들은 설명과 재검·재진·악화 시 계획을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "prior-assessment"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.treatment_start_adherence_response_and_adverse_effect",
+        "display": "Treatment and Response",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.treatment-response",
+        "display": "Treatment and Response",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.treatment-response",
+        "wording": "이번 숨참에 사용한 약·산소·휴식 등 조치의 시작·순응도·효과·부작용을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 127,
+          "reason": "treatment-response"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.prior_exacerbations_ed_visits_admissions_intubation_and_baseline",
+        "display": "Prior Exacerbations and Acute Care",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.prior-exacerbations",
+        "display": "Prior Exacerbations and Acute Care",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.prior-exacerbations",
+        "wording": "이전 비슷한 악화의 빈도, 최근 1년 응급실·입원·중환자실·삽관과 당시 평소 상태를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 126,
+          "reason": "prior-exacerbations"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "dyspnea.patient_concern_goal_and_other_detail",
+        "display": "Patient Concern Goal and Other Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.dyspnea.patient-goal",
+        "display": "Patient Concern Goal and Other Detail",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.dyspnea.patient-goal",
+        "wording": "질문에 없지만 의료진에게 꼭 전달할 내용, 가장 걱정하는 점과 이번 진료에서 원하는 것을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 120,
+          "reason": "patient-goal"
+        }
+      ],
+      "supports": [
+        "group.dyspnea.routing"
+      ]
+    }
   ],
   "provenance": {
-    "created_by": {"type": "ai", "id": "codex-gpt5"},
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
     "created_at": "2026-07-14T00:00:00Z",
-    "source_refs": ["source.nice.ng158.vte", "source.nice.ng115.copd", "source.nhs.shortness-of-breath", "source.nhs.cyanosis"],
+    "source_refs": [
+      "source.nice.ng158.vte",
+      "source.nice.ng115.copd",
+      "source.nice.ng106.heart-failure",
+      "source.gina.strategy.2026",
+      "source.nhs.shortness-of-breath",
+      "source.stom.dyspnea.20260717"
+    ],
     "review_status": "unreviewed",
     "version": "0.1.0"
   }

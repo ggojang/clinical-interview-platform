@@ -2,18 +2,153 @@
   "id": "policy.primary-care-dyspnea-completion",
   "version": "0.1.0",
   "status": "research_only",
-  "addressed_fact_states": ["known", "unknown", "not_applicable"],
+  "addressed_fact_states": [
+    "known",
+    "unknown",
+    "not_applicable"
+  ],
   "required_facts": {
-    "always": ["symptom.dyspnea", "symptom.duration", "symptom.dyspnea_onset"],
+    "always": [
+      "dyspnea.primary_group",
+      "dyspnea.severe_breathing_distress",
+      "dyspnea.inability_to_speak_gasping_or_exhaustion",
+      "symptom.cyanosis",
+      "symptom.confusion",
+      "dyspnea.collapse_clammy_or_circulatory_warning",
+      "dyspnea.stridor_choking_or_airway_swelling",
+      "dyspnea.chest_pressure_radiation_or_sweating",
+      "symptom.hemoptysis",
+      "dyspnea.sudden_with_unilateral_leg_or_vte_warning",
+      "dyspnea.pregnancy_postpartum_chest_pain_or_collapse",
+      "dyspnea.rescue_treatment_not_helping_or_rapid_worsening",
+      "dyspnea.child_retractions_grunting_or_limp",
+      "symptom.syncope"
+    ],
     "routine": [
-      "symptom.dyspnea_at_rest", "symptom.exertional_dyspnea", "symptom.cyanosis",
-      "symptom.confusion", "symptom.stridor", "symptom.syncope", "symptom.chest_pain",
-      "symptom.hemoptysis", "symptom.unilateral_leg_pain_swelling",
-      "symptom.orthopnea", "symptom.paroxysmal_nocturnal_dyspnea", "symptom.ankle_swelling",
-      "symptom.wheeze", "symptom.cough", "symptom.fever"
+      "dyspnea.age_life_stage_and_baseline",
+      "dyspnea.cardiac_history_and_baseline",
+      "dyspnea.current_medicines_inhalers_oxygen_sedatives_opioids_and_changes",
+      "dyspnea.episode_frequency_duration_trend_and_between_episode_baseline",
+      "dyspnea.exertional_threshold_and_change_from_baseline",
+      "dyspnea.information_source_proxy_and_reliability",
+      "dyspnea.medicine_allergies_and_adverse_reactions",
+      "dyspnea.onset_date_time_activity_and_circumstance",
+      "dyspnea.oxygen_saturation_device_time_oxygen_and_reliability",
+      "dyspnea.patient_concern_goal_and_other_detail",
+      "dyspnea.prior_assessment_diagnosis_and_followup_plan",
+      "dyspnea.pulmonary_history_and_baseline",
+      "dyspnea.speaking_eating_sleep_selfcare_and_mobility_impact",
+      "dyspnea.treatment_start_adherence_response_and_adverse_effect",
+      "patient.smoking.status",
+      "symptom.duration",
+      "symptom.dyspnea_at_rest",
+      "symptom.dyspnea_onset",
+      "symptom.exertional_dyspnea"
     ]
   },
   "clarification_facts_by_rule": {},
-  "question_budget": {"routine": 20, "clarify": 12},
-  "provenance": {"created_by": {"type": "ai", "id": "codex-gpt5"}, "created_at": "2026-07-14T00:00:00Z", "source_refs": ["source.nice.ng158.vte", "source.nice.ng115.copd", "source.nhs.shortness-of-breath"], "review_status": "unreviewed", "version": "0.1.0"}
+  "question_budget": {
+    "routine": 76,
+    "clarify": 12
+  },
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nice.ng158.vte",
+      "source.nice.ng115.copd",
+      "source.nice.ng106.heart-failure",
+      "source.gina.strategy.2026",
+      "source.nhs.shortness-of-breath",
+      "source.stom.dyspnea.20260717"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  },
+  "conditional_required_facts": [
+    {
+      "selector_fact": "dyspnea.primary_group",
+      "cases": {
+        "acute_sudden": [
+          "dyspnea.respiratory_pattern_accessory_muscle_and_position",
+          "symptom.chest_pain",
+          "dyspnea.chest_pain_location_character_radiation_trigger_and_duration",
+          "symptom.palpitations",
+          "dyspnea.syncope_presyncope_dizziness_and_recovery_detail",
+          "symptom.unilateral_leg_pain_swelling",
+          "dyspnea.vte_risk_surgery_immobility_cancer_prior_vte_estrogen_pregnancy"
+        ],
+        "acute_progressive_or_infectious": [
+          "symptom.cough",
+          "dyspnea.cough_sputum_color_volume_blood_and_change",
+          "symptom.fever",
+          "dyspnea.fever_infection_contact_and_recent_respiratory_illness",
+          "symptom.wheeze",
+          "dyspnea.prior_exacerbations_ed_visits_admissions_intubation_and_baseline"
+        ],
+        "exertional_or_functional": [
+          "dyspnea.exertional_threshold_and_change_from_baseline",
+          "dyspnea.anemia_bleeding_and_recent_hemoglobin_context",
+          "symptom.chest_pain",
+          "symptom.palpitations",
+          "dyspnea.cardiac_history_and_baseline"
+        ],
+        "positional_nocturnal_or_edema": [
+          "symptom.orthopnea",
+          "dyspnea.orthopnea_pillow_count_and_position_detail",
+          "symptom.paroxysmal_nocturnal_dyspnea",
+          "dyspnea.nocturnal_episode_sleep_and_recovery_detail",
+          "dyspnea.edema_weight_gain_nocturia_and_abdominal_swelling",
+          "dyspnea.renal_liver_fluid_and_recent_weight_context"
+        ],
+        "airway_wheeze_or_cough": [
+          "symptom.cough",
+          "dyspnea.cough_sputum_color_volume_blood_and_change",
+          "symptom.fever",
+          "dyspnea.fever_infection_contact_and_recent_respiratory_illness",
+          "symptom.wheeze",
+          "dyspnea.wheeze_stridor_voice_swallowing_and_choking_detail",
+          "dyspnea.rescue_inhaler_nebulizer_oxygen_use_dose_time_and_response",
+          "dyspnea.inhaler_adherence_technique_spacer_and_action_plan",
+          "dyspnea.spirometry_peak_flow_baseline_personal_best_and_date"
+        ],
+        "vte_or_post_immobility": [
+          "symptom.unilateral_leg_pain_swelling",
+          "dyspnea.leg_side_swelling_pain_redness_and_onset",
+          "dyspnea.vte_risk_surgery_immobility_cancer_prior_vte_estrogen_pregnancy",
+          "risk.recent_immobility_or_surgery",
+          "history.venous_thromboembolism",
+          "dyspnea.travel_flight_altitude_diving_and_recent_infection_exposure"
+        ],
+        "known_cardiopulmonary_followup": [
+          "dyspnea.rescue_inhaler_nebulizer_oxygen_use_dose_time_and_response",
+          "dyspnea.inhaler_adherence_technique_spacer_and_action_plan",
+          "dyspnea.spirometry_peak_flow_baseline_personal_best_and_date",
+          "dyspnea.ecg_imaging_labs_and_result_source",
+          "dyspnea.prior_exacerbations_ed_visits_admissions_intubation_and_baseline",
+          "dyspnea.sleep_snoring_apnea_daytime_sleepiness_and_pap_use"
+        ],
+        "pregnancy_postpartum": [
+          "dyspnea.pregnancy_postpartum_gestation_delivery_and_complications",
+          "dyspnea.vte_risk_surgery_immobility_cancer_prior_vte_estrogen_pregnancy",
+          "dyspnea.anemia_bleeding_and_recent_hemoglobin_context",
+          "dyspnea.edema_weight_gain_nocturia_and_abdominal_swelling"
+        ],
+        "exposure_altitude_or_toxic": [
+          "dyspnea.occupation_home_pollution_fume_dust_mold_and_animal_exposure",
+          "dyspnea.travel_flight_altitude_diving_and_recent_infection_exposure",
+          "dyspnea.smoking_vaping_pack_years_passive_exposure_and_change"
+        ],
+        "other_unclear": [
+          "dyspnea.anemia_bleeding_and_recent_hemoglobin_context",
+          "dyspnea.renal_liver_fluid_and_recent_weight_context",
+          "dyspnea.neuromuscular_weakness_swallowing_and_cough_strength",
+          "dyspnea.anxiety_panic_context_after_medical_warning_screen"
+        ]
+      }
+    }
+  ]
 }
