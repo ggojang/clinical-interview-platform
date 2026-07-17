@@ -18,6 +18,7 @@ class PatientSimulator:
                 "asked-unknown": {"en": "I am not sure.", "ko": "잘 모르겠어요."},
                 "asked-declined": {"en": "I prefer not to answer.", "ko": "답하고 싶지 않아요."},
                 "not-applicable": {"en": "Not applicable.", "ko": "해당되지 않아요."},
+                "not-performed": {"en": "It was not measured.", "ko": "측정하지 않았어요."},
             }
             return responses.get(absent_reason, responses["asked-unknown"]).get(
                 language, responses["asked-unknown"]["en"]

@@ -2,37 +2,145 @@
   "id": "policy.primary-care-fever-completion",
   "version": "0.1.0",
   "status": "research_only",
-  "addressed_fact_states": ["known", "unknown", "not_applicable"],
+  "addressed_fact_states": [
+    "known",
+    "unknown",
+    "not_applicable"
+  ],
   "required_facts": {
     "always": [
-      "symptom.duration",
-      "observation.body_temperature"
+      "fever.primary_group",
+      "fever.reduced_consciousness_or_new_confusion",
+      "fever.severe_breathing_cyanosis_or_new_high_oxygen_need",
+      "fever.collapse_mottled_ashen_or_shock_features",
+      "symptom.non_blanching_rash",
+      "fever.meningitis_warning_combination",
+      "fever.new_seizure_or_focal_neurologic_deficit",
+      "fever.no_urine_or_severe_dehydration",
+      "fever.recent_anticancer_or_neutropenia_risk",
+      "fever.young_infant_temperature_warning",
+      "fever.pregnancy_postpartum_severe_infection_warning",
+      "fever.travel_with_bleeding_altered_mental_state_or_instability",
+      "fever.post_procedure_device_wound_severe_infection"
     ],
     "routine": [
-      "symptom.systemic_unwellness",
-      "symptom.confusion",
-      "symptom.dyspnea",
-      "symptom.headache",
-      "symptom.neck_stiffness",
-      "symptom.non_blanching_rash",
-      "symptom.severe_pain",
-      "patient.immunocompromised",
-      "symptom.cough",
-      "symptom.urinary_symptoms",
-      "symptom.abdominal_pain",
-      "symptom.skin_infection_features"
+      "fever.acute_functional_decline_eating_drinking_mobility",
+      "fever.age_life_stage_and_baseline",
+      "fever.antipyretic_name_dose_time_and_temperature_response",
+      "fever.chills_sweats_timing_and_severity",
+      "fever.chronic_conditions_frailty_and_baseline_vulnerability",
+      "fever.current_medicines_antibiotics_antipyretics_and_recent_changes",
+      "fever.current_status_peak_trend_and_pattern",
+      "fever.fluid_intake_urine_frequency_and_color",
+      "fever.information_source_proxy_and_reliability",
+      "fever.measurement_site_device_time_and_circumstance",
+      "fever.medicine_allergies_and_adverse_reactions",
+      "fever.pain_present",
+      "fever.pain_site_character_and_course",
+      "fever.patient_concern_goal_and_other_detail",
+      "fever.prior_clinical_assessment_diagnosis_and_followup_plan",
+      "fever.prior_tests_results_cultures_and_imaging",
+      "fever.treatment_antibiotic_start_response_and_adverse_effect",
+      "fever.vaccination_infection_history_and_previous_similar_episodes",
+      "observation.body_temperature",
+      "symptom.chills",
+      "symptom.duration",
+      "symptom.systemic_unwellness"
     ]
   },
-  "clarification_facts_by_rule": {
-    "rule.fever.safety.immunocompromised": ["symptom.confusion", "symptom.dyspnea", "symptom.non_blanching_rash", "symptom.severe_pain"],
-    "rule.fever.safety.systemically_unwell": ["symptom.confusion", "symptom.dyspnea", "symptom.non_blanching_rash", "symptom.severe_pain"]
+  "clarification_facts_by_rule": {},
+  "question_budget": {
+    "routine": 72,
+    "clarify": 12
   },
-  "question_budget": {"routine": 16, "clarify": 10},
   "provenance": {
-    "created_by": {"type": "ai", "id": "codex-gpt5"},
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
     "created_at": "2026-07-14T00:00:00Z",
-    "source_refs": ["source.nice.ng253.sepsis-adults", "source.nice.ng240.meningitis"],
+    "source_refs": [
+      "source.nice.ng253.sepsis-adults.2025",
+      "source.nice.ng254.sepsis-under16.2025",
+      "source.nice.ng255.sepsis-pregnancy.2026",
+      "source.nice.ng240.meningitis.2024",
+      "source.cdc.yellow-book.post-travel-fever.2026",
+      "source.nhs.fever-adults.2023",
+      "source.nhs.fever-children.2026",
+      "source.stom.fever.20260716"
+    ],
     "review_status": "unreviewed",
     "version": "0.1.0"
-  }
+  },
+  "conditional_required_facts": [
+    {
+      "selector_fact": "fever.primary_group",
+      "cases": {
+        "acute_current_fever": [
+          "symptom.cough",
+          "fever.respiratory_nasal_throat_sputum_and_chest_features",
+          "symptom.sore_throat",
+          "symptom.dyspnea",
+          "symptom.urinary_symptoms",
+          "fever.flank_pelvic_or_genital_urinary_features",
+          "symptom.vomiting",
+          "symptom.diarrhea",
+          "symptom.abdominal_pain",
+          "fever.gastrointestinal_stool_blood_jaundice_and_intake",
+          "symptom.headache",
+          "symptom.neck_stiffness",
+          "fever.neurologic_eye_ear_and_behavior_features",
+          "symptom.skin_infection_features",
+          "fever.rash_wound_joint_or_localized_swelling_detail",
+          "exposure.sick_contact"
+        ],
+        "recurrent_or_periodic_fever": [
+          "fever.current_status_peak_trend_and_pattern",
+          "fever.vaccination_infection_history_and_previous_similar_episodes",
+          "fever.chronic_conditions_frailty_and_baseline_vulnerability",
+          "fever.immunosuppression_cancer_transplant_hiv_asplenia_and_last_treatment",
+          "fever.occupation_healthcare_laboratory_animal_or_crowding_exposure"
+        ],
+        "persistent_or_prolonged_fever": [
+          "fever.current_status_peak_trend_and_pattern",
+          "fever.travel_destinations_dates_onset_and_healthcare",
+          "fever.occupation_healthcare_laboratory_animal_or_crowding_exposure",
+          "fever.sexual_sharps_tattoo_piercing_or_blood_exposure",
+          "fever.immunosuppression_cancer_transplant_hiv_asplenia_and_last_treatment"
+        ],
+        "post_travel_or_specific_exposure": [
+          "fever.travel_destinations_dates_onset_and_healthcare",
+          "fever.insect_tick_animal_bite_scratch_or_contact",
+          "fever.food_water_freshwater_and_group_meal_exposure",
+          "fever.sexual_sharps_tattoo_piercing_or_blood_exposure",
+          "fever.occupation_healthcare_laboratory_animal_or_crowding_exposure",
+          "exposure.sick_contact"
+        ],
+        "post_procedure_device_or_treatment": [
+          "fever.recent_surgery_procedure_delivery_dental_work_wound_or_device",
+          "symptom.skin_infection_features",
+          "fever.rash_wound_joint_or_localized_swelling_detail",
+          "fever.current_medicines_antibiotics_antipyretics_and_recent_changes"
+        ],
+        "immunocompromised_or_high_risk": [
+          "patient.immunocompromised",
+          "fever.immunosuppression_cancer_transplant_hiv_asplenia_and_last_treatment",
+          "fever.recent_surgery_procedure_delivery_dental_work_wound_or_device",
+          "fever.occupation_healthcare_laboratory_animal_or_crowding_exposure"
+        ],
+        "test_or_treatment_followup": [
+          "fever.prior_tests_results_cultures_and_imaging",
+          "fever.treatment_antibiotic_start_response_and_adverse_effect",
+          "fever.prior_clinical_assessment_diagnosis_and_followup_plan"
+        ],
+        "feverish_not_measured": [
+          "observation.body_temperature",
+          "fever.measurement_site_device_time_and_circumstance",
+          "fever.current_status_peak_trend_and_pattern",
+          "exposure.sick_contact"
+        ],
+        "other_unclear": []
+      }
+    }
+  ]
 }

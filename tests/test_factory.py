@@ -265,10 +265,22 @@ class CompilerTests(unittest.TestCase):
             node["id"] for node in first["knowledge_graph"]["nodes"]
             if node["type"] == "Fact"
         }
-        self.assertEqual(len(facts), 19)
+        self.assertEqual(len(facts), 62)
         self.assertEqual(facts, set(first["indexes"]["questions_by_fact"]))
-        self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 6)
-        self.assertEqual(first["coverage"]["total_safety_rules"], 6)
+        self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 12)
+        self.assertEqual(first["coverage"]["total_safety_rules"], 12)
+        self.assertEqual(first["coverage"]["uncovered_safety_rules"], [])
+
+        mapping = json.loads(
+            (Path(__file__).resolve().parents[1]
+             / "mappings/terminology/snomed-mrcm-fever.json")
+            .read_text(encoding="utf-8")
+        )
+        self.assertEqual(len(mapping["focus_concepts"]), 3)
+        self.assertEqual(mapping["quantitative_observation_binding"]["code"], "8310-5")
+        self.assertFalse(mapping["validation"]["clinical_rule_authority"])
+        self.assertFalse(mapping["fever_semantics"]["sepsis_score_calculated"])
+        self.assertFalse(mapping["fever_semantics"]["news2_or_mews_calculated"])
 
     def test_fever_reuses_shared_fact_identity(self):
         cough = compile_package()
@@ -1287,6 +1299,34 @@ class ClinicalMemoryTests(unittest.TestCase):
 
 
 class PackageRuntimeTests(unittest.TestCase):
+    def test_scoped_answer_does_not_conflict_with_known_duration(self):
+        session = InterviewSession("scoped-cross-fact", package_path=FEVER_PACKAGE)
+        session.memory.merge("symptom.duration", {
+            "value": {"amount": 1, "unit": "day"},
+            "raw_text": "1 day",
+            "confidence": .97,
+            "evidence": [{"speaker": "patient", "turn": 0, "text": "1 day"}],
+        })
+        session.last_question_fact = "fever.travel_destinations_dates_onset_and_healthcare"
+        session.process("2026-07-10 귀국 후 3일 뒤 발열 시작")
+        self.assertEqual(
+            session.memory.facts["symptom.duration"]["value"],
+            {"amount": 1, "unit": "day"},
+        )
+        self.assertEqual(session.memory.facts["symptom.duration"]["status"], "known")
+        self.assertEqual(
+            session.memory.facts["fever.travel_destinations_dates_onset_and_healthcare"]["value"],
+            "2026-07-10 귀국 후 3일 뒤 발열 시작",
+        )
+
+    def test_not_measured_is_preserved_as_data_absent_reason(self):
+        session = InterviewSession("not-performed-temperature", package_path=FEVER_PACKAGE)
+        session.last_question_fact = "observation.body_temperature"
+        session.process("측정하지 않았어요.")
+        record = session.memory.facts["observation.body_temperature"]
+        self.assertEqual(record["status"], "unknown")
+        self.assertEqual(record["dataAbsentReason"]["code"], "not-performed")
+
     def test_question_references_are_monotonic_and_do_not_reset(self):
         session = InterviewSession("stable-question-references")
         first = session.process("기침이 4일째입니다")
@@ -1479,8 +1519,8 @@ class PackageRuntimeTests(unittest.TestCase):
     def test_fever_package_simulation_evaluation_passes(self):
         report = run_evaluation(FEVER_PACKAGE)
         self.assertTrue(report["passed"])
-        self.assertEqual(report["case_count"], 8)
-        self.assertLessEqual(max(item["turns"] for item in report["results"]), 14)
+        self.assertEqual(report["case_count"], 19)
+        self.assertLessEqual(max(item["turns"] for item in report["results"]), 75)
 
     def test_fever_runtime_uses_fever_rfe(self):
         session = InterviewSession("fever-runtime", package_path=FEVER_PACKAGE)

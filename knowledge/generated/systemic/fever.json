@@ -2,74 +2,2468 @@
   "id": "knowledge.generated.systemic.fever",
   "version": "0.1.0",
   "status": "research_only",
-  "usage_modes": ["research_test", "simulation"],
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
   "source_manifest": "source-manifest.primary-care-fever-research",
   "default_refresh": {
-    "class": "guideline_behavior",
-    "last_assessed_at": "2026-07-14",
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-07-16",
     "monitor_interval_days": 1,
     "full_review_interval_days": 180,
-    "next_monitor_at": "2026-07-15",
-    "next_full_review_at": "2027-01-10",
+    "next_monitor_at": "2026-07-17",
+    "next_full_review_at": "2027-01-12",
     "policy_id": "policy.knowledge-refresh",
-    "overdue_behavior": {"production": "exclude_or_require_review", "research_test": "allow_with_warning"}
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
   },
   "extra_nodes": [
-    {"id": "group.fever_severity", "type": "ClinicalGroup", "display": "Fever Severity and Systemic State"},
-    {"id": "group.fever_neurological", "type": "ClinicalGroup", "display": "Neurological Warning Features"},
-    {"id": "group.fever_respiratory", "type": "ClinicalGroup", "display": "Respiratory Source Features"},
-    {"id": "group.fever_urinary", "type": "ClinicalGroup", "display": "Urinary Source Features"},
-    {"id": "group.fever_gastrointestinal", "type": "ClinicalGroup", "display": "Gastrointestinal Source Features"},
-    {"id": "group.fever_skin", "type": "ClinicalGroup", "display": "Skin and Soft Tissue Source Features"},
-    {"id": "group.fever_host_risk", "type": "ClinicalGroup", "display": "Host Vulnerability"},
-    {"id": "hypothesis.fever_systemic_infection_warning", "type": "Hypothesis", "display": "Systemic Infection Warning Features"},
-    {"id": "hypothesis.fever_meningitis_warning", "type": "Hypothesis", "display": "Meningitis or Meningococcal Warning Features"},
-    {"id": "hypothesis.fever_respiratory_source", "type": "Hypothesis", "display": "Respiratory Source Features"},
-    {"id": "hypothesis.fever_urinary_source", "type": "Hypothesis", "display": "Urinary Source Features"},
-    {"id": "hypothesis.fever_gastrointestinal_source", "type": "Hypothesis", "display": "Gastrointestinal Source Features"},
-    {"id": "hypothesis.fever_skin_source", "type": "Hypothesis", "display": "Skin or Soft Tissue Source Features"}
+    {
+      "id": "group.fever.routing",
+      "type": "ClinicalGroup",
+      "display": "routing"
+    },
+    {
+      "id": "group.fever.safety",
+      "type": "ClinicalGroup",
+      "display": "safety"
+    },
+    {
+      "id": "group.fever.character",
+      "type": "ClinicalGroup",
+      "display": "character"
+    },
+    {
+      "id": "group.fever.respiratory",
+      "type": "ClinicalGroup",
+      "display": "respiratory"
+    },
+    {
+      "id": "group.fever.urinary",
+      "type": "ClinicalGroup",
+      "display": "urinary"
+    },
+    {
+      "id": "group.fever.gastrointestinal",
+      "type": "ClinicalGroup",
+      "display": "gastrointestinal"
+    },
+    {
+      "id": "group.fever.neurological",
+      "type": "ClinicalGroup",
+      "display": "neurological"
+    },
+    {
+      "id": "group.fever.skin_joint",
+      "type": "ClinicalGroup",
+      "display": "skin_joint"
+    },
+    {
+      "id": "group.fever.reproductive",
+      "type": "ClinicalGroup",
+      "display": "reproductive"
+    },
+    {
+      "id": "group.fever.exposure",
+      "type": "ClinicalGroup",
+      "display": "exposure"
+    },
+    {
+      "id": "group.fever.risk",
+      "type": "ClinicalGroup",
+      "display": "risk"
+    },
+    {
+      "id": "group.fever.followup",
+      "type": "ClinicalGroup",
+      "display": "followup"
+    },
+    {
+      "id": "group.fever.function",
+      "type": "ClinicalGroup",
+      "display": "function"
+    }
   ],
-  "group_hypothesis_edges": [
-    ["group.fever_severity", "hypothesis.fever_systemic_infection_warning"],
-    ["group.fever_neurological", "hypothesis.fever_meningitis_warning"],
-    ["group.fever_respiratory", "hypothesis.fever_respiratory_source"],
-    ["group.fever_urinary", "hypothesis.fever_urinary_source"],
-    ["group.fever_gastrointestinal", "hypothesis.fever_gastrointestinal_source"],
-    ["group.fever_skin", "hypothesis.fever_skin_source"]
-  ],
+  "group_hypothesis_edges": [],
   "safety_rules": [
-    {"id": "rule.fever.safety.confusion", "priority": 900, "when": {"fact": "symptom.confusion", "equals": true}, "then": {"safety_level": "urgent", "action": "human_handoff", "suppress_routine": true}},
-    {"id": "rule.fever.safety.non_blanching_rash", "priority": 1000, "when": {"fact": "symptom.non_blanching_rash", "equals": true}, "then": {"safety_level": "emergency", "action": "human_handoff", "suppress_routine": true}},
-    {"id": "rule.fever.safety.meningitis_red_flag_combination", "priority": 1000, "when": {"all": [{"fact": "symptom.headache", "equals": true}, {"fact": "symptom.neck_stiffness", "equals": true}, {"fact": "symptom.confusion", "equals": true}]}, "then": {"safety_level": "emergency", "action": "human_handoff", "suppress_routine": true}},
-    {"id": "rule.fever.safety.severe_breathing_difficulty", "priority": 1000, "when": {"fact": "symptom.dyspnea", "equals": "severe"}, "then": {"safety_level": "emergency", "action": "human_handoff", "suppress_routine": true}},
-    {"id": "rule.fever.safety.immunocompromised", "priority": 620, "when": {"fact": "patient.immunocompromised", "equals": true}, "then": {"safety_level": "clarify", "action": "continue_targeted_assessment", "suppress_routine": false}},
-    {"id": "rule.fever.safety.systemically_unwell", "priority": 610, "when": {"fact": "symptom.systemic_unwellness", "equals": true}, "then": {"safety_level": "clarify", "action": "continue_targeted_assessment", "suppress_routine": false}}
+    {
+      "id": "rule.fever.safety.reduced-consciousness",
+      "priority": 1000,
+      "when": {
+        "fact": "fever.reduced_consciousness_or_new_confusion",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.fever.safety.severe-breathing",
+      "priority": 1000,
+      "when": {
+        "fact": "fever.severe_breathing_cyanosis_or_new_high_oxygen_need",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.fever.safety.shock-warning",
+      "priority": 1000,
+      "when": {
+        "fact": "fever.collapse_mottled_ashen_or_shock_features",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.fever.safety.non-blanching-rash",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.non_blanching_rash",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.fever.safety.meningitis-warning",
+      "priority": 1000,
+      "when": {
+        "fact": "fever.meningitis_warning_combination",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.fever.safety.seizure-neurology",
+      "priority": 1000,
+      "when": {
+        "fact": "fever.new_seizure_or_focal_neurologic_deficit",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.fever.safety.severe-dehydration",
+      "priority": 990,
+      "when": {
+        "fact": "fever.no_urine_or_severe_dehydration",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.fever.safety.neutropenia-risk",
+      "priority": 990,
+      "when": {
+        "fact": "fever.recent_anticancer_or_neutropenia_risk",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.fever.safety.young-infant-warning",
+      "priority": 990,
+      "when": {
+        "fact": "fever.young_infant_temperature_warning",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.fever.safety.pregnancy-warning",
+      "priority": 990,
+      "when": {
+        "fact": "fever.pregnancy_postpartum_severe_infection_warning",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.fever.safety.travel-warning",
+      "priority": 1000,
+      "when": {
+        "fact": "fever.travel_with_bleeding_altered_mental_state_or_instability",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.fever.safety.procedure-infection",
+      "priority": 990,
+      "when": {
+        "fact": "fever.post_procedure_device_wound_severe_infection",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
   ],
   "entries": [
-    {"reuse_existing": true, "fact": {"id": "symptom.duration", "display": "Fever Duration", "value_type": "quantity"}, "target": {"id": "target.fever.determine_duration", "display": "Determine Fever Duration", "intents": ["intent.characterize_symptom"]}, "question": {"id": "question.fever.duration", "wording": "How long have you had the fever or felt feverish?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 120, "reason": "characterize_course"}], "supports": ["group.fever_severity"]},
-    {"fact": {"id": "observation.body_temperature", "display": "Measured Body Temperature", "value_type": "quantity", "extraction_cues": ["temperature", "degrees", "°C", "도"]}, "target": {"id": "target.fever.determine_temperature", "display": "Determine Measured Temperature", "intents": ["intent.characterize_symptom"]}, "question": {"id": "question.fever.temperature", "wording": "Have you measured your temperature, and what was the highest reading?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 118, "reason": "objective_characterization"}], "supports": ["group.fever_severity"]},
-    {"reuse_existing": true, "fact": {"id": "symptom.systemic_unwellness", "display": "Systemically Unwell", "value_type": "boolean"}, "target": {"id": "target.fever.determine_systemic_unwellness", "display": "Determine General Illness Severity", "intents": ["intent.screen_red_flags"]}, "question": {"id": "question.fever.systemic_unwellness", "wording": "Do you feel severely or unusually unwell overall?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 116, "reason": "systemic_safety_gate"}], "supports": ["group.fever_severity"]},
-    {"fact": {"id": "symptom.confusion", "display": "New Confusion or Disorientation", "value_type": "boolean", "extraction_cues": ["confused", "disoriented", "new confusion", "혼란", "의식이 흐"]}, "target": {"id": "target.fever.determine_confusion", "display": "Determine New Confusion", "intents": ["intent.screen_red_flags"]}, "question": {"id": "question.fever.confusion", "wording": "Have you or someone with you noticed new confusion, disorientation, or unusual drowsiness?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 115, "reason": "neurological_safety_gate"}], "supports": ["group.fever_neurological", "group.fever_severity"]},
-    {"reuse_existing": true, "fact": {"id": "symptom.dyspnea", "display": "Breathing Difficulty", "value_type": "severity"}, "target": {"id": "target.fever.determine_dyspnea", "display": "Determine Breathing Difficulty", "intents": ["intent.screen_red_flags"]}, "question": {"id": "question.fever.dyspnea", "wording": "Are you having any difficulty breathing?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 114, "reason": "respiratory_safety_gate"}], "supports": ["group.fever_respiratory", "group.fever_severity"]},
-    {"fact": {"id": "symptom.headache", "display": "Headache", "value_type": "boolean", "extraction_cues": ["headache", "head hurts", "두통", "머리가 아"]}, "target": {"id": "target.fever.determine_headache", "display": "Determine Headache", "intents": ["intent.screen_red_flags"]}, "question": {"id": "question.fever.headache", "wording": "Do you have a new or severe headache?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 108, "reason": "neurological_warning_feature"}], "supports": ["group.fever_neurological"]},
-    {"fact": {"id": "symptom.neck_stiffness", "display": "Neck Stiffness", "value_type": "boolean", "extraction_cues": ["stiff neck", "neck stiffness", "목이 뻣뻣"]}, "target": {"id": "target.fever.determine_neck_stiffness", "display": "Determine Neck Stiffness", "intents": ["intent.screen_red_flags"]}, "question": {"id": "question.fever.neck_stiffness", "wording": "Is your neck unusually stiff or painful to move?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 107, "reason": "neurological_warning_feature"}], "supports": ["group.fever_neurological"]},
-    {"fact": {"id": "symptom.non_blanching_rash", "display": "Non-blanching or Rapidly Spreading Rash", "value_type": "boolean", "extraction_cues": ["non-blanching rash", "purple rash", "rash does not fade", "자반", "눌러도 사라지지 않는 발진"]}, "target": {"id": "target.fever.determine_non_blanching_rash", "display": "Determine Warning Rash", "intents": ["intent.screen_red_flags"]}, "question": {"id": "question.fever.non_blanching_rash", "wording": "Do you have a new purple, rapidly spreading, or non-blanching rash that does not fade when pressed?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 106, "reason": "rash_safety_gate"}], "supports": ["group.fever_neurological", "group.fever_skin"]},
-    {"fact": {"id": "symptom.severe_pain", "display": "Extreme Pain or Discomfort", "value_type": "boolean", "extraction_cues": ["extreme pain", "severe pain", "worst pain", "극심한 통증"]}, "target": {"id": "target.fever.determine_severe_pain", "display": "Determine Extreme Pain", "intents": ["intent.screen_red_flags"]}, "question": {"id": "question.fever.severe_pain", "wording": "Are you having extreme pain or discomfort anywhere?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 104, "reason": "systemic_warning_feature"}], "supports": ["group.fever_severity"]},
-    {"reuse_existing": true, "fact": {"id": "patient.immunocompromised", "display": "Immunocompromised State", "value_type": "boolean"}, "target": {"id": "target.fever.determine_immunocompromised", "display": "Determine Immune Vulnerability", "intents": ["intent.risk_assessment"]}, "question": {"id": "question.fever.immunocompromised", "wording": "Do you have a condition or treatment that weakens your immune system?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 102, "reason": "host_vulnerability"}], "supports": ["group.fever_host_risk"]},
-    {"fact": {"id": "symptom.cough", "display": "Cough", "value_type": "boolean", "extraction_cues": ["cough", "기침"]}, "target": {"id": "target.fever.determine_cough", "display": "Determine Cough", "intents": ["intent.differentiate_common_causes"]}, "question": {"id": "question.fever.cough", "wording": "Do you also have a cough?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 90, "reason": "respiratory_source_localization"}], "supports": ["group.fever_respiratory"]},
-    {"reuse_existing": true, "fact": {"id": "symptom.sore_throat", "display": "Sore Throat", "value_type": "boolean"}, "target": {"id": "target.fever.determine_sore_throat", "display": "Determine Sore Throat", "intents": ["intent.differentiate_common_causes"]}, "question": {"id": "question.fever.sore_throat", "wording": "Do you have a sore throat?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 88, "reason": "upper_respiratory_source_localization"}], "supports": ["group.fever_respiratory"]},
-    {"fact": {"id": "symptom.urinary_symptoms", "display": "Urinary Symptoms", "value_type": "boolean", "extraction_cues": ["painful urination", "burning urination", "urinary frequency", "배뇨통", "소변이 자주"]}, "target": {"id": "target.fever.determine_urinary_symptoms", "display": "Determine Urinary Symptoms", "intents": ["intent.differentiate_common_causes"]}, "question": {"id": "question.fever.urinary_symptoms", "wording": "Do you have pain or burning when urinating, urgency, or needing to urinate more often?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 86, "reason": "urinary_source_localization"}], "supports": ["group.fever_urinary"]},
-    {"fact": {"id": "symptom.abdominal_pain", "display": "Abdominal Pain", "value_type": "boolean", "extraction_cues": ["abdominal pain", "stomach pain", "배가 아", "복통"]}, "target": {"id": "target.fever.determine_abdominal_pain", "display": "Determine Abdominal Pain", "intents": ["intent.differentiate_common_causes"]}, "question": {"id": "question.fever.abdominal_pain", "wording": "Do you have abdominal or stomach pain?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 84, "reason": "gastrointestinal_source_localization"}], "supports": ["group.fever_gastrointestinal"]},
-    {"fact": {"id": "symptom.skin_infection_features", "display": "Skin Infection Features", "value_type": "boolean", "extraction_cues": ["red swollen skin", "skin wound", "pus", "피부가 붉고 부", "상처에 고름"]}, "target": {"id": "target.fever.determine_skin_features", "display": "Determine Skin or Wound Features", "intents": ["intent.differentiate_common_causes"]}, "question": {"id": "question.fever.skin_features", "wording": "Do you have a new painful red or swollen skin area, wound, or drainage?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 82, "reason": "skin_source_localization"}], "supports": ["group.fever_skin"]},
-    {"fact": {"id": "symptom.chills", "display": "Chills or Shivering", "value_type": "boolean", "extraction_cues": ["chills", "shivering", "오한", "몸이 떨"]}, "target": {"id": "target.fever.determine_chills", "display": "Determine Chills", "intents": ["intent.characterize_symptom"]}, "question": {"id": "question.fever.chills", "wording": "Have you had chills or shaking?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 78, "reason": "fever_characterization"}], "supports": ["group.fever_severity"]},
-    {"fact": {"id": "symptom.vomiting", "display": "Vomiting", "value_type": "boolean", "extraction_cues": ["vomiting", "throwing up", "구토", "토했"]}, "target": {"id": "target.fever.determine_vomiting", "display": "Determine Vomiting", "intents": ["intent.differentiate_common_causes"]}, "question": {"id": "question.fever.vomiting", "wording": "Have you been vomiting?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 76, "reason": "gastrointestinal_source_localization"}], "supports": ["group.fever_gastrointestinal"]},
-    {"fact": {"id": "symptom.diarrhea", "display": "Diarrhea", "value_type": "boolean", "extraction_cues": ["diarrhea", "loose stools", "설사"]}, "target": {"id": "target.fever.determine_diarrhea", "display": "Determine Diarrhea", "intents": ["intent.differentiate_common_causes"]}, "question": {"id": "question.fever.diarrhea", "wording": "Have you had diarrhea or unusually loose stools?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 74, "reason": "gastrointestinal_source_localization"}], "supports": ["group.fever_gastrointestinal"]},
-    {"reuse_existing": true, "fact": {"id": "exposure.sick_contact", "display": "Sick Contact", "value_type": "boolean"}, "target": {"id": "target.fever.determine_sick_contact", "display": "Determine Sick Contact", "intents": ["intent.risk_assessment"]}, "question": {"id": "question.fever.sick_contact", "wording": "Have you been in close contact with anyone who has been ill?", "language": "en", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 70, "reason": "exposure_context"}], "supports": []}
+    {
+      "fact": {
+        "id": "fever.primary_group",
+        "display": "Primary Fever Context",
+        "value_type": "coded",
+        "allowed_values": [
+          "acute_current_fever",
+          "recurrent_or_periodic_fever",
+          "persistent_or_prolonged_fever",
+          "post_travel_or_specific_exposure",
+          "post_procedure_device_or_treatment",
+          "immunocompromised_or_high_risk",
+          "test_or_treatment_followup",
+          "feverish_not_measured",
+          "other_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.fever.primary-group",
+        "display": "Primary Fever Context",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.fever.primary-group",
+        "wording": "이번 발열·열감은 현재 급성 발열, 반복·주기적 발열, 오래 지속되는 발열, 여행·특정 노출 후 발열, 시술·수술·기구·치료 후 발열, 면역저하·고위험 상태의 발열, 검사·치료 후 추적, 체온은 재지 않았지만 열감이 있는 경우 중 무엇에 가장 가깝나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 240,
+          "reason": "primary-group"
+        }
+      ],
+      "supports": [
+        "group.fever.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "fever.reduced_consciousness_or_new_confusion",
+        "display": "Reduced Consciousness or New Confusion",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.fever.reduced-consciousness",
+        "display": "Reduced Consciousness or New Confusion",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.fever.reduced-consciousness",
+        "wording": "새로 혼란스럽거나 깨우기 어렵고 평소와 다른 행동·의식 저하가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 239,
+          "reason": "reduced-consciousness"
+        }
+      ],
+      "supports": [
+        "group.fever.safety",
+        "group.fever.neurological"
+      ]
+    },
+    {
+      "fact": {
+        "id": "fever.severe_breathing_cyanosis_or_new_high_oxygen_need",
+        "display": "Severe Respiratory Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.fever.severe-breathing",
+        "display": "Severe Respiratory Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.fever.severe-breathing",
+        "wording": "숨을 매우 힘들게 쉬거나 입술·혀가 파래지고, 말을 잇기 어렵거나 평소보다 많은 산소가 필요한가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 238,
+          "reason": "severe-breathing"
+        }
+      ],
+      "supports": [
+        "group.fever.safety",
+        "group.fever.respiratory"
+      ]
+    },
+    {
+      "fact": {
+        "id": "fever.collapse_mottled_ashen_or_shock_features",
+        "display": "Collapse or Circulatory Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.fever.shock-warning",
+        "display": "Collapse or Circulatory Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.fever.shock-warning",
+        "wording": "쓰러짐·실신, 차갑고 축축한 피부, 회색빛·얼룩덜룩한 피부, 매우 빠른 맥박 또는 심한 어지럼이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 237,
+          "reason": "shock-warning"
+        }
+      ],
+      "supports": [
+        "group.fever.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.non_blanching_rash",
+        "display": "Non-blanching or Purpuric Rash",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.fever.non-blanching-rash",
+        "display": "Non-blanching or Purpuric Rash",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.fever.non-blanching-rash",
+        "wording": "눌러도 옅어지지 않는 붉거나 자주색 점·멍 같은 발진이 새로 생겼나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 236,
+          "reason": "non-blanching-rash"
+        }
+      ],
+      "supports": [
+        "group.fever.safety",
+        "group.fever.skin_joint"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "fever.meningitis_warning_combination",
+        "display": "Meningitis Warning Combination",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.fever.meningitis-warning",
+        "display": "Meningitis Warning Combination",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.fever.meningitis-warning",
+        "wording": "심한 두통과 목 경직이 있으면서 혼란·심한 졸림 또는 빛을 보기 힘든 증상이 함께 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 235,
+          "reason": "meningitis-warning"
+        }
+      ],
+      "supports": [
+        "group.fever.safety",
+        "group.fever.neurological"
+      ]
+    },
+    {
+      "fact": {
+        "id": "fever.new_seizure_or_focal_neurologic_deficit",
+        "display": "Seizure or Focal Neurologic Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.fever.seizure-neurology",
+        "display": "Seizure or Focal Neurologic Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.fever.seizure-neurology",
+        "wording": "처음 발생한 경련, 한쪽 힘 빠짐·감각 저하, 새 말하기 장애 또는 갑작스러운 신경학적 변화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 234,
+          "reason": "seizure-neurology"
+        }
+      ],
+      "supports": [
+        "group.fever.safety",
+        "group.fever.neurological"
+      ]
+    },
+    {
+      "fact": {
+        "id": "fever.no_urine_or_severe_dehydration",
+        "display": "Severe Dehydration Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.fever.severe-dehydration",
+        "display": "Severe Dehydration Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.fever.severe-dehydration",
+        "wording": "12시간 이상 소변을 거의 보지 못했거나 물을 마시지 못하고 계속 토하며 입이 매우 마르고 심하게 처지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 233,
+          "reason": "severe-dehydration"
+        }
+      ],
+      "supports": [
+        "group.fever.safety",
+        "group.fever.gastrointestinal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "fever.recent_anticancer_or_neutropenia_risk",
+        "display": "Neutropenic Sepsis Risk",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.fever.neutropenia-risk",
+        "display": "Neutropenic Sepsis Risk",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.fever.neutropenia-risk",
+        "wording": "최근 30일 이내 전신 항암치료를 받았거나 의료진에게 호중구감소·심한 면역억제 위험이 있다고 들은 상태에서 열이 나나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 232,
+          "reason": "neutropenia-risk"
+        }
+      ],
+      "supports": [
+        "group.fever.safety",
+        "group.fever.risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "fever.young_infant_temperature_warning",
+        "display": "Young Infant Fever Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.fever.young-infant-warning",
+        "display": "Young Infant Fever Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.fever.young-infant-warning",
+        "wording": "생후 3개월 미만인데 38℃ 이상이거나 열이 의심되거나, 생후 3~6개월인데 39℃ 이상이거나 평소와 다르게 많이 처지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 231,
+          "reason": "young-infant-warning"
+        }
+      ],
+      "supports": [
+        "group.fever.safety",
+        "group.fever.risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "fever.pregnancy_postpartum_severe_infection_warning",
+        "display": "Pregnancy or Postpartum Infection Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.fever.pregnancy-warning",
+        "display": "Pregnancy or Postpartum Infection Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.fever.pregnancy-warning",
+        "wording": "임신 중이거나 출산·유산·임신종결 후 6주 이내이며, 발열과 함께 심한 처짐·숨참·혼란·심한 복통·악취 나는 분비물 또는 상처 악화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 230,
+          "reason": "pregnancy-warning"
+        }
+      ],
+      "supports": [
+        "group.fever.safety",
+        "group.fever.reproductive"
+      ]
+    },
+    {
+      "fact": {
+        "id": "fever.travel_with_bleeding_altered_mental_state_or_instability",
+        "display": "High-consequence Travel Fever Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.fever.travel-warning",
+        "display": "High-consequence Travel Fever Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.fever.travel-warning",
+        "wording": "최근 해외 체류 뒤 발열과 함께 원인 모를 출혈·자주색 발진, 의식 변화, 심한 숨참 또는 쓰러질 듯한 상태가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 229,
+          "reason": "travel-warning"
+        }
+      ],
+      "supports": [
+        "group.fever.safety",
+        "group.fever.exposure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "fever.post_procedure_device_wound_severe_infection",
+        "display": "Post-procedure or Device Infection Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.fever.procedure-infection",
+        "display": "Post-procedure or Device Infection Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.fever.procedure-infection",
+        "wording": "최근 수술·시술·분만 또는 카테터·주사관 주변에 심한 통증·붉음·고름·상처 벌어짐이 있고 발열·오한·전신 악화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 228,
+          "reason": "procedure-infection"
+        }
+      ],
+      "supports": [
+        "group.fever.safety",
+        "group.fever.risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "fever.information_source_proxy_and_reliability",
+        "display": "Information Source and Reliability",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.fever.information-source",
+        "display": "Information Source and Reliability",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.fever.information-source",
+        "wording": "누가 답변하며 본인 측정, 보호자 관찰, 체온계 기록, 사진, 검사결과 중 무엇에 근거하나요? 확실하지 않거나 서로 다른 정보도 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 210,
+          "reason": "information-source"
+        }
+      ],
+      "supports": [
+        "group.fever.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "fever.age_life_stage_and_baseline",
+        "display": "Age and Life Stage",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.fever.age-life-stage",
+        "display": "Age and Life Stage",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.fever.age-life-stage",
+        "wording": "만 나이 또는 생후 개월 수, 임신·산후 여부와 평소 건강·기능 상태를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 209,
+          "reason": "age-life-stage"
+        }
+      ],
+      "supports": [
+        "group.fever.risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.duration",
+        "display": "Fever Duration",
+        "value_type": "quantity"
+      },
+      "target": {
+        "id": "target.fever.duration",
+        "display": "Fever Duration",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.fever.duration",
+        "wording": "처음 열감이나 측정된 발열이 시작된 날짜·시각과 지금까지의 기간을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 208,
+          "reason": "duration"
+        }
+      ],
+      "supports": [
+        "group.fever.character"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "observation.body_temperature",
+        "display": "Measured Body Temperature",
+        "value_type": "quantity"
+      },
+      "target": {
+        "id": "target.fever.temperature",
+        "display": "Measured Body Temperature",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.fever.temperature",
+        "wording": "측정한 체온이 있다면 가장 최근 값과 최고·최저값을 ℃로 알려주세요. 측정하지 않았다면 그렇게 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 207,
+          "reason": "temperature"
+        }
+      ],
+      "supports": [
+        "group.fever.character"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "fever.measurement_site_device_time_and_circumstance",
+        "display": "Temperature Measurement Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.fever.measurement-context",
+        "display": "Temperature Measurement Context",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.fever.measurement-context",
+        "wording": "체온을 언제, 귀·입·겨드랑이·이마·직장 중 어디에서 어떤 체온계로 측정했으며 해열제 전후 중 언제였나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 206,
+          "reason": "measurement-context"
+        }
+      ],
+      "supports": [
+        "group.fever.character"
+      ]
+    },
+    {
+      "fact": {
+        "id": "fever.current_status_peak_trend_and_pattern",
+        "display": "Fever Course and Pattern",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.fever.course-pattern",
+        "display": "Fever Course and Pattern",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.fever.course-pattern",
+        "wording": "지금도 열이 있는지, 계속·간헐·매일 특정 시간·주기적 반복인지와 최고점·호전·악화 추세를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 205,
+          "reason": "course-pattern"
+        }
+      ],
+      "supports": [
+        "group.fever.character"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.chills",
+        "display": "Chills Sweats or Rigors",
+        "value_type": "boolean",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "248456009"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.fever",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.fever.chills",
+        "display": "Chills Sweats or Rigors",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.fever.chills",
+        "wording": "오한, 이를 부딪칠 정도의 심한 떨림 또는 식은땀·밤땀이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 204,
+          "reason": "chills"
+        }
+      ],
+      "supports": [
+        "group.fever.character"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "fever.chills_sweats_timing_and_severity",
+        "display": "Chills and Sweats Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.fever.chills-detail",
+        "display": "Chills and Sweats Detail",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.fever.chills-detail",
+        "wording": "오한·심한 떨림·땀의 시작 시각, 빈도, 지속시간과 체온 변화와의 관계를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 203,
+          "reason": "chills-detail"
+        }
+      ],
+      "supports": [
+        "group.fever.character"
+      ]
+    },
+    {
+      "fact": {
+        "id": "fever.antipyretic_name_dose_time_and_temperature_response",
+        "display": "Antipyretic Use and Response",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.fever.antipyretic-response",
+        "display": "Antipyretic Use and Response",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.fever.antipyretic-response",
+        "wording": "아세트아미노펜·이부프로펜 등 해열제를 먹었다면 이름·용량·복용 시각과 전후 체온·증상 변화를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 202,
+          "reason": "antipyretic-response"
+        }
+      ],
+      "supports": [
+        "group.fever.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "fever.fluid_intake_urine_frequency_and_color",
+        "display": "Hydration and Urine",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.fever.hydration",
+        "display": "Hydration and Urine",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.fever.hydration",
+        "wording": "평소 대비 마신 양, 마지막 소변 시각, 소변 횟수·양·색과 입 마름·어지럼을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 201,
+          "reason": "hydration"
+        }
+      ],
+      "supports": [
+        "group.fever.character",
+        "group.fever.gastrointestinal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "fever.acute_functional_decline_eating_drinking_mobility",
+        "display": "Acute Functional Decline",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.fever.functional-decline",
+        "display": "Acute Functional Decline",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.fever.functional-decline",
+        "wording": "식사·수분 섭취, 걷기, 일상생활, 수면과 돌봄 필요가 평소보다 어떻게 달라졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 200,
+          "reason": "functional-decline"
+        }
+      ],
+      "supports": [
+        "group.fever.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.systemic_unwellness",
+        "display": "Systemically Unwell",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.fever.systemic-unwellness",
+        "display": "Systemically Unwell",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.fever.systemic-unwellness",
+        "wording": "열과 함께 평소와 달리 전반적으로 매우 아프거나 처진 상태인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 199,
+          "reason": "systemic-unwellness"
+        }
+      ],
+      "supports": [
+        "group.fever.function",
+        "group.fever.safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "fever.pain_present",
+        "display": "Pain Present with Fever",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.fever.pain-present",
+        "display": "Pain Present with Fever",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.fever.pain-present",
+        "wording": "열과 함께 통증이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 199,
+          "reason": "pain-present"
+        }
+      ],
+      "supports": [
+        "group.fever.character"
+      ]
+    },
+    {
+      "fact": {
+        "id": "fever.pain_nrs",
+        "display": "Fever-associated Pain NRS",
+        "value_type": "integer"
+      },
+      "target": {
+        "id": "target.fever.pain-nrs",
+        "display": "Fever-associated Pain NRS",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.fever.pain-nrs",
+        "wording": "[필수] 통증이 있다면 현재 통증을 0부터 10까지 숫자로 알려주세요. 0은 통증 없음, 10은 상상할 수 있는 가장 심한 통증입니다.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 198,
+          "reason": "pain-nrs"
+        }
+      ],
+      "supports": [
+        "group.fever.character"
+      ]
+    },
+    {
+      "fact": {
+        "id": "fever.pain_site_character_and_course",
+        "display": "Pain Site and Character",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.fever.pain-detail",
+        "display": "Pain Site and Character",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.fever.pain-detail",
+        "wording": "통증의 정확한 부위, 양상, 시작·지속시간, 움직임·호흡·식사·배뇨와의 관계를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 197,
+          "reason": "pain-detail"
+        }
+      ],
+      "supports": [
+        "group.fever.character"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.cough",
+        "display": "Cough",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.fever.cough",
+        "display": "Cough",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.fever.cough",
+        "wording": "기침이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 180,
+          "reason": "cough"
+        }
+      ],
+      "supports": [
+        "group.fever.respiratory"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "fever.respiratory_nasal_throat_sputum_and_chest_features",
+        "display": "Respiratory and ENT Features",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.fever.respiratory-detail",
+        "display": "Respiratory and ENT Features",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.fever.respiratory-detail",
+        "wording": "콧물·코막힘·인후통·기침·가래·흉통·숨참의 시작, 심한 정도와 가래 색·피 여부를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 179,
+          "reason": "respiratory-detail"
+        }
+      ],
+      "supports": [
+        "group.fever.respiratory"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.sore_throat",
+        "display": "Sore Throat",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.fever.sore-throat",
+        "display": "Sore Throat",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.fever.sore-throat",
+        "wording": "목 통증이나 삼키기 어려움이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 178,
+          "reason": "sore-throat"
+        }
+      ],
+      "supports": [
+        "group.fever.respiratory"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.dyspnea",
+        "display": "Breathing Difficulty",
+        "value_type": "severity"
+      },
+      "target": {
+        "id": "target.fever.dyspnea",
+        "display": "Breathing Difficulty",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.fever.dyspnea",
+        "wording": "숨참이 있다면 없음·가벼움·중간·심함 중 어느 정도이며 안정 시에도 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 177,
+          "reason": "dyspnea"
+        }
+      ],
+      "supports": [
+        "group.fever.respiratory"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.urinary_symptoms",
+        "display": "Urinary Symptoms",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.fever.urinary",
+        "display": "Urinary Symptoms",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.fever.urinary",
+        "wording": "배뇨통, 빈뇨·절박뇨, 탁하거나 피 섞인 소변 또는 소변 냄새 변화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 174,
+          "reason": "urinary"
+        }
+      ],
+      "supports": [
+        "group.fever.urinary"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "fever.flank_pelvic_or_genital_urinary_features",
+        "display": "Upper Urinary or Genital Features",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.fever.urinary-detail",
+        "display": "Upper Urinary or Genital Features",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.fever.urinary-detail",
+        "wording": "옆구리·허리·아랫배 통증, 소변 문제, 생식기 분비물·통증과 시작 시점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 173,
+          "reason": "urinary-detail"
+        }
+      ],
+      "supports": [
+        "group.fever.urinary",
+        "group.fever.reproductive"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.vomiting",
+        "display": "Vomiting",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.fever.vomiting",
+        "display": "Vomiting",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.fever.vomiting",
+        "wording": "구토가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 170,
+          "reason": "vomiting"
+        }
+      ],
+      "supports": [
+        "group.fever.gastrointestinal"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.diarrhea",
+        "display": "Diarrhea",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.fever.diarrhea",
+        "display": "Diarrhea",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.fever.diarrhea",
+        "wording": "설사나 평소와 다른 묽은 변이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 169,
+          "reason": "diarrhea"
+        }
+      ],
+      "supports": [
+        "group.fever.gastrointestinal"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.abdominal_pain",
+        "display": "Abdominal Pain",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.fever.abdominal-pain",
+        "display": "Abdominal Pain",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.fever.abdominal-pain",
+        "wording": "복통이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 168,
+          "reason": "abdominal-pain"
+        }
+      ],
+      "supports": [
+        "group.fever.gastrointestinal"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "fever.gastrointestinal_stool_blood_jaundice_and_intake",
+        "display": "Gastrointestinal Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.fever.gastrointestinal-detail",
+        "display": "Gastrointestinal Detail",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.fever.gastrointestinal-detail",
+        "wording": "구토·설사의 횟수와 혈액, 복통 위치, 황달, 식욕·섭취 변화와 최근 음식 노출을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 167,
+          "reason": "gastrointestinal-detail"
+        }
+      ],
+      "supports": [
+        "group.fever.gastrointestinal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.headache",
+        "display": "Headache",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.fever.headache",
+        "display": "Headache",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.fever.headache",
+        "wording": "새 두통이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 164,
+          "reason": "headache"
+        }
+      ],
+      "supports": [
+        "group.fever.neurological"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.neck_stiffness",
+        "display": "Neck Stiffness",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.fever.neck-stiffness",
+        "display": "Neck Stiffness",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.fever.neck-stiffness",
+        "wording": "목이 평소와 다르게 뻣뻣하거나 움직이기 어렵나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 163,
+          "reason": "neck-stiffness"
+        }
+      ],
+      "supports": [
+        "group.fever.neurological"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "fever.neurologic_eye_ear_and_behavior_features",
+        "display": "Neurologic Sensory and Behavior Features",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.fever.neurologic-detail",
+        "display": "Neurologic Sensory and Behavior Features",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.fever.neurologic-detail",
+        "wording": "두통·목 경직·빛 불편·눈 통증, 귀 통증, 어지럼, 혼란·행동 변화가 있으면 시작과 경과를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 162,
+          "reason": "neurologic-detail"
+        }
+      ],
+      "supports": [
+        "group.fever.neurological"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.skin_infection_features",
+        "display": "Skin or Wound Infection Features",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.fever.skin-infection",
+        "display": "Skin or Wound Infection Features",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.fever.skin-infection",
+        "wording": "붉고 뜨겁고 아픈 피부, 상처·고름 또는 빠르게 번지는 부위가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 159,
+          "reason": "skin-infection"
+        }
+      ],
+      "supports": [
+        "group.fever.skin_joint"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "fever.rash_wound_joint_or_localized_swelling_detail",
+        "display": "Skin Joint and Wound Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.fever.skin-joint-detail",
+        "display": "Skin Joint and Wound Detail",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.fever.skin-joint-detail",
+        "wording": "발진·물집·상처·피부 붉음, 관절 통증·부기, 국소 멍울의 위치·범위·사진 유무와 진행을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 158,
+          "reason": "skin-joint-detail"
+        }
+      ],
+      "supports": [
+        "group.fever.skin_joint"
+      ]
+    },
+    {
+      "fact": {
+        "id": "fever.pregnancy_postpartum_lactation_and_reproductive_source",
+        "display": "Pregnancy and Postpartum Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.fever.reproductive-context",
+        "display": "Pregnancy and Postpartum Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.fever.reproductive-context",
+        "wording": "임신 주수, 출산·유산·임신종결 날짜, 수유 여부와 골반통·분비물·유방·상처 증상을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 155,
+          "reason": "reproductive-context"
+        }
+      ],
+      "supports": [
+        "group.fever.reproductive"
+      ]
+    },
+    {
+      "fact": {
+        "id": "exposure.sick_contact",
+        "display": "Sick Contact or Cluster",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.fever.sick-contact",
+        "display": "Sick Contact or Cluster",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.fever.sick-contact",
+        "wording": "가족·학교·직장·시설에서 비슷하게 아픈 사람이나 알려진 유행이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 150,
+          "reason": "sick-contact"
+        }
+      ],
+      "supports": [
+        "group.fever.exposure"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "fever.travel_destinations_dates_onset_and_healthcare",
+        "display": "Travel Itinerary and Timing",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.fever.travel-itinerary",
+        "display": "Travel Itinerary and Timing",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.fever.travel-itinerary",
+        "wording": "최근 1년 내 국내외 여행·체류 지역과 출입국 날짜, 여행 중·귀국 후 증상 시작 시점과 현지 진료·약 복용을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 149,
+          "reason": "travel-itinerary"
+        }
+      ],
+      "supports": [
+        "group.fever.exposure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "fever.insect_tick_animal_bite_scratch_or_contact",
+        "display": "Vector and Animal Exposure",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.fever.vector-animal",
+        "display": "Vector and Animal Exposure",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.fever.vector-animal",
+        "wording": "모기·진드기 등 벌레물림, 동물 물림·긁힘·사체·분비물 접촉과 날짜·지역을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 148,
+          "reason": "vector-animal"
+        }
+      ],
+      "supports": [
+        "group.fever.exposure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "fever.food_water_freshwater_and_group_meal_exposure",
+        "display": "Food Water and Environmental Exposure",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.fever.food-water",
+        "display": "Food Water and Environmental Exposure",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.fever.food-water",
+        "wording": "날음식·덜 익힌 음식·비살균 유제품·의심되는 물, 계곡·강·호수·온천, 단체식사와 함께 아픈 사람을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 147,
+          "reason": "food-water"
+        }
+      ],
+      "supports": [
+        "group.fever.exposure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "fever.sexual_sharps_tattoo_piercing_or_blood_exposure",
+        "display": "Sexual and Blood Exposure",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.fever.sexual-blood",
+        "display": "Sexual and Blood Exposure",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.fever.sexual-blood",
+        "wording": "답변 가능한 범위에서 최근 새 성접촉, 주사침·혈액, 문신·피어싱 등 감염 관련 노출과 날짜를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 146,
+          "reason": "sexual-blood"
+        }
+      ],
+      "supports": [
+        "group.fever.exposure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "fever.occupation_healthcare_laboratory_animal_or_crowding_exposure",
+        "display": "Occupational and Congregate Exposure",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.fever.occupation-exposure",
+        "display": "Occupational and Congregate Exposure",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.fever.occupation-exposure",
+        "wording": "의료·돌봄·실험실·축산·동물·식품 관련 업무, 군대·기숙사·교정시설·보호시설 등 집단생활 노출이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 145,
+          "reason": "occupation-exposure"
+        }
+      ],
+      "supports": [
+        "group.fever.exposure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "patient.immunocompromised",
+        "display": "Immunocompromised State",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.fever.immunocompromised",
+        "display": "Immunocompromised State",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.fever.immunocompromised",
+        "wording": "면역을 약화시키는 질환이나 치료가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 140,
+          "reason": "immunocompromised"
+        }
+      ],
+      "supports": [
+        "group.fever.risk"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "fever.immunosuppression_cancer_transplant_hiv_asplenia_and_last_treatment",
+        "display": "Immune Risk Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.fever.immune-detail",
+        "display": "Immune Risk Detail",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.fever.immune-detail",
+        "wording": "암·항암치료, 이식, HIV, 비장 없음, 면역결핍, 스테로이드·생물학제제 등 면역억제 치료의 이름과 마지막 투여일을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 139,
+          "reason": "immune-detail"
+        }
+      ],
+      "supports": [
+        "group.fever.risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "fever.chronic_conditions_frailty_and_baseline_vulnerability",
+        "display": "Chronic Conditions and Frailty",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.fever.chronic-risk",
+        "display": "Chronic Conditions and Frailty",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.fever.chronic-risk",
+        "wording": "당뇨, 심장·폐·신장·간·신경 질환, 허약·거동 제한 등 중증 감염 위험이나 증상 표현에 영향을 줄 상태를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 138,
+          "reason": "chronic-risk"
+        }
+      ],
+      "supports": [
+        "group.fever.risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "fever.recent_surgery_procedure_delivery_dental_work_wound_or_device",
+        "display": "Recent Procedure and Device Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.fever.procedure-device",
+        "display": "Recent Procedure and Device Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.fever.procedure-device",
+        "wording": "최근 6주 내 수술·시술·분만·치과치료·상처와 카테터·투석관·중심정맥관·인공관절 등 기구의 종류·날짜·부위를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 137,
+          "reason": "procedure-device"
+        }
+      ],
+      "supports": [
+        "group.fever.risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "fever.vaccination_infection_history_and_previous_similar_episodes",
+        "display": "Vaccination and Infection History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.fever.vaccination-history",
+        "display": "Vaccination and Infection History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.fever.vaccination-history",
+        "wording": "최근 예방접종과 독감·COVID-19·폐렴구균·수막구균 등 접종력, 최근 감염·입원·내성균 및 이전 비슷한 발열을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 136,
+          "reason": "vaccination-history"
+        }
+      ],
+      "supports": [
+        "group.fever.risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "fever.current_medicines_antibiotics_antipyretics_and_recent_changes",
+        "display": "Medicines and Antibiotics",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.fever.medicines",
+        "display": "Medicines and Antibiotics",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.fever.medicines",
+        "wording": "현재 약·보충제, 최근 시작·중단·변경한 약, 최근 반복 항생제와 해열제의 이름·용량·복용 시각을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 135,
+          "reason": "medicines"
+        }
+      ],
+      "supports": [
+        "group.fever.risk",
+        "group.fever.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "fever.medicine_allergies_and_adverse_reactions",
+        "display": "Medicine Allergies",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.fever.medicine-allergies",
+        "display": "Medicine Allergies",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.fever.medicine-allergies",
+        "wording": "항생제·해열제 등 약물 알레르기와 발생한 반응을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 134,
+          "reason": "medicine-allergies"
+        }
+      ],
+      "supports": [
+        "group.fever.risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "fever.prior_tests_results_cultures_and_imaging",
+        "display": "Prior Tests and Results",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.fever.prior-tests",
+        "display": "Prior Tests and Results",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.fever.prior-tests",
+        "wording": "이번 발열로 시행한 혈액·소변·호흡기검사·배양·영상의 날짜와 수치·결과, 원본 유무를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "prior-tests"
+        }
+      ],
+      "supports": [
+        "group.fever.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "fever.treatment_antibiotic_start_response_and_adverse_effect",
+        "display": "Treatment and Response",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.fever.treatment-response",
+        "display": "Treatment and Response",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.fever.treatment-response",
+        "wording": "수액·해열제·항생제 등 치료의 시작일·용량·순응도, 체온·증상 반응과 부작용을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "treatment-response"
+        }
+      ],
+      "supports": [
+        "group.fever.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "fever.prior_clinical_assessment_diagnosis_and_followup_plan",
+        "display": "Prior Assessment and Plan",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.fever.prior-assessment",
+        "display": "Prior Assessment and Plan",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.fever.prior-assessment",
+        "wording": "이미 진료받았다면 의료기관·날짜, 들은 설명, 재진·검사·격리 지시와 악화 시 계획을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "prior-assessment"
+        }
+      ],
+      "supports": [
+        "group.fever.followup"
+      ]
+    },
+    {
+      "fact": {
+        "id": "fever.patient_concern_goal_and_other_detail",
+        "display": "Patient Concern and Goal",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.fever.patient-goal",
+        "display": "Patient Concern and Goal",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.fever.patient-goal",
+        "wording": "질문에 없지만 의료진에게 꼭 전달할 내용, 가장 걱정하는 점과 이번 진료에서 원하는 것을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 120,
+          "reason": "patient-goal"
+        }
+      ],
+      "supports": [
+        "group.fever.function",
+        "group.fever.routing"
+      ]
+    }
   ],
   "provenance": {
-    "created_by": {"type": "ai", "id": "codex-gpt5"},
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
     "created_at": "2026-07-14T00:00:00Z",
-    "source_refs": ["source.nice.ng253.sepsis-adults", "source.nice.ng240.meningitis", "source.cdc.sepsis.2026"],
+    "source_refs": [
+      "source.nice.ng253.sepsis-adults.2025",
+      "source.nice.ng254.sepsis-under16.2025",
+      "source.nice.ng255.sepsis-pregnancy.2026",
+      "source.nice.ng240.meningitis.2024",
+      "source.cdc.yellow-book.post-travel-fever.2026",
+      "source.nhs.fever-adults.2023",
+      "source.nhs.fever-children.2026",
+      "source.stom.fever.20260716"
+    ],
     "review_status": "unreviewed",
     "version": "0.1.0"
   }

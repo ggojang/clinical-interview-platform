@@ -1,13 +1,13 @@
 {
   "contains_patient_responses": false,
-  "count": 45,
+  "count": 136,
   "encounter_contexts": [
     "context.primary_care"
   ],
   "generated_at": "2026-07-16T00:00:00Z",
   "items": [
     {
-      "id": "rule.fever.safety.meningitis_red_flag_combination",
+      "id": "rule.fever.safety.meningitis-warning",
       "priority": 1000,
       "then": {
         "action": "human_handoff",
@@ -16,24 +16,12 @@
       },
       "type": "safety",
       "when": {
-        "all": [
-          {
-            "equals": true,
-            "fact": "symptom.headache"
-          },
-          {
-            "equals": true,
-            "fact": "symptom.neck_stiffness"
-          },
-          {
-            "equals": true,
-            "fact": "symptom.confusion"
-          }
-        ]
+        "equals": true,
+        "fact": "fever.meningitis_warning_combination"
       }
     },
     {
-      "id": "rule.fever.safety.non_blanching_rash",
+      "id": "rule.fever.safety.non-blanching-rash",
       "priority": 1000,
       "then": {
         "action": "human_handoff",
@@ -47,7 +35,7 @@
       }
     },
     {
-      "id": "rule.fever.safety.severe_breathing_difficulty",
+      "id": "rule.fever.safety.reduced-consciousness",
       "priority": 1000,
       "then": {
         "action": "human_handoff",
@@ -56,13 +44,69 @@
       },
       "type": "safety",
       "when": {
-        "equals": "severe",
-        "fact": "symptom.dyspnea"
+        "equals": true,
+        "fact": "fever.reduced_consciousness_or_new_confusion"
       }
     },
     {
-      "id": "rule.fever.safety.confusion",
-      "priority": 900,
+      "id": "rule.fever.safety.seizure-neurology",
+      "priority": 1000,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "fever.new_seizure_or_focal_neurologic_deficit"
+      }
+    },
+    {
+      "id": "rule.fever.safety.severe-breathing",
+      "priority": 1000,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "fever.severe_breathing_cyanosis_or_new_high_oxygen_need"
+      }
+    },
+    {
+      "id": "rule.fever.safety.shock-warning",
+      "priority": 1000,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "fever.collapse_mottled_ashen_or_shock_features"
+      }
+    },
+    {
+      "id": "rule.fever.safety.travel-warning",
+      "priority": 1000,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "fever.travel_with_bleeding_altered_mental_state_or_instability"
+      }
+    },
+    {
+      "id": "rule.fever.safety.neutropenia-risk",
+      "priority": 990,
       "then": {
         "action": "human_handoff",
         "safety_level": "urgent",
@@ -71,174 +115,916 @@
       "type": "safety",
       "when": {
         "equals": true,
-        "fact": "symptom.confusion"
+        "fact": "fever.recent_anticancer_or_neutropenia_risk"
       }
     },
     {
-      "id": "rule.fever.safety.immunocompromised",
-      "priority": 620,
+      "id": "rule.fever.safety.pregnancy-warning",
+      "priority": 990,
       "then": {
-        "action": "continue_targeted_assessment",
-        "safety_level": "clarify",
-        "suppress_routine": false
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
       },
       "type": "safety",
       "when": {
         "equals": true,
-        "fact": "patient.immunocompromised"
+        "fact": "fever.pregnancy_postpartum_severe_infection_warning"
       }
     },
     {
-      "id": "rule.fever.safety.systemically_unwell",
-      "priority": 610,
+      "id": "rule.fever.safety.procedure-infection",
+      "priority": 990,
       "then": {
-        "action": "continue_targeted_assessment",
-        "safety_level": "clarify",
-        "suppress_routine": false
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
       },
       "type": "safety",
       "when": {
         "equals": true,
-        "fact": "symptom.systemic_unwellness"
+        "fact": "fever.post_procedure_device_wound_severe_infection"
       }
     },
     {
-      "id": "rule.generated.priority.any.determine_duration",
+      "id": "rule.fever.safety.severe-dehydration",
+      "priority": 990,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "fever.no_urine_or_severe_dehydration"
+      }
+    },
+    {
+      "id": "rule.fever.safety.young-infant-warning",
+      "priority": 990,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "fever.young_infant_temperature_warning"
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.primary-group",
+      "priority": 240,
+      "then": {
+        "reason": "primary-group",
+        "target": "target.fever.primary-group"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.primary-group": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.reduced-consciousness",
+      "priority": 239,
+      "then": {
+        "reason": "reduced-consciousness",
+        "target": "target.fever.reduced-consciousness"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.reduced-consciousness": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.severe-breathing",
+      "priority": 238,
+      "then": {
+        "reason": "severe-breathing",
+        "target": "target.fever.severe-breathing"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.severe-breathing": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.shock-warning",
+      "priority": 237,
+      "then": {
+        "reason": "shock-warning",
+        "target": "target.fever.shock-warning"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.shock-warning": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.non-blanching-rash",
+      "priority": 236,
+      "then": {
+        "reason": "non-blanching-rash",
+        "target": "target.fever.non-blanching-rash"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.non-blanching-rash": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.meningitis-warning",
+      "priority": 235,
+      "then": {
+        "reason": "meningitis-warning",
+        "target": "target.fever.meningitis-warning"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.meningitis-warning": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.seizure-neurology",
+      "priority": 234,
+      "then": {
+        "reason": "seizure-neurology",
+        "target": "target.fever.seizure-neurology"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.seizure-neurology": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.severe-dehydration",
+      "priority": 233,
+      "then": {
+        "reason": "severe-dehydration",
+        "target": "target.fever.severe-dehydration"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.severe-dehydration": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.neutropenia-risk",
+      "priority": 232,
+      "then": {
+        "reason": "neutropenia-risk",
+        "target": "target.fever.neutropenia-risk"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.neutropenia-risk": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.young-infant-warning",
+      "priority": 231,
+      "then": {
+        "reason": "young-infant-warning",
+        "target": "target.fever.young-infant-warning"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.young-infant-warning": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.pregnancy-warning",
+      "priority": 230,
+      "then": {
+        "reason": "pregnancy-warning",
+        "target": "target.fever.pregnancy-warning"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.pregnancy-warning": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.travel-warning",
+      "priority": 229,
+      "then": {
+        "reason": "travel-warning",
+        "target": "target.fever.travel-warning"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.travel-warning": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.procedure-infection",
+      "priority": 228,
+      "then": {
+        "reason": "procedure-infection",
+        "target": "target.fever.procedure-infection"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.procedure-infection": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.information-source",
+      "priority": 210,
+      "then": {
+        "reason": "information-source",
+        "target": "target.fever.information-source"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.information-source": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.age-life-stage",
+      "priority": 209,
+      "then": {
+        "reason": "age-life-stage",
+        "target": "target.fever.age-life-stage"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.age-life-stage": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.duration",
+      "priority": 208,
+      "then": {
+        "reason": "duration",
+        "target": "target.fever.duration"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.duration": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.temperature",
+      "priority": 207,
+      "then": {
+        "reason": "temperature",
+        "target": "target.fever.temperature"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.temperature": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.measurement-context",
+      "priority": 206,
+      "then": {
+        "reason": "measurement-context",
+        "target": "target.fever.measurement-context"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.measurement-context": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.course-pattern",
+      "priority": 205,
+      "then": {
+        "reason": "course-pattern",
+        "target": "target.fever.course-pattern"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.course-pattern": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.chills",
+      "priority": 204,
+      "then": {
+        "reason": "chills",
+        "target": "target.fever.chills"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.chills": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.chills-detail",
+      "priority": 203,
+      "then": {
+        "reason": "chills-detail",
+        "target": "target.fever.chills-detail"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.chills-detail": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.antipyretic-response",
+      "priority": 202,
+      "then": {
+        "reason": "antipyretic-response",
+        "target": "target.fever.antipyretic-response"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.antipyretic-response": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.hydration",
+      "priority": 201,
+      "then": {
+        "reason": "hydration",
+        "target": "target.fever.hydration"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.hydration": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.functional-decline",
+      "priority": 200,
+      "then": {
+        "reason": "functional-decline",
+        "target": "target.fever.functional-decline"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.functional-decline": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.pain-present",
+      "priority": 199,
+      "then": {
+        "reason": "pain-present",
+        "target": "target.fever.pain-present"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.pain-present": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.systemic-unwellness",
+      "priority": 199,
+      "then": {
+        "reason": "systemic-unwellness",
+        "target": "target.fever.systemic-unwellness"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.systemic-unwellness": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.pain-nrs",
+      "priority": 198,
+      "then": {
+        "reason": "pain-nrs",
+        "target": "target.fever.pain-nrs"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.pain-nrs": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.pain-detail",
+      "priority": 197,
+      "then": {
+        "reason": "pain-detail",
+        "target": "target.fever.pain-detail"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.pain-detail": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.cough",
+      "priority": 180,
+      "then": {
+        "reason": "cough",
+        "target": "target.fever.cough"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.cough": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.respiratory-detail",
+      "priority": 179,
+      "then": {
+        "reason": "respiratory-detail",
+        "target": "target.fever.respiratory-detail"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.respiratory-detail": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.sore-throat",
+      "priority": 178,
+      "then": {
+        "reason": "sore-throat",
+        "target": "target.fever.sore-throat"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.sore-throat": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.dyspnea",
+      "priority": 177,
+      "then": {
+        "reason": "dyspnea",
+        "target": "target.fever.dyspnea"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.dyspnea": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.urinary",
+      "priority": 174,
+      "then": {
+        "reason": "urinary",
+        "target": "target.fever.urinary"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.urinary": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.urinary-detail",
+      "priority": 173,
+      "then": {
+        "reason": "urinary-detail",
+        "target": "target.fever.urinary-detail"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.urinary-detail": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.vomiting",
+      "priority": 170,
+      "then": {
+        "reason": "vomiting",
+        "target": "target.fever.vomiting"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.vomiting": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.diarrhea",
+      "priority": 169,
+      "then": {
+        "reason": "diarrhea",
+        "target": "target.fever.diarrhea"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.diarrhea": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.abdominal-pain",
+      "priority": 168,
+      "then": {
+        "reason": "abdominal-pain",
+        "target": "target.fever.abdominal-pain"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.abdominal-pain": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.gastrointestinal-detail",
+      "priority": 167,
+      "then": {
+        "reason": "gastrointestinal-detail",
+        "target": "target.fever.gastrointestinal-detail"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.gastrointestinal-detail": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.headache",
+      "priority": 164,
+      "then": {
+        "reason": "headache",
+        "target": "target.fever.headache"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.headache": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.neck-stiffness",
+      "priority": 163,
+      "then": {
+        "reason": "neck-stiffness",
+        "target": "target.fever.neck-stiffness"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.neck-stiffness": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.neurologic-detail",
+      "priority": 162,
+      "then": {
+        "reason": "neurologic-detail",
+        "target": "target.fever.neurologic-detail"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.neurologic-detail": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.skin-infection",
+      "priority": 159,
+      "then": {
+        "reason": "skin-infection",
+        "target": "target.fever.skin-infection"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.skin-infection": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.skin-joint-detail",
+      "priority": 158,
+      "then": {
+        "reason": "skin-joint-detail",
+        "target": "target.fever.skin-joint-detail"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.skin-joint-detail": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.reproductive-context",
+      "priority": 155,
+      "then": {
+        "reason": "reproductive-context",
+        "target": "target.fever.reproductive-context"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.reproductive-context": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.sick-contact",
+      "priority": 150,
+      "then": {
+        "reason": "sick-contact",
+        "target": "target.fever.sick-contact"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.sick-contact": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.travel-itinerary",
+      "priority": 149,
+      "then": {
+        "reason": "travel-itinerary",
+        "target": "target.fever.travel-itinerary"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.travel-itinerary": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.vector-animal",
+      "priority": 148,
+      "then": {
+        "reason": "vector-animal",
+        "target": "target.fever.vector-animal"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.vector-animal": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.food-water",
+      "priority": 147,
+      "then": {
+        "reason": "food-water",
+        "target": "target.fever.food-water"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.food-water": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.sexual-blood",
+      "priority": 146,
+      "then": {
+        "reason": "sexual-blood",
+        "target": "target.fever.sexual-blood"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.sexual-blood": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.occupation-exposure",
+      "priority": 145,
+      "then": {
+        "reason": "occupation-exposure",
+        "target": "target.fever.occupation-exposure"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.occupation-exposure": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.immunocompromised",
+      "priority": 140,
+      "then": {
+        "reason": "immunocompromised",
+        "target": "target.fever.immunocompromised"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.immunocompromised": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.immune-detail",
+      "priority": 139,
+      "then": {
+        "reason": "immune-detail",
+        "target": "target.fever.immune-detail"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.immune-detail": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.chronic-risk",
+      "priority": 138,
+      "then": {
+        "reason": "chronic-risk",
+        "target": "target.fever.chronic-risk"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.chronic-risk": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.procedure-device",
+      "priority": 137,
+      "then": {
+        "reason": "procedure-device",
+        "target": "target.fever.procedure-device"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.procedure-device": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.vaccination-history",
+      "priority": 136,
+      "then": {
+        "reason": "vaccination-history",
+        "target": "target.fever.vaccination-history"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.vaccination-history": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.medicines",
+      "priority": 135,
+      "then": {
+        "reason": "medicines",
+        "target": "target.fever.medicines"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.medicines": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.medicine-allergies",
+      "priority": 134,
+      "then": {
+        "reason": "medicine-allergies",
+        "target": "target.fever.medicine-allergies"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.medicine-allergies": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.prior-tests",
+      "priority": 130,
+      "then": {
+        "reason": "prior-tests",
+        "target": "target.fever.prior-tests"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.prior-tests": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.treatment-response",
+      "priority": 129,
+      "then": {
+        "reason": "treatment-response",
+        "target": "target.fever.treatment-response"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.treatment-response": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.prior-assessment",
+      "priority": 128,
+      "then": {
+        "reason": "prior-assessment",
+        "target": "target.fever.prior-assessment"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.fever.prior-assessment": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.patient-goal",
       "priority": 120,
       "then": {
-        "reason": "characterize_course",
-        "target": "target.fever.determine_duration"
+        "reason": "patient-goal",
+        "target": "target.fever.patient-goal"
       },
       "type": "priority",
       "when": {
         "target_state": {
-          "target.fever.determine_duration": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine_temperature",
-      "priority": 118,
-      "then": {
-        "reason": "objective_characterization",
-        "target": "target.fever.determine_temperature"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.fever.determine_temperature": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine_systemic_unwellness",
-      "priority": 116,
-      "then": {
-        "reason": "systemic_safety_gate",
-        "target": "target.fever.determine_systemic_unwellness"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.fever.determine_systemic_unwellness": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine_confusion",
-      "priority": 115,
-      "then": {
-        "reason": "neurological_safety_gate",
-        "target": "target.fever.determine_confusion"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.fever.determine_confusion": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine_dyspnea",
-      "priority": 114,
-      "then": {
-        "reason": "respiratory_safety_gate",
-        "target": "target.fever.determine_dyspnea"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.fever.determine_dyspnea": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine_headache",
-      "priority": 108,
-      "then": {
-        "reason": "neurological_warning_feature",
-        "target": "target.fever.determine_headache"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.fever.determine_headache": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine_neck_stiffness",
-      "priority": 107,
-      "then": {
-        "reason": "neurological_warning_feature",
-        "target": "target.fever.determine_neck_stiffness"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.fever.determine_neck_stiffness": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine_non_blanching_rash",
-      "priority": 106,
-      "then": {
-        "reason": "rash_safety_gate",
-        "target": "target.fever.determine_non_blanching_rash"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.fever.determine_non_blanching_rash": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine_severe_pain",
-      "priority": 104,
-      "then": {
-        "reason": "systemic_warning_feature",
-        "target": "target.fever.determine_severe_pain"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.fever.determine_severe_pain": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine_immunocompromised",
-      "priority": 102,
-      "then": {
-        "reason": "host_vulnerability",
-        "target": "target.fever.determine_immunocompromised"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.fever.determine_immunocompromised": "active"
+          "target.fever.patient-goal": "active"
         }
       }
     },
@@ -259,133 +1045,17 @@
       }
     },
     {
-      "id": "rule.generated.priority.any.determine_cough",
-      "priority": 90,
+      "id": "rule.hira-pain.priority.pain.frequency",
+      "priority": 96,
       "then": {
-        "reason": "respiratory_source_localization",
-        "target": "target.fever.determine_cough"
+        "reason": "mandatory_standardized_pain_assessment",
+        "target": "target.standardized_pain_frequency"
       },
       "type": "priority",
-      "when": {
-        "target_state": {
-          "target.fever.determine_cough": "active"
-        }
-      }
+      "when": {}
     },
     {
-      "id": "rule.generated.priority.any.determine_sore_throat",
-      "priority": 88,
-      "then": {
-        "reason": "upper_respiratory_source_localization",
-        "target": "target.fever.determine_sore_throat"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.fever.determine_sore_throat": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine_urinary_symptoms",
-      "priority": 86,
-      "then": {
-        "reason": "urinary_source_localization",
-        "target": "target.fever.determine_urinary_symptoms"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.fever.determine_urinary_symptoms": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine_abdominal_pain",
-      "priority": 84,
-      "then": {
-        "reason": "gastrointestinal_source_localization",
-        "target": "target.fever.determine_abdominal_pain"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.fever.determine_abdominal_pain": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine_skin_features",
-      "priority": 82,
-      "then": {
-        "reason": "skin_source_localization",
-        "target": "target.fever.determine_skin_features"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.fever.determine_skin_features": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine_chills",
-      "priority": 78,
-      "then": {
-        "reason": "fever_characterization",
-        "target": "target.fever.determine_chills"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.fever.determine_chills": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine_vomiting",
-      "priority": 76,
-      "then": {
-        "reason": "gastrointestinal_source_localization",
-        "target": "target.fever.determine_vomiting"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.fever.determine_vomiting": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine_diarrhea",
-      "priority": 74,
-      "then": {
-        "reason": "gastrointestinal_source_localization",
-        "target": "target.fever.determine_diarrhea"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.fever.determine_diarrhea": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine_sick_contact",
-      "priority": 70,
-      "then": {
-        "reason": "exposure_context",
-        "target": "target.fever.determine_sick_contact"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.fever.determine_sick_contact": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.complete.determine_abdominal_pain",
+      "id": "rule.generated.complete.abdominal-pain",
       "priority": 50,
       "then": {
         "target_state": "satisfied"
@@ -393,11 +1063,11 @@
       "type": "completion",
       "when": {
         "facts_resolved": "all_required",
-        "target": "target.fever.determine_abdominal_pain"
+        "target": "target.fever.abdominal-pain"
       }
     },
     {
-      "id": "rule.generated.complete.determine_chills",
+      "id": "rule.generated.complete.age-life-stage",
       "priority": 50,
       "then": {
         "target_state": "satisfied"
@@ -405,11 +1075,11 @@
       "type": "completion",
       "when": {
         "facts_resolved": "all_required",
-        "target": "target.fever.determine_chills"
+        "target": "target.fever.age-life-stage"
       }
     },
     {
-      "id": "rule.generated.complete.determine_confusion",
+      "id": "rule.generated.complete.antipyretic-response",
       "priority": 50,
       "then": {
         "target_state": "satisfied"
@@ -417,11 +1087,11 @@
       "type": "completion",
       "when": {
         "facts_resolved": "all_required",
-        "target": "target.fever.determine_confusion"
+        "target": "target.fever.antipyretic-response"
       }
     },
     {
-      "id": "rule.generated.complete.determine_cough",
+      "id": "rule.generated.complete.chills",
       "priority": 50,
       "then": {
         "target_state": "satisfied"
@@ -429,11 +1099,11 @@
       "type": "completion",
       "when": {
         "facts_resolved": "all_required",
-        "target": "target.fever.determine_cough"
+        "target": "target.fever.chills"
       }
     },
     {
-      "id": "rule.generated.complete.determine_diarrhea",
+      "id": "rule.generated.complete.chills-detail",
       "priority": 50,
       "then": {
         "target_state": "satisfied"
@@ -441,11 +1111,11 @@
       "type": "completion",
       "when": {
         "facts_resolved": "all_required",
-        "target": "target.fever.determine_diarrhea"
+        "target": "target.fever.chills-detail"
       }
     },
     {
-      "id": "rule.generated.complete.determine_duration",
+      "id": "rule.generated.complete.chronic-risk",
       "priority": 50,
       "then": {
         "target_state": "satisfied"
@@ -453,11 +1123,11 @@
       "type": "completion",
       "when": {
         "facts_resolved": "all_required",
-        "target": "target.fever.determine_duration"
+        "target": "target.fever.chronic-risk"
       }
     },
     {
-      "id": "rule.generated.complete.determine_dyspnea",
+      "id": "rule.generated.complete.cough",
       "priority": 50,
       "then": {
         "target_state": "satisfied"
@@ -465,11 +1135,11 @@
       "type": "completion",
       "when": {
         "facts_resolved": "all_required",
-        "target": "target.fever.determine_dyspnea"
+        "target": "target.fever.cough"
       }
     },
     {
-      "id": "rule.generated.complete.determine_headache",
+      "id": "rule.generated.complete.course-pattern",
       "priority": 50,
       "then": {
         "target_state": "satisfied"
@@ -477,11 +1147,11 @@
       "type": "completion",
       "when": {
         "facts_resolved": "all_required",
-        "target": "target.fever.determine_headache"
+        "target": "target.fever.course-pattern"
       }
     },
     {
-      "id": "rule.generated.complete.determine_immunocompromised",
+      "id": "rule.generated.complete.diarrhea",
       "priority": 50,
       "then": {
         "target_state": "satisfied"
@@ -489,11 +1159,11 @@
       "type": "completion",
       "when": {
         "facts_resolved": "all_required",
-        "target": "target.fever.determine_immunocompromised"
+        "target": "target.fever.diarrhea"
       }
     },
     {
-      "id": "rule.generated.complete.determine_neck_stiffness",
+      "id": "rule.generated.complete.duration",
       "priority": 50,
       "then": {
         "target_state": "satisfied"
@@ -501,11 +1171,11 @@
       "type": "completion",
       "when": {
         "facts_resolved": "all_required",
-        "target": "target.fever.determine_neck_stiffness"
+        "target": "target.fever.duration"
       }
     },
     {
-      "id": "rule.generated.complete.determine_non_blanching_rash",
+      "id": "rule.generated.complete.dyspnea",
       "priority": 50,
       "then": {
         "target_state": "satisfied"
@@ -513,11 +1183,11 @@
       "type": "completion",
       "when": {
         "facts_resolved": "all_required",
-        "target": "target.fever.determine_non_blanching_rash"
+        "target": "target.fever.dyspnea"
       }
     },
     {
-      "id": "rule.generated.complete.determine_severe_pain",
+      "id": "rule.generated.complete.food-water",
       "priority": 50,
       "then": {
         "target_state": "satisfied"
@@ -525,11 +1195,11 @@
       "type": "completion",
       "when": {
         "facts_resolved": "all_required",
-        "target": "target.fever.determine_severe_pain"
+        "target": "target.fever.food-water"
       }
     },
     {
-      "id": "rule.generated.complete.determine_sick_contact",
+      "id": "rule.generated.complete.functional-decline",
       "priority": 50,
       "then": {
         "target_state": "satisfied"
@@ -537,11 +1207,11 @@
       "type": "completion",
       "when": {
         "facts_resolved": "all_required",
-        "target": "target.fever.determine_sick_contact"
+        "target": "target.fever.functional-decline"
       }
     },
     {
-      "id": "rule.generated.complete.determine_skin_features",
+      "id": "rule.generated.complete.gastrointestinal-detail",
       "priority": 50,
       "then": {
         "target_state": "satisfied"
@@ -549,11 +1219,11 @@
       "type": "completion",
       "when": {
         "facts_resolved": "all_required",
-        "target": "target.fever.determine_skin_features"
+        "target": "target.fever.gastrointestinal-detail"
       }
     },
     {
-      "id": "rule.generated.complete.determine_sore_throat",
+      "id": "rule.generated.complete.headache",
       "priority": 50,
       "then": {
         "target_state": "satisfied"
@@ -561,11 +1231,11 @@
       "type": "completion",
       "when": {
         "facts_resolved": "all_required",
-        "target": "target.fever.determine_sore_throat"
+        "target": "target.fever.headache"
       }
     },
     {
-      "id": "rule.generated.complete.determine_systemic_unwellness",
+      "id": "rule.generated.complete.hydration",
       "priority": 50,
       "then": {
         "target_state": "satisfied"
@@ -573,11 +1243,11 @@
       "type": "completion",
       "when": {
         "facts_resolved": "all_required",
-        "target": "target.fever.determine_systemic_unwellness"
+        "target": "target.fever.hydration"
       }
     },
     {
-      "id": "rule.generated.complete.determine_temperature",
+      "id": "rule.generated.complete.immune-detail",
       "priority": 50,
       "then": {
         "target_state": "satisfied"
@@ -585,11 +1255,11 @@
       "type": "completion",
       "when": {
         "facts_resolved": "all_required",
-        "target": "target.fever.determine_temperature"
+        "target": "target.fever.immune-detail"
       }
     },
     {
-      "id": "rule.generated.complete.determine_urinary_symptoms",
+      "id": "rule.generated.complete.immunocompromised",
       "priority": 50,
       "then": {
         "target_state": "satisfied"
@@ -597,11 +1267,11 @@
       "type": "completion",
       "when": {
         "facts_resolved": "all_required",
-        "target": "target.fever.determine_urinary_symptoms"
+        "target": "target.fever.immunocompromised"
       }
     },
     {
-      "id": "rule.generated.complete.determine_vomiting",
+      "id": "rule.generated.complete.information-source",
       "priority": 50,
       "then": {
         "target_state": "satisfied"
@@ -609,7 +1279,511 @@
       "type": "completion",
       "when": {
         "facts_resolved": "all_required",
-        "target": "target.fever.determine_vomiting"
+        "target": "target.fever.information-source"
+      }
+    },
+    {
+      "id": "rule.generated.complete.measurement-context",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.measurement-context"
+      }
+    },
+    {
+      "id": "rule.generated.complete.medicine-allergies",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.medicine-allergies"
+      }
+    },
+    {
+      "id": "rule.generated.complete.medicines",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.medicines"
+      }
+    },
+    {
+      "id": "rule.generated.complete.meningitis-warning",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.meningitis-warning"
+      }
+    },
+    {
+      "id": "rule.generated.complete.neck-stiffness",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.neck-stiffness"
+      }
+    },
+    {
+      "id": "rule.generated.complete.neurologic-detail",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.neurologic-detail"
+      }
+    },
+    {
+      "id": "rule.generated.complete.neutropenia-risk",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.neutropenia-risk"
+      }
+    },
+    {
+      "id": "rule.generated.complete.non-blanching-rash",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.non-blanching-rash"
+      }
+    },
+    {
+      "id": "rule.generated.complete.occupation-exposure",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.occupation-exposure"
+      }
+    },
+    {
+      "id": "rule.generated.complete.pain-detail",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.pain-detail"
+      }
+    },
+    {
+      "id": "rule.generated.complete.pain-nrs",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.pain-nrs"
+      }
+    },
+    {
+      "id": "rule.generated.complete.pain-present",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.pain-present"
+      }
+    },
+    {
+      "id": "rule.generated.complete.patient-goal",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.patient-goal"
+      }
+    },
+    {
+      "id": "rule.generated.complete.pregnancy-warning",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.pregnancy-warning"
+      }
+    },
+    {
+      "id": "rule.generated.complete.primary-group",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.primary-group"
+      }
+    },
+    {
+      "id": "rule.generated.complete.prior-assessment",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.prior-assessment"
+      }
+    },
+    {
+      "id": "rule.generated.complete.prior-tests",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.prior-tests"
+      }
+    },
+    {
+      "id": "rule.generated.complete.procedure-device",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.procedure-device"
+      }
+    },
+    {
+      "id": "rule.generated.complete.procedure-infection",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.procedure-infection"
+      }
+    },
+    {
+      "id": "rule.generated.complete.reduced-consciousness",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.reduced-consciousness"
+      }
+    },
+    {
+      "id": "rule.generated.complete.reproductive-context",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.reproductive-context"
+      }
+    },
+    {
+      "id": "rule.generated.complete.respiratory-detail",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.respiratory-detail"
+      }
+    },
+    {
+      "id": "rule.generated.complete.seizure-neurology",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.seizure-neurology"
+      }
+    },
+    {
+      "id": "rule.generated.complete.severe-breathing",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.severe-breathing"
+      }
+    },
+    {
+      "id": "rule.generated.complete.severe-dehydration",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.severe-dehydration"
+      }
+    },
+    {
+      "id": "rule.generated.complete.sexual-blood",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.sexual-blood"
+      }
+    },
+    {
+      "id": "rule.generated.complete.shock-warning",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.shock-warning"
+      }
+    },
+    {
+      "id": "rule.generated.complete.sick-contact",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.sick-contact"
+      }
+    },
+    {
+      "id": "rule.generated.complete.skin-infection",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.skin-infection"
+      }
+    },
+    {
+      "id": "rule.generated.complete.skin-joint-detail",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.skin-joint-detail"
+      }
+    },
+    {
+      "id": "rule.generated.complete.sore-throat",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.sore-throat"
+      }
+    },
+    {
+      "id": "rule.generated.complete.systemic-unwellness",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.systemic-unwellness"
+      }
+    },
+    {
+      "id": "rule.generated.complete.temperature",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.temperature"
+      }
+    },
+    {
+      "id": "rule.generated.complete.travel-itinerary",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.travel-itinerary"
+      }
+    },
+    {
+      "id": "rule.generated.complete.travel-warning",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.travel-warning"
+      }
+    },
+    {
+      "id": "rule.generated.complete.treatment-response",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.treatment-response"
+      }
+    },
+    {
+      "id": "rule.generated.complete.urinary",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.urinary"
+      }
+    },
+    {
+      "id": "rule.generated.complete.urinary-detail",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.urinary-detail"
+      }
+    },
+    {
+      "id": "rule.generated.complete.vaccination-history",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.vaccination-history"
+      }
+    },
+    {
+      "id": "rule.generated.complete.vector-animal",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.vector-animal"
+      }
+    },
+    {
+      "id": "rule.generated.complete.vomiting",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.vomiting"
+      }
+    },
+    {
+      "id": "rule.generated.complete.young-infant-warning",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.fever.young-infant-warning"
       }
     }
   ],
@@ -621,39 +1795,99 @@
   "knowledge_sources": [
     {
       "complete": false,
-      "id": "source.cdc.sepsis.2026",
-      "kind": "public_health_guidance_metadata",
-      "last_monitored_at": "2026-07-14",
+      "id": "source.cdc.yellow-book.post-travel-fever.2026",
+      "kind": "clinical_guidance_metadata",
+      "last_monitored_at": "2026-07-16",
       "license_status": "unknown",
-      "monitor_interval_days": 7,
+      "monitor_interval_days": 1,
       "publisher": "CDC",
-      "title": "About Sepsis",
-      "url": "https://www.cdc.gov/sepsis/about/index.html",
-      "version": "2026-03-23"
+      "title": "Post-Travel Evaluation of the Ill Traveler",
+      "url": "https://www.cdc.gov/yellow-book/hcp/post-travel-evaluation/post-travel-evaluation-of-the-ill-traveler.html",
+      "version": "Yellow-Book-2026"
     },
     {
       "complete": false,
-      "id": "source.nice.ng240.meningitis",
-      "kind": "clinical_guideline_metadata",
-      "last_monitored_at": "2026-07-14",
+      "id": "source.nhs.fever-adults.2023",
+      "kind": "clinical_guidance_metadata",
+      "last_monitored_at": "2026-07-16",
+      "license_status": "unknown",
+      "monitor_interval_days": 7,
+      "publisher": "NHS",
+      "title": "High temperature in adults",
+      "url": "https://www.nhs.uk/symptoms/fever-in-adults/",
+      "version": "reviewed-2023-05-24-review-due"
+    },
+    {
+      "complete": false,
+      "id": "source.nhs.fever-children.2026",
+      "kind": "clinical_guidance_metadata",
+      "last_monitored_at": "2026-07-16",
+      "license_status": "unknown",
+      "monitor_interval_days": 7,
+      "publisher": "NHS",
+      "title": "High temperature in children",
+      "url": "https://www.nhs.uk/symptoms/fever-in-children/",
+      "version": "accessed-2026-07-16"
+    },
+    {
+      "complete": false,
+      "id": "source.nice.ng240.meningitis.2024",
+      "kind": "clinical_guidance_metadata",
+      "last_monitored_at": "2026-07-16",
       "license_status": "restricted",
       "monitor_interval_days": 7,
       "publisher": "NICE",
       "title": "Bacterial meningitis and meningococcal disease",
       "url": "https://www.nice.org.uk/guidance/ng240/chapter/Recommendations",
-      "version": "NG240-2024"
+      "version": "NG240-published-2024-03-19"
     },
     {
       "complete": false,
-      "id": "source.nice.ng253.sepsis-adults",
-      "kind": "clinical_guideline_metadata",
-      "last_monitored_at": "2026-07-14",
+      "id": "source.nice.ng253.sepsis-adults.2025",
+      "kind": "clinical_guidance_metadata",
+      "last_monitored_at": "2026-07-16",
       "license_status": "restricted",
       "monitor_interval_days": 7,
       "publisher": "NICE",
       "title": "Suspected sepsis in people aged 16 or over",
-      "url": "https://www.nice.org.uk/guidance/NG253",
-      "version": "NG253-2025"
+      "url": "https://www.nice.org.uk/guidance/ng253",
+      "version": "NG253-published-2025-11-19"
+    },
+    {
+      "complete": false,
+      "id": "source.nice.ng254.sepsis-under16.2025",
+      "kind": "clinical_guidance_metadata",
+      "last_monitored_at": "2026-07-16",
+      "license_status": "restricted",
+      "monitor_interval_days": 7,
+      "publisher": "NICE",
+      "title": "Suspected sepsis in under 16s",
+      "url": "https://www.nice.org.uk/guidance/ng254",
+      "version": "NG254-published-2025-11-19"
+    },
+    {
+      "complete": false,
+      "id": "source.nice.ng255.sepsis-pregnancy.2026",
+      "kind": "clinical_guidance_metadata",
+      "last_monitored_at": "2026-07-16",
+      "license_status": "restricted",
+      "monitor_interval_days": 7,
+      "publisher": "NICE",
+      "title": "Suspected sepsis in pregnant or recently pregnant people",
+      "url": "https://www.nice.org.uk/guidance/ng255",
+      "version": "NG255-reviewed-2026-03-05"
+    },
+    {
+      "complete": false,
+      "id": "source.stom.fever.20260716",
+      "kind": "terminology_mrcm_query_summary",
+      "last_monitored_at": "2026-07-16",
+      "license_status": "restricted",
+      "monitor_interval_days": 30,
+      "publisher": "Infoclinic",
+      "title": "STOM fever terminology and MRCM summary",
+      "url": "https://stom.infoclinic.co/allow/attributes/SNOMEDCT/386661006",
+      "version": "SNOMEDCT-20260701"
     }
   ],
   "package_id": "package.primary-care-fever",

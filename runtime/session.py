@@ -343,6 +343,24 @@ class InterviewSession:
             ):
                 additions[node["id"]] = fact(True, answer_text, turn, .78)
 
+        correction_language = any(
+            marker in patient_text.lower()
+            for marker in ("i meant", "sorry, i meant")
+        ) or "정정" in patient_text or "아니, " in patient_text
+        if expected_fact and not correction_target and not correction_language:
+            # A number embedded in an answer to another question can resemble
+            # an already recorded quantity. Keep the scoped answer without
+            # creating an incidental contradiction in the known Fact.
+            for fact_id, candidate in list(additions.items()):
+                current = self.memory.facts.get(fact_id)
+                if (
+                    fact_id != expected_fact
+                    and current
+                    and current.get("status") == "known"
+                    and current.get("value") != candidate.get("value")
+                ):
+                    additions.pop(fact_id)
+
         if expected_fact and expected_fact not in additions:
             node = self._fact_node(expected_fact)
             if node:
@@ -398,7 +416,7 @@ class InterviewSession:
         if correction_target:
             for candidate in additions.values():
                 candidate["correction"] = True
-        elif any(marker in patient_text.lower() for marker in ("i meant", "sorry, i meant")) or "정정" in patient_text or "아니, " in patient_text:
+        elif correction_language:
             for candidate in additions.values():
                 candidate["correction"] = True
         merge_results: dict[str, str] = {}
@@ -446,6 +464,18 @@ class InterviewSession:
                     correction=bool(correction_target),
                 )
                 merge_results[expected_fact] = "corrected" if correction_target else "not-applicable"
+            elif low_normalized in {
+                "not measured", "it was not measured", "was not measured",
+                "측정하지 않았어요", "측정하지 않았습니다", "재지 않았어요",
+                "재지 않았습니다",
+            }:
+                self.memory.mark_absent(
+                    expected_fact, answer_text, "not-performed",
+                    correction=bool(correction_target),
+                )
+                merge_results[expected_fact] = (
+                    "corrected" if correction_target else "not-performed"
+                )
 
         was_complete = bool(self.trace and self.trace[-1]["completion"]["complete"])
         if correction_target and correction_target not in merge_results:
