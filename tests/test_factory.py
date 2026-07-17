@@ -345,10 +345,10 @@ class CompilerTests(unittest.TestCase):
             node["id"] for node in first["knowledge_graph"]["nodes"]
             if node["type"] == "Fact"
         }
-        self.assertEqual(len(facts), 30)
+        self.assertEqual(len(facts), 75)
         self.assertEqual(facts, set(first["indexes"]["questions_by_fact"]))
-        self.assertEqual(first["coverage"]["total_safety_rules"], 12)
-        self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 12)
+        self.assertEqual(first["coverage"]["total_safety_rules"], 16)
+        self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 16)
         self.assertEqual(first["coverage"]["uncovered_safety_rules"], [])
 
     def test_abdominal_pain_mrcm_is_build_time_metadata_only(self):
@@ -1573,8 +1573,8 @@ class PackageRuntimeTests(unittest.TestCase):
     def test_abdominal_pain_package_simulation_evaluation_passes(self):
         report = run_evaluation(ABDOMINAL_PAIN_PACKAGE)
         self.assertTrue(report["passed"])
-        self.assertEqual(report["case_count"], 14)
-        self.assertLessEqual(max(item["turns"] for item in report["results"]), 32)
+        self.assertEqual(report["case_count"], 23)
+        self.assertLessEqual(max(item["turns"] for item in report["results"]), 55)
 
     def test_abdominal_pain_runtime_uses_abdominal_rfe(self):
         session = InterviewSession(

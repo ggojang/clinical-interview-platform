@@ -450,7 +450,7 @@ class GptExportTests(unittest.TestCase):
                     encoding="utf-8"
                 )
             )
-            self.assertEqual(abdominal["count"], 30)
+            self.assertEqual(abdominal["count"], 75)
             location = next(
                 item for item in abdominal["items"]
                 if item["id"] == "symptom.abdominal_pain.location"

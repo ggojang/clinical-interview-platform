@@ -2,73 +2,2976 @@
   "id": "knowledge.generated.gastrointestinal.abdominal-pain",
   "version": "0.1.0",
   "status": "research_only",
-  "usage_modes": ["research_test", "simulation"],
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
   "source_manifest": "source-manifest.primary-care-abdominal-pain-research",
-  "default_refresh": {"class": "clinical_guideline", "last_assessed_at": "2026-07-14", "monitor_interval_days": 1, "full_review_interval_days": 180, "next_monitor_at": "2026-07-15", "next_full_review_at": "2027-01-10", "policy_id": "policy.knowledge-refresh", "overdue_behavior": {"production": "exclude_or_require_review", "research_test": "allow_with_warning"}},
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-07-17",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-07-18",
+    "next_full_review_at": "2027-01-13",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
   "extra_nodes": [
-    {"id": "group.abdominal-pain.immediate-safety", "type": "ClinicalGroup", "display": "Immediate Abdominal Safety Features"},
-    {"id": "group.abdominal-pain.characterization", "type": "ClinicalGroup", "display": "Pain Characterization"},
-    {"id": "group.abdominal-pain.gastrointestinal", "type": "ClinicalGroup", "display": "Gastrointestinal Features"},
-    {"id": "group.abdominal-pain.urinary", "type": "ClinicalGroup", "display": "Urinary Features"},
-    {"id": "group.abdominal-pain.pregnancy", "type": "ClinicalGroup", "display": "Pregnancy-related Features"},
-    {"id": "group.abdominal-pain.persistence", "type": "ClinicalGroup", "display": "Persistent and Constitutional Features"},
-    {"id": "group.abdominal-pain.background", "type": "ClinicalGroup", "display": "Relevant Background"},
-    {"id": "hypothesis.abdominal-pain.immediate-safety", "type": "Hypothesis", "display": "Immediate Assessment Warning Features"},
-    {"id": "hypothesis.abdominal-pain.gastrointestinal-pattern", "type": "Hypothesis", "display": "Gastrointestinal-associated Features"},
-    {"id": "hypothesis.abdominal-pain.urinary-pattern", "type": "Hypothesis", "display": "Urinary-associated Features"},
-    {"id": "hypothesis.abdominal-pain.pregnancy-warning", "type": "Hypothesis", "display": "Pregnancy-related Warning Features"},
-    {"id": "hypothesis.abdominal-pain.persistent-warning", "type": "Hypothesis", "display": "Persistent or Constitutional Warning Features"}
+    {
+      "id": "group.abdominal_pain.routing",
+      "type": "ClinicalGroup",
+      "display": "routing"
+    },
+    {
+      "id": "group.abdominal_pain.safety",
+      "type": "ClinicalGroup",
+      "display": "safety"
+    },
+    {
+      "id": "group.abdominal_pain.course",
+      "type": "ClinicalGroup",
+      "display": "course"
+    },
+    {
+      "id": "group.abdominal_pain.site",
+      "type": "ClinicalGroup",
+      "display": "site"
+    },
+    {
+      "id": "group.abdominal_pain.pain",
+      "type": "ClinicalGroup",
+      "display": "pain"
+    },
+    {
+      "id": "group.abdominal_pain.gastrointestinal",
+      "type": "ClinicalGroup",
+      "display": "gastrointestinal"
+    },
+    {
+      "id": "group.abdominal_pain.urinary",
+      "type": "ClinicalGroup",
+      "display": "urinary"
+    },
+    {
+      "id": "group.abdominal_pain.reproductive",
+      "type": "ClinicalGroup",
+      "display": "reproductive"
+    },
+    {
+      "id": "group.abdominal_pain.systemic",
+      "type": "ClinicalGroup",
+      "display": "systemic"
+    },
+    {
+      "id": "group.abdominal_pain.exposure",
+      "type": "ClinicalGroup",
+      "display": "exposure"
+    },
+    {
+      "id": "group.abdominal_pain.history",
+      "type": "ClinicalGroup",
+      "display": "history"
+    },
+    {
+      "id": "group.abdominal_pain.treatment",
+      "type": "ClinicalGroup",
+      "display": "treatment"
+    },
+    {
+      "id": "group.abdominal_pain.child",
+      "type": "ClinicalGroup",
+      "display": "child"
+    },
+    {
+      "id": "group.abdominal_pain.handoff",
+      "type": "ClinicalGroup",
+      "display": "handoff"
+    }
   ],
-  "group_hypothesis_edges": [
-    ["group.abdominal-pain.immediate-safety", "hypothesis.abdominal-pain.immediate-safety"],
-    ["group.abdominal-pain.gastrointestinal", "hypothesis.abdominal-pain.gastrointestinal-pattern"],
-    ["group.abdominal-pain.urinary", "hypothesis.abdominal-pain.urinary-pattern"],
-    ["group.abdominal-pain.pregnancy", "hypothesis.abdominal-pain.pregnancy-warning"],
-    ["group.abdominal-pain.persistence", "hypothesis.abdominal-pain.persistent-warning"]
-  ],
+  "group_hypothesis_edges": [],
   "safety_rules": [
-    {"id": "rule.abdominal-pain.safety.sudden-onset", "priority": 1000, "when": {"fact": "symptom.abdominal_pain.onset", "equals": "sudden"}, "then": {"safety_level": "emergency", "action": "human_handoff", "suppress_routine": true}},
-    {"id": "rule.abdominal-pain.safety.severe-pain", "priority": 1000, "when": {"fact": "symptom.abdominal_pain.severity", "equals": "severe"}, "then": {"safety_level": "emergency", "action": "human_handoff", "suppress_routine": true}},
-    {"id": "rule.abdominal-pain.safety.touch-tenderness", "priority": 1000, "when": {"fact": "symptom.abdominal_pain.touch_tenderness", "equals": true}, "then": {"safety_level": "emergency", "action": "human_handoff", "suppress_routine": true}},
-    {"id": "rule.abdominal-pain.safety.hematemesis", "priority": 1000, "when": {"fact": "symptom.hematemesis", "equals": true}, "then": {"safety_level": "emergency", "action": "human_handoff", "suppress_routine": true}},
-    {"id": "rule.abdominal-pain.safety.bloody-or-black-stool", "priority": 1000, "when": {"fact": "symptom.bloody_or_black_stool", "equals": true}, "then": {"safety_level": "emergency", "action": "human_handoff", "suppress_routine": true}},
-    {"id": "rule.abdominal-pain.safety.unable-to-urinate", "priority": 1000, "when": {"fact": "symptom.unable_to_urinate", "equals": true}, "then": {"safety_level": "emergency", "action": "human_handoff", "suppress_routine": true}},
-    {"id": "rule.abdominal-pain.safety.unable-to-pass-stool-or-gas", "priority": 1000, "when": {"fact": "symptom.unable_to_pass_stool_or_gas", "equals": true}, "then": {"safety_level": "emergency", "action": "human_handoff", "suppress_routine": true}},
-    {"id": "rule.abdominal-pain.safety.severe-dyspnea", "priority": 1000, "when": {"fact": "symptom.dyspnea", "equals": "severe"}, "then": {"safety_level": "emergency", "action": "human_handoff", "suppress_routine": true}},
-    {"id": "rule.abdominal-pain.safety.chest-pain", "priority": 1000, "when": {"fact": "symptom.chest_pain", "equals": true}, "then": {"safety_level": "emergency", "action": "human_handoff", "suppress_routine": true}},
-    {"id": "rule.abdominal-pain.safety.collapse-or-syncope", "priority": 1000, "when": {"fact": "symptom.collapse_or_syncope", "equals": true}, "then": {"safety_level": "emergency", "action": "human_handoff", "suppress_routine": true}},
-    {"id": "rule.abdominal-pain.safety.diabetes-with-vomiting", "priority": 1000, "when": {"all": [{"fact": "history.diabetes", "equals": true}, {"fact": "symptom.vomiting", "equals": true}]}, "then": {"safety_level": "emergency", "action": "human_handoff", "suppress_routine": true}},
-    {"id": "rule.abdominal-pain.safety.possible-pregnancy", "priority": 900, "when": {"fact": "pregnancy.possible", "equals": "possible"}, "then": {"safety_level": "urgent", "action": "human_handoff", "suppress_routine": true}}
+    {
+      "id": "rule.abdominal_pain.safety.collapse-shock",
+      "priority": 1000,
+      "when": {
+        "fact": "abdominal_pain.collapse_shock_or_severe_weakness",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.abdominal_pain.safety.rigid-rebound",
+      "priority": 1000,
+      "when": {
+        "fact": "abdominal_pain.rigid_distended_rebound_or_unable_to_move",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.abdominal_pain.safety.hematemesis",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.hematemesis",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.abdominal_pain.safety.bloody-black-stool",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.bloody_or_black_stool",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.abdominal_pain.safety.green-feculent-vomit",
+      "priority": 1000,
+      "when": {
+        "fact": "abdominal_pain.repeated_green_or_feculent_vomit",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.abdominal_pain.safety.obstruction",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.unable_to_pass_stool_or_gas",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.abdominal_pain.safety.urinary-retention",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.unable_to_urinate",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.abdominal_pain.safety.chest-pain",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.chest_pain",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.abdominal_pain.safety.pregnancy-warning",
+      "priority": 1000,
+      "when": {
+        "fact": "abdominal_pain.pregnancy_bleeding_shoulder_syncope_or_severe_unilateral_pain",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.abdominal_pain.safety.testicular-warning",
+      "priority": 1000,
+      "when": {
+        "fact": "abdominal_pain.acute_testicular_scrotal_or_groin_pain",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.abdominal_pain.safety.vascular-warning",
+      "priority": 1000,
+      "when": {
+        "fact": "abdominal_pain.severe_back_pain_pulsation_or_collapse",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.abdominal_pain.safety.child-warning",
+      "priority": 1000,
+      "when": {
+        "fact": "abdominal_pain.child_limp_bilious_vomit_distension_or_bloody_stool",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.abdominal_pain.safety.fever-localized-warning",
+      "priority": 960,
+      "when": {
+        "fact": "abdominal_pain.fever_with_severe_localized_or_rapid_worsening_pain",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.abdominal_pain.safety.post-procedure-warning",
+      "priority": 960,
+      "when": {
+        "fact": "abdominal_pain.recent_procedure_with_severe_pain_bleeding_or_fever",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.abdominal_pain.safety.sudden-severe",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.abdominal_pain.onset",
+            "equals": true
+          },
+          {
+            "fact": "symptom.abdominal_pain.severity",
+            "equals": "severe"
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.abdominal_pain.safety.severe-dyspnea",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.dyspnea",
+        "equals": "severe"
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
   ],
   "entries": [
-    {"reuse_existing": true, "fact": {"id": "symptom.duration", "display": "Abdominal Pain Duration", "value_type": "quantity"}, "target": {"id": "target.abdominal-pain.determine-duration", "display": "Determine Duration", "intents": ["intent.characterize_symptom"]}, "question": {"id": "question.abdominal-pain.duration", "wording": "복통은 언제부터 있었나요?", "language": "ko", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 125, "reason": "characterize_duration"}], "supports": ["group.abdominal-pain.characterization"]},
-    {"fact": {"id": "symptom.abdominal_pain.onset", "display": "Abdominal Pain Onset", "value_type": "coded", "allowed_values": ["sudden", "gradual"]}, "target": {"id": "target.abdominal-pain.determine-onset", "display": "Determine Onset", "intents": ["intent.screen_red_flags", "intent.characterize_symptom"]}, "question": {"id": "question.abdominal-pain.onset", "wording": "통증은 갑자기 시작했나요, 서서히 시작했나요?", "language": "ko", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 124, "reason": "immediate_safety_gate"}], "supports": ["group.abdominal-pain.immediate-safety", "group.abdominal-pain.characterization"]},
-    {"fact": {"id": "symptom.abdominal_pain.severity", "display": "Abdominal Pain Severity", "value_type": "coded", "allowed_values": ["mild", "moderate", "severe"], "terminology_binding": {"system": "http://snomed.info/sct", "focus_code": "21522001", "attribute_code": "246112005"}, "mrcm_validation": {"ref": "mapping.snomed-mrcm.abdominal-pain", "status": "provisional_pass"}}, "target": {"id": "target.abdominal-pain.determine-severity", "display": "Determine Severity", "intents": ["intent.screen_red_flags", "intent.characterize_symptom"]}, "question": {"id": "question.abdominal-pain.severity", "wording": "현재 복통은 가벼움, 중간 정도, 참기 어려울 정도 중 어디에 가깝나요?", "language": "ko", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 123, "reason": "immediate_safety_gate"}], "supports": ["group.abdominal-pain.immediate-safety", "group.abdominal-pain.characterization"]},
-    {"fact": {"id": "symptom.abdominal_pain.location", "display": "Abdominal Pain Location", "value_type": "string", "terminology_binding": {"system": "http://snomed.info/sct", "focus_code": "21522001", "attribute_code": "363698007"}, "mrcm_validation": {"ref": "mapping.snomed-mrcm.abdominal-pain", "status": "provisional_pass"}}, "target": {"id": "target.abdominal-pain.determine-location", "display": "Determine Location", "intents": ["intent.characterize_symptom", "intent.differentiate_common_causes"]}, "question": {"id": "question.abdominal-pain.location", "wording": "배의 어느 부위가 아픈가요? 한 곳을 짚거나 여러 부위를 말씀해도 됩니다.", "language": "ko", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 122, "reason": "localize_pain"}], "supports": ["group.abdominal-pain.characterization"]},
-    {"fact": {"id": "symptom.abdominal_pain.character", "display": "Abdominal Pain Character", "value_type": "string"}, "target": {"id": "target.abdominal-pain.determine-character", "display": "Determine Character", "intents": ["intent.characterize_symptom"]}, "question": {"id": "question.abdominal-pain.character", "wording": "통증은 쥐어짜는 느낌, 찌르는 느낌, 타는 느낌, 묵직함 등 어떤 양상인가요?", "language": "ko", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 100, "reason": "characterize_quality"}], "supports": ["group.abdominal-pain.characterization"]},
-    {"fact": {"id": "symptom.abdominal_pain.worsening", "display": "Abdominal Pain Worsening", "value_type": "boolean"}, "target": {"id": "target.abdominal-pain.determine-worsening", "display": "Determine Worsening", "intents": ["intent.risk_assessment", "intent.characterize_symptom"]}, "question": {"id": "question.abdominal-pain.worsening", "wording": "통증이 점점 심해지고 있나요?", "language": "ko", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 112, "reason": "worsening_course"}], "supports": ["group.abdominal-pain.persistence"]},
-    {"fact": {"id": "symptom.abdominal_pain.touch_tenderness", "display": "Pain on Touching Abdomen", "value_type": "boolean", "safety_relevant": true}, "target": {"id": "target.abdominal-pain.determine-touch-tenderness", "display": "Determine Touch Tenderness", "intents": ["intent.screen_red_flags"]}, "question": {"id": "question.abdominal-pain.touch-tenderness", "wording": "배를 가볍게 만졌을 때도 심하게 아픈가요?", "language": "ko", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 121, "reason": "immediate_safety_gate"}], "supports": ["group.abdominal-pain.immediate-safety"]},
-    {"fact": {"id": "symptom.vomiting", "display": "Vomiting", "value_type": "boolean"}, "target": {"id": "target.abdominal-pain.determine-vomiting", "display": "Determine Vomiting", "intents": ["intent.differentiate_common_causes", "intent.risk_assessment"]}, "question": {"id": "question.abdominal-pain.vomiting", "wording": "구토가 있나요?", "language": "ko", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 110, "reason": "gastrointestinal_feature"}], "supports": ["group.abdominal-pain.gastrointestinal"]},
-    {"fact": {"id": "symptom.hematemesis", "display": "Vomiting Blood or Coffee-ground Material", "value_type": "boolean", "safety_relevant": true}, "target": {"id": "target.abdominal-pain.determine-hematemesis", "display": "Determine Haematemesis", "intents": ["intent.screen_red_flags"]}, "question": {"id": "question.abdominal-pain.hematemesis", "wording": "피를 토했거나 구토물이 커피 찌꺼기처럼 보였나요?", "language": "ko", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 120, "reason": "bleeding_safety_gate"}], "supports": ["group.abdominal-pain.immediate-safety", "group.abdominal-pain.gastrointestinal"]},
-    {"fact": {"id": "symptom.bloody_or_black_stool", "display": "Bloody or Black Stool", "value_type": "boolean", "safety_relevant": true}, "target": {"id": "target.abdominal-pain.determine-stool-bleeding", "display": "Determine Stool Bleeding", "intents": ["intent.screen_red_flags"]}, "question": {"id": "question.abdominal-pain.stool-bleeding", "wording": "피가 섞인 변이나 검고 끈적한 변을 봤나요?", "language": "ko", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 119, "reason": "bleeding_safety_gate"}], "supports": ["group.abdominal-pain.immediate-safety", "group.abdominal-pain.gastrointestinal"]},
-    {"fact": {"id": "symptom.unable_to_urinate", "display": "Unable to Urinate", "value_type": "boolean", "safety_relevant": true}, "target": {"id": "target.abdominal-pain.determine-urinary-retention", "display": "Determine Urinary Retention", "intents": ["intent.screen_red_flags"]}, "question": {"id": "question.abdominal-pain.urinary-retention", "wording": "소변이 마려운데 전혀 나오지 않나요?", "language": "ko", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 118, "reason": "urinary_safety_gate"}], "supports": ["group.abdominal-pain.immediate-safety", "group.abdominal-pain.urinary"]},
-    {"fact": {"id": "symptom.unable_to_pass_stool_or_gas", "display": "Unable to Pass Stool or Gas", "value_type": "boolean", "safety_relevant": true}, "target": {"id": "target.abdominal-pain.determine-obstruction-feature", "display": "Determine Obstruction Feature", "intents": ["intent.screen_red_flags"]}, "question": {"id": "question.abdominal-pain.obstruction-feature", "wording": "대변과 방귀가 모두 전혀 나오지 않나요?", "language": "ko", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 117, "reason": "obstruction_safety_gate"}], "supports": ["group.abdominal-pain.immediate-safety", "group.abdominal-pain.gastrointestinal"]},
-    {"fact": {"id": "symptom.collapse_or_syncope", "display": "Collapse or Syncope", "value_type": "boolean", "safety_relevant": true}, "target": {"id": "target.abdominal-pain.determine-collapse", "display": "Determine Collapse", "intents": ["intent.screen_red_flags"]}, "question": {"id": "question.abdominal-pain.collapse", "wording": "실신했거나 쓰러진 적이 있나요?", "language": "ko", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 116, "reason": "circulatory_safety_gate"}], "supports": ["group.abdominal-pain.immediate-safety", "group.abdominal-pain.pregnancy"]},
-    {"reuse_existing": true, "fact": {"id": "symptom.dyspnea", "display": "Breathing Difficulty", "value_type": "severity"}, "target": {"id": "target.abdominal-pain.determine-dyspnea", "display": "Determine Dyspnea", "intents": ["intent.screen_red_flags"]}, "question": {"id": "question.abdominal-pain.dyspnea", "wording": "숨쉬기가 힘든가요?", "language": "ko", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 115, "reason": "respiratory_safety_gate"}], "supports": ["group.abdominal-pain.immediate-safety"]},
-    {"reuse_existing": true, "fact": {"id": "symptom.chest_pain", "display": "Chest Pain", "value_type": "boolean"}, "target": {"id": "target.abdominal-pain.determine-chest-pain", "display": "Determine Chest Pain", "intents": ["intent.screen_red_flags"]}, "question": {"id": "question.abdominal-pain.chest-pain", "wording": "복통과 함께 가슴 통증이 있나요?", "language": "ko", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 114, "reason": "chest_safety_gate"}], "supports": ["group.abdominal-pain.immediate-safety"]},
-    {"reuse_existing": true, "fact": {"id": "symptom.fever", "display": "Fever", "value_type": "boolean"}, "target": {"id": "target.abdominal-pain.determine-fever", "display": "Determine Fever", "intents": ["intent.risk_assessment", "intent.differentiate_common_causes"]}, "question": {"id": "question.abdominal-pain.fever", "wording": "열이 나거나 오한이 있나요?", "language": "ko", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 108, "reason": "infection_feature"}], "supports": ["group.abdominal-pain.gastrointestinal"]},
-    {"fact": {"id": "symptom.diarrhea", "display": "Diarrhea", "value_type": "boolean"}, "target": {"id": "target.abdominal-pain.determine-diarrhea", "display": "Determine Diarrhea", "intents": ["intent.differentiate_common_causes"]}, "question": {"id": "question.abdominal-pain.diarrhea", "wording": "설사나 묽은 변이 있나요?", "language": "ko", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 92, "reason": "bowel_feature"}], "supports": ["group.abdominal-pain.gastrointestinal"]},
-    {"fact": {"id": "symptom.constipation", "display": "Constipation", "value_type": "boolean"}, "target": {"id": "target.abdominal-pain.determine-constipation", "display": "Determine Constipation", "intents": ["intent.differentiate_common_causes"]}, "question": {"id": "question.abdominal-pain.constipation", "wording": "평소보다 변을 보기 어렵거나 변 횟수가 줄었나요?", "language": "ko", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 91, "reason": "bowel_feature"}], "supports": ["group.abdominal-pain.gastrointestinal"]},
-    {"fact": {"id": "symptom.urinary_symptoms", "display": "Urinary Symptoms", "value_type": "boolean"}, "target": {"id": "target.abdominal-pain.determine-urinary-symptoms", "display": "Determine Urinary Symptoms", "intents": ["intent.differentiate_common_causes"]}, "question": {"id": "question.abdominal-pain.urinary-symptoms", "wording": "소변을 볼 때 아프거나 자주 마렵거나 소변 양이 달라졌나요?", "language": "ko", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 96, "reason": "urinary_feature"}], "supports": ["group.abdominal-pain.urinary"]},
-    {"fact": {"id": "pregnancy.possible", "display": "Pregnancy Possible", "value_type": "coded", "allowed_values": ["possible", "not_possible", "unknown", "not_applicable"], "safety_relevant": true}, "target": {"id": "target.abdominal-pain.determine-pregnancy-possibility", "display": "Determine Pregnancy Possibility", "intents": ["intent.screen_red_flags", "intent.risk_assessment"]}, "question": {"id": "question.abdominal-pain.pregnancy-possibility", "wording": "현재 임신 중이거나 임신 가능성이 있나요? 해당되지 않으면 그렇게 답해 주세요.", "language": "ko", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 113, "reason": "pregnancy_safety_context"}], "supports": ["group.abdominal-pain.pregnancy"]},
-    {"fact": {"id": "symptom.missed_period", "display": "Missed Period", "value_type": "boolean"}, "target": {"id": "target.abdominal-pain.determine-missed-period", "display": "Determine Missed Period", "intents": ["intent.risk_assessment"]}, "question": {"id": "question.abdominal-pain.missed-period", "wording": "해당되는 경우, 예정된 월경이 늦어졌거나 건너뛴 적이 있나요?", "language": "ko", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 89, "reason": "pregnancy_related_feature"}], "supports": ["group.abdominal-pain.pregnancy"]},
-    {"fact": {"id": "symptom.vaginal_bleeding_or_discharge", "display": "Unusual Vaginal Bleeding or Discharge", "value_type": "boolean"}, "target": {"id": "target.abdominal-pain.determine-vaginal-symptoms", "display": "Determine Vaginal Symptoms", "intents": ["intent.risk_assessment"]}, "question": {"id": "question.abdominal-pain.vaginal-symptoms", "wording": "해당되는 경우, 평소와 다른 질 출혈이나 분비물이 있나요?", "language": "ko", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 88, "reason": "pregnancy_or_pelvic_feature"}], "supports": ["group.abdominal-pain.pregnancy"]},
-    {"fact": {"id": "symptom.shoulder_tip_pain", "display": "Shoulder-tip Pain", "value_type": "boolean"}, "target": {"id": "target.abdominal-pain.determine-shoulder-tip-pain", "display": "Determine Shoulder-tip Pain", "intents": ["intent.risk_assessment"]}, "question": {"id": "question.abdominal-pain.shoulder-tip-pain", "wording": "어깨 끝부분에 새로 생긴 통증이 있나요?", "language": "ko", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 87, "reason": "pregnancy_related_warning_feature"}], "supports": ["group.abdominal-pain.pregnancy"]},
-    {"fact": {"id": "symptom.unintentional_weight_loss", "display": "Unintentional Weight Loss", "value_type": "boolean"}, "target": {"id": "target.abdominal-pain.determine-weight-loss", "display": "Determine Weight Loss", "intents": ["intent.risk_assessment"]}, "question": {"id": "question.abdominal-pain.weight-loss", "wording": "최근 특별한 이유 없이 체중이 줄었나요?", "language": "ko", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 84, "reason": "persistent_warning_feature"}], "supports": ["group.abdominal-pain.persistence"]},
-    {"fact": {"id": "symptom.persistent_bloating", "display": "Persistent or Frequent Bloating", "value_type": "boolean"}, "target": {"id": "target.abdominal-pain.determine-bloating", "display": "Determine Persistent Bloating", "intents": ["intent.risk_assessment", "intent.differentiate_common_causes"]}, "question": {"id": "question.abdominal-pain.bloating", "wording": "배가 자주 또는 계속 불러오거나 팽팽한 느낌이 있나요?", "language": "ko", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 82, "reason": "persistent_abdominal_feature"}], "supports": ["group.abdominal-pain.persistence"]},
-    {"fact": {"id": "symptom.early_satiety_or_appetite_loss", "display": "Early Satiety or Appetite Loss", "value_type": "boolean"}, "target": {"id": "target.abdominal-pain.determine-appetite", "display": "Determine Appetite Change", "intents": ["intent.risk_assessment"]}, "question": {"id": "question.abdominal-pain.appetite", "wording": "조금만 먹어도 금방 배부르거나 식욕이 줄었나요?", "language": "ko", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 81, "reason": "persistent_warning_feature"}], "supports": ["group.abdominal-pain.persistence"]},
-    {"fact": {"id": "history.diabetes", "display": "Diabetes History", "value_type": "boolean"}, "target": {"id": "target.abdominal-pain.determine-diabetes", "display": "Determine Diabetes", "intents": ["intent.risk_assessment"]}, "question": {"id": "question.abdominal-pain.diabetes", "wording": "당뇨병을 진단받은 적이 있나요?", "language": "ko", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 86, "reason": "vomiting_safety_context"}], "supports": ["group.abdominal-pain.background"]},
-    {"fact": {"id": "history.abdominal_surgery", "display": "Prior Abdominal Surgery", "value_type": "boolean"}, "target": {"id": "target.abdominal-pain.determine-abdominal-surgery", "display": "Determine Prior Abdominal Surgery", "intents": ["intent.risk_assessment"]}, "question": {"id": "question.abdominal-pain.abdominal-surgery", "wording": "과거에 복부 수술이나 주요 시술을 받은 적이 있나요?", "language": "ko", "mode": ["chat", "face_to_face", "telephone", "video"]}, "priority": [{"branch": "any", "score": 80, "reason": "abdominal_background"}], "supports": ["group.abdominal-pain.background"]}
+    {
+      "fact": {
+        "id": "abdominal_pain.primary_group",
+        "display": "Primary Abdominal Pain Context",
+        "value_type": "coded",
+        "allowed_values": [
+          "acute_sudden_or_severe",
+          "upper_meal_or_back",
+          "right_lower_or_localized",
+          "lower_pelvic_or_reproductive",
+          "flank_urinary_or_groin",
+          "bowel_change_or_distension",
+          "chronic_recurrent_weight_or_appetite",
+          "post_surgery_or_procedure",
+          "infant_child_caregiver",
+          "other_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.abdominal_pain.primary-group",
+        "display": "Primary Abdominal Pain Context",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.primary-group",
+        "wording": "이번 복통은 갑자기 시작하거나 매우 심한 경우, 윗배·식사 관련 또는 등으로 퍼짐, 오른쪽 아랫배나 한 부위에 국한, 아랫배·골반·임신 가능성과 관련, 옆구리·배뇨·사타구니 관련, 배변 변화·복부팽만 관련, 오래 지속·반복되며 체중·식욕 변화 동반, 수술·시술 뒤 발생, 소아 보호자 문진, 그 밖의 불분명한 경우 중 무엇에 가장 가깝나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 270,
+          "reason": "primary-group"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.collapse_shock_or_severe_weakness",
+        "display": "Collapse Shock or Severe Weakness",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.abdominal_pain.collapse-shock",
+        "display": "Collapse Shock or Severe Weakness",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.collapse-shock",
+        "wording": "쓰러짐·실신, 깨우기 어려움, 차갑고 축축한 피부, 매우 창백함 또는 곧 쓰러질 듯한 상태가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 269,
+          "reason": "collapse-shock"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.abdominal_pain.onset",
+        "display": "Sudden Abdominal Pain Onset",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.abdominal_pain.sudden-onset",
+        "display": "Sudden Abdominal Pain Onset",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.sudden-onset",
+        "wording": "통증이 갑자기 시작했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 268,
+          "reason": "sudden-onset"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.abdominal_pain.severity",
+        "display": "Abdominal Pain Severity",
+        "value_type": "coded",
+        "allowed_values": [
+          "mild",
+          "moderate",
+          "severe"
+        ],
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.abdominal_pain.severity",
+        "display": "Abdominal Pain Severity",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.severity",
+        "wording": "복통은 가벼움·중간·심함 중 어느 정도인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 267,
+          "reason": "severity"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.pain"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.rigid_distended_rebound_or_unable_to_move",
+        "display": "Rigid Distended or Peritoneal Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.abdominal_pain.rigid-rebound",
+        "display": "Rigid Distended or Peritoneal Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.rigid-rebound",
+        "wording": "배가 단단하게 긴장되거나 빠르게 붓고, 손을 뗄 때 더 아프거나 통증 때문에 움직이기 매우 어렵나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 266,
+          "reason": "rigid-rebound"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.hematemesis",
+        "display": "Blood or Coffee Ground Vomit",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.abdominal_pain.hematemesis",
+        "display": "Blood or Coffee Ground Vomit",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.hematemesis",
+        "wording": "피를 토했거나 토사물이 커피 찌꺼기처럼 보이나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 265,
+          "reason": "hematemesis"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.bloody_or_black_stool",
+        "display": "Bloody or Black Stool",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.abdominal_pain.bloody-black-stool",
+        "display": "Bloody or Black Stool",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.bloody-black-stool",
+        "wording": "많은 피·혈괴가 섞인 변이나 검고 끈적한 변을 보았나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 264,
+          "reason": "bloody-black-stool"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.repeated_green_or_feculent_vomit",
+        "display": "Green or Feculent Vomit",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.abdominal_pain.green-feculent-vomit",
+        "display": "Green or Feculent Vomit",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.green-feculent-vomit",
+        "wording": "초록색 구토를 반복하거나 토사물에서 대변 같은 냄새·내용물이 느껴지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 263,
+          "reason": "green-feculent-vomit"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.unable_to_pass_stool_or_gas",
+        "display": "Unable to Pass Stool or Gas",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.abdominal_pain.obstruction",
+        "display": "Unable to Pass Stool or Gas",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.obstruction",
+        "wording": "배가 붓고 구토하면서 대변과 방귀가 전혀 나오지 않나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 262,
+          "reason": "obstruction"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.unable_to_urinate",
+        "display": "Unable to Urinate",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.abdominal_pain.urinary-retention",
+        "display": "Unable to Urinate",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.urinary-retention",
+        "wording": "소변이 마려운데도 전혀 나오지 않으면서 아랫배가 아프거나 불러오나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 261,
+          "reason": "urinary-retention"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.chest_pain",
+        "display": "Chest Pain",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.abdominal_pain.chest-pain",
+        "display": "Chest Pain",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.chest-pain",
+        "wording": "복통과 함께 가슴 압박감·조임·통증이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 260,
+          "reason": "chest-pain"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.dyspnea",
+        "display": "Breathing Difficulty",
+        "value_type": "severity",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.abdominal_pain.dyspnea",
+        "display": "Breathing Difficulty",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.dyspnea",
+        "wording": "숨참은 없음·가벼움·중간·심함 중 어느 정도인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 259,
+          "reason": "dyspnea"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.pregnancy_bleeding_shoulder_syncope_or_severe_unilateral_pain",
+        "display": "Pregnancy Warning Features",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.abdominal_pain.pregnancy-warning",
+        "display": "Pregnancy Warning Features",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.pregnancy-warning",
+        "wording": "임신 가능성이 있거나 임신 중이며 질출혈, 어깨끝 통증, 실신 또는 한쪽의 심한 아랫배 통증이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 258,
+          "reason": "pregnancy-warning"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.acute_testicular_scrotal_or_groin_pain",
+        "display": "Acute Testicular Scrotal or Groin Pain",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.abdominal_pain.testicular-warning",
+        "display": "Acute Testicular Scrotal or Groin Pain",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.testicular-warning",
+        "wording": "갑자기 시작한 고환·음낭·사타구니의 심한 통증이나 부종이 함께 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 257,
+          "reason": "testicular-warning"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.severe_back_pain_pulsation_or_collapse",
+        "display": "Severe Back Pain Pulsation or Collapse",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.abdominal_pain.vascular-warning",
+        "display": "Severe Back Pain Pulsation or Collapse",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.vascular-warning",
+        "wording": "배와 등에 갑작스러운 심한 통증이 함께 있고 배에서 강한 박동이 느껴지거나 실신할 듯한가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 256,
+          "reason": "vascular-warning"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.fever_with_severe_localized_or_rapid_worsening_pain",
+        "display": "Fever with Severe Localized Pain",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.abdominal_pain.fever-localized-warning",
+        "display": "Fever with Severe Localized Pain",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.fever-localized-warning",
+        "wording": "발열·오한과 함께 한 부위 복통이 심하거나 빠르게 악화하고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 255,
+          "reason": "fever-localized-warning"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.recent_procedure_with_severe_pain_bleeding_or_fever",
+        "display": "Post Procedure Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.abdominal_pain.post-procedure-warning",
+        "display": "Post Procedure Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.post-procedure-warning",
+        "wording": "최근 복부·골반 수술, 내시경·시술 뒤 통증이 심해지면서 출혈·발열·구토가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 254,
+          "reason": "post-procedure-warning"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.child_limp_bilious_vomit_distension_or_bloody_stool",
+        "display": "Child Abdominal Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.abdominal_pain.child-warning",
+        "display": "Child Abdominal Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.child-warning",
+        "wording": "소아라면 축 늘어짐·깨우기 어려움, 초록색 구토, 심한 복부팽만 또는 피 섞인 변이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 253,
+          "reason": "child-warning"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.information_source_proxy_reliability_and_conflict",
+        "display": "Information Source and Reliability",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.information-source",
+        "display": "Information Source and Reliability",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.information-source",
+        "wording": "누가 답변하며 본인 느낌, 보호자 관찰, 측정값, 진료기록·검사결과 중 무엇에 근거하나요? 불확실하거나 서로 다른 정보도 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 240,
+          "reason": "information-source"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.age_life_stage_anatomy_and_baseline",
+        "display": "Age Life Stage Anatomy and Baseline",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.age-baseline",
+        "display": "Age Life Stage Anatomy and Baseline",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.age-baseline",
+        "wording": "만 나이, 영유아·소아·고령·임신·산후 여부, 진료에 필요한 생식·비뇨기 해부학 정보와 평소 식사·배변·활동 상태를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 239,
+          "reason": "age-baseline"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.duration",
+        "display": "Abdominal Pain Duration",
+        "value_type": "quantity"
+      },
+      "target": {
+        "id": "target.abdominal_pain.duration",
+        "display": "Abdominal Pain Duration",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.duration",
+        "wording": "복통이 처음 시작된 뒤 지금까지의 기간을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 238,
+          "reason": "duration"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.course"
+      ]
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.onset_date_time_activity_and_preceding_event",
+        "display": "Onset Date Time and Circumstance",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.onset-detail",
+        "display": "Onset Date Time and Circumstance",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.onset-detail",
+        "wording": "처음 시작한 날짜·시각과 당시 식사·배변·배뇨·운동·외상·성관계·수술·시술 등 상황을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 237,
+          "reason": "onset-detail"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.course"
+      ]
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.continuous_episodic_frequency_duration_and_trend",
+        "display": "Episode Pattern and Trend",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.episode-pattern",
+        "display": "Episode Pattern and Trend",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.episode-pattern",
+        "wording": "계속 아픈지 반복되는지, 반복한다면 빈도·한 번의 지속시간·호전/악화 추세와 사이에 정상으로 돌아오는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 236,
+          "reason": "episode-pattern"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.course"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.abdominal_pain.location",
+        "display": "Abdominal Pain Location",
+        "value_type": "coded",
+        "allowed_values": [
+          "epigastric",
+          "right_upper",
+          "left_upper",
+          "periumbilical",
+          "right_lower",
+          "left_lower",
+          "suprapubic_or_pelvic",
+          "flank",
+          "generalized_or_migratory"
+        ],
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "focus_code": "21522001",
+          "attribute_code": "363698007"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.abdominal-pain",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.abdominal_pain.location",
+        "display": "Abdominal Pain Location",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.location",
+        "wording": "통증이 가장 심한 곳은 윗배 중앙, 오른쪽 윗배, 왼쪽 윗배, 배꼽 주위, 오른쪽 아랫배, 왼쪽 아랫배, 아랫배 중앙·골반, 옆구리, 전반적·이동성 중 어디인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 235,
+          "reason": "location"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.site"
+      ]
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.side_exact_point_and_number_of_sites",
+        "display": "Side Exact Point and Number of Sites",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.site-detail",
+        "display": "Side Exact Point and Number of Sites",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.site-detail",
+        "wording": "오른쪽·왼쪽·양쪽 여부, 손가락 하나로 짚을 수 있는 가장 아픈 지점과 아픈 부위 수를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 234,
+          "reason": "site-detail"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.site"
+      ]
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.radiation_and_migration_sequence",
+        "display": "Radiation and Migration",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.radiation",
+        "display": "Radiation and Migration",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.radiation",
+        "wording": "통증이 등·어깨·가슴·옆구리·사타구니·고환 등으로 퍼지거나 처음 위치에서 다른 곳으로 이동했다면 순서와 시각을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 233,
+          "reason": "radiation"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.site"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.abdominal_pain.character",
+        "display": "Abdominal Pain Character",
+        "value_type": "coded",
+        "allowed_values": [
+          "cramping",
+          "stabbing",
+          "burning",
+          "dull",
+          "pressure_or_distension",
+          "colicky",
+          "other"
+        ]
+      },
+      "target": {
+        "id": "target.abdominal_pain.character",
+        "display": "Abdominal Pain Character",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.character",
+        "wording": "통증은 쥐어짜는 경련, 찌름, 타는 느낌, 둔함, 압박·팽만, 파도처럼 반복, 그 밖의 양상 중 무엇에 가깝나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 232,
+          "reason": "character"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.pain"
+      ]
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.character_patient_words_and_change",
+        "display": "Pain in Patient Words",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.character-detail",
+        "display": "Pain in Patient Words",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.character-detail",
+        "wording": "통증을 본인 표현으로 설명하고 시작 뒤 양상이 어떻게 변했는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 231,
+          "reason": "character-detail"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.pain"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.abdominal_pain.worsening",
+        "display": "Pain Worsening",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.abdominal_pain.worsening",
+        "display": "Pain Worsening",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.worsening",
+        "wording": "통증이 시간에 따라 점점 심해지고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 230,
+          "reason": "worsening"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.pain"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.abdominal_pain.touch_tenderness",
+        "display": "Pain on Touch",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.abdominal_pain.touch-tenderness",
+        "display": "Pain on Touch",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.touch-tenderness",
+        "wording": "배를 가볍게 만져도 많이 아픈가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 229,
+          "reason": "touch-tenderness"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.pain"
+      ]
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.meal_food_fasting_and_appetite_relationship",
+        "display": "Meal and Food Relationship",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.meal-relation",
+        "display": "Meal and Food Relationship",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.meal-relation",
+        "wording": "식사 전후·공복, 특정 음식·술과 통증의 관계, 식욕과 먹는 양의 변화를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 228,
+          "reason": "meal-relation"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.gastrointestinal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.bowel_movement_flatus_and_stool_relationship",
+        "display": "Bowel Relationship",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.bowel-relation",
+        "display": "Bowel Relationship",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.bowel-relation",
+        "wording": "배변·방귀 전후 통증 변화와 마지막 배변·방귀 시각을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 227,
+          "reason": "bowel-relation"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.gastrointestinal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.urination_bladder_filling_and_flank_relationship",
+        "display": "Urinary Relationship",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.urinary-relation",
+        "display": "Urinary Relationship",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.urinary-relation",
+        "wording": "소변을 참거나 볼 때, 방광이 찰 때 통증 변화와 옆구리·사타구니로 퍼지는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 226,
+          "reason": "urinary-relation"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.urinary"
+      ]
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.movement_cough_breath_posture_and_sleep_relationship",
+        "display": "Movement Posture and Sleep Relationship",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.movement-relation",
+        "display": "Movement Posture and Sleep Relationship",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.movement-relation",
+        "wording": "걷기·기침·깊은숨·자세·누움·잠과 통증의 관계, 편해지는 자세를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 225,
+          "reason": "movement-relation"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.pain"
+      ]
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.menstrual_ovulation_sexual_and_pregnancy_relationship",
+        "display": "Menstrual Sexual and Pregnancy Relationship",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.reproductive-relation",
+        "display": "Menstrual Sexual and Pregnancy Relationship",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.reproductive-relation",
+        "wording": "월경·배란·성관계·임신 가능성과 통증의 시간 관계를 해당되는 범위에서 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 224,
+          "reason": "reproductive-relation"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.reproductive"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.vomiting",
+        "display": "Vomiting",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.abdominal_pain.vomiting",
+        "display": "Vomiting",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.vomiting",
+        "wording": "메스꺼움이나 구토가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 215,
+          "reason": "vomiting"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.gastrointestinal"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.nausea_vomit_count_content_blood_bile_and_relation",
+        "display": "Nausea and Vomit Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.vomit-detail",
+        "display": "Nausea and Vomit Detail",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.vomit-detail",
+        "wording": "메스꺼움·구토의 시작, 최근 24시간 횟수, 내용물·색·피·초록색 여부와 통증·식사의 시간 관계를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 214,
+          "reason": "vomit-detail"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.gastrointestinal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.diarrhea",
+        "display": "Diarrhoea",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.abdominal_pain.diarrhea",
+        "display": "Diarrhoea",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.diarrhea",
+        "wording": "묽거나 물 같은 설사가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 213,
+          "reason": "diarrhea"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.gastrointestinal"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.constipation",
+        "display": "Constipation",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.abdominal_pain.constipation",
+        "display": "Constipation",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.constipation",
+        "wording": "평소보다 변이 딱딱하거나 배변 횟수가 줄고 힘들어졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 212,
+          "reason": "constipation"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.gastrointestinal"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.baseline_bowel_stool_frequency_consistency_blood_and_mucus",
+        "display": "Bowel and Stool Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.stool-detail",
+        "display": "Bowel and Stool Detail",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.stool-detail",
+        "wording": "평소와 현재 배변 횟수·변 모양, 설사·변비, 피·검은변·점액·기름진 변과 마지막 배변을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 211,
+          "reason": "stool-detail"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.gastrointestinal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.distension_bloating_hernia_bulge_and_abdominal_girth",
+        "display": "Distension Bloating or Bulge",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.distension",
+        "display": "Distension Bloating or Bulge",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.distension",
+        "wording": "배가 붓거나 팽팽함, 반복되는 더부룩함, 탈장처럼 튀어나오는 부위와 복부둘레 변화를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 210,
+          "reason": "distension"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.gastrointestinal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.urinary_symptoms",
+        "display": "Urinary Symptoms",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.abdominal_pain.urinary-symptoms",
+        "display": "Urinary Symptoms",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.urinary-symptoms",
+        "wording": "소변볼 때 통증, 잦음·급함, 소변 변화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 209,
+          "reason": "urinary-symptoms"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.urinary"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.urine_frequency_urgency_dysuria_blood_color_and_volume",
+        "display": "Urinary Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.urine-detail",
+        "display": "Urinary Detail",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.urine-detail",
+        "wording": "소변 횟수·급함·통증, 피·색·냄새·양 변화와 마지막 소변 시각을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 208,
+          "reason": "urine-detail"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.urinary"
+      ]
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.vaginal_bleeding_discharge_lmp_contraception_and_pregnancy_test",
+        "display": "Reproductive and Pregnancy Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.pregnancy-detail",
+        "display": "Reproductive and Pregnancy Detail",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.pregnancy-detail",
+        "wording": "해당된다면 마지막 월경일, 월경 주기, 피임법, 질출혈·분비물과 임신검사 날짜·결과를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 207,
+          "reason": "pregnancy-detail"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.reproductive"
+      ]
+    },
+    {
+      "fact": {
+        "id": "pregnancy.possible",
+        "display": "Possible Pregnancy",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.abdominal_pain.pregnancy-possible",
+        "display": "Possible Pregnancy",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.pregnancy-possible",
+        "wording": "임신 가능성이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 206,
+          "reason": "pregnancy-possible"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.reproductive"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.missed_period",
+        "display": "Missed Period",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.abdominal_pain.missed-period",
+        "display": "Missed Period",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.missed-period",
+        "wording": "예정된 월경이 늦었거나 건너뛰었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 205,
+          "reason": "missed-period"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.reproductive"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.vaginal_bleeding_or_discharge",
+        "display": "Vaginal Bleeding or Discharge",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.abdominal_pain.vaginal-bleeding",
+        "display": "Vaginal Bleeding or Discharge",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.vaginal-bleeding",
+        "wording": "비정상 질출혈이나 분비물이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 204,
+          "reason": "vaginal-bleeding"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.reproductive"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.shoulder_tip_pain",
+        "display": "Shoulder Tip Pain",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.abdominal_pain.shoulder-tip",
+        "display": "Shoulder Tip Pain",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.shoulder-tip",
+        "wording": "어깨끝 통증이 함께 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 203,
+          "reason": "shoulder-tip"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.reproductive"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.obstetric_history_gestation_postpartum_and_complications",
+        "display": "Obstetric History and Current Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.obstetric-history",
+        "display": "Obstetric History and Current Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.obstetric-history",
+        "wording": "임신 중이면 주수, 출산·유산·임신종결 뒤라면 날짜와 출산력·이전 자궁외임신·주요 합병증을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 202,
+          "reason": "obstetric-history"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.reproductive"
+      ]
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.testicular_scrotal_groin_symptoms_and_laterality",
+        "display": "Testicular Scrotal and Groin Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.scrotal-detail",
+        "display": "Testicular Scrotal and Groin Detail",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.scrotal-detail",
+        "wording": "해당된다면 고환·음낭·사타구니 통증·부종·덩이·위치 변화와 좌우를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 201,
+          "reason": "scrotal-detail"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.reproductive"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.fever",
+        "display": "Fever",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.abdominal_pain.fever",
+        "display": "Fever",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.fever",
+        "wording": "측정된 발열이나 열감·오한이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 200,
+          "reason": "fever"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.systemic"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.temperature_chills_sweats_and_systemic_state",
+        "display": "Temperature and Systemic State",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.systemic-detail",
+        "display": "Temperature and Systemic State",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.systemic-detail",
+        "wording": "최고 체온·측정 시각·부위·기기, 오한·식은땀·심한 처짐과 변화 추세를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 199,
+          "reason": "systemic-detail"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.systemic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.jaundice_dark_urine_pale_stool_or_pruritus",
+        "display": "Jaundice and Biliary Features",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.jaundice",
+        "display": "Jaundice and Biliary Features",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.jaundice",
+        "wording": "눈·피부가 노래짐, 진한 소변, 회색·흰색 변, 전신 가려움이 있나요? 시작 시각도 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 198,
+          "reason": "jaundice"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.systemic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.appetite_early_satiety_weight_and_fatigue_change",
+        "display": "Appetite Weight and Fatigue",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.constitutional",
+        "display": "Appetite Weight and Fatigue",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.constitutional",
+        "wording": "식욕저하·조기포만, 의도하지 않은 체중 변화, 피로와 시작 시점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 197,
+          "reason": "constitutional"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.systemic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.unintentional_weight_loss",
+        "display": "Unintentional Weight Loss",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.abdominal_pain.weight-loss",
+        "display": "Unintentional Weight Loss",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.weight-loss",
+        "wording": "의도하지 않은 체중감소가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 196,
+          "reason": "weight-loss"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.systemic"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.persistent_bloating",
+        "display": "Persistent Bloating",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.abdominal_pain.persistent-bloating",
+        "display": "Persistent Bloating",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.persistent-bloating",
+        "wording": "지속적이거나 자주 반복되는 복부팽만이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 195,
+          "reason": "persistent-bloating"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.gastrointestinal"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.early_satiety_or_appetite_loss",
+        "display": "Early Satiety or Appetite Loss",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.abdominal_pain.appetite-loss",
+        "display": "Early Satiety or Appetite Loss",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.appetite-loss",
+        "wording": "조금만 먹어도 금방 배부르거나 식욕이 줄었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 194,
+          "reason": "appetite-loss"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.systemic"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.function_eating_sleep_mobility_work_school_and_selfcare",
+        "display": "Functional Impact",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.function",
+        "display": "Functional Impact",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.function",
+        "wording": "통증이 식사·수면·걷기·화장실 이용·자가관리·직장·학교에 미치는 영향을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 193,
+          "reason": "function"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.gi_hepatobiliary_pancreatic_urinary_gyn_and_vascular_history",
+        "display": "Relevant Medical History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.medical-history",
+        "display": "Relevant Medical History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.medical-history",
+        "wording": "위궤양·염증성장질환·담석·간·췌장·신장결석·요로·부인과·혈관 질환과 진단 시기·현재 상태를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 180,
+          "reason": "medical-history"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "history.abdominal_surgery",
+        "display": "Abdominal Surgery History",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.abdominal_pain.abdominal-surgery",
+        "display": "Abdominal Surgery History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.abdominal-surgery",
+        "wording": "복부·골반 수술이나 주요 시술을 받은 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 179,
+          "reason": "abdominal-surgery"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.history"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.surgery_procedure_date_reason_complications_stoma_or_device",
+        "display": "Surgery Procedure and Device Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.surgery-detail",
+        "display": "Surgery Procedure and Device Detail",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.surgery-detail",
+        "wording": "복부·골반 수술·내시경·시술의 명칭·날짜·이유·합병증과 장루·배액관·영양관 여부를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 178,
+          "reason": "surgery-detail"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "history.diabetes",
+        "display": "Diabetes",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.abdominal_pain.diabetes",
+        "display": "Diabetes",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.diabetes",
+        "wording": "당뇨병이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 177,
+          "reason": "diabetes"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.history"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.high_risk_conditions_immunosuppression_bleeding_and_frailty",
+        "display": "High Risk Conditions",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.high-risk-history",
+        "display": "High Risk Conditions",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.high-risk-history",
+        "wording": "면역저하·암치료·신장/부신질환, 출혈질환·항응고 치료, 고령·허약 등 관련 상태를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 176,
+          "reason": "high-risk-history"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.current_medicines_nsaid_anticoagulant_steroid_glp1_and_changes",
+        "display": "Medicines and Recent Changes",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.medicines",
+        "display": "Medicines and Recent Changes",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.medicines",
+        "wording": "현재 약과 최근 시작·중단·증량한 소염진통제, 아스피린·항응고제, 스테로이드, GLP-1 계열 주사·변비약 등을 이름·용량·날짜와 함께 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 175,
+          "reason": "medicines"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.medicine_food_allergies_and_reactions",
+        "display": "Allergies and Reactions",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.allergies",
+        "display": "Allergies and Reactions",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.allergies",
+        "wording": "약·음식·조영제 알레르기와 실제 나타난 반응을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 174,
+          "reason": "allergies"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.alcohol_smoking_substance_and_last_use",
+        "display": "Alcohol Tobacco and Substance Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.substance",
+        "display": "Alcohol Tobacco and Substance Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.substance",
+        "wording": "술 종류·양·빈도·마지막 음주, 흡연과 기타 물질 사용을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 173,
+          "reason": "substance"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.exposure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.food_water_sick_contact_travel_and_outbreak_context",
+        "display": "Food Water Travel and Contact",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.exposure-detail",
+        "display": "Food Water Travel and Contact",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.exposure-detail",
+        "wording": "의심 음식·물·공동식사, 비슷하게 아픈 사람, 최근 여행지·날짜·수영·동물 노출을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 172,
+          "reason": "exposure-detail"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.exposure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.injury_heavy_exertion_occupation_and_safeguarding_context",
+        "display": "Injury Exertion Occupation and Safety",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.injury-context",
+        "display": "Injury Exertion Occupation and Safety",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.injury-context",
+        "wording": "복부 외상·무거운 물건·격한 운동, 직업 노출과 안전·폭력 우려가 있다면 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 171,
+          "reason": "injury-context"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.exposure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.child_age_weight_feeding_behavior_stool_urine_and_caregiver_observation",
+        "display": "Child Caregiver Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.child-detail",
+        "display": "Child Caregiver Detail",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.child-detail",
+        "wording": "소아라면 정확한 나이·체중, 먹고 마신 양, 구토·변·소변 횟수, 보챔·처짐·걷기·잠과 보호자가 본 통증 위치를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 170,
+          "reason": "child-detail"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.child"
+      ]
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.prior_similar_episodes_diagnoses_ed_visits_and_admissions",
+        "display": "Prior Episodes and Acute Care",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.prior-episodes",
+        "display": "Prior Episodes and Acute Care",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.prior-episodes",
+        "wording": "이전 비슷한 통증의 시기·횟수, 당시 진단과 응급실·입원 경험을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 160,
+          "reason": "prior-episodes"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.prior_assessment_labs_urine_stool_imaging_endoscopy_and_source",
+        "display": "Prior Assessment and Tests",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.prior-tests",
+        "display": "Prior Assessment and Tests",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.prior-tests",
+        "wording": "이번 통증 관련 진료, 혈액·소변·대변검사, 초음파·CT·MRI·내시경 결과가 있다면 날짜·기관·결과와 원본 또는 전달받은 설명을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 159,
+          "reason": "prior-tests"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.treatment_analgesic_antacid_antibiotic_bowel_action_and_response",
+        "display": "Treatment and Response",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.treatment-response",
+        "display": "Treatment and Response",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.treatment-response",
+        "wording": "진통제·제산제·항생제·변비약·금식·식이조절 등 시행한 조치의 이름·용량·시각과 효과·부작용을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 158,
+          "reason": "treatment-response"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.treatment"
+      ]
+    },
+    {
+      "fact": {
+        "id": "abdominal_pain.patient_concern_goal_and_additional_comment",
+        "display": "Patient Concern Goal and Other Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.abdominal_pain.concern-goal",
+        "display": "Patient Concern Goal and Other Detail",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.abdominal_pain.concern-goal",
+        "wording": "가장 걱정되는 점, 의료진에게 원하는 도움과 질문에 없지만 전달할 내용을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 157,
+          "reason": "concern-goal"
+        }
+      ],
+      "supports": [
+        "group.abdominal_pain.handoff"
+      ]
+    }
   ],
-  "provenance": {"created_by": {"type": "ai", "id": "codex-gpt5"}, "created_at": "2026-07-14T00:00:00Z", "source_refs": ["source.nhs.stomach-ache.2023", "source.nice.ng126.ectopic-pregnancy.2026", "source.nice.ng12.abdominal-symptoms.2026", "source.acr.abdominal-pain.2026", "source.stom.mrcm.abdominal-pain.20260714"], "review_status": "unreviewed", "version": "0.1.0"}
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nhs.stomach-ache.2023",
+      "source.nice.ng126.ectopic-pregnancy.2026",
+      "source.nice.ng12.abdominal-symptoms.2026",
+      "source.acr.abdominal-pain.2026",
+      "source.nice.ng104.pancreatitis",
+      "source.nice.cg188.gallstone-disease",
+      "source.nhs.abdominal-aortic-aneurysm.2025",
+      "source.nhs.testicle-pain.2025",
+      "source.nice.cg84.gastroenteritis-under-5",
+      "source.stom.mrcm.abdominal-pain.20260714"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
 }
