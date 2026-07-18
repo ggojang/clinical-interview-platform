@@ -9,11 +9,11 @@
   "source_manifest": "source-manifest.primary-care-medication-review-research",
   "default_refresh": {
     "class": "clinical_guideline",
-    "last_assessed_at": "2026-07-14",
+    "last_assessed_at": "2026-07-19",
     "monitor_interval_days": 1,
     "full_review_interval_days": 180,
-    "next_monitor_at": "2026-07-15",
-    "next_full_review_at": "2027-01-10",
+    "next_monitor_at": "2026-07-20",
+    "next_full_review_at": "2027-01-15",
     "policy_id": "policy.knowledge-refresh",
     "overdue_behavior": {
       "production": "exclude_or_require_review",
@@ -70,6 +70,41 @@
       "id": "hypothesis.medication-review.support",
       "type": "Hypothesis",
       "display": "Medicine Use Support Need Pattern"
+    },
+    {
+      "id": "group.medication-review.structured-list",
+      "type": "ClinicalGroup",
+      "display": "Structured List"
+    },
+    {
+      "id": "group.medication-review.source-verification",
+      "type": "ClinicalGroup",
+      "display": "Source Verification"
+    },
+    {
+      "id": "group.medication-review.adherence-support",
+      "type": "ClinicalGroup",
+      "display": "Adherence Support"
+    },
+    {
+      "id": "group.medication-review.adverse-detail",
+      "type": "ClinicalGroup",
+      "display": "Adverse Detail"
+    },
+    {
+      "id": "group.medication-review.transition",
+      "type": "ClinicalGroup",
+      "display": "Transition"
+    },
+    {
+      "id": "group.medication-review.functional-safety",
+      "type": "ClinicalGroup",
+      "display": "Functional Safety"
+    },
+    {
+      "id": "group.medication-review.clinician-handoff",
+      "type": "ClinicalGroup",
+      "display": "Clinician Handoff"
     }
   ],
   "group_hypothesis_edges": [
@@ -1535,6 +1570,1121 @@
       "supports": [
         "group.medication-review.immediate-safety"
       ]
+    },
+    {
+      "fact": {
+        "id": "medication.list_source_last_reconciled_and_date",
+        "display": "Medication List Source and Reconciliation Date",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.medication-review.list-source",
+        "display": "Medication List Source and Reconciliation Date",
+        "intents": [
+          "intent.medication_reconciliation",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.medication-review.list-source",
+        "wording": "현재 약 목록은 본인 기억, 약 봉투·처방전, 의무기록, 보호자, 약국 중 무엇을 근거로 했고 마지막으로 의료진과 대조한 날짜는 언제인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 111,
+          "reason": "list-source"
+        }
+      ],
+      "supports": [
+        "group.medication-review.source-verification"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.list_conflict_unknown_and_verification_needed",
+        "display": "Medication Information Conflict and Verification Need",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.medication-review.list-conflict",
+        "display": "Medication Information Conflict and Verification Need",
+        "intents": [
+          "intent.medication_reconciliation",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.medication-review.list-conflict",
+        "wording": "약 이름·용량·복용법이 자료마다 다르거나 확인되지 않은 항목과 추가 확인이 필요한 약국·의료기관을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 110,
+          "reason": "list-conflict"
+        }
+      ],
+      "supports": [
+        "group.medication-review.source-verification"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.item_name_brand_generic_product_and_code",
+        "display": "Medicine Name Product and Code Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.medication-review.item-name",
+        "display": "Medicine Name Product and Code Detail",
+        "intents": [
+          "intent.medication_reconciliation"
+        ]
+      },
+      "question": {
+        "id": "question.medication-review.item-name",
+        "wording": "각 약의 제품명과 성분명, 제조사·식별문자 또는 제공된 약제코드가 있으면 약별로 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 109,
+          "reason": "item-name"
+        }
+      ],
+      "supports": [
+        "group.medication-review.structured-list"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.item_strength_formulation_and_unit",
+        "display": "Medicine Strength Formulation and Unit",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.medication-review.item-strength",
+        "display": "Medicine Strength Formulation and Unit",
+        "intents": [
+          "intent.medication_reconciliation"
+        ]
+      },
+      "question": {
+        "id": "question.medication-review.item-strength",
+        "wording": "각 약의 함량·단위와 정제, 캡슐, 액상, 흡입제, 주사, 패치 같은 제형을 약별로 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 108,
+          "reason": "item-strength"
+        }
+      ],
+      "supports": [
+        "group.medication-review.structured-list"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.item_dose_route_frequency_timing_and_prn",
+        "display": "Medicine Dose Route Frequency Timing and PRN",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.medication-review.item-regimen",
+        "display": "Medicine Dose Route Frequency Timing and PRN",
+        "intents": [
+          "intent.medication_reconciliation"
+        ]
+      },
+      "question": {
+        "id": "question.medication-review.item-regimen",
+        "wording": "각 약의 1회량, 투여경로, 하루·주당 횟수, 식전·식후·취침 전 같은 시간과 필요 시 복용 조건을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 107,
+          "reason": "item-regimen"
+        }
+      ],
+      "supports": [
+        "group.medication-review.structured-list"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.item_indication_start_date_prescriber_and_pharmacy",
+        "display": "Medicine Indication Start Date Prescriber and Pharmacy",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.medication-review.item-context",
+        "display": "Medicine Indication Start Date Prescriber and Pharmacy",
+        "intents": [
+          "intent.medication_reconciliation"
+        ]
+      },
+      "question": {
+        "id": "question.medication-review.item-context",
+        "wording": "각 약을 사용하는 이유, 시작 시점, 처방한 의료기관·진료과와 조제 약국을 알고 있는 범위에서 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 106,
+          "reason": "item-context"
+        }
+      ],
+      "supports": [
+        "group.medication-review.structured-list"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.last_actual_dose_by_item",
+        "display": "Last Actual Dose by Medicine",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.medication-review.last-actual-dose",
+        "display": "Last Actual Dose by Medicine",
+        "intents": [
+          "intent.medication_reconciliation",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.medication-review.last-actual-dose",
+        "wording": "최근 복용·투여한 시각이 중요한 약은 약별 마지막 실제 사용 시각을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 96,
+          "reason": "last-actual-dose"
+        }
+      ],
+      "supports": [
+        "group.medication-review.actual-use"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.stopped_held_expired_and_remaining_stock",
+        "display": "Stopped Held Expired Medicines and Remaining Stock",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.medication-review.stopped-stock",
+        "display": "Stopped Held Expired Medicines and Remaining Stock",
+        "intents": [
+          "intent.medication_reconciliation",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.medication-review.stopped-stock",
+        "wording": "중단·보류했거나 유효기간이 지났지만 집에 남아 있는 약과 남은 수량, 중단 이유를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 91,
+          "reason": "stopped-stock"
+        }
+      ],
+      "supports": [
+        "group.medication-review.reconciliation"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.unintentional_nonadherence_reason",
+        "display": "Unintentional Non-adherence Reason",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.medication-review.unintentional-nonadherence",
+        "display": "Unintentional Non-adherence Reason",
+        "intents": [
+          "intent.medication_reconciliation",
+          "intent.medication_review"
+        ]
+      },
+      "question": {
+        "id": "question.medication-review.unintentional-nonadherence",
+        "wording": "깜빡함, 일정 변화, 복잡한 복용법, 삼킴·시력·손 사용·인지 문제 등 의도하지 않게 빠뜨리는 이유가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 98,
+          "reason": "unintentional-nonadherence"
+        }
+      ],
+      "supports": [
+        "group.medication-review.adherence-support"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.adherence_aid_caregiver_and_administration_source",
+        "display": "Adherence Aid and Administration Support",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.medication-review.adherence-support",
+        "display": "Adherence Aid and Administration Support",
+        "intents": [
+          "intent.medication_reconciliation",
+          "intent.medication_review"
+        ]
+      },
+      "question": {
+        "id": "question.medication-review.adherence-support",
+        "wording": "약 달력·약통·알람을 쓰는지, 누가 약을 준비·투여·확인하는지와 도움이 부족한 부분을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 87,
+          "reason": "adherence-support"
+        }
+      ],
+      "supports": [
+        "group.medication-review.adherence-support"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.swallowing_vision_dexterity_cognition_and_packaging",
+        "display": "Administration Accessibility Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.medication-review.accessibility",
+        "display": "Administration Accessibility Detail",
+        "intents": [
+          "intent.medication_reconciliation",
+          "intent.medication_review"
+        ]
+      },
+      "question": {
+        "id": "question.medication-review.accessibility",
+        "wording": "알약 삼키기, 라벨 읽기, 포장 열기, 손으로 기구 조작하기, 용량 계산·기억하기 중 어려운 점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 86,
+          "reason": "accessibility"
+        }
+      ],
+      "supports": [
+        "group.medication-review.adherence-support"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.inhaler_injection_patch_device_technique_and_training",
+        "display": "Medicine Device Technique and Training",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.medication-review.device-technique",
+        "display": "Medicine Device Technique and Training",
+        "intents": [
+          "intent.medication_reconciliation",
+          "intent.medication_review"
+        ]
+      },
+      "question": {
+        "id": "question.medication-review.device-technique",
+        "wording": "흡입기·주사·점안·패치 등 기구 사용법을 직접 확인받은 시점과 현재 사용 중 어려움·오류 의심을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 85,
+          "reason": "device-technique"
+        }
+      ],
+      "supports": [
+        "group.medication-review.adherence-support"
+      ]
+    },
+    {
+      "fact": {
+        "id": "allergy.drug_culprit_dose_route_onset_and_timing",
+        "display": "Drug Reaction Culprit Dose Route and Timing",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.medication-review.allergy-timing",
+        "display": "Drug Reaction Culprit Dose Route and Timing",
+        "intents": [
+          "intent.medication_review",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.medication-review.allergy-timing",
+        "wording": "약물 반응이 있었다면 원인 약, 당시 용량·투여경로, 복용 후 얼마 만에 어떤 순서로 시작했는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 105,
+          "reason": "allergy-timing"
+        }
+      ],
+      "supports": [
+        "group.medication-review.adverse-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "allergy.drug_reaction_severity_treatment_outcome_and_reexposure",
+        "display": "Drug Reaction Severity Treatment Outcome and Re-exposure",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.medication-review.allergy-outcome",
+        "display": "Drug Reaction Severity Treatment Outcome and Re-exposure",
+        "intents": [
+          "intent.medication_review",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.medication-review.allergy-outcome",
+        "wording": "반응의 중증도, 응급치료·입원 여부, 회복 과정과 같은 약 또는 같은 계열을 다시 사용했을 때 반응을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 104,
+          "reason": "allergy-outcome"
+        }
+      ],
+      "supports": [
+        "group.medication-review.adverse-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "allergy.drug_allergy_intolerance_or_uncertain_label",
+        "display": "Drug Allergy Intolerance or Uncertain Label",
+        "value_type": "coded",
+        "allowed_values": [
+          "confirmed_allergy",
+          "adverse_effect_or_intolerance",
+          "family_history_only",
+          "uncertain"
+        ]
+      },
+      "target": {
+        "id": "target.medication-review.allergy-label",
+        "display": "Drug Allergy Intolerance or Uncertain Label",
+        "intents": [
+          "intent.medication_review",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.medication-review.allergy-label",
+        "wording": "기록된 반응은 알레르기로 확인됨, 부작용·불내성, 가족력만 있음, 원인 불확실 중 어디에 해당하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 97,
+          "reason": "allergy-label"
+        }
+      ],
+      "supports": [
+        "group.medication-review.adverse-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.adverse_effect_onset_dose_relation_dechallenge_rechallenge",
+        "display": "Adverse Effect Temporal Relationship",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.medication-review.adverse-timeline",
+        "display": "Adverse Effect Temporal Relationship",
+        "intents": [
+          "intent.medication_review",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.medication-review.adverse-timeline",
+        "wording": "의심 부작용이 약 시작·증량 후 언제 생겼고 감량·중단 뒤 호전했는지, 다시 사용했을 때 재발했는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 103,
+          "reason": "adverse-timeline"
+        }
+      ],
+      "supports": [
+        "group.medication-review.adverse-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.adverse_effect_severity_frequency_function_and_actions",
+        "display": "Adverse Effect Severity Frequency and Impact",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.medication-review.adverse-impact",
+        "display": "Adverse Effect Severity Frequency and Impact",
+        "intents": [
+          "intent.medication_review",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.medication-review.adverse-impact",
+        "wording": "의심 부작용의 빈도·중증도, 수면·식사·보행·운전·근무 영향과 이미 받은 조치를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 102,
+          "reason": "adverse-impact"
+        }
+      ],
+      "supports": [
+        "group.medication-review.adverse-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.benefit_by_indication_target_and_time_course",
+        "display": "Benefit by Indication and Target",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.medication-review.benefit-detail",
+        "display": "Benefit by Indication and Target",
+        "intents": [
+          "intent.medication_review"
+        ]
+      },
+      "question": {
+        "id": "question.medication-review.benefit-detail",
+        "wording": "각 주요 약이 목표 증상·수치·기능에 얼마나 도움이 되었고 언제부터 효과가 나타났거나 줄었는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 88,
+          "reason": "benefit-detail"
+        }
+      ],
+      "supports": [
+        "group.medication-review.benefit-harm"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.monitoring_test_name_last_date_result_trend_and_source",
+        "display": "Medicine Monitoring Test Result and Source",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.medication-review.monitoring-result",
+        "display": "Medicine Monitoring Test Result and Source",
+        "intents": [
+          "intent.medication_review",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.medication-review.monitoring-result",
+        "wording": "약과 관련해 받은 혈압·맥박·혈당, 혈액·소변검사, 심전도 또는 약물농도의 검사명, 최근 날짜·결과·추세와 자료 출처를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 95,
+          "reason": "monitoring-result"
+        }
+      ],
+      "supports": [
+        "group.medication-review.monitoring-risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.monitoring_target_due_date_and_unresolved_action",
+        "display": "Monitoring Target Due Date and Follow-up",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.medication-review.monitoring-plan",
+        "display": "Monitoring Target Due Date and Follow-up",
+        "intents": [
+          "intent.medication_review",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.medication-review.monitoring-plan",
+        "wording": "의료진이 정한 목표치·다음 검사 예정일과 결과 후 조치가 필요했지만 아직 확인하지 못한 항목이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 90,
+          "reason": "monitoring-plan"
+        }
+      ],
+      "supports": [
+        "group.medication-review.monitoring-risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.renal_hepatic_function_date_result_and_dose_context",
+        "display": "Renal and Hepatic Function Result Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.medication-review.organ-function",
+        "display": "Renal and Hepatic Function Result Context",
+        "intents": [
+          "intent.medication_review",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.medication-review.organ-function",
+        "wording": "최근 신장·간 기능검사의 날짜·결과와 그 결과로 용량을 조정하거나 약을 피하라는 설명을 들었는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 94,
+          "reason": "organ-function"
+        }
+      ],
+      "supports": [
+        "group.medication-review.monitoring-risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.opioid_sedative_alcohol_sleep_apnoea_and_naloxone_context",
+        "display": "Opioid Sedative and Respiratory Risk Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.medication-review.opioid-context",
+        "display": "Opioid Sedative and Respiratory Risk Context",
+        "intents": [
+          "intent.screen_red_flags",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.medication-review.opioid-context",
+        "wording": "마약성 진통제·수면제·진정제와 술을 함께 사용하는지, 수면무호흡·폐질환이 있는지, naloxone 교육·보유 여부를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 101,
+          "reason": "opioid-context"
+        }
+      ],
+      "supports": [
+        "group.medication-review.functional-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.drowsiness_confusion_dizziness_falls_driving_and_work",
+        "display": "Sedation Falls Driving and Work Impact",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.medication-review.functional-safety",
+        "display": "Sedation Falls Driving and Work Impact",
+        "intents": [
+          "intent.medication_review",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.medication-review.functional-safety",
+        "wording": "약 사용 뒤 졸림·혼란·어지럼·휘청거림·낙상이 있었는지와 운전·기계조작·근무 안전에 미친 영향을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 99,
+          "reason": "functional-safety"
+        }
+      ],
+      "supports": [
+        "group.medication-review.functional-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.anticoagulant_indication_dose_last_dose_bleeding_and_monitoring",
+        "display": "Anticoagulant Regimen and Bleeding Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.medication-review.anticoagulant-detail",
+        "display": "Anticoagulant Regimen and Bleeding Context",
+        "intents": [
+          "intent.medication_review",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.medication-review.anticoagulant-detail",
+        "wording": "항응고제·항혈소판제를 사용한다면 이유, 약명·용량·마지막 복용, 멍·출혈과 관련 검사·다음 시술 계획을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 100,
+          "reason": "anticoagulant-detail"
+        }
+      ],
+      "supports": [
+        "group.medication-review.monitoring-risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.diabetes_medicine_meal_pattern_glucose_and_hypoglycaemia",
+        "display": "Diabetes Medicine Meal and Hypoglycaemia Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.medication-review.diabetes-detail",
+        "display": "Diabetes Medicine Meal and Hypoglycaemia Context",
+        "intents": [
+          "intent.medication_review",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.medication-review.diabetes-detail",
+        "wording": "인슐린·당뇨약을 사용한다면 식사와 투여 시각, 최근 혈당, 저혈당 횟수·대처와 도움 필요 여부를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 100,
+          "reason": "diabetes-detail"
+        }
+      ],
+      "supports": [
+        "group.medication-review.monitoring-risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.care_transition_previous_current_discharge_list_conflict",
+        "display": "Care Transition Medication List Conflict",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.medication-review.transition-conflict",
+        "display": "Care Transition Medication List Conflict",
+        "intents": [
+          "intent.medication_reconciliation",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.medication-review.transition-conflict",
+        "wording": "최근 입원·응급실·수술·전원 전 목록, 퇴원 목록과 현재 실제 복용 사이에 새로 시작·중단·변경되었거나 서로 다른 항목을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 108,
+          "reason": "transition-conflict"
+        }
+      ],
+      "supports": [
+        "group.medication-review.transition"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.transition_change_reason_author_date_and_followup",
+        "display": "Care Transition Change Reason and Follow-up",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.medication-review.transition-followup",
+        "display": "Care Transition Change Reason and Follow-up",
+        "intents": [
+          "intent.medication_reconciliation",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.medication-review.transition-followup",
+        "wording": "입퇴원 과정에서 누가 언제 어떤 이유로 약을 바꿨고, 어느 의료기관이 계속 처방·검사·추적하기로 했는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 96,
+          "reason": "transition-followup"
+        }
+      ],
+      "supports": [
+        "group.medication-review.transition"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.supply_days_remaining_refill_access_and_storage",
+        "display": "Medicine Supply Refill Access and Storage",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.medication-review.supply-detail",
+        "display": "Medicine Supply Refill Access and Storage",
+        "intents": [
+          "intent.medication_reconciliation",
+          "intent.medication_review"
+        ]
+      },
+      "question": {
+        "id": "question.medication-review.supply-detail",
+        "wording": "약별 남은 일수, 다음 처방·조제 가능일, 비용·이동·품절 문제와 냉장·차광 등 보관 어려움을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 84,
+          "reason": "supply-detail"
+        }
+      ],
+      "supports": [
+        "group.medication-review.clinician-handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.preference_tradeoff_change_request_and_constraints",
+        "display": "Medicine Preference Trade-off and Constraints",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.medication-review.preference-detail",
+        "display": "Medicine Preference Trade-off and Constraints",
+        "intents": [
+          "intent.medication_review"
+        ]
+      },
+      "question": {
+        "id": "question.medication-review.preference-detail",
+        "wording": "효과, 부작용, 복용 횟수, 비용 중 무엇을 우선하며 바꾸거나 줄이고 싶은 약과 걱정되는 점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 83,
+          "reason": "preference-detail"
+        }
+      ],
+      "supports": [
+        "group.medication-review.preference-support"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.information_source_reliability_conflict_and_proxy",
+        "display": "Medication Information Source Reliability and Proxy",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.medication-review.information-reliability",
+        "display": "Medication Information Source Reliability and Proxy",
+        "intents": [
+          "intent.medication_reconciliation",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.medication-review.information-reliability",
+        "wording": "본인·보호자 중 누가 답하는지, 기억의 확실성, 약 사진·처방전·퇴원서·검사자료 유무와 서로 맞지 않는 부분을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 82,
+          "reason": "information-reliability"
+        }
+      ],
+      "supports": [
+        "group.medication-review.clinician-handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.clinician_handoff_unresolved_questions_and_additional_comment",
+        "display": "Clinician Handoff Questions and Additional Comment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.medication-review.handoff-goal",
+        "display": "Clinician Handoff Questions and Additional Comment",
+        "intents": [
+          "intent.medication_review"
+        ]
+      },
+      "question": {
+        "id": "question.medication-review.handoff-goal",
+        "wording": "진료 전에 의료진이 꼭 확인해야 할 미해결 약 문제, 가장 원하는 결정과 질문에 없던 의견을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 81,
+          "reason": "handoff-goal"
+        }
+      ],
+      "supports": [
+        "group.medication-review.clinician-handoff"
+      ]
     }
   ],
   "provenance": {
@@ -1551,7 +2701,8 @@
       "source.nhs.anaphylaxis.2026",
       "source.nhs.stevens-johnson.2026",
       "source.nhs.hypoglycaemia.2026",
-      "source.nhs-england.opioid-respiratory-depression.2020"
+      "source.nhs-england.opioid-respiratory-depression.2020",
+      "source.stom.mrcm.medication-review.20260714"
     ],
     "review_status": "unreviewed",
     "version": "0.1.0"

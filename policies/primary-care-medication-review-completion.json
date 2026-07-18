@@ -27,31 +27,21 @@
       "medication.current_otc_list",
       "medication.current_supplement_list",
       "medication.non_oral_products",
-      "medication.indications_known",
       "medication.actual_use_differs",
       "medication.recent_start_stop_dose_change",
-      "medication.last_dose_critical_or_infrequent",
-      "medication.duplicate_or_unknown_product",
-      "medication.multiple_prescribers_or_pharmacies",
       "allergy.drug_status",
       "allergy.drug_reaction_details",
-      "medication.missed_dose_frequency",
-      "medication.intentional_nonadherence_reason",
-      "medication.administration_difficulty",
-      "medication.access_or_cost_problem",
-      "medication.perceived_benefit",
       "medication.suspected_adverse_effects",
       "medication.monitoring_due_or_overdue",
-      "medication.recent_care_transition",
-      "patient.pregnant_planning_or_breastfeeding",
-      "history.kidney_impairment",
-      "history.liver_impairment",
-      "medication.patient_priority_or_question"
+      "medication.list_source_last_reconciled_and_date",
+      "medication.list_conflict_unknown_and_verification_needed",
+      "medication.information_source_reliability_conflict_and_proxy",
+      "medication.clinician_handoff_unresolved_questions_and_additional_comment"
     ]
   },
   "clarification_facts_by_rule": {},
   "question_budget": {
-    "routine": 40,
+    "routine": 75,
     "clarify": 12
   },
   "provenance": {
@@ -68,9 +58,81 @@
       "source.nhs.anaphylaxis.2026",
       "source.nhs.stevens-johnson.2026",
       "source.nhs.hypoglycaemia.2026",
-      "source.nhs-england.opioid-respiratory-depression.2020"
+      "source.nhs-england.opioid-respiratory-depression.2020",
+      "source.stom.mrcm.medication-review.20260714"
     ],
     "review_status": "unreviewed",
     "version": "0.1.0"
-  }
+  },
+  "conditional_required_facts": [
+    {
+      "selector_fact": "medication.review.purpose",
+      "cases": {
+        "reconcile": [
+          "medication.item_name_brand_generic_product_and_code",
+          "medication.item_strength_formulation_and_unit",
+          "medication.item_dose_route_frequency_timing_and_prn",
+          "medication.item_indication_start_date_prescriber_and_pharmacy",
+          "medication.indications_known",
+          "medication.last_actual_dose_by_item",
+          "medication.duplicate_or_unknown_product",
+          "medication.multiple_prescribers_or_pharmacies",
+          "medication.stopped_held_expired_and_remaining_stock"
+        ],
+        "effectiveness": [
+          "medication.perceived_benefit",
+          "medication.benefit_by_indication_target_and_time_course",
+          "medication.missed_dose_frequency",
+          "medication.monitoring_test_name_last_date_result_trend_and_source",
+          "medication.monitoring_target_due_date_and_unresolved_action",
+          "medication.renal_hepatic_function_date_result_and_dose_context"
+        ],
+        "adverse_effect": [
+          "medication.adverse_effect_onset_dose_relation_dechallenge_rechallenge",
+          "medication.adverse_effect_severity_frequency_function_and_actions",
+          "allergy.drug_culprit_dose_route_onset_and_timing",
+          "allergy.drug_reaction_severity_treatment_outcome_and_reexposure",
+          "allergy.drug_allergy_intolerance_or_uncertain_label",
+          "medication.drowsiness_confusion_dizziness_falls_driving_and_work",
+          "medication.opioid_sedative_alcohol_sleep_apnoea_and_naloxone_context"
+        ],
+        "instructions": [
+          "medication.missed_dose_frequency",
+          "medication.intentional_nonadherence_reason",
+          "medication.unintentional_nonadherence_reason",
+          "medication.administration_difficulty",
+          "medication.adherence_aid_caregiver_and_administration_source",
+          "medication.swallowing_vision_dexterity_cognition_and_packaging",
+          "medication.inhaler_injection_patch_device_technique_and_training"
+        ],
+        "change_request": [
+          "medication.perceived_benefit",
+          "medication.intentional_nonadherence_reason",
+          "medication.stopped_held_expired_and_remaining_stock",
+          "medication.preference_tradeoff_change_request_and_constraints",
+          "patient.pregnant_planning_or_breastfeeding",
+          "history.kidney_impairment",
+          "history.liver_impairment"
+        ],
+        "post_discharge": [
+          "medication.recent_care_transition",
+          "medication.care_transition_previous_current_discharge_list_conflict",
+          "medication.transition_change_reason_author_date_and_followup",
+          "medication.multiple_prescribers_or_pharmacies",
+          "medication.last_actual_dose_by_item",
+          "medication.supply_days_remaining_refill_access_and_storage"
+        ],
+        "other": [
+          "medication.item_dose_route_frequency_timing_and_prn",
+          "medication.missed_dose_frequency",
+          "medication.unintentional_nonadherence_reason",
+          "medication.perceived_benefit",
+          "medication.adverse_effect_onset_dose_relation_dechallenge_rechallenge",
+          "medication.monitoring_test_name_last_date_result_trend_and_source",
+          "medication.supply_days_remaining_refill_access_and_storage",
+          "medication.preference_tradeoff_change_request_and_constraints"
+        ]
+      }
+    }
+  ]
 }

@@ -505,7 +505,7 @@ class GptExportTests(unittest.TestCase):
                     encoding="utf-8"
                 )
             )
-            self.assertEqual(medication["count"], 36)
+            self.assertEqual(medication["count"], 67)
             upper = json.loads(
                 (output_path / "rfe/upper_respiratory_symptoms/facts.json").read_text(
                     encoding="utf-8"

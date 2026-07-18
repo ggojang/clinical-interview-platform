@@ -611,7 +611,7 @@ class CompilerTests(unittest.TestCase):
             node["id"] for node in first["knowledge_graph"]["nodes"]
             if node["type"] == "Fact"
         }
-        self.assertEqual(len(facts), 36)
+        self.assertEqual(len(facts), 67)
         self.assertEqual(facts, set(first["indexes"]["questions_by_fact"]))
         self.assertEqual(first["coverage"]["total_safety_rules"], 9)
         self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 9)
@@ -1789,8 +1789,8 @@ class PackageRuntimeTests(unittest.TestCase):
     def test_medication_review_simulation_evaluation_passes(self):
         report = run_evaluation(MEDICATION_REVIEW_PACKAGE)
         self.assertTrue(report["passed"])
-        self.assertEqual(report["case_count"], 10)
-        self.assertLessEqual(max(item["turns"] for item in report["results"]), 40)
+        self.assertEqual(report["case_count"], 20)
+        self.assertLessEqual(max(item["turns"] for item in report["results"]), 65)
 
     def test_medication_review_runtime_uses_medication_rfe(self):
         session = InterviewSession(
