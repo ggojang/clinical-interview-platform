@@ -414,10 +414,10 @@ class CompilerTests(unittest.TestCase):
             node["id"] for node in first["knowledge_graph"]["nodes"]
             if node["type"] == "Fact"
         }
-        self.assertEqual(len(facts), 32)
+        self.assertEqual(len(facts), 76)
         self.assertEqual(facts, set(first["indexes"]["questions_by_fact"]))
-        self.assertEqual(first["coverage"]["total_safety_rules"], 10)
-        self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 10)
+        self.assertEqual(first["coverage"]["total_safety_rules"], 22)
+        self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 22)
         self.assertEqual(first["coverage"]["uncovered_safety_rules"], [])
 
     def test_headache_mrcm_is_build_time_metadata_only(self):
@@ -1649,8 +1649,8 @@ class PackageRuntimeTests(unittest.TestCase):
     def test_headache_package_simulation_evaluation_passes(self):
         report = run_evaluation(HEADACHE_PACKAGE)
         self.assertTrue(report["passed"])
-        self.assertEqual(report["case_count"], 11)
-        self.assertLessEqual(max(item["turns"] for item in report["results"]), 33)
+        self.assertEqual(report["case_count"], 30)
+        self.assertLessEqual(max(item["turns"] for item in report["results"]), 60)
 
     def test_headache_runtime_uses_headache_rfe(self):
         session = InterviewSession("headache-runtime", package_path=HEADACHE_PACKAGE)

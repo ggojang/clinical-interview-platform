@@ -9,11 +9,11 @@
   "source_manifest": "source-manifest.primary-care-headache-research",
   "default_refresh": {
     "class": "clinical_guideline",
-    "last_assessed_at": "2026-07-14",
+    "last_assessed_at": "2026-07-18",
     "monitor_interval_days": 1,
     "full_review_interval_days": 180,
-    "next_monitor_at": "2026-07-15",
-    "next_full_review_at": "2027-01-10",
+    "next_monitor_at": "2026-07-19",
+    "next_full_review_at": "2027-01-14",
     "policy_id": "policy.knowledge-refresh",
     "overdue_behavior": {
       "production": "exclude_or_require_review",
@@ -22,75 +22,91 @@
   },
   "extra_nodes": [
     {
-      "id": "group.headache.immediate-safety",
+      "id": "group.headache.routing",
       "type": "ClinicalGroup",
-      "display": "Immediate Headache Safety Features"
+      "display": "routing"
     },
     {
-      "id": "group.headache.characterization",
+      "id": "group.headache.safety",
       "type": "ClinicalGroup",
-      "display": "Headache Characterization"
+      "display": "safety"
     },
     {
-      "id": "group.headache.migraine-associated",
+      "id": "group.headache.course",
       "type": "ClinicalGroup",
-      "display": "Migraine-associated Features"
+      "display": "course"
     },
     {
-      "id": "group.headache.meningeal-associated",
+      "id": "group.headache.pain",
       "type": "ClinicalGroup",
-      "display": "Meningeal-associated Warning Features"
+      "display": "pain"
     },
     {
-      "id": "group.headache.secondary-warning",
+      "id": "group.headache.associated",
       "type": "ClinicalGroup",
-      "display": "Secondary Headache Warning Features"
+      "display": "associated"
     },
     {
-      "id": "group.headache.background",
+      "id": "group.headache.neurological",
       "type": "ClinicalGroup",
-      "display": "Relevant Headache Background"
+      "display": "neurological"
     },
     {
-      "id": "hypothesis.headache.immediate-safety",
-      "type": "Hypothesis",
-      "display": "Immediate Assessment Warning Features"
+      "id": "group.headache.eye_autonomic",
+      "type": "ClinicalGroup",
+      "display": "eye_autonomic"
     },
     {
-      "id": "hypothesis.headache.migraine-associated",
-      "type": "Hypothesis",
-      "display": "Possible Migraine-associated Pattern"
+      "id": "group.headache.systemic",
+      "type": "ClinicalGroup",
+      "display": "systemic"
     },
     {
-      "id": "hypothesis.headache.meningeal-associated",
-      "type": "Hypothesis",
-      "display": "Possible Meningeal-associated Pattern"
+      "id": "group.headache.trigger",
+      "type": "ClinicalGroup",
+      "display": "trigger"
     },
     {
-      "id": "hypothesis.headache.secondary-warning",
-      "type": "Hypothesis",
-      "display": "Possible Secondary Headache Warning Pattern"
+      "id": "group.headache.medicine",
+      "type": "ClinicalGroup",
+      "display": "medicine"
+    },
+    {
+      "id": "group.headache.reproductive",
+      "type": "ClinicalGroup",
+      "display": "reproductive"
+    },
+    {
+      "id": "group.headache.child",
+      "type": "ClinicalGroup",
+      "display": "child"
+    },
+    {
+      "id": "group.headache.history",
+      "type": "ClinicalGroup",
+      "display": "history"
+    },
+    {
+      "id": "group.headache.handoff",
+      "type": "ClinicalGroup",
+      "display": "handoff"
     }
   ],
-  "group_hypothesis_edges": [
-    [
-      "group.headache.immediate-safety",
-      "hypothesis.headache.immediate-safety"
-    ],
-    [
-      "group.headache.migraine-associated",
-      "hypothesis.headache.migraine-associated"
-    ],
-    [
-      "group.headache.meningeal-associated",
-      "hypothesis.headache.meningeal-associated"
-    ],
-    [
-      "group.headache.secondary-warning",
-      "hypothesis.headache.secondary-warning"
-    ]
-  ],
+  "group_hypothesis_edges": [],
   "safety_rules": [
+    {
+      "id": "rule.headache.safety.ongoing-consciousness",
+      "priority": 1000,
+      "when": {
+        "fact": "headache.current_unconscious_or_difficult_to_wake",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
     {
       "id": "rule.headache.safety.sudden-peak",
       "priority": 1000,
@@ -118,6 +134,19 @@
       }
     },
     {
+      "id": "rule.headache.safety.meningitis-combination",
+      "priority": 1000,
+      "when": {
+        "fact": "headache.fever_neck_stiffness_altered_combination",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
       "id": "rule.headache.safety.altered-consciousness",
       "priority": 1000,
       "when": {
@@ -131,7 +160,7 @@
       }
     },
     {
-      "id": "rule.headache.safety.meningitis-combination",
+      "id": "rule.headache.safety.fever-non-blanching-rash",
       "priority": 1000,
       "when": {
         "all": [
@@ -140,11 +169,7 @@
             "equals": true
           },
           {
-            "fact": "symptom.neck_stiffness",
-            "equals": true
-          },
-          {
-            "fact": "symptom.altered_consciousness_or_cognition",
+            "fact": "headache.non_blanching_rash",
             "equals": true
           }
         ]
@@ -156,14 +181,27 @@
       }
     },
     {
-      "id": "rule.headache.safety.recent-head-trauma",
-      "priority": 900,
+      "id": "rule.headache.safety.severe-head-injury",
+      "priority": 1000,
       "when": {
-        "fact": "history.recent_head_trauma",
+        "fact": "headache.severe_head_injury_warning",
         "equals": true
       },
       "then": {
-        "safety_level": "urgent",
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.headache.safety.poisoning-carbon-monoxide",
+      "priority": 1000,
+      "when": {
+        "fact": "headache.poisoning_or_carbon_monoxide_concern",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
         "action": "human_handoff",
         "suppress_routine": true
       }
@@ -190,6 +228,19 @@
       }
     },
     {
+      "id": "rule.headache.safety.sudden-one-eye-vision-loss",
+      "priority": 900,
+      "when": {
+        "fact": "headache.sudden_one_eye_vision_loss",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
       "id": "rule.headache.safety.worsening-fever",
       "priority": 900,
       "when": {
@@ -203,6 +254,19 @@
             "equals": true
           }
         ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.headache.safety.recent-head-trauma",
+      "priority": 900,
+      "when": {
+        "fact": "history.recent_head_trauma",
+        "equals": true
       },
       "then": {
         "safety_level": "urgent",
@@ -272,25 +336,120 @@
         "action": "human_handoff",
         "suppress_routine": true
       }
+    },
+    {
+      "id": "rule.headache.safety.cough-valsalva-trigger",
+      "priority": 900,
+      "when": {
+        "fact": "symptom.headache.cough_or_valsalva_trigger",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.headache.safety.exercise-trigger",
+      "priority": 900,
+      "when": {
+        "fact": "symptom.headache.exercise_trigger",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.headache.safety.postural-headache",
+      "priority": 900,
+      "when": {
+        "fact": "symptom.headache.postural",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.headache.safety.substantial-worsening",
+      "priority": 900,
+      "when": {
+        "fact": "symptom.headache.worsening",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.headache.safety.jaw-scalp-vision-warning",
+      "priority": 900,
+      "when": {
+        "fact": "headache.jaw_claudication_scalp_tenderness_or_new_vision_warning",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.headache.safety.pregnancy-postpartum-warning",
+      "priority": 900,
+      "when": {
+        "fact": "headache.pregnancy_postpartum_severe_warning",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.headache.safety.child-under12-warning",
+      "priority": 900,
+      "when": {
+        "fact": "headache.child_under12_warning",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
     }
   ],
   "entries": [
     {
       "fact": {
         "id": "symptom.headache.current",
-        "display": "Headache Present Now",
-        "value_type": "boolean"
+        "display": "Current Headache",
+        "value_type": "boolean",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "25064002"
+        }
       },
       "target": {
-        "id": "target.headache.determine-current",
-        "display": "Determine Current Headache",
+        "id": "target.headache.current",
+        "display": "Current Headache",
         "intents": [
           "intent.characterize_symptom"
         ]
       },
       "question": {
         "id": "question.headache.current",
-        "wording": "지금도 두통이 있나요?",
+        "wording": "지금도 머리·얼굴·목 위쪽의 통증이나 두통이 있나요?",
         "language": "ko",
         "mode": [
           "chat",
@@ -302,12 +461,166 @@
       "priority": [
         {
           "branch": "any",
-          "score": 120,
-          "reason": "current_state"
+          "score": 330,
+          "reason": "current"
         }
       ],
       "supports": [
-        "group.headache.characterization"
+        "group.headache.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "headache.primary_group",
+        "display": "Primary Headache Context",
+        "value_type": "coded",
+        "allowed_values": [
+          "sudden_or_acute_new",
+          "recurrent_migraine_like",
+          "pressure_or_tension_like",
+          "unilateral_autonomic",
+          "infection_or_systemic",
+          "medicine_or_overuse",
+          "pregnancy_or_postpartum",
+          "child_or_proxy",
+          "other_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.headache.primary-group",
+        "display": "Primary Headache Context",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.headache.primary-group",
+        "wording": "가장 가까운 상황은 갑자기 생긴 새 두통, 반복되는 편두통 같은 양상, 압박·긴장 양상, 한쪽 눈·코 증상 동반, 감염·전신증상, 약물·진통제 관련, 임신·산후, 소아·보호자 관찰, 또는 불분명 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 329,
+          "reason": "primary-group"
+        }
+      ],
+      "supports": [
+        "group.headache.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.duration",
+        "display": "Headache Duration",
+        "value_type": "quantity"
+      },
+      "target": {
+        "id": "target.headache.duration",
+        "display": "Headache Duration",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.headache.duration",
+        "wording": "두통은 언제부터 시작했고 전체적으로 얼마나 지속됐나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 220,
+          "reason": "duration"
+        }
+      ],
+      "supports": [
+        "group.headache.course"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "headache.onset_date_time_place_activity_and_speed",
+        "display": "Exact Onset Circumstances",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.headache.onset",
+        "display": "Exact Onset Circumstances",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.headache.onset",
+        "wording": "처음 시작한 날짜·시간·장소와 당시 활동, 몇 초·분·시간에 걸쳐 심해졌는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 219,
+          "reason": "onset"
+        }
+      ],
+      "supports": [
+        "group.headache.course"
+      ]
+    },
+    {
+      "fact": {
+        "id": "headache.first_worst_new_or_changed_from_usual",
+        "display": "First Worst New or Changed Headache",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.headache.baseline-change",
+        "display": "First Worst New or Changed Headache",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.headache.baseline-change",
+        "wording": "처음 겪는 두통인지, 평생 가장 심한 두통인지, 평소 두통과 비교해 새롭거나 달라진 점이 있는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 218,
+          "reason": "baseline-change"
+        }
+      ],
+      "supports": [
+        "group.headache.course"
       ]
     },
     {
@@ -318,16 +631,15 @@
         "safety_relevant": true
       },
       "target": {
-        "id": "target.headache.determine-new-onset",
-        "display": "Determine New Onset",
+        "id": "target.headache.new-onset",
+        "display": "New-onset Headache",
         "intents": [
-          "intent.screen_red_flags",
-          "intent.risk_assessment"
+          "intent.screen_red_flags"
         ]
       },
       "question": {
         "id": "question.headache.new-onset",
-        "wording": "이런 양상의 두통은 이번이 처음인가요?",
+        "wording": "이번 두통이 처음 생겼거나 평소와 뚜렷하게 다른 새 두통인가요?",
         "language": "ko",
         "mode": [
           "chat",
@@ -339,31 +651,31 @@
       "priority": [
         {
           "branch": "any",
-          "score": 119,
-          "reason": "secondary_warning_context"
+          "score": 304,
+          "reason": "new-onset"
         }
       ],
       "supports": [
-        "group.headache.secondary-warning"
-      ]
+        "group.headache.safety"
+      ],
+      "reuse_existing": true
     },
     {
-      "reuse_existing": true,
       "fact": {
-        "id": "symptom.duration",
-        "display": "Headache History Duration",
-        "value_type": "quantity"
+        "id": "headache.continuous_episodic_frequency_duration_and_trend",
+        "display": "Episode Pattern and Trend",
+        "value_type": "string"
       },
       "target": {
-        "id": "target.headache.determine-duration",
-        "display": "Determine Duration",
+        "id": "target.headache.pattern",
+        "display": "Episode Pattern and Trend",
         "intents": [
           "intent.characterize_symptom"
         ]
       },
       "question": {
-        "id": "question.headache.duration",
-        "wording": "두통은 언제부터 있었나요?",
+        "id": "question.headache.pattern",
+        "wording": "계속되는지 발작처럼 반복되는지, 한 번 지속시간·하루/주/월 횟수와 최근 빈도·강도 변화를 알려주세요.",
         "language": "ko",
         "mode": [
           "chat",
@@ -375,98 +687,12 @@
       "priority": [
         {
           "branch": "any",
-          "score": 100,
-          "reason": "characterize_duration"
+          "score": 217,
+          "reason": "pattern"
         }
       ],
       "supports": [
-        "group.headache.characterization"
-      ]
-    },
-    {
-      "fact": {
-        "id": "symptom.headache.maximum_within_5_minutes",
-        "display": "Headache Reached Maximum Within 5 Minutes",
-        "value_type": "boolean",
-        "safety_relevant": true
-      },
-      "target": {
-        "id": "target.headache.determine-sudden-peak",
-        "display": "Determine Sudden Peak",
-        "intents": [
-          "intent.screen_red_flags"
-        ]
-      },
-      "question": {
-        "id": "question.headache.sudden-peak",
-        "wording": "두통이 시작된 뒤 5분 안에 가장 심한 정도에 도달했나요?",
-        "language": "ko",
-        "mode": [
-          "chat",
-          "face_to_face",
-          "telephone",
-          "video"
-        ]
-      },
-      "priority": [
-        {
-          "branch": "any",
-          "score": 130,
-          "reason": "immediate_safety_gate"
-        }
-      ],
-      "supports": [
-        "group.headache.immediate-safety"
-      ]
-    },
-    {
-      "fact": {
-        "id": "symptom.headache.severity",
-        "display": "Headache Severity",
-        "value_type": "coded",
-        "allowed_values": [
-          "mild",
-          "moderate",
-          "severe"
-        ],
-        "terminology_binding": {
-          "system": "http://snomed.info/sct",
-          "focus_code": "25064002",
-          "attribute_code": "246112005"
-        },
-        "mrcm_validation": {
-          "ref": "mapping.snomed-mrcm.headache",
-          "status": "provisional_pass"
-        }
-      },
-      "target": {
-        "id": "target.headache.determine-severity",
-        "display": "Determine Severity",
-        "intents": [
-          "intent.characterize_symptom",
-          "intent.screen_red_flags"
-        ]
-      },
-      "question": {
-        "id": "question.headache.severity",
-        "wording": "두통은 가벼움, 중간 정도, 매우 심함 중 어디에 가깝나요?",
-        "language": "ko",
-        "mode": [
-          "chat",
-          "face_to_face",
-          "telephone",
-          "video"
-        ]
-      },
-      "priority": [
-        {
-          "branch": "any",
-          "score": 118,
-          "reason": "characterize_severity"
-        }
-      ],
-      "supports": [
-        "group.headache.characterization"
+        "group.headache.course"
       ]
     },
     {
@@ -485,16 +711,15 @@
         }
       },
       "target": {
-        "id": "target.headache.determine-location",
-        "display": "Determine Location",
+        "id": "target.headache.location",
+        "display": "Headache Location",
         "intents": [
-          "intent.characterize_symptom",
-          "intent.differentiate_common_causes"
+          "intent.characterize_symptom"
         ]
       },
       "question": {
         "id": "question.headache.location",
-        "wording": "머리의 어느 부위가 아픈가요? 한쪽인지 양쪽인지도 알려주세요.",
+        "wording": "통증이 있는 머리·얼굴·목 위쪽의 정확한 부위를 알려주세요.",
         "language": "ko",
         "mode": [
           "chat",
@@ -506,13 +731,47 @@
       "priority": [
         {
           "branch": "any",
-          "score": 99,
-          "reason": "localize_headache"
+          "score": 216,
+          "reason": "location"
         }
       ],
       "supports": [
-        "group.headache.characterization",
-        "group.headache.migraine-associated"
+        "group.headache.pain"
+      ]
+    },
+    {
+      "fact": {
+        "id": "headache.side_site_radiation_and_laterality",
+        "display": "Site Side and Radiation",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.headache.site-detail",
+        "display": "Site Side and Radiation",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.headache.site-detail",
+        "wording": "왼쪽·오른쪽·양쪽 중 어디인지, 눈 주위·관자·뒤통수·얼굴·목 등 시작 부위와 퍼지는 방향을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 215,
+          "reason": "site-detail"
+        }
+      ],
+      "supports": [
+        "group.headache.pain"
       ]
     },
     {
@@ -522,24 +781,22 @@
         "value_type": "coded",
         "allowed_values": [
           "pulsating",
-          "pressing",
-          "tightening",
-          "sharp",
-          "burning",
+          "pressing_tightening",
+          "sharp_burning",
+          "dull_heavy",
           "other"
         ]
       },
       "target": {
-        "id": "target.headache.determine-quality",
-        "display": "Determine Quality",
+        "id": "target.headache.quality",
+        "display": "Headache Quality",
         "intents": [
-          "intent.characterize_symptom",
-          "intent.differentiate_common_causes"
+          "intent.characterize_symptom"
         ]
       },
       "question": {
         "id": "question.headache.quality",
-        "wording": "통증은 욱신거림, 누르는 느낌, 조임, 찌름, 화끈거림 중 무엇에 가깝나요?",
+        "wording": "욱신거림, 조이거나 압박함, 찌름·화끈거림, 묵직함 중 어디에 가깝나요? 보기와 다르면 본인의 표현으로 답해도 됩니다.",
         "language": "ko",
         "mode": [
           "chat",
@@ -551,13 +808,47 @@
       "priority": [
         {
           "branch": "any",
-          "score": 98,
-          "reason": "characterize_quality"
+          "score": 214,
+          "reason": "quality"
         }
       ],
       "supports": [
-        "group.headache.characterization",
-        "group.headache.migraine-associated"
+        "group.headache.pain"
+      ]
+    },
+    {
+      "fact": {
+        "id": "headache.current_nrs_peak_nrs_and_peak_time",
+        "display": "Current and Peak Pain Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.headache.nrs-context",
+        "display": "Current and Peak Pain Context",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.headache.nrs-context",
+        "wording": "현재 통증 점수와 가장 심했던 점수·시각이 다르면 함께 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 212,
+          "reason": "nrs-context"
+        }
+      ],
+      "supports": [
+        "group.headache.pain"
       ]
     },
     {
@@ -567,16 +858,52 @@
         "value_type": "integer"
       },
       "target": {
-        "id": "target.headache.determine-frequency",
-        "display": "Determine Frequency",
+        "id": "target.headache.monthly-frequency",
+        "display": "Headache Days per Month",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.headache.monthly-frequency",
+        "wording": "최근 한 달 중 두통이 있었던 날은 며칠인가요? 숫자로 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 211,
+          "reason": "monthly-frequency"
+        }
+      ],
+      "supports": [
+        "group.headache.course"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "headache.activity_sleep_work_school_selfcare_and_driving_impact",
+        "display": "Functional and Safety Impact",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.headache.function",
+        "display": "Functional and Safety Impact",
         "intents": [
           "intent.characterize_symptom",
           "intent.risk_assessment"
         ]
       },
       "question": {
-        "id": "question.headache.frequency",
-        "wording": "한 달에 두통이 있는 날은 대략 며칠인가요?",
+        "id": "question.headache.function",
+        "wording": "두통 때문에 일상활동·수면·일·학업·가사·돌봄·운전이 얼마나 줄었거나 중단됐나요?",
         "language": "ko",
         "mode": [
           "chat",
@@ -588,30 +915,30 @@
       "priority": [
         {
           "branch": "any",
-          "score": 90,
-          "reason": "frequency_and_overuse_context"
+          "score": 210,
+          "reason": "function"
         }
       ],
       "supports": [
-        "group.headache.characterization"
+        "group.headache.handoff"
       ]
     },
     {
       "fact": {
-        "id": "symptom.headache.activity_aggravation",
-        "display": "Headache Aggravated by Routine Activity",
-        "value_type": "boolean"
+        "id": "headache.patient_words_and_between_episode_baseline",
+        "display": "Patient Description and Baseline",
+        "value_type": "string"
       },
       "target": {
-        "id": "target.headache.determine-activity-impact",
-        "display": "Determine Activity Aggravation",
+        "id": "target.headache.patient-words",
+        "display": "Patient Description and Baseline",
         "intents": [
-          "intent.differentiate_common_causes"
+          "intent.characterize_symptom"
         ]
       },
       "question": {
-        "id": "question.headache.activity-impact",
-        "wording": "걷거나 계단을 오르는 일상 활동으로 두통이 심해지거나 활동을 피하게 되나요?",
+        "id": "question.headache.patient-words",
+        "wording": "본인의 말로 두통을 표현하고, 두통이 없을 때는 평소 상태로 완전히 돌아오는지 알려주세요.",
         "language": "ko",
         "mode": [
           "chat",
@@ -623,12 +950,891 @@
       "priority": [
         {
           "branch": "any",
-          "score": 88,
-          "reason": "migraine_associated_feature"
+          "score": 209,
+          "reason": "patient-words"
         }
       ],
       "supports": [
-        "group.headache.migraine-associated"
+        "group.headache.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.headache.maximum_within_5_minutes",
+        "display": "Maximum Intensity within Five Minutes",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.headache.sudden-peak",
+        "display": "Maximum Intensity within Five Minutes",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.headache.sudden-peak",
+        "wording": "두통이 시작된 뒤 5분 안에 가장 심한 정도에 도달했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 327,
+          "reason": "sudden-peak"
+        }
+      ],
+      "supports": [
+        "group.headache.safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.neurological_deficit",
+        "display": "New Focal Neurological Deficit",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.headache.neuro-deficit",
+        "display": "New Focal Neurological Deficit",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.headache.neuro-deficit",
+        "wording": "새로 한쪽 얼굴·팔·다리 힘 빠짐/감각 저하, 말 어눌함, 삼킴 곤란이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 326,
+          "reason": "neuro-deficit"
+        }
+      ],
+      "supports": [
+        "group.headache.safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "headache.fever_neck_stiffness_altered_combination",
+        "display": "Fever Neck Stiffness and Altered Consciousness Combination",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.headache.meningitis-combination",
+        "display": "Fever Neck Stiffness and Altered Consciousness Combination",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.headache.meningitis-combination",
+        "wording": "두통과 함께 발열·목 경직·새로운 혼란 또는 의식 저하가 동시에 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 325,
+          "reason": "meningitis-combination"
+        }
+      ],
+      "supports": [
+        "group.headache.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.altered_consciousness_or_cognition",
+        "display": "Altered Consciousness or Cognition",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.headache.altered-cognition",
+        "display": "Altered Consciousness or Cognition",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.headache.altered-cognition",
+        "wording": "새로 혼란스럽거나 성격·기억·판단이 달라졌거나 의식이 흐려진 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 324,
+          "reason": "altered-cognition"
+        }
+      ],
+      "supports": [
+        "group.headache.safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "headache.current_unconscious_or_difficult_to_wake",
+        "display": "Current Unconsciousness or Difficult to Wake",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.headache.ongoing-consciousness",
+        "display": "Current Unconsciousness or Difficult to Wake",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.headache.ongoing-consciousness",
+        "wording": "현재 의식이 없거나 깨우기 어렵고 정상적으로 반응하지 못하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 324,
+          "reason": "ongoing-consciousness"
+        }
+      ],
+      "supports": [
+        "group.headache.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.fever",
+        "display": "Fever",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.headache.fever",
+        "display": "Fever",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.headache.fever",
+        "wording": "발열이나 오한이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 323,
+          "reason": "fever"
+        }
+      ],
+      "supports": [
+        "group.headache.safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.neck_stiffness",
+        "display": "Neck Stiffness",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.headache.neck-stiffness",
+        "display": "Neck Stiffness",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.headache.neck-stiffness",
+        "wording": "고개를 숙이기 어려울 정도로 목이 뻣뻣하거나 심하게 아픈가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 322,
+          "reason": "neck-stiffness"
+        }
+      ],
+      "supports": [
+        "group.headache.safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "headache.non_blanching_rash",
+        "display": "Non-blanching Rash",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.headache.non-blanching-rash",
+        "display": "Non-blanching Rash",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.headache.non-blanching-rash",
+        "wording": "발열과 함께 유리컵으로 눌러도 사라지지 않는 붉거나 보라색 발진이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 321,
+          "reason": "non-blanching-rash"
+        }
+      ],
+      "supports": [
+        "group.headache.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "history.recent_head_trauma",
+        "display": "Recent Head Trauma",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.headache.recent-trauma",
+        "display": "Recent Head Trauma",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.headache.recent-trauma",
+        "wording": "최근 3개월 안에 머리를 부딪치거나 다친 일이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 320,
+          "reason": "recent-trauma"
+        }
+      ],
+      "supports": [
+        "group.headache.safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "headache.severe_head_injury_warning",
+        "display": "Severe Head Injury Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.headache.head-injury-warning",
+        "display": "Severe Head Injury Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.headache.head-injury-warning",
+        "wording": "머리를 다친 뒤 반복 구토·경련·한쪽 힘 빠짐·점점 심한 졸림·귀나 코의 맑은 액체가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 319,
+          "reason": "head-injury-warning"
+        }
+      ],
+      "supports": [
+        "group.headache.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.painful_red_eye",
+        "display": "Painful Red Eye",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.headache.painful-red-eye",
+        "display": "Painful Red Eye",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.headache.painful-red-eye",
+        "wording": "두통과 함께 한쪽 눈이 심하게 아프고 빨갛나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 318,
+          "reason": "painful-red-eye"
+        }
+      ],
+      "supports": [
+        "group.headache.safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.visual_disturbance",
+        "display": "Visual Disturbance",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.headache.visual-disturbance",
+        "display": "Visual Disturbance",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.headache.visual-disturbance",
+        "wording": "시야 흐림·무지개 테·겹쳐 보임·번쩍임·시야 일부 소실이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 317,
+          "reason": "visual-disturbance"
+        }
+      ],
+      "supports": [
+        "group.headache.safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "headache.sudden_one_eye_vision_loss",
+        "display": "Sudden Monocular Vision Loss",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.headache.one-eye-loss",
+        "display": "Sudden Monocular Vision Loss",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.headache.one-eye-loss",
+        "wording": "한쪽 눈의 시력이 갑자기 떨어지거나 보이지 않게 됐나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 316,
+          "reason": "one-eye-loss"
+        }
+      ],
+      "supports": [
+        "group.headache.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.headache.worsening",
+        "display": "Progressively Worsening Headache",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.headache.worsening",
+        "display": "Progressively Worsening Headache",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.headache.worsening",
+        "wording": "두통이 계속 또는 빠르게 더 심해지고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 315,
+          "reason": "worsening"
+        }
+      ],
+      "supports": [
+        "group.headache.safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.unexplained_vomiting",
+        "display": "Unexplained Vomiting",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.headache.unexplained-vomiting",
+        "display": "Unexplained Vomiting",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.headache.unexplained-vomiting",
+        "wording": "장염·임신 등 다른 이유로 설명되지 않는 구토가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 314,
+          "reason": "unexplained-vomiting"
+        }
+      ],
+      "supports": [
+        "group.headache.safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "patient.immunocompromised",
+        "display": "Immunocompromised State",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.headache.immunocompromised",
+        "display": "Immunocompromised State",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.headache.immunocompromised",
+        "wording": "항암치료·장기이식·고용량 면역억제제 등으로 면역이 크게 저하된 상태인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 313,
+          "reason": "immunocompromised"
+        }
+      ],
+      "supports": [
+        "group.headache.safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "history.malignancy",
+        "display": "Malignancy History",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.headache.malignancy",
+        "display": "Malignancy History",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.headache.malignancy",
+        "wording": "암 진단이나 치료 병력이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 312,
+          "reason": "malignancy"
+        }
+      ],
+      "supports": [
+        "group.headache.safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.headache.cough_or_valsalva_trigger",
+        "display": "Cough Valsalva or Sneeze Trigger",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.headache.cough-trigger",
+        "display": "Cough Valsalva or Sneeze Trigger",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.headache.cough-trigger",
+        "wording": "기침·재채기·힘주기·몸을 숙일 때 두통이 새로 생기거나 심해지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 311,
+          "reason": "cough-trigger"
+        }
+      ],
+      "supports": [
+        "group.headache.safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.headache.exercise_trigger",
+        "display": "Exercise Trigger",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.headache.exercise-trigger",
+        "display": "Exercise Trigger",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.headache.exercise-trigger",
+        "wording": "운동이나 힘든 활동 중 두통이 새로 생기거나 심해지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 310,
+          "reason": "exercise-trigger"
+        }
+      ],
+      "supports": [
+        "group.headache.safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "symptom.headache.postural",
+        "display": "Postural Headache",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.headache.postural",
+        "display": "Postural Headache",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.headache.postural",
+        "wording": "눕거나 일어서는 자세에 따라 두통이 뚜렷하게 달라지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 309,
+          "reason": "postural"
+        }
+      ],
+      "supports": [
+        "group.headache.safety"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "headache.jaw_claudication_scalp_tenderness_or_new_vision_warning",
+        "display": "Jaw Scalp or Vision Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.headache.arteritis-warning",
+        "display": "Jaw Scalp or Vision Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.headache.arteritis-warning",
+        "wording": "씹을 때 턱이 아프거나 쉽게 피로하고, 두피가 아프거나 새 시력 변화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 308,
+          "reason": "arteritis-warning"
+        }
+      ],
+      "supports": [
+        "group.headache.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "headache.pregnancy_postpartum_severe_warning",
+        "display": "Pregnancy or Postpartum Severe Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.headache.pregnancy-warning",
+        "display": "Pregnancy or Postpartum Severe Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.headache.pregnancy-warning",
+        "wording": "임신 중이거나 출산 후라면 심한 두통과 함께 시야 문제·명치/갈비뼈 아래 심한 통증·구토·얼굴/손/발의 갑작스러운 붓기 중 하나가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 307,
+          "reason": "pregnancy-warning"
+        }
+      ],
+      "supports": [
+        "group.headache.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "headache.child_under12_warning",
+        "display": "Child under Twelve Headache Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.headache.child-warning",
+        "display": "Child under Twelve Headache Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.headache.child-warning",
+        "wording": "12세 미만이라면 밤에 깨는/아침부터 있는/점점 심해지는 두통, 구토·휘청거림·축 처짐·의식 변화, 최근 5일 내 머리 외상 중 하나가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 306,
+          "reason": "child-warning"
+        }
+      ],
+      "supports": [
+        "group.headache.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "headache.poisoning_or_carbon_monoxide_concern",
+        "display": "Poisoning or Carbon Monoxide Concern",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.headache.poisoning-warning",
+        "display": "Poisoning or Carbon Monoxide Concern",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.headache.poisoning-warning",
+        "wording": "약물 과량·화학물질·밀폐공간 난방기 노출 또는 함께 있던 사람들의 두통·어지럼·구역이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 305,
+          "reason": "poisoning-warning"
+        }
+      ],
+      "supports": [
+        "group.headache.safety"
       ]
     },
     {
@@ -638,15 +1844,15 @@
         "value_type": "boolean"
       },
       "target": {
-        "id": "target.headache.determine-nausea",
-        "display": "Determine Nausea or Vomiting",
+        "id": "target.headache.nausea",
+        "display": "Nausea or Vomiting",
         "intents": [
           "intent.differentiate_common_causes"
         ]
       },
       "question": {
         "id": "question.headache.nausea",
-        "wording": "두통과 함께 메스껍거나 토한 적이 있나요?",
+        "wording": "두통과 함께 메스꺼움이나 구토가 있나요?",
         "language": "ko",
         "mode": [
           "chat",
@@ -658,30 +1864,31 @@
       "priority": [
         {
           "branch": "any",
-          "score": 87,
-          "reason": "migraine_associated_feature"
+          "score": 175,
+          "reason": "nausea"
         }
       ],
       "supports": [
-        "group.headache.migraine-associated"
-      ]
+        "group.headache.associated"
+      ],
+      "reuse_existing": true
     },
     {
       "fact": {
         "id": "symptom.light_sensitivity",
-        "display": "Sensitivity to Light",
+        "display": "Light Sensitivity",
         "value_type": "boolean"
       },
       "target": {
-        "id": "target.headache.determine-light-sensitivity",
-        "display": "Determine Light Sensitivity",
+        "id": "target.headache.photophobia",
+        "display": "Light Sensitivity",
         "intents": [
           "intent.differentiate_common_causes"
         ]
       },
       "question": {
-        "id": "question.headache.light-sensitivity",
-        "wording": "두통이 있을 때 빛이 유난히 불편한가요?",
+        "id": "question.headache.photophobia",
+        "wording": "평소보다 빛이 불편하거나 어두운 곳을 찾게 되나요?",
         "language": "ko",
         "mode": [
           "chat",
@@ -693,30 +1900,31 @@
       "priority": [
         {
           "branch": "any",
-          "score": 86,
-          "reason": "migraine_associated_feature"
+          "score": 174,
+          "reason": "photophobia"
         }
       ],
       "supports": [
-        "group.headache.migraine-associated"
-      ]
+        "group.headache.associated"
+      ],
+      "reuse_existing": true
     },
     {
       "fact": {
         "id": "symptom.sound_sensitivity",
-        "display": "Sensitivity to Sound",
+        "display": "Sound Sensitivity",
         "value_type": "boolean"
       },
       "target": {
-        "id": "target.headache.determine-sound-sensitivity",
-        "display": "Determine Sound Sensitivity",
+        "id": "target.headache.phonophobia",
+        "display": "Sound Sensitivity",
         "intents": [
           "intent.differentiate_common_causes"
         ]
       },
       "question": {
-        "id": "question.headache.sound-sensitivity",
-        "wording": "두통이 있을 때 소리가 유난히 불편한가요?",
+        "id": "question.headache.phonophobia",
+        "wording": "평소보다 소리가 불편한가요?",
         "language": "ko",
         "mode": [
           "chat",
@@ -728,31 +1936,31 @@
       "priority": [
         {
           "branch": "any",
-          "score": 85,
-          "reason": "migraine_associated_feature"
+          "score": 173,
+          "reason": "phonophobia"
         }
       ],
       "supports": [
-        "group.headache.migraine-associated"
-      ]
+        "group.headache.associated"
+      ],
+      "reuse_existing": true
     },
     {
       "fact": {
         "id": "symptom.aura_visual",
-        "display": "Reversible Visual Aura-like Symptoms",
+        "display": "Visual Aura-like Symptom",
         "value_type": "boolean"
       },
       "target": {
-        "id": "target.headache.determine-visual-aura",
-        "display": "Determine Visual Aura",
+        "id": "target.headache.visual-aura",
+        "display": "Visual Aura-like Symptom",
         "intents": [
-          "intent.differentiate_common_causes",
-          "intent.risk_assessment"
+          "intent.differentiate_common_causes"
         ]
       },
       "question": {
         "id": "question.headache.visual-aura",
-        "wording": "두통 전후로 번쩍이는 빛, 점이나 선, 시야 일부가 안 보이는 증상이 5~60분 정도 나타났다가 완전히 회복되나요?",
+        "wording": "두통 전후 번쩍임·지그재그·점·시야 일부 가림이 있었나요?",
         "language": "ko",
         "mode": [
           "chat",
@@ -764,31 +1972,31 @@
       "priority": [
         {
           "branch": "any",
-          "score": 84,
-          "reason": "aura_associated_feature"
+          "score": 172,
+          "reason": "visual-aura"
         }
       ],
       "supports": [
-        "group.headache.migraine-associated"
-      ]
+        "group.headache.neurological"
+      ],
+      "reuse_existing": true
     },
     {
       "fact": {
         "id": "symptom.aura_sensory",
-        "display": "Reversible Sensory Aura-like Symptoms",
+        "display": "Sensory Aura-like Symptom",
         "value_type": "boolean"
       },
       "target": {
-        "id": "target.headache.determine-sensory-aura",
-        "display": "Determine Sensory Aura",
+        "id": "target.headache.sensory-aura",
+        "display": "Sensory Aura-like Symptom",
         "intents": [
-          "intent.differentiate_common_causes",
-          "intent.risk_assessment"
+          "intent.differentiate_common_causes"
         ]
       },
       "question": {
         "id": "question.headache.sensory-aura",
-        "wording": "두통 전후로 저림이나 감각 둔화가 서서히 생겼다가 5~60분 안에 완전히 회복되나요?",
+        "wording": "두통 전후 저림·감각 이상이 서서히 퍼진 적이 있나요?",
         "language": "ko",
         "mode": [
           "chat",
@@ -800,31 +2008,68 @@
       "priority": [
         {
           "branch": "any",
-          "score": 83,
-          "reason": "aura_associated_feature"
+          "score": 171,
+          "reason": "sensory-aura"
         }
       ],
       "supports": [
-        "group.headache.migraine-associated"
-      ]
+        "group.headache.neurological"
+      ],
+      "reuse_existing": true
     },
     {
       "fact": {
         "id": "symptom.aura_speech",
-        "display": "Reversible Speech Aura-like Symptoms",
+        "display": "Speech Aura-like Symptom",
         "value_type": "boolean"
       },
       "target": {
-        "id": "target.headache.determine-speech-aura",
-        "display": "Determine Speech Aura",
+        "id": "target.headache.speech-aura",
+        "display": "Speech Aura-like Symptom",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.headache.speech-aura",
+        "wording": "두통 전후 말이 잘 나오지 않거나 말하기가 달라진 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 170,
+          "reason": "speech-aura"
+        }
+      ],
+      "supports": [
+        "group.headache.neurological"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "headache.aura_onset_progression_sequence_duration_reversibility_and_side",
+        "display": "Neurological Symptom Time Course",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.headache.aura-detail",
+        "display": "Neurological Symptom Time Course",
         "intents": [
           "intent.differentiate_common_causes",
           "intent.risk_assessment"
         ]
       },
       "question": {
-        "id": "question.headache.speech-aura",
-        "wording": "두통 전후로 말이 잘 나오지 않는 증상이 서서히 생겼다가 5~60분 안에 완전히 회복되나요?",
+        "id": "question.headache.aura-detail",
+        "wording": "시각·감각·말 증상이 있다면 갑자기/서서히 시작했는지, 순서·지속시간·좌우와 완전 회복 여부를 알려주세요.",
         "language": "ko",
         "mode": [
           "chat",
@@ -836,31 +2081,916 @@
       "priority": [
         {
           "branch": "any",
-          "score": 82,
-          "reason": "aura_associated_feature"
+          "score": 169,
+          "reason": "aura-detail"
         }
       ],
       "supports": [
-        "group.headache.migraine-associated"
+        "group.headache.neurological"
       ]
     },
     {
       "fact": {
-        "id": "symptom.neurological_deficit",
-        "display": "New Neurological Deficit",
-        "value_type": "boolean",
-        "safety_relevant": true
+        "id": "headache.double_vision_balance_motor_or_one_eye_symptom_relation",
+        "display": "Atypical Neurological Feature Detail",
+        "value_type": "string"
       },
       "target": {
-        "id": "target.headache.determine-neurological-deficit",
-        "display": "Determine Neurological Deficit",
+        "id": "target.headache.neuro-detail",
+        "display": "Atypical Neurological Feature Detail",
         "intents": [
-          "intent.screen_red_flags"
+          "intent.differentiate_common_causes",
+          "intent.risk_assessment"
         ]
       },
       "question": {
-        "id": "question.headache.neurological-deficit",
-        "wording": "두통과 함께 새로 한쪽 힘이 빠짐, 지속되는 감각 이상, 말하기 어려움, 균형 이상 또는 겹쳐 보임이 있나요?",
+        "id": "question.headache.neuro-detail",
+        "wording": "복시·균형 이상·힘 빠짐·한쪽 눈에만 생긴 시각 증상이 두통 전후 언제 나타났는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 168,
+          "reason": "neuro-detail"
+        }
+      ],
+      "supports": [
+        "group.headache.neurological"
+      ]
+    },
+    {
+      "fact": {
+        "id": "headache.same_side_eye_nose_lid_sweat_pupil_features",
+        "display": "Same-side Autonomic Features",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.headache.autonomic",
+        "display": "Same-side Autonomic Features",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.headache.autonomic",
+        "wording": "두통과 같은 쪽의 눈물·충혈·눈꺼풀 붓기/처짐, 코막힘·콧물, 얼굴 땀이나 동공 변화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 167,
+          "reason": "autonomic"
+        }
+      ],
+      "supports": [
+        "group.headache.eye_autonomic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "headache.restlessness_agitation_or_need_to_lie_still",
+        "display": "Behaviour during Headache",
+        "value_type": "coded",
+        "allowed_values": [
+          "prefer_stillness",
+          "restless_agitated",
+          "no_clear_change"
+        ]
+      },
+      "target": {
+        "id": "target.headache.behaviour",
+        "display": "Behaviour during Headache",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.headache.behaviour",
+        "wording": "두통 때 가만히 눕고 싶은지, 안절부절못하고 움직이게 되는지, 큰 차이가 없는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 166,
+          "reason": "behaviour"
+        }
+      ],
+      "supports": [
+        "group.headache.associated"
+      ]
+    },
+    {
+      "fact": {
+        "id": "headache.neck_jaw_scalp_sinus_dental_ear_features",
+        "display": "Head Neck Face and Ear Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.headache.regional-associated",
+        "display": "Head Neck Face and Ear Context",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.headache.regional-associated",
+        "wording": "목·턱·두피·코/부비동·치아·귀 통증이나 증상이 두통과 함께 있는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 165,
+          "reason": "regional-associated"
+        }
+      ],
+      "supports": [
+        "group.headache.associated"
+      ]
+    },
+    {
+      "fact": {
+        "id": "headache.menstrual_cycle_relation_and_pattern",
+        "display": "Menstrual Relationship",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.headache.menstrual",
+        "display": "Menstrual Relationship",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.headache.menstrual",
+        "wording": "해당되는 경우 두통이 월경 시작 전후에 반복되는지와 주기 관계를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 164,
+          "reason": "menstrual"
+        }
+      ],
+      "supports": [
+        "group.headache.reproductive"
+      ]
+    },
+    {
+      "fact": {
+        "id": "headache.infection_fever_rash_sick_contact_and_recent_illness_detail",
+        "display": "Infection and Exposure Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.headache.infection",
+        "display": "Infection and Exposure Context",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.headache.infection",
+        "wording": "최근 감염·발열·발진·아픈 사람 접촉과 두통 시작의 순서를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 163,
+          "reason": "infection"
+        }
+      ],
+      "supports": [
+        "group.headache.systemic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "headache.weight_appetite_night_sweat_and_systemic_change",
+        "display": "Systemic Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.headache.systemic-change",
+        "display": "Systemic Change",
+        "intents": [
+          "intent.differentiate_common_causes",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.headache.systemic-change",
+        "wording": "의도하지 않은 체중 감소·식욕 저하·야간발한·전신 상태 변화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 162,
+          "reason": "systemic-change"
+        }
+      ],
+      "supports": [
+        "group.headache.systemic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "headache.sleep_hydration_meals_stress_screen_and_trigger_response",
+        "display": "Common Precipitants and Relief",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.headache.triggers",
+        "display": "Common Precipitants and Relief",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.headache.triggers",
+        "wording": "수면·수분·식사·스트레스·화면·날씨·냄새·활동 중 유발하거나 악화하는 것과 휴식 등 완화 요인을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 161,
+          "reason": "triggers"
+        }
+      ],
+      "supports": [
+        "group.headache.trigger"
+      ]
+    },
+    {
+      "fact": {
+        "id": "medication.acute_headache_days_per_month",
+        "display": "Acute Headache Medicine Days per Month",
+        "value_type": "integer"
+      },
+      "target": {
+        "id": "target.headache.acute-med-days",
+        "display": "Acute Headache Medicine Days per Month",
+        "intents": [
+          "intent.differentiate_common_causes",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.headache.acute-med-days",
+        "wording": "최근 3개월 동안 진통제·편두통 급성약을 한 달 평균 며칠 사용했나요? 숫자로 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 155,
+          "reason": "acute-med-days"
+        }
+      ],
+      "supports": [
+        "group.headache.medicine"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "headache.acute_medicine_name_dose_route_time_frequency_and_response",
+        "display": "Acute Medicine Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.headache.acute-medicine",
+        "display": "Acute Medicine Detail",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.headache.acute-medicine",
+        "wording": "두통 때 쓴 처방약·일반약의 이름·용량·복용 시각·월 사용일수와 효과·부작용을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 154,
+          "reason": "acute-medicine"
+        }
+      ],
+      "supports": [
+        "group.headache.medicine"
+      ]
+    },
+    {
+      "fact": {
+        "id": "headache.preventive_medicine_adherence_change_response_and_adverse_effect",
+        "display": "Preventive Medicine Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.headache.preventive-medicine",
+        "display": "Preventive Medicine Detail",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.headache.preventive-medicine",
+        "wording": "예방 목적으로 쓰는 약이 있다면 이름·용량·복용 규칙·빠뜨림·최근 변경·효과·부작용을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 153,
+          "reason": "preventive-medicine"
+        }
+      ],
+      "supports": [
+        "group.headache.medicine"
+      ]
+    },
+    {
+      "fact": {
+        "id": "headache.allergy_otc_supplement_hormone_and_contraception",
+        "display": "Allergy OTC Supplement and Hormone Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.headache.allergy-hormone",
+        "display": "Allergy OTC Supplement and Hormone Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.headache.allergy-hormone",
+        "wording": "약물 알레르기, 일반약·한약·영양제, 호르몬 치료·피임약 사용과 최근 변경을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 152,
+          "reason": "allergy-hormone"
+        }
+      ],
+      "supports": [
+        "group.headache.medicine"
+      ]
+    },
+    {
+      "fact": {
+        "id": "headache.caffeine_alcohol_nicotine_substance_and_withdrawal",
+        "display": "Substance and Withdrawal Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.headache.substance",
+        "display": "Substance and Withdrawal Context",
+        "intents": [
+          "intent.differentiate_common_causes",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.headache.substance",
+        "wording": "카페인·술·담배/전자담배·기타 물질의 양·빈도와 최근 급격한 중단 또는 증가를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 151,
+          "reason": "substance"
+        }
+      ],
+      "supports": [
+        "group.headache.medicine"
+      ]
+    },
+    {
+      "fact": {
+        "id": "headache.occupation_shift_heat_noise_chemical_and_co_exposure",
+        "display": "Occupational and Environmental Exposure",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.headache.occupation",
+        "display": "Occupational and Environmental Exposure",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.headache.occupation",
+        "wording": "직업·교대근무와 더위·소음·용제·화학물질·연소가스 노출, 함께 증상이 생긴 사람이 있는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 150,
+          "reason": "occupation"
+        }
+      ],
+      "supports": [
+        "group.headache.medicine"
+      ]
+    },
+    {
+      "fact": {
+        "id": "headache.pregnancy_possible_lmp_gestation_postpartum_and_lactation",
+        "display": "Pregnancy and Postpartum Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.headache.pregnancy-context",
+        "display": "Pregnancy and Postpartum Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.headache.pregnancy-context",
+        "wording": "해당되는 경우 임신 가능성, 마지막 월경일·임신 주수, 출산일·산후 기간과 수유 여부를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 145,
+          "reason": "pregnancy-context"
+        }
+      ],
+      "supports": [
+        "group.headache.reproductive"
+      ]
+    },
+    {
+      "fact": {
+        "id": "headache.obstetric_history_parity_outcomes_hypertension_and_complications",
+        "display": "Professional Obstetric History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.headache.obstetric-history",
+        "display": "Professional Obstetric History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.headache.obstetric-history",
+        "wording": "임신·출산 횟수와 결과, 임신성 고혈압/전자간증·출혈·혈전 등 과거 및 현재 합병증을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 144,
+          "reason": "obstetric-history"
+        }
+      ],
+      "supports": [
+        "group.headache.reproductive"
+      ]
+    },
+    {
+      "fact": {
+        "id": "headache.pregnancy_postpartum_bp_value_time_device_and_upper_abdominal_edema",
+        "display": "Pregnancy Postpartum Measurements and Symptoms",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.headache.pregnancy-detail",
+        "display": "Pregnancy Postpartum Measurements and Symptoms",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.headache.pregnancy-detail",
+        "wording": "임신·산후라면 최근 혈압 수치·측정 시각/기기, 명치나 갈비뼈 아래 통증·구토·갑작스러운 붓기를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 143,
+          "reason": "pregnancy-detail"
+        }
+      ],
+      "supports": [
+        "group.headache.reproductive"
+      ]
+    },
+    {
+      "fact": {
+        "id": "headache.child_age_development_growth_and_proxy_observation",
+        "display": "Child Development and Proxy Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.headache.child-context",
+        "display": "Child Development and Proxy Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.headache.child-context",
+        "wording": "소아라면 나이·발달·성장·평소 상태와 본인/보호자 중 누가 관찰하고 답하는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 140,
+          "reason": "child-context"
+        }
+      ],
+      "supports": [
+        "group.headache.child"
+      ]
+    },
+    {
+      "fact": {
+        "id": "headache.child_night_morning_school_play_vomiting_balance_and_eye_change",
+        "display": "Child Headache Functional Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.headache.child-detail",
+        "display": "Child Headache Functional Detail",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.headache.child-detail",
+        "wording": "밤에 깨거나 아침부터 아픈지, 학교·놀이·식사 변화, 구토·휘청거림·눈 위치나 시선 변화가 있는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 139,
+          "reason": "child-detail"
+        }
+      ],
+      "supports": [
+        "group.headache.child"
+      ]
+    },
+    {
+      "fact": {
+        "id": "headache.prior_headache_pattern_diagnosis_ed_visit_admission_and_change",
+        "display": "Prior Headache and Acute Care History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.headache.prior-history",
+        "display": "Prior Headache and Acute Care History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.headache.prior-history",
+        "wording": "이전 비슷한 두통의 양상·진단, 응급실 방문·입원 여부와 이번에 달라진 점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 135,
+          "reason": "prior-history"
+        }
+      ],
+      "supports": [
+        "group.headache.history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "headache.neurologic_eye_ent_sinus_dental_sleep_and_bp_history",
+        "display": "Relevant Medical History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.headache.medical-history",
+        "display": "Relevant Medical History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.headache.medical-history",
+        "wording": "뇌·신경·눈·귀코목·부비동·치과·수면·고혈압 관련 진단과 평소 상태를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 134,
+          "reason": "medical-history"
+        }
+      ],
+      "supports": [
+        "group.headache.history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "headache.surgery_procedure_infection_trauma_cancer_and_immunity_history",
+        "display": "Surgical Procedure and Risk History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.headache.procedure-history",
+        "display": "Surgical Procedure and Risk History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.headache.procedure-history",
+        "wording": "최근 수술·마취·척추/경막 시술·감염·머리/목 외상, 암·면역저하 병력과 시점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 133,
+          "reason": "procedure-history"
+        }
+      ],
+      "supports": [
+        "group.headache.history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "headache.family_headache_aneurysm_stroke_clotting_and_early_death",
+        "display": "Family Neurological and Vascular History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.headache.family-history",
+        "display": "Family Neurological and Vascular History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.headache.family-history",
+        "wording": "가족의 반복 두통·뇌동맥류·뇌출혈/뇌졸중·혈전질환과 젊은 나이의 원인불명 사망을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 132,
+          "reason": "family-history"
+        }
+      ],
+      "supports": [
+        "group.headache.history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "headache.prior_bp_neurologic_fundus_visual_exam_and_source",
+        "display": "Prior Examination and Measurements",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.headache.prior-exam",
+        "display": "Prior Examination and Measurements",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.headache.prior-exam",
+        "wording": "이전에 측정한 혈압과 신경학적·안저·시력/시야 검사의 날짜·결과·정보 출처를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 131,
+          "reason": "prior-exam"
+        }
+      ],
+      "supports": [
+        "group.headache.history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "headache.prior_labs_imaging_lumbar_puncture_and_source",
+        "display": "Prior Tests",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.headache.prior-tests",
+        "display": "Prior Tests",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.headache.prior-tests",
+        "wording": "관련 혈액검사·CT/MRI·기타 검사 날짜·결과와 직접 본 자료인지 들은 내용인지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "prior-tests"
+        }
+      ],
+      "supports": [
+        "group.headache.history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "headache.prior_nonmedicine_treatment_response_and_adverse_effect",
+        "display": "Previous Non-medicine Management",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.headache.prior-treatment",
+        "display": "Previous Non-medicine Management",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.headache.prior-treatment",
+        "wording": "휴식·수분·수면 조절·물리치료 등 이전에 시도한 방법과 효과·악화·부작용을 알려주세요.",
         "language": "ko",
         "mode": [
           "chat",
@@ -873,32 +3003,29 @@
         {
           "branch": "any",
           "score": 129,
-          "reason": "immediate_safety_gate"
+          "reason": "prior-treatment"
         }
       ],
       "supports": [
-        "group.headache.immediate-safety",
-        "group.headache.secondary-warning"
+        "group.headache.history"
       ]
     },
     {
       "fact": {
-        "id": "symptom.altered_consciousness_or_cognition",
-        "display": "Altered Consciousness or Cognition",
-        "value_type": "boolean",
-        "extraction_cues": ["confused", "confusion", "혼란"],
-        "safety_relevant": true
+        "id": "headache.diary_frequency_duration_severity_trigger_medicine_and_menses",
+        "display": "Headache Diary Availability",
+        "value_type": "string"
       },
       "target": {
-        "id": "target.headache.determine-consciousness",
-        "display": "Determine Consciousness or Cognition",
+        "id": "target.headache.diary",
+        "display": "Headache Diary Availability",
         "intents": [
-          "intent.screen_red_flags"
+          "intent.risk_assessment"
         ]
       },
       "question": {
-        "id": "question.headache.consciousness",
-        "wording": "두통과 함께 심하게 졸리거나 깨우기 어렵거나 혼란, 기억·행동·성격의 뚜렷한 변화가 있나요?",
+        "id": "question.headache.diary",
+        "wording": "두통 일지가 있다면 날짜·빈도·지속시간·NRS·동반증상·유발요인·복용약·월경 관계를 알려주세요.",
         "language": "ko",
         "mode": [
           "chat",
@@ -911,70 +3038,29 @@
         {
           "branch": "any",
           "score": 128,
-          "reason": "immediate_safety_gate"
+          "reason": "diary"
         }
       ],
       "supports": [
-        "group.headache.immediate-safety",
-        "group.headache.meningeal-associated"
-      ]
-    },
-    {
-      "reuse_existing": true,
-      "fact": {
-        "id": "symptom.fever",
-        "display": "Fever",
-        "value_type": "boolean",
-        "safety_relevant": true
-      },
-      "target": {
-        "id": "target.headache.determine-fever",
-        "display": "Determine Fever",
-        "intents": [
-          "intent.screen_red_flags"
-        ]
-      },
-      "question": {
-        "id": "question.headache.fever",
-        "wording": "두통과 함께 열이나 오한이 있나요?",
-        "language": "ko",
-        "mode": [
-          "chat",
-          "face_to_face",
-          "telephone",
-          "video"
-        ]
-      },
-      "priority": [
-        {
-          "branch": "any",
-          "score": 126,
-          "reason": "infection_safety_gate"
-        }
-      ],
-      "supports": [
-        "group.headache.meningeal-associated",
-        "group.headache.secondary-warning"
+        "group.headache.history"
       ]
     },
     {
       "fact": {
-        "id": "symptom.neck_stiffness",
-        "display": "Neck Stiffness",
-        "value_type": "boolean",
-        "extraction_cues": ["stiff neck", "목이 뻣뻣"],
-        "safety_relevant": true
+        "id": "headache.information_source_proxy_reliability_and_conflict",
+        "display": "Information Source Reliability and Conflict",
+        "value_type": "string"
       },
       "target": {
-        "id": "target.headache.determine-neck-stiffness",
-        "display": "Determine Neck Stiffness",
+        "id": "target.headache.source",
+        "display": "Information Source Reliability and Conflict",
         "intents": [
-          "intent.screen_red_flags"
+          "intent.risk_assessment"
         ]
       },
       "question": {
-        "id": "question.headache.neck-stiffness",
-        "wording": "목이 뻣뻣해서 고개를 숙이기 어렵나요?",
+        "id": "question.headache.source",
+        "wording": "본인·보호자 중 누가 답하는지, 기억이 불확실하거나 기록·다른 사람 설명과 충돌하는 내용이 있는지 알려주세요.",
         "language": "ko",
         "mode": [
           "chat",
@@ -987,65 +3073,29 @@
         {
           "branch": "any",
           "score": 127,
-          "reason": "meningeal_safety_gate"
+          "reason": "source"
         }
       ],
       "supports": [
-        "group.headache.meningeal-associated"
+        "group.headache.handoff"
       ]
     },
     {
       "fact": {
-        "id": "history.recent_head_trauma",
-        "display": "Recent Head Trauma",
-        "value_type": "boolean",
-        "safety_relevant": true
+        "id": "headache.patient_concern_goal_expectation_and_additional_comment",
+        "display": "Patient Concern Goal and Additional Comment",
+        "value_type": "string"
       },
       "target": {
-        "id": "target.headache.determine-trauma",
-        "display": "Determine Recent Head Trauma",
-        "intents": [
-          "intent.screen_red_flags"
-        ]
-      },
-      "question": {
-        "id": "question.headache.trauma",
-        "wording": "최근 3개월 안에 머리를 다치거나 강하게 부딪힌 적이 있나요?",
-        "language": "ko",
-        "mode": [
-          "chat",
-          "face_to_face",
-          "telephone",
-          "video"
-        ]
-      },
-      "priority": [
-        {
-          "branch": "any",
-          "score": 125,
-          "reason": "trauma_safety_gate"
-        }
-      ],
-      "supports": [
-        "group.headache.secondary-warning"
-      ]
-    },
-    {
-      "fact": {
-        "id": "symptom.headache.cough_or_valsalva_trigger",
-        "display": "Headache Triggered by Cough or Valsalva",
-        "value_type": "boolean"
-      },
-      "target": {
-        "id": "target.headache.determine-cough-trigger",
-        "display": "Determine Cough or Strain Trigger",
+        "id": "target.headache.goal",
+        "display": "Patient Concern Goal and Additional Comment",
         "intents": [
           "intent.risk_assessment"
         ]
       },
       "question": {
-        "id": "question.headache.cough-trigger",
-        "wording": "기침, 재채기 또는 힘주기를 할 때 두통이 시작되거나 뚜렷이 심해지나요?",
+        "id": "question.headache.goal",
+        "wording": "가장 걱정되는 점, 진료에서 확인하고 싶은 점과 질문에 없던 의견을 알려주세요.",
         "language": "ko",
         "mode": [
           "chat",
@@ -1057,337 +3107,12 @@
       "priority": [
         {
           "branch": "any",
-          "score": 95,
-          "reason": "secondary_warning_feature"
+          "score": 126,
+          "reason": "goal"
         }
       ],
       "supports": [
-        "group.headache.secondary-warning"
-      ]
-    },
-    {
-      "fact": {
-        "id": "symptom.headache.exercise_trigger",
-        "display": "Headache Triggered by Exercise",
-        "value_type": "boolean"
-      },
-      "target": {
-        "id": "target.headache.determine-exercise-trigger",
-        "display": "Determine Exercise Trigger",
-        "intents": [
-          "intent.risk_assessment"
-        ]
-      },
-      "question": {
-        "id": "question.headache.exercise-trigger",
-        "wording": "운동이나 격한 활동을 할 때 두통이 시작되나요?",
-        "language": "ko",
-        "mode": [
-          "chat",
-          "face_to_face",
-          "telephone",
-          "video"
-        ]
-      },
-      "priority": [
-        {
-          "branch": "any",
-          "score": 94,
-          "reason": "secondary_warning_feature"
-        }
-      ],
-      "supports": [
-        "group.headache.secondary-warning"
-      ]
-    },
-    {
-      "fact": {
-        "id": "symptom.headache.postural",
-        "display": "Headache Changes with Posture",
-        "value_type": "boolean"
-      },
-      "target": {
-        "id": "target.headache.determine-postural",
-        "display": "Determine Postural Relationship",
-        "intents": [
-          "intent.risk_assessment"
-        ]
-      },
-      "question": {
-        "id": "question.headache.postural",
-        "wording": "앉거나 서거나 누울 때처럼 자세가 바뀌면 두통이 뚜렷하게 달라지나요?",
-        "language": "ko",
-        "mode": [
-          "chat",
-          "face_to_face",
-          "telephone",
-          "video"
-        ]
-      },
-      "priority": [
-        {
-          "branch": "any",
-          "score": 93,
-          "reason": "secondary_warning_feature"
-        }
-      ],
-      "supports": [
-        "group.headache.secondary-warning"
-      ]
-    },
-    {
-      "fact": {
-        "id": "symptom.headache.worsening",
-        "display": "Worsening Headache",
-        "value_type": "boolean",
-        "safety_relevant": true
-      },
-      "target": {
-        "id": "target.headache.determine-worsening",
-        "display": "Determine Worsening",
-        "intents": [
-          "intent.screen_red_flags",
-          "intent.risk_assessment"
-        ]
-      },
-      "question": {
-        "id": "question.headache.worsening",
-        "wording": "두통이 점점 심해지거나 이전과 비교해 양상이 크게 달라졌나요?",
-        "language": "ko",
-        "mode": [
-          "chat",
-          "face_to_face",
-          "telephone",
-          "video"
-        ]
-      },
-      "priority": [
-        {
-          "branch": "any",
-          "score": 124,
-          "reason": "secondary_warning_gate"
-        }
-      ],
-      "supports": [
-        "group.headache.secondary-warning"
-      ]
-    },
-    {
-      "fact": {
-        "id": "symptom.painful_red_eye",
-        "display": "Painful Red Eye",
-        "value_type": "boolean",
-        "safety_relevant": true
-      },
-      "target": {
-        "id": "target.headache.determine-red-eye",
-        "display": "Determine Painful Red Eye",
-        "intents": [
-          "intent.screen_red_flags"
-        ]
-      },
-      "question": {
-        "id": "question.headache.red-eye",
-        "wording": "두통이 있는 쪽 눈이 빨갛고 아픈가요?",
-        "language": "ko",
-        "mode": [
-          "chat",
-          "face_to_face",
-          "telephone",
-          "video"
-        ]
-      },
-      "priority": [
-        {
-          "branch": "any",
-          "score": 123,
-          "reason": "ocular_safety_gate"
-        }
-      ],
-      "supports": [
-        "group.headache.secondary-warning"
-      ]
-    },
-    {
-      "fact": {
-        "id": "symptom.visual_disturbance",
-        "display": "Visual Disturbance",
-        "value_type": "boolean",
-        "safety_relevant": true
-      },
-      "target": {
-        "id": "target.headache.determine-visual-disturbance",
-        "display": "Determine Visual Disturbance",
-        "intents": [
-          "intent.screen_red_flags"
-        ]
-      },
-      "question": {
-        "id": "question.headache.visual-disturbance",
-        "wording": "시야가 흐리거나 겹쳐 보이거나 무지개 테두리가 보이거나 시력이 떨어졌나요?",
-        "language": "ko",
-        "mode": [
-          "chat",
-          "face_to_face",
-          "telephone",
-          "video"
-        ]
-      },
-      "priority": [
-        {
-          "branch": "any",
-          "score": 122,
-          "reason": "ocular_and_neurological_safety_gate"
-        }
-      ],
-      "supports": [
-        "group.headache.secondary-warning"
-      ]
-    },
-    {
-      "reuse_existing": true,
-      "fact": {
-        "id": "patient.immunocompromised",
-        "display": "Immunocompromised",
-        "value_type": "boolean",
-        "safety_relevant": true
-      },
-      "target": {
-        "id": "target.headache.determine-immunocompromise",
-        "display": "Determine Immune Status",
-        "intents": [
-          "intent.screen_red_flags",
-          "intent.risk_assessment"
-        ]
-      },
-      "question": {
-        "id": "question.headache.immunocompromise",
-        "wording": "면역을 낮추는 약을 복용 중이거나 면역이 약해지는 질환·치료를 받고 있나요?",
-        "language": "ko",
-        "mode": [
-          "chat",
-          "face_to_face",
-          "telephone",
-          "video"
-        ]
-      },
-      "priority": [
-        {
-          "branch": "any",
-          "score": 92,
-          "reason": "secondary_warning_context"
-        }
-      ],
-      "supports": [
-        "group.headache.background"
-      ]
-    },
-    {
-      "fact": {
-        "id": "history.malignancy",
-        "display": "Relevant Malignancy History",
-        "value_type": "boolean",
-        "safety_relevant": true
-      },
-      "target": {
-        "id": "target.headache.determine-malignancy",
-        "display": "Determine Malignancy History",
-        "intents": [
-          "intent.screen_red_flags",
-          "intent.risk_assessment"
-        ]
-      },
-      "question": {
-        "id": "question.headache.malignancy",
-        "wording": "현재 또는 과거에 암을 진단받은 적이 있나요?",
-        "language": "ko",
-        "mode": [
-          "chat",
-          "face_to_face",
-          "telephone",
-          "video"
-        ]
-      },
-      "priority": [
-        {
-          "branch": "any",
-          "score": 91,
-          "reason": "secondary_warning_context"
-        }
-      ],
-      "supports": [
-        "group.headache.background"
-      ]
-    },
-    {
-      "fact": {
-        "id": "symptom.unexplained_vomiting",
-        "display": "Unexplained Vomiting",
-        "value_type": "boolean",
-        "safety_relevant": true
-      },
-      "target": {
-        "id": "target.headache.determine-unexplained-vomiting",
-        "display": "Determine Unexplained Vomiting",
-        "intents": [
-          "intent.screen_red_flags"
-        ]
-      },
-      "question": {
-        "id": "question.headache.unexplained-vomiting",
-        "wording": "장염이나 음식 문제 등 뚜렷한 이유 없이 구토가 반복되나요?",
-        "language": "ko",
-        "mode": [
-          "chat",
-          "face_to_face",
-          "telephone",
-          "video"
-        ]
-      },
-      "priority": [
-        {
-          "branch": "any",
-          "score": 121,
-          "reason": "secondary_warning_gate"
-        }
-      ],
-      "supports": [
-        "group.headache.secondary-warning"
-      ]
-    },
-    {
-      "fact": {
-        "id": "medication.acute_headache_days_per_month",
-        "display": "Days per Month Using Acute Headache Medicine",
-        "value_type": "integer"
-      },
-      "target": {
-        "id": "target.headache.determine-medication-frequency",
-        "display": "Determine Acute Medicine Frequency",
-        "intents": [
-          "intent.risk_assessment"
-        ]
-      },
-      "question": {
-        "id": "question.headache.medication-frequency",
-        "wording": "진통제나 편두통 급성 약을 한 달에 며칠 정도 사용하나요?",
-        "language": "ko",
-        "mode": [
-          "chat",
-          "face_to_face",
-          "telephone",
-          "video"
-        ]
-      },
-      "priority": [
-        {
-          "branch": "any",
-          "score": 80,
-          "reason": "medication_overuse_context"
-        }
-      ],
-      "supports": [
-        "group.headache.background"
+        "group.headache.handoff"
       ]
     }
   ],
@@ -1400,7 +3125,9 @@
     "source_refs": [
       "source.nice.cg150.headache.2025",
       "source.nice.ng240.meningitis.2024",
-      "source.nhs.headaches.emergency.2026",
+      "source.nice.ng127.child-headache.2023",
+      "source.nice.ng133.pregnancy-headache.2019",
+      "source.nhs.headaches.2026",
       "source.stom.mrcm.headache.20260714"
     ],
     "review_status": "unreviewed",

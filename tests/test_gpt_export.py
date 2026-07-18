@@ -469,7 +469,7 @@ class GptExportTests(unittest.TestCase):
                     encoding="utf-8"
                 )
             )
-            self.assertEqual(headache["count"], 32)
+            self.assertEqual(headache["count"], 76)
             dizziness = json.loads(
                 (output_path / "rfe/dizziness_syncope/facts.json").read_text(
                     encoding="utf-8"

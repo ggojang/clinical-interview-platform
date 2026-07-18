@@ -39,6 +39,17 @@ class PainAssessmentTest(unittest.TestCase):
             self.assertNotIn("잘 모르겠음", wording)
             self.assertNotIn("답변하지 않음", wording)
 
+    def test_headache_also_requires_known_raw_nrs(self):
+        package = compile_package(profile="headache")
+        policy = package["interview_completion_policy"]
+        self.assertIn("pain.frequency", policy["required_facts"]["always"])
+        self.assertIn("pain.nrs_score", policy["required_facts"]["always"])
+        self.assertIn("pain.nrs_score", policy["must_be_known_facts"])
+        question = package["indexes"]["questions_by_fact"]["pain.nrs_score"]
+        self.assertIn("[필수]", question["wording"])
+        self.assertNotIn("잘 모르겠음", question["wording"])
+        self.assertNotIn("답변하지 않음", question["wording"])
+
     def test_conditional_profile_activates_only_after_pain_is_present(self):
         session = self._session("skin_complaint")
         before = set(session._required_facts(None, session._safety()))
