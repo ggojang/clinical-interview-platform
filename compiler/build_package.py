@@ -1113,6 +1113,7 @@ def compile_package(
             "review_status": clinician_submission_context["review_status"],
             "resource_ref": str(CLINICIAN_SUBMISSION_CONTEXT.relative_to(ROOT)),
             "semantic_digest": semantic_digest(clinician_submission_context),
+            "session_facts": [context_facts["interview.additional_comment"]],
         },
         "interoperability_coverage": interoperability_coverage,
         "simulations": simulations,

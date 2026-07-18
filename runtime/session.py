@@ -229,12 +229,27 @@ class InterviewSession:
     def __post_init__(self) -> None:
         self.encounter_context = normalize_encounter_context(self.encounter_context)
         self.package = load_package(self.package_path, self.execution_mode)
-        clinician_context = (
-            self._load_clinician_context() if self.clinician_submission else {}
+        shared_context = (
+            self._load_clinician_context()
+            if self.clinician_submission
+            else {
+                "facts": self.package.get("clinician_submission_context", {})
+                .get("session_facts", [])
+            }
+        )
+        clinician_context = shared_context if self.clinician_submission else {}
+        runtime_context_facts = (
+            shared_context.get("facts", [])
+            if self.clinician_submission
+            else [
+                item for item in shared_context.get("facts", [])
+                if isinstance(item, dict)
+                and item.get("id") == "interview.additional_comment"
+            ]
         )
         self.clinician_fact_index = {
             item["id"]: item
-            for item in clinician_context.get("facts", [])
+            for item in runtime_context_facts
             if isinstance(item, dict) and item.get("id")
         }
         self.clinician_question_index = {
@@ -840,8 +855,6 @@ class InterviewSession:
             node for node in self.package["knowledge_graph"]["nodes"]
             if node.get("type") == "Fact"
         ]
-        if not self.clinician_submission:
-            return nodes
         package_ids = {node["id"] for node in nodes}
         return nodes + [
             node for fact_id, node in self.clinician_fact_index.items()
