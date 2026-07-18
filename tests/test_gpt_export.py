@@ -463,7 +463,7 @@ class GptExportTests(unittest.TestCase):
                     encoding="utf-8"
                 )
             )
-            self.assertEqual(chest["count"], 32)
+            self.assertEqual(chest["count"], 73)
             headache = json.loads(
                 (output_path / "rfe/headache/facts.json").read_text(
                     encoding="utf-8"

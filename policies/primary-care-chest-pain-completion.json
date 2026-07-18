@@ -2,50 +2,154 @@
   "id": "policy.primary-care-chest-pain-completion",
   "version": "0.1.0",
   "status": "research_only",
-  "addressed_fact_states": ["known", "unknown", "not_applicable"],
+  "addressed_fact_states": [
+    "known",
+    "unknown",
+    "not_applicable"
+  ],
   "required_facts": {
     "always": [
       "symptom.chest_pain.current",
-      "symptom.chest_pain.onset",
-      "symptom.chest_pain.severity",
-      "symptom.chest_pain.longer_than_15_minutes"
-    ],
-    "routine": [
-      "symptom.duration",
-      "symptom.chest_pain.within_last_72_hours",
-      "symptom.chest_pain.location",
+      "chest_pain.current_severe_breathlessness_cyanosis_or_consciousness_change",
+      "chest_pain.new_limb_cold_pale_weak_or_pulse_difference",
+      "chest_pain.abrupt_severe_tearing_migrating_with_aortic_context",
+      "chest_pain.recent_chest_trauma_or_procedure_with_breathlessness",
+      "chest_pain.pregnancy_postpartum_vte_warning",
+      "symptom.dyspnea",
+      "symptom.chest_pain.longer_than_15_minutes",
       "symptom.chest_pain.quality",
       "symptom.chest_pain.radiation",
-      "symptom.chest_pain.exertional",
-      "symptom.chest_pain.relieved_by_rest",
-      "symptom.chest_pain.pleuritic",
-      "symptom.chest_pain.positional",
-      "symptom.chest_pain.reproducible",
-      "symptom.dyspnea",
       "symptom.marked_sweating",
       "symptom.nausea_or_vomiting",
-      "symptom.syncope",
-      "symptom.palpitations",
       "symptom.hemoptysis",
-      "symptom.unilateral_leg_pain_swelling",
       "symptom.neurological_deficit",
-      "symptom.fever",
-      "history.cardiovascular_disease",
-      "history.previous_vte",
-      "history.recent_immobility_or_surgery",
-      "history.diabetes",
-      "history.hypertension",
-      "patient.smoking.status",
-      "family_history.premature_coronary_disease"
+      "symptom.chest_pain.pleuritic",
+      "symptom.chest_pain.onset",
+      "symptom.chest_pain.severity",
+      "symptom.syncope",
+      "symptom.chest_pain.within_last_72_hours",
+      "symptom.chest_pain.exertional",
+      "symptom.unilateral_leg_pain_swelling",
+      "chest_pain.rest_nocturnal_or_minimal_exertion_escalation",
+      "chest_pain.child_exertional_syncope_or_family_sudden_death",
+      "pain.frequency",
+      "pain.nrs_score"
+    ],
+    "routine": [
+      "chest_pain.primary_group",
+      "symptom.duration",
+      "chest_pain.exact_onset_date_time_activity_and_sequence",
+      "chest_pain.last_episode_start_duration_and_time_since",
+      "chest_pain.episode_count_frequency_recovery_and_trend",
+      "symptom.chest_pain.location",
+      "chest_pain.exact_site_side_area_depth_and_tender_point",
+      "symptom.chest_pain.quality",
+      "symptom.chest_pain.radiation",
+      "chest_pain.radiation_route_side_and_timing",
+      "chest_pain.patient_words_and_change_from_baseline",
+      "chest_pain.activity_sleep_selfcare_work_and_driving_impact",
+      "chest_pain.cardiovascular_history_procedure_device_and_baseline_function",
+      "chest_pain.current_medicines_dose_schedule_adherence_and_recent_change",
+      "chest_pain.antiplatelet_anticoagulant_nitrate_and_allergy_context",
+      "chest_pain.prior_episode_ed_admission_diagnosis_and_difference",
+      "chest_pain.prior_ecg_troponin_xray_ct_echo_stress_test_and_source",
+      "chest_pain.prior_treatment_name_dose_time_response_recurrence_and_adverse_effect",
+      "chest_pain.information_source_witness_record_reliability_and_conflict",
+      "chest_pain.patient_concern_goal_expectation_and_additional_comment"
     ]
   },
   "clarification_facts_by_rule": {},
-  "question_budget": {"routine": 31, "clarify": 12},
+  "question_budget": {
+    "routine": 72,
+    "clarify": 12
+  },
   "provenance": {
-    "created_by": {"type": "ai", "id": "codex-gpt5"},
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
     "created_at": "2026-07-14T00:00:00Z",
-    "source_refs": ["source.nice.cg95.chest-pain.2016", "source.nice.ng158.pe.2023", "source.nhs-england.aortic-dissection-sop.2024"],
+    "source_refs": [
+      "source.nice.cg95.chest-pain.2016",
+      "source.nice.ng158.pe.2023",
+      "source.nhs.chest-pain.2026",
+      "source.nhs-england.aortic-dissection-sop.2024",
+      "source.nhsggc.child-chest-pain.2024",
+      "source.stom.mrcm.chest-pain.20260714"
+    ],
     "review_status": "unreviewed",
     "version": "0.1.0"
-  }
+  },
+  "conditional_required_facts": [
+    {
+      "selector_fact": "chest_pain.primary_group",
+      "cases": {
+        "acute_or_recent": [
+          "chest_pain.associated_symptom_timing_and_recovery",
+          "chest_pain.reported_bp_pulse_oxygen_temperature_and_measurement_source",
+          "chest_pain.lipid_kidney_weight_vascular_and_family_sudden_death_context"
+        ],
+        "exertional_recurrent": [
+          "symptom.chest_pain.exertional",
+          "symptom.chest_pain.relieved_by_rest",
+          "chest_pain.exertional_threshold_cold_emotion_and_change",
+          "chest_pain.relief_time_rest_gtn_antacid_posture_and_recurrence",
+          "chest_pain.lipid_kidney_weight_vascular_and_family_sudden_death_context"
+        ],
+        "pleuritic_respiratory": [
+          "symptom.chest_pain.pleuritic",
+          "symptom.dyspnea",
+          "symptom.hemoptysis",
+          "symptom.fever",
+          "chest_pain.respiratory_cough_sputum_fever_breathlessness_and_oxygen_context",
+          "chest_pain.vte_surgery_immobility_travel_cancer_prior_vte_hormone_context",
+          "chest_pain.leg_side_site_swelling_pain_redness_and_onset"
+        ],
+        "positional_or_reproducible": [
+          "symptom.chest_pain.positional",
+          "symptom.chest_pain.reproducible",
+          "chest_pain.movement_breath_touch_injury_exercise_and_work_relation",
+          "chest_pain.skin_tenderness_rash_blister_and_side",
+          "chest_pain.occupation_heavy_lifting_repetition_cold_fume_and_safety_impact"
+        ],
+        "meal_or_swallow": [
+          "chest_pain.meal_reflux_swallowing_bloating_and_vomit_relation",
+          "chest_pain.relief_time_rest_gtn_antacid_posture_and_recurrence",
+          "chest_pain.pulmonary_gi_musculoskeletal_infection_and_anxiety_history"
+        ],
+        "palpitations_or_collapse": [
+          "symptom.palpitations",
+          "symptom.syncope",
+          "chest_pain.associated_symptom_timing_and_recovery",
+          "chest_pain.reported_bp_pulse_oxygen_temperature_and_measurement_source",
+          "chest_pain.stress_panic_hyperventilation_and_symptom_sequence"
+        ],
+        "pregnancy_or_vte": [
+          "chest_pain.pregnancy_lmp_gestation_postpartum_date_and_complications",
+          "chest_pain.vte_surgery_immobility_travel_cancer_prior_vte_hormone_context",
+          "chest_pain.leg_side_site_swelling_pain_redness_and_onset",
+          "chest_pain.reported_bp_pulse_oxygen_temperature_and_measurement_source"
+        ],
+        "child_or_proxy": [
+          "chest_pain.child_age_growth_activity_infection_and_proxy_context",
+          "chest_pain.communication_accessibility_and_interpreter_need",
+          "chest_pain.information_source_witness_record_reliability_and_conflict"
+        ],
+        "other_unclear": [
+          "chest_pain.respiratory_cough_sputum_fever_breathlessness_and_oxygen_context",
+          "chest_pain.meal_reflux_swallowing_bloating_and_vomit_relation",
+          "chest_pain.movement_breath_touch_injury_exercise_and_work_relation",
+          "chest_pain.skin_tenderness_rash_blister_and_side",
+          "chest_pain.stress_panic_hyperventilation_and_symptom_sequence",
+          "chest_pain.pulmonary_gi_musculoskeletal_infection_and_anxiety_history",
+          "chest_pain.cocaine_stimulant_vaping_alcohol_and_tobacco_exposure",
+          "chest_pain.communication_accessibility_and_interpreter_need"
+        ]
+      }
+    }
+  ],
+  "must_be_known_facts": [
+    "pain.frequency",
+    "pain.nrs_score"
+  ]
 }
