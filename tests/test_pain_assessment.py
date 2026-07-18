@@ -72,6 +72,22 @@ class PainAssessmentTest(unittest.TestCase):
         ]
         self.assertIn("[필수]", question["wording"])
 
+    def test_bowel_symptoms_require_raw_nrs_only_when_abdominal_pain_is_present(self):
+        package = compile_package(profile="bowel_symptoms")
+        policy = package["interview_completion_policy"]
+        conditional = next(
+            item for item in policy["conditional_required_facts"]
+            if item.get("reason") == "pain_item_activated"
+        )
+        self.assertEqual(
+            conditional["when"],
+            {"fact": "bowel.abdominal_pain_present", "equals": True},
+        )
+        self.assertEqual(
+            conditional["required_facts"], ["pain.frequency", "pain.nrs_score"],
+        )
+        self.assertIn("pain.nrs_score", policy["must_be_known_facts"])
+
     def test_conditional_profile_activates_only_after_pain_is_present(self):
         session = self._session("skin_complaint")
         before = set(session._required_facts(None, session._safety()))

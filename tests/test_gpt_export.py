@@ -519,7 +519,7 @@ class GptExportTests(unittest.TestCase):
             bowel = json.loads(
                 (output_path / "rfe/bowel_symptoms/facts.json").read_text(encoding="utf-8")
             )
-            self.assertEqual(bowel["count"], 35)
+            self.assertEqual(bowel["count"], 67)
             focal = json.loads((output_path / "rfe/focal_weakness_numbness/facts.json").read_text(encoding="utf-8"))
             self.assertEqual(focal["count"], 67)
             joint = json.loads((output_path / "rfe/joint_limb_complaint/facts.json").read_text(encoding="utf-8"))
@@ -1026,6 +1026,17 @@ class GptExportTests(unittest.TestCase):
             )
             self.assertEqual(safety_index["default_action"], "human_handoff")
             self.assertTrue(safety_index["default_equals"])
+            self.assertEqual(
+                safety_index["returned_count"], len(safety_index["items"])
+            )
+            self.assertEqual(
+                safety_index["truncated"],
+                safety_index["returned_count"] < safety_index["count"],
+            )
+            self.assertEqual(
+                safety_index["complete_rule_payloads"],
+                "/gpt/rfe/{rfe}/rules.json",
+            )
             fact_index = json.loads(
                 (output_path / "facts.json").read_text(encoding="utf-8")
             )

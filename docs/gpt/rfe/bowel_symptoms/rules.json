@@ -1,14 +1,16 @@
 {
   "contains_patient_responses": false,
-  "count": 80,
+  "count": 144,
   "encounter_contexts": [
     "context.primary_care"
   ],
   "generated_at": "2026-07-16T00:00:00Z",
+  "inline_count": 12,
   "items": [
     {
       "id": "rule.bowel-symptoms.safety.acute-abdomen",
       "priority": 1000,
+      "status": "research_only",
       "then": {
         "action": "human_handoff",
         "safety_level": "emergency",
@@ -23,6 +25,7 @@
     {
       "id": "rule.bowel-symptoms.safety.bleeding-collapse",
       "priority": 1000,
+      "status": "research_only",
       "then": {
         "action": "human_handoff",
         "safety_level": "emergency",
@@ -37,6 +40,7 @@
     {
       "id": "rule.bowel-symptoms.safety.large-bleeding",
       "priority": 1000,
+      "status": "research_only",
       "then": {
         "action": "human_handoff",
         "safety_level": "emergency",
@@ -51,6 +55,7 @@
     {
       "id": "rule.bowel-symptoms.safety.nonstop-bleeding",
       "priority": 1000,
+      "status": "research_only",
       "then": {
         "action": "human_handoff",
         "safety_level": "emergency",
@@ -65,6 +70,7 @@
     {
       "id": "rule.bowel-symptoms.safety.obstruction",
       "priority": 1000,
+      "status": "research_only",
       "then": {
         "action": "human_handoff",
         "safety_level": "emergency",
@@ -89,8 +95,39 @@
       }
     },
     {
+      "id": "rule.bowel-symptoms.safety.dehydration",
+      "priority": 920,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "bowel.hydration_urine_dizziness_dry_mouth_and_intake_warning"
+      }
+    },
+    {
+      "id": "rule.bowel-symptoms.safety.child-red-flag",
+      "priority": 910,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "bowel.child_early_onset_growth_neurologic_or_gross_distension_warning"
+      }
+    },
+    {
       "id": "rule.bowel-symptoms.safety.black-tarry-stool",
       "priority": 900,
+      "status": "research_only",
       "then": {
         "action": "human_handoff",
         "safety_level": "urgent",
@@ -105,6 +142,7 @@
     {
       "id": "rule.bowel-symptoms.safety.bloody-diarrhea",
       "priority": 900,
+      "status": "research_only",
       "then": {
         "action": "human_handoff",
         "safety_level": "urgent",
@@ -119,6 +157,7 @@
     {
       "id": "rule.bowel-symptoms.safety.systemic-inflammation",
       "priority": 900,
+      "status": "research_only",
       "then": {
         "action": "human_handoff",
         "safety_level": "urgent",
@@ -141,6 +180,7 @@
     {
       "id": "rule.bowel-symptoms.safety.persistent-bleeding-weight-loss",
       "priority": 850,
+      "status": "research_only",
       "then": {
         "action": "human_handoff",
         "safety_level": "urgent",
@@ -161,288 +201,9 @@
       }
     },
     {
-      "id": "rule.generated.priority.any.current",
-      "priority": 130,
-      "then": {
-        "reason": "confirm_presentation",
-        "target": "target.bowel-symptoms.current"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.bowel-symptoms.current": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.bleeding-nonstop",
-      "priority": 129,
-      "then": {
-        "reason": "hemorrhage_gate",
-        "target": "target.bowel-symptoms.bleeding-nonstop"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.bowel-symptoms.bleeding-nonstop": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.large-bleeding",
-      "priority": 128,
-      "then": {
-        "reason": "hemorrhage_gate",
-        "target": "target.bowel-symptoms.large-bleeding"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.bowel-symptoms.large-bleeding": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.collapse",
-      "priority": 127,
-      "then": {
-        "reason": "shock_gate",
-        "target": "target.bowel-symptoms.collapse"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.bowel-symptoms.collapse": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.severe-pain",
-      "priority": 126,
-      "then": {
-        "reason": "acute_abdomen_gate",
-        "target": "target.bowel-symptoms.severe-pain"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.bowel-symptoms.severe-pain": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.obstipation",
-      "priority": 125,
-      "then": {
-        "reason": "obstruction_gate",
-        "target": "target.bowel-symptoms.obstipation"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.bowel-symptoms.obstipation": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.distension",
-      "priority": 124,
-      "then": {
-        "reason": "obstruction_gate",
-        "target": "target.bowel-symptoms.distension"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.bowel-symptoms.distension": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.vomiting",
-      "priority": 123,
-      "then": {
-        "reason": "obstruction_gate",
-        "target": "target.bowel-symptoms.vomiting"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.bowel-symptoms.vomiting": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.black-stool",
-      "priority": 122,
-      "then": {
-        "reason": "gi_bleeding_gate",
-        "target": "target.bowel-symptoms.black-stool"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.bowel-symptoms.black-stool": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.bloody-diarrhea",
-      "priority": 121,
-      "then": {
-        "reason": "urgent_bleeding_gate",
-        "target": "target.bowel-symptoms.bloody-diarrhea"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.bowel-symptoms.bloody-diarrhea": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.fever",
-      "priority": 120,
-      "then": {
-        "reason": "infection_context",
-        "target": "target.bowel-symptoms.fever"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.bowel-symptoms.fever": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.systemically-unwell",
-      "priority": 119,
-      "then": {
-        "reason": "systemic_gate",
-        "target": "target.bowel-symptoms.systemically-unwell"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.bowel-symptoms.systemically-unwell": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.main-type",
-      "priority": 111,
-      "then": {
-        "reason": "group_branch",
-        "target": "target.bowel-symptoms.main-type"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.bowel-symptoms.main-type": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.duration",
-      "priority": 110,
-      "then": {
-        "reason": "duration",
-        "target": "target.bowel-symptoms.duration"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.bowel-symptoms.duration": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.onset",
-      "priority": 109,
-      "then": {
-        "reason": "onset",
-        "target": "target.bowel-symptoms.onset"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.bowel-symptoms.onset": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.frequency",
-      "priority": 105,
-      "then": {
-        "reason": "habit_characterization",
-        "target": "target.bowel-symptoms.frequency"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.bowel-symptoms.frequency": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.stool-form",
-      "priority": 104,
-      "then": {
-        "reason": "stool_characterization",
-        "target": "target.bowel-symptoms.stool-form"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.bowel-symptoms.stool-form": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.blood-appearance",
-      "priority": 103,
-      "then": {
-        "reason": "bleeding_characterization",
-        "target": "target.bowel-symptoms.blood-appearance"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.bowel-symptoms.blood-appearance": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.persistent-bleeding",
-      "priority": 102,
-      "then": {
-        "reason": "persistence_risk",
-        "target": "target.bowel-symptoms.persistent-bleeding"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.bowel-symptoms.persistent-bleeding": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.weight-loss",
-      "priority": 101,
-      "then": {
-        "reason": "colorectal_risk",
-        "target": "target.bowel-symptoms.weight-loss"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.bowel-symptoms.weight-loss": "active"
-        }
-      }
-    },
-    {
       "id": "rule.activate.bowel-symptoms",
       "priority": 100,
+      "status": "research_only",
       "then": {
         "activate_intents": [
           "intent.characterize_symptom",
@@ -455,636 +216,6 @@
       "when": {
         "rfe": "rfe.bowel_symptoms"
       }
-    },
-    {
-      "id": "rule.generated.priority.any.anemia",
-      "priority": 100,
-      "then": {
-        "reason": "colorectal_risk",
-        "target": "target.bowel-symptoms.anemia"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.bowel-symptoms.anemia": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.mass",
-      "priority": 99,
-      "then": {
-        "reason": "colorectal_risk",
-        "target": "target.bowel-symptoms.mass"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.bowel-symptoms.mass": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.straining",
-      "priority": 98,
-      "then": {
-        "reason": "constipation_context",
-        "target": "target.bowel-symptoms.straining"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.bowel-symptoms.straining": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.incomplete",
-      "priority": 97,
-      "then": {
-        "reason": "constipation_context",
-        "target": "target.bowel-symptoms.incomplete"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.bowel-symptoms.incomplete": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.narrow-stool",
-      "priority": 96,
-      "then": {
-        "reason": "change_context",
-        "target": "target.bowel-symptoms.narrow-stool"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.bowel-symptoms.narrow-stool": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.abdominal-pain",
-      "priority": 95,
-      "then": {
-        "reason": "associated_context",
-        "target": "target.bowel-symptoms.abdominal-pain"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.bowel-symptoms.abdominal-pain": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.rectal-pain",
-      "priority": 94,
-      "then": {
-        "reason": "bleeding_source_context",
-        "target": "target.bowel-symptoms.rectal-pain"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.bowel-symptoms.rectal-pain": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.manual-maneuver",
-      "priority": 86,
-      "then": {
-        "reason": "constipation_severity",
-        "target": "target.bowel-symptoms.manual-maneuver"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.bowel-symptoms.manual-maneuver": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.mucus",
-      "priority": 85,
-      "then": {
-        "reason": "inflammatory_context",
-        "target": "target.bowel-symptoms.mucus"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.bowel-symptoms.mucus": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.bloating",
-      "priority": 84,
-      "then": {
-        "reason": "associated_context",
-        "target": "target.bowel-symptoms.bloating"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.bowel-symptoms.bloating": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.family-history",
-      "priority": 83,
-      "then": {
-        "reason": "risk_context",
-        "target": "target.bowel-symptoms.family-history"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.bowel-symptoms.family-history": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.ibd",
-      "priority": 82,
-      "then": {
-        "reason": "risk_context",
-        "target": "target.bowel-symptoms.ibd"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.bowel-symptoms.ibd": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.medication",
-      "priority": 81,
-      "then": {
-        "reason": "medication_context",
-        "target": "target.bowel-symptoms.medication"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.bowel-symptoms.medication": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.lifestyle",
-      "priority": 80,
-      "then": {
-        "reason": "common_context",
-        "target": "target.bowel-symptoms.lifestyle"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.bowel-symptoms.lifestyle": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.surgery",
-      "priority": 79,
-      "then": {
-        "reason": "obstruction_risk",
-        "target": "target.bowel-symptoms.surgery"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.bowel-symptoms.surgery": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.complete.abdominal-pain",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.bowel-symptoms.abdominal-pain"
-      }
-    },
-    {
-      "id": "rule.generated.complete.anemia",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.bowel-symptoms.anemia"
-      }
-    },
-    {
-      "id": "rule.generated.complete.black-stool",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.bowel-symptoms.black-stool"
-      }
-    },
-    {
-      "id": "rule.generated.complete.bleeding-nonstop",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.bowel-symptoms.bleeding-nonstop"
-      }
-    },
-    {
-      "id": "rule.generated.complete.bloating",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.bowel-symptoms.bloating"
-      }
-    },
-    {
-      "id": "rule.generated.complete.blood-appearance",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.bowel-symptoms.blood-appearance"
-      }
-    },
-    {
-      "id": "rule.generated.complete.bloody-diarrhea",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.bowel-symptoms.bloody-diarrhea"
-      }
-    },
-    {
-      "id": "rule.generated.complete.collapse",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.bowel-symptoms.collapse"
-      }
-    },
-    {
-      "id": "rule.generated.complete.current",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.bowel-symptoms.current"
-      }
-    },
-    {
-      "id": "rule.generated.complete.distension",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.bowel-symptoms.distension"
-      }
-    },
-    {
-      "id": "rule.generated.complete.duration",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.bowel-symptoms.duration"
-      }
-    },
-    {
-      "id": "rule.generated.complete.family-history",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.bowel-symptoms.family-history"
-      }
-    },
-    {
-      "id": "rule.generated.complete.fever",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.bowel-symptoms.fever"
-      }
-    },
-    {
-      "id": "rule.generated.complete.frequency",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.bowel-symptoms.frequency"
-      }
-    },
-    {
-      "id": "rule.generated.complete.ibd",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.bowel-symptoms.ibd"
-      }
-    },
-    {
-      "id": "rule.generated.complete.incomplete",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.bowel-symptoms.incomplete"
-      }
-    },
-    {
-      "id": "rule.generated.complete.large-bleeding",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.bowel-symptoms.large-bleeding"
-      }
-    },
-    {
-      "id": "rule.generated.complete.lifestyle",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.bowel-symptoms.lifestyle"
-      }
-    },
-    {
-      "id": "rule.generated.complete.main-type",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.bowel-symptoms.main-type"
-      }
-    },
-    {
-      "id": "rule.generated.complete.manual-maneuver",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.bowel-symptoms.manual-maneuver"
-      }
-    },
-    {
-      "id": "rule.generated.complete.mass",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.bowel-symptoms.mass"
-      }
-    },
-    {
-      "id": "rule.generated.complete.medication",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.bowel-symptoms.medication"
-      }
-    },
-    {
-      "id": "rule.generated.complete.mucus",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.bowel-symptoms.mucus"
-      }
-    },
-    {
-      "id": "rule.generated.complete.narrow-stool",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.bowel-symptoms.narrow-stool"
-      }
-    },
-    {
-      "id": "rule.generated.complete.obstipation",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.bowel-symptoms.obstipation"
-      }
-    },
-    {
-      "id": "rule.generated.complete.onset",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.bowel-symptoms.onset"
-      }
-    },
-    {
-      "id": "rule.generated.complete.persistent-bleeding",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.bowel-symptoms.persistent-bleeding"
-      }
-    },
-    {
-      "id": "rule.generated.complete.rectal-pain",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.bowel-symptoms.rectal-pain"
-      }
-    },
-    {
-      "id": "rule.generated.complete.severe-pain",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.bowel-symptoms.severe-pain"
-      }
-    },
-    {
-      "id": "rule.generated.complete.stool-form",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.bowel-symptoms.stool-form"
-      }
-    },
-    {
-      "id": "rule.generated.complete.straining",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.bowel-symptoms.straining"
-      }
-    },
-    {
-      "id": "rule.generated.complete.surgery",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.bowel-symptoms.surgery"
-      }
-    },
-    {
-      "id": "rule.generated.complete.systemically-unwell",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.bowel-symptoms.systemically-unwell"
-      }
-    },
-    {
-      "id": "rule.generated.complete.vomiting",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.bowel-symptoms.vomiting"
-      }
-    },
-    {
-      "id": "rule.generated.complete.weight-loss",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.bowel-symptoms.weight-loss"
-      }
     }
   ],
   "knowledge_source_status": {
@@ -1095,9 +226,21 @@
   "knowledge_sources": [
     {
       "complete": false,
+      "id": "source.nhs.constipation.2026",
+      "kind": "public_health_guidance_metadata",
+      "last_monitored_at": "2026-07-19",
+      "license_status": "unknown",
+      "monitor_interval_days": 7,
+      "publisher": "NHS",
+      "title": "Constipation",
+      "url": "https://www.nhs.uk/conditions/constipation/",
+      "version": "current-accessed-2026-07-19"
+    },
+    {
+      "complete": false,
       "id": "source.nhs.rectal-bleeding.2023",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-07-14",
+      "last_monitored_at": "2026-07-19",
       "license_status": "unknown",
       "monitor_interval_days": 7,
       "publisher": "NHS",
@@ -1109,7 +252,7 @@
       "complete": false,
       "id": "source.nhs.stomach-ache.2023",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-07-14",
+      "last_monitored_at": "2026-07-19",
       "license_status": "unknown",
       "monitor_interval_days": 7,
       "publisher": "NHS",
@@ -1119,9 +262,21 @@
     },
     {
       "complete": false,
+      "id": "source.nice.cg99.child-constipation.2017",
+      "kind": "clinical_guidance_metadata",
+      "last_monitored_at": "2026-07-19",
+      "license_status": "restricted",
+      "monitor_interval_days": 7,
+      "publisher": "NICE",
+      "title": "Constipation in children and young people: diagnosis and management",
+      "url": "https://www.nice.org.uk/guidance/cg99/chapter/Recommendations",
+      "version": "CG99-updated-2017-07-13"
+    },
+    {
+      "complete": false,
       "id": "source.nice.ng12.colorectal.2026",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-07-14",
+      "last_monitored_at": "2026-07-19",
       "license_status": "unknown",
       "monitor_interval_days": 7,
       "publisher": "NICE",
@@ -1142,10 +297,23 @@
       "version": "SNOMEDCT-20260701"
     }
   ],
+  "loading_policy": "Load this safety and activation index first; load a declared completion or priority partition only when needed.",
   "package_id": "package.primary-care-bowel-symptoms",
   "package_version": "0.1.0",
+  "partitions": [
+    {
+      "count": 65,
+      "path": "/gpt/rfe/bowel_symptoms/rules/completion.json",
+      "rule_type": "completion"
+    },
+    {
+      "count": 67,
+      "path": "/gpt/rfe/bowel_symptoms/rules/priority.json",
+      "rule_type": "priority"
+    }
+  ],
   "reason_for_encounter": "rfe.bowel_symptoms",
-  "resource_type": "ReasonForEncounterRuleCollection",
+  "resource_type": "ReasonForEncounterRuleCollectionIndex",
   "review_status": "unreviewed",
   "status": "research_only",
   "usage_modes": [

@@ -622,6 +622,17 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
     aggregate_rules["items"] = [
         compact_safety_rule_index(item) for item in aggregate_rules["items"]
     ]
+    # This endpoint is a backward-compatible discovery index, not an
+    # executable rule bundle. Bound its deterministic prefix so future RFE
+    # expansion cannot break the Custom GPT Action response-size limit. The
+    # complete, non-truncated rules remain available from the per-RFE path.
+    complete_rule_count = len(aggregate_rules["items"])
+    aggregate_rules["items"] = aggregate_rules["items"][:500]
+    aggregate_rules["count"] = complete_rule_count
+    aggregate_rules["returned_count"] = len(aggregate_rules["items"])
+    aggregate_rules["truncated"] = (
+        aggregate_rules["returned_count"] < complete_rule_count
+    )
     aggregate_rules["payload_role"] = "legacy_cross_rfe_safety_index"
     aggregate_rules["default_action"] = "human_handoff"
     aggregate_rules["default_equals"] = True
@@ -671,7 +682,10 @@ def build(root: Path, output: Path) -> dict[str, Any]:
         # Full, readable Fact payloads remain split by RFE; minifying this one
         # index prevents growth in implemented packages from breaking the
         # Custom GPT Action response-size guard.
-        payload = encoded(document, minified=name == "facts.json")
+        payload = encoded(
+            document,
+            minified=name in {"facts.json", "safety-rules.json"},
+        )
         destination = output / name
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_bytes(payload)

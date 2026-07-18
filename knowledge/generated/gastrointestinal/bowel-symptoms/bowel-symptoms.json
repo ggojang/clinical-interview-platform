@@ -9,11 +9,11 @@
   "source_manifest": "source-manifest.primary-care-bowel-symptoms-research",
   "default_refresh": {
     "class": "clinical_guideline",
-    "last_assessed_at": "2026-07-14",
+    "last_assessed_at": "2026-07-19",
     "monitor_interval_days": 1,
     "full_review_interval_days": 180,
-    "next_monitor_at": "2026-07-15",
-    "next_full_review_at": "2027-01-10",
+    "next_monitor_at": "2026-07-20",
+    "next_full_review_at": "2027-01-15",
     "policy_id": "policy.knowledge-refresh",
     "overdue_behavior": {
       "production": "exclude_or_require_review",
@@ -65,6 +65,66 @@
       "id": "hypothesis.bowel.bleeding-risk",
       "type": "Hypothesis",
       "display": "Bowel Bleeding and Persistence Pattern"
+    },
+    {
+      "id": "group.bowel.routing",
+      "type": "ClinicalGroup",
+      "display": "Routing"
+    },
+    {
+      "id": "group.bowel.course",
+      "type": "ClinicalGroup",
+      "display": "Course"
+    },
+    {
+      "id": "group.bowel.stool-detail",
+      "type": "ClinicalGroup",
+      "display": "Stool Detail"
+    },
+    {
+      "id": "group.bowel.constipation-detail",
+      "type": "ClinicalGroup",
+      "display": "Constipation Detail"
+    },
+    {
+      "id": "group.bowel.diarrhea-detail",
+      "type": "ClinicalGroup",
+      "display": "Diarrhea Detail"
+    },
+    {
+      "id": "group.bowel.pain",
+      "type": "ClinicalGroup",
+      "display": "Pain"
+    },
+    {
+      "id": "group.bowel.bleeding-detail",
+      "type": "ClinicalGroup",
+      "display": "Bleeding Detail"
+    },
+    {
+      "id": "group.bowel.systemic",
+      "type": "ClinicalGroup",
+      "display": "Systemic"
+    },
+    {
+      "id": "group.bowel.medicine",
+      "type": "ClinicalGroup",
+      "display": "Medicine"
+    },
+    {
+      "id": "group.bowel.child",
+      "type": "ClinicalGroup",
+      "display": "Child"
+    },
+    {
+      "id": "group.bowel.previous-care",
+      "type": "ClinicalGroup",
+      "display": "Previous Care"
+    },
+    {
+      "id": "group.bowel.handoff",
+      "type": "ClinicalGroup",
+      "display": "Handoff"
     }
   ],
   "group_hypothesis_edges": [
@@ -83,23 +143,10 @@
   ],
   "safety_rules": [
     {
-      "id": "rule.bowel-symptoms.safety.nonstop-bleeding",
+      "id": "rule.bowel-symptoms.safety.acute-abdomen",
       "priority": 1000,
       "when": {
-        "fact": "symptom.rectal_bleeding_nonstop",
-        "equals": true
-      },
-      "then": {
-        "safety_level": "emergency",
-        "action": "human_handoff",
-        "suppress_routine": true
-      }
-    },
-    {
-      "id": "rule.bowel-symptoms.safety.large-bleeding",
-      "priority": 1000,
-      "when": {
-        "fact": "symptom.rectal_bleeding_large_volume_or_clots",
+        "fact": "symptom.sudden_severe_abdominal_pain",
         "equals": true
       },
       "then": {
@@ -122,10 +169,23 @@
       }
     },
     {
-      "id": "rule.bowel-symptoms.safety.acute-abdomen",
+      "id": "rule.bowel-symptoms.safety.large-bleeding",
       "priority": 1000,
       "when": {
-        "fact": "symptom.sudden_severe_abdominal_pain",
+        "fact": "symptom.rectal_bleeding_large_volume_or_clots",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.bowel-symptoms.safety.nonstop-bleeding",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.rectal_bleeding_nonstop",
         "equals": true
       },
       "then": {
@@ -155,6 +215,32 @@
       },
       "then": {
         "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.bowel-symptoms.safety.dehydration",
+      "priority": 920,
+      "when": {
+        "fact": "bowel.hydration_urine_dizziness_dry_mouth_and_intake_warning",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.bowel-symptoms.safety.child-red-flag",
+      "priority": 910,
+      "when": {
+        "fact": "bowel.child_early_onset_growth_neurologic_or_gross_distension_warning",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
         "action": "human_handoff",
         "suppress_routine": true
       }
@@ -1536,6 +1622,1075 @@
         "group.bowel.context",
         "group.bowel.obstruction"
       ]
+    },
+    {
+      "fact": {
+        "id": "bowel.primary_group",
+        "display": "Primary Bowel Symptom Context",
+        "value_type": "coded",
+        "allowed_values": [
+          "constipation_or_difficult_passage",
+          "loose_frequent_or_urgent",
+          "rectal_bleeding_or_blood",
+          "pain_bloating_or_obstruction",
+          "persistent_change_or_systemic",
+          "child_or_proxy",
+          "medicine_or_postprocedure",
+          "other_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.bowel-symptoms.primary-group",
+        "display": "Primary Bowel Symptom Context",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.primary-group",
+        "wording": "가장 가까운 상황은 변비·배변곤란, 묽거나 잦고 급한 변, 항문출혈·혈변, 복통·팽만·막힘 느낌, 지속 변화·전신 증상, 소아·보호자 관찰, 약물·시술 후 변화, 또는 불분명 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 118,
+          "reason": "primary-group"
+        }
+      ],
+      "supports": [
+        "group.bowel.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "bowel.patient_words_and_change_from_baseline",
+        "display": "Patient Description and Baseline Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.patient-words",
+        "display": "Patient Description and Baseline Change",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.patient-words",
+        "wording": "본인의 표현으로 가장 불편한 점과 평소 배변 습관에서 무엇이 달라졌는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 108,
+          "reason": "patient-words"
+        }
+      ],
+      "supports": [
+        "group.bowel.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "bowel.exact_onset_date_context_sequence_and_trend",
+        "display": "Exact Onset Sequence and Trend",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.onset-detail",
+        "display": "Exact Onset Sequence and Trend",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.onset-detail",
+        "wording": "처음 달라진 날짜, 당시 감염·식사·여행·입원·약 변경과 증상이 생긴 순서, 최근 호전/악화 추세를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 107,
+          "reason": "onset-detail"
+        }
+      ],
+      "supports": [
+        "group.bowel.course"
+      ]
+    },
+    {
+      "fact": {
+        "id": "bowel.episode_days_frequency_baseline_and_current",
+        "display": "Baseline and Current Frequency",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.frequency-detail",
+        "display": "Baseline and Current Frequency",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.frequency-detail",
+        "wording": "평소와 현재 각각 하루·주당 배변 횟수, 며칠씩 못 보는지와 증상이 있는 날 수를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 106,
+          "reason": "frequency-detail"
+        }
+      ],
+      "supports": [
+        "group.bowel.course"
+      ]
+    },
+    {
+      "fact": {
+        "id": "bowel.stool_bristol_size_colour_odour_float_and_variability",
+        "display": "Detailed Stool Description",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.stool-detail",
+        "display": "Detailed Stool Description",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.stool-detail",
+        "wording": "가능하면 Bristol 1~7형, 변의 크기·색·냄새·기름지거나 뜨는지와 매번 같은지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 105,
+          "reason": "stool-detail"
+        }
+      ],
+      "supports": [
+        "group.bowel.stool-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "bowel.urgency_nocturnal_stool_incontinence_and_toilet_access",
+        "display": "Urgency Nocturnal Symptoms and Incontinence",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.urgency",
+        "display": "Urgency Nocturnal Symptoms and Incontinence",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.urgency",
+        "wording": "갑작스러운 변의, 밤에 깨서 배변, 변을 참지 못함·속옷에 묻음과 화장실 접근 어려움이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 104,
+          "reason": "urgency"
+        }
+      ],
+      "supports": [
+        "group.bowel.diarrhea-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "bowel.pain_relation_to_meals_defecation_gas_and_site",
+        "display": "Abdominal Pain Pattern",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.pain-detail",
+        "display": "Abdominal Pain Pattern",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.pain-detail",
+        "wording": "복통이 있다면 정확한 부위, 식사·배변·가스 전후 변화, 지속시간과 퍼지는 곳을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 103,
+          "reason": "pain-detail"
+        }
+      ],
+      "supports": [
+        "group.bowel.pain"
+      ]
+    },
+    {
+      "fact": {
+        "id": "bowel.abdominal_pain_present",
+        "display": "Abdominal Pain Present",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.pain-present",
+        "display": "Abdominal Pain Present",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.pain-present",
+        "wording": "현재 또는 이번 배변 변화와 함께 복통이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 102,
+          "reason": "pain-present"
+        }
+      ],
+      "supports": [
+        "group.bowel.pain"
+      ]
+    },
+    {
+      "fact": {
+        "id": "bowel.blood_amount_frequency_duration_mixed_surface_or_separate",
+        "display": "Bleeding Amount and Pattern",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.bleeding-detail",
+        "display": "Bleeding Amount and Pattern",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.bleeding-detail",
+        "wording": "피의 양·색·피떡, 휴지/변 표면/변 속/변기 중 어디에 보였는지와 횟수·지속기간을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 101,
+          "reason": "bleeding-detail"
+        }
+      ],
+      "supports": [
+        "group.bowel.bleeding-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "bowel.anal_lump_fissure_prolapse_discharge_and_defecation_pain",
+        "display": "Anal and Rectal Local Symptoms",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.anal-detail",
+        "display": "Anal and Rectal Local Symptoms",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.anal-detail",
+        "wording": "항문 통증·가려움·찢어짐, 돌출되는 덩이·탈출, 고름/분비물과 배변 시 악화 여부를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 93,
+          "reason": "anal-detail"
+        }
+      ],
+      "supports": [
+        "group.bowel.bleeding-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "bowel.appetite_early_satiety_nausea_vomiting_and_intake",
+        "display": "Appetite and Intake",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.intake",
+        "display": "Appetite and Intake",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.intake",
+        "wording": "식욕·조기 포만감·메스꺼움·구토와 먹고 마실 수 있는 양의 변화를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 92,
+          "reason": "intake"
+        }
+      ],
+      "supports": [
+        "group.bowel.systemic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "bowel.weight_change_amount_timeframe_and_intent",
+        "display": "Weight Change Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.weight-detail",
+        "display": "Weight Change Detail",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.weight-detail",
+        "wording": "체중이 변했다면 얼마가 얼마나 오랫동안 변했고 의도적으로 감량한 것인지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 91,
+          "reason": "weight-detail"
+        }
+      ],
+      "supports": [
+        "group.bowel.systemic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "bowel.hydration_urine_dizziness_dry_mouth_and_intake_warning",
+        "display": "Dehydration Warning",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.bowel-symptoms.dehydration-warning",
+        "display": "Dehydration Warning",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.dehydration-warning",
+        "wording": "물을 거의 못 마시거나 소변이 현저히 줄고, 심한 어지럼·입마름·축 처짐이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 118,
+          "reason": "dehydration-warning"
+        }
+      ],
+      "supports": [
+        "group.bowel.systemic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "bowel.infection_travel_food_water_contact_and_antibiotic_timing",
+        "display": "Infectious and Antibiotic Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.infection-context",
+        "display": "Infectious and Antibiotic Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.infection-context",
+        "wording": "최근 여행·의심 음식/물·같이 아픈 사람·동물 접촉, 발열과 최근 항생제/입원 시점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 90,
+          "reason": "infection-context"
+        }
+      ],
+      "supports": [
+        "group.bowel.diarrhea-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "bowel.current_medicines_dose_schedule_change_and_bowel_effect",
+        "display": "Current Medicines and Changes",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.medicine-detail",
+        "display": "Current Medicines and Changes",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.medicine-detail",
+        "wording": "처방약·일반약·한약·영양제의 이름·용량·횟수, 최근 시작/중단/변경과 배변 변화 시점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 89,
+          "reason": "medicine-detail"
+        }
+      ],
+      "supports": [
+        "group.bowel.medicine"
+      ]
+    },
+    {
+      "fact": {
+        "id": "bowel.laxative_antidiarrheal_enema_suppository_and_response",
+        "display": "Bowel Treatment Exposure and Response",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.bowel-treatment",
+        "display": "Bowel Treatment Exposure and Response",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.bowel-treatment",
+        "wording": "완하제·지사제·관장·좌약·식이 조절을 언제 얼마나 사용했고 효과·재발·부작용이 어땠는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 88,
+          "reason": "bowel-treatment"
+        }
+      ],
+      "supports": [
+        "group.bowel.medicine"
+      ]
+    },
+    {
+      "fact": {
+        "id": "bowel.anticoagulant_antiplatelet_nsaid_opioid_iron_and_allergy",
+        "display": "High-risk Medicines and Allergies",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.medicine-risk",
+        "display": "High-risk Medicines and Allergies",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.medicine-risk",
+        "wording": "항응고제·아스피린/항혈소판제·소염진통제·마약성 진통제·철분제와 약물 알레르기를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 87,
+          "reason": "medicine-risk"
+        }
+      ],
+      "supports": [
+        "group.bowel.medicine"
+      ]
+    },
+    {
+      "fact": {
+        "id": "bowel.metabolic_neurologic_pelvic_floor_and_mobility_context",
+        "display": "Relevant Medical and Functional Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.medical-context",
+        "display": "Relevant Medical and Functional Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.medical-context",
+        "wording": "갑상선·당뇨·신경질환·골반저 문제·거동 제한·인지 변화 등 배변에 영향을 줄 수 있는 병력을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 78,
+          "reason": "medical-context"
+        }
+      ],
+      "supports": [
+        "group.bowel.previous-care"
+      ]
+    },
+    {
+      "fact": {
+        "id": "bowel.pregnancy_lmp_postpartum_and_pelvic_history",
+        "display": "Pregnancy and Pelvic Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.pregnancy",
+        "display": "Pregnancy and Pelvic Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.pregnancy",
+        "wording": "해당되는 경우 임신 가능성·마지막 월경일·임신 주수·산후 기간과 골반 수술/출산 손상 병력을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 77,
+          "reason": "pregnancy"
+        }
+      ],
+      "supports": [
+        "group.bowel.previous-care"
+      ]
+    },
+    {
+      "fact": {
+        "id": "bowel.child_meconium_onset_growth_feeding_withholding_soiling_and_proxy",
+        "display": "Child Constipation and Proxy Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.child-detail",
+        "display": "Child Constipation and Proxy Detail",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.child-detail",
+        "wording": "소아라면 출생 후 첫 태변 시점, 생후 언제부터 시작했는지, 성장·수유/식사, 변 참는 자세·통증·속옷에 묻음과 답변자를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 116,
+          "reason": "child-detail"
+        }
+      ],
+      "supports": [
+        "group.bowel.child"
+      ]
+    },
+    {
+      "fact": {
+        "id": "bowel.child_early_onset_growth_neurologic_or_gross_distension_warning",
+        "display": "Child Constipation Red Flag",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.bowel-symptoms.child-warning",
+        "display": "Child Constipation Red Flag",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.child-warning",
+        "wording": "소아라면 생후 첫 주부터 변비, 48시간 이후 태변, 성장부진, 다리 힘/보행·허리/천골 이상, 심한 복부팽만과 구토 중 하나가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 117,
+          "reason": "child-warning"
+        }
+      ],
+      "supports": [
+        "group.bowel.child"
+      ]
+    },
+    {
+      "fact": {
+        "id": "bowel.prior_episode_diagnosis_ed_admission_and_baseline_recovery",
+        "display": "Prior Episode and Care",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.prior-care",
+        "display": "Prior Episode and Care",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.prior-care",
+        "wording": "비슷한 증상의 시기·설명받은 진단·응급실/입원 여부와 평소 배변으로 얼마나 회복했는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 76,
+          "reason": "prior-care"
+        }
+      ],
+      "supports": [
+        "group.bowel.previous-care"
+      ]
+    },
+    {
+      "fact": {
+        "id": "bowel.prior_fit_blood_stool_colonoscopy_imaging_and_source",
+        "display": "Prior Tests and Results",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.prior-tests",
+        "display": "Prior Tests and Results",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.prior-tests",
+        "wording": "이전 FIT/대변검사·혈액검사(빈혈 포함)·대장내시경·CT/초음파의 날짜·결과와 자료 출처를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 75,
+          "reason": "prior-tests"
+        }
+      ],
+      "supports": [
+        "group.bowel.previous-care"
+      ]
+    },
+    {
+      "fact": {
+        "id": "bowel.prior_examination_mass_rectal_findings_and_source",
+        "display": "Prior Examination Findings",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.prior-exam",
+        "display": "Prior Examination Findings",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.prior-exam",
+        "wording": "의료진이 배·항문·직장을 진찰했다면 덩이·압통·치핵/열상 등 설명받은 결과와 시점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 74,
+          "reason": "prior-exam"
+        }
+      ],
+      "supports": [
+        "group.bowel.previous-care"
+      ]
+    },
+    {
+      "fact": {
+        "id": "bowel.function_sleep_school_work_selfcare_and_social_impact",
+        "display": "Functional and Social Impact",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.function",
+        "display": "Functional and Social Impact",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.function",
+        "wording": "수면·식사·등교/출근·외출·운동·자가관리와 대인관계에서 어려워진 점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 73,
+          "reason": "function"
+        }
+      ],
+      "supports": [
+        "group.bowel.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "bowel.diet_fibre_fluid_dairy_caffeine_alcohol_and_recent_change",
+        "display": "Detailed Diet and Fluid Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.diet-detail",
+        "display": "Detailed Diet and Fluid Context",
+        "intents": [
+          "intent.differentiate_common_causes",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.diet-detail",
+        "wording": "식이섬유·수분·유제품·카페인·술 섭취와 최근 식단 변화, 증상과 관련된 음식을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 72,
+          "reason": "diet-detail"
+        }
+      ],
+      "supports": [
+        "group.bowel.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "bowel.occupation_shift_toilet_access_activity_and_stress_context",
+        "display": "Occupation and Toilet Access",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.occupation",
+        "display": "Occupation and Toilet Access",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.occupation",
+        "wording": "직업·교대근무·장시간 앉음·활동량·화장실 접근 제한과 스트레스가 증상에 미친 영향을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 71,
+          "reason": "occupation"
+        }
+      ],
+      "supports": [
+        "group.bowel.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "bowel.family_colorectal_polyps_ibd_celiac_hirschsprung_age",
+        "display": "Detailed Family History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.family-detail",
+        "display": "Detailed Family History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.family-detail",
+        "wording": "가족의 대장암·용종·염증성 장질환·셀리악병·히르슈스프룽병과 진단 나이를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 70,
+          "reason": "family-detail"
+        }
+      ],
+      "supports": [
+        "group.bowel.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "bowel.information_source_record_reliability_and_conflict",
+        "display": "Information Source Reliability and Conflict",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.information-source",
+        "display": "Information Source Reliability and Conflict",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.information-source",
+        "wording": "본인·보호자 중 누가 답하는지, 배변일지·사진·검사자료가 있는지, 기억이 불확실하거나 설명이 다른 부분을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 69,
+          "reason": "information-source"
+        }
+      ],
+      "supports": [
+        "group.bowel.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "bowel.patient_concern_goal_expectation_and_additional_comment",
+        "display": "Patient Concern Goal and Additional Comment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.bowel-symptoms.goal",
+        "display": "Patient Concern Goal and Additional Comment",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.bowel-symptoms.goal",
+        "wording": "가장 걱정되는 점, 진료에서 확인하고 싶은 점과 질문에 없던 의견을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 68,
+          "reason": "goal"
+        }
+      ],
+      "supports": [
+        "group.bowel.handoff"
+      ]
     }
   ],
   "provenance": {
@@ -1546,8 +2701,11 @@
     "created_at": "2026-07-14T00:00:00Z",
     "source_refs": [
       "source.nhs.rectal-bleeding.2023",
+      "source.nhs.constipation.2026",
       "source.nhs.stomach-ache.2023",
-      "source.nice.ng12.colorectal.2026"
+      "source.nice.ng12.colorectal.2026",
+      "source.nice.cg99.child-constipation.2017",
+      "source.stom.mrcm.bowel.20260714"
     ],
     "review_status": "unreviewed",
     "version": "0.1.0"

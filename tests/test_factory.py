@@ -206,10 +206,26 @@ class CompilerTests(unittest.TestCase):
             artifacts["source.ers.chronic-cough.2020"]["next_monitor_at"]
         )
         daily = due_sources(daily_date)
-        daily_ids = {item["source_id"] for item in daily["due"]}
+        daily_by_id = {item["source_id"]: item for item in daily["due"]}
+        daily_ids = set(daily_by_id)
         self.assertIn("source.ers.chronic-cough.2020", daily_ids)
         self.assertIn("source.gina.strategy.2026", daily_ids)
-        self.assertNotIn("source.nice.ng120", daily_ids)
+        self.assertEqual(
+            daily_by_id["source.ers.chronic-cough.2020"]["monitor_interval_days"],
+            1,
+        )
+        self.assertEqual(
+            daily_by_id["source.gina.strategy.2026"]["monitor_interval_days"],
+            1,
+        )
+        # Sources are due on or before the requested date. A weekly source may
+        # legitimately appear when its next date coincides with a newly
+        # monitored daily source.
+        if "source.nice.ng120" in daily_by_id:
+            self.assertEqual(
+                daily_by_id["source.nice.ng120"]["monitor_interval_days"],
+                7,
+            )
         weekly_date = date.fromisoformat(
             artifacts["source.nice.ng120"]["next_monitor_at"]
         )
@@ -660,10 +676,10 @@ class CompilerTests(unittest.TestCase):
         first = compile_package(profile="bowel_symptoms"); second = compile_package(profile="bowel_symptoms")
         self.assertEqual(first, second)
         facts = {node["id"] for node in first["knowledge_graph"]["nodes"] if node["type"] == "Fact"}
-        self.assertEqual(len(facts), 35)
+        self.assertEqual(len(facts), 67)
         self.assertEqual(facts, set(first["indexes"]["questions_by_fact"]))
-        self.assertEqual(first["coverage"]["total_safety_rules"], 9)
-        self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 9)
+        self.assertEqual(first["coverage"]["total_safety_rules"], 11)
+        self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 11)
         self.assertEqual(first["coverage"]["uncovered_safety_rules"], [])
 
     def test_bowel_symptoms_mrcm_preserves_unsupported_constipation(self):
@@ -1830,8 +1846,8 @@ class PackageRuntimeTests(unittest.TestCase):
 
     def test_bowel_symptoms_simulation_evaluation_passes(self):
         report = run_evaluation(BOWEL_SYMPTOMS_PACKAGE)
-        self.assertTrue(report["passed"]); self.assertEqual(report["case_count"], 10)
-        self.assertLessEqual(max(item["turns"] for item in report["results"]), 37)
+        self.assertTrue(report["passed"]); self.assertEqual(report["case_count"], 20)
+        self.assertLessEqual(max(item["turns"] for item in report["results"]), 45)
 
     def test_bowel_symptoms_runtime_uses_grouped_rfe(self):
         session = InterviewSession("bowel-runtime", package_path=BOWEL_SYMPTOMS_PACKAGE)

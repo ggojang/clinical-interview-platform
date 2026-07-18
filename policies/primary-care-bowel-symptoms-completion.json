@@ -10,13 +10,15 @@
   "required_facts": {
     "always": [
       "symptom.bowel.current",
-      "symptom.rectal_bleeding_nonstop",
-      "symptom.rectal_bleeding_large_volume_or_clots",
-      "symptom.collapse_or_severe_faintness",
       "symptom.sudden_severe_abdominal_pain",
+      "symptom.collapse_or_severe_faintness",
+      "symptom.rectal_bleeding_large_volume_or_clots",
+      "symptom.rectal_bleeding_nonstop",
       "symptom.unable_to_pass_stool_or_flatus",
       "symptom.abdominal_distension",
       "symptom.repeated_vomiting",
+      "bowel.hydration_urine_dizziness_dry_mouth_and_intake_warning",
+      "bowel.child_early_onset_growth_neurologic_or_gross_distension_warning",
       "symptom.black_tarry_stool",
       "symptom.bloody_diarrhea",
       "symptom.fever",
@@ -25,32 +27,27 @@
       "symptom.unintentional_weight_loss"
     ],
     "routine": [
+      "bowel.primary_group",
       "symptom.bowel.main_type",
       "symptom.duration",
       "symptom.bowel.sudden_or_gradual",
+      "bowel.patient_words_and_change_from_baseline",
+      "bowel.exact_onset_date_context_sequence_and_trend",
+      "bowel.episode_days_frequency_baseline_and_current",
       "symptom.bowel.frequency",
       "symptom.stool_form",
-      "symptom.straining",
-      "symptom.incomplete_evacuations",
-      "symptom.manual_maneuver_for_defecation",
-      "symptom.narrow_stool",
-      "symptom.mucus_in_stool",
-      "symptom.abdominal_pain",
-      "symptom.bloating",
-      "symptom.rectal_pain_or_itch",
-      "symptom.blood_appearance",
-      "symptom.anemia_or_fatigue_features",
-      "observation.abdominal_or_rectal_mass_known",
-      "family.colorectal_cancer_or_polyps",
-      "history.inflammatory_bowel_disease",
-      "medication.bowel_relevant",
-      "lifestyle.fibre_fluid_activity_change",
-      "history.abdominal_or_bowel_surgery"
+      "bowel.stool_bristol_size_colour_odour_float_and_variability",
+      "bowel.function_sleep_school_work_selfcare_and_social_impact",
+      "bowel.current_medicines_dose_schedule_change_and_bowel_effect",
+      "bowel.prior_episode_diagnosis_ed_admission_and_baseline_recovery",
+      "bowel.prior_fit_blood_stool_colonoscopy_imaging_and_source",
+      "bowel.information_source_record_reliability_and_conflict",
+      "bowel.patient_concern_goal_expectation_and_additional_comment"
     ]
   },
   "clarification_facts_by_rule": {},
   "question_budget": {
-    "routine": 37,
+    "routine": 70,
     "clarify": 12
   },
   "provenance": {
@@ -61,10 +58,81 @@
     "created_at": "2026-07-14T00:00:00Z",
     "source_refs": [
       "source.nhs.rectal-bleeding.2023",
+      "source.nhs.constipation.2026",
       "source.nhs.stomach-ache.2023",
-      "source.nice.ng12.colorectal.2026"
+      "source.nice.ng12.colorectal.2026",
+      "source.nice.cg99.child-constipation.2017",
+      "source.stom.mrcm.bowel.20260714"
     ],
     "review_status": "unreviewed",
     "version": "0.1.0"
-  }
+  },
+  "conditional_required_facts": [
+    {
+      "selector_fact": "bowel.primary_group",
+      "cases": {
+        "constipation_or_difficult_passage": [
+          "symptom.straining",
+          "symptom.incomplete_evacuations",
+          "symptom.manual_maneuver_for_defecation",
+          "bowel.laxative_antidiarrheal_enema_suppository_and_response",
+          "bowel.diet_fibre_fluid_dairy_caffeine_alcohol_and_recent_change",
+          "bowel.metabolic_neurologic_pelvic_floor_and_mobility_context"
+        ],
+        "loose_frequent_or_urgent": [
+          "bowel.urgency_nocturnal_stool_incontinence_and_toilet_access",
+          "symptom.mucus_in_stool",
+          "bowel.infection_travel_food_water_contact_and_antibiotic_timing",
+          "bowel.hydration_urine_dizziness_dry_mouth_and_intake_warning",
+          "bowel.diet_fibre_fluid_dairy_caffeine_alcohol_and_recent_change"
+        ],
+        "rectal_bleeding_or_blood": [
+          "symptom.blood_appearance",
+          "bowel.blood_amount_frequency_duration_mixed_surface_or_separate",
+          "symptom.rectal_pain_or_itch",
+          "bowel.anal_lump_fissure_prolapse_discharge_and_defecation_pain",
+          "bowel.anticoagulant_antiplatelet_nsaid_opioid_iron_and_allergy",
+          "bowel.prior_examination_mass_rectal_findings_and_source"
+        ],
+        "pain_bloating_or_obstruction": [
+          "bowel.abdominal_pain_present",
+          "symptom.abdominal_pain",
+          "bowel.pain_relation_to_meals_defecation_gas_and_site",
+          "symptom.bloating",
+          "bowel.appetite_early_satiety_nausea_vomiting_and_intake",
+          "history.abdominal_or_bowel_surgery"
+        ],
+        "persistent_change_or_systemic": [
+          "symptom.narrow_stool",
+          "symptom.unintentional_weight_loss",
+          "bowel.weight_change_amount_timeframe_and_intent",
+          "symptom.anemia_or_fatigue_features",
+          "observation.abdominal_or_rectal_mass_known",
+          "bowel.family_colorectal_polyps_ibd_celiac_hirschsprung_age"
+        ],
+        "child_or_proxy": [
+          "bowel.child_meconium_onset_growth_feeding_withholding_soiling_and_proxy",
+          "bowel.child_early_onset_growth_neurologic_or_gross_distension_warning",
+          "bowel.family_colorectal_polyps_ibd_celiac_hirschsprung_age",
+          "bowel.information_source_record_reliability_and_conflict"
+        ],
+        "medicine_or_postprocedure": [
+          "bowel.current_medicines_dose_schedule_change_and_bowel_effect",
+          "bowel.laxative_antidiarrheal_enema_suppository_and_response",
+          "bowel.anticoagulant_antiplatelet_nsaid_opioid_iron_and_allergy",
+          "history.abdominal_or_bowel_surgery",
+          "bowel.pregnancy_lmp_postpartum_and_pelvic_history"
+        ],
+        "other_unclear": [
+          "bowel.urgency_nocturnal_stool_incontinence_and_toilet_access",
+          "bowel.abdominal_pain_present",
+          "bowel.infection_travel_food_water_contact_and_antibiotic_timing",
+          "bowel.metabolic_neurologic_pelvic_floor_and_mobility_context",
+          "bowel.pregnancy_lmp_postpartum_and_pelvic_history",
+          "bowel.diet_fibre_fluid_dairy_caffeine_alcohol_and_recent_change",
+          "bowel.occupation_shift_toilet_access_activity_and_stress_context"
+        ]
+      }
+    }
+  ]
 }
