@@ -50,6 +50,28 @@ class PainAssessmentTest(unittest.TestCase):
         self.assertNotIn("잘 모르겠음", question["wording"])
         self.assertNotIn("답변하지 않음", question["wording"])
 
+    def test_focal_neurology_requires_raw_nrs_only_when_pain_is_present(self):
+        package = compile_package(profile="focal_weakness_numbness")
+        policy = package["interview_completion_policy"]
+        conditional = next(
+            item for item in policy["conditional_required_facts"]
+            if item.get("reason") == "associated_pain_requires_raw_nrs"
+        )
+        self.assertEqual(
+            conditional["when"],
+            {"fact": "focal_neurology.pain_present", "equals": True},
+        )
+        self.assertEqual(
+            conditional["required_facts"], ["focal_neurology.pain_nrs"]
+        )
+        self.assertIn(
+            "focal_neurology.pain_nrs", policy["must_be_known_facts"]
+        )
+        question = package["indexes"]["questions_by_fact"][
+            "focal_neurology.pain_nrs"
+        ]
+        self.assertIn("[필수]", question["wording"])
+
     def test_conditional_profile_activates_only_after_pain_is_present(self):
         session = self._session("skin_complaint")
         before = set(session._required_facts(None, session._safety()))

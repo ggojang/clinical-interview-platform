@@ -676,9 +676,9 @@ class CompilerTests(unittest.TestCase):
     def test_focal_neurology_package_is_complete(self):
         package = compile_package(profile="focal_weakness_numbness")
         facts = {n["id"] for n in package["knowledge_graph"]["nodes"] if n["type"] == "Fact"}
-        self.assertEqual(len(facts), 32); self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
-        self.assertEqual(package["coverage"]["total_safety_rules"], 11)
-        self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 11)
+        self.assertEqual(len(facts), 67); self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
+        self.assertEqual(package["coverage"]["total_safety_rules"], 21)
+        self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 21)
         self.assertEqual(package["coverage"]["uncovered_safety_rules"], [])
 
     def test_joint_limb_package_is_complete(self):
@@ -1845,7 +1845,8 @@ class PackageRuntimeTests(unittest.TestCase):
 
     def test_focal_neurology_simulation_and_runtime(self):
         report = run_evaluation(FOCAL_WEAKNESS_NUMBNESS_PACKAGE)
-        self.assertTrue(report["passed"]); self.assertEqual(report["case_count"], 12)
+        self.assertTrue(report["passed"]); self.assertEqual(report["case_count"], 30)
+        self.assertLessEqual(max(item["turns"] for item in report["results"]), 55)
         session = InterviewSession("focal-runtime", package_path=FOCAL_WEAKNESS_NUMBNESS_PACKAGE)
         state = session.process("한쪽 팔이 저리고 힘이 빠져요.")
         self.assertIn("neurological.focal_weakness_numbness", state["active_patterns"])

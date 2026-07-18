@@ -10,44 +10,54 @@
   "required_facts": {
     "always": [
       "symptom.focal_neurology.current",
+      "focal_neurology.current_unconscious_confused_or_difficult_to_wake",
       "symptom.focal_neurology.sudden_onset",
       "symptom.focal_neurology.one_sided",
       "symptom.face_droop",
       "symptom.arm_drift_or_cannot_raise",
       "symptom.speech_or_language_disturbance",
-      "symptom.focal_neurology.resolved_within_24h",
       "symptom.sudden_visual_loss_or_field_defect",
+      "symptom.sudden_gait_unsteadiness",
+      "symptom.focal_neurology.resolved_within_24h",
+      "focal_neurology.seizure_with_persistent_new_weakness_or_confusion",
+      "focal_neurology.recent_head_spine_trauma_with_new_deficit",
       "symptom.symmetric_progressive_weakness",
       "symptom.dyspnea_at_rest_or_supine",
       "symptom.new_swallowing_impairment",
       "symptom.severe_back_pain_radiating_leg",
       "symptom.new_bladder_bowel_or_sexual_dysfunction",
       "symptom.perineal_or_saddle_numbness",
-      "symptom.single_limb_rapid_progression"
+      "focal_neurology.child_sudden_or_rapid_progressive_weakness",
+      "symptom.single_limb_rapid_progression",
+      "focal_neurology.recurrent_brief_fixed_sensory_under_two_minutes",
+      "focal_neurology.child_tingling_with_weakness_bladder_bowel_or_gait",
+      "focal_neurology.infant_hypotonia_feeding_breathing_or_consciousness_warning",
+      "focal_neurology.neck_weakness_head_drop_or_voice_change"
     ],
     "routine": [
+      "focal_neurology.primary_group",
       "symptom.focal_neurology.main_type",
       "symptom.duration",
-      "symptom.sudden_gait_unsteadiness",
+      "focal_neurology.last_known_well_and_exact_onset_date_time_place_activity_posture",
+      "focal_neurology.onset_seconds_minutes_hours_and_symptom_sequence",
+      "focal_neurology.continuous_episodic_frequency_duration_recovery_and_trend",
       "symptom.focal_neurology.side",
       "symptom.focal_neurology.region",
-      "symptom.focal_neurology.progression",
-      "symptom.objective_motor_task_loss",
-      "symptom.sensory_quality",
-      "symptom.neck_or_back_pain",
-      "symptom.radicular_pain",
-      "symptom.position_or_repetition_trigger",
-      "event.recent_injury_or_procedure",
-      "event.recent_infection_or_vaccination",
-      "history.diabetes_or_neuropathy",
-      "history.stroke_tia_or_neurologic_disease",
-      "medication.neurologic_relevant",
-      "symptom.focal_neurology.functional_impact"
+      "focal_neurology.exact_boundary_digits_joints_proximal_distal_and_spread",
+      "focal_neurology.patient_words_and_difference_from_baseline",
+      "focal_neurology.function_walk_transfer_stairs_handwriting_grip_selfcare_work_school_driving",
+      "focal_neurology.prior_stroke_tia_seizure_migraine_neuropathy_spine_and_functional_diagnosis",
+      "focal_neurology.prior_episode_emergency_visit_admission_diagnosis_and_baseline_recovery",
+      "focal_neurology.prior_neurologic_exam_strength_reflex_sensation_gait_and_source",
+      "focal_neurology.prior_glucose_b12_thyroid_renal_imaging_emg_and_source",
+      "focal_neurology.prior_treatment_splint_position_rehab_medicine_response_and_adverse_effect",
+      "focal_neurology.information_source_proxy_witness_reliability_record_and_conflict",
+      "focal_neurology.patient_concern_goal_expectation_and_additional_comment"
     ]
   },
   "clarification_facts_by_rule": {},
   "question_budget": {
-    "routine": 34,
+    "routine": 82,
     "clarify": 12
   },
   "provenance": {
@@ -57,10 +67,92 @@
     },
     "created_at": "2026-07-14T00:00:00Z",
     "source_refs": [
-      "source.nhs.stroke.2024",
-      "source.nice.ng127.2023"
+      "source.nice.ng127.adult-focal-neurology.2023",
+      "source.nice.ng127.child-focal-neurology.2023",
+      "source.nhs.stroke.2026",
+      "source.stom.focal.20260714"
     ],
     "review_status": "unreviewed",
     "version": "0.1.0"
-  }
+  },
+  "conditional_required_facts": [
+    {
+      "selector_fact": "focal_neurology.primary_group",
+      "cases": {
+        "sudden_unilateral": [
+          "symptom.objective_motor_task_loss",
+          "focal_neurology.face_eye_closure_forehead_cheek_tongue_and_drooling",
+          "focal_neurology.arm_leg_proximal_distal_grip_foot_drop_and_fatigability",
+          "focal_neurology.headache_dizziness_vision_speech_swallowing_hearing_and_cognition_relation",
+          "focal_neurology.anticoagulant_antiplatelet_hormone_allergy_and_substance"
+        ],
+        "recurrent_transient": [
+          "focal_neurology.episode_fixed_pattern_spread_duration_awareness_and_post_event",
+          "focal_neurology.gradual_reversible_five_to_sixty_minute_sensory_visual_headache_relation",
+          "focal_neurology.headache_dizziness_vision_speech_swallowing_hearing_and_cognition_relation"
+        ],
+        "progressive_symmetric": [
+          "symptom.objective_motor_task_loss",
+          "focal_neurology.arm_leg_proximal_distal_grip_foot_drop_and_fatigability",
+          "focal_neurology.balance_coordination_falls_and_dexterity",
+          "focal_neurology.diabetes_thyroid_b12_kidney_celiac_nutrition_and_alcohol_context",
+          "focal_neurology.current_medicines_dose_schedule_adherence_recent_change_and_neurotoxic_exposure"
+        ],
+        "progressive_single_limb": [
+          "symptom.objective_motor_task_loss",
+          "focal_neurology.arm_leg_proximal_distal_grip_foot_drop_and_fatigability",
+          "focal_neurology.weight_loss_night_sweat_cancer_immunity_and_systemic_change",
+          "focal_neurology.family_neuromuscular_neuropathy_stroke_clotting_and_early_death"
+        ],
+        "spine_or_radicular": [
+          "focal_neurology.pain_present",
+          "focal_neurology.neck_back_pain_radiation_cough_movement_and_night_pattern",
+          "focal_neurology.position_repetition_sleep_compression_tool_and_relief",
+          "focal_neurology.balance_coordination_falls_and_dexterity"
+        ],
+        "distal_symmetric": [
+          "symptom.sensory_quality",
+          "focal_neurology.sensory_level_stocking_glove_patch_and_provocation",
+          "focal_neurology.diabetes_thyroid_b12_kidney_celiac_nutrition_and_alcohol_context",
+          "focal_neurology.current_medicines_dose_schedule_adherence_recent_change_and_neurotoxic_exposure"
+        ],
+        "compression_or_position": [
+          "symptom.sensory_quality",
+          "focal_neurology.sensory_level_stocking_glove_patch_and_provocation",
+          "focal_neurology.position_repetition_sleep_compression_tool_and_relief",
+          "focal_neurology.occupation_repetition_vibration_posture_heavy_lifting_chemical_and_driving"
+        ],
+        "child_or_proxy": [
+          "focal_neurology.child_age_development_regression_school_play_feeding_and_proxy",
+          "focal_neurology.child_early_hand_preference_new_gait_backpack_crossed_legs_and_hyperventilation",
+          "symptom.objective_motor_task_loss",
+          "focal_neurology.information_source_proxy_witness_reliability_record_and_conflict"
+        ],
+        "other_unclear": [
+          "symptom.objective_motor_task_loss",
+          "symptom.sensory_quality",
+          "focal_neurology.sensory_level_stocking_glove_patch_and_provocation",
+          "focal_neurology.balance_coordination_falls_and_dexterity",
+          "focal_neurology.pain_present",
+          "focal_neurology.blister_rash_fever_infection_tick_and_recent_illness",
+          "focal_neurology.current_medicines_dose_schedule_adherence_recent_change_and_neurotoxic_exposure",
+          "focal_neurology.occupation_repetition_vibration_posture_heavy_lifting_chemical_and_driving",
+          "focal_neurology.pregnancy_possible_lmp_gestation_postpartum_and_complications"
+        ]
+      }
+    },
+    {
+      "when": {
+        "fact": "focal_neurology.pain_present",
+        "equals": true
+      },
+      "required_facts": [
+        "focal_neurology.pain_nrs"
+      ],
+      "reason": "associated_pain_requires_raw_nrs"
+    }
+  ],
+  "must_be_known_facts": [
+    "focal_neurology.pain_nrs"
+  ]
 }

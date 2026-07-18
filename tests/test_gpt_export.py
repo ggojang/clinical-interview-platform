@@ -521,7 +521,7 @@ class GptExportTests(unittest.TestCase):
             )
             self.assertEqual(bowel["count"], 35)
             focal = json.loads((output_path / "rfe/focal_weakness_numbness/facts.json").read_text(encoding="utf-8"))
-            self.assertEqual(focal["count"], 32)
+            self.assertEqual(focal["count"], 67)
             joint = json.loads((output_path / "rfe/joint_limb_complaint/facts.json").read_text(encoding="utf-8"))
             self.assertEqual(joint["count"], 39)
             mental = json.loads((output_path / "rfe/mental_health_sleep/facts.json").read_text(encoding="utf-8"))
