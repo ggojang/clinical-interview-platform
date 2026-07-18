@@ -475,7 +475,7 @@ class GptExportTests(unittest.TestCase):
                     encoding="utf-8"
                 )
             )
-            self.assertEqual(dizziness["count"], 31)
+            self.assertEqual(dizziness["count"], 73)
             vomiting_diarrhea = json.loads(
                 (output_path / "rfe/vomiting_diarrhea/facts.json").read_text(
                     encoding="utf-8"

@@ -1,14 +1,16 @@
 {
   "contains_patient_responses": false,
-  "count": 76,
+  "count": 167,
   "encounter_contexts": [
     "context.primary_care"
   ],
   "generated_at": "2026-07-16T00:00:00Z",
+  "inline_count": 21,
   "items": [
     {
-      "id": "rule.dizziness-syncope.safety.acute-vestibular-syndrome",
+      "id": "rule.dizziness-syncope.safety.acute-vestibular-warning",
       "priority": 1000,
+      "status": "research_only",
       "then": {
         "action": "human_handoff",
         "safety_level": "emergency",
@@ -35,6 +37,7 @@
     {
       "id": "rule.dizziness-syncope.safety.incomplete-recovery",
       "priority": 1000,
+      "status": "research_only",
       "then": {
         "action": "human_handoff",
         "safety_level": "emergency",
@@ -55,8 +58,69 @@
       }
     },
     {
+      "id": "rule.dizziness-syncope.safety.ongoing-unconscious",
+      "priority": 1000,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "dizziness_syncope.current_unconscious_or_cannot_be_woken"
+      }
+    },
+    {
+      "id": "rule.dizziness-syncope.safety.poisoning-overdose-co",
+      "priority": 1000,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "dizziness_syncope.poisoning_overdose_or_carbon_monoxide_concern"
+      }
+    },
+    {
+      "id": "rule.dizziness-syncope.safety.severe-cardiorespiratory",
+      "priority": 1000,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "dizziness_syncope.severe_chest_pain_or_breathlessness"
+      }
+    },
+    {
+      "id": "rule.dizziness-syncope.safety.severe-head-injury",
+      "priority": 1000,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "dizziness_syncope.severe_head_injury_warning"
+      }
+    },
+    {
       "id": "rule.dizziness-syncope.safety.sudden-neurological-deficit",
       "priority": 1000,
+      "status": "research_only",
       "then": {
         "action": "human_handoff",
         "safety_level": "emergency",
@@ -77,74 +141,54 @@
       }
     },
     {
-      "id": "rule.dizziness-syncope.safety.sudden-new-deafness",
-      "priority": 1000,
-      "then": {
-        "action": "human_handoff",
-        "safety_level": "emergency",
-        "suppress_routine": true
-      },
-      "type": "safety",
-      "when": {
-        "all": [
-          {
-            "equals": true,
-            "fact": "symptom.dizziness.sudden_onset"
-          },
-          {
-            "equals": true,
-            "fact": "symptom.new_hearing_loss"
-          }
-        ]
-      }
-    },
-    {
-      "id": "rule.dizziness-syncope.safety.sudden-new-unsteadiness",
-      "priority": 1000,
-      "then": {
-        "action": "human_handoff",
-        "safety_level": "emergency",
-        "suppress_routine": true
-      },
-      "type": "safety",
-      "when": {
-        "all": [
-          {
-            "equals": true,
-            "fact": "symptom.dizziness.sudden_onset"
-          },
-          {
-            "equals": true,
-            "fact": "symptom.new_gait_unsteadiness"
-          }
-        ]
-      }
-    },
-    {
-      "id": "rule.dizziness-syncope.safety.syncope-chest-pain",
-      "priority": 1000,
-      "then": {
-        "action": "human_handoff",
-        "safety_level": "emergency",
-        "suppress_routine": true
-      },
-      "type": "safety",
-      "when": {
-        "all": [
-          {
-            "equals": true,
-            "fact": "symptom.syncope.occurred"
-          },
-          {
-            "equals": true,
-            "fact": "symptom.chest_pain"
-          }
-        ]
-      }
-    },
-    {
-      "id": "rule.dizziness-syncope.safety.seizure-associated-features",
+      "id": "rule.dizziness-syncope.safety.active-bleeding",
       "priority": 900,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "dizziness_syncope.active_heavy_bleeding_or_black_stool"
+      }
+    },
+    {
+      "id": "rule.dizziness-syncope.safety.child-severe-warning",
+      "priority": 900,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "dizziness_syncope.child_severe_warning"
+      }
+    },
+    {
+      "id": "rule.dizziness-syncope.safety.pregnancy-postpartum-warning",
+      "priority": 900,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "dizziness_syncope.pregnancy_postpartum_warning"
+      }
+    },
+    {
+      "id": "rule.dizziness-syncope.safety.seizure-associated-feature",
+      "priority": 900,
+      "status": "research_only",
       "then": {
         "action": "human_handoff",
         "safety_level": "urgent",
@@ -165,8 +209,32 @@
       }
     },
     {
-      "id": "rule.dizziness-syncope.safety.syncope-breathlessness",
+      "id": "rule.dizziness-syncope.safety.sudden-new-deafness",
       "priority": 900,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.dizziness.sudden_onset"
+          },
+          {
+            "equals": true,
+            "fact": "symptom.new_hearing_loss"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.dizziness-syncope.safety.syncope-cardiac-warning",
+      "priority": 900,
+      "status": "research_only",
       "then": {
         "action": "human_handoff",
         "safety_level": "urgent",
@@ -180,11 +248,31 @@
             "fact": "symptom.syncope.occurred"
           },
           {
-            "fact": "symptom.dyspnea",
-            "in": [
-              "moderate",
-              "severe"
-            ]
+            "equals": true,
+            "fact": "dizziness_syncope.unexplained_breathlessness_or_known_murmur_ecg_abnormality"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.dizziness-syncope.safety.syncope-chest-pain",
+      "priority": 900,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.syncope.occurred"
+          },
+          {
+            "equals": true,
+            "fact": "symptom.chest_pain"
           }
         ]
       }
@@ -192,6 +280,7 @@
     {
       "id": "rule.dizziness-syncope.safety.syncope-exertion",
       "priority": 900,
+      "status": "research_only",
       "then": {
         "action": "human_handoff",
         "safety_level": "urgent",
@@ -214,6 +303,7 @@
     {
       "id": "rule.dizziness-syncope.safety.syncope-family-sudden-death",
       "priority": 900,
+      "status": "research_only",
       "then": {
         "action": "human_handoff",
         "safety_level": "urgent",
@@ -236,6 +326,7 @@
     {
       "id": "rule.dizziness-syncope.safety.syncope-heart-failure",
       "priority": 900,
+      "status": "research_only",
       "then": {
         "action": "human_handoff",
         "safety_level": "urgent",
@@ -258,6 +349,7 @@
     {
       "id": "rule.dizziness-syncope.safety.syncope-injury",
       "priority": 900,
+      "status": "research_only",
       "then": {
         "action": "human_handoff",
         "safety_level": "urgent",
@@ -280,6 +372,7 @@
     {
       "id": "rule.dizziness-syncope.safety.syncope-palpitations",
       "priority": 900,
+      "status": "research_only",
       "then": {
         "action": "human_handoff",
         "safety_level": "urgent",
@@ -300,260 +393,32 @@
       }
     },
     {
-      "id": "rule.generated.priority.any.determine-presentation",
-      "priority": 130,
+      "id": "rule.dizziness-syncope.safety.syncope-supine",
+      "priority": 900,
+      "status": "research_only",
       "then": {
-        "reason": "route_dizziness_or_syncope",
-        "target": "target.dizziness-syncope.determine-presentation"
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
       },
-      "type": "priority",
+      "type": "safety",
       "when": {
-        "target_state": {
-          "target.dizziness-syncope.determine-presentation": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine-sudden-onset",
-      "priority": 129,
-      "then": {
-        "reason": "neurological_safety_gate",
-        "target": "target.dizziness-syncope.determine-sudden-onset"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.dizziness-syncope.determine-sudden-onset": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine-syncope",
-      "priority": 128,
-      "then": {
-        "reason": "syncope_safety_gate",
-        "target": "target.dizziness-syncope.determine-syncope"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.dizziness-syncope.determine-syncope": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine-recovery",
-      "priority": 127,
-      "then": {
-        "reason": "immediate_recovery_gate",
-        "target": "target.dizziness-syncope.determine-recovery"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.dizziness-syncope.determine-recovery": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine-injury",
-      "priority": 126,
-      "then": {
-        "reason": "injury_safety_gate",
-        "target": "target.dizziness-syncope.determine-injury"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.dizziness-syncope.determine-injury": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine-neurological-deficit",
-      "priority": 125,
-      "then": {
-        "reason": "neurological_safety_gate",
-        "target": "target.dizziness-syncope.determine-neurological-deficit"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.dizziness-syncope.determine-neurological-deficit": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine-unsteadiness",
-      "priority": 124,
-      "then": {
-        "reason": "neurological_safety_gate",
-        "target": "target.dizziness-syncope.determine-unsteadiness"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.dizziness-syncope.determine-unsteadiness": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine-hearing-loss",
-      "priority": 123,
-      "then": {
-        "reason": "neurological_safety_gate",
-        "target": "target.dizziness-syncope.determine-hearing-loss"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.dizziness-syncope.determine-hearing-loss": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine-vomiting",
-      "priority": 122,
-      "then": {
-        "reason": "acute_vestibular_gate",
-        "target": "target.dizziness-syncope.determine-vomiting"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.dizziness-syncope.determine-vomiting": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine-chest-pain",
-      "priority": 121,
-      "then": {
-        "reason": "cardiovascular_safety_gate",
-        "target": "target.dizziness-syncope.determine-chest-pain"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.dizziness-syncope.determine-chest-pain": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine-dyspnea",
-      "priority": 120,
-      "then": {
-        "reason": "cardiovascular_safety_gate",
-        "target": "target.dizziness-syncope.determine-dyspnea"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.dizziness-syncope.determine-dyspnea": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine-palpitations",
-      "priority": 119,
-      "then": {
-        "reason": "cardiovascular_safety_gate",
-        "target": "target.dizziness-syncope.determine-palpitations"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.dizziness-syncope.determine-palpitations": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine-exertion",
-      "priority": 118,
-      "then": {
-        "reason": "cardiovascular_safety_gate",
-        "target": "target.dizziness-syncope.determine-exertion"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.dizziness-syncope.determine-exertion": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine-heart-failure",
-      "priority": 117,
-      "then": {
-        "reason": "cardiovascular_safety_context",
-        "target": "target.dizziness-syncope.determine-heart-failure"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.dizziness-syncope.determine-heart-failure": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine-family-sudden-death",
-      "priority": 116,
-      "then": {
-        "reason": "cardiovascular_safety_context",
-        "target": "target.dizziness-syncope.determine-family-sudden-death"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.dizziness-syncope.determine-family-sudden-death": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine-tongue-bite",
-      "priority": 115,
-      "then": {
-        "reason": "neurological_referral_gate",
-        "target": "target.dizziness-syncope.determine-tongue-bite"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.dizziness-syncope.determine-tongue-bite": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine-current",
-      "priority": 110,
-      "then": {
-        "reason": "current_state",
-        "target": "target.dizziness-syncope.determine-current"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.dizziness-syncope.determine-current": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine-severity",
-      "priority": 105,
-      "then": {
-        "reason": "characterize_severity",
-        "target": "target.dizziness-syncope.determine-severity"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.dizziness-syncope.determine-severity": "active"
-        }
+        "all": [
+          {
+            "equals": true,
+            "fact": "symptom.syncope.occurred"
+          },
+          {
+            "equals": true,
+            "fact": "event.syncope.while_supine"
+          }
+        ]
       }
     },
     {
       "id": "rule.activate.dizziness-syncope",
       "priority": 100,
+      "status": "research_only",
       "then": {
         "activate_intents": [
           "intent.characterize_symptom",
@@ -566,560 +431,6 @@
       "when": {
         "rfe": "rfe.dizziness_syncope"
       }
-    },
-    {
-      "id": "rule.generated.priority.any.determine-duration",
-      "priority": 100,
-      "then": {
-        "reason": "characterize_duration",
-        "target": "target.dizziness-syncope.determine-duration"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.dizziness-syncope.determine-duration": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine-supine",
-      "priority": 95,
-      "then": {
-        "reason": "event_context",
-        "target": "target.dizziness-syncope.determine-supine"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.dizziness-syncope.determine-supine": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine-prodrome-absence",
-      "priority": 94,
-      "then": {
-        "reason": "event_context",
-        "target": "target.dizziness-syncope.determine-prodrome-absence"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.dizziness-syncope.determine-prodrome-absence": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine-cardiac-history",
-      "priority": 90,
-      "then": {
-        "reason": "cardiovascular_context",
-        "target": "target.dizziness-syncope.determine-cardiac-history"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.dizziness-syncope.determine-cardiac-history": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine-jerking",
-      "priority": 89,
-      "then": {
-        "reason": "seizure_associated_feature",
-        "target": "target.dizziness-syncope.determine-jerking"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.dizziness-syncope.determine-jerking": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine-post-confusion",
-      "priority": 88,
-      "then": {
-        "reason": "seizure_associated_feature",
-        "target": "target.dizziness-syncope.determine-post-confusion"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.dizziness-syncope.determine-post-confusion": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine-postural-trigger",
-      "priority": 84,
-      "then": {
-        "reason": "postural_pattern",
-        "target": "target.dizziness-syncope.determine-postural-trigger"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.dizziness-syncope.determine-postural-trigger": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine-head-movement",
-      "priority": 83,
-      "then": {
-        "reason": "positional_vertigo_pattern",
-        "target": "target.dizziness-syncope.determine-head-movement"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.dizziness-syncope.determine-head-movement": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine-reflex-prodrome",
-      "priority": 82,
-      "then": {
-        "reason": "reflex_pattern",
-        "target": "target.dizziness-syncope.determine-reflex-prodrome"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.dizziness-syncope.determine-reflex-prodrome": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine-reflex-trigger",
-      "priority": 81,
-      "then": {
-        "reason": "reflex_pattern",
-        "target": "target.dizziness-syncope.determine-reflex-trigger"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.dizziness-syncope.determine-reflex-trigger": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine-hearing-symptoms",
-      "priority": 80,
-      "then": {
-        "reason": "vestibular_context",
-        "target": "target.dizziness-syncope.determine-hearing-symptoms"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.dizziness-syncope.determine-hearing-symptoms": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine-medication",
-      "priority": 79,
-      "then": {
-        "reason": "medication_context",
-        "target": "target.dizziness-syncope.determine-medication"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.dizziness-syncope.determine-medication": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.determine-diabetes",
-      "priority": 78,
-      "then": {
-        "reason": "hypoglycaemia_context",
-        "target": "target.dizziness-syncope.determine-diabetes"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.dizziness-syncope.determine-diabetes": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.complete.determine-cardiac-history",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.dizziness-syncope.determine-cardiac-history"
-      }
-    },
-    {
-      "id": "rule.generated.complete.determine-chest-pain",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.dizziness-syncope.determine-chest-pain"
-      }
-    },
-    {
-      "id": "rule.generated.complete.determine-current",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.dizziness-syncope.determine-current"
-      }
-    },
-    {
-      "id": "rule.generated.complete.determine-diabetes",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.dizziness-syncope.determine-diabetes"
-      }
-    },
-    {
-      "id": "rule.generated.complete.determine-duration",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.dizziness-syncope.determine-duration"
-      }
-    },
-    {
-      "id": "rule.generated.complete.determine-dyspnea",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.dizziness-syncope.determine-dyspnea"
-      }
-    },
-    {
-      "id": "rule.generated.complete.determine-exertion",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.dizziness-syncope.determine-exertion"
-      }
-    },
-    {
-      "id": "rule.generated.complete.determine-family-sudden-death",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.dizziness-syncope.determine-family-sudden-death"
-      }
-    },
-    {
-      "id": "rule.generated.complete.determine-head-movement",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.dizziness-syncope.determine-head-movement"
-      }
-    },
-    {
-      "id": "rule.generated.complete.determine-hearing-loss",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.dizziness-syncope.determine-hearing-loss"
-      }
-    },
-    {
-      "id": "rule.generated.complete.determine-hearing-symptoms",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.dizziness-syncope.determine-hearing-symptoms"
-      }
-    },
-    {
-      "id": "rule.generated.complete.determine-heart-failure",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.dizziness-syncope.determine-heart-failure"
-      }
-    },
-    {
-      "id": "rule.generated.complete.determine-injury",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.dizziness-syncope.determine-injury"
-      }
-    },
-    {
-      "id": "rule.generated.complete.determine-jerking",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.dizziness-syncope.determine-jerking"
-      }
-    },
-    {
-      "id": "rule.generated.complete.determine-medication",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.dizziness-syncope.determine-medication"
-      }
-    },
-    {
-      "id": "rule.generated.complete.determine-neurological-deficit",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.dizziness-syncope.determine-neurological-deficit"
-      }
-    },
-    {
-      "id": "rule.generated.complete.determine-palpitations",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.dizziness-syncope.determine-palpitations"
-      }
-    },
-    {
-      "id": "rule.generated.complete.determine-post-confusion",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.dizziness-syncope.determine-post-confusion"
-      }
-    },
-    {
-      "id": "rule.generated.complete.determine-postural-trigger",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.dizziness-syncope.determine-postural-trigger"
-      }
-    },
-    {
-      "id": "rule.generated.complete.determine-presentation",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.dizziness-syncope.determine-presentation"
-      }
-    },
-    {
-      "id": "rule.generated.complete.determine-prodrome-absence",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.dizziness-syncope.determine-prodrome-absence"
-      }
-    },
-    {
-      "id": "rule.generated.complete.determine-recovery",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.dizziness-syncope.determine-recovery"
-      }
-    },
-    {
-      "id": "rule.generated.complete.determine-reflex-prodrome",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.dizziness-syncope.determine-reflex-prodrome"
-      }
-    },
-    {
-      "id": "rule.generated.complete.determine-reflex-trigger",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.dizziness-syncope.determine-reflex-trigger"
-      }
-    },
-    {
-      "id": "rule.generated.complete.determine-severity",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.dizziness-syncope.determine-severity"
-      }
-    },
-    {
-      "id": "rule.generated.complete.determine-sudden-onset",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.dizziness-syncope.determine-sudden-onset"
-      }
-    },
-    {
-      "id": "rule.generated.complete.determine-supine",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.dizziness-syncope.determine-supine"
-      }
-    },
-    {
-      "id": "rule.generated.complete.determine-syncope",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.dizziness-syncope.determine-syncope"
-      }
-    },
-    {
-      "id": "rule.generated.complete.determine-tongue-bite",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.dizziness-syncope.determine-tongue-bite"
-      }
-    },
-    {
-      "id": "rule.generated.complete.determine-unsteadiness",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.dizziness-syncope.determine-unsteadiness"
-      }
-    },
-    {
-      "id": "rule.generated.complete.determine-vomiting",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.dizziness-syncope.determine-vomiting"
-      }
     }
   ],
   "knowledge_source_status": {
@@ -1130,25 +441,73 @@
   "knowledge_sources": [
     {
       "complete": false,
+      "id": "source.nhs.carbon-monoxide-poisoning.2025",
+      "kind": "clinical_guidance_metadata",
+      "last_monitored_at": "2026-07-18",
+      "license_status": "unknown",
+      "monitor_interval_days": 7,
+      "publisher": "NHS",
+      "title": "Carbon monoxide poisoning",
+      "url": "https://www.nhs.uk/conditions/carbon-monoxide-poisoning/",
+      "version": "reviewed-2025-12-16"
+    },
+    {
+      "complete": false,
+      "id": "source.nhs.fainting.2023",
+      "kind": "clinical_guidance_metadata",
+      "last_monitored_at": "2026-07-18",
+      "license_status": "unknown",
+      "monitor_interval_days": 7,
+      "publisher": "NHS",
+      "title": "Fainting",
+      "url": "https://www.nhs.uk/symptoms/fainting/",
+      "version": "reviewed-2023-02-23"
+    },
+    {
+      "complete": false,
+      "id": "source.nhs.head-injury.2025",
+      "kind": "clinical_guidance_metadata",
+      "last_monitored_at": "2026-07-18",
+      "license_status": "unknown",
+      "monitor_interval_days": 7,
+      "publisher": "NHS",
+      "title": "Head injury and concussion",
+      "url": "https://www.nhs.uk/conditions/head-injury-and-concussion/",
+      "version": "current-2026"
+    },
+    {
+      "complete": false,
+      "id": "source.nhs.stroke-symptoms.2026",
+      "kind": "clinical_guidance_metadata",
+      "last_monitored_at": "2026-07-18",
+      "license_status": "unknown",
+      "monitor_interval_days": 7,
+      "publisher": "NHS",
+      "title": "Symptoms of a stroke",
+      "url": "https://www.nhs.uk/conditions/stroke/symptoms/",
+      "version": "current-2026"
+    },
+    {
+      "complete": false,
       "id": "source.nice.cg109.tloc.2023",
-      "kind": "clinical_guideline_metadata",
+      "kind": "clinical_guidance_metadata",
       "last_monitored_at": "2026-07-14",
       "license_status": "restricted",
       "monitor_interval_days": 7,
       "publisher": "NICE",
-      "title": "Transient loss of consciousness (blackouts) in over 16s",
+      "title": "Transient loss of consciousness in over 16s",
       "url": "https://www.nice.org.uk/guidance/cg109/chapter/Recommendations",
       "version": "CG109-updated-2023-11-21"
     },
     {
       "complete": false,
       "id": "source.nice.ng127.dizziness.2023",
-      "kind": "clinical_guideline_metadata",
+      "kind": "clinical_guidance_metadata",
       "last_monitored_at": "2026-07-14",
       "license_status": "restricted",
       "monitor_interval_days": 7,
       "publisher": "NICE",
-      "title": "Suspected neurological conditions: recognition and referral — dizziness and vertigo in adults",
+      "title": "Suspected neurological conditions — dizziness and vertigo",
       "url": "https://www.nice.org.uk/guidance/ng127/chapter/Recommendations-for-adults-aged-over-16",
       "version": "NG127-updated-2023-10-02"
     },
@@ -1160,15 +519,28 @@
       "license_status": "restricted",
       "monitor_interval_days": 30,
       "publisher": "Infoclinic",
-      "title": "STOM SNOMED CT lookup and MRCM allowed attributes for dizziness and syncope",
+      "title": "STOM dizziness and syncope terminology and MRCM summary",
       "url": "https://stom.infoclinic.co/allow/attributes/SNOMEDCT/404640003",
       "version": "SNOMEDCT-20260701"
     }
   ],
+  "loading_policy": "Load this safety and activation index first; load a declared completion or priority partition only when needed.",
   "package_id": "package.primary-care-dizziness-syncope",
   "package_version": "0.1.0",
+  "partitions": [
+    {
+      "count": 73,
+      "path": "/gpt/rfe/dizziness_syncope/rules/completion.json",
+      "rule_type": "completion"
+    },
+    {
+      "count": 73,
+      "path": "/gpt/rfe/dizziness_syncope/rules/priority.json",
+      "rule_type": "priority"
+    }
+  ],
   "reason_for_encounter": "rfe.dizziness_syncope",
-  "resource_type": "ReasonForEncounterRuleCollection",
+  "resource_type": "ReasonForEncounterRuleCollectionIndex",
   "review_status": "unreviewed",
   "status": "research_only",
   "usage_modes": [

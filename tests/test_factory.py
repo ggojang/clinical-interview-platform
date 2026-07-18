@@ -446,10 +446,10 @@ class CompilerTests(unittest.TestCase):
             node["id"] for node in first["knowledge_graph"]["nodes"]
             if node["type"] == "Fact"
         }
-        self.assertEqual(len(facts), 31)
+        self.assertEqual(len(facts), 73)
         self.assertEqual(facts, set(first["indexes"]["questions_by_fact"]))
-        self.assertEqual(first["coverage"]["total_safety_rules"], 13)
-        self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 13)
+        self.assertEqual(first["coverage"]["total_safety_rules"], 20)
+        self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 20)
         self.assertEqual(first["coverage"]["uncovered_safety_rules"], [])
 
     def test_dizziness_syncope_mrcm_preserves_unsupported_syncope_result(self):
@@ -1625,8 +1625,8 @@ class PackageRuntimeTests(unittest.TestCase):
     def test_dizziness_syncope_simulation_evaluation_passes(self):
         report = run_evaluation(DIZZINESS_SYNCOPE_PACKAGE)
         self.assertTrue(report["passed"])
-        self.assertEqual(report["case_count"], 13)
-        self.assertLessEqual(max(item["turns"] for item in report["results"]), 32)
+        self.assertEqual(report["case_count"], 28)
+        self.assertLessEqual(max(item["turns"] for item in report["results"]), 55)
 
     def test_dizziness_syncope_runtime_uses_combined_rfe(self):
         session = InterviewSession(
