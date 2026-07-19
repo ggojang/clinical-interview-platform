@@ -716,7 +716,7 @@ class CompilerTests(unittest.TestCase):
     def test_edema_package_is_complete(self):
         package = compile_package(profile="edema")
         facts = {n["id"] for n in package["knowledge_graph"]["nodes"] if n["type"] == "Fact"}
-        self.assertEqual(len(facts), 37)
+        self.assertEqual(len(facts), 69)
         self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
         self.assertEqual(package["coverage"]["total_safety_rules"], 10)
         self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 10)
@@ -1923,7 +1923,8 @@ class PackageRuntimeTests(unittest.TestCase):
     def test_edema_simulation_and_runtime(self):
         report = run_evaluation(EDEMA_PACKAGE)
         self.assertTrue(report["passed"])
-        self.assertEqual(report["case_count"], 11)
+        self.assertEqual(report["case_count"], 24)
+        self.assertLessEqual(max(item["turns"] for item in report["results"]), 45)
         session = InterviewSession("edema-runtime", package_path=EDEMA_PACKAGE)
         state = session.process("다리가 붓고 숨이 차요.")
         self.assertIn("cardiovascular.edema", state["active_patterns"])

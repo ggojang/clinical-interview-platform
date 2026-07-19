@@ -26,31 +26,25 @@
       "symptom.edema.severity"
     ],
     "routine": [
+      "edema.primary_context",
       "symptom.duration",
       "symptom.edema.location",
       "symptom.edema.laterality",
-      "symptom.edema.pitting",
-      "symptom.edema.time_pattern",
+      "symptom.edema.severity",
       "symptom.edema.pain",
-      "symptom.edema.skin_change_or_wound",
-      "symptom.dyspnea_on_exertion",
-      "symptom.orthopnea",
-      "symptom.paroxysmal_nocturnal_dyspnea",
-      "symptom.rapid_weight_gain",
-      "symptom.abdominal_swelling_or_ascites",
-      "risk.recent_immobility_or_surgery",
-      "history.venous_thromboembolism",
-      "risk.active_cancer_or_hormonal_therapy",
-      "history.heart_kidney_liver_or_venous_disease",
-      "medication.edema_relevant",
-      "event.edema.injury_bite_or_local_trigger",
-      "lifestyle.prolonged_standing_sitting_or_salt",
-      "symptom.edema.functional_impact"
+      "symptom.edema.functional_impact",
+      "edema.patient_words_first_noticed_change_and_main_concern",
+      "edema.first_latest_onset_exact_time_context_and_progression",
+      "edema.daily_episode_duration_baseline_and_between_state",
+      "edema.exact_site_side_extent_sequence_and_asymmetry",
+      "edema.walking_footwear_hand_use_sleep_work_selfcare_and_fall_impact",
+      "edema.information_source_reliability_conflict_and_proxy",
+      "edema.patient_goal_expected_help_and_additional_rfe"
     ]
   },
   "clarification_facts_by_rule": {},
   "question_budget": {
-    "routine": 37,
+    "routine": 85,
     "clarify": 12
   },
   "provenance": {
@@ -62,9 +56,102 @@
     "source_refs": [
       "source.nhs.edema.2026",
       "source.nice.ng158.vte.2023",
-      "source.nice.ng106.heart-failure.2025"
+      "source.nice.ng106.heart-failure.2025",
+      "source.stom.edema.20260714"
     ],
     "review_status": "unreviewed",
     "version": "0.1.0"
-  }
+  },
+  "conditional_required_facts": [
+    {
+      "selector_fact": "edema.primary_context",
+      "cases": {
+        "acute_unilateral_leg": [
+          "symptom.unilateral_leg_pain_swelling",
+          "symptom.edema.red_or_hot",
+          "edema.unilateral_leg_onset_route_size_change_skin_and_function",
+          "edema.circumference_landmark_time_device_and_side_comparison",
+          "edema.immobility_surgery_cast_travel_date_duration_and_mobility_return",
+          "edema.vte_cancer_hormone_pregnancy_family_and_anticoagulant_context"
+        ],
+        "bilateral_dependent_leg": [
+          "symptom.edema.time_pattern",
+          "symptom.edema.pitting",
+          "edema.pitting_observation_method_depth_duration_and_recovery",
+          "edema.weight_date_time_scale_trend_and_dry_baseline",
+          "edema.salt_fluid_alcohol_activity_heat_and_posture_change",
+          "edema.elevation_compression_diuretic_skin_care_response_and_adverse_effect"
+        ],
+        "generalized_or_fluid_change": [
+          "symptom.markedly_reduced_urine",
+          "symptom.rapid_weight_gain",
+          "symptom.abdominal_swelling_or_ascites",
+          "symptom.dyspnea_on_exertion",
+          "symptom.orthopnea",
+          "symptom.paroxysmal_nocturnal_dyspnea",
+          "edema.weight_date_time_scale_trend_and_dry_baseline",
+          "edema.urine_output_frequency_appearance_intake_and_baseline_change",
+          "edema.orthopnea_pillow_count_nocturnal_awaking_and_baseline_change",
+          "edema.pulse_bp_oxygen_temperature_time_device_position_and_source"
+        ],
+        "face_or_upper_body": [
+          "symptom.sudden_face_tongue_throat_swelling",
+          "edema.exact_site_side_extent_sequence_and_asymmetry",
+          "edema.skin_colour_temperature_texture_wound_drainage_and_timeline",
+          "edema.urine_output_frequency_appearance_intake_and_baseline_change",
+          "edema.prior_node_surgery_radiation_infection_or_limb_procedure"
+        ],
+        "local_inflammatory_or_wound": [
+          "symptom.edema.red_or_hot",
+          "symptom.fever",
+          "symptom.edema.skin_change_or_wound",
+          "event.edema.injury_bite_or_local_trigger",
+          "edema.skin_colour_temperature_texture_wound_drainage_and_timeline",
+          "edema.pain_tenderness_heaviness_tightness_and_movement_relation"
+        ],
+        "pregnancy_or_postpartum": [
+          "patient.pregnant_or_postpartum",
+          "symptom.preeclampsia_warning_features",
+          "edema.pregnancy_gestation_postpartum_delivery_bp_proteinuria_and_warning_timeline",
+          "edema.pulse_bp_oxygen_temperature_time_device_position_and_source",
+          "edema.urine_output_frequency_appearance_intake_and_baseline_change"
+        ],
+        "medicine_related": [
+          "medication.edema_relevant",
+          "edema.medicine_name_dose_start_change_last_use_and_temporal_relation",
+          "edema.heart_kidney_liver_venous_lymphatic_diagnosis_stage_and_status",
+          "edema.prior_episode_trigger_diagnosis_resolution_and_current_difference"
+        ],
+        "chronic_venous_or_lymphatic": [
+          "symptom.edema.pitting",
+          "symptom.edema.skin_change_or_wound",
+          "edema.skin_colour_temperature_texture_wound_drainage_and_timeline",
+          "edema.heart_kidney_liver_venous_lymphatic_diagnosis_stage_and_status",
+          "edema.prior_node_surgery_radiation_infection_or_limb_procedure",
+          "edema.prior_exam_ecg_echo_ultrasound_imaging_lab_date_result_and_source",
+          "edema.elevation_compression_diuretic_skin_care_response_and_adverse_effect"
+        ],
+        "child_or_proxy": [
+          "edema.child_age_growth_nephrotic_infection_function_and_proxy_observation",
+          "edema.information_source_reliability_conflict_and_proxy",
+          "edema.communication_language_hearing_cognition_and_accessibility"
+        ],
+        "followup_or_result_review": [
+          "edema.prior_episode_trigger_diagnosis_resolution_and_current_difference",
+          "edema.prior_exam_ecg_echo_ultrasound_imaging_lab_date_result_and_source",
+          "edema.elevation_compression_diuretic_skin_care_response_and_adverse_effect",
+          "edema.weight_date_time_scale_trend_and_dry_baseline"
+        ],
+        "other_or_unclear": [
+          "edema.pitting_observation_method_depth_duration_and_recovery",
+          "edema.weight_date_time_scale_trend_and_dry_baseline",
+          "edema.dyspnea_chest_symptom_order_rest_exertion_sleep_and_recovery",
+          "edema.urine_output_frequency_appearance_intake_and_baseline_change",
+          "edema.heart_kidney_liver_venous_lymphatic_diagnosis_stage_and_status",
+          "edema.medicine_name_dose_start_change_last_use_and_temporal_relation",
+          "edema.communication_language_hearing_cognition_and_accessibility"
+        ]
+      }
+    }
+  ]
 }
