@@ -24,7 +24,7 @@ from runtime.package import (
     VOMITING_DIARRHEA_PACKAGE,
     PackageLoadError, load_package,
 )
-from runtime.session import InterviewSession
+from runtime.session import InterviewSession, extract
 from sources.check_refresh import due_sources
 from tools.validator.audit_expansion_queue import run as run_expansion_audit
 
@@ -660,7 +660,7 @@ class CompilerTests(unittest.TestCase):
         second = compile_package(profile="palpitations")
         self.assertEqual(first, second)
         facts = {node["id"] for node in first["knowledge_graph"]["nodes"] if node["type"] == "Fact"}
-        self.assertEqual(len(facts), 36)
+        self.assertEqual(len(facts), 69)
         self.assertEqual(facts, set(first["indexes"]["questions_by_fact"]))
         self.assertEqual(first["coverage"]["total_safety_rules"], 9)
         self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 9)
@@ -1831,8 +1831,32 @@ class PackageRuntimeTests(unittest.TestCase):
     def test_palpitations_simulation_evaluation_passes(self):
         report = run_evaluation(PALPITATIONS_PACKAGE)
         self.assertTrue(report["passed"])
-        self.assertEqual(report["case_count"], 10)
-        self.assertLessEqual(max(item["turns"] for item in report["results"]), 38)
+        self.assertEqual(report["case_count"], 20)
+        self.assertLessEqual(max(item["turns"] for item in report["results"]), 70)
+
+    def test_palpitations_korean_syncope_negation_is_not_false_escalation(self):
+        extracted = extract("운동 때 두근거리지만 실신은 없었습니다.", 1)
+        self.assertFalse(extracted["symptom.syncope"]["value"])
+
+    def test_palpitations_korean_syncope_negation_typo_is_not_false_escalation(self):
+        extracted = extract("두근거리지만 실신은 업서요.", 1)
+        self.assertFalse(extracted["symptom.syncope"]["value"])
+
+    def test_palpitations_bare_pulse_number_is_stored_with_declared_unit(self):
+        session = InterviewSession(
+            "palpitations-pulse-quantity", package_path=PALPITATIONS_PACKAGE
+        )
+        pulse_node = next(
+            node for node in session.package["knowledge_graph"]["nodes"]
+            if node["id"] == "observation.pulse_rate_during_episode"
+        )
+        self.assertEqual(pulse_node["unit"], "/min")
+        session.last_question_fact = "observation.pulse_rate_during_episode"
+        state = session.process("96")
+        self.assertEqual(
+            state["facts"]["observation.pulse_rate_during_episode"]["value"],
+            {"amount": 96, "unit": "/min"},
+        )
 
     def test_palpitations_runtime_uses_grouped_rfe(self):
         session = InterviewSession("palpitations-runtime", package_path=PALPITATIONS_PACKAGE)

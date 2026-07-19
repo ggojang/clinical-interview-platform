@@ -9,11 +9,11 @@
   "source_manifest": "source-manifest.primary-care-palpitations-research",
   "default_refresh": {
     "class": "clinical_guideline",
-    "last_assessed_at": "2026-07-14",
+    "last_assessed_at": "2026-07-19",
     "monitor_interval_days": 1,
     "full_review_interval_days": 180,
-    "next_monitor_at": "2026-07-15",
-    "next_full_review_at": "2027-01-10",
+    "next_monitor_at": "2026-07-21",
+    "next_full_review_at": "2027-01-15",
     "policy_id": "policy.knowledge-refresh",
     "overdue_behavior": {
       "production": "exclude_or_require_review",
@@ -60,6 +60,56 @@
       "id": "hypothesis.palpitations.reversible-trigger",
       "type": "Hypothesis",
       "display": "Possible Reversible Trigger Pattern"
+    },
+    {
+      "id": "group.palpitations.routing",
+      "type": "ClinicalGroup",
+      "display": "Routing"
+    },
+    {
+      "id": "group.palpitations.episode-course",
+      "type": "ClinicalGroup",
+      "display": "Episode Course"
+    },
+    {
+      "id": "group.palpitations.rhythm-detail",
+      "type": "ClinicalGroup",
+      "display": "Rhythm Detail"
+    },
+    {
+      "id": "group.palpitations.associated-sequence",
+      "type": "ClinicalGroup",
+      "display": "Associated Sequence"
+    },
+    {
+      "id": "group.palpitations.trigger-detail",
+      "type": "ClinicalGroup",
+      "display": "Trigger Detail"
+    },
+    {
+      "id": "group.palpitations.cardiac-history",
+      "type": "ClinicalGroup",
+      "display": "Cardiac History"
+    },
+    {
+      "id": "group.palpitations.systemic-context",
+      "type": "ClinicalGroup",
+      "display": "Systemic Context"
+    },
+    {
+      "id": "group.palpitations.previous-investigation",
+      "type": "ClinicalGroup",
+      "display": "Previous Investigation"
+    },
+    {
+      "id": "group.palpitations.function",
+      "type": "ClinicalGroup",
+      "display": "Function"
+    },
+    {
+      "id": "group.palpitations.handoff",
+      "type": "ClinicalGroup",
+      "display": "Handoff"
     }
   ],
   "group_hypothesis_edges": [
@@ -876,7 +926,8 @@
         "mrcm_validation": {
           "ref": "mapping.snomed-mrcm.palpitations",
           "status": "provisional_pass"
-        }
+        },
+        "unit": "/min"
       },
       "target": {
         "id": "target.palpitations.pulse-rate",
@@ -1596,6 +1647,1154 @@
       "supports": [
         "group.palpitations.rhythm-characterization"
       ]
+    },
+    {
+      "fact": {
+        "id": "palpitations.primary_context",
+        "display": "Primary Palpitations Context",
+        "value_type": "coded",
+        "allowed_values": [
+          "current_or_persistent",
+          "episodic_recurrent",
+          "wearable_or_pulse_record",
+          "exertional",
+          "postural_or_volume_related",
+          "medicine_or_substance_related",
+          "pregnancy_anemia_thyroid_or_systemic",
+          "other_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.palpitations.primary-context",
+        "display": "Primary Palpitations Context",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.primary-context",
+        "wording": "가장 가까운 상황은 현재 지속 중, 간헐적 반복, 기기·맥박 기록 확인, 운동 관련, 자세·탈수 관련, 약물·카페인 등 관련, 임신·빈혈·갑상선 등 전신 상황, 또는 불분명 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 119,
+          "reason": "primary-context"
+        }
+      ],
+      "supports": [
+        "group.palpitations.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "palpitations.patient_words_and_heartbeat_location",
+        "display": "Patient Description and Perceived Location",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.palpitations.patient-words",
+        "display": "Patient Description and Perceived Location",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.patient-words",
+        "wording": "본인의 표현으로 심장이 어떻게 뛰는 느낌인지와 가슴·목·귀·배 등 어디에서 느끼는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 113,
+          "reason": "patient-words"
+        }
+      ],
+      "supports": [
+        "group.palpitations.rhythm-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "palpitations.first_latest_onset_exact_time_context_and_trend",
+        "display": "First and Latest Episode Timeline",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.palpitations.onset-timeline",
+        "display": "First and Latest Episode Timeline",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.onset-timeline",
+        "wording": "처음과 가장 최근 증상의 날짜·시각, 당시 하던 일과 최근 빈도·지속시간·강도의 변화 추세를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 112,
+          "reason": "onset-timeline"
+        }
+      ],
+      "supports": [
+        "group.palpitations.episode-course"
+      ]
+    },
+    {
+      "fact": {
+        "id": "palpitations.episode_count_duration_range_and_between_episode_state",
+        "display": "Episode Count Duration Range and Inter-episode State",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.palpitations.episode-count",
+        "display": "Episode Count Duration Range and Inter-episode State",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.episode-count",
+        "wording": "하루·주당 횟수, 가장 짧고 긴 지속시간과 증상 사이에는 완전히 정상으로 돌아오는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 111,
+          "reason": "episode-count"
+        }
+      ],
+      "supports": [
+        "group.palpitations.episode-course"
+      ]
+    },
+    {
+      "fact": {
+        "id": "palpitations.onset_offset_precipitant_termination_and_maneuver",
+        "display": "Episode Start Stop and Termination Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.palpitations.onset-offset-detail",
+        "display": "Episode Start Stop and Termination Detail",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.onset-offset-detail",
+        "wording": "갑자기 또는 서서히 시작·종료하는지, 시작 직전 상황과 저절로·휴식·자세변화·기침·숨참기 등 어떻게 끝났는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 110,
+          "reason": "onset-offset-detail"
+        }
+      ],
+      "supports": [
+        "group.palpitations.episode-course"
+      ]
+    },
+    {
+      "fact": {
+        "id": "palpitations.pulse_measurement_method_time_rate_range_and_reliability",
+        "display": "Pulse Measurement Method Rate and Reliability",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.palpitations.pulse-provenance",
+        "display": "Pulse Measurement Method Rate and Reliability",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.pulse-provenance",
+        "wording": "증상 중 맥박을 손으로 잰 것인지 기기로 측정했는지, 측정 시각·분당 최저/최고·규칙성과 기록의 신뢰도를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 109,
+          "reason": "pulse-provenance"
+        }
+      ],
+      "supports": [
+        "group.palpitations.rhythm-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "palpitations.wearable_ecg_timestamp_duration_symptom_correlation_and_source",
+        "display": "Wearable ECG and Symptom Correlation",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.palpitations.wearable-record",
+        "display": "Wearable ECG and Symptom Correlation",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.wearable-record",
+        "wording": "스마트워치·휴대형 ECG 기록이 있다면 날짜·시각·기록 길이, 그때 증상과 기기 표시 문구를 원문 그대로 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 108,
+          "reason": "wearable-record"
+        }
+      ],
+      "supports": [
+        "group.palpitations.rhythm-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "palpitations.associated_symptom_order_before_during_after_and_recovery",
+        "display": "Associated Symptom Sequence and Recovery",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.palpitations.associated-sequence",
+        "display": "Associated Symptom Sequence and Recovery",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.associated-sequence",
+        "wording": "흉통·호흡곤란·어지럼·실신·땀·메스꺼움 등이 두근거림 전·중·후 어느 순서로 생겼고 회복까지 얼마나 걸렸는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 107,
+          "reason": "associated-sequence"
+        }
+      ],
+      "supports": [
+        "group.palpitations.associated-sequence"
+      ]
+    },
+    {
+      "fact": {
+        "id": "palpitations.chest_pain_nrs",
+        "display": "Chest Pain NRS",
+        "value_type": "quantity"
+      },
+      "target": {
+        "id": "target.palpitations.chest-pain-nrs",
+        "display": "Chest Pain NRS",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.chest-pain-nrs",
+        "wording": "[필수] 두근거림과 관련된 흉통이 있었다면 가장 심할 때 통증을 0부터 10까지 숫자로 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 106,
+          "reason": "chest-pain-nrs"
+        }
+      ],
+      "supports": [
+        "group.palpitations.associated-sequence"
+      ]
+    },
+    {
+      "fact": {
+        "id": "palpitations.chest_pain_site_character_radiation_duration_and_relation",
+        "display": "Chest Pain Pattern with Palpitations",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.palpitations.chest-pain-detail",
+        "display": "Chest Pain Pattern with Palpitations",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.chest-pain-detail",
+        "wording": "흉통이 있었다면 부위·양상·퍼지는 곳·지속시간과 두근거림·운동·호흡·자세와의 관계를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 105,
+          "reason": "chest-pain-detail"
+        }
+      ],
+      "supports": [
+        "group.palpitations.associated-sequence"
+      ]
+    },
+    {
+      "fact": {
+        "id": "palpitations.dyspnea_rest_exertion_speech_sleep_and_recovery",
+        "display": "Dyspnea Detail with Palpitations",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.palpitations.dyspnea-detail",
+        "display": "Dyspnea Detail with Palpitations",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.dyspnea-detail",
+        "wording": "숨참이 있었다면 안정 시·운동 시 여부, 말하기·눕기·수면 영향, 지속시간과 회복 과정을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 104,
+          "reason": "dyspnea-detail"
+        }
+      ],
+      "supports": [
+        "group.palpitations.associated-sequence"
+      ]
+    },
+    {
+      "fact": {
+        "id": "palpitations.syncope_witness_posture_prodrome_injury_duration_recovery",
+        "display": "Syncope Witness and Recovery Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.palpitations.syncope-detail",
+        "display": "Syncope Witness and Recovery Detail",
+        "intents": [
+          "intent.screen_red_flags",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.syncope-detail",
+        "wording": "실신·실신 직전 증상이 있었다면 자세·전조·목격 내용·의식소실 시간·부상·회복 후 혼란과 응급진료 여부를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 103,
+          "reason": "syncope-detail"
+        }
+      ],
+      "supports": [
+        "group.palpitations.associated-sequence"
+      ]
+    },
+    {
+      "fact": {
+        "id": "palpitations.exertion_activity_threshold_during_or_after_and_recovery",
+        "display": "Exertional Threshold and Recovery",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.palpitations.exertion-detail",
+        "display": "Exertional Threshold and Recovery",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.exertion-detail",
+        "wording": "걷기·계단·달리기 등 어느 활동 수준에서 운동 중 또는 직후 시작했고 쉬면 얼마 만에 회복하는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 102,
+          "reason": "exertion-detail"
+        }
+      ],
+      "supports": [
+        "group.palpitations.trigger-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "palpitations.posture_standing_time_hydration_heat_illness_and_bp",
+        "display": "Postural Hydration and Blood Pressure Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.palpitations.postural-detail",
+        "display": "Postural Hydration and Blood Pressure Context",
+        "intents": [
+          "intent.differentiate_common_causes",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.postural-detail",
+        "wording": "눕거나 앉았다 일어난 뒤 몇 초·분에 생기는지, 수분섭취·더위·설사/구토·최근 질병과 당시 혈압 기록을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 96,
+          "reason": "postural-detail"
+        }
+      ],
+      "supports": [
+        "group.palpitations.trigger-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "palpitations.sleep_nocturnal_lying_meal_and_reflux_relation",
+        "display": "Sleep Nocturnal Meal and Lying Relation",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.palpitations.sleep-meal",
+        "display": "Sleep Nocturnal Meal and Lying Relation",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.sleep-meal",
+        "wording": "수면 중 깨거나 누울 때, 식사·과식·역류 증상 전후로 생기는지와 수면을 얼마나 방해하는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 88,
+          "reason": "sleep-meal"
+        }
+      ],
+      "supports": [
+        "group.palpitations.trigger-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "palpitations.caffeine_energy_alcohol_nicotine_amount_timing_change",
+        "display": "Detailed Stimulant Exposure Timing",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.palpitations.stimulant-detail",
+        "display": "Detailed Stimulant Exposure Timing",
+        "intents": [
+          "intent.differentiate_common_causes",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.stimulant-detail",
+        "wording": "커피·차·에너지음료·술·담배·전자담배의 하루·주당 양, 마지막 사용 시각과 최근 증가·중단을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 95,
+          "reason": "stimulant-detail"
+        }
+      ],
+      "supports": [
+        "group.palpitations.trigger-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "palpitations.medicine_decongestant_inhaler_thyroid_supplement_dose_timing",
+        "display": "Medicine and Supplement Timing Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.palpitations.medicine-detail",
+        "display": "Medicine and Supplement Timing Detail",
+        "intents": [
+          "intent.differentiate_common_causes",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.medicine-detail",
+        "wording": "처방약·감기약/비충혈제거제·흡입제·갑상선약·체중감량제·한약/보충제의 이름·용량·변경일과 증상 시점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 101,
+          "reason": "medicine-detail"
+        }
+      ],
+      "supports": [
+        "group.palpitations.trigger-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "palpitations.recreational_stimulant_withdrawal_and_other_exposure_timing",
+        "display": "Recreational Stimulant and Withdrawal Timing",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.palpitations.substance-detail",
+        "display": "Recreational Stimulant and Withdrawal Timing",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.substance-detail",
+        "wording": "코카인·암페타민 등 각성제나 다른 물질 사용, 술·진정제 중단과 증상 시점의 관계를 답할 수 있는 범위에서 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 94,
+          "reason": "substance-detail"
+        }
+      ],
+      "supports": [
+        "group.palpitations.trigger-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "palpitations.prior_arrhythmia_cardioversion_ablation_device_and_followup",
+        "display": "Prior Arrhythmia Procedure and Device History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.palpitations.arrhythmia-history",
+        "display": "Prior Arrhythmia Procedure and Device History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.arrhythmia-history",
+        "wording": "이전 부정맥 진단, 전기충격·도자절제술, 심박동기/제세동기 여부와 담당 의료기관·최근 추적일을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 100,
+          "reason": "arrhythmia-history"
+        }
+      ],
+      "supports": [
+        "group.palpitations.cardiac-history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "palpitations.structural_heart_failure_ischemic_valve_congenital_history",
+        "display": "Detailed Cardiac History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.palpitations.cardiac-history",
+        "display": "Detailed Cardiac History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.cardiac-history",
+        "wording": "심부전·관상동맥질환·심근병증·판막·선천성 심장질환의 진단명, 시기, 현재 상태를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 99,
+          "reason": "cardiac-history"
+        }
+      ],
+      "supports": [
+        "group.palpitations.cardiac-history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "palpitations.thyroid_anemia_electrolyte_glucose_lab_date_result_source",
+        "display": "Relevant Laboratory Result Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.palpitations.lab-context",
+        "display": "Relevant Laboratory Result Context",
+        "intents": [
+          "intent.differentiate_common_causes",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.lab-context",
+        "wording": "갑상선·혈색소/철분·전해질·혈당 검사의 최근 날짜·결과·추세와 자료 출처를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 93,
+          "reason": "lab-context"
+        }
+      ],
+      "supports": [
+        "group.palpitations.systemic-context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "palpitations.pregnancy_gestation_postpartum_bleeding_and_obstetric_context",
+        "display": "Pregnancy and Postpartum Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.palpitations.pregnancy-detail",
+        "display": "Pregnancy and Postpartum Detail",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.pregnancy-detail",
+        "wording": "해당되는 경우 임신 주수·출산 후 기간, 출혈·빈혈·고혈압과 임신 전후 약 변경을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 92,
+          "reason": "pregnancy-detail"
+        }
+      ],
+      "supports": [
+        "group.palpitations.systemic-context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "palpitations.fever_infection_dehydration_sleep_and_recent_illness",
+        "display": "Recent Illness Dehydration and Sleep Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.palpitations.illness-context",
+        "display": "Recent Illness Dehydration and Sleep Context",
+        "intents": [
+          "intent.differentiate_common_causes",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.illness-context",
+        "wording": "최근 발열·감염·탈수·구토/설사, 수면 부족과 회복 중인 질환이 증상보다 언제 생겼는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 91,
+          "reason": "illness-context"
+        }
+      ],
+      "supports": [
+        "group.palpitations.systemic-context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "palpitations.family_arrhythmia_cardiomyopathy_channelopathy_sudden_death_age",
+        "display": "Detailed Family Cardiac History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.palpitations.family-detail",
+        "display": "Detailed Family Cardiac History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.family-detail",
+        "wording": "가족의 부정맥·심근병증·유전성 심장질환·심박동기와 돌연사 당시 나이·상황을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 98,
+          "reason": "family-detail"
+        }
+      ],
+      "supports": [
+        "group.palpitations.cardiac-history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "palpitations.prior_12lead_ecg_date_result_symptom_state_and_source",
+        "display": "Prior 12-lead ECG Result",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.palpitations.ecg-result",
+        "display": "Prior 12-lead ECG Result",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.ecg-result",
+        "wording": "이전 12유도 ECG의 날짜·설명받은 결과, 검사 당시 증상 유무와 결과 자료 출처를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 97,
+          "reason": "ecg-result"
+        }
+      ],
+      "supports": [
+        "group.palpitations.previous-investigation"
+      ]
+    },
+    {
+      "fact": {
+        "id": "palpitations.ambulatory_monitor_type_duration_result_and_symptom_correlation",
+        "display": "Ambulatory Rhythm Monitor Result",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.palpitations.monitor-result",
+        "display": "Ambulatory Rhythm Monitor Result",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.monitor-result",
+        "wording": "Holter·패치·event monitor의 종류·착용기간·날짜, 설명받은 결과와 증상 버튼·일지의 일치 여부를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 96,
+          "reason": "monitor-result"
+        }
+      ],
+      "supports": [
+        "group.palpitations.previous-investigation"
+      ]
+    },
+    {
+      "fact": {
+        "id": "palpitations.echo_stress_test_lab_and_device_check_result",
+        "display": "Other Cardiac Test and Device Check Result",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.palpitations.other-tests",
+        "display": "Other Cardiac Test and Device Check Result",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.other-tests",
+        "wording": "심초음파·운동검사·혈액검사·기기 점검의 날짜·결과와 아직 확인하지 못한 항목을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 90,
+          "reason": "other-tests"
+        }
+      ],
+      "supports": [
+        "group.palpitations.previous-investigation"
+      ]
+    },
+    {
+      "fact": {
+        "id": "palpitations.prior_ed_admission_treatment_response_and_recurrence",
+        "display": "Prior Emergency Care Treatment and Recurrence",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.palpitations.prior-care",
+        "display": "Prior Emergency Care Treatment and Recurrence",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.prior-care",
+        "wording": "이 증상으로 응급실·입원한 시기, 당시 맥박/리듬·처치와 반응, 퇴원 후 재발 과정을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 89,
+          "reason": "prior-care"
+        }
+      ],
+      "supports": [
+        "group.palpitations.previous-investigation"
+      ]
+    },
+    {
+      "fact": {
+        "id": "palpitations.function_sleep_work_driving_exercise_and_selfcare_impact",
+        "display": "Functional Safety and Activity Impact",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.palpitations.function",
+        "display": "Functional Safety and Activity Impact",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.function",
+        "wording": "수면·출근/등교·운전·기계조작·운동·식사·자가관리에서 제한하거나 중단한 활동을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 87,
+          "reason": "function"
+        }
+      ],
+      "supports": [
+        "group.palpitations.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "palpitations.occupation_shift_heat_exertion_and_safety_exposure",
+        "display": "Occupation Shift and Safety Exposure",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.palpitations.occupation",
+        "display": "Occupation Shift and Safety Exposure",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.occupation",
+        "wording": "직업·교대근무·고온·고강도 활동·고소작업·운전 등 증상과 관련되거나 안전에 영향을 주는 환경을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 86,
+          "reason": "occupation"
+        }
+      ],
+      "supports": [
+        "group.palpitations.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "palpitations.information_source_reliability_conflict_and_proxy",
+        "display": "Information Source Reliability and Conflict",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.palpitations.information-source",
+        "display": "Information Source Reliability and Conflict",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.information-source",
+        "wording": "본인·보호자·목격자 중 누가 답하는지, 일지·기기·의무기록 유무와 기억이 불확실하거나 자료가 서로 다른 부분을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 85,
+          "reason": "information-source"
+        }
+      ],
+      "supports": [
+        "group.palpitations.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "palpitations.patient_concern_goal_expectation_and_additional_comment",
+        "display": "Patient Concern Goal and Additional Comment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.palpitations.goal",
+        "display": "Patient Concern Goal and Additional Comment",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.palpitations.goal",
+        "wording": "가장 걱정되는 점, 진료에서 확인하고 싶은 내용과 질문에 없던 다른 증상·의견을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 84,
+          "reason": "goal"
+        }
+      ],
+      "supports": [
+        "group.palpitations.handoff"
+      ]
     }
   ],
   "provenance": {
@@ -1607,7 +2806,8 @@
     "source_refs": [
       "source.nhs.heart-palpitations.2026",
       "source.nice.ng196.atrial-fibrillation.2021",
-      "source.nice.cg109.blackouts.2023"
+      "source.nice.cg109.blackouts.2023",
+      "source.stom.mrcm.palpitations.20260714"
     ],
     "review_status": "unreviewed",
     "version": "0.1.0"

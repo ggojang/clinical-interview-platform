@@ -546,7 +546,10 @@ def merge_fragment(
         }
         if fact.get("allowed_values") is not None:
             fact_node["allowed_values"] = fact["allowed_values"]
-        for key in ("terminology_binding", "mrcm_validation"):
+        for key in (
+            "unit", "minimum", "maximum", "scale", "derived_category",
+            "terminology_binding", "mrcm_validation",
+        ):
             if fact.get(key) is not None:
                 fact_node[key] = deepcopy(fact[key])
         if (

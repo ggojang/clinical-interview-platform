@@ -126,6 +126,15 @@ def extract(text: str, turn: int, expected_fact: str | None = None) -> dict[str,
         "symptom.dyspnea": ["not short of breath", "no trouble breathing", "숨은 안 차", "호흡곤란은 없"],
         "symptom.hemoptysis": ["no blood", "피는 없", "피가 안"],
         "symptom.chest_pain": ["no chest pain", "가슴 통증은 없"],
+        "symptom.syncope": [
+            "no fainting", "did not faint", "no syncope",
+            "실신은 없", "실신이 없", "실신하지 않",
+            "기절은 없", "기절이 없", "기절하지 않",
+            # Common Korean phonetic typos for "없어요" must not turn the
+            # nearby positive cue (실신/기절) into a false emergency signal.
+            "실신은 업서", "실신이 업서", "실신은 업어", "실신이 업어",
+            "기절은 업서", "기절이 업서", "기절은 업어", "기절이 업어",
+        ],
     }
     for fact_id, cues in lexical_true.items():
         negatives = explicit_negative.get(fact_id, [])
@@ -424,6 +433,24 @@ class InterviewSession:
                             and (maximum is None or numeric_value <= maximum)):
                         additions[expected_fact] = fact(
                             numeric_value, answer_text, turn, .95
+                        )
+                elif (
+                    node.get("value_type") == "quantity"
+                    and node.get("unit")
+                    and re.fullmatch(r"\d+(?:\.\d+)?", normalized)
+                ):
+                    numeric_value = float(normalized)
+                    if numeric_value.is_integer():
+                        numeric_value = int(numeric_value)
+                    minimum = node.get("minimum")
+                    maximum = node.get("maximum")
+                    if ((minimum is None or numeric_value >= minimum)
+                            and (maximum is None or numeric_value <= maximum)):
+                        additions[expected_fact] = fact(
+                            {"amount": numeric_value, "unit": node["unit"]},
+                            answer_text,
+                            turn,
+                            .95,
                         )
                 elif (
                     node.get("value_type") == "string"

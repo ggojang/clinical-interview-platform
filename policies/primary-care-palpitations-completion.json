@@ -22,36 +22,26 @@
       "family.sudden_cardiac_death_under_40"
     ],
     "routine": [
+      "palpitations.primary_context",
       "symptom.duration",
       "symptom.palpitations.episode_duration",
       "symptom.palpitations.frequency",
       "symptom.palpitations.onset_offset",
       "symptom.palpitations.sensation",
-      "observation.pulse_rate_during_episode",
-      "observation.pulse_regular_during_episode",
+      "palpitations.patient_words_and_heartbeat_location",
+      "palpitations.first_latest_onset_exact_time_context_and_trend",
+      "palpitations.episode_count_duration_range_and_between_episode_state",
+      "palpitations.associated_symptom_order_before_during_after_and_recovery",
       "symptom.dyspnea",
       "symptom.dizziness",
-      "symptom.fatigue",
-      "symptom.sweating_or_tremor",
-      "symptom.fever",
-      "symptom.weight_loss_heat_intolerance",
-      "symptom.bleeding_or_anemia_features",
-      "trigger.palpitations.exertion",
-      "trigger.palpitations.postural",
-      "trigger.palpitations.stress_or_panic",
-      "exposure.caffeine_or_energy_drinks",
-      "exposure.alcohol_nicotine_recreational_stimulant",
-      "medication.recent_change_palpitations",
-      "history.thyroid_disease",
-      "history.anemia",
-      "patient.pregnant_or_postpartum",
-      "investigation.ecg_or_device_record_available",
-      "symptom.palpitations.functional_impact"
+      "palpitations.function_sleep_work_driving_exercise_and_selfcare_impact",
+      "palpitations.information_source_reliability_conflict_and_proxy",
+      "palpitations.patient_concern_goal_expectation_and_additional_comment"
     ]
   },
   "clarification_facts_by_rule": {},
   "question_budget": {
-    "routine": 38,
+    "routine": 75,
     "clarify": 12
   },
   "provenance": {
@@ -63,9 +53,77 @@
     "source_refs": [
       "source.nhs.heart-palpitations.2026",
       "source.nice.ng196.atrial-fibrillation.2021",
-      "source.nice.cg109.blackouts.2023"
+      "source.nice.cg109.blackouts.2023",
+      "source.stom.mrcm.palpitations.20260714"
     ],
     "review_status": "unreviewed",
     "version": "0.1.0"
-  }
+  },
+  "conditional_required_facts": [
+    {
+      "selector_fact": "palpitations.primary_context",
+      "cases": {
+        "current_or_persistent": [
+          "observation.pulse_rate_during_episode",
+          "observation.pulse_regular_during_episode",
+          "palpitations.pulse_measurement_method_time_rate_range_and_reliability",
+          "palpitations.chest_pain_site_character_radiation_duration_and_relation",
+          "palpitations.dyspnea_rest_exertion_speech_sleep_and_recovery"
+        ],
+        "episodic_recurrent": [
+          "palpitations.onset_offset_precipitant_termination_and_maneuver",
+          "palpitations.sleep_nocturnal_lying_meal_and_reflux_relation",
+          "palpitations.prior_12lead_ecg_date_result_symptom_state_and_source",
+          "palpitations.ambulatory_monitor_type_duration_result_and_symptom_correlation",
+          "palpitations.prior_ed_admission_treatment_response_and_recurrence"
+        ],
+        "wearable_or_pulse_record": [
+          "observation.pulse_rate_during_episode",
+          "observation.pulse_regular_during_episode",
+          "palpitations.pulse_measurement_method_time_rate_range_and_reliability",
+          "palpitations.wearable_ecg_timestamp_duration_symptom_correlation_and_source",
+          "investigation.ecg_or_device_record_available"
+        ],
+        "exertional": [
+          "trigger.palpitations.exertion",
+          "palpitations.exertion_activity_threshold_during_or_after_and_recovery",
+          "palpitations.syncope_witness_posture_prodrome_injury_duration_recovery",
+          "palpitations.structural_heart_failure_ischemic_valve_congenital_history",
+          "palpitations.family_arrhythmia_cardiomyopathy_channelopathy_sudden_death_age"
+        ],
+        "postural_or_volume_related": [
+          "trigger.palpitations.postural",
+          "palpitations.posture_standing_time_hydration_heat_illness_and_bp",
+          "palpitations.fever_infection_dehydration_sleep_and_recent_illness",
+          "palpitations.thyroid_anemia_electrolyte_glucose_lab_date_result_source"
+        ],
+        "medicine_or_substance_related": [
+          "medication.recent_change_palpitations",
+          "palpitations.medicine_decongestant_inhaler_thyroid_supplement_dose_timing",
+          "palpitations.caffeine_energy_alcohol_nicotine_amount_timing_change",
+          "palpitations.recreational_stimulant_withdrawal_and_other_exposure_timing",
+          "palpitations.fever_infection_dehydration_sleep_and_recent_illness"
+        ],
+        "pregnancy_anemia_thyroid_or_systemic": [
+          "patient.pregnant_or_postpartum",
+          "history.thyroid_disease",
+          "history.anemia",
+          "symptom.bleeding_or_anemia_features",
+          "symptom.weight_loss_heat_intolerance",
+          "palpitations.pregnancy_gestation_postpartum_bleeding_and_obstetric_context",
+          "palpitations.thyroid_anemia_electrolyte_glucose_lab_date_result_source"
+        ],
+        "other_unclear": [
+          "trigger.palpitations.exertion",
+          "trigger.palpitations.postural",
+          "trigger.palpitations.stress_or_panic",
+          "palpitations.sleep_nocturnal_lying_meal_and_reflux_relation",
+          "palpitations.caffeine_energy_alcohol_nicotine_amount_timing_change",
+          "palpitations.prior_arrhythmia_cardioversion_ablation_device_and_followup",
+          "palpitations.echo_stress_test_lab_and_device_check_result",
+          "palpitations.occupation_shift_heat_exertion_and_safety_exposure"
+        ]
+      }
+    }
+  ]
 }
