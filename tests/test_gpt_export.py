@@ -492,6 +492,10 @@ class GptExportTests(unittest.TestCase):
                 (output_path / "rfe/fatigue/facts.json").read_text(encoding="utf-8")
             )
             self.assertEqual(fatigue["count"], 75)
+            cough = json.loads(
+                (output_path / "rfe/cough/facts.json").read_text(encoding="utf-8")
+            )
+            self.assertEqual(cough["count"], 70)
             back_pain = json.loads(
                 (output_path / "rfe/back_pain/facts.json").read_text(encoding="utf-8")
             )

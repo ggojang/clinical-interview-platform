@@ -9,8 +9,19 @@
   ],
   "required_facts": {
     "always": [
+      "cough.primary_context",
       "symptom.duration",
-      "symptom.dyspnea"
+      "symptom.dyspnea",
+      "cough.patient_words_dry_productive_and_main_concern",
+      "cough.first_latest_onset_exact_time_context_and_trend",
+      "cough.daily_frequency_episode_duration_bouts_and_between_state",
+      "cough.rapid_or_significant_worsening",
+      "symptom.systemic_unwellness",
+      "symptom.hemoptysis",
+      "symptom.chest_pain",
+      "cough.sleep_work_school_voice_eating_activity_and_care_impact",
+      "cough.information_source_witness_record_reliability_and_conflict",
+      "cough.patient_goal_expectation_additional_comment_and_other_rfe"
     ],
     "acute": [
       "symptom.rhinorrhea",
@@ -86,11 +97,22 @@
       "exposure.tuberculosis_risk",
       "symptom.hemoptysis",
       "patient.smoking.status"
+    ],
+    "rule.cough.safety.rapid-significant-worsening": [
+      "symptom.dyspnea",
+      "symptom.systemic_unwellness",
+      "symptom.hemoptysis",
+      "symptom.chest_pain"
+    ],
+    "rule.cough.safety.severe-systemic-illness": [
+      "symptom.dyspnea",
+      "symptom.hemoptysis",
+      "symptom.chest_pain"
     ]
   },
   "question_budget": {
-    "routine": 18,
-    "clarify": 14
+    "routine": 60,
+    "clarify": 20
   },
   "provenance": {
     "created_by": {
@@ -99,10 +121,73 @@
     },
     "created_at": "2026-07-14T00:00:00Z",
     "source_refs": [
-      "specifications/common-cause-prioritization.md",
-      "specifications/safety-escalation.md"
+      "source.cdc.common-cold.2026",
+      "source.nice.ng120",
+      "source.ers.chronic-cough.2020",
+      "source.gina.strategy.2026",
+      "source.bts.chronic-cough.2023"
     ],
     "review_status": "unreviewed",
     "version": "0.1.0"
-  }
+  },
+  "conditional_required_facts": [
+    {
+      "selector_fact": "cough.primary_context",
+      "cases": {
+        "current_acute": [
+          "symptom.fever",
+          "symptom.systemic_unwellness",
+          "symptom.cough_trajectory",
+          "cough.fever_temperature_chills_systemic_state_and_timeline",
+          "cough.upper_airway_symptom_sequence_and_baseline"
+        ],
+        "subacute_or_postinfectious": [
+          "cough.day_night_sleep_posture_voice_laugh_and_meal_variation",
+          "cough.wheeze_chest_tightness_variability_and_prior_pattern",
+          "cough.treatment_antibiotic_inhaler_antacid_antihistamine_and_response"
+        ],
+        "chronic_or_recurrent": [
+          "cough.day_night_sleep_posture_voice_laugh_and_meal_variation",
+          "cough.exercise_cold_air_speech_laugh_fume_and_scent_triggers",
+          "cough.smoking_vaping_cannabis_pack_years_last_use_and_change",
+          "cough.respiratory_cardiac_reflux_ent_immunity_and_cancer_history",
+          "cough.prior_chest_xray_ct_spirometry_feno_and_result_source"
+        ],
+        "productive_or_recurrent_infection": [
+          "symptom.sputum",
+          "cough.sputum_amount_colour_consistency_odor_and_change",
+          "history.recurrent_respiratory_infections",
+          "cough.prior_recurrent_episode_ed_admission_and_baseline_recovery",
+          "cough.prior_blood_sputum_swab_allergy_tb_and_other_tests"
+        ],
+        "trigger_or_exposure_related": [
+          "cough.exercise_cold_air_speech_laugh_fume_and_scent_triggers",
+          "cough.home_work_hobby_mold_dust_fume_animal_and_season_exposure",
+          "cough.infectious_contact_travel_tb_setting_and_timing"
+        ],
+        "medicine_related": [
+          "medication.ace_inhibitor_exposure",
+          "cough.medicine_name_dose_start_change_acei_inhaler_and_adherence",
+          "cough.treatment_antibiotic_inhaler_antacid_antihistamine_and_response"
+        ],
+        "child_or_proxy": [
+          "cough.child_age_feeding_sleep_breathing_growth_and_caregiver_observation",
+          "cough.paroxysm_whoop_posttussive_vomit_and_recovery",
+          "cough.eating_drinking_swallowing_choking_and_aspiration_context",
+          "cough.communication_language_hearing_literacy_and_accessibility"
+        ],
+        "followup_or_result_context": [
+          "cough.prior_chest_xray_ct_spirometry_feno_and_result_source",
+          "cough.prior_blood_sputum_swab_allergy_tb_and_other_tests",
+          "cough.treatment_antibiotic_inhaler_antacid_antihistamine_and_response"
+        ],
+        "other_or_unclear": [
+          "cough.day_night_sleep_posture_voice_laugh_and_meal_variation",
+          "cough.eating_drinking_swallowing_choking_and_aspiration_context",
+          "cough.older_frailty_swallowing_polypharmacy_and_care_support",
+          "cough.communication_language_hearing_literacy_and_accessibility"
+        ]
+      }
+    }
+  ]
 }

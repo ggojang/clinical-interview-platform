@@ -181,7 +181,7 @@ class ClinicianSubmissionContextTest(unittest.TestCase):
         }
         state = session.process("의료인 제출용 문진을 계속합니다")
         selected = []
-        for _ in range(60):
+        for _ in range(session.max_turns):
             question = state["selected_question"]
             if question is None:
                 break
@@ -209,6 +209,18 @@ class ClinicianSubmissionContextTest(unittest.TestCase):
         self.assertIn("symptom.sputum", required)
         self.assertIn("symptom.cough_nocturnal", required)
         self.assertIn("exposure.tuberculosis_risk", required)
+        self.assertIn(
+            "cough.prior_chest_xray_ct_spirometry_feno_and_result_source",
+            required,
+        )
+        self.assertIn(
+            "cough.information_source_witness_record_reliability_and_conflict",
+            required,
+        )
+        self.assertIn(
+            "cough.patient_goal_expectation_additional_comment_and_other_rfe",
+            required,
+        )
         self.assertIn("encounter.rfe.functional_impact", required)
         self.assertIn("encounter.rfe.patient_concern_and_expectation", required)
 

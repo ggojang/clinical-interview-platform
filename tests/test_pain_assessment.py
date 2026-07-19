@@ -107,6 +107,23 @@ class PainAssessmentTest(unittest.TestCase):
             "palpitations.chest_pain_nrs", policy["must_be_known_facts"]
         )
 
+    def test_cough_requires_raw_nrs_only_when_chest_pain_is_present(self):
+        package = compile_package(profile="cough")
+        policy = package["interview_completion_policy"]
+        conditional = next(
+            item for item in policy["conditional_required_facts"]
+            if item.get("reason") == "pain_item_activated"
+        )
+        self.assertEqual(
+            conditional["when"],
+            {"fact": "symptom.chest_pain", "equals": True},
+        )
+        self.assertEqual(
+            conditional["required_facts"],
+            ["pain.frequency", "cough.chest_pain_nrs"],
+        )
+        self.assertIn("cough.chest_pain_nrs", policy["must_be_known_facts"])
+
     def test_conditional_profile_activates_only_after_pain_is_present(self):
         session = self._session("skin_complaint")
         before = set(session._required_facts(None, session._safety()))

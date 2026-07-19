@@ -184,7 +184,7 @@ class CompilerTests(unittest.TestCase):
             node["id"] for node in package["knowledge_graph"]["nodes"]
             if node["type"] == "Fact"
         }
-        self.assertEqual(len(facts), 35)
+        self.assertEqual(len(facts), 70)
         self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
         generated = [
             node for node in package["knowledge_graph"]["nodes"]
@@ -1548,6 +1548,18 @@ class PackageRuntimeTests(unittest.TestCase):
         self.assertEqual(state["safety_status"]["level"], "urgent")
         self.assertEqual(state["stop_reason"], "urgent_escalation")
 
+    def test_korean_clinical_term_chest_pain_with_dyspnea_triggers_urgent_path(self):
+        session = InterviewSession("korean-cough-chest-pain-dyspnea")
+        state = session.process("기침과 흉통이 있고 숨쉬기가 꽤 힘들어요.")
+        self.assertTrue(state["facts"]["symptom.chest_pain"]["value"])
+        self.assertEqual(state["facts"]["symptom.dyspnea"]["value"], "moderate")
+        self.assertEqual(state["safety_status"]["level"], "urgent")
+        self.assertEqual(state["stop_reason"], "urgent_escalation")
+
+    def test_korean_clinical_term_chest_pain_negation_is_preserved(self):
+        extracted = extract("기침은 있지만 흉통은 없습니다.", 1)
+        self.assertFalse(extracted["symptom.chest_pain"]["value"])
+
     def test_runtime_exposes_package_and_trace(self):
         session = InterviewSession("package-runtime")
         state = session.process("I have had a cough for 4 days.")
@@ -1569,7 +1581,7 @@ class PackageRuntimeTests(unittest.TestCase):
     def test_package_simulation_evaluation_passes(self):
         report = run_evaluation(DEFAULT_PACKAGE)
         self.assertTrue(report["passed"])
-        self.assertEqual(report["case_count"], 15)
+        self.assertEqual(report["case_count"], 28)
         for result in report["results"]:
             self.assertIn(
                 result["stop_reason"],
@@ -1587,7 +1599,7 @@ class PackageRuntimeTests(unittest.TestCase):
             item["turns"] for item in report["results"]
             if item["safety_level"] not in {"urgent", "emergency"}
         ]
-        self.assertLessEqual(max(non_escalated), 12)
+        self.assertLessEqual(max(non_escalated), 30)
 
     def test_research_package_is_rejected_in_production_runtime(self):
         with self.assertRaises(PackageLoadError):
