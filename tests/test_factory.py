@@ -731,8 +731,12 @@ class CompilerTests(unittest.TestCase):
     def test_hypertension_follow_up_package_is_complete(self):
         package = compile_package(profile="hypertension_follow_up")
         facts = {n["id"] for n in package["knowledge_graph"]["nodes"] if n["type"] == "Fact"}
-        self.assertEqual(len(facts), 38)
+        self.assertEqual(len(facts), 71)
         self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
+        self.assertIn("hypertension.latest_reading_series_values_dates_times_and_context", facts)
+        self.assertIn("hypertension.actual_last_dose_timing_and_difference_from_prescription", facts)
+        self.assertIn("hypertension.prior_ecg_and_clinical_test_result_date_source", facts)
+        self.assertIn("hypertension.patient_goal_expected_help_followup_plan_and_additional_rfe", facts)
         self.assertEqual(package["coverage"]["total_safety_rules"], 9)
         self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 9)
         self.assertEqual(package["coverage"]["uncovered_safety_rules"], [])
@@ -1935,7 +1939,8 @@ class PackageRuntimeTests(unittest.TestCase):
     def test_hypertension_follow_up_simulation_and_runtime(self):
         report = run_evaluation(HYPERTENSION_FOLLOW_UP_PACKAGE)
         self.assertTrue(report["passed"])
-        self.assertEqual(report["case_count"], 10)
+        self.assertEqual(report["case_count"], 21)
+        self.assertLessEqual(max(item["turns"] for item in report["results"]), 40)
         session = InterviewSession("hypertension-runtime", package_path=HYPERTENSION_FOLLOW_UP_PACKAGE)
         state = session.process("고혈압 추적 진료를 받으러 왔어요.")
         self.assertIn("cardiovascular.hypertension_follow_up", state["active_patterns"])

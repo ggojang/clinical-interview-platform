@@ -9,11 +9,11 @@
   "source_manifest": "source-manifest.primary-care-hypertension-follow-up-research",
   "default_refresh": {
     "class": "clinical_guideline",
-    "last_assessed_at": "2026-07-14",
+    "last_assessed_at": "2026-07-20",
     "monitor_interval_days": 1,
     "full_review_interval_days": 180,
-    "next_monitor_at": "2026-07-15",
-    "next_full_review_at": "2027-01-10",
+    "next_monitor_at": "2026-07-21",
+    "next_full_review_at": "2027-01-16",
     "policy_id": "policy.knowledge-refresh",
     "overdue_behavior": {
       "production": "exclude_or_require_review",
@@ -60,6 +60,46 @@
       "id": "group.hypertension-follow-up.pregnancy",
       "type": "ClinicalGroup",
       "display": "pregnancy"
+    },
+    {
+      "id": "group.hypertension-follow-up.routing",
+      "type": "ClinicalGroup",
+      "display": "Routing"
+    },
+    {
+      "id": "group.hypertension-follow-up.measurement-detail",
+      "type": "ClinicalGroup",
+      "display": "Measurement Detail"
+    },
+    {
+      "id": "group.hypertension-follow-up.medicine-detail",
+      "type": "ClinicalGroup",
+      "display": "Medicine Detail"
+    },
+    {
+      "id": "group.hypertension-follow-up.risk-detail",
+      "type": "ClinicalGroup",
+      "display": "Risk Detail"
+    },
+    {
+      "id": "group.hypertension-follow-up.monitoring-detail",
+      "type": "ClinicalGroup",
+      "display": "Monitoring Detail"
+    },
+    {
+      "id": "group.hypertension-follow-up.pregnancy-detail",
+      "type": "ClinicalGroup",
+      "display": "Pregnancy Detail"
+    },
+    {
+      "id": "group.hypertension-follow-up.function",
+      "type": "ClinicalGroup",
+      "display": "Function"
+    },
+    {
+      "id": "group.hypertension-follow-up.handoff",
+      "type": "ClinicalGroup",
+      "display": "Handoff"
     }
   ],
   "group_hypothesis_edges": [],
@@ -1661,6 +1701,1191 @@
         "group.hypertension-follow-up.self-management",
         "group.hypertension-follow-up.medication"
       ]
+    },
+    {
+      "fact": {
+        "id": "hypertension.primary_followup_context",
+        "display": "Primary Hypertension Follow-up Context",
+        "value_type": "coded",
+        "allowed_values": [
+          "reading_or_home_log_review",
+          "medicine_effect_or_adherence",
+          "adverse_effect_or_postural_symptom",
+          "risk_and_monitoring_review",
+          "pregnancy_or_postpartum",
+          "child_or_proxy",
+          "result_or_plan_followup",
+          "other_or_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.hypertension-follow-up.primary-context",
+        "display": "Primary Hypertension Follow-up Context",
+        "intents": [
+          "intent.characterize_follow_up",
+          "intent.follow_up_support"
+        ]
+      },
+      "question": {
+        "id": "question.hypertension-follow-up.primary-context",
+        "wording": "이번 방문 목적은 혈압 수치·가정기록 확인, 약 효과·복용 확인, 부작용·기립 증상, 심혈관 위험·검사 확인, 임신·산후, 소아·보호자 응답, 결과·계획 추적, 또는 불분명 중 무엇에 가장 가깝나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 116,
+          "reason": "primary-context"
+        }
+      ],
+      "supports": [
+        "group.hypertension-follow-up.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hypertension.patient_words_current_status_and_main_change",
+        "display": "Patient Description of Current Status",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.hypertension-follow-up.patient-words",
+        "display": "Patient Description of Current Status",
+        "intents": [
+          "intent.characterize_follow_up"
+        ]
+      },
+      "question": {
+        "id": "question.hypertension-follow-up.patient-words",
+        "wording": "본인의 표현으로 최근 혈압 상태, 평소와 달라진 점과 가장 걱정되는 내용을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 115,
+          "reason": "patient-words"
+        }
+      ],
+      "supports": [
+        "group.hypertension-follow-up.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hypertension.diagnosis_date_basis_target_and_followup_team",
+        "display": "Diagnosis, Target and Follow-up Team",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.hypertension-follow-up.diagnosis-context",
+        "display": "Diagnosis, Target and Follow-up Team",
+        "intents": [
+          "intent.characterize_follow_up",
+          "intent.follow_up_support"
+        ]
+      },
+      "question": {
+        "id": "question.hypertension-follow-up.diagnosis-context",
+        "wording": "고혈압을 언제 어떤 측정이나 설명으로 진단받았고, 의료진과 정한 목표 혈압 및 현재 추적기관이 있다면 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 114,
+          "reason": "diagnosis-context"
+        }
+      ],
+      "supports": [
+        "group.hypertension-follow-up.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hypertension.latest_reading_series_values_dates_times_and_context",
+        "display": "Recent Blood Pressure Series",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.hypertension-follow-up.reading-series",
+        "display": "Recent Blood Pressure Series",
+        "intents": [
+          "intent.characterize_follow_up",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.hypertension-follow-up.reading-series",
+        "wording": "최근 혈압값들을 날짜·시각별로 위/아래 숫자와 함께 적고, 각각 측정 전 활동·식사·카페인·흡연·증상 상황을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 113,
+          "reason": "reading-series"
+        }
+      ],
+      "supports": [
+        "group.hypertension-follow-up.measurement-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hypertension.measurement_arm_position_rest_cuff_device_and_repeats",
+        "display": "Blood Pressure Measurement Method",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.hypertension-follow-up.measurement-method",
+        "display": "Blood Pressure Measurement Method",
+        "intents": [
+          "intent.characterize_follow_up"
+        ]
+      },
+      "question": {
+        "id": "question.hypertension-follow-up.measurement-method",
+        "wording": "측정한 팔, 자세, 휴식시간, 커프 크기·기기, 반복 횟수와 반복값 사이 간격을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 112,
+          "reason": "measurement-method"
+        }
+      ],
+      "supports": [
+        "group.hypertension-follow-up.measurement-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hypertension.home_log_days_morning_evening_average_range_and_missing",
+        "display": "Home Blood Pressure Log Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.hypertension-follow-up.home-log-detail",
+        "display": "Home Blood Pressure Log Detail",
+        "intents": [
+          "intent.characterize_follow_up",
+          "intent.follow_up_support"
+        ]
+      },
+      "question": {
+        "id": "question.hypertension-follow-up.home-log-detail",
+        "wording": "가정혈압 기록이 있다면 측정한 날짜 수, 아침·저녁 횟수, 평균·최저·최고 범위와 빠진 날을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 111,
+          "reason": "home-log-detail"
+        }
+      ],
+      "supports": [
+        "group.hypertension-follow-up.measurement-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hypertension.baseline_variability_recent_trend_and_trigger_relation",
+        "display": "Blood Pressure Trend and Variability",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.hypertension-follow-up.trend",
+        "display": "Blood Pressure Trend and Variability",
+        "intents": [
+          "intent.characterize_follow_up",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.hypertension-follow-up.trend",
+        "wording": "평소 범위와 비교한 최근 상승·하락·변동 양상, 반복되는 시간대와 스트레스·통증·수면·운동과의 관계를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 110,
+          "reason": "trend"
+        }
+      ],
+      "supports": [
+        "group.hypertension-follow-up.measurement-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hypertension.high_or_low_reading_symptom_sequence_duration_and_recovery",
+        "display": "Reading-associated Symptom Sequence",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.hypertension-follow-up.symptom-sequence",
+        "display": "Reading-associated Symptom Sequence",
+        "intents": [
+          "intent.characterize_follow_up",
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.hypertension-follow-up.symptom-sequence",
+        "wording": "높거나 낮은 혈압과 함께 증상이 있었다면 수치와 증상 중 무엇이 먼저였는지, 지속시간·회복과 반복 여부를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 109,
+          "reason": "symptom-sequence"
+        }
+      ],
+      "supports": [
+        "group.hypertension-follow-up.measurement-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hypertension.postural_symptom_position_timing_bp_pulse_fall_and_recovery",
+        "display": "Postural Symptom Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.hypertension-follow-up.postural-detail",
+        "display": "Postural Symptom Detail",
+        "intents": [
+          "intent.characterize_follow_up",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.hypertension-follow-up.postural-detail",
+        "wording": "자세를 바꿀 때 어지럼이 있다면 누움·앉음·서기 순서, 시작까지 시간, 당시 혈압·맥박, 넘어짐과 회복 과정을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 108,
+          "reason": "postural-detail"
+        }
+      ],
+      "supports": [
+        "group.hypertension-follow-up.measurement-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hypertension.antihypertensive_name_strength_form_route_schedule_indication",
+        "display": "Structured Antihypertensive Regimen",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.hypertension-follow-up.medicine-regimen",
+        "display": "Structured Antihypertensive Regimen",
+        "intents": [
+          "intent.follow_up_support"
+        ]
+      },
+      "question": {
+        "id": "question.hypertension-follow-up.medicine-regimen",
+        "wording": "혈압약마다 제품명·성분명, 용량·제형, 복용 경로, 예정 시간·횟수와 처방 목적을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 107,
+          "reason": "medicine-regimen"
+        }
+      ],
+      "supports": [
+        "group.hypertension-follow-up.medicine-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hypertension.actual_last_dose_timing_and_difference_from_prescription",
+        "display": "Actual Medicine Use and Last Dose",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.hypertension-follow-up.actual-use",
+        "display": "Actual Medicine Use and Last Dose",
+        "intents": [
+          "intent.follow_up_support",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.hypertension-follow-up.actual-use",
+        "wording": "각 혈압약의 실제 복용 시간과 마지막 복용 시각, 처방대로 복용하지 않은 차이가 있다면 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 106,
+          "reason": "actual-use"
+        }
+      ],
+      "supports": [
+        "group.hypertension-follow-up.medicine-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hypertension.missed_extra_or_late_dose_dates_reasons_and_action",
+        "display": "Dose Variance Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.hypertension-follow-up.dose-variance",
+        "display": "Dose Variance Detail",
+        "intents": [
+          "intent.follow_up_support",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.hypertension-follow-up.dose-variance",
+        "wording": "최근 빠뜨림·추가복용·늦은 복용의 날짜·횟수·이유와 이후 어떻게 했는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 105,
+          "reason": "dose-variance"
+        }
+      ],
+      "supports": [
+        "group.hypertension-follow-up.medicine-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hypertension.access_cost_supply_schedule_memory_and_caregiver_barriers",
+        "display": "Medication Access and Adherence Barriers",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.hypertension-follow-up.adherence-barriers",
+        "display": "Medication Access and Adherence Barriers",
+        "intents": [
+          "intent.follow_up_support"
+        ]
+      },
+      "question": {
+        "id": "question.hypertension-follow-up.adherence-barriers",
+        "wording": "비용·재고·처방전·생활일정·기억·삼킴·보호자 도움 등 꾸준한 복용을 어렵게 하는 점이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 104,
+          "reason": "adherence-barriers"
+        }
+      ],
+      "supports": [
+        "group.hypertension-follow-up.medicine-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hypertension.adverse_effect_onset_dose_relation_function_and_dechallenge",
+        "display": "Suspected Adverse-effect Timeline",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.hypertension-follow-up.adverse-effect-detail",
+        "display": "Suspected Adverse-effect Timeline",
+        "intents": [
+          "intent.characterize_follow_up",
+          "intent.follow_up_support"
+        ]
+      },
+      "question": {
+        "id": "question.hypertension-follow-up.adverse-effect-detail",
+        "wording": "의심되는 부작용의 시작일, 약 복용·용량변경과의 순서, 일상 영향과 중단·재복용 때 변화를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 103,
+          "reason": "adverse-effect-detail"
+        }
+      ],
+      "supports": [
+        "group.hypertension-follow-up.medicine-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hypertension.nonprescription_stimulant_hormone_supplement_timing_and_amount",
+        "display": "Other Product Exposure Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.hypertension-follow-up.other-product-detail",
+        "display": "Other Product Exposure Detail",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.hypertension-follow-up.other-product-detail",
+        "wording": "진통소염제·코막힘약·스테로이드·호르몬·각성제·한약·보충제·에너지음료를 사용한다면 이름·양·빈도·마지막 사용을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 102,
+          "reason": "other-product-detail"
+        }
+      ],
+      "supports": [
+        "group.hypertension-follow-up.medicine-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hypertension.cardiovascular_cerebrovascular_disease_event_date_status_and_treatment",
+        "display": "Cardiovascular Disease History Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.hypertension-follow-up.cardiovascular-history",
+        "display": "Cardiovascular Disease History Detail",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.hypertension-follow-up.cardiovascular-history",
+        "wording": "심장·뇌·말초혈관 질환이 있다면 정확한 진단, 발생일·시술·입원과 현재 증상·치료 상태를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 101,
+          "reason": "cardiovascular-history"
+        }
+      ],
+      "supports": [
+        "group.hypertension-follow-up.risk-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hypertension.kidney_disease_albuminuria_stage_result_date_and_care_status",
+        "display": "Kidney Disease and Albuminuria Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.hypertension-follow-up.kidney-history-detail",
+        "display": "Kidney Disease and Albuminuria Detail",
+        "intents": [
+          "intent.risk_assessment",
+          "intent.follow_up_support"
+        ]
+      },
+      "question": {
+        "id": "question.hypertension-follow-up.kidney-history-detail",
+        "wording": "신장질환·단백뇨가 있다면 진단명·단계, 최근 신장기능·소변검사 날짜와 설명받은 결과, 담당 진료를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 100,
+          "reason": "kidney-history-detail"
+        }
+      ],
+      "supports": [
+        "group.hypertension-follow-up.risk-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hypertension.diabetes_lipid_gout_and_vascular_risk_status",
+        "display": "Metabolic and Vascular Risk Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.hypertension-follow-up.metabolic-risk",
+        "display": "Metabolic and Vascular Risk Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.hypertension-follow-up.metabolic-risk",
+        "wording": "당뇨·이상지질혈증·통풍 등 관련 질환의 진단 시기, 최근 수치와 현재 치료 상태를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 99,
+          "reason": "metabolic-risk"
+        }
+      ],
+      "supports": [
+        "group.hypertension-follow-up.risk-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hypertension.family_early_cardiovascular_kidney_hypertension_history",
+        "display": "Family Cardiovascular and Kidney History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.hypertension-follow-up.family-risk",
+        "display": "Family Cardiovascular and Kidney History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.hypertension-follow-up.family-risk",
+        "wording": "가족의 고혈압, 젊은 나이의 심장·뇌혈관질환, 신장질환이 있다면 관계와 발병 나이를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 98,
+          "reason": "family-risk"
+        }
+      ],
+      "supports": [
+        "group.hypertension-follow-up.risk-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hypertension.sleep_snoring_apnoea_daytime_sleepiness_and_sleep_duration",
+        "display": "Sleep and Apnoea Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.hypertension-follow-up.sleep-detail",
+        "display": "Sleep and Apnoea Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.hypertension-follow-up.sleep-detail",
+        "wording": "평균 수면시간, 코골이·목격된 무호흡·아침 두통·낮 졸림과 교대근무 여부를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 97,
+          "reason": "sleep-detail"
+        }
+      ],
+      "supports": [
+        "group.hypertension-follow-up.risk-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hypertension.pregnancy_gestation_postpartum_obstetric_history_bp_proteinuria_and_plan",
+        "display": "Pregnancy and Postpartum Hypertension Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.hypertension-follow-up.pregnancy-detail",
+        "display": "Pregnancy and Postpartum Hypertension Detail",
+        "intents": [
+          "intent.screen_red_flags",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.hypertension-follow-up.pregnancy-detail",
+        "wording": "해당되는 경우 임신 주수 또는 출산 후 기간, 출산력·과거 임신 고혈압, 최근 혈압·소변 단백과 산과 진료 계획을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 96,
+          "reason": "pregnancy-detail"
+        }
+      ],
+      "supports": [
+        "group.hypertension-follow-up.pregnancy-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hypertension.laboratory_creatinine_egfr_electrolytes_urine_glucose_lipid_date_source",
+        "display": "Hypertension Laboratory Result Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.hypertension-follow-up.laboratory-results",
+        "display": "Hypertension Laboratory Result Detail",
+        "intents": [
+          "intent.follow_up_support",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.hypertension-follow-up.laboratory-results",
+        "wording": "최근 크레아티닌·eGFR, 전해질, 소변 단백, 혈당·당화혈색소, 지질 검사의 날짜·결과·결과 출처를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 95,
+          "reason": "laboratory-results"
+        }
+      ],
+      "supports": [
+        "group.hypertension-follow-up.monitoring-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hypertension.prior_ecg_and_clinical_test_result_date_source",
+        "display": "ECG and Clinical Test Result",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.hypertension-follow-up.clinical-tests",
+        "display": "ECG and Clinical Test Result",
+        "intents": [
+          "intent.follow_up_support",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.hypertension-follow-up.clinical-tests",
+        "wording": "심전도나 다른 심혈관 기능검사를 했다면 검사명·날짜·설명받은 결과와 자료 출처를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 94,
+          "reason": "clinical-tests"
+        }
+      ],
+      "supports": [
+        "group.hypertension-follow-up.monitoring-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hypertension.prior_cardiac_renal_vascular_imaging_date_result_and_source",
+        "display": "Cardiac Renal and Vascular Imaging",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.hypertension-follow-up.imaging-results",
+        "display": "Cardiac Renal and Vascular Imaging",
+        "intents": [
+          "intent.follow_up_support",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.hypertension-follow-up.imaging-results",
+        "wording": "심장·신장·혈관 영상검사를 했다면 검사명·날짜·설명받은 결과와 자료 출처를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 93,
+          "reason": "imaging-results"
+        }
+      ],
+      "supports": [
+        "group.hypertension-follow-up.monitoring-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hypertension.eye_retinal_evaluation_date_result_and_source",
+        "display": "Eye and Retinal Evaluation",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.hypertension-follow-up.eye-evaluation",
+        "display": "Eye and Retinal Evaluation",
+        "intents": [
+          "intent.follow_up_support"
+        ]
+      },
+      "question": {
+        "id": "question.hypertension-follow-up.eye-evaluation",
+        "wording": "고혈압과 관련해 눈 또는 망막 검사를 했다면 날짜·설명받은 결과와 자료 출처를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 92,
+          "reason": "eye-evaluation"
+        }
+      ],
+      "supports": [
+        "group.hypertension-follow-up.monitoring-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hypertension.prior_treatment_change_response_bp_effect_and_adverse_effect",
+        "display": "Prior Treatment Response",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.hypertension-follow-up.treatment-response",
+        "display": "Prior Treatment Response",
+        "intents": [
+          "intent.characterize_follow_up",
+          "intent.follow_up_support"
+        ]
+      },
+      "question": {
+        "id": "question.hypertension-follow-up.treatment-response",
+        "wording": "이전에 약·생활습관을 바꾼 시기, 이후 혈압 변화·증상 개선과 부작용을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 91,
+          "reason": "treatment-response"
+        }
+      ],
+      "supports": [
+        "group.hypertension-follow-up.medicine-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hypertension.diet_salt_activity_weight_alcohol_tobacco_caffeine_and_change",
+        "display": "Lifestyle Pattern and Recent Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.hypertension-follow-up.lifestyle-detail",
+        "display": "Lifestyle Pattern and Recent Change",
+        "intents": [
+          "intent.follow_up_support",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.hypertension-follow-up.lifestyle-detail",
+        "wording": "식사·소금, 운동, 체중, 음주·흡연, 카페인 섭취량과 최근 바꾼 내용 및 지속 가능성을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 90,
+          "reason": "lifestyle-detail"
+        }
+      ],
+      "supports": [
+        "group.hypertension-follow-up.risk-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hypertension.function_sleep_work_driving_exercise_and_fall_impact",
+        "display": "Functional and Safety Impact",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.hypertension-follow-up.function-detail",
+        "display": "Functional and Safety Impact",
+        "intents": [
+          "intent.characterize_follow_up",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.hypertension-follow-up.function-detail",
+        "wording": "혈압·증상·약 때문에 수면, 운동, 업무·운전, 일상활동과 낙상 위험에 어떤 영향이 있는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 89,
+          "reason": "function-detail"
+        }
+      ],
+      "supports": [
+        "group.hypertension-follow-up.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hypertension.child_age_growth_birth_kidney_sleep_medicine_and_proxy_observation",
+        "display": "Child and Proxy Hypertension Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.hypertension-follow-up.child-context",
+        "display": "Child and Proxy Hypertension Context",
+        "intents": [
+          "intent.characterize_follow_up",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.hypertension-follow-up.child-context",
+        "wording": "소아라면 나이·성장, 출생력, 신장·수면·복용약, 보호자가 직접 본 증상과 아이가 표현한 내용을 구분해 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 88,
+          "reason": "child-context"
+        }
+      ],
+      "supports": [
+        "group.hypertension-follow-up.risk-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hypertension.older_frailty_cognition_falls_self_management_and_support",
+        "display": "Older Adult Frailty and Support",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.hypertension-follow-up.older-context",
+        "display": "Older Adult Frailty and Support",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.hypertension-follow-up.older-context",
+        "wording": "고령자라면 보행·낙상·인지·복약 자가관리의 최근 변화와 보조기구·보호자 지원을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 87,
+          "reason": "older-context"
+        }
+      ],
+      "supports": [
+        "group.hypertension-follow-up.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hypertension.information_source_measurement_record_reliability_and_conflict",
+        "display": "Information Source and Conflict",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.hypertension-follow-up.information-source",
+        "display": "Information Source and Conflict",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.hypertension-follow-up.information-source",
+        "wording": "누가 답하는지, 혈압계·기록·처방전·검사자료 유무, 기억이 불확실하거나 서로 다른 수치·복약 정보가 있는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 86,
+          "reason": "information-source"
+        }
+      ],
+      "supports": [
+        "group.hypertension-follow-up.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hypertension.communication_language_hearing_vision_cognition_and_accessibility",
+        "display": "Communication and Accessibility Needs",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.hypertension-follow-up.accessibility",
+        "display": "Communication and Accessibility Needs",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.hypertension-follow-up.accessibility",
+        "wording": "선호 언어, 통역·청각·시각·인지·문해·디지털 사용에 필요한 도움과 선호하는 응답 방법을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 85,
+          "reason": "accessibility"
+        }
+      ],
+      "supports": [
+        "group.hypertension-follow-up.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hypertension.patient_goal_expected_help_followup_plan_and_additional_rfe",
+        "display": "Patient Goal, Plan and Additional RFE",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.hypertension-follow-up.goal",
+        "display": "Patient Goal, Plan and Additional RFE",
+        "intents": [
+          "intent.characterize_follow_up",
+          "intent.follow_up_support"
+        ]
+      },
+      "question": {
+        "id": "question.hypertension-follow-up.goal",
+        "wording": "이번 진료에서 확인할 목표, 원하는 도움·다음 계획과 질문에 없던 다른 증상·의견 또는 별도 문진이 필요한 문제를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 84,
+          "reason": "goal"
+        }
+      ],
+      "supports": [
+        "group.hypertension-follow-up.handoff"
+      ]
     }
   ],
   "provenance": {
@@ -1672,7 +2897,8 @@
     "source_refs": [
       "source.nice.ng136.hypertension.2026",
       "source.nice.ng133.pregnancy-hypertension.2023",
-      "source.nhs.high-blood-pressure.2026"
+      "source.nhs.high-blood-pressure.2026",
+      "source.stom.hypertension.20260714"
     ],
     "review_status": "unreviewed",
     "version": "0.1.0"

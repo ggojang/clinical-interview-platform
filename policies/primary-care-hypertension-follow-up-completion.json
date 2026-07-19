@@ -23,37 +23,24 @@
       "symptom.paroxysmal_headache_palpitations_sweating"
     ],
     "routine": [
+      "hypertension.primary_followup_context",
       "blood_pressure.latest_systolic",
       "blood_pressure.latest_diastolic",
       "blood_pressure.latest_measurement_time",
       "blood_pressure.measurement_setting",
-      "blood_pressure.repeated_after_rest",
-      "blood_pressure.device_and_cuff_suitable",
-      "blood_pressure.home_log_available",
-      "blood_pressure.home_average_or_range",
-      "symptom.postural_dizziness",
-      "event.recent_fall",
-      "medication.antihypertensive_current_list",
-      "medication.missed_dose_frequency",
-      "medication.recent_start_stop_dose_change",
-      "medication.suspected_adverse_effects",
-      "medication.blood_pressure_raising_products",
-      "history.cardiovascular_or_cerebrovascular_disease",
-      "history.kidney_impairment",
-      "history.diabetes",
-      "symptom.sleep_apnoea_features",
-      "lifestyle.tobacco_current",
-      "lifestyle.alcohol_pattern",
-      "lifestyle.salt_intake",
-      "lifestyle.physical_activity",
-      "patient.recent_weight_or_weight_change",
-      "hypertension.monitoring_tests_due_or_known",
-      "hypertension.patient_goal_or_question"
+      "hypertension.patient_words_current_status_and_main_change",
+      "hypertension.diagnosis_date_basis_target_and_followup_team",
+      "hypertension.latest_reading_series_values_dates_times_and_context",
+      "hypertension.measurement_arm_position_rest_cuff_device_and_repeats",
+      "hypertension.baseline_variability_recent_trend_and_trigger_relation",
+      "hypertension.function_sleep_work_driving_exercise_and_fall_impact",
+      "hypertension.information_source_measurement_record_reliability_and_conflict",
+      "hypertension.patient_goal_expected_help_followup_plan_and_additional_rfe"
     ]
   },
   "clarification_facts_by_rule": {},
   "question_budget": {
-    "routine": 42,
+    "routine": 90,
     "clarify": 12
   },
   "provenance": {
@@ -65,9 +52,86 @@
     "source_refs": [
       "source.nice.ng136.hypertension.2026",
       "source.nice.ng133.pregnancy-hypertension.2023",
-      "source.nhs.high-blood-pressure.2026"
+      "source.nhs.high-blood-pressure.2026",
+      "source.stom.hypertension.20260714"
     ],
     "review_status": "unreviewed",
     "version": "0.1.0"
-  }
+  },
+  "conditional_required_facts": [
+    {
+      "selector_fact": "hypertension.primary_followup_context",
+      "cases": {
+        "reading_or_home_log_review": [
+          "blood_pressure.repeated_after_rest",
+          "blood_pressure.device_and_cuff_suitable",
+          "blood_pressure.home_log_available",
+          "blood_pressure.home_average_or_range",
+          "hypertension.home_log_days_morning_evening_average_range_and_missing",
+          "hypertension.high_or_low_reading_symptom_sequence_duration_and_recovery"
+        ],
+        "medicine_effect_or_adherence": [
+          "medication.antihypertensive_current_list",
+          "medication.missed_dose_frequency",
+          "medication.recent_start_stop_dose_change",
+          "medication.suspected_adverse_effects",
+          "hypertension.antihypertensive_name_strength_form_route_schedule_indication",
+          "hypertension.actual_last_dose_timing_and_difference_from_prescription",
+          "hypertension.missed_extra_or_late_dose_dates_reasons_and_action",
+          "hypertension.access_cost_supply_schedule_memory_and_caregiver_barriers",
+          "hypertension.prior_treatment_change_response_bp_effect_and_adverse_effect"
+        ],
+        "adverse_effect_or_postural_symptom": [
+          "symptom.postural_dizziness",
+          "event.recent_fall",
+          "medication.suspected_adverse_effects",
+          "hypertension.postural_symptom_position_timing_bp_pulse_fall_and_recovery",
+          "hypertension.adverse_effect_onset_dose_relation_function_and_dechallenge",
+          "hypertension.actual_last_dose_timing_and_difference_from_prescription"
+        ],
+        "risk_and_monitoring_review": [
+          "history.cardiovascular_or_cerebrovascular_disease",
+          "history.kidney_impairment",
+          "history.diabetes",
+          "symptom.sleep_apnoea_features",
+          "hypertension.cardiovascular_cerebrovascular_disease_event_date_status_and_treatment",
+          "hypertension.kidney_disease_albuminuria_stage_result_date_and_care_status",
+          "hypertension.diabetes_lipid_gout_and_vascular_risk_status",
+          "hypertension.family_early_cardiovascular_kidney_hypertension_history",
+          "hypertension.laboratory_creatinine_egfr_electrolytes_urine_glucose_lipid_date_source",
+          "hypertension.prior_ecg_and_clinical_test_result_date_source",
+          "hypertension.prior_cardiac_renal_vascular_imaging_date_result_and_source"
+        ],
+        "pregnancy_or_postpartum": [
+          "patient.pregnant_or_postpartum",
+          "blood_pressure.pregnancy_160_110_or_higher",
+          "symptom.preeclampsia_warning_features",
+          "hypertension.pregnancy_gestation_postpartum_obstetric_history_bp_proteinuria_and_plan",
+          "hypertension.laboratory_creatinine_egfr_electrolytes_urine_glucose_lipid_date_source"
+        ],
+        "child_or_proxy": [
+          "hypertension.child_age_growth_birth_kidney_sleep_medicine_and_proxy_observation",
+          "hypertension.information_source_measurement_record_reliability_and_conflict",
+          "hypertension.communication_language_hearing_vision_cognition_and_accessibility"
+        ],
+        "result_or_plan_followup": [
+          "hypertension.monitoring_tests_due_or_known",
+          "hypertension.laboratory_creatinine_egfr_electrolytes_urine_glucose_lipid_date_source",
+          "hypertension.prior_ecg_and_clinical_test_result_date_source",
+          "hypertension.prior_cardiac_renal_vascular_imaging_date_result_and_source",
+          "hypertension.eye_retinal_evaluation_date_result_and_source",
+          "hypertension.prior_treatment_change_response_bp_effect_and_adverse_effect"
+        ],
+        "other_or_unclear": [
+          "medication.antihypertensive_current_list",
+          "symptom.postural_dizziness",
+          "hypertension.antihypertensive_name_strength_form_route_schedule_indication",
+          "hypertension.nonprescription_stimulant_hormone_supplement_timing_and_amount",
+          "hypertension.laboratory_creatinine_egfr_electrolytes_urine_glucose_lipid_date_source",
+          "hypertension.diet_salt_activity_weight_alcohol_tobacco_caffeine_and_change",
+          "hypertension.communication_language_hearing_vision_cognition_and_accessibility"
+        ]
+      }
+    }
+  ]
 }
