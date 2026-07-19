@@ -561,7 +561,7 @@ class CompilerTests(unittest.TestCase):
             node["id"] for node in first["knowledge_graph"]["nodes"]
             if node["type"] == "Fact"
         }
-        self.assertEqual(len(facts), 36)
+        self.assertEqual(len(facts), 68)
         self.assertEqual(facts, set(first["indexes"]["questions_by_fact"]))
         self.assertEqual(first["coverage"]["total_safety_rules"], 12)
         self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 12)
@@ -1769,8 +1769,8 @@ class PackageRuntimeTests(unittest.TestCase):
     def test_back_pain_simulation_evaluation_passes(self):
         report = run_evaluation(BACK_PAIN_PACKAGE)
         self.assertTrue(report["passed"])
-        self.assertEqual(report["case_count"], 13)
-        self.assertLessEqual(max(item["turns"] for item in report["results"]), 36)
+        self.assertEqual(report["case_count"], 26)
+        self.assertLessEqual(max(item["turns"] for item in report["results"]), 45)
 
     def test_back_pain_runtime_uses_back_pain_rfe(self):
         session = InterviewSession("back-pain-runtime", package_path=BACK_PAIN_PACKAGE)

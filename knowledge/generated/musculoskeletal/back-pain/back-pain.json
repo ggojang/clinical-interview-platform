@@ -1,44 +1,2740 @@
 {
-  "id":"knowledge.generated.musculoskeletal.back-pain","version":"0.1.0","status":"research_only","usage_modes":["research_test","simulation"],"source_manifest":"source-manifest.primary-care-back-pain-research",
-  "default_refresh":{"class":"clinical_guideline","last_assessed_at":"2026-07-14","monitor_interval_days":1,"full_review_interval_days":180,"next_monitor_at":"2026-07-15","next_full_review_at":"2027-01-10","policy_id":"policy.knowledge-refresh","overdue_behavior":{"production":"exclude_or_require_review","research_test":"allow_with_warning"}},
-  "extra_nodes":[{"id":"group.back-pain.immediate-safety","type":"ClinicalGroup","display":"Immediate Back Pain Safety"},{"id":"group.back-pain.characterization","type":"ClinicalGroup","display":"Back Pain Characterization"},{"id":"group.back-pain.radicular","type":"ClinicalGroup","display":"Radicular and Neurological Features"},{"id":"group.back-pain.systemic","type":"ClinicalGroup","display":"Systemic and Structural Warning Features"},{"id":"group.back-pain.mechanical","type":"ClinicalGroup","display":"Mechanical and Inflammatory Context"},{"id":"hypothesis.back-pain.cauda-equina","type":"Hypothesis","display":"Cauda Equina Warning Pattern"},{"id":"hypothesis.back-pain.radicular","type":"Hypothesis","display":"Radicular Feature Pattern"},{"id":"hypothesis.back-pain.serious-pathology","type":"Hypothesis","display":"Serious Underlying Pathology Warning Pattern"},{"id":"hypothesis.back-pain.mechanical","type":"Hypothesis","display":"Mechanical Back Pain Pattern"}],
-  "group_hypothesis_edges":[["group.back-pain.immediate-safety","hypothesis.back-pain.cauda-equina"],["group.back-pain.radicular","hypothesis.back-pain.radicular"],["group.back-pain.systemic","hypothesis.back-pain.serious-pathology"],["group.back-pain.mechanical","hypothesis.back-pain.mechanical"]],
-  "safety_rules":[{"id":"rule.back-pain.safety.bilateral-leg-neurology","priority":1000,"when":{"fact":"symptom.bilateral_leg_neurological_symptoms","equals":true},"then":{"safety_level":"emergency","action":"human_handoff","suppress_routine":true}},{"id":"rule.back-pain.safety.saddle-sensory-loss","priority":1000,"when":{"fact":"symptom.saddle_sensory_loss","equals":true},"then":{"safety_level":"emergency","action":"human_handoff","suppress_routine":true}},{"id":"rule.back-pain.safety.bladder-change","priority":1000,"when":{"fact":"symptom.new_bladder_dysfunction","equals":true},"then":{"safety_level":"emergency","action":"human_handoff","suppress_routine":true}},{"id":"rule.back-pain.safety.bowel-change","priority":1000,"when":{"fact":"symptom.new_bowel_control_change","equals":true},"then":{"safety_level":"emergency","action":"human_handoff","suppress_routine":true}},{"id":"rule.back-pain.safety.sexual-neurological-change","priority":1000,"when":{"fact":"symptom.new_sexual_sensory_or_function_change","equals":true},"then":{"safety_level":"emergency","action":"human_handoff","suppress_routine":true}},{"id":"rule.back-pain.safety.progressive-leg-weakness","priority":1000,"when":{"fact":"symptom.progressive_leg_weakness","equals":true},"then":{"safety_level":"emergency","action":"human_handoff","suppress_routine":true}},{"id":"rule.back-pain.safety.serious-trauma","priority":1000,"when":{"fact":"event.serious_back_trauma","equals":true},"then":{"safety_level":"emergency","action":"human_handoff","suppress_routine":true}},{"id":"rule.back-pain.safety.chest-pain","priority":1000,"when":{"fact":"symptom.chest_pain","equals":true},"then":{"safety_level":"emergency","action":"human_handoff","suppress_routine":true}},{"id":"rule.back-pain.safety.fever-systemically-unwell","priority":900,"when":{"all":[{"fact":"symptom.fever","equals":true},{"fact":"symptom.systemically_unwell","equals":true}]},"then":{"safety_level":"urgent","action":"human_handoff","suppress_routine":true}},{"id":"rule.back-pain.safety.sudden-severe","priority":900,"when":{"fact":"symptom.back_pain.sudden_severe","equals":true},"then":{"safety_level":"urgent","action":"human_handoff","suppress_routine":true}},{"id":"rule.back-pain.safety.rapid-worsening","priority":900,"when":{"fact":"symptom.back_pain.rapidly_worsening","equals":true},"then":{"safety_level":"urgent","action":"human_handoff","suppress_routine":true}},{"id":"rule.back-pain.safety.fever-immunocompromised","priority":900,"when":{"all":[{"fact":"symptom.fever","equals":true},{"fact":"patient.immunocompromised","equals":true}]},"then":{"safety_level":"urgent","action":"human_handoff","suppress_routine":true}}],
-  "entries":[
-    {"fact":{"id":"symptom.back_pain.current","display":"Current Back Pain","value_type":"boolean","terminology_binding":{"system":"http://snomed.info/sct","code":"161891005"}},"target":{"id":"target.back-pain.current","display":"Confirm Current Back Pain","intents":["intent.characterize_symptom"]},"question":{"id":"question.back-pain.current","wording":"지금도 등이나 허리 통증이 있나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":130,"reason":"confirm_presentation"}],"supports":["group.back-pain.characterization"]},
-    {"reuse_existing":true,"fact":{"id":"symptom.duration","display":"Symptom Duration","value_type":"quantity"},"target":{"id":"target.back-pain.duration","display":"Determine Duration","intents":["intent.characterize_symptom"]},"question":{"id":"question.back-pain.duration","wording":"통증은 언제부터 시작했나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":105,"reason":"characterize_duration"}],"supports":["group.back-pain.characterization"]},
-    {"fact":{"id":"symptom.back_pain.location","display":"Back Pain Location","value_type":"coded","allowed_values":["lower_back","mid_back","upper_back","diffuse"],"terminology_binding":{"system":"http://snomed.info/sct","focus_code":"161891005","attribute_code":"363698007"},"mrcm_validation":{"ref":"mapping.snomed-mrcm.back-pain","status":"provisional_pass"}},"target":{"id":"target.back-pain.location","display":"Determine Location","intents":["intent.characterize_symptom"]},"question":{"id":"question.back-pain.location","wording":"통증은 허리, 등 가운데, 양쪽 어깨뼈 사이의 윗등, 등 전체 중 어디인가요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":104,"reason":"characterize_location"}],"supports":["group.back-pain.characterization"]},
-    {"fact":{"id":"symptom.back_pain.severity","display":"Back Pain Severity","value_type":"coded","allowed_values":["mild","moderate","severe"],"terminology_binding":{"system":"http://snomed.info/sct","focus_code":"279039007","attribute_code":"246112005"},"mrcm_validation":{"ref":"mapping.snomed-mrcm.back-pain","status":"provisional_pass"}},"target":{"id":"target.back-pain.severity","display":"Determine Severity","intents":["intent.characterize_symptom"]},"question":{"id":"question.back-pain.severity","wording":"통증은 가벼움, 중간, 심함 중 어디에 가깝나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":103,"reason":"characterize_severity"}],"supports":["group.back-pain.characterization"]},
-    {"fact":{"id":"symptom.back_pain.onset","display":"Back Pain Onset","value_type":"coded","allowed_values":["sudden","gradual","unclear"]},"target":{"id":"target.back-pain.onset","display":"Determine Onset","intents":["intent.characterize_symptom"]},"question":{"id":"question.back-pain.onset","wording":"통증은 갑자기 시작했나요, 서서히 시작했나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":102,"reason":"characterize_onset"}],"supports":["group.back-pain.characterization"]},
-    {"fact":{"id":"symptom.back_pain.functional_impact","display":"Back Pain Functional Impact","value_type":"coded","allowed_values":["none","mild","moderate","severe"]},"target":{"id":"target.back-pain.function","display":"Determine Functional Impact","intents":["intent.risk_assessment"]},"question":{"id":"question.back-pain.function","wording":"통증 때문에 걷기·일·수면·씻기 같은 일상이 얼마나 제한되나요? 없음, 가벼움, 중간, 심함으로 답해 주세요.","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":101,"reason":"functional_impact"}],"supports":["group.back-pain.characterization"]},
-    {"fact":{"id":"symptom.bilateral_leg_neurological_symptoms","display":"Bilateral Leg Pain Tingling Weakness or Numbness","value_type":"boolean","safety_relevant":true},"target":{"id":"target.back-pain.bilateral-legs","display":"Determine Bilateral Leg Neurology","intents":["intent.screen_red_flags"]},"question":{"id":"question.back-pain.bilateral-legs","wording":"양쪽 다리에 통증, 저림, 감각 저하 또는 힘 빠짐이 새로 생겼나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":129,"reason":"cauda_equina_gate"}],"supports":["group.back-pain.immediate-safety","group.back-pain.radicular"]},
-    {"fact":{"id":"symptom.saddle_sensory_loss","display":"Saddle Sensory Loss","value_type":"boolean","safety_relevant":true},"target":{"id":"target.back-pain.saddle","display":"Determine Saddle Sensation","intents":["intent.screen_red_flags"]},"question":{"id":"question.back-pain.saddle","wording":"성기, 항문, 엉덩이 안쪽 또는 허벅지 안쪽의 감각이 둔하거나 없어졌나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":128,"reason":"cauda_equina_gate"}],"supports":["group.back-pain.immediate-safety"]},
-    {"fact":{"id":"symptom.new_bladder_dysfunction","display":"New Bladder Dysfunction","value_type":"boolean","safety_relevant":true},"target":{"id":"target.back-pain.bladder","display":"Determine Bladder Change","intents":["intent.screen_red_flags"]},"question":{"id":"question.back-pain.bladder","wording":"소변이 시작되지 않거나 감각 없이 새거나, 방광이 찬 느낌을 못 느끼는 변화가 새로 생겼나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":127,"reason":"cauda_equina_gate"}],"supports":["group.back-pain.immediate-safety"]},
-    {"fact":{"id":"symptom.new_bowel_control_change","display":"New Bowel Control Change","value_type":"boolean","safety_relevant":true},"target":{"id":"target.back-pain.bowel","display":"Determine Bowel Control Change","intents":["intent.screen_red_flags"]},"question":{"id":"question.back-pain.bowel","wording":"대변을 참거나 느끼는 기능에 새 변화가 있거나 자신도 모르게 대변이 나왔나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":126,"reason":"cauda_equina_gate"}],"supports":["group.back-pain.immediate-safety"]},
-    {"fact":{"id":"symptom.new_sexual_sensory_or_function_change","display":"New Sexual Sensory or Function Change","value_type":"boolean","safety_relevant":true},"target":{"id":"target.back-pain.sexual-neurology","display":"Determine Sexual Neurological Change","intents":["intent.screen_red_flags"]},"question":{"id":"question.back-pain.sexual-neurology","wording":"성관계 때 성기 감각, 발기 또는 오르가슴 기능이 갑자기 달라졌나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":125,"reason":"cauda_equina_gate"}],"supports":["group.back-pain.immediate-safety"]},
-    {"fact":{"id":"symptom.progressive_leg_weakness","display":"Progressive Leg Weakness","value_type":"boolean","safety_relevant":true},"target":{"id":"target.back-pain.progressive-weakness","display":"Determine Progressive Weakness","intents":["intent.screen_red_flags"]},"question":{"id":"question.back-pain.progressive-weakness","wording":"다리 힘이 빠지는 증상이 빠르게 심해지거나 걷기가 어려워지고 있나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":124,"reason":"progressive_neurological_gate"}],"supports":["group.back-pain.immediate-safety","group.back-pain.radicular"]},
-    {"fact":{"id":"event.serious_back_trauma","display":"Serious Accident or Back Trauma","value_type":"boolean","safety_relevant":true},"target":{"id":"target.back-pain.trauma","display":"Determine Serious Trauma","intents":["intent.screen_red_flags"]},"question":{"id":"question.back-pain.trauma","wording":"통증이 교통사고, 높은 곳에서 떨어짐 또는 강한 충격 뒤 시작했나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":123,"reason":"trauma_gate"}],"supports":["group.back-pain.immediate-safety","group.back-pain.systemic"]},
-    {"reuse_existing":true,"fact":{"id":"symptom.chest_pain","display":"Chest Pain","value_type":"boolean","safety_relevant":true},"target":{"id":"target.back-pain.chest-pain","display":"Determine Chest Pain","intents":["intent.screen_red_flags"]},"question":{"id":"question.back-pain.chest-pain","wording":"등 통증과 함께 가슴 통증이나 압박감이 있나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":122,"reason":"emergency_gate"}],"supports":["group.back-pain.immediate-safety"]},
-    {"reuse_existing":true,"fact":{"id":"symptom.fever","display":"Fever","value_type":"boolean","safety_relevant":true},"target":{"id":"target.back-pain.fever","display":"Determine Fever","intents":["intent.screen_red_flags"]},"question":{"id":"question.back-pain.fever","wording":"열이 나거나 몸이 뜨겁고 춥고 떨리나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":121,"reason":"infection_gate"}],"supports":["group.back-pain.immediate-safety","group.back-pain.systemic"]},
-    {"fact":{"id":"symptom.systemically_unwell","display":"Systemically Unwell","value_type":"boolean","safety_relevant":true},"target":{"id":"target.back-pain.unwell","display":"Determine Systemic Illness","intents":["intent.screen_red_flags"]},"question":{"id":"question.back-pain.unwell","wording":"평소와 달리 전신 상태가 나쁘고 몹시 기운이 없나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":120,"reason":"infection_gate"}],"supports":["group.back-pain.immediate-safety","group.back-pain.systemic"]},
-    {"fact":{"id":"symptom.back_pain.sudden_severe","display":"Sudden Severe Back Pain","value_type":"boolean","safety_relevant":true},"target":{"id":"target.back-pain.sudden-severe","display":"Determine Sudden Severe Pain","intents":["intent.screen_red_flags"]},"question":{"id":"question.back-pain.sudden-severe","wording":"참기 어려운 심한 통증이 갑자기 시작했나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":119,"reason":"urgent_gate"}],"supports":["group.back-pain.immediate-safety"]},
-    {"fact":{"id":"symptom.back_pain.rapidly_worsening","display":"Rapidly Worsening Back Pain","value_type":"boolean","safety_relevant":true},"target":{"id":"target.back-pain.rapid-worsening","display":"Determine Rapid Worsening","intents":["intent.screen_red_flags"]},"question":{"id":"question.back-pain.rapid-worsening","wording":"통증이 빠르게 심해지고 있나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":118,"reason":"urgent_gate"}],"supports":["group.back-pain.immediate-safety"]},
-    {"fact":{"id":"symptom.radicular_leg_pain","display":"Pain Radiating into Leg","value_type":"boolean","terminology_binding":{"system":"http://snomed.info/sct","code":"23056005"}},"target":{"id":"target.back-pain.radicular-pain","display":"Determine Radicular Pain","intents":["intent.differentiate_common_causes"]},"question":{"id":"question.back-pain.radicular-pain","wording":"허리 통증이 엉덩이에서 한쪽 또는 양쪽 다리 아래로 뻗치나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":94,"reason":"radicular_feature"}],"supports":["group.back-pain.radicular"]},
-    {"fact":{"id":"symptom.unilateral_leg_numbness","display":"Unilateral Leg Numbness or Tingling","value_type":"boolean"},"target":{"id":"target.back-pain.leg-numbness","display":"Determine Leg Sensory Symptom","intents":["intent.differentiate_common_causes"]},"question":{"id":"question.back-pain.leg-numbness","wording":"한쪽 다리에 저림이나 감각 저하가 있나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":93,"reason":"radicular_feature"}],"supports":["group.back-pain.radicular"]},
-    {"fact":{"id":"symptom.unilateral_leg_weakness","display":"Unilateral Leg Weakness","value_type":"boolean"},"target":{"id":"target.back-pain.leg-weakness","display":"Determine Leg Weakness","intents":["intent.risk_assessment"]},"question":{"id":"question.back-pain.leg-weakness","wording":"한쪽 다리에 힘이 빠지나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":92,"reason":"radicular_feature"}],"supports":["group.back-pain.radicular"]},
-    {"fact":{"id":"symptom.back_pain.cough_sneeze_strain_aggravation","display":"Pain Worse with Cough Sneeze or Strain","value_type":"boolean"},"target":{"id":"target.back-pain.strain","display":"Determine Strain Aggravation","intents":["intent.risk_assessment"]},"question":{"id":"question.back-pain.strain","wording":"기침, 재채기 또는 대변을 볼 때 힘주면 통증이 심해지나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":82,"reason":"review_context"}],"supports":["group.back-pain.radicular","group.back-pain.systemic"]},
-    {"fact":{"id":"symptom.back_pain.night_or_rest_pain","display":"Night Pain or Pain Not Relieved by Rest","value_type":"boolean"},"target":{"id":"target.back-pain.night-rest","display":"Determine Night or Rest Pain","intents":["intent.risk_assessment"]},"question":{"id":"question.back-pain.night-rest","wording":"쉬어도 좋아지지 않거나 밤에 더 심해 잠을 깨나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":91,"reason":"systemic_warning_context"}],"supports":["group.back-pain.systemic"]},
-    {"fact":{"id":"symptom.unintentional_weight_loss","display":"Unintentional Weight Loss","value_type":"boolean"},"target":{"id":"target.back-pain.weight-loss","display":"Determine Weight Loss","intents":["intent.risk_assessment"]},"question":{"id":"question.back-pain.weight-loss","wording":"최근 의도하지 않았는데 체중이 줄었나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":90,"reason":"systemic_warning_context"}],"supports":["group.back-pain.systemic"]},
-    {"fact":{"id":"history.malignancy","display":"History of Malignancy","value_type":"boolean"},"target":{"id":"target.back-pain.malignancy","display":"Determine Malignancy History","intents":["intent.risk_assessment"]},"question":{"id":"question.back-pain.malignancy","wording":"암을 진단받거나 치료받은 적이 있나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":89,"reason":"systemic_warning_context"}],"supports":["group.back-pain.systemic"]},
-    {"reuse_existing":true,"fact":{"id":"patient.immunocompromised","display":"Immunocompromised","value_type":"boolean","safety_relevant":true},"target":{"id":"target.back-pain.immunocompromise","display":"Determine Immune Status","intents":["intent.risk_assessment","intent.screen_red_flags"]},"question":{"id":"question.back-pain.immunocompromise","wording":"면역을 낮추는 약을 사용하거나 면역이 약해지는 질환·치료를 받고 있나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":117,"reason":"infection_safety_context"}],"supports":["group.back-pain.systemic"]},
-    {"fact":{"id":"exposure.injection_drug_use","display":"Injection Drug Use","value_type":"boolean"},"target":{"id":"target.back-pain.injection-drug","display":"Determine Injection Drug Exposure","intents":["intent.risk_assessment"]},"question":{"id":"question.back-pain.injection-drug","wording":"최근 주사로 비처방 약물이나 마약류를 사용한 적이 있나요? 답변하지 않아도 됩니다.","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":80,"reason":"infection_risk_context"}],"supports":["group.back-pain.systemic"]},
-    {"fact":{"id":"history.osteoporosis_or_long_term_steroids","display":"Osteoporosis or Long-term Steroid Use","value_type":"boolean"},"target":{"id":"target.back-pain.fracture-risk","display":"Determine Fracture Risk","intents":["intent.risk_assessment"]},"question":{"id":"question.back-pain.fracture-risk","wording":"골다공증이 있거나 스테로이드 약을 오래 복용했나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":88,"reason":"fracture_risk_context"}],"supports":["group.back-pain.systemic"]},
-    {"fact":{"id":"patient.age_60_or_older","display":"Age 60 or Older","value_type":"boolean"},"target":{"id":"target.back-pain.age60","display":"Determine Age Context","intents":["intent.risk_assessment"]},"question":{"id":"question.back-pain.age60","wording":"만 60세 이상인가요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":87,"reason":"investigation_context"}],"supports":["group.back-pain.systemic"]},
-    {"fact":{"id":"symptom.back_pain.persistent","display":"Persistent Back Pain","value_type":"boolean"},"target":{"id":"target.back-pain.persistence","display":"Determine Persistence","intents":["intent.risk_assessment"]},"question":{"id":"question.back-pain.persistence","wording":"통증이 몇 주 이상 계속되거나 자가 관리에도 좋아지지 않나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":86,"reason":"investigation_context"}],"supports":["group.back-pain.systemic"]},
-    {"fact":{"id":"symptom.urinary_symptoms","display":"Urinary Symptoms with Back Pain","value_type":"boolean"},"target":{"id":"target.back-pain.urinary","display":"Determine Urinary Features","intents":["intent.differentiate_common_causes"]},"question":{"id":"question.back-pain.urinary","wording":"소변 볼 때 통증, 잦은 소변 또는 혈뇨가 함께 있나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":79,"reason":"alternative_source_context"}],"supports":["group.back-pain.systemic"]},
-    {"fact":{"id":"symptom.inflammatory_back_features","display":"Inflammatory Back Pain Features","value_type":"boolean"},"target":{"id":"target.back-pain.inflammatory","display":"Determine Inflammatory Features","intents":["intent.differentiate_common_causes"]},"question":{"id":"question.back-pain.inflammatory","wording":"아침에 오래 뻣뻣하고 쉬면 더 아프지만 움직이면 좋아지는 편인가요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":78,"reason":"inflammatory_context"}],"supports":["group.back-pain.mechanical"]},
-    {"fact":{"id":"event.mechanical_trigger","display":"Mechanical Trigger","value_type":"boolean"},"target":{"id":"target.back-pain.mechanical-trigger","display":"Determine Mechanical Trigger","intents":["intent.differentiate_common_causes"]},"question":{"id":"question.back-pain.mechanical-trigger","wording":"무거운 물건 들기, 갑작스러운 동작, 운동 또는 오래 같은 자세를 취한 뒤 시작했나요?","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":77,"reason":"mechanical_context"}],"supports":["group.back-pain.mechanical"]},
-    {"fact":{"id":"treatment.back_pain_self_care_response","display":"Response to Back Pain Self-care","value_type":"coded","allowed_values":["not_tried","improved","unchanged","worsened"]},"target":{"id":"target.back-pain.self-care","display":"Determine Self-care Response","intents":["intent.risk_assessment"]},"question":{"id":"question.back-pain.self-care","wording":"활동 조절, 온찜질 또는 일반 진통제 같은 자가 관리를 해봤다면 좋아짐, 변화 없음, 악화 중 무엇인가요? 안 해봤다면 안 해봄으로 답해 주세요.","language":"ko","mode":["chat","face_to_face","telephone","video"]},"priority":[{"branch":"any","score":76,"reason":"management_context"}],"supports":["group.back-pain.mechanical"]}
+  "id": "knowledge.generated.musculoskeletal.back-pain",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
   ],
-  "provenance":{"created_by":{"type":"ai","id":"codex-gpt5"},"created_at":"2026-07-14T00:00:00Z","source_refs":["source.nhs.back-pain.2026","source.nice.ng59.back-pain.2020","source.nice.ng127.cauda-equina.2025","source.nice.ng12.back-pain.2026","source.stom.mrcm.back-pain.20260714"],"review_status":"unreviewed","version":"0.1.0"}
+  "source_manifest": "source-manifest.primary-care-back-pain-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-07-19",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-07-21",
+    "next_full_review_at": "2027-01-15",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.back-pain.immediate-safety",
+      "type": "ClinicalGroup",
+      "display": "Immediate Back Pain Safety"
+    },
+    {
+      "id": "group.back-pain.characterization",
+      "type": "ClinicalGroup",
+      "display": "Back Pain Characterization"
+    },
+    {
+      "id": "group.back-pain.radicular",
+      "type": "ClinicalGroup",
+      "display": "Radicular and Neurological Features"
+    },
+    {
+      "id": "group.back-pain.systemic",
+      "type": "ClinicalGroup",
+      "display": "Systemic and Structural Warning Features"
+    },
+    {
+      "id": "group.back-pain.mechanical",
+      "type": "ClinicalGroup",
+      "display": "Mechanical and Inflammatory Context"
+    },
+    {
+      "id": "hypothesis.back-pain.cauda-equina",
+      "type": "Hypothesis",
+      "display": "Cauda Equina Warning Pattern"
+    },
+    {
+      "id": "hypothesis.back-pain.radicular",
+      "type": "Hypothesis",
+      "display": "Radicular Feature Pattern"
+    },
+    {
+      "id": "hypothesis.back-pain.serious-pathology",
+      "type": "Hypothesis",
+      "display": "Serious Underlying Pathology Warning Pattern"
+    },
+    {
+      "id": "hypothesis.back-pain.mechanical",
+      "type": "Hypothesis",
+      "display": "Mechanical Back Pain Pattern"
+    },
+    {
+      "id": "group.back-pain.routing",
+      "type": "ClinicalGroup",
+      "display": "Routing"
+    },
+    {
+      "id": "group.back-pain.course",
+      "type": "ClinicalGroup",
+      "display": "Course"
+    },
+    {
+      "id": "group.back-pain.pain-detail",
+      "type": "ClinicalGroup",
+      "display": "Pain Detail"
+    },
+    {
+      "id": "group.back-pain.neurological-detail",
+      "type": "ClinicalGroup",
+      "display": "Neurological Detail"
+    },
+    {
+      "id": "group.back-pain.systemic-detail",
+      "type": "ClinicalGroup",
+      "display": "Systemic Detail"
+    },
+    {
+      "id": "group.back-pain.risk-history",
+      "type": "ClinicalGroup",
+      "display": "Risk History"
+    },
+    {
+      "id": "group.back-pain.investigation",
+      "type": "ClinicalGroup",
+      "display": "Investigation"
+    },
+    {
+      "id": "group.back-pain.function",
+      "type": "ClinicalGroup",
+      "display": "Function"
+    },
+    {
+      "id": "group.back-pain.handoff",
+      "type": "ClinicalGroup",
+      "display": "Handoff"
+    }
+  ],
+  "group_hypothesis_edges": [
+    [
+      "group.back-pain.immediate-safety",
+      "hypothesis.back-pain.cauda-equina"
+    ],
+    [
+      "group.back-pain.radicular",
+      "hypothesis.back-pain.radicular"
+    ],
+    [
+      "group.back-pain.systemic",
+      "hypothesis.back-pain.serious-pathology"
+    ],
+    [
+      "group.back-pain.mechanical",
+      "hypothesis.back-pain.mechanical"
+    ]
+  ],
+  "safety_rules": [
+    {
+      "id": "rule.back-pain.safety.bilateral-leg-neurology",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.bilateral_leg_neurological_symptoms",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.back-pain.safety.saddle-sensory-loss",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.saddle_sensory_loss",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.back-pain.safety.bladder-change",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.new_bladder_dysfunction",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.back-pain.safety.bowel-change",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.new_bowel_control_change",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.back-pain.safety.sexual-neurological-change",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.new_sexual_sensory_or_function_change",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.back-pain.safety.progressive-leg-weakness",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.progressive_leg_weakness",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.back-pain.safety.serious-trauma",
+      "priority": 1000,
+      "when": {
+        "fact": "event.serious_back_trauma",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.back-pain.safety.chest-pain",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.chest_pain",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.back-pain.safety.fever-systemically-unwell",
+      "priority": 900,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.fever",
+            "equals": true
+          },
+          {
+            "fact": "symptom.systemically_unwell",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.back-pain.safety.sudden-severe",
+      "priority": 900,
+      "when": {
+        "fact": "symptom.back_pain.sudden_severe",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.back-pain.safety.rapid-worsening",
+      "priority": 900,
+      "when": {
+        "fact": "symptom.back_pain.rapidly_worsening",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.back-pain.safety.fever-immunocompromised",
+      "priority": 900,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.fever",
+            "equals": true
+          },
+          {
+            "fact": "patient.immunocompromised",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "symptom.back_pain.current",
+        "display": "Current Back Pain",
+        "value_type": "boolean",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "161891005"
+        }
+      },
+      "target": {
+        "id": "target.back-pain.current",
+        "display": "Confirm Current Back Pain",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.current",
+        "wording": "지금도 등이나 허리 통증이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "confirm_presentation"
+        }
+      ],
+      "supports": [
+        "group.back-pain.characterization"
+      ]
+    },
+    {
+      "reuse_existing": true,
+      "fact": {
+        "id": "symptom.duration",
+        "display": "Symptom Duration",
+        "value_type": "quantity"
+      },
+      "target": {
+        "id": "target.back-pain.duration",
+        "display": "Determine Duration",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.duration",
+        "wording": "통증은 언제부터 시작했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 105,
+          "reason": "characterize_duration"
+        }
+      ],
+      "supports": [
+        "group.back-pain.characterization"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.back_pain.location",
+        "display": "Back Pain Location",
+        "value_type": "coded",
+        "allowed_values": [
+          "lower_back",
+          "mid_back",
+          "upper_back",
+          "diffuse"
+        ],
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "focus_code": "161891005",
+          "attribute_code": "363698007"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.back-pain",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.back-pain.location",
+        "display": "Determine Location",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.location",
+        "wording": "통증은 허리, 등 가운데, 양쪽 어깨뼈 사이의 윗등, 등 전체 중 어디인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 104,
+          "reason": "characterize_location"
+        }
+      ],
+      "supports": [
+        "group.back-pain.characterization"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.back_pain.severity",
+        "display": "Back Pain Severity",
+        "value_type": "coded",
+        "allowed_values": [
+          "mild",
+          "moderate",
+          "severe"
+        ],
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "focus_code": "279039007",
+          "attribute_code": "246112005"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.back-pain",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.back-pain.severity",
+        "display": "Determine Severity",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.severity",
+        "wording": "통증은 가벼움, 중간, 심함 중 어디에 가깝나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 103,
+          "reason": "characterize_severity"
+        }
+      ],
+      "supports": [
+        "group.back-pain.characterization"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.back_pain.onset",
+        "display": "Back Pain Onset",
+        "value_type": "coded",
+        "allowed_values": [
+          "sudden",
+          "gradual",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.back-pain.onset",
+        "display": "Determine Onset",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.onset",
+        "wording": "통증은 갑자기 시작했나요, 서서히 시작했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 102,
+          "reason": "characterize_onset"
+        }
+      ],
+      "supports": [
+        "group.back-pain.characterization"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.back_pain.functional_impact",
+        "display": "Back Pain Functional Impact",
+        "value_type": "coded",
+        "allowed_values": [
+          "none",
+          "mild",
+          "moderate",
+          "severe"
+        ]
+      },
+      "target": {
+        "id": "target.back-pain.function",
+        "display": "Determine Functional Impact",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.function",
+        "wording": "통증 때문에 걷기·일·수면·씻기 같은 일상이 얼마나 제한되나요? 없음, 가벼움, 중간, 심함으로 답해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 101,
+          "reason": "functional_impact"
+        }
+      ],
+      "supports": [
+        "group.back-pain.characterization"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.bilateral_leg_neurological_symptoms",
+        "display": "Bilateral Leg Pain Tingling Weakness or Numbness",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.back-pain.bilateral-legs",
+        "display": "Determine Bilateral Leg Neurology",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.bilateral-legs",
+        "wording": "양쪽 다리에 통증, 저림, 감각 저하 또는 힘 빠짐이 새로 생겼나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "cauda_equina_gate"
+        }
+      ],
+      "supports": [
+        "group.back-pain.immediate-safety",
+        "group.back-pain.radicular"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.saddle_sensory_loss",
+        "display": "Saddle Sensory Loss",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.back-pain.saddle",
+        "display": "Determine Saddle Sensation",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.saddle",
+        "wording": "성기, 항문, 엉덩이 안쪽 또는 허벅지 안쪽의 감각이 둔하거나 없어졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "cauda_equina_gate"
+        }
+      ],
+      "supports": [
+        "group.back-pain.immediate-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.new_bladder_dysfunction",
+        "display": "New Bladder Dysfunction",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.back-pain.bladder",
+        "display": "Determine Bladder Change",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.bladder",
+        "wording": "소변이 시작되지 않거나 감각 없이 새거나, 방광이 찬 느낌을 못 느끼는 변화가 새로 생겼나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 127,
+          "reason": "cauda_equina_gate"
+        }
+      ],
+      "supports": [
+        "group.back-pain.immediate-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.new_bowel_control_change",
+        "display": "New Bowel Control Change",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.back-pain.bowel",
+        "display": "Determine Bowel Control Change",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.bowel",
+        "wording": "대변을 참거나 느끼는 기능에 새 변화가 있거나 자신도 모르게 대변이 나왔나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 126,
+          "reason": "cauda_equina_gate"
+        }
+      ],
+      "supports": [
+        "group.back-pain.immediate-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.new_sexual_sensory_or_function_change",
+        "display": "New Sexual Sensory or Function Change",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.back-pain.sexual-neurology",
+        "display": "Determine Sexual Neurological Change",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.sexual-neurology",
+        "wording": "성관계 때 성기 감각, 발기 또는 오르가슴 기능이 갑자기 달라졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 125,
+          "reason": "cauda_equina_gate"
+        }
+      ],
+      "supports": [
+        "group.back-pain.immediate-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.progressive_leg_weakness",
+        "display": "Progressive Leg Weakness",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.back-pain.progressive-weakness",
+        "display": "Determine Progressive Weakness",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.progressive-weakness",
+        "wording": "다리 힘이 빠지는 증상이 빠르게 심해지거나 걷기가 어려워지고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 124,
+          "reason": "progressive_neurological_gate"
+        }
+      ],
+      "supports": [
+        "group.back-pain.immediate-safety",
+        "group.back-pain.radicular"
+      ]
+    },
+    {
+      "fact": {
+        "id": "event.serious_back_trauma",
+        "display": "Serious Accident or Back Trauma",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.back-pain.trauma",
+        "display": "Determine Serious Trauma",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.trauma",
+        "wording": "통증이 교통사고, 높은 곳에서 떨어짐 또는 강한 충격 뒤 시작했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 123,
+          "reason": "trauma_gate"
+        }
+      ],
+      "supports": [
+        "group.back-pain.immediate-safety",
+        "group.back-pain.systemic"
+      ]
+    },
+    {
+      "reuse_existing": true,
+      "fact": {
+        "id": "symptom.chest_pain",
+        "display": "Chest Pain",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.back-pain.chest-pain",
+        "display": "Determine Chest Pain",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.chest-pain",
+        "wording": "등 통증과 함께 가슴 통증이나 압박감이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 122,
+          "reason": "emergency_gate"
+        }
+      ],
+      "supports": [
+        "group.back-pain.immediate-safety"
+      ]
+    },
+    {
+      "reuse_existing": true,
+      "fact": {
+        "id": "symptom.fever",
+        "display": "Fever",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.back-pain.fever",
+        "display": "Determine Fever",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.fever",
+        "wording": "열이 나거나 몸이 뜨겁고 춥고 떨리나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 121,
+          "reason": "infection_gate"
+        }
+      ],
+      "supports": [
+        "group.back-pain.immediate-safety",
+        "group.back-pain.systemic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.systemically_unwell",
+        "display": "Systemically Unwell",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.back-pain.unwell",
+        "display": "Determine Systemic Illness",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.unwell",
+        "wording": "평소와 달리 전신 상태가 나쁘고 몹시 기운이 없나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 120,
+          "reason": "infection_gate"
+        }
+      ],
+      "supports": [
+        "group.back-pain.immediate-safety",
+        "group.back-pain.systemic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.back_pain.sudden_severe",
+        "display": "Sudden Severe Back Pain",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.back-pain.sudden-severe",
+        "display": "Determine Sudden Severe Pain",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.sudden-severe",
+        "wording": "참기 어려운 심한 통증이 갑자기 시작했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 119,
+          "reason": "urgent_gate"
+        }
+      ],
+      "supports": [
+        "group.back-pain.immediate-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.back_pain.rapidly_worsening",
+        "display": "Rapidly Worsening Back Pain",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.back-pain.rapid-worsening",
+        "display": "Determine Rapid Worsening",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.rapid-worsening",
+        "wording": "통증이 빠르게 심해지고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 118,
+          "reason": "urgent_gate"
+        }
+      ],
+      "supports": [
+        "group.back-pain.immediate-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.radicular_leg_pain",
+        "display": "Pain Radiating into Leg",
+        "value_type": "boolean",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "23056005"
+        }
+      },
+      "target": {
+        "id": "target.back-pain.radicular-pain",
+        "display": "Determine Radicular Pain",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.radicular-pain",
+        "wording": "허리 통증이 엉덩이에서 한쪽 또는 양쪽 다리 아래로 뻗치나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 94,
+          "reason": "radicular_feature"
+        }
+      ],
+      "supports": [
+        "group.back-pain.radicular"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.unilateral_leg_numbness",
+        "display": "Unilateral Leg Numbness or Tingling",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.back-pain.leg-numbness",
+        "display": "Determine Leg Sensory Symptom",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.leg-numbness",
+        "wording": "한쪽 다리에 저림이나 감각 저하가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 93,
+          "reason": "radicular_feature"
+        }
+      ],
+      "supports": [
+        "group.back-pain.radicular"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.unilateral_leg_weakness",
+        "display": "Unilateral Leg Weakness",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.back-pain.leg-weakness",
+        "display": "Determine Leg Weakness",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.leg-weakness",
+        "wording": "한쪽 다리에 힘이 빠지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 92,
+          "reason": "radicular_feature"
+        }
+      ],
+      "supports": [
+        "group.back-pain.radicular"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.back_pain.cough_sneeze_strain_aggravation",
+        "display": "Pain Worse with Cough Sneeze or Strain",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.back-pain.strain",
+        "display": "Determine Strain Aggravation",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.strain",
+        "wording": "기침, 재채기 또는 대변을 볼 때 힘주면 통증이 심해지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 82,
+          "reason": "review_context"
+        }
+      ],
+      "supports": [
+        "group.back-pain.radicular",
+        "group.back-pain.systemic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.back_pain.night_or_rest_pain",
+        "display": "Night Pain or Pain Not Relieved by Rest",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.back-pain.night-rest",
+        "display": "Determine Night or Rest Pain",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.night-rest",
+        "wording": "쉬어도 좋아지지 않거나 밤에 더 심해 잠을 깨나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 91,
+          "reason": "systemic_warning_context"
+        }
+      ],
+      "supports": [
+        "group.back-pain.systemic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.unintentional_weight_loss",
+        "display": "Unintentional Weight Loss",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.back-pain.weight-loss",
+        "display": "Determine Weight Loss",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.weight-loss",
+        "wording": "최근 의도하지 않았는데 체중이 줄었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 90,
+          "reason": "systemic_warning_context"
+        }
+      ],
+      "supports": [
+        "group.back-pain.systemic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "history.malignancy",
+        "display": "History of Malignancy",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.back-pain.malignancy",
+        "display": "Determine Malignancy History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.malignancy",
+        "wording": "암을 진단받거나 치료받은 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 89,
+          "reason": "systemic_warning_context"
+        }
+      ],
+      "supports": [
+        "group.back-pain.systemic"
+      ]
+    },
+    {
+      "reuse_existing": true,
+      "fact": {
+        "id": "patient.immunocompromised",
+        "display": "Immunocompromised",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.back-pain.immunocompromise",
+        "display": "Determine Immune Status",
+        "intents": [
+          "intent.risk_assessment",
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.immunocompromise",
+        "wording": "면역을 낮추는 약을 사용하거나 면역이 약해지는 질환·치료를 받고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 117,
+          "reason": "infection_safety_context"
+        }
+      ],
+      "supports": [
+        "group.back-pain.systemic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "exposure.injection_drug_use",
+        "display": "Injection Drug Use",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.back-pain.injection-drug",
+        "display": "Determine Injection Drug Exposure",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.injection-drug",
+        "wording": "최근 주사로 비처방 약물이나 마약류를 사용한 적이 있나요? 답변하지 않아도 됩니다.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 80,
+          "reason": "infection_risk_context"
+        }
+      ],
+      "supports": [
+        "group.back-pain.systemic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "history.osteoporosis_or_long_term_steroids",
+        "display": "Osteoporosis or Long-term Steroid Use",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.back-pain.fracture-risk",
+        "display": "Determine Fracture Risk",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.fracture-risk",
+        "wording": "골다공증이 있거나 스테로이드 약을 오래 복용했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 88,
+          "reason": "fracture_risk_context"
+        }
+      ],
+      "supports": [
+        "group.back-pain.systemic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "patient.age_60_or_older",
+        "display": "Age 60 or Older",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.back-pain.age60",
+        "display": "Determine Age Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.age60",
+        "wording": "만 60세 이상인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 87,
+          "reason": "investigation_context"
+        }
+      ],
+      "supports": [
+        "group.back-pain.systemic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.back_pain.persistent",
+        "display": "Persistent Back Pain",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.back-pain.persistence",
+        "display": "Determine Persistence",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.persistence",
+        "wording": "통증이 몇 주 이상 계속되거나 자가 관리에도 좋아지지 않나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 86,
+          "reason": "investigation_context"
+        }
+      ],
+      "supports": [
+        "group.back-pain.systemic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.urinary_symptoms",
+        "display": "Urinary Symptoms with Back Pain",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.back-pain.urinary",
+        "display": "Determine Urinary Features",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.urinary",
+        "wording": "소변 볼 때 통증, 잦은 소변 또는 혈뇨가 함께 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 79,
+          "reason": "alternative_source_context"
+        }
+      ],
+      "supports": [
+        "group.back-pain.systemic"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.inflammatory_back_features",
+        "display": "Inflammatory Back Pain Features",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.back-pain.inflammatory",
+        "display": "Determine Inflammatory Features",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.inflammatory",
+        "wording": "아침에 오래 뻣뻣하고 쉬면 더 아프지만 움직이면 좋아지는 편인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 78,
+          "reason": "inflammatory_context"
+        }
+      ],
+      "supports": [
+        "group.back-pain.mechanical"
+      ]
+    },
+    {
+      "fact": {
+        "id": "event.mechanical_trigger",
+        "display": "Mechanical Trigger",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.back-pain.mechanical-trigger",
+        "display": "Determine Mechanical Trigger",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.mechanical-trigger",
+        "wording": "무거운 물건 들기, 갑작스러운 동작, 운동 또는 오래 같은 자세를 취한 뒤 시작했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 77,
+          "reason": "mechanical_context"
+        }
+      ],
+      "supports": [
+        "group.back-pain.mechanical"
+      ]
+    },
+    {
+      "fact": {
+        "id": "treatment.back_pain_self_care_response",
+        "display": "Response to Back Pain Self-care",
+        "value_type": "coded",
+        "allowed_values": [
+          "not_tried",
+          "improved",
+          "unchanged",
+          "worsened"
+        ]
+      },
+      "target": {
+        "id": "target.back-pain.self-care",
+        "display": "Determine Self-care Response",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.self-care",
+        "wording": "활동 조절, 온찜질 또는 일반 진통제 같은 자가 관리를 해봤다면 좋아짐, 변화 없음, 악화 중 무엇인가요? 안 해봤다면 안 해봄으로 답해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 76,
+          "reason": "management_context"
+        }
+      ],
+      "supports": [
+        "group.back-pain.mechanical"
+      ]
+    },
+    {
+      "fact": {
+        "id": "back_pain.primary_context",
+        "display": "Primary Back Pain Context",
+        "value_type": "coded",
+        "allowed_values": [
+          "acute_mechanical",
+          "radicular_or_neurological",
+          "trauma_or_fracture_risk",
+          "fever_infection_or_systemic",
+          "night_rest_or_persistent",
+          "urinary_abdominal_or_pelvic_context",
+          "chronic_recurrent_or_followup",
+          "pregnancy_or_postpartum",
+          "child_or_proxy",
+          "other_or_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.back-pain.primary-context",
+        "display": "Primary Back Pain Context",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.primary-context",
+        "wording": "가장 가까운 상황은 급성·동작 관련, 다리로 뻗침·신경 증상, 외상·골절 위험, 발열·감염·전신 증상, 밤·휴식·지속 통증, 소변·복부·골반 관련, 만성·반복·추적, 임신·산후, 소아·보호자 응답, 또는 불분명 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 116,
+          "reason": "primary-context"
+        }
+      ],
+      "supports": [
+        "group.back-pain.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "back_pain.patient_words_and_main_concern",
+        "display": "Patient Description and Main Concern",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.back-pain.patient-words",
+        "display": "Patient Description and Main Concern",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.patient-words",
+        "wording": "본인의 표현으로 통증을 설명하고 가장 불편하거나 걱정되는 점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 115,
+          "reason": "patient-words"
+        }
+      ],
+      "supports": [
+        "group.back-pain.pain-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "back_pain.first_latest_onset_context_and_course",
+        "display": "First and Latest Back Pain Timeline",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.back-pain.timeline",
+        "display": "First and Latest Back Pain Timeline",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.timeline",
+        "wording": "처음과 가장 최근 통증의 날짜·시각, 당시 하던 일과 이후 좋아짐·악화·반복 양상을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 114,
+          "reason": "timeline"
+        }
+      ],
+      "supports": [
+        "group.back-pain.course"
+      ]
+    },
+    {
+      "fact": {
+        "id": "back_pain.episode_frequency_duration_baseline_and_between_state",
+        "display": "Episode Frequency Duration and Baseline",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.back-pain.episode-course",
+        "display": "Episode Frequency Duration and Baseline",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.episode-course",
+        "wording": "하루·주당 통증 횟수, 한 번 지속되는 시간, 통증 사이에 평소 상태로 돌아오는지와 이전의 통증 없는 기준 상태를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 113,
+          "reason": "episode-course"
+        }
+      ],
+      "supports": [
+        "group.back-pain.course"
+      ]
+    },
+    {
+      "fact": {
+        "id": "back_pain.exact_site_laterality_surface_depth_and_radiation",
+        "display": "Exact Site Laterality Depth and Radiation",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.back-pain.site-detail",
+        "display": "Exact Site Laterality Depth and Radiation",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.site-detail",
+        "wording": "허리·등의 정확한 부위와 왼쪽·오른쪽·가운데, 피부 가까이 또는 깊은 느낌인지, 엉덩이·다리·가슴·배로 퍼지는 경로를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 112,
+          "reason": "site-detail"
+        }
+      ],
+      "supports": [
+        "group.back-pain.pain-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "back_pain.character_quality_and_patient_comparison",
+        "display": "Back Pain Character and Quality",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.back-pain.character",
+        "display": "Back Pain Character and Quality",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.character",
+        "wording": "쑤심·찌름·타는 느낌·전기 오는 느낌·압박·당김 등 통증 양상과 이전 통증과 다른 점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 111,
+          "reason": "character"
+        }
+      ],
+      "supports": [
+        "group.back-pain.pain-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "back_pain.movement_posture_load_cough_strain_and_relief_pattern",
+        "display": "Movement Posture Load and Relief Pattern",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.back-pain.mechanical-pattern",
+        "display": "Movement Posture Load and Relief Pattern",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.mechanical-pattern",
+        "wording": "허리 굽힘·폄·비틀기, 앉기·서기·걷기·눕기, 물건 들기, 기침·재채기·힘주기 중 무엇이 악화하거나 완화하며 변화까지 얼마나 걸리는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 110,
+          "reason": "mechanical-pattern"
+        }
+      ],
+      "supports": [
+        "group.back-pain.pain-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "back_pain.day_night_rest_sleep_morning_stiffness_and_activity_pattern",
+        "display": "Day Night Rest Sleep and Stiffness Pattern",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.back-pain.time-pattern",
+        "display": "Day Night Rest Sleep and Stiffness Pattern",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.time-pattern",
+        "wording": "낮·밤·휴식·수면·기상 후 중 언제 심한지, 아침 뻣뻣함이 지속되는 시간과 움직이면 좋아지는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 109,
+          "reason": "time-pattern"
+        }
+      ],
+      "supports": [
+        "group.back-pain.course"
+      ]
+    },
+    {
+      "fact": {
+        "id": "back_pain.walk_transfer_stairs_sleep_work_selfcare_and_driving_impact",
+        "display": "Detailed Functional and Safety Impact",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.back-pain.function-detail",
+        "display": "Detailed Functional and Safety Impact",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.function-detail",
+        "wording": "걷기·일어나기·계단·수면·씻기·옷입기·업무·운전에서 어려운 활동과 도움이나 보조기구가 필요한 정도를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 108,
+          "reason": "function-detail"
+        }
+      ],
+      "supports": [
+        "group.back-pain.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "back_pain.leg_radiation_route_side_below_knee_and_timing",
+        "display": "Leg Radiation Route and Timing",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.back-pain.radiation-detail",
+        "display": "Leg Radiation Route and Timing",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.radiation-detail",
+        "wording": "다리로 통증이 뻗친다면 어느 쪽 엉덩이·허벅지·종아리·발까지 이어지는지와 허리 통증 전·후·동시에 시작했는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 107,
+          "reason": "radiation-detail"
+        }
+      ],
+      "supports": [
+        "group.back-pain.neurological-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "back_pain.weakness_numbness_distribution_tasks_sequence_and_trend",
+        "display": "Weakness and Sensory Distribution",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.back-pain.neurology-detail",
+        "display": "Weakness and Sensory Distribution",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.neurology-detail",
+        "wording": "다리 힘 빠짐·저림·감각 저하가 있다면 정확한 부위, 계단·발뒤꿈치/발끝 걷기 등 어려운 동작, 시작 순서와 진행 양상을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 106,
+          "reason": "neurology-detail"
+        }
+      ],
+      "supports": [
+        "group.back-pain.neurological-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "back_pain.bladder_bowel_saddle_sexual_change_onset_and_baseline",
+        "display": "Cauda Equina Symptom Detail and Baseline",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.back-pain.cauda-detail",
+        "display": "Cauda Equina Symptom Detail and Baseline",
+        "intents": [
+          "intent.screen_red_flags",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.cauda-detail",
+        "wording": "배뇨·배변·회음부 감각·성기능 변화가 있다면 평소와 달라진 내용, 시작 시각, 허리·다리 증상과의 순서를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 105,
+          "reason": "cauda-detail"
+        }
+      ],
+      "supports": [
+        "group.back-pain.neurological-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "back_pain.trauma_mechanism_height_force_date_and_immediate_function",
+        "display": "Trauma Mechanism and Immediate Function",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.back-pain.trauma-detail",
+        "display": "Trauma Mechanism and Immediate Function",
+        "intents": [
+          "intent.screen_red_flags",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.trauma-detail",
+        "wording": "외상이 있었다면 날짜·시각, 낙상 높이·충돌 방향·힘, 직후 걷거나 움직일 수 있었는지와 다른 부상을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 104,
+          "reason": "trauma-detail"
+        }
+      ],
+      "supports": [
+        "group.back-pain.risk-history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "back_pain.fever_temperature_systemic_state_infection_exposure_and_timeline",
+        "display": "Fever Systemic Illness and Infection Timeline",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.back-pain.infection-detail",
+        "display": "Fever Systemic Illness and Infection Timeline",
+        "intents": [
+          "intent.screen_red_flags",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.infection-detail",
+        "wording": "발열이 있다면 최고 체온·측정방법·시각, 오한·전신 상태, 최근 감염·상처·치과/비뇨기 증상과 허리 통증의 시작 순서를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 103,
+          "reason": "infection-detail"
+        }
+      ],
+      "supports": [
+        "group.back-pain.systemic-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "back_pain.recent_procedure_injection_device_wound_and_infection_context",
+        "display": "Procedure Device Wound and Infection Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.back-pain.procedure-infection",
+        "display": "Procedure Device Wound and Infection Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.procedure-infection",
+        "wording": "최근 수술·주사·척추 시술·카테터/기기, 피부 상처·감염 또는 입원이 있었다면 날짜와 통증 시작과의 관계를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 102,
+          "reason": "procedure-infection"
+        }
+      ],
+      "supports": [
+        "group.back-pain.systemic-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "back_pain.weight_change_night_rest_thoracic_and_systemic_timeline",
+        "display": "Persistent and Systemic Symptom Timeline",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.back-pain.systemic-timeline",
+        "display": "Persistent and Systemic Symptom Timeline",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.systemic-timeline",
+        "wording": "체중 변화의 양·기간, 밤이나 휴식 때 통증, 윗등 통증과 식욕·피로·식은땀 등 전신 변화의 순서를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 101,
+          "reason": "systemic-timeline"
+        }
+      ],
+      "supports": [
+        "group.back-pain.systemic-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "back_pain.cancer_history_type_treatment_date_status_and_followup",
+        "display": "Cancer History and Current Status",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.back-pain.cancer-history",
+        "display": "Cancer History and Current Status",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.cancer-history",
+        "wording": "암 병력이 있다면 종류·진단 시기·수술/항암/방사선 치료·현재 상태와 최근 추적 결과를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 100,
+          "reason": "cancer-history"
+        }
+      ],
+      "supports": [
+        "group.back-pain.risk-history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "back_pain.immune_suppression_diabetes_infection_risk_and_timing",
+        "display": "Immune and Infection Risk Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.back-pain.immune-risk",
+        "display": "Immune and Infection Risk Detail",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.immune-risk",
+        "wording": "면역저하 질환·치료, 당뇨, 투석 등 감염 위험 병력과 약 이름·마지막 투여 시기를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 99,
+          "reason": "immune-risk"
+        }
+      ],
+      "supports": [
+        "group.back-pain.risk-history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "back_pain.osteoporosis_steroid_frailty_fall_and_fracture_history",
+        "display": "Bone Fragility and Fracture Risk Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.back-pain.bone-risk",
+        "display": "Bone Fragility and Fracture Risk Detail",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.bone-risk",
+        "wording": "골다공증·과거 골절, 장기 스테로이드의 이름·기간, 허약·최근 낙상과 작은 충격 뒤 통증 여부를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 98,
+          "reason": "bone-risk"
+        }
+      ],
+      "supports": [
+        "group.back-pain.risk-history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "back_pain.anticoagulant_antiplatelet_bleeding_disorder_and_last_dose",
+        "display": "Antithrombotic and Bleeding Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.back-pain.bleeding-risk",
+        "display": "Antithrombotic and Bleeding Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.bleeding-risk",
+        "wording": "항응고제·항혈소판제 사용이나 출혈 질환이 있다면 약 이름·용량·마지막 복용과 멍·출혈 변화를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 97,
+          "reason": "bleeding-risk"
+        }
+      ],
+      "supports": [
+        "group.back-pain.risk-history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "back_pain.pregnancy_gestation_postpartum_delivery_anesthesia_and_complications",
+        "display": "Pregnancy and Postpartum Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.back-pain.pregnancy-context",
+        "display": "Pregnancy and Postpartum Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.pregnancy-context",
+        "wording": "해당되는 경우 임신 주수 또는 출산 후 기간, 분만 방식·마취, 출혈·발열·혈압 문제와 통증 시작 시점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 96,
+          "reason": "pregnancy-context"
+        }
+      ],
+      "supports": [
+        "group.back-pain.risk-history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "back_pain.urinary_abdominal_bowel_menstrual_and_pelvic_relation",
+        "display": "Urinary Abdominal Bowel and Pelvic Relation",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.back-pain.visceral-context",
+        "display": "Urinary Abdominal Bowel and Pelvic Relation",
+        "intents": [
+          "intent.differentiate_common_causes",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.visceral-context",
+        "wording": "소변·혈뇨, 복통·구토·배변, 월경·질출혈·골반 증상과 허리·등 통증의 시간 관계를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 95,
+          "reason": "visceral-context"
+        }
+      ],
+      "supports": [
+        "group.back-pain.systemic-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "back_pain.prior_episode_spine_diagnosis_surgery_injection_and_recovery",
+        "display": "Prior Spine Episode Procedure and Recovery",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.back-pain.prior-history",
+        "display": "Prior Spine Episode Procedure and Recovery",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.prior-history",
+        "wording": "이전 같은 통증의 시기·진단, 척추 수술·주사·재활 여부, 당시 회복 정도와 이번에 달라진 점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 94,
+          "reason": "prior-history"
+        }
+      ],
+      "supports": [
+        "group.back-pain.risk-history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "back_pain.medicine_analgesic_dose_timing_effect_adverse_effect_and_allergy",
+        "display": "Medication Treatment and Allergy Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.back-pain.medicine-detail",
+        "display": "Medication Treatment and Allergy Detail",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.medicine-detail",
+        "wording": "현재 약과 이번 통증에 사용한 진통제·소염제·근이완제 등의 이름·용량·시각, 효과·부작용과 약물 알레르기를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 93,
+          "reason": "medicine-detail"
+        }
+      ],
+      "supports": [
+        "group.back-pain.risk-history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "back_pain.prior_examination_imaging_lab_date_result_source_and_pending",
+        "display": "Prior Examination Imaging and Laboratory Result",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.back-pain.prior-tests",
+        "display": "Prior Examination Imaging and Laboratory Result",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.prior-tests",
+        "wording": "이전 진찰, X선·CT·MRI, 혈액·소변 검사의 날짜·설명받은 결과·자료 출처와 아직 확인하지 못한 결과를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 92,
+          "reason": "prior-tests"
+        }
+      ],
+      "supports": [
+        "group.back-pain.investigation"
+      ]
+    },
+    {
+      "fact": {
+        "id": "back_pain.treatment_activity_heat_therapy_response_and_recurrence",
+        "display": "Treatment Attempt Response and Recurrence",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.back-pain.treatment-response",
+        "display": "Treatment Attempt Response and Recurrence",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.treatment-response",
+        "wording": "활동 조절·찜질·약·물리/운동치료 등 해본 방법, 시행 시기·횟수, 효과·부작용과 중단 뒤 재발 여부를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 91,
+          "reason": "treatment-response"
+        }
+      ],
+      "supports": [
+        "group.back-pain.investigation"
+      ]
+    },
+    {
+      "fact": {
+        "id": "back_pain.occupation_manual_handling_posture_vibration_ppe_and_work_change",
+        "display": "Occupation and Work Exposure Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.back-pain.occupation",
+        "display": "Occupation and Work Exposure Detail",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.occupation",
+        "wording": "직업·가사·돌봄에서 물건 들기, 반복 굽힘·비틀기, 장시간 자세·진동·운전 노출과 업무 조정·보호구를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 90,
+          "reason": "occupation"
+        }
+      ],
+      "supports": [
+        "group.back-pain.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "back_pain.child_age_growth_fever_function_trauma_and_proxy_observation",
+        "display": "Child Back Pain and Proxy Observation",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.back-pain.child-context",
+        "display": "Child Back Pain and Proxy Observation",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.child-context",
+        "wording": "소아라면 나이·성장, 발열·보행·놀이·수면 변화, 외상과 보호자가 직접 본 내용 및 아이의 표현을 구분해 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 89,
+          "reason": "child-context"
+        }
+      ],
+      "supports": [
+        "group.back-pain.risk-history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "back_pain.older_frailty_falls_mobility_cognition_and_caregiver_support",
+        "display": "Older Adult Frailty and Support Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.back-pain.older-context",
+        "display": "Older Adult Frailty and Support Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.older-context",
+        "wording": "고령자라면 평소 보행·낙상·골절·인지 상태, 최근 기능 저하, 보조기구와 보호자 도움을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 88,
+          "reason": "older-context"
+        }
+      ],
+      "supports": [
+        "group.back-pain.risk-history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "back_pain.communication_language_hearing_cognition_and_accessibility",
+        "display": "Communication and Accessibility Needs",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.back-pain.accessibility",
+        "display": "Communication and Accessibility Needs",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.accessibility",
+        "wording": "통역·청각·시각·인지·문해·디지털 사용 또는 자세 유지에 필요한 도움과 선호하는 응답 방법을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 87,
+          "reason": "accessibility"
+        }
+      ],
+      "supports": [
+        "group.back-pain.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "back_pain.information_source_reliability_conflict_and_proxy",
+        "display": "Information Source Reliability and Conflict",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.back-pain.information-source",
+        "display": "Information Source Reliability and Conflict",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.information-source",
+        "wording": "본인·보호자·목격자 중 누가 답하는지, 기록·영상·검사자료 유무와 기억이 불확실하거나 서로 다른 부분을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 86,
+          "reason": "information-source"
+        }
+      ],
+      "supports": [
+        "group.back-pain.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "back_pain.patient_goal_expected_help_and_additional_rfe",
+        "display": "Patient Goal Expected Help and Additional RFE",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.back-pain.goal",
+        "display": "Patient Goal Expected Help and Additional RFE",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.back-pain.goal",
+        "wording": "진료에서 확인하고 싶은 내용, 원하는 도움과 질문에 없던 다른 증상·의견 또는 별도 문진이 필요한 문제를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 85,
+          "reason": "goal"
+        }
+      ],
+      "supports": [
+        "group.back-pain.handoff"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nhs.back-pain.2026",
+      "source.nice.ng59.back-pain.2020",
+      "source.nice.ng127.cauda-equina.2025",
+      "source.nice.ng12.back-pain.2026",
+      "source.stom.mrcm.back-pain.20260714"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
 }

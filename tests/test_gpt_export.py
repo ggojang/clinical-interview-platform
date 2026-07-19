@@ -499,7 +499,7 @@ class GptExportTests(unittest.TestCase):
             back_pain = json.loads(
                 (output_path / "rfe/back_pain/facts.json").read_text(encoding="utf-8")
             )
-            self.assertEqual(back_pain["count"], 36)
+            self.assertEqual(back_pain["count"], 68)
             skin = json.loads(
                 (output_path / "rfe/skin_complaint/facts.json").read_text(encoding="utf-8")
             )
