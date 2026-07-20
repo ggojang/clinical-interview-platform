@@ -586,10 +586,10 @@ class CompilerTests(unittest.TestCase):
             node["id"] for node in first["knowledge_graph"]["nodes"]
             if node["type"] == "Fact"
         }
-        self.assertEqual(len(facts), 38)
+        self.assertEqual(len(facts), 70)
         self.assertEqual(facts, set(first["indexes"]["questions_by_fact"]))
-        self.assertEqual(first["coverage"]["total_safety_rules"], 10)
-        self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 10)
+        self.assertEqual(first["coverage"]["total_safety_rules"], 14)
+        self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 14)
         self.assertEqual(first["coverage"]["uncovered_safety_rules"], [])
 
     def test_skin_complaint_mrcm_is_build_time_metadata_only(self):
@@ -1789,8 +1789,8 @@ class PackageRuntimeTests(unittest.TestCase):
     def test_skin_complaint_simulation_evaluation_passes(self):
         report = run_evaluation(SKIN_COMPLAINT_PACKAGE)
         self.assertTrue(report["passed"])
-        self.assertEqual(report["case_count"], 11)
-        self.assertLessEqual(max(item["turns"] for item in report["results"]), 40)
+        self.assertEqual(report["case_count"], 27)
+        self.assertLessEqual(max(item["turns"] for item in report["results"]), 50)
 
     def test_skin_complaint_runtime_uses_skin_rfe(self):
         session = InterviewSession("skin-runtime", package_path=SKIN_COMPLAINT_PACKAGE)

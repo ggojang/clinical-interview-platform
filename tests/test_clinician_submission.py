@@ -251,6 +251,37 @@ class ClinicianSubmissionContextTest(unittest.TestCase):
         self.assertIn("encounter.rfe.functional_impact", required)
         self.assertIn("encounter.rfe.patient_concern_and_expectation", required)
 
+    def test_skin_profile_has_detailed_clinician_handoff_and_regression_coverage(self):
+        package = compile_package(profile="skin_complaint")
+        facts = {
+            node["id"] for node in package["knowledge_graph"]["nodes"]
+            if node["type"] == "Fact"
+        }
+        minimum = package["clinician_submission_context"]
+        module = json.loads(
+            (Path(__file__).resolve().parents[1] / minimum["resource_ref"])
+            .read_text(encoding="utf-8")
+        )
+        required = set(
+            module["completion"]["clinician_rfe_minimum"]
+            ["additional_required_facts_by_rfe"]["rfe.skin_complaint"]
+        )
+        rules = {item["id"] for item in package["rule_graph"]["rules"]}
+
+        self.assertGreaterEqual(len(facts), 70)
+        self.assertGreaterEqual(package["coverage"]["simulation_count"], 27)
+        self.assertIn(
+            "skin.count_dimensions_shape_border_colour_surface_and_measurement",
+            required,
+        )
+        self.assertIn(
+            "skin.suspected_medicine_product_strength_route_indication_start_last_dose_and_interval",
+            required,
+        )
+        self.assertIn("pain.nrs_score", required)
+        self.assertIn("rule.skin.safety.blistering-new-medicine", rules)
+        self.assertIn("rule.skin.safety.near-eye-hot-swollen", rules)
+
     def test_autonomous_clinician_minimum_completes_all_packages(self):
         for profile in PACKAGE_PROFILES:
             with self.subTest(profile=profile):

@@ -503,7 +503,7 @@ class GptExportTests(unittest.TestCase):
             skin = json.loads(
                 (output_path / "rfe/skin_complaint/facts.json").read_text(encoding="utf-8")
             )
-            self.assertEqual(skin["count"], 38)
+            self.assertEqual(skin["count"], 70)
             medication = json.loads(
                 (output_path / "rfe/medication_review/facts.json").read_text(
                     encoding="utf-8"
