@@ -750,10 +750,10 @@ class CompilerTests(unittest.TestCase):
     def test_weight_constitutional_package_is_complete(self):
         package = compile_package(profile="weight_constitutional_change")
         facts = {n["id"] for n in package["knowledge_graph"]["nodes"] if n["type"] == "Fact"}
-        self.assertEqual(len(facts), 38)
+        self.assertEqual(len(facts), 78)
         self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
-        self.assertEqual(package["coverage"]["total_safety_rules"], 10)
-        self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 10)
+        self.assertEqual(package["coverage"]["total_safety_rules"], 15)
+        self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 15)
         self.assertEqual(package["coverage"]["uncovered_safety_rules"], [])
 
     def test_weight_constitutional_mrcm_preserves_unsupported_weight_loss(self):
@@ -1951,7 +1951,7 @@ class PackageRuntimeTests(unittest.TestCase):
     def test_weight_constitutional_simulation_and_runtime(self):
         report = run_evaluation(WEIGHT_CONSTITUTIONAL_CHANGE_PACKAGE)
         self.assertTrue(report["passed"])
-        self.assertEqual(report["case_count"], 11)
+        self.assertEqual(report["case_count"], 32)
         session = InterviewSession("constitutional-runtime", package_path=WEIGHT_CONSTITUTIONAL_CHANGE_PACKAGE)
         state = session.process("이유 없이 체중이 줄고 밤에 땀이 나요.")
         self.assertIn("general.weight_constitutional_change", state["active_patterns"])

@@ -282,6 +282,43 @@ class ClinicianSubmissionContextTest(unittest.TestCase):
         self.assertIn("rule.skin.safety.blistering-new-medicine", rules)
         self.assertIn("rule.skin.safety.near-eye-hot-swollen", rules)
 
+    def test_weight_constitutional_profile_has_professional_handoff_and_regressions(self):
+        package = compile_package(profile="weight_constitutional_change")
+        facts = {
+            node["id"] for node in package["knowledge_graph"]["nodes"]
+            if node["type"] == "Fact"
+        }
+        minimum = package["clinician_submission_context"]
+        module = json.loads(
+            (Path(__file__).resolve().parents[1] / minimum["resource_ref"])
+            .read_text(encoding="utf-8")
+        )
+        required = set(
+            module["completion"]["clinician_rfe_minimum"]
+            ["additional_required_facts_by_rfe"]["rfe.weight_constitutional_change"]
+        )
+        rules = {item["id"] for item in package["rule_graph"]["rules"]}
+
+        self.assertGreaterEqual(len(facts), 78)
+        self.assertGreaterEqual(package["coverage"]["simulation_count"], 32)
+        self.assertIn(
+            "weight.usual_current_low_high_date_scale_clothing_and_source",
+            required,
+        )
+        self.assertIn(
+            "constitutional.restriction_binge_vomit_laxative_diuretic_exercise_and_water_loading",
+            required,
+        )
+        self.assertIn("pain.nrs_score", required)
+        self.assertIn(
+            "rule.weight-constitutional-change.safety.current-self-harm-danger",
+            rules,
+        )
+        self.assertIn(
+            "rule.weight-constitutional-change.safety.unintentional-loss-mass",
+            rules,
+        )
+
     def test_autonomous_clinician_minimum_completes_all_packages(self):
         for profile in PACKAGE_PROFILES:
             with self.subTest(profile=profile):
