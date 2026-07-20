@@ -1943,6 +1943,10 @@ class InterviewSession:
             "reason_for_encounter": self.reason_for_encounter,
             "encounter_context": deepcopy(self.encounter_context),
             "safety_status": safety,
+            "conflicting_fact_ids": sorted(
+                fact_id for fact_id in self.memory.facts
+                if self.memory.state(fact_id) == "conflicted"
+            ),
             "sections": sections,
         }
 

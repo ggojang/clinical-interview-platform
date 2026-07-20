@@ -140,6 +140,33 @@ class ClinicianSubmissionContextTest(unittest.TestCase):
         self.assertEqual(entries["patient.height_cm"]["dataAbsentReason"], "not-asked")
         self.assertEqual(handoff["format"], "non_fhir_structured_summary")
 
+    def test_handoff_exposes_conflicts_across_package_and_shared_facts(self):
+        session = self._session()
+        session.memory.merge(
+            "history.condition.current",
+            fact("고혈압", "합성 응답 A", 1),
+        )
+        session.memory.merge(
+            "history.condition.current",
+            fact("고혈압 없음", "합성 응답 B", 2),
+        )
+
+        handoff = session.clinician_handoff()
+
+        self.assertIn(
+            "history.condition.current",
+            handoff["conflicting_fact_ids"],
+        )
+        medical_history = next(
+            section for section in handoff["sections"]
+            if section["id"] == "medical_history"
+        )
+        entry = next(
+            item for item in medical_history["entries"]
+            if item["fact_id"] == "history.condition.current"
+        )
+        self.assertEqual(entry["status"], "conflicted")
+
     def test_legacy_runtime_remains_package_only_by_default(self):
         package = compile_package(profile="cough")
         temporary = tempfile.NamedTemporaryFile(suffix=".json", delete=False)
