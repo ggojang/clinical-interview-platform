@@ -319,6 +319,41 @@ class ClinicianSubmissionContextTest(unittest.TestCase):
             rules,
         )
 
+    def test_joint_limb_profile_has_professional_handoff_and_regressions(self):
+        package = compile_package(profile="joint_limb_complaint")
+        facts = {
+            node["id"] for node in package["knowledge_graph"]["nodes"]
+            if node["type"] == "Fact"
+        }
+        minimum = package["clinician_submission_context"]
+        module = json.loads(
+            (Path(__file__).resolve().parents[1] / minimum["resource_ref"])
+            .read_text(encoding="utf-8")
+        )
+        required = set(
+            module["completion"]["clinician_rfe_minimum"]
+            ["additional_required_facts_by_rfe"]["rfe.joint_limb_complaint"]
+        )
+        rules = {item["id"] for item in package["rule_graph"]["rules"]}
+
+        self.assertGreaterEqual(len(facts), 83)
+        self.assertGreaterEqual(package["coverage"]["simulation_count"], 28)
+        self.assertIn(
+            "joint_limb.exact_structure_site_side_surface_depth_and_distribution",
+            required,
+        )
+        self.assertIn(
+            "joint_limb.prior_exam_clinical_test_laboratory_and_imaging_date_result_source_pending",
+            required,
+        )
+        self.assertIn("pain.nrs_score", required)
+        self.assertIn(
+            "rule.joint-limb.safety.unilateral-leg-chest-pain", rules,
+        )
+        self.assertIn(
+            "rule.joint-limb.safety.unilateral-leg-severe-dyspnea", rules,
+        )
+
     def test_autonomous_clinician_minimum_completes_all_packages(self):
         for profile in PACKAGE_PROFILES:
             with self.subTest(profile=profile):

@@ -24,35 +24,31 @@
       "symptom.hot_swollen_joint",
       "symptom.fever",
       "symptom.systemically_unwell",
-      "symptom.sudden_severe_single_joint"
+      "symptom.sudden_severe_single_joint",
+      "joint_limb.acute_unilateral_calf_or_thigh_swelling_pain_and_colour"
     ],
     "routine": [
-      "symptom.joint_limb.main_type",
+      "joint_limb.primary_context",
       "symptom.duration",
+      "symptom.joint_limb.main_type",
       "symptom.joint_limb.location",
       "symptom.joint_limb.side",
       "symptom.joint_limb.onset",
       "symptom.joint_limb.pain_severity",
-      "symptom.joint_limb.number_of_joints",
       "symptom.joint_limb.range_of_motion",
-      "symptom.joint_limb.morning_stiffness",
-      "symptom.joint_limb.activity_relation",
-      "symptom.joint_limb.night_or_rest_pain",
-      "symptom.joint_limb.locking_or_giving_way",
-      "symptom.joint_limb.rapid_worsening_or_deformity",
-      "event.joint_limb.injury_mechanism",
-      "history.inflammatory_arthritis_gout_or_psoriasis",
-      "risk.joint_infection_recent_procedure_or_infection",
-      "patient.immunocompromised",
-      "medication.anticoagulant_or_steroid",
-      "exposure.repetitive_work_sport_or_new_load",
-      "treatment.joint_limb_response",
-      "symptom.joint_limb.functional_impact"
+      "symptom.joint_limb.functional_impact",
+      "joint_limb.patient_words_first_change_and_main_concern",
+      "joint_limb.exact_structure_site_side_surface_depth_and_distribution",
+      "joint_limb.first_latest_date_time_activity_speed_course_and_baseline",
+      "joint_limb.episode_frequency_duration_flare_recovery_and_between_state",
+      "joint_limb.walking_stairs_transfer_selfcare_work_sleep_driving_and_sport_impact",
+      "joint_limb.information_source_record_image_witness_reliability_conflict_and_proxy",
+      "joint_limb.patient_goal_expected_help_and_additional_rfe"
     ]
   },
   "clarification_facts_by_rule": {},
   "question_budget": {
-    "routine": 39,
+    "routine": 96,
     "clarify": 12
   },
   "provenance": {
@@ -60,14 +56,99 @@
       "type": "ai",
       "id": "codex-gpt5"
     },
-    "created_at": "2026-07-14T00:00:00Z",
+    "created_at": "2026-07-21T00:00:00Z",
     "source_refs": [
       "source.nhs.joint-pain.2026",
       "source.nhs.septic-arthritis.2023",
       "source.nice.ng38.fracture.2025",
-      "source.nice.ng226.osteoarthritis.2022"
+      "source.nice.ng226.osteoarthritis.2022",
+      "source.nice.ng100.rheumatoid-arthritis.2020",
+      "source.nice.ng158.venous-thromboembolism.2023",
+      "source.nice.ng12.skeletal-soft-tissue.2026",
+      "source.stom.joint-limb.20260714"
     ],
     "review_status": "unreviewed",
     "version": "0.1.0"
-  }
+  },
+  "conditional_required_facts": [
+    {
+      "selector_fact": "joint_limb.primary_context",
+      "cases": {
+        "acute_injury": [
+          "event.joint_limb.recent_injury",
+          "joint_limb.trauma_exact_time_place_activity_mechanism_force_direction_and_position",
+          "joint_limb.trauma_immediate_pain_pop_swelling_bruising_and_function",
+          "joint_limb.weight_bearing_steps_grip_lift_and_current_change",
+          "joint_limb.wound_contamination_bite_foreign_body_bleeding_and_tetanus_record",
+          "joint_limb.numbness_tingling_weakness_exact_boundary_and_progression",
+          "joint_limb.distal_colour_temperature_capillary_change_and_patient_observation"
+        ],
+        "hot_swollen_single_joint": [
+          "symptom.hot_swollen_joint",
+          "symptom.sudden_severe_single_joint",
+          "joint_limb.swelling_onset_extent_measurement_progression_and_symmetry",
+          "joint_limb.warmth_redness_colour_tenderness_and_sequence",
+          "joint_limb.temperature_chills_malaise_sweats_rash_weight_and_sequence",
+          "joint_limb.infection_skin_wound_dental_urinary_procedure_and_injection_timeline",
+          "joint_limb.prosthesis_implant_hardware_site_date_and_recent_problem"
+        ],
+        "mechanical_or_overuse": [
+          "symptom.joint_limb.activity_relation",
+          "symptom.joint_limb.locking_or_giving_way",
+          "joint_limb.pain_exact_site_radiation_character_timing_and_pattern",
+          "joint_limb.active_passive_motion_task_limit_and_comparison",
+          "joint_limb.click_catch_lock_give_way_pop_and_timing",
+          "joint_limb.occupation_repetition_load_posture_vibration_ergonomics_and_ppe",
+          "joint_limb.sport_hobby_training_change_surface_footwear_and_equipment",
+          "joint_limb.analgesic_rest_ice_support_exercise_therapy_response_and_adverse_effect"
+        ],
+        "multiple_or_inflammatory_joints": [
+          "symptom.joint_limb.number_of_joints",
+          "symptom.joint_limb.morning_stiffness",
+          "joint_limb.multijoint_exact_count_small_large_symmetry_and_migration",
+          "joint_limb.stiffness_after_rest_morning_duration_and_improvement",
+          "joint_limb.eye_skin_nail_mouth_bowel_urinary_and_genital_context",
+          "joint_limb.inflammatory_gout_psoriasis_detail_and_current_status",
+          "joint_limb.family_inflammatory_gout_psoriasis_clot_bone_and_joint_history"
+        ],
+        "calf_or_circulatory": [
+          "joint_limb.acute_unilateral_calf_or_thigh_swelling_pain_and_colour",
+          "joint_limb.swelling_onset_extent_measurement_progression_and_symmetry",
+          "joint_limb.leg_and_chest_breathlessness_haemoptysis_syncope_sequence",
+          "joint_limb.distal_colour_temperature_capillary_change_and_patient_observation",
+          "joint_limb.pregnancy_gestation_postpartum_lactation_hormone_and_mobility_context",
+          "joint_limb.anticoagulant_steroid_immunosuppressant_and_antibiotic_timeline"
+        ],
+        "child_or_proxy": [
+          "joint_limb.child_age_growth_limp_activity_fever_rash_and_proxy_observation",
+          "joint_limb.information_source_record_image_witness_reliability_conflict_and_proxy",
+          "joint_limb.communication_language_hearing_vision_cognition_literacy_and_accessibility",
+          "falls.baseline_mobility_and_recent_functional_change"
+        ],
+        "pregnancy_or_postpartum": [
+          "joint_limb.pregnancy_gestation_postpartum_lactation_hormone_and_mobility_context",
+          "joint_limb.acute_unilateral_calf_or_thigh_swelling_pain_and_colour",
+          "joint_limb.medicine_product_dose_route_schedule_indication_change_and_last_use",
+          "joint_limb.walking_stairs_transfer_selfcare_work_sleep_driving_and_sport_impact"
+        ],
+        "followup_or_result_review": [
+          "joint_limb.previous_episode_diagnosis_injury_surgery_injection_and_rehabilitation",
+          "joint_limb.prior_exam_clinical_test_laboratory_and_imaging_date_result_source_pending",
+          "joint_limb.medicine_product_dose_route_schedule_indication_change_and_last_use",
+          "joint_limb.analgesic_rest_ice_support_exercise_therapy_response_and_adverse_effect",
+          "falls.baseline_mobility_and_recent_functional_change"
+        ],
+        "other_or_unclear": [
+          "joint_limb.pain_exact_site_radiation_character_timing_and_pattern",
+          "joint_limb.previous_episode_diagnosis_injury_surgery_injection_and_rehabilitation",
+          "joint_limb.diabetes_bleeding_vascular_neurologic_cancer_and_bone_health_history",
+          "joint_limb.unexplained_increasing_lump_or_bone_swelling",
+          "joint_limb.older_frailty_falls_baseline_mobility_aid_cognition_and_support",
+          "falls.falls_and_near_falls_last_twelve_months",
+          "falls.baseline_mobility_and_recent_functional_change",
+          "joint_limb.communication_language_hearing_vision_cognition_literacy_and_accessibility"
+        ]
+      }
+    }
+  ]
 }

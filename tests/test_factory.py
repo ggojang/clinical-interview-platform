@@ -700,9 +700,12 @@ class CompilerTests(unittest.TestCase):
     def test_joint_limb_package_is_complete(self):
         package = compile_package(profile="joint_limb_complaint")
         facts = {n["id"] for n in package["knowledge_graph"]["nodes"] if n["type"] == "Fact"}
-        self.assertEqual(len(facts), 39); self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
-        self.assertEqual(package["coverage"]["total_safety_rules"], 12)
-        self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 12)
+        self.assertEqual(len(facts), 83); self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
+        self.assertIn("joint_limb.exact_structure_site_side_surface_depth_and_distribution", facts)
+        self.assertIn("joint_limb.prior_exam_clinical_test_laboratory_and_imaging_date_result_source_pending", facts)
+        self.assertIn("falls.baseline_mobility_and_recent_functional_change", facts)
+        self.assertEqual(package["coverage"]["total_safety_rules"], 14)
+        self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 14)
         self.assertEqual(package["coverage"]["uncovered_safety_rules"], [])
 
     def test_mental_health_sleep_package_is_complete(self):
@@ -1910,7 +1913,8 @@ class PackageRuntimeTests(unittest.TestCase):
 
     def test_joint_limb_simulation_and_runtime(self):
         report = run_evaluation(JOINT_LIMB_COMPLAINT_PACKAGE)
-        self.assertTrue(report["passed"]); self.assertEqual(report["case_count"], 13)
+        self.assertTrue(report["passed"]); self.assertEqual(report["case_count"], 28)
+        self.assertLessEqual(max(item["turns"] for item in report["results"]), 100)
         session = InterviewSession("joint-runtime", package_path=JOINT_LIMB_COMPLAINT_PACKAGE)
         state = session.process("무릎이 붓고 아파요.")
         self.assertIn("musculoskeletal.joint_limb_complaint", state["active_patterns"])
