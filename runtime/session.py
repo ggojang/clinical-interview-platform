@@ -64,6 +64,7 @@ def extract(text: str, turn: int, expected_fact: str | None = None) -> dict[str,
 
     explicit_additional_request_markers = (
         "추가로", "별도로", "문의도", "질문에 없", "그 밖에",
+        "따로 걱정",
         "also need", "another concern", "separate request", "in addition",
     )
     if any(marker in low for marker in explicit_additional_request_markers):

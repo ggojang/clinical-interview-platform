@@ -1342,8 +1342,6 @@ class PackageRuntimeTests(unittest.TestCase):
             ).read_text(encoding="utf-8")
         )
         self.assertFalse(fixture["contains_real_patient_data"])
-        case = fixture["cases"][0]
-        self.assertEqual(case["package_profile"], "cough")
         package = load_package(DEFAULT_PACKAGE)
         self.assertEqual(
             [
@@ -1352,27 +1350,33 @@ class PackageRuntimeTests(unittest.TestCase):
             ],
             ["interview.additional_comment"],
         )
-        session = InterviewSession(
-            case["id"], package_path=DEFAULT_PACKAGE
-        )
-        first = session.process(case["initial_statement"])
-        pending = first["selected_question"]
-        detour = session.process(case["detour_text"])
+        for case in fixture["cases"]:
+            with self.subTest(case=case["id"]):
+                self.assertEqual(case["package_profile"], "cough")
+                session = InterviewSession(
+                    case["id"], package_path=DEFAULT_PACKAGE
+                )
+                first = session.process(case["initial_statement"])
+                pending = first["selected_question"]
+                detour = session.process(case["detour_text"])
 
-        comment = detour["facts"]["interview.additional_comment"]
-        self.assertEqual(comment["status"], "known")
-        self.assertEqual(comment["value"], case["detour_text"])
-        self.assertEqual(session.memory.state(pending["fact_id"]), "not_asked")
-        self.assertEqual(
-            detour["selected_question"]["fact_id"], pending["fact_id"]
-        )
-        self.assertEqual(
-            detour["selected_question"]["question_ref"], pending["question_ref"]
-        )
-        self.assertEqual(
-            detour["answer_clarification"]["reason"],
-            case["expected"]["clarification_reason"],
-        )
+                comment = detour["facts"]["interview.additional_comment"]
+                self.assertEqual(comment["status"], "known")
+                self.assertEqual(comment["value"], case["detour_text"])
+                self.assertEqual(
+                    session.memory.state(pending["fact_id"]), "not_asked"
+                )
+                self.assertEqual(
+                    detour["selected_question"]["fact_id"], pending["fact_id"]
+                )
+                self.assertEqual(
+                    detour["selected_question"]["question_ref"],
+                    pending["question_ref"],
+                )
+                self.assertEqual(
+                    detour["answer_clarification"]["reason"],
+                    case["expected"]["clarification_reason"],
+                )
 
     def test_scoped_answer_does_not_conflict_with_known_duration(self):
         session = InterviewSession("scoped-cross-fact", package_path=FEVER_PACKAGE)
