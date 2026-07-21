@@ -711,7 +711,7 @@ class CompilerTests(unittest.TestCase):
     def test_mental_health_sleep_package_is_complete(self):
         package = compile_package(profile="mental_health_sleep")
         facts = {n["id"] for n in package["knowledge_graph"]["nodes"] if n["type"] == "Fact"}
-        self.assertEqual(len(facts), 39); self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
+        self.assertEqual(len(facts), 66); self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
         self.assertEqual(package["coverage"]["total_safety_rules"], 11)
         self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 11)
         self.assertEqual(package["coverage"]["uncovered_safety_rules"], [])
@@ -1926,11 +1926,29 @@ class PackageRuntimeTests(unittest.TestCase):
 
     def test_mental_health_sleep_simulation_and_runtime(self):
         report = run_evaluation(MENTAL_HEALTH_SLEEP_PACKAGE)
-        self.assertTrue(report["passed"]); self.assertEqual(report["case_count"], 12)
+        self.assertTrue(report["passed"]); self.assertEqual(report["case_count"], 24)
         session = InterviewSession("mental-runtime", package_path=MENTAL_HEALTH_SLEEP_PACKAGE)
         state = session.process("걱정이 많고 잠을 못 자요.")
         self.assertIn("mental_health.sleep_concern", state["active_patterns"])
         with self.assertRaises(PackageLoadError): load_package(MENTAL_HEALTH_SLEEP_PACKAGE, execution_mode="production")
+
+    def test_mental_health_sleep_opening_suicide_plan_escalates(self):
+        session = InterviewSession("mental-opening-plan", package_path=MENTAL_HEALTH_SLEEP_PACKAGE)
+        state = session.process("오늘 밤 너무 불안하고 죽을 계획이 있습니다.")
+        self.assertEqual(state["safety_status"]["level"], "emergency")
+        self.assertEqual(state["stop_reason"], "emergency_escalation")
+        self.assertIn(
+            "rule.mental-health-sleep.safety.suicide-plan",
+            state["safety_status"]["triggered_rules"],
+        )
+
+    def test_mental_health_sleep_negated_suicide_plan_does_not_escalate(self):
+        session = InterviewSession("mental-negated-plan", package_path=MENTAL_HEALTH_SLEEP_PACKAGE)
+        state = session.process("불안하지만 자살 생각이나 죽을 계획은 없습니다.")
+        self.assertEqual(state["facts"]["risk.suicidal_thoughts_current"]["value"], False)
+        self.assertEqual(state["facts"]["risk.suicide_plan_or_intent"]["value"], False)
+        self.assertEqual(state["safety_status"]["level"], "routine")
+        self.assertIsNone(state["stop_reason"])
 
     def test_edema_simulation_and_runtime(self):
         report = run_evaluation(EDEMA_PACKAGE)

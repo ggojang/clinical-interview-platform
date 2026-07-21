@@ -9,11 +9,11 @@
   "source_manifest": "source-manifest.primary-care-mental-health-sleep-research",
   "default_refresh": {
     "class": "clinical_guideline",
-    "last_assessed_at": "2026-07-14",
+    "last_assessed_at": "2026-07-21",
     "monitor_interval_days": 1,
     "full_review_interval_days": 180,
-    "next_monitor_at": "2026-07-15",
-    "next_full_review_at": "2027-01-10",
+    "next_monitor_at": "2026-07-22",
+    "next_full_review_at": "2027-01-17",
     "policy_id": "policy.knowledge-refresh",
     "overdue_behavior": {
       "production": "exclude_or_require_review",
@@ -50,6 +50,56 @@
       "id": "group.mental-health-sleep.context-function",
       "type": "ClinicalGroup",
       "display": "context-function"
+    },
+    {
+      "id": "group.mental-health-sleep.routing",
+      "type": "ClinicalGroup",
+      "display": "Routing"
+    },
+    {
+      "id": "group.mental-health-sleep.course-detail",
+      "type": "ClinicalGroup",
+      "display": "Course Detail"
+    },
+    {
+      "id": "group.mental-health-sleep.mood-detail",
+      "type": "ClinicalGroup",
+      "display": "Mood Detail"
+    },
+    {
+      "id": "group.mental-health-sleep.anxiety-detail",
+      "type": "ClinicalGroup",
+      "display": "Anxiety Detail"
+    },
+    {
+      "id": "group.mental-health-sleep.sleep-detail",
+      "type": "ClinicalGroup",
+      "display": "Sleep Detail"
+    },
+    {
+      "id": "group.mental-health-sleep.treatment-detail",
+      "type": "ClinicalGroup",
+      "display": "Treatment Detail"
+    },
+    {
+      "id": "group.mental-health-sleep.social-context",
+      "type": "ClinicalGroup",
+      "display": "Social Context"
+    },
+    {
+      "id": "group.mental-health-sleep.life-stage",
+      "type": "ClinicalGroup",
+      "display": "Life Stage"
+    },
+    {
+      "id": "group.mental-health-sleep.function-detail",
+      "type": "ClinicalGroup",
+      "display": "Function Detail"
+    },
+    {
+      "id": "group.mental-health-sleep.handoff",
+      "type": "ClinicalGroup",
+      "display": "Handoff"
     }
   ],
   "group_hypothesis_edges": [],
@@ -1703,6 +1753,978 @@
       "supports": [
         "group.mental-health-sleep.context-function"
       ]
+    },
+    {
+      "fact": {
+        "id": "mental_health.primary_context",
+        "display": "Primary Mental Health or Sleep Context",
+        "value_type": "coded",
+        "allowed_values": [
+          "low_mood",
+          "anxiety_or_worry",
+          "panic",
+          "sleep_problem",
+          "stress_trauma_or_loss",
+          "treatment_followup",
+          "mania_or_psychosis_followup",
+          "proxy_or_accessibility",
+          "pregnancy_postpartum_or_life_stage",
+          "mixed_or_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.mental-health-sleep.primary-context",
+        "display": "Primary Mental Health or Sleep Context",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.primary-context",
+        "wording": "가장 가까운 상황은 기분 저하, 불안·걱정, 공황, 수면 문제, 스트레스·충격·상실, 치료 추적, 조증·정신증 관련 추적, 보호자 대리·접근성 지원, 임신·산후·생애단계 관련, 또는 여러 문제·불분명 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 132,
+          "reason": "primary-context"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.routing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "mental_health.patient_words_first_change_and_main_concern",
+        "display": "Patient Description and Main Concern",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.patient-words",
+        "display": "Patient Description and Main Concern",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.patient-words",
+        "wording": "본인의 표현으로 처음 달라졌다고 느낀 점, 지금 가장 힘든 점과 가장 걱정되는 점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 115,
+          "reason": "patient-words"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.course-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "mental_health.first_latest_onset_course_previous_baseline_and_fluctuation",
+        "display": "Detailed Onset Course and Baseline",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.timeline",
+        "display": "Detailed Onset Course and Baseline",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.timeline",
+        "wording": "처음과 가장 최근 변화의 날짜·상황, 서서히 또는 갑자기 시작했는지, 지속·반복·악화·호전 양상과 평소 상태를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 114,
+          "reason": "timeline"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.course-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "mental_health.episode_frequency_duration_triggers_recovery_and_between_state",
+        "display": "Episode Pattern and Recovery",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.episode-pattern",
+        "display": "Episode Pattern and Recovery",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.episode-pattern",
+        "wording": "증상이나 발작적 에피소드의 빈도·지속시간, 직전 상황·유발요인, 회복 시간과 에피소드 사이 상태를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 113,
+          "reason": "episode-pattern"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.course-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "mental_health.symptom_intensity_variation_and_distress",
+        "display": "Symptom Intensity Variation and Distress",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.intensity-distress",
+        "display": "Symptom Intensity Variation and Distress",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.intensity-distress",
+        "wording": "증상의 가장 약할 때와 심할 때의 정도, 하루 중 변화와 본인이 느끼는 고통의 정도를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 112,
+          "reason": "intensity-distress"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.course-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "mental_health.panic_frequency_duration_somatic_features_triggers_and_avoidance",
+        "display": "Detailed Panic Episode Features",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.panic-detail",
+        "display": "Detailed Panic Episode Features",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.panic-detail",
+        "wording": "공황처럼 갑자기 몰려오는 증상이 있다면 횟수·지속시간, 신체 증상, 유발 상황, 회복과 이후 피하게 된 활동을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 111,
+          "reason": "panic-detail"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.anxiety-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "mental_health.anxiety_topics_somatic_reassurance_seeking_and_control",
+        "display": "Anxiety Topics Somatic Symptoms and Reassurance",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.anxiety-detail",
+        "display": "Anxiety Topics Somatic Symptoms and Reassurance",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.anxiety-detail",
+        "wording": "걱정하는 주제, 함께 나타나는 신체 증상, 반복 확인·안심을 구하는 행동과 걱정을 조절하기 어려운 정도를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 110,
+          "reason": "anxiety-detail"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.anxiety-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "mental_health.past_mood_elevation_reduced_sleep_energy_and_family_observation",
+        "display": "Past Mood Elevation and Collateral Observation",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.mood-elevation-history",
+        "display": "Past Mood Elevation and Collateral Observation",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.mood-elevation-history",
+        "wording": "과거에도 잠을 거의 자지 않아도 에너지가 많거나 기분·말·활동이 비정상적으로 높아진 기간이 있었는지와 주변 사람이 본 변화를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 109,
+          "reason": "mood-elevation-history"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.mood-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "mental_health.coexisting_mental_physical_cognitive_and_pain_conditions",
+        "display": "Coexisting Mental Physical and Cognitive Conditions",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.coexisting-conditions",
+        "display": "Coexisting Mental Physical and Cognitive Conditions",
+        "intents": [
+          "intent.risk_assessment",
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.coexisting-conditions",
+        "wording": "함께 진단받거나 의심된 다른 정신건강, 신체질환, 통증, 인지·발달 문제와 현재 상태를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 108,
+          "reason": "coexisting-conditions"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.life-stage"
+      ]
+    },
+    {
+      "fact": {
+        "id": "mental_health.prior_episodes_diagnoses_admissions_crisis_and_recovery",
+        "display": "Prior Episodes and Crisis History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.prior-episodes",
+        "display": "Prior Episodes and Crisis History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.prior-episodes",
+        "wording": "이전 비슷한 시기, 진단, 응급·입원·위기지원 경험과 당시 회복까지의 경과를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 107,
+          "reason": "prior-episodes"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.treatment-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "mental_health.previous_counselling_psychotherapy_medicine_and_response",
+        "display": "Previous Treatment and Response",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.treatment-response",
+        "display": "Previous Treatment and Response",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.treatment-response",
+        "wording": "이전 상담·심리치료·약물·기타 치료의 종류와 시기, 도움이 된 점·되지 않은 점과 부작용을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 106,
+          "reason": "treatment-response"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.treatment-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "mental_health.current_medicine_product_dose_schedule_adherence_start_change_and_prescriber",
+        "display": "Current Mental Health Medicine Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.medicine-detail",
+        "display": "Current Mental Health Medicine Detail",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.medicine-detail",
+        "wording": "정신건강·수면 관련 처방약, 일반약·보충제마다 제품/성분명, 용량·복용시간, 실제 복용, 시작·변경일과 처방자를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 105,
+          "reason": "medicine-detail"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.treatment-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "mental_health.medicine_benefit_side_effect_withdrawal_missed_dose_and_symptom_timing",
+        "display": "Medicine Effect and Symptom Timeline",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.medicine-effect",
+        "display": "Medicine Effect and Symptom Timeline",
+        "intents": [
+          "intent.risk_assessment",
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.medicine-effect",
+        "wording": "약의 효과·부작용, 빠뜨리거나 갑자기 줄이거나 중단한 일과 기분·불안·수면·초조 변화의 시간관계를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 104,
+          "reason": "medicine-effect"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.treatment-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "mental_health.alcohol_caffeine_nicotine_prescribed_nonprescribed_and_recreational_substances",
+        "display": "Alcohol Caffeine Nicotine and Other Substance Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.substance-detail",
+        "display": "Alcohol Caffeine Nicotine and Other Substance Context",
+        "intents": [
+          "intent.risk_assessment",
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.substance-detail",
+        "wording": "술, 카페인·에너지음료, 담배·니코틴, 처방 외 약물과 기타 물질의 종류·양·빈도·마지막 사용과 최근 변화를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 103,
+          "reason": "substance-detail"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.treatment-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "mental_health.relationship_living_debt_employment_loneliness_and_social_isolation",
+        "display": "Relationship Living Financial and Social Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.social-context",
+        "display": "Relationship Living Financial and Social Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.social-context",
+        "wording": "가족·관계, 주거, 경제·부채, 직장·학업, 외로움·고립과 돌봄 부담 중 증상과 관련해 달라진 점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 102,
+          "reason": "social-context"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.social-context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "mental_health.strengths_coping_supports_and_help_awareness",
+        "display": "Strengths Coping and Support Resources",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.strengths-support",
+        "display": "Strengths Coping and Support Resources",
+        "intents": [
+          "intent.risk_assessment",
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.strengths-support",
+        "wording": "지금 버티는 데 도움이 되는 강점·활동·사람, 연락 가능한 지원과 상태가 나빠질 때 도움을 요청할 방법을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 101,
+          "reason": "strengths-support"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.social-context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "mental_health.diet_activity_daily_routine_sleep_and_recent_change",
+        "display": "Lifestyle and Daily Routine Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.lifestyle",
+        "display": "Lifestyle and Daily Routine Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.lifestyle",
+        "wording": "식사, 신체활동, 하루 일과와 수면 습관이 평소와 어떻게 달라졌고 증상과 어떤 순서로 변했는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 100,
+          "reason": "lifestyle"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.social-context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "mental_health.pregnancy_postpartum_reproductive_menopause_and_life_stage_context",
+        "display": "Pregnancy Postpartum and Life-stage Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.life-stage",
+        "display": "Pregnancy Postpartum and Life-stage Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.life-stage",
+        "wording": "해당되는 경우 임신 주수, 출산 후 기간·수유, 월경·폐경 또는 다른 생애단계 변화와 증상·치료의 관계를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 99,
+          "reason": "life-stage"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.life-stage"
+      ]
+    },
+    {
+      "fact": {
+        "id": "mental_health.family_mood_psychosis_suicide_substance_and_treatment_history",
+        "display": "Relevant Family Mental Health History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.family-history",
+        "display": "Relevant Family Mental Health History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.family-history",
+        "wording": "가족의 기분·불안·조증·정신증, 자살·자해, 물질 사용 문제와 치료력이 있다면 관계와 알려진 내용을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 98,
+          "reason": "family-history"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.life-stage"
+      ]
+    },
+    {
+      "fact": {
+        "id": "mental_health.work_school_relationship_selfcare_sleep_driving_and_safety_impact",
+        "display": "Detailed Functional and Safety Impact",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.function-detail",
+        "display": "Detailed Functional and Safety Impact",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.function-detail",
+        "wording": "업무·학업, 관계, 씻기·식사·약 복용 같은 자기관리, 수면, 운전·기계 사용과 일상 안전에 어떤 영향이 있는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 97,
+          "reason": "function-detail"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.function-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "mental_health.communication_language_hearing_vision_cognition_literacy_and_privacy_needs",
+        "display": "Communication Accessibility and Privacy Needs",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.accessibility",
+        "display": "Communication Accessibility and Privacy Needs",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.accessibility",
+        "wording": "선호 언어, 통역·청각·시각·인지·문해·디지털 사용 지원, 혼자 답할 필요나 선호하는 응답 방법을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 96,
+          "reason": "accessibility"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "mental_health.information_source_proxy_record_reliability_conflict_and_consent",
+        "display": "Information Source Reliability and Conflict",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.information-source",
+        "display": "Information Source Reliability and Conflict",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.information-source",
+        "wording": "본인·보호자 중 누가 답하는지, 일기·약 목록·의무기록 등 자료 유무, 기억이 불확실하거나 서로 다른 내용과 공유 동의 범위를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 95,
+          "reason": "information-source"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "mental_health.prior_scale_name_score_date_context_and_source",
+        "display": "Prior Validated Measure Provenance",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.prior-measure",
+        "display": "Prior Validated Measure Provenance",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.prior-measure",
+        "wording": "이전에 시행한 정신건강·기능 설문이 있다면 도구명, 원점수, 날짜, 시행 상황과 자료 출처를 알려주세요. 이 문진은 점수를 새로 계산하지 않습니다.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 94,
+          "reason": "prior-measure"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "mental_health.prior_assessment_physical_review_tests_date_result_source_and_pending",
+        "display": "Prior Assessment and Result Provenance",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.prior-assessment",
+        "display": "Prior Assessment and Result Provenance",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.prior-assessment",
+        "wording": "이전 정신건강 평가, 신체진찰·검사 또는 의뢰 결과가 있다면 날짜, 설명받은 결과, 자료 출처와 아직 확인하지 못한 항목을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 93,
+          "reason": "prior-assessment"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "mental_health.patient_goal_treatment_preference_expected_help_and_additional_rfe",
+        "display": "Patient Goal Preference and Additional RFE",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.goal",
+        "display": "Patient Goal Preference and Additional RFE",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.goal",
+        "wording": "진료에서 확인하고 싶은 내용, 선호하거나 피하고 싶은 도움, 기대하는 변화와 질문에 없던 의견 또는 별도 문진이 필요한 다른 문제를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 92,
+          "reason": "goal"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "sleep.daytime_sleepiness_naps_function_driving_and_accident_risk",
+        "display": "Daytime Sleepiness and Safety Impact",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.daytime-sleep",
+        "display": "Daytime Sleepiness and Safety Impact",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.daytime-sleep",
+        "wording": "낮 졸림·낮잠, 집중·업무·운전 영향과 졸음 때문에 아찔하거나 사고가 날 뻔한 일이 있었는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 91,
+          "reason": "daytime-sleep"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.sleep-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "sleep.bedroom_environment_screen_nap_routine_and_sleep_opportunity",
+        "display": "Sleep Opportunity and Environment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.mental-health-sleep.sleep-context",
+        "display": "Sleep Opportunity and Environment",
+        "intents": [
+          "intent.characterize_symptom",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.mental-health-sleep.sleep-context",
+        "wording": "수면 기회, 침실 환경, 화면 사용, 낮잠·취침 전 습관과 평일·휴일 일정 차이를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 90,
+          "reason": "sleep-context"
+        }
+      ],
+      "supports": [
+        "group.mental-health-sleep.sleep-detail"
+      ]
     }
   ],
   "provenance": {
@@ -1710,7 +2732,7 @@
       "type": "ai",
       "id": "codex-gpt5"
     },
-    "created_at": "2026-07-14T00:00:00Z",
+    "created_at": "2026-07-21T00:00:00Z",
     "source_refs": [
       "source.nice.ng222.depression.2022",
       "source.nice.cg113.anxiety.2020",

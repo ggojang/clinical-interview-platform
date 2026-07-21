@@ -529,7 +529,7 @@ class GptExportTests(unittest.TestCase):
             joint = json.loads((output_path / "rfe/joint_limb_complaint/facts.json").read_text(encoding="utf-8"))
             self.assertEqual(joint["count"], 83)
             mental = json.loads((output_path / "rfe/mental_health_sleep/facts.json").read_text(encoding="utf-8"))
-            self.assertEqual(mental["count"], 39)
+            self.assertEqual(mental["count"], 66)
             edema = json.loads((output_path / "rfe/edema/facts.json").read_text(encoding="utf-8"))
             self.assertEqual(edema["count"], 69)
             hypertension = json.loads((output_path / "rfe/hypertension_follow_up/facts.json").read_text(encoding="utf-8"))

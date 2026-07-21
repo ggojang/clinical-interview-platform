@@ -121,6 +121,21 @@ def extract(text: str, turn: int, expected_fact: str | None = None) -> dict[str,
         "symptom.ankle_swelling": ["swollen ankles", "ankle swelling", "발목이 붓"],
         "symptom.postnasal_drip": ["draining into", "clear my throat", "후비루", "목 뒤로 넘어"],
         "exposure.sick_contact": ["sick contact", "someone around", "가족도 감기", "주변에 감기"],
+        "risk.suicidal_thoughts_current": [
+            "suicidal thoughts", "want to die", "자살 생각", "죽고 싶", "죽고싶",
+        ],
+        "risk.suicide_plan_or_intent": [
+            "suicide plan", "plan to kill myself", "자살 계획", "죽을 계획",
+            "구체적인 자살 계획", "구체적인 계획으로 죽",
+        ],
+        "risk.unable_to_stay_safe": [
+            "cannot keep myself safe", "can't keep myself safe",
+            "내 안전을 지킬 수 없", "나를 해칠 것 같",
+        ],
+        "event.recent_self_harm_or_suicide_attempt": [
+            "attempted suicide", "recent suicide attempt", "recent self-harm attempt",
+            "자살 시도", "극단적 선택을 시도", "최근 자해를 시도",
+        ],
     }
     explicit_negative = {
         "symptom.fever": ["no fever", "열은 없", "열이 없"],
@@ -138,6 +153,22 @@ def extract(text: str, turn: int, expected_fact: str | None = None) -> dict[str,
             "실신은 업서", "실신이 업서", "실신은 업어", "실신이 업어",
             "기절은 업서", "기절이 업서", "기절은 업어", "기절이 업어",
         ],
+        "risk.suicidal_thoughts_current": [
+            "no suicidal thoughts", "do not want to die", "자살 생각은 없",
+            "자살 생각이 없", "자살 생각이나 죽을 계획은 없",
+            "죽고 싶은 생각은 없", "죽고 싶지는 않",
+        ],
+        "risk.suicide_plan_or_intent": [
+            "no suicide plan", "do not have a suicide plan", "자살 계획은 없",
+            "자살 계획이 없", "죽을 계획은 없",
+        ],
+        "risk.unable_to_stay_safe": [
+            "can keep myself safe", "내 안전을 지킬 수 있",
+        ],
+        "event.recent_self_harm_or_suicide_attempt": [
+            "no suicide attempt", "have not attempted suicide", "자살 시도는 없",
+            "자살 시도한 적 없", "자해를 시도하지 않",
+        ],
     }
     for fact_id, cues in lexical_true.items():
         negatives = explicit_negative.get(fact_id, [])
@@ -145,6 +176,15 @@ def extract(text: str, turn: int, expected_fact: str | None = None) -> dict[str,
             out[fact_id] = fact(False, text, turn, .95)
         elif any(cue in low or cue in text for cue in cues):
             out[fact_id] = fact(True, text, turn, .88)
+
+    # A stated suicide plan necessarily conveys current suicidal thinking for
+    # the package's two-Fact emergency rule. Preserve both explicit Facts so a
+    # plan disclosed in the opening RFE cannot be delayed until routine prompts.
+    if out.get("risk.suicide_plan_or_intent", {}).get("value") is True:
+        out.setdefault(
+            "risk.suicidal_thoughts_current",
+            fact(True, text, turn, .90),
+        )
 
     # Preserve the semantic relation when a Korean modifier separates "blood"
     # from "mixed" (for example, "피가 조금 섞여"). Requiring a nearby cough
