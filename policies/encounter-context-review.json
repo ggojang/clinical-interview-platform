@@ -1,6 +1,6 @@
 {
   "id": "policy.encounter-context-review",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "status": "research_only",
   "review_status": "unreviewed",
   "encounter_context": {
@@ -248,8 +248,14 @@
     },
     "ambiguous_flow": {
       "ask_one_specific_clarifying_question_at_a_time": true,
-      "repeat_original_question_with_original_choices_when_no_safe_interpretation": true,
-      "message_ko": "응답을 명확히 이해하지 못했습니다. 아래 질문에 다시 답해 주세요.",
+      "preserve_any_reliably_understood_partial_information": true,
+      "ask_only_for_the_missing_or_ambiguous_dimension": true,
+      "prefer_a_more_detailed_targeted_clarification_over_verbatim_repetition": true,
+      "reuse_original_question_reference": true,
+      "do_not_assign_a_new_question_reference": true,
+      "repeat_original_question_with_original_choices_only_when_no_more_specific_clarification_is_possible": true,
+      "message_ko": "입력하신 내용 중 '{ambiguous_dimension}'을 조금 더 구체적으로 확인하겠습니다.",
+      "temporal_example_ko": "Q1. '최근'이라고 하신 것은 대략 어느 시점인가요? 1 24시간 이내, 2 2~7일 전, 3 1~4주 전, 4 1개월 이상, 5 잘 모르겠음, 6 답변하지 않음",
       "allow_korean_or_english_free_text_when_fact_supports_free_text": true
     },
     "retry_policy": {
@@ -338,6 +344,16 @@
       "precision": "patient_reported_qualitative",
       "question_status": "answered",
       "next_action": "advance_to_next_question"
+    },
+    "ambiguous_example_outcome": {
+      "input": "최근",
+      "reported_expression": "최근",
+      "normalized_relation": "ambiguous_relative_time",
+      "question_status": "unanswered_pending_clarification",
+      "question_reference": "Q1",
+      "clarification": "ask_for_a_more_specific_time_range",
+      "verbatim_question_repeat": false,
+      "new_question_reference": false
     },
     "privacy": {
       "raw_expression_stays_in_current_conversation": true,
@@ -611,6 +627,6 @@
     "created_at": "2026-07-14T00:00:00Z",
     "source_refs": ["docs/context/002-encounter-context.md", "docs/context/017-clinical-memory.md"],
     "review_status": "unreviewed",
-    "version": "0.5.0"
+    "version": "0.6.0"
   }
 }

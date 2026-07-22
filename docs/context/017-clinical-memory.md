@@ -147,7 +147,10 @@ specific reported expression or normalized relation.
 
 An unambiguous relative-time answer satisfies the current Question and advances
 the interview. Only genuinely vague or conflicting temporal language requires a
-clarification using the same Question reference.
+clarification using the same Question reference. Clarification preserves any
+reliably understood partial information and asks only for the missing dimension;
+it should not repeat the original wording and full choice list unchanged when a
+more specific follow-up can safely resolve the ambiguity.
 
 Raw temporal expressions remain encounter evidence. They are not copied into
 repository feedback, analytics, Knowledge, or regression fixtures derived from

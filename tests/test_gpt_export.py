@@ -78,6 +78,13 @@ class GptExportTests(unittest.TestCase):
             temporal["expected_flow"]["next_new_question_reference"], "Q2"
         )
 
+        ambiguous = fixture["cases"][2]["expected_flow"]
+        self.assertEqual(ambiguous["clarification_question_reference"], "Q1")
+        self.assertFalse(ambiguous["new_question_reference_assigned"])
+        self.assertTrue(ambiguous["preserve_understood_partial_information"])
+        self.assertEqual(ambiguous["ask_only_ambiguous_dimension"], "time_range")
+        self.assertFalse(ambiguous["verbatim_original_question_repeat"])
+
     def test_export_is_deterministic_and_response_free(self):
         with tempfile.TemporaryDirectory() as first, tempfile.TemporaryDirectory() as second:
             first_path = Path(first)
@@ -817,6 +824,20 @@ class GptExportTests(unittest.TestCase):
             self.assertEqual(outcome["normalized_relation"], "just_now")
             self.assertEqual(outcome["coarse_option_bucket"], "within_24_hours")
             self.assertEqual(outcome["next_action"], "advance_to_next_question")
+            ambiguous_flow = clarification["ambiguous_flow"]
+            self.assertTrue(
+                ambiguous_flow["preserve_any_reliably_understood_partial_information"]
+            )
+            self.assertTrue(
+                ambiguous_flow["ask_only_for_the_missing_or_ambiguous_dimension"]
+            )
+            self.assertTrue(
+                ambiguous_flow[
+                    "prefer_a_more_detailed_targeted_clarification_over_verbatim_repetition"
+                ]
+            )
+            self.assertTrue(ambiguous_flow["reuse_original_question_reference"])
+            self.assertTrue(ambiguous_flow["do_not_assign_a_new_question_reference"])
             self.assertTrue(
                 clarification["retry_policy"]["never_force_data_absent_reason_without_explicit_user_choice"]
             )
