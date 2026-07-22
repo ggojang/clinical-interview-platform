@@ -713,6 +713,39 @@ class GptExportTests(unittest.TestCase):
             self.assertTrue(
                 result_policy["interpretation_request"]["request_upload_once"]
             )
+            self.assertTrue(result_policy["do_not_force_into_symptom_package"])
+            self.assertTrue(
+                result_policy["interpretation_request"]
+                ["if_content_already_available"]
+                == "use_current_content_without_upload_prompt"
+            )
+            self.assertIn(
+                "result.test.name",
+                result_policy["institution_result_check"]
+                ["optional_context_when_needed"],
+            )
+            self.assertEqual(
+                result_policy["institution_result_check"]["minimum_collect"],
+                [
+                    "result.abnormal_notice",
+                    "result.urgent_follow_up_instruction",
+                    "result.new_concern",
+                    "result.related_symptoms",
+                    "result.patient_question",
+                ],
+            )
+            self.assertTrue(
+                result_policy["institution_result_check"]
+                ["do_not_require_optional_context_when_user_only_wants_institution_result_check_and_has_no_abnormal_notice_or_new_concern"]
+            )
+            self.assertTrue(
+                result_policy["fact_capture"]
+                ["do_not_turn_missing_or_illegible_content_into_normal_result"]
+            )
+            self.assertTrue(
+                result_policy["clinician_handoff"]
+                ["include_missing_unreadable_conflicting_fields_and_data_absent_reason"]
+            )
             upload_policy = manifest["uploaded_clinical_material_policy"]
             self.assertTrue(upload_policy["extract_only_explicit_information"])
             self.assertTrue(

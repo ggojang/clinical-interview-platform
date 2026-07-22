@@ -1,6 +1,6 @@
 {
   "id": "simulation.encounter-policy-cases",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "status": "synthetic",
   "contains_real_patient_data": false,
   "cases": [
@@ -25,6 +25,69 @@
       "result_content_requested": true,
       "expected_goal": "interpretation_request",
       "expected_action": "await_or_interpret_provided_result"
+    },
+    {
+      "id": "RESULT-INTERPRET-PREUPLOADED-001",
+      "input": "올린 검사결과가 무슨 뜻인지 설명해 주세요",
+      "result_content_available": true,
+      "expected_goal": "interpretation_request",
+      "expected_action": "interpret_provided_result"
+    },
+    {
+      "id": "RESULT-BOTH-GOALS-001",
+      "input": "병원에서 결과 확인하러 왔고 보고서도 설명해 주세요",
+      "result_content_requested": false,
+      "expected_goal": "both",
+      "expected_action": "request_result_content_once"
+    },
+    {
+      "id": "RESULT-URGENT-INSTRUCTION-001",
+      "input": "검사 결과가 나왔다고 해서 병원에서 확인하러 왔어요",
+      "urgent_follow_up_instruction": true,
+      "expected_goal": "institution_result_check",
+      "expected_action": "continue_targeted_interview"
+    },
+    {
+      "id": "RESULT-AMBIGUOUS-GOAL-001",
+      "input": "검사 결과 때문에 왔어요",
+      "expected_goal": "unknown",
+      "expected_action": "clarify_result_follow_up_goal"
+    },
+    {
+      "id": "RESULT-PROXY-PROVIDED-001",
+      "input": "보호자인데 올린 영상검사 보고서를 설명해 주세요",
+      "result_content_available": true,
+      "synthetic_context": {"interview_initiator": "caregiver", "response_source": "proxy_report", "interview_mode": "chat"},
+      "expected_goal": "interpretation_request",
+      "expected_action": "interpret_provided_result",
+      "expected_handoff": ["proxy_source_attribution", "report_status", "missing_fields"]
+    },
+    {
+      "id": "RESULT-DATA-ABSENT-NO-REPEAT-001",
+      "input": "검사결과를 판독하고 설명해 주세요",
+      "result_content_requested": true,
+      "response_state": {"result.content.available": {"dataAbsentReason": "asked-unknown"}},
+      "expected_goal": "interpretation_request",
+      "expected_action": "await_or_interpret_provided_result",
+      "must_not_repeat_upload_request": true,
+      "must_not_infer_normal_result": true
+    },
+    {
+      "id": "RESULT-MULTI-RFE-NEW-SYMPTOM-001",
+      "input": "병원에서 결과 확인하러 왔고 오늘 숨도 차요",
+      "new_concern": true,
+      "synthetic_context": {"care_setting": "primary_care", "time_constraint": "routine", "additional_rfe": "rfe.dyspnea"},
+      "expected_goal": "institution_result_check",
+      "expected_action": "continue_targeted_interview",
+      "expected_routing": "relevant_rfe_safety_rules_before_result_metadata_completion"
+    },
+    {
+      "id": "RESULT-UNRELATED-COMMENT-001",
+      "input": "병원에서 검사 결과 확인하러 왔어요",
+      "unrelated_additional_comment": "주차 안내도 궁금합니다",
+      "expected_goal": "institution_result_check",
+      "expected_action": "ask_additional_request_then_complete",
+      "expected_reporting": "preserve_off_path_comment_separately"
     }
   ],
   "context_review_cases": [

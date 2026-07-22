@@ -210,16 +210,33 @@ class EncounterPolicyTests(unittest.TestCase):
             ).read_text(encoding="utf-8")
         )
         self.assertFalse(fixture["contains_real_patient_data"])
+        self.assertGreaterEqual(len(fixture["cases"]), 10)
         for case in fixture["cases"]:
             goal = classify_result_follow_up_goal(case["input"])
             self.assertEqual(goal, case["expected_goal"], case["id"])
             action = result_follow_up_action(
                 goal,
                 result_content_requested=case.get("result_content_requested", False),
+                result_content_available=case.get("result_content_available", False),
                 abnormal_notice=case.get("abnormal_notice", False),
+                urgent_follow_up_instruction=case.get(
+                    "urgent_follow_up_instruction", False
+                ),
                 new_concern=case.get("new_concern", False),
             )
             self.assertEqual(action, case["expected_action"], case["id"])
+
+        absent_case = next(
+            item for item in fixture["cases"]
+            if item["id"] == "RESULT-DATA-ABSENT-NO-REPEAT-001"
+        )
+        self.assertEqual(
+            absent_case["response_state"]["result.content.available"]
+            ["dataAbsentReason"],
+            "asked-unknown",
+        )
+        self.assertTrue(absent_case["must_not_repeat_upload_request"])
+        self.assertTrue(absent_case["must_not_infer_normal_result"])
 
         for case in fixture["context_review_cases"]:
             due = context_review_due(

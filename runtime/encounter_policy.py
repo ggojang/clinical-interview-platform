@@ -58,14 +58,18 @@ def result_follow_up_action(
     goal: str,
     *,
     result_content_requested: bool = False,
+    result_content_available: bool = False,
     abnormal_notice: bool = False,
+    urgent_follow_up_instruction: bool = False,
     new_concern: bool = False,
 ) -> str:
-    if abnormal_notice or new_concern:
+    if abnormal_notice or urgent_follow_up_instruction or new_concern:
         return "continue_targeted_interview"
     if goal == "institution_result_check":
         return "ask_additional_request_then_complete"
     if goal in {"interpretation_request", "both"}:
+        if result_content_available:
+            return "interpret_provided_result"
         return (
             "await_or_interpret_provided_result"
             if result_content_requested

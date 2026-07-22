@@ -1,6 +1,6 @@
 {
   "id": "policy.encounter-context-review",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "status": "research_only",
   "review_status": "unreviewed",
   "encounter_context": {
@@ -43,6 +43,10 @@
     ]
   },
   "result_follow_up": {
+    "status": "research_only",
+    "review_status": "unreviewed",
+    "workflow_type": "purpose_specific_minimal_interview",
+    "do_not_force_into_symptom_package": true,
     "clarification_question_ko": "오늘은 의료기관에서 검사결과를 확인하려는 것인가요, 아니면 검사결과의 판독이나 설명을 원하시나요?",
     "options": [
       {"code": "institution_result_check", "display_ko": "의료기관에서 결과 확인"},
@@ -51,13 +55,52 @@
     ],
     "institution_result_check": {
       "request_upload": false,
-      "check": ["result.abnormal_notice", "result.new_concern"],
+      "minimum_collect": ["result.abnormal_notice", "result.urgent_follow_up_instruction", "result.new_concern", "result.related_symptoms", "result.patient_question"],
+      "optional_context_when_needed": ["result.test.category", "result.test.name", "result.test.performed_at", "result.performing_organization", "result.content.available", "result.report.status", "result.prior_explanation", "result.follow_up_plan"],
+      "do_not_require_optional_context_when_user_only_wants_institution_result_check_and_has_no_abnormal_notice_or_new_concern": true,
+      "check": ["result.abnormal_notice", "result.urgent_follow_up_instruction", "result.new_concern", "result.related_symptoms"],
+      "do_not_request_values_or_report_text_unless_user_changes_goal": true,
       "when_no_abnormality_or_concern": "ask_additional_request_then_complete"
     },
     "interpretation_request": {
       "request_upload_once": true,
       "accepted_input": ["image", "pdf", "text"],
-      "never_repeat_upload_request": true
+      "never_repeat_upload_request": true,
+      "if_content_already_available": "use_current_content_without_upload_prompt",
+      "if_content_unavailable": "ask_once_for_transcribed_test_name_date_status_values_units_reference_range_and_reported_conclusion",
+      "collect_or_extract_once": ["result.test.category", "result.test.name", "result.test.performed_at", "result.report.issued_at", "result.report.status", "result.performing_organization", "result.report.source", "result.report.readability", "result.value.summary", "result.reference_range", "result.reported_interpretation", "result.abnormal_notice", "result.urgent_follow_up_instruction", "result.related_symptoms", "result.prior_explanation", "result.follow_up_plan", "result.patient_question"]
+    },
+    "fact_capture": {
+      "extract_only_explicit_report_content": true,
+      "preserve_original_units_and_reference_range": true,
+      "preserve_report_status_and_version": true,
+      "preserve_performed_time_separately_from_issued_time": true,
+      "preserve_patient_proxy_document_and_record_sources_separately": true,
+      "record_unknown_declined_not_available_not_performed_and_not_asked_as_distinct_states": true,
+      "do_not_turn_missing_or_illegible_content_into_normal_result": true,
+      "preserve_conflicting_sources_without_silent_overwrite": true
+    },
+    "safety_boundary": {
+      "abnormal_flag_is_not_a_diagnosis": true,
+      "report_interpretation_alone_must_not_generate_new_diagnosis": true,
+      "explicit_immediate_evaluation_instruction_triggers_targeted_safety_assessment": true,
+      "new_or_severe_current_symptoms_route_to_relevant_rfe_and_safety_rules": true,
+      "do_not_infer_emergency_only_from_unverified_patient_paraphrase": true,
+      "do_not_delay_explicit_emergency_instruction_to_complete_routine_metadata": true
+    },
+    "clinician_handoff": {
+      "include_goal_test_identity_performed_and_issued_times_status_and_source": true,
+      "include_verbatim_report_values_or_findings_only_when_explicitly_available": true,
+      "include_reported_interpretation_separately_from_ai_explanation": true,
+      "include_abnormal_or_urgent_notification_current_symptoms_prior_explanation_and_follow_up_plan": true,
+      "include_patient_question_and_expected_outcome": true,
+      "include_missing_unreadable_conflicting_fields_and_data_absent_reason": true,
+      "label_research_only_ai_explanation_and_do_not_present_as_official_result": true
+    },
+    "provenance": {
+      "source_refs": ["source.hl7.fhir-r4.diagnosticreport", "source.hl7.fhir-r4.observation", "source.uscdi.v6.2025", "docs/context/002-encounter-context.md"],
+      "review_status": "unreviewed",
+      "version": "0.1.0"
     }
   },
   "uploaded_clinical_material": {
@@ -700,8 +743,8 @@
   "provenance": {
     "created_by": {"type": "ai", "id": "codex-gpt5"},
     "created_at": "2026-07-14T00:00:00Z",
-    "source_refs": ["docs/context/002-encounter-context.md", "docs/context/017-clinical-memory.md"],
+    "source_refs": ["docs/context/002-encounter-context.md", "docs/context/017-clinical-memory.md", "sources/manifests/test-result-follow-up-research.json"],
     "review_status": "unreviewed",
-    "version": "0.8.0"
+    "version": "0.13.0"
   }
 }

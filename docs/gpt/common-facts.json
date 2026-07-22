@@ -1,6 +1,6 @@
 {
   "contains_patient_responses": false,
-  "count": 50,
+  "count": 70,
   "generated_at": "2026-07-22T00:00:00Z",
   "items": [
     {
@@ -501,6 +501,32 @@
       "value_type": "boolean"
     },
     {
+      "display": "Conflicting Result Information",
+      "display_ko": "검사결과 정보 상충",
+      "id": "result.conflict",
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "allowed_values": [
+        "provided_in_conversation",
+        "available_at_institution",
+        "not_available",
+        "unknown"
+      ],
+      "display": "Result Content Availability",
+      "display_ko": "검사결과 자료 이용 가능 여부",
+      "fhir_r4_targets": [
+        "DiagnosticReport.presentedForm",
+        "DiagnosticReport.result"
+      ],
+      "id": "result.content.available",
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "coded"
+    },
+    {
       "display": "Result Content Already Requested",
       "display_ko": "검사결과 자료 요청 여부",
       "id": "result.content.requested",
@@ -509,12 +535,234 @@
       "value_type": "boolean"
     },
     {
+      "display": "Result Data Absent Reason",
+      "display_ko": "검사결과 정보 부재 사유",
+      "fhir_r4_targets": [
+        "Observation.dataAbsentReason"
+      ],
+      "id": "result.data_absent_reason",
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "coded_by_field"
+    },
+    {
+      "display": "Known Follow-up Plan",
+      "display_ko": "안내받은 후속 계획",
+      "id": "result.follow_up_plan",
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
       "display": "New Concern Related to Result",
       "display_ko": "결과 관련 새 증상 또는 우려",
       "id": "result.new_concern",
       "status": "research_only",
       "type": "Fact",
       "value_type": "boolean"
+    },
+    {
+      "display": "Result Notification Summary",
+      "display_ko": "결과 통보 내용",
+      "id": "result.notification.summary",
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "display": "Patient Question or Expected Outcome",
+      "display_ko": "검사결과에 관해 확인하고 싶은 점",
+      "id": "result.patient_question",
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "display": "Performing Organization",
+      "display_ko": "검사 시행 기관",
+      "fhir_r4_targets": [
+        "DiagnosticReport.performer",
+        "Observation.performer"
+      ],
+      "id": "result.performing_organization",
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "string_or_reference"
+    },
+    {
+      "display": "Prior Clinician Explanation",
+      "display_ko": "이미 받은 의료진 설명",
+      "id": "result.prior_explanation",
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "display": "Reported Reference Range",
+      "display_ko": "기재된 기준범위",
+      "fhir_r4_targets": [
+        "Observation.referenceRange"
+      ],
+      "id": "result.reference_range",
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "display": "Current Symptoms Related to Result",
+      "display_ko": "결과와 관련된 현재 증상",
+      "id": "result.related_symptoms",
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "display": "Report Issued Time",
+      "display_ko": "보고서 발행 시점",
+      "fhir_r4_targets": [
+        "DiagnosticReport.issued"
+      ],
+      "id": "result.report.issued_at",
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "datetime"
+    },
+    {
+      "allowed_values": [
+        "complete_readable",
+        "partial",
+        "unreadable",
+        "not_provided",
+        "unknown"
+      ],
+      "display": "Report Readability and Completeness",
+      "display_ko": "보고서 판독 가능성과 완전성",
+      "id": "result.report.readability",
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "coded"
+    },
+    {
+      "allowed_values": [
+        "patient_report",
+        "proxy_report",
+        "uploaded_document",
+        "clinical_record",
+        "institution_portal",
+        "unknown"
+      ],
+      "display": "Result Information Source",
+      "display_ko": "검사결과 정보 출처",
+      "id": "result.report.source",
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "coded"
+    },
+    {
+      "allowed_values": [
+        "registered",
+        "partial",
+        "preliminary",
+        "final",
+        "amended",
+        "corrected",
+        "appended",
+        "cancelled",
+        "entered-in-error",
+        "unknown"
+      ],
+      "display": "Report Status",
+      "display_ko": "보고서 상태",
+      "fhir_r4_targets": [
+        "DiagnosticReport.status",
+        "Observation.status"
+      ],
+      "id": "result.report.status",
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "coded"
+    },
+    {
+      "display": "Reported Interpretation or Conclusion",
+      "display_ko": "보고서에 기재된 판정 또는 결론",
+      "fhir_r4_targets": [
+        "Observation.interpretation",
+        "DiagnosticReport.conclusion",
+        "DiagnosticReport.conclusionCode"
+      ],
+      "id": "result.reported_interpretation",
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "allowed_values": [
+        "laboratory",
+        "diagnostic_imaging",
+        "pathology",
+        "procedure_or_function_test",
+        "other",
+        "unknown"
+      ],
+      "display": "Test Category",
+      "display_ko": "검사 종류",
+      "fhir_r4_targets": [
+        "DiagnosticReport.category"
+      ],
+      "id": "result.test.category",
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "coded_or_string"
+    },
+    {
+      "display": "Test or Report Name",
+      "display_ko": "검사명 또는 보고서명",
+      "fhir_r4_targets": [
+        "DiagnosticReport.code",
+        "Observation.code"
+      ],
+      "id": "result.test.name",
+      "status": "research_only",
+      "terminology_binding_candidates": [
+        "LOINC",
+        "SNOMED_CT"
+      ],
+      "type": "Fact",
+      "value_type": "coded_or_string"
+    },
+    {
+      "display": "Clinically Relevant Test Time",
+      "display_ko": "검사 시행 시점",
+      "fhir_r4_targets": [
+        "DiagnosticReport.effectiveDateTime",
+        "DiagnosticReport.effectivePeriod",
+        "Observation.effective[x]"
+      ],
+      "id": "result.test.performed_at",
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "date_or_period"
+    },
+    {
+      "display": "Explicit Urgent Follow-up Instruction",
+      "display_ko": "즉시 또는 긴급 확인 지시",
+      "id": "result.urgent_follow_up_instruction",
+      "safety_relevant": true,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "boolean"
+    },
+    {
+      "display": "Reported Values or Findings",
+      "display_ko": "기재된 수치 또는 소견",
+      "fhir_r4_targets": [
+        "Observation.value[x]",
+        "DiagnosticReport.result"
+      ],
+      "id": "result.value.summary",
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "string"
     },
     {
       "display": "Chest Pain",
