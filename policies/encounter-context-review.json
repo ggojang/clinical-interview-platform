@@ -1,6 +1,6 @@
 {
   "id": "policy.encounter-context-review",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "status": "research_only",
   "review_status": "unreviewed",
   "encounter_context": {
@@ -555,6 +555,73 @@
       "never_claim_diagnosis_or_certainty": true
     }
   },
+  "question_utility_and_deduplication": {
+    "scope": "all_adaptive_interviews",
+    "core_principle": "ask_a_question_only_when_its_answer_can_add_new_clinically_useful_information",
+    "before_every_new_question": [
+      "update_a_semantic_coverage_ledger_from_every_explicit_fact_already_supplied",
+      "allow_one_answer_to_satisfy_multiple_overlapping_package_and_baseline_facts",
+      "compare_the_candidate_question_with_answered_questions_unprompted_facts_and_uploaded_material",
+      "skip_the_candidate_when_the_fact_is_already_known_or_covered_at_sufficient_clinical_precision",
+      "confirm_that_the_candidate_can_change_safety_routing_clinician_handoff_or_required_completion"
+    ],
+    "eligible_reasons_to_ask": [
+      "unresolved_safety_or_time_sensitive_information",
+      "missing_core_reason_for_encounter_characterization",
+      "missing_relevant_history_or_medicine_information_that_changes_clinician_handoff",
+      "a_due_longitudinal_baseline_group_not_already_satisfied_by_current_answers",
+      "a_branch_selector_or_branch_specific_high_value_fact",
+      "a_genuine_ambiguity_conflict_or_source_disagreement",
+      "a_mandatory_value_required_by_an_applicable_policy"
+    ],
+    "must_skip": [
+      "synonym_or_rewording_of_an_answered_fact",
+      "broad_other_disease_question_after_current_and_past_conditions_are_already_complete",
+      "additional_diagnosis_confirmation_after_the_same_condition_history_was_answered",
+      "medicine_list_confirmation_after_names_doses_schedule_and_completeness_are_already_explicit",
+      "repeat_trigger_or_timing_question_when_the_event_sequence_already_supplies_it",
+      "second_generic_additional_symptom_health_problem_or_comment_question",
+      "optional_detail_that_will_not_materially_improve_the_clinician_handoff"
+    ],
+    "reconfirmation_is_allowed_only_for": [
+      "genuine_ambiguity",
+      "unresolved_conflict",
+      "safety_critical_detail",
+      "information_due_for_recency_review",
+      "material_disagreement_between_user_and_document_sources"
+    ],
+    "ordinary_routine_target_range_new_questions": {
+      "minimum": 12,
+      "soft_maximum": 24,
+      "clarifications_do_not_count_as_new_questions": true,
+      "extension_beyond_soft_maximum_requires": "unresolved_safety_mandatory_due_baseline_or_branch_specific_high_value_fact"
+    },
+    "completion_readiness": {
+      "required": [
+        "applicable_safety_screen_addressed",
+        "core_reason_for_encounter_characterization_sufficient_for_clinician_handoff",
+        "relevant_history_medicines_and_prior_response_addressed",
+        "all_due_longitudinal_baseline_groups_resolved_or_explicitly_absent",
+        "patient_concern_or_expectation_addressed",
+        "one_final_additional_comment_opportunity_offered"
+      ],
+      "when_ready": "transition_to_numbered_review_instead_of_seeking_optional_completeness",
+      "do_not_treat_every_loaded_fact_or_question_as_mandatory": true
+    },
+    "examples": {
+      "medicine": "A response containing current medicine names dose schedule and statement of completeness satisfies later medicine-list confirmation unless ambiguity or conflict exists.",
+      "condition_history": "A completed condition-history answer satisfies later other-disease and additional-diagnosis prompts.",
+      "additional_comment": "Offer one final additional-comment opportunity only; do not later ask another generic additional health-problem question."
+    },
+    "audit_fields": [
+      "candidate_fact_id",
+      "coverage_source_fact_ids",
+      "utility_reason",
+      "skip_reason",
+      "question_count_at_decision"
+    ],
+    "provenance_marker": "출처: [공동 작업 지식] 질문 가치·중복 억제 정책"
+  },
   "longitudinal_context_review": {
     "review_all_on_first_encounter": true,
     "unknown_last_confirmed_at": "ask_single_recency_gate_then_due_if_still_unknown",
@@ -627,6 +694,6 @@
     "created_at": "2026-07-14T00:00:00Z",
     "source_refs": ["docs/context/002-encounter-context.md", "docs/context/017-clinical-memory.md"],
     "review_status": "unreviewed",
-    "version": "0.6.0"
+    "version": "0.7.0"
   }
 }

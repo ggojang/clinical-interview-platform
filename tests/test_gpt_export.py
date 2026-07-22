@@ -85,6 +85,25 @@ class GptExportTests(unittest.TestCase):
         self.assertEqual(ambiguous["ask_only_ambiguous_dimension"], "time_range")
         self.assertFalse(ambiguous["verbatim_original_question_repeat"])
 
+        deduplication = fixture["cases"][3]
+        self.assertTrue(
+            deduplication["expected_flow"]["ask_only_questions_with_new_clinical_utility"]
+        )
+        self.assertTrue(
+            deduplication["expected_flow"]["loaded_question_count_is_not_a_completion_target"]
+        )
+        self.assertFalse(
+            deduplication["expected_flow"]["reconfirmation_without_ambiguity_conflict_or_safety_need"]
+        )
+        self.assertEqual(
+            deduplication["expected_flow"]["ordinary_routine_soft_maximum_new_questions"],
+            24,
+        )
+        self.assertTrue(all(
+            item["expected_action"] == "skip"
+            for item in deduplication["candidate_questions"]
+        ))
+
     def test_export_is_deterministic_and_response_free(self):
         with tempfile.TemporaryDirectory() as first, tempfile.TemporaryDirectory() as second:
             first_path = Path(first)
@@ -813,6 +832,24 @@ class GptExportTests(unittest.TestCase):
             )
             self.assertTrue(
                 clarification["safety"]["urgent_or_emergency_routing_precedes_clarification"]
+            )
+            utility = manifest["question_utility_and_deduplication_policy"]
+            self.assertEqual(
+                utility["ordinary_routine_target_range_new_questions"]["soft_maximum"],
+                24,
+            )
+            self.assertTrue(
+                utility["completion_readiness"][
+                    "do_not_treat_every_loaded_fact_or_question_as_mandatory"
+                ]
+            )
+            self.assertIn(
+                "medicine_list_confirmation_after_names_doses_schedule_and_completeness_are_already_explicit",
+                utility["must_skip"],
+            )
+            self.assertIn(
+                "second_generic_additional_symptom_health_problem_or_comment_question",
+                utility["must_skip"],
             )
             temporal = manifest["temporal_free_text_normalization_policy"]
             self.assertTrue(temporal["unambiguous_free_text_satisfies_current_question"])

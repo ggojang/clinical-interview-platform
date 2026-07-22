@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "1.44.0"
+VERSION = "1.45.0"
 GENERATED_AT = "2026-07-22T00:00:00Z"
 PRIVATE_KEYS = {
     "raw_text", "raw_input", "patient_response", "patient_responses",
@@ -852,6 +852,9 @@ def build(root: Path, output: Path) -> dict[str, Any]:
         },
         "adaptive_interview_turn_contract": encounter_policy[
             "adaptive_interview_turn_contract"
+        ],
+        "question_utility_and_deduplication_policy": encounter_policy[
+            "question_utility_and_deduplication"
         ],
         "question_choice_semantic_alignment_policy": encounter_policy[
             "question_choice_semantic_alignment"
