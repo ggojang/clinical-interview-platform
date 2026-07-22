@@ -99,7 +99,7 @@ def extract(text: str, turn: int, expected_fact: str | None = None) -> dict[str,
         "symptom.rhinorrhea": ["runny nose", "blocked nose", "stuffy nose", "콧물", "코막힘"],
         "symptom.sore_throat": ["sore throat", "scratchy throat", "목이 아", "목 아"],
         "symptom.sneezing": ["sneez", "재채기"],
-        "symptom.fever": ["fever", "feverish", "열이", "발열"],
+        "symptom.fever": ["fever", "feverish", "열이", "열과 오한", "고열", "발열"],
         "symptom.dyspnea": [
             "short of breath", "trouble breathing", "hard to breathe",
             "harder to breathe", "숨이 차", "숨도 차", "숨쉬기 힘", "숨쉬기가",
@@ -136,9 +136,35 @@ def extract(text: str, turn: int, expected_fact: str | None = None) -> dict[str,
             "attempted suicide", "recent suicide attempt", "recent self-harm attempt",
             "자살 시도", "극단적 선택을 시도", "최근 자해를 시도",
         ],
+        "symptom.unable_to_urinate": [
+            "cannot urinate", "can't urinate", "unable to pee", "cannot pee",
+            "소변이 전혀 안 나", "소변이 안 나", "소변을 못 봐", "소변을 볼 수 없",
+        ],
+        "symptom.visible_hematuria": [
+            "blood in urine", "blood in my urine", "urine is red",
+            "소변에 피", "혈뇨", "붉은 소변", "빨간 소변",
+        ],
+        "symptom.flank_pain": [
+            "flank pain", "pain under the ribs in my back", "옆구리가 아",
+            "옆구리 통증", "등 아래쪽이 아",
+        ],
+        "symptom.rigors": [
+            "rigors", "shaking chills", "오한", "몸이 심하게 떨",
+        ],
+        "symptom.unable_to_take_oral_fluids": [
+            "cannot keep fluids down", "can't keep fluids down", "물을 못 마",
+            "토해서 약을 못 먹", "마시면 계속 토",
+        ],
+        "symptom.rapidly_worsening": [
+            "rapidly worsening", "getting worse quickly", "빠르게 심해",
+            "급격히 악화", "갑자기 더 나빠",
+        ],
     }
     explicit_negative = {
-        "symptom.fever": ["no fever", "열은 없", "열이 없"],
+        "symptom.fever": [
+            "no fever", "열은 없", "열이 없", "발열은 없",
+            "열과 오한은 없", "열과 오한도 없",
+        ],
         "symptom.dyspnea": ["not short of breath", "no trouble breathing", "숨은 안 차", "호흡곤란은 없"],
         "symptom.hemoptysis": ["no blood", "피는 없", "피가 안"],
         "symptom.chest_pain": [
@@ -168,6 +194,26 @@ def extract(text: str, turn: int, expected_fact: str | None = None) -> dict[str,
         "event.recent_self_harm_or_suicide_attempt": [
             "no suicide attempt", "have not attempted suicide", "자살 시도는 없",
             "자살 시도한 적 없", "자해를 시도하지 않",
+        ],
+        "symptom.unable_to_urinate": [
+            "can urinate", "able to pee", "소변은 잘 나", "소변이 잘 나",
+            "소변이 나와", "소변을 볼 수 있",
+        ],
+        "symptom.visible_hematuria": [
+            "no blood in urine", "no blood in my urine", "혈뇨는 없", "혈뇨가 없",
+            "소변에 피는 없", "소변에 피가 없",
+        ],
+        "symptom.flank_pain": [
+            "no flank pain", "옆구리 통증은 없", "옆구리는 안 아", "옆구리가 아프지 않",
+        ],
+        "symptom.rigors": [
+            "no rigors", "no shaking chills", "오한은 없", "오한이 없", "오한도 없",
+        ],
+        "symptom.unable_to_take_oral_fluids": [
+            "can keep fluids down", "물은 마실 수 있", "약은 먹을 수 있",
+        ],
+        "symptom.rapidly_worsening": [
+            "not worsening rapidly", "빠르게 심해지지는 않", "급격히 악화하지 않",
         ],
     }
     for fact_id, cues in lexical_true.items():

@@ -487,7 +487,7 @@ class GptExportTests(unittest.TestCase):
                     encoding="utf-8"
                 )
             )
-            self.assertEqual(urinary["count"], 39)
+            self.assertEqual(urinary["count"], 74)
             fatigue = json.loads(
                 (output_path / "rfe/fatigue/facts.json").read_text(encoding="utf-8")
             )

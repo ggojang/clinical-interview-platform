@@ -511,7 +511,7 @@ class CompilerTests(unittest.TestCase):
             node["id"] for node in first["knowledge_graph"]["nodes"]
             if node["type"] == "Fact"
         }
-        self.assertEqual(len(facts), 39)
+        self.assertEqual(len(facts), 74)
         self.assertEqual(facts, set(first["indexes"]["questions_by_fact"]))
         self.assertEqual(first["coverage"]["total_safety_rules"], 11)
         self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 11)
@@ -1744,8 +1744,8 @@ class PackageRuntimeTests(unittest.TestCase):
     def test_urinary_symptoms_simulation_evaluation_passes(self):
         report = run_evaluation(URINARY_SYMPTOMS_PACKAGE)
         self.assertTrue(report["passed"])
-        self.assertEqual(report["case_count"], 12)
-        self.assertLessEqual(max(item["turns"] for item in report["results"]), 39)
+        self.assertEqual(report["case_count"], 23)
+        self.assertLessEqual(max(item["turns"] for item in report["results"]), 130)
 
     def test_urinary_symptoms_runtime_uses_urinary_rfe(self):
         session = InterviewSession(
@@ -1756,6 +1756,34 @@ class PackageRuntimeTests(unittest.TestCase):
         self.assertEqual(
             state["package"]["id"], "package.primary-care-urinary-symptoms"
         )
+
+    def test_urinary_opening_retention_escalates_immediately(self):
+        session = InterviewSession("urinary-opening-retention", package_path=URINARY_SYMPTOMS_PACKAGE)
+        state = session.process("소변이 전혀 안 나오고 아랫배가 팽팽합니다.")
+        self.assertEqual(state["safety_status"]["level"], "emergency")
+        self.assertEqual(state["stop_reason"], "emergency_escalation")
+
+    def test_urinary_opening_hematuria_and_fever_flank_escalate(self):
+        cases = [
+            ("오늘 소변에 피가 보입니다.", "rule.urinary.safety.visible-haematuria"),
+            ("옆구리가 아프고 열과 오한이 있습니다.", "rule.urinary.safety.fever-flank-pain"),
+        ]
+        for text, rule in cases:
+            with self.subTest(text=text):
+                session = InterviewSession("urinary-opening-warning", package_path=URINARY_SYMPTOMS_PACKAGE)
+                state = session.process(text)
+                self.assertEqual(state["safety_status"]["level"], "urgent")
+                self.assertEqual(state["stop_reason"], "urgent_escalation")
+                self.assertIn(rule, state["safety_status"]["triggered_rules"])
+
+    def test_urinary_negated_opening_warning_does_not_escalate(self):
+        session = InterviewSession("urinary-negated-warning", package_path=URINARY_SYMPTOMS_PACKAGE)
+        state = session.process("소변은 잘 나오고 혈뇨는 없고 옆구리 통증은 없으며, 열과 오한도 없습니다.")
+        self.assertFalse(state["facts"]["symptom.unable_to_urinate"]["value"])
+        self.assertFalse(state["facts"]["symptom.visible_hematuria"]["value"])
+        self.assertFalse(state["facts"]["symptom.flank_pain"]["value"])
+        self.assertFalse(state["facts"]["symptom.rigors"]["value"])
+        self.assertEqual(state["safety_status"]["level"], "routine")
 
     def test_urinary_symptoms_research_package_is_rejected_in_production(self):
         with self.assertRaises(PackageLoadError):
