@@ -1,6 +1,6 @@
 {
   "id": "simulation.encounter-policy-cases",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "status": "synthetic",
   "contains_real_patient_data": false,
   "cases": [
@@ -51,6 +51,14 @@
       "expected_action": "ask_combined_recency_gate_then_resolve_due_groups",
       "expected_complete": false,
       "must_not_assume_other_chat_answers": true
+    },
+    {
+      "id": "BASELINE-RECENCY-EXPLANATION-001",
+      "is_first_encounter": false,
+      "last_confirmed": {"medication.current": "over_90_days", "history.conditions": "within_365_days"},
+      "expected_action": "explain_intervals_then_ask_only_due_medication_group",
+      "expected_interval_days": {"medication.current": 90, "other_baseline_groups": 365},
+      "must_not_claim_all_history_repeats_every_three_months": true
     }
   ]
 }

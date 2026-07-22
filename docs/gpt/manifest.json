@@ -2618,6 +2618,7 @@
     "version": "0.2.0"
   },
   "completion_handoff_policy": {
+    "before_review_user_finish_request": "show_numbered_review_and_wait_for_review_complete_command",
     "clinician_previsit_content": {
       "do_not_limit_handoff_to_common_history_sections": true,
       "identify_missing_required_and_must_be_known_facts": true,
@@ -2630,10 +2631,11 @@
     },
     "completion_announcement_ko": "설문이 종료되었습니다. 현재 응답은 이 종료 시점을 기준으로 확정되었습니다. 이후 입력은 기존 결과의 수정 요청 또는 새로운 상담 사유로 구분됩니다.",
     "completion_confirmation_is_not_consent": true,
-    "confirmation_question_ko": "설문을 어떻게 마칠까요?",
+    "confirmation_source": "exact_review_complete_command",
     "do_not_mark_completed_before_confirmation": true,
     "do_not_present_differential_management_or_test_guidance_during_review": true,
     "do_not_produce_finalized_result_before_confirmation": true,
+    "explicit_stop_command": "mark_stopped_without_finalizing_as_completed",
     "future_fhir_r4_questionnaire_response_status": {
       "administratively_invalidated": "entered-in-error",
       "awaiting_user_confirmation": "in-progress",
@@ -2643,33 +2645,7 @@
       "user_completed": "completed",
       "user_stopped": "stopped"
     },
-    "options": [
-      {
-        "code": "complete",
-        "display_ko": "설문 종료 및 결과 확정",
-        "number": 1
-      },
-      {
-        "code": "continue_or_edit",
-        "display_ko": "답변 추가·수정",
-        "number": 2
-      },
-      {
-        "code": "stop",
-        "display_ko": "설문 중단",
-        "number": 3
-      },
-      {
-        "code": "unknown",
-        "display_ko": "잘 모르겠음",
-        "number": 4
-      },
-      {
-        "code": "decline",
-        "display_ko": "답변하지 않음",
-        "number": 5
-      }
-    ],
+    "on_review_complete_command": "mark_completed_and_produce_finalized_result_immediately",
     "post_completion_input": "classify_as_amendment_or_new_reason_for_encounter_before_collecting",
     "pre_confirmation_steps": [
       "offer_final_free_text_concern",
@@ -2690,6 +2666,7 @@
     ],
     "requires_explicit_user_confirmation": true,
     "review_phase": {
+      "do_not_ask_a_second_completion_question_after_review_complete_command": true,
       "do_not_show_completion_options_in_same_turn_as_review_rows": true,
       "edit_commands": [
         "수정 {review_number}",
@@ -2697,10 +2674,11 @@
         "수정 U{positive_integer}"
       ],
       "every_editable_row_has_continuous_review_number": true,
-      "instruction_ko": "수정할 항목은 '수정 2', '수정 Q2' 또는 '수정 U1'처럼 입력해 주세요. 수정할 내용이 없으면 '종료 확인'이라고 입력해 주세요.",
+      "instruction_ko": "수정할 항목은 '수정 2', '수정 Q2' 또는 '수정 U1'처럼 입력해 주세요. 수정할 내용이 없으면 '종료 확인'이라고 입력해 주세요. 이 명령을 입력하면 추가 확인 없이 설문이 종료·확정됩니다.",
       "must_precede_completion_confirmation": true,
       "prompted_item_reference": "Q{positive_integer}",
       "return_to_review_after_each_edit": true,
+      "review_complete_command_is_final_confirmation": true,
       "review_complete_command_ko": "종료 확인",
       "row_fields": [
         "review_number",
@@ -2710,7 +2688,8 @@
       ],
       "summary_heading_ko": "응답 검토 및 수정",
       "unprompted_fact_reference": "U{positive_integer}"
-    }
+    },
+    "user_wants_more_changes": "use_edit_command_before_review_complete_command"
   },
   "contains_patient_responses": false,
   "encounter_context_policy": {
@@ -3869,7 +3848,11 @@
       "unknown": "asked-unknown"
     },
     "do_not_ask_separate_recency_question_per_group": true,
+    "do_not_claim_all_baseline_groups_have_a_three_month_interval": true,
     "do_not_merge_diagnosis_and_procedure_history_into_one_binary_question": true,
+    "do_not_show_explanation_or_baseline_inventory_when_no_group_is_due": true,
+    "explain_before_first_due_group_ko": "진료 전 의료진에게 최신 정보를 전달하기 위해 갱신 확인이 필요한 기본 건강정보만 질문하겠습니다. 현재 복용약은 3개월, 그 밖의 기본 병력은 1년 기준이며 이미 최근 확인된 항목은 다시 묻지 않습니다.",
+    "explain_before_recency_gate_ko": "기본 건강정보는 초회 작성, 마지막 확인 시점이 불명확한 경우, 항목별 갱신 주기가 지난 경우 또는 변경 내용이 있을 때만 다시 확인합니다. 현재 복용약은 3개월, 진단·수술·알레르기·가족력·직업·흡연·음주는 1년을 기본 확인 주기로 사용합니다. 진료 전에 의료진에게 최신 정보를 전달하기 위한 과정이며, 최근 확인된 항목은 반복하지 않습니다.",
     "first_encounter_required_group_order": [
       "history.conditions",
       "history.procedures",
@@ -3939,6 +3922,10 @@
         "question_ko": "현재 흡연, 과거 흡연, 비흡연 중 어디에 해당하나요?"
       }
     },
+    "interval_summary": {
+      "medication_current_days": 90,
+      "other_baseline_groups_days": 365
+    },
     "known_absence_is_answered_not_data_absent": true,
     "never_assume_another_chat_answered_baseline_history": true,
     "new_chat_is_not_proof_of_first_encounter": true,
@@ -3951,6 +3938,7 @@
     "review_all_on_first_encounter": true,
     "review_only_due_groups": true,
     "safety_deferred_groups_keep_interview_incomplete": true,
+    "show_explanation_only_when_recency_gate_or_one_or_more_baseline_groups_are_due": true,
     "symptom_irrelevance_is_not_valid_first_encounter_omission": true,
     "unknown_last_confirmed_at": "ask_single_recency_gate_then_due_if_still_unknown",
     "user_stop_keeps_status_stopped_not_completed": true
@@ -4178,7 +4166,7 @@
       }
     ],
     "status": "research_only",
-    "version": "1.45.0"
+    "version": "1.46.0"
   },
   "preferred_loading": {
     "aggregate_resources_are_backward_compatible": true,
@@ -4446,7 +4434,7 @@
       "count": 50,
       "name": "common-facts",
       "path": "/gpt/common-facts.json",
-      "sha256": "31601d5b6501fb11a228e33455838846e0f226733c8de0cc91bea3dfb775345a"
+      "sha256": "b7b4c0b1a5eef7a7459eddea4fd1bff68845841a9a6bd40f6a7f866f267402fa"
     },
     {
       "count": 2712,
@@ -4488,61 +4476,61 @@
       "count": 10,
       "name": "question-groups",
       "path": "/gpt/question-groups.json",
-      "sha256": "8946617814e32a844b60ee6464c91b6aeb6f53c48227ee20690f859be49b7f78"
+      "sha256": "4c0d6999ac3062a83354877c5eee4fafa6f1bf095ec928721d99bbc7e748ceaf"
     },
     {
       "count": 26,
       "name": "questionnaires-patient-experience-5th-2025-metadata",
       "path": "/gpt/questionnaires/patient-experience-5th-2025/metadata.json",
-      "sha256": "a9e2f1420b2a753750dd9844dd1eb9c607ac3635b2a5860e34152e9b2de72188"
+      "sha256": "07a7aeb40cd77a7f418ea108bc08763f90a52bb5dbb9b3074e9565ba49180449"
     },
     {
       "count": 4,
       "name": "questionnaires-patient-experience-5th-2025-sections-1",
       "path": "/gpt/questionnaires/patient-experience-5th-2025/sections/1.json",
-      "sha256": "0aaadb87aca94c93de6162ec3368da9270eadf747396785fd4ecc2d7c5d6dfe7"
+      "sha256": "c667baf26258b0d837c5d084f3c82aa484a8f1a323a40f8bef9ea9b9d2ab2451"
     },
     {
       "count": 4,
       "name": "questionnaires-patient-experience-5th-2025-sections-2",
       "path": "/gpt/questionnaires/patient-experience-5th-2025/sections/2.json",
-      "sha256": "0fadbfbaf504143b12542e0921b0194091fbdb0bb33a974cbbedee2180894304"
+      "sha256": "e4ef5814e1097201446e2f03a72e0574ad85eb19b84315ced7cfadddc3301cbc"
     },
     {
       "count": 5,
       "name": "questionnaires-patient-experience-5th-2025-sections-3",
       "path": "/gpt/questionnaires/patient-experience-5th-2025/sections/3.json",
-      "sha256": "eb976daf8bf55c5dc2f480d0df6338d8a884d42743613b4151a5973dda0360b3"
+      "sha256": "5d9f57aae05cb9fa2e89883ff7456e0cc6456d5239fb21a9ff2d5a9bce9acf72"
     },
     {
       "count": 1,
       "name": "questionnaires-patient-experience-5th-2025-sections-4",
       "path": "/gpt/questionnaires/patient-experience-5th-2025/sections/4.json",
-      "sha256": "a099e707130efe22a71479a33fbc530b59d6eee619de5e171533f38d015fc5f3"
+      "sha256": "1e0b6d3db894c3c19a5233bdcd482630a43b15ff2d92b319a8a49812d537bc30"
     },
     {
       "count": 3,
       "name": "questionnaires-patient-experience-5th-2025-sections-5",
       "path": "/gpt/questionnaires/patient-experience-5th-2025/sections/5.json",
-      "sha256": "823347aa4baf7e6b6a218f8bc3767e0b7a5509b627e220c8fad9f21b5a7202bf"
+      "sha256": "af944980c24a20d8722543a88200157c961a0ba776a6ffc0094798c1cd557426"
     },
     {
       "count": 4,
       "name": "questionnaires-patient-experience-5th-2025-sections-6",
       "path": "/gpt/questionnaires/patient-experience-5th-2025/sections/6.json",
-      "sha256": "b527a33a770dff71423295872397e4315995e111f278585cac4170be65d3226c"
+      "sha256": "aaf29d3848f0a785ccf008d212605ca228ad917344662d2c6199f04c286d1fe4"
     },
     {
       "count": 2,
       "name": "questionnaires-patient-experience-5th-2025-sections-7",
       "path": "/gpt/questionnaires/patient-experience-5th-2025/sections/7.json",
-      "sha256": "94d2fe381e20b02cf9430fb5416e0cfa8d51c204c5431979e79db58db2009206"
+      "sha256": "8b600b1e62ff140e5a84c4cf169724afef57bd2e9dc629e650ed0666602b1d9e"
     },
     {
       "count": 3,
       "name": "questionnaires-patient-experience-5th-2025-sections-8",
       "path": "/gpt/questionnaires/patient-experience-5th-2025/sections/8.json",
-      "sha256": "0aaa81b45305e980da23409ec777e011fbeebd8442b3672e455b4573ce905d3e"
+      "sha256": "b11742df5ba60ed0217912202e7d8849b09ca56ff1a27dfde5c10d9014beb48c"
     },
     {
       "count": 49,
@@ -4554,1123 +4542,1123 @@
       "count": 75,
       "name": "rfe-abdominal_pain-facts",
       "path": "/gpt/rfe/abdominal_pain/facts.json",
-      "sha256": "bef8f186767774b6292bfe19f877a9a470f354f048f4360bb8207aed8e3e641c"
+      "sha256": "1b34ec8ed3ba99e2da0d4014175c06977f6f30323691707025e1794361b7f02a"
     },
     {
       "count": 75,
       "name": "rfe-abdominal_pain-questions",
       "path": "/gpt/rfe/abdominal_pain/questions.json",
-      "sha256": "b7d0213a5efb6391206985d7134af93ccfdba5568aab9fd909d74a2f39689d54"
+      "sha256": "a972c082d407abb15af6e3d5261bee55f555464ed9946a2486c914fb7a084453"
     },
     {
       "count": 165,
       "name": "rfe-abdominal_pain-rules",
       "path": "/gpt/rfe/abdominal_pain/rules.json",
-      "sha256": "72f9acac7d6bfbd3e79e8de02a1e95383819a38a5246a3bb83ef011071b1fa17"
+      "sha256": "99a9f23ef3c31c5a01a8b64b55d117b1a1a88f8fdeae2863f725ac55492d6d3e"
     },
     {
       "count": 73,
       "name": "rfe-abdominal_pain-rules-completion",
       "path": "/gpt/rfe/abdominal_pain/rules/completion.json",
-      "sha256": "0f615bdcc5562b9415aed47237b161dedadb82e561feaf7295648b5191e1ec99"
+      "sha256": "3f8ae46a7085e33fae969f215ef934e3f6650ed96b6a0b0cbc8cb547addb29ec"
     },
     {
       "count": 75,
       "name": "rfe-abdominal_pain-rules-priority",
       "path": "/gpt/rfe/abdominal_pain/rules/priority.json",
-      "sha256": "ed26b9cf7d32258729904a19d738b90ede24133053c098fe1febe9f1ff6284ee"
+      "sha256": "44373d951e5e99828e7bb18f43e15ef4a3b796e4d08fd1b27bffeaf90f7b6f88"
     },
     {
       "count": 47,
       "name": "rfe-allergy_concern-facts",
       "path": "/gpt/rfe/allergy_concern/facts.json",
-      "sha256": "0e580b0c3346ede25c24b488180626e11d042c9296f45a20d4f9c576042b3c69"
+      "sha256": "2176335dc5a8f563023604791aedb75e9ed4033f6059ca18b291e29cdaacf47f"
     },
     {
       "count": 47,
       "name": "rfe-allergy_concern-questions",
       "path": "/gpt/rfe/allergy_concern/questions.json",
-      "sha256": "3a281e4b9e3ec99e81a81218f774bd963d109561eacdee703e9ac3204a090d40"
+      "sha256": "375301da3be09d89d3fc895caea1f9c38a5d08deeae38d0595c33f6466ed4967"
     },
     {
       "count": 107,
       "name": "rfe-allergy_concern-rules",
       "path": "/gpt/rfe/allergy_concern/rules.json",
-      "sha256": "364c692506d8790a9b841ea8dc4248f77a7a0e012cd998c474981737c1167abb"
+      "sha256": "56c4b132c42e916761f53d525b508f0eab0a4d261b5cd7237135890762ffaf67"
     },
     {
       "count": 48,
       "name": "rfe-anemia_concern_follow_up-facts",
       "path": "/gpt/rfe/anemia_concern_follow_up/facts.json",
-      "sha256": "1221f9d60142fe27058a60fb6a1b6231c16c628d130909966c470c201310b9dc"
+      "sha256": "3bc6d696eb1ef87498c2f923f210df6b12590e824a8d771d9060ea0c6420e434"
     },
     {
       "count": 48,
       "name": "rfe-anemia_concern_follow_up-questions",
       "path": "/gpt/rfe/anemia_concern_follow_up/questions.json",
-      "sha256": "ded7f067c4b820d31260c350b2e3a049e77ce2d78bdcf72dab862914c7a721ed"
+      "sha256": "c2ebb43c491f3d3d9fbe0b6799758f9ac2dfad418602080a4399916f819ab2c4"
     },
     {
       "count": 109,
       "name": "rfe-anemia_concern_follow_up-rules",
       "path": "/gpt/rfe/anemia_concern_follow_up/rules.json",
-      "sha256": "1ef9821a6fa38151c637d8638fc6befe389c8a5c559e60f8e8208663a20b2769"
+      "sha256": "d84f56bb8b29395eeeb8be8e89017e83be450583596a51e303f9923605e83e8a"
     },
     {
       "count": 61,
       "name": "rfe-asthma_copd_follow_up-facts",
       "path": "/gpt/rfe/asthma_copd_follow_up/facts.json",
-      "sha256": "f111049285cc206c4395d5701d883c6d89ca1ee1587d9d6860034ac69ae7a035"
+      "sha256": "74eae7f85e5906a6b6e306b37233f0c8ea0f47214e1b455eecdfa68ce1db287d"
     },
     {
       "count": 61,
       "name": "rfe-asthma_copd_follow_up-questions",
       "path": "/gpt/rfe/asthma_copd_follow_up/questions.json",
-      "sha256": "58cbe20ea23daa6419e93c8dc91340976f457a5c38f0878094387beed9617d2f"
+      "sha256": "ff134829a70f416010b6715dd907ea41846ffaef2ea3f25769be4e2e8a8b7818"
     },
     {
       "count": 136,
       "name": "rfe-asthma_copd_follow_up-rules",
       "path": "/gpt/rfe/asthma_copd_follow_up/rules.json",
-      "sha256": "b617175a9df2bc72f68ec243d2ce8be319c4b407bef18780d195515390ff40da"
+      "sha256": "b05c66393439d001d8590b020b0cb3976b11769e4fc1b638592b5a625df697a3"
     },
     {
       "count": 68,
       "name": "rfe-back_pain-facts",
       "path": "/gpt/rfe/back_pain/facts.json",
-      "sha256": "226458ae0044b2a374c3d0f872ff49d66c5b275e4f27ce3b8d2cea0c7c8a7d7c"
+      "sha256": "5aef72d542c56847e64dcd87f796436996d1ebbde1115404f46d6a5453cadd6a"
     },
     {
       "count": 68,
       "name": "rfe-back_pain-questions",
       "path": "/gpt/rfe/back_pain/questions.json",
-      "sha256": "3fdfe5626c9fd470cda33365a057f2fd9b80b5a812e88aa5a3d94135f92a739d"
+      "sha256": "67526433cc64cf74858b0de4e283cce31a35bfdde7d5013ba7c2aa53f0b20d3e"
     },
     {
       "count": 147,
       "name": "rfe-back_pain-rules",
       "path": "/gpt/rfe/back_pain/rules.json",
-      "sha256": "ca3c62bbed521a78d74a20e4ead4009e805a477850783a2bf71e178b9842595d"
+      "sha256": "8b277f988ac43e0eab0d7e68a9315d5b6fff9636df3bb6b44869eeb5a0cca822"
     },
     {
       "count": 66,
       "name": "rfe-back_pain-rules-completion",
       "path": "/gpt/rfe/back_pain/rules/completion.json",
-      "sha256": "3682d3bc62ade815710bdde8a3a07e3c3453902c68fced908b253f877450afc0"
+      "sha256": "daaaa1db505d4d421860b3ef38fc80be5dcdcfa768de0c365a635b930583bdbc"
     },
     {
       "count": 68,
       "name": "rfe-back_pain-rules-priority",
       "path": "/gpt/rfe/back_pain/rules/priority.json",
-      "sha256": "a8b7835e6e73371831d2eeff26e4d9fdf087e54b32b4c968d61e8bf08d5e88d4"
+      "sha256": "f456fb96f3afafa87fb3e49df1157ee70975c1d0911a4bec59db4aef09dba441"
     },
     {
       "count": 67,
       "name": "rfe-bowel_symptoms-facts",
       "path": "/gpt/rfe/bowel_symptoms/facts.json",
-      "sha256": "7286631a4a3887f88fe5cce8f1552de12c5532228bc539a55e755e2b82e071e2"
+      "sha256": "a9c3ea554ff48d7992edd27a24e6629044ee3f51e254847b4b7ef87b0c597f25"
     },
     {
       "count": 67,
       "name": "rfe-bowel_symptoms-questions",
       "path": "/gpt/rfe/bowel_symptoms/questions.json",
-      "sha256": "b21d1ba921a28ae6224cc9b8dcb4533a191a638f105a25e5fc2a5cbf047f7633"
+      "sha256": "315a54eee8c29d504fa9223ba6cb1817c05514307e7540a59a9056c60b0637e3"
     },
     {
       "count": 144,
       "name": "rfe-bowel_symptoms-rules",
       "path": "/gpt/rfe/bowel_symptoms/rules.json",
-      "sha256": "2fac48e356a7496169609f0830d04de1473542e58944b22c77770630a140b4bb"
+      "sha256": "711c5aa5c548937bccc2b43109f387fa1f939cbaf978d0bb09367e788b3e0284"
     },
     {
       "count": 65,
       "name": "rfe-bowel_symptoms-rules-completion",
       "path": "/gpt/rfe/bowel_symptoms/rules/completion.json",
-      "sha256": "ac52fa0dcf877cc7a1c05ba82b295467ba104c2ce3595b9bd6e760cecfba967a"
+      "sha256": "0b9f2c7ea2f6a9916ec534fc2fe9750b52a0b77b12d62904f31d5ba5cf1d892d"
     },
     {
       "count": 67,
       "name": "rfe-bowel_symptoms-rules-priority",
       "path": "/gpt/rfe/bowel_symptoms/rules/priority.json",
-      "sha256": "c724efdb75c5c698604b35ba988516fdf832e949c05083f77e0de7c7a8fd04fb"
+      "sha256": "1b6a0070b44c623de6ace131208108e1ffcbbb614897889e20c34a474d2d66b2"
     },
     {
       "count": 53,
       "name": "rfe-breast_symptoms-facts",
       "path": "/gpt/rfe/breast_symptoms/facts.json",
-      "sha256": "bb8aa0ea949582863c32268df33eb8ff762dbe9cb934c87ceba0c84b9c483e44"
+      "sha256": "6be42f815636effb0d46b615d3edcd86771708cae57a3bf83831293277718315"
     },
     {
       "count": 53,
       "name": "rfe-breast_symptoms-questions",
       "path": "/gpt/rfe/breast_symptoms/questions.json",
-      "sha256": "6b31d6f188ef6a9c9c0e48ed453453a73e23eabd3621bac262bf9f33116017a1"
+      "sha256": "889b75d3615ea9be2dc8ff6a9e23136957150e06945b92368e40306e5a5209b3"
     },
     {
       "count": 116,
       "name": "rfe-breast_symptoms-rules",
       "path": "/gpt/rfe/breast_symptoms/rules.json",
-      "sha256": "a7cf5efa361869e75f8ad78192db0b3d7d33815b8af569aebd023b487e0bfebb"
+      "sha256": "ac00cdacb7f56306e2de704d453be865e4ed4a4ab1b7f1559ecd8c5cbea3bbed"
     },
     {
       "count": 73,
       "name": "rfe-chest_pain-facts",
       "path": "/gpt/rfe/chest_pain/facts.json",
-      "sha256": "e93f4a2ade4fd77fd25a35558e7b5d2cd0d0f5fbd985da2f998116f8ba6a5da2"
+      "sha256": "c3c273d8eb1fc173aa347f3c9db482a95221e7f337ad2c7dc2fd5cb349776dab"
     },
     {
       "count": 73,
       "name": "rfe-chest_pain-questions",
       "path": "/gpt/rfe/chest_pain/questions.json",
-      "sha256": "79753421d73df35d928a05198e1b09af003cfe54c0c7ec1aecc7e24bbc53e279"
+      "sha256": "ce0eacc71ce40bbdf6fd553421c5dfa7d8758a06c85cdeef9f6e80dc9ee151a2"
     },
     {
       "count": 164,
       "name": "rfe-chest_pain-rules",
       "path": "/gpt/rfe/chest_pain/rules.json",
-      "sha256": "7ecd9d04ccc018481013132842a361c3f830b70d6d73ae1f74641233fd58b735"
+      "sha256": "d4fe1f1a1cd19fad89ed8d2f6dd06129d2d87d8b24600f0135e7b424853a8b26"
     },
     {
       "count": 71,
       "name": "rfe-chest_pain-rules-completion",
       "path": "/gpt/rfe/chest_pain/rules/completion.json",
-      "sha256": "2af88045a6f5b7437ab8873a34ec47aa9886f022793de4a97b1f4dce6d45a431"
+      "sha256": "4ec4009cd0e3454a66299470b645b3361db0dc0eeded3afb078fa92d1d20aa7f"
     },
     {
       "count": 73,
       "name": "rfe-chest_pain-rules-priority",
       "path": "/gpt/rfe/chest_pain/rules/priority.json",
-      "sha256": "37b6d0a3ec4aa008ca8947fb34b4ddfc1251c2cc488d77238e758dc482e6fd2c"
+      "sha256": "0230e86340c236251e055869f38ee35b25aef369c14aa518ddb3728fd9480b81"
     },
     {
       "count": 70,
       "name": "rfe-cough-facts",
       "path": "/gpt/rfe/cough/facts.json",
-      "sha256": "a94dcfc8675b2d387532a60ec22bec73fd3a419c1c978d5372a7469de2b28530"
+      "sha256": "d494182bd9568814969a31095e9498d98ddc105490e0a738fe6dd81cf491ac52"
     },
     {
       "count": 70,
       "name": "rfe-cough-questions",
       "path": "/gpt/rfe/cough/questions.json",
-      "sha256": "5499d8b921548032bbd0c25ffa124ae84a4d61cc571bdaa0f573070011f043df"
+      "sha256": "c1fa77afdbd8b19a150a1a97c37cf214836a1788a275ea7d0c6a40326cf8484e"
     },
     {
       "count": 159,
       "name": "rfe-cough-rules",
       "path": "/gpt/rfe/cough/rules.json",
-      "sha256": "b201eb2e5f6bcd396d05cdb95ef63b0dcf25efaa39a9303e7c889ef68879f855"
+      "sha256": "f61a416436205975f630c99fa266c10bf069ff82af8de95a61cffae7f7e5c13e"
     },
     {
       "count": 69,
       "name": "rfe-cough-rules-completion",
       "path": "/gpt/rfe/cough/rules/completion.json",
-      "sha256": "453df64d5554564129ef60e3c6d149669c17b3b980423f87eb699878ef801472"
+      "sha256": "cdaaf83c620a2d6ecc8c0018cc188fd29e2f29217a9415f318aaca2bf50f77fa"
     },
     {
       "count": 76,
       "name": "rfe-cough-rules-priority",
       "path": "/gpt/rfe/cough/rules/priority.json",
-      "sha256": "8d6a6eeafc8bcc3fcc274b518e61c5e793ced9a6ad87bb770417e6be0ec0bf9b"
+      "sha256": "ae7a54645ba340990471e91c6b872507a7b271744edccf05b72e0f6c192fec7a"
     },
     {
       "count": 54,
       "name": "rfe-diabetes_follow_up-facts",
       "path": "/gpt/rfe/diabetes_follow_up/facts.json",
-      "sha256": "c1066286afdd514f6142add92d17659cf8256655629f9a2f4014e09c294ed629"
+      "sha256": "e0bd5235e2c9c6731293dbf14521c4c16a03ba2c266d44bbddd60fe409021bc5"
     },
     {
       "count": 54,
       "name": "rfe-diabetes_follow_up-questions",
       "path": "/gpt/rfe/diabetes_follow_up/questions.json",
-      "sha256": "7a624eb8741904669ed5dc498e30a5097751db928160415f6899002a62f51130"
+      "sha256": "9652d22d04dd39492c74fabf9cf61d3566cc1c41b70597b4ccdb7db77f53ba24"
     },
     {
       "count": 120,
       "name": "rfe-diabetes_follow_up-rules",
       "path": "/gpt/rfe/diabetes_follow_up/rules.json",
-      "sha256": "0cfafb32f8c34a9ae81e65afd7db0ce7be606046157b9f40a68c7ee2baa5911b"
+      "sha256": "9bd5333a77970769de4b8d31ded3120136991c9663bec5aec5e086310ed34bf8"
     },
     {
       "count": 73,
       "name": "rfe-dizziness_syncope-facts",
       "path": "/gpt/rfe/dizziness_syncope/facts.json",
-      "sha256": "7c7d75aa7ee2a802c7e329a2a1d38c9ae57198830e6594263d2f5a0b6bca8944"
+      "sha256": "ddda673c7ea7d9670f07bb867499d4355ecafc2ff609687cf2b65137325e789f"
     },
     {
       "count": 73,
       "name": "rfe-dizziness_syncope-questions",
       "path": "/gpt/rfe/dizziness_syncope/questions.json",
-      "sha256": "6f90bb00c95c311990fdc9f9c10c20376dba8670ea058dbb9810f9b6618c1328"
+      "sha256": "85676e15cd19ac031fbe0b0333049a9c45bdd8e936734142c1d5b7768644322b"
     },
     {
       "count": 167,
       "name": "rfe-dizziness_syncope-rules",
       "path": "/gpt/rfe/dizziness_syncope/rules.json",
-      "sha256": "06c205407d1534e70c8ed695652c0053495e1f6a9f1c39a21120a777e37fc7ea"
+      "sha256": "ca35c2ddc27dfc27427fddb3d939377a3037c78dbc6eed338bcc18dd3039adaa"
     },
     {
       "count": 73,
       "name": "rfe-dizziness_syncope-rules-completion",
       "path": "/gpt/rfe/dizziness_syncope/rules/completion.json",
-      "sha256": "0b86170deaf5640d47428d8f173e7c370cb9a8fe115e78f3be8b459818db6ce3"
+      "sha256": "2286725aff86f9fc051b9a25e350a32bfb49b65137a93a8a01ca59e8fecd4cd1"
     },
     {
       "count": 73,
       "name": "rfe-dizziness_syncope-rules-priority",
       "path": "/gpt/rfe/dizziness_syncope/rules/priority.json",
-      "sha256": "c2eb743f067520d656fc7877780a9d3f45e0d3a44bb765398275d0dcf6959082"
+      "sha256": "1a7a4df25306b049a0514435f81e6c52daa2b04ea2e93c19db019edd14ee8cae"
     },
     {
       "count": 52,
       "name": "rfe-dyspepsia_reflux-facts",
       "path": "/gpt/rfe/dyspepsia_reflux/facts.json",
-      "sha256": "023d162bf38cab0417454b348adab89036e81fc954629d51a6c6320ddf6ba5ef"
+      "sha256": "b3117bc6b1ac6ca862f664e60cfe4be579d3d302edf15b566c4372740e9a4bae"
     },
     {
       "count": 52,
       "name": "rfe-dyspepsia_reflux-questions",
       "path": "/gpt/rfe/dyspepsia_reflux/questions.json",
-      "sha256": "ad61b305ea6a2a5815639794c8703d135be7eee1a119e661aa6a0c8e8474175e"
+      "sha256": "fe79a60c5d4e046d2df209b7afab24cda1026a6220ae805678ede9adaa29457a"
     },
     {
       "count": 117,
       "name": "rfe-dyspepsia_reflux-rules",
       "path": "/gpt/rfe/dyspepsia_reflux/rules.json",
-      "sha256": "1c7e1c2c3ee16225cef2296b56ebecbd4578d23d35c5c0278341ba1793742d42"
+      "sha256": "49cae30b8dafb3094028c1814d8b64141c91c53ae4c84bc3901a2a129002b81b"
     },
     {
       "count": 74,
       "name": "rfe-dyspnea-facts",
       "path": "/gpt/rfe/dyspnea/facts.json",
-      "sha256": "59fd0ada34eccea556fa9758c8ec39b9ce41e7dc322729bd7355007d2ac652b9"
+      "sha256": "9fc31b63c125893fa278063cd0ca7697df0ea992701c1247156f281e89a3e8ee"
     },
     {
       "count": 74,
       "name": "rfe-dyspnea-questions",
       "path": "/gpt/rfe/dyspnea/questions.json",
-      "sha256": "9383701f164ca3be45b9cb945adbae30ad320142f99739bec0eaaa30837cdc8a"
+      "sha256": "fa59be378efa938e2368d72fba9e44a74c0bb0e24eebed1c9bd00da2cf35d4b3"
     },
     {
       "count": 161,
       "name": "rfe-dyspnea-rules",
       "path": "/gpt/rfe/dyspnea/rules.json",
-      "sha256": "328abce5487b26fc60b0ffd9c4dccba782c9d95456f24fcd0b8529a3e989733b"
+      "sha256": "2d20ef81a270933b444238d0e286a5ed496f622b8aa84eb26bc517a2d392220a"
     },
     {
       "count": 73,
       "name": "rfe-dyspnea-rules-completion",
       "path": "/gpt/rfe/dyspnea/rules/completion.json",
-      "sha256": "e151ebc7118a713c2efb7cfda63d7c88955f34babfa1ff5a39c953012a2bfd86"
+      "sha256": "d7426c7723552238560770846c7f9f28e0e16057b246b2221176a8d712471b32"
     },
     {
       "count": 74,
       "name": "rfe-dyspnea-rules-priority",
       "path": "/gpt/rfe/dyspnea/rules/priority.json",
-      "sha256": "9e5e50cc254b5c94fbddd80e28644324edde713307cae0f039a258192cc56e51"
+      "sha256": "51fad24ac87ba5d2ba0d95a3606ad3f9ef29e00a6a78ae78ce032bd4e2d6fe0b"
     },
     {
       "count": 46,
       "name": "rfe-ear_hearing_symptoms-facts",
       "path": "/gpt/rfe/ear_hearing_symptoms/facts.json",
-      "sha256": "f61d3ef1ef19a9c83a1f21e99ee1738a84044208ea0283ef00037bd0213c0652"
+      "sha256": "98892025e9a9d567a1c030a57d168a39b6c02a346ff84234a4da27b247d75607"
     },
     {
       "count": 46,
       "name": "rfe-ear_hearing_symptoms-questions",
       "path": "/gpt/rfe/ear_hearing_symptoms/questions.json",
-      "sha256": "9faeac8ee47f321d9803fe90ed106d8c444771cf9128ae3285ef1eadd86637a9"
+      "sha256": "9d20c47d74801e64c807759a404559ef85592e85603e40b8ad233396ea19fcdf"
     },
     {
       "count": 103,
       "name": "rfe-ear_hearing_symptoms-rules",
       "path": "/gpt/rfe/ear_hearing_symptoms/rules.json",
-      "sha256": "39b916cf871175ed0ab3d8b1d574aeaacecf5656f1ffbdadc0461960786500bb"
+      "sha256": "1496c4ba5ff4ab459f86c75ab57e6e66db152475542a683480a2e22cea9c321f"
     },
     {
       "count": 69,
       "name": "rfe-edema-facts",
       "path": "/gpt/rfe/edema/facts.json",
-      "sha256": "9698f64bf1d2769457d02f129bd84dd3c967d0184ce5ae5cb461a7ee9b63a597"
+      "sha256": "4d258a41e27cd64b7e8a80cc69afb6cc06ffbfc897d72538582147a9d269ba80"
     },
     {
       "count": 69,
       "name": "rfe-edema-questions",
       "path": "/gpt/rfe/edema/questions.json",
-      "sha256": "55cfaafd19d96e95a50a7e8dc53d290db64cf114eec8c6425fdedc7a0d19ebf5"
+      "sha256": "8be521d4b346d157f0a1f365a474fa24defaba415a3c4ae37f7fa7664e464307"
     },
     {
       "count": 148,
       "name": "rfe-edema-rules",
       "path": "/gpt/rfe/edema/rules.json",
-      "sha256": "34fe342082f0ad15d7dca318e3e8190b3b880f14cdc577894a28721ad683c289"
+      "sha256": "7bd0cd5bec3e45d3a5b6640bbd6d41fc7b8379034a3318d992d7f7d0b33489f6"
     },
     {
       "count": 44,
       "name": "rfe-epistaxis-facts",
       "path": "/gpt/rfe/epistaxis/facts.json",
-      "sha256": "21ba42177537568e9e849fa40b221f90fa180adffe91a06a3b12b23ece0d4a09"
+      "sha256": "085719a3dea8e16180a038e5a69137503f434ef7d8309f2f798f19dc7a551bda"
     },
     {
       "count": 44,
       "name": "rfe-epistaxis-questions",
       "path": "/gpt/rfe/epistaxis/questions.json",
-      "sha256": "f976dc0bb35caa984ad570f5bf4efccf45f46ff984bc32dc32621795afad92a6"
+      "sha256": "40a6fc505ae84c693bad47fdf2b5ed607a8040d2b9d0599f78e4089f958cbbb0"
     },
     {
       "count": 99,
       "name": "rfe-epistaxis-rules",
       "path": "/gpt/rfe/epistaxis/rules.json",
-      "sha256": "478b40762371efe2dc053745fa0e4cf4392b2c3b0c853d4528a8030b7ce0e260"
+      "sha256": "917f8a3d642ac5f5614dcbcf358c8b774ef83e14091de05a7941d24f70449283"
     },
     {
       "count": 45,
       "name": "rfe-eye_symptoms-facts",
       "path": "/gpt/rfe/eye_symptoms/facts.json",
-      "sha256": "498af22fa662e6409b8195499d06af89e5388c5471319d3f0cbb6fbf323488ab"
+      "sha256": "0717fa5e43d40732bea4732e94e8a760c8b372b71a09f1394c002ab078696bce"
     },
     {
       "count": 45,
       "name": "rfe-eye_symptoms-questions",
       "path": "/gpt/rfe/eye_symptoms/questions.json",
-      "sha256": "77dbdc337ae704fb246a8254caf2af507ae72cb26c3e5c2b0908e83018a13200"
+      "sha256": "ca5b8081c4a87ebdaa3c1714677ab80bf6d0c6cb2f3ad974e8dcc14c9de4a119"
     },
     {
       "count": 104,
       "name": "rfe-eye_symptoms-rules",
       "path": "/gpt/rfe/eye_symptoms/rules.json",
-      "sha256": "39051ef7863760dbb944f4bb12b2756b4cd0623b4cdc72ba38a150895fa6c8b3"
+      "sha256": "79d5dfd70523fbfecff1eba1cf780e1908f58739fe5cf4d363af6de3545bc927"
     },
     {
       "count": 75,
       "name": "rfe-fatigue-facts",
       "path": "/gpt/rfe/fatigue/facts.json",
-      "sha256": "5fb134b19d0629b897f4d057de077fcb88ccc87d3571ed9378feae99c1982852"
+      "sha256": "586a903dd26f211bca2d5a4cb2a674ea1abe7ad30f62b3f849f6c4128b9bbb63"
     },
     {
       "count": 75,
       "name": "rfe-fatigue-questions",
       "path": "/gpt/rfe/fatigue/questions.json",
-      "sha256": "e873c7a161e72ab3c9c2608c96b58fd77e577db02b18b59bf8cff6ef9520389e"
+      "sha256": "7caad52c71c4a8d17fc328bb281be37bbb9c05dd440f09dd02d20d48638994de"
     },
     {
       "count": 164,
       "name": "rfe-fatigue-rules",
       "path": "/gpt/rfe/fatigue/rules.json",
-      "sha256": "8f7f596cf76c9ac7dfa207d38358fca3b0c2f10527e2e7b694e071fde1d132b5"
+      "sha256": "10eccb34223b8c8cecf3e0cee76096ec5f9ca74ec3fffc86559e70acd9510715"
     },
     {
       "count": 75,
       "name": "rfe-fatigue-rules-completion",
       "path": "/gpt/rfe/fatigue/rules/completion.json",
-      "sha256": "d03ac28884e0726df954c3512def0d8a8fa06d0a6edbc13a978c2304279c472b"
+      "sha256": "e7f3e4d51a8d774091b18dc8fffdc1ef6609c7859d9526d9e067d069395950a8"
     },
     {
       "count": 75,
       "name": "rfe-fatigue-rules-priority",
       "path": "/gpt/rfe/fatigue/rules/priority.json",
-      "sha256": "05427053868e76d59825a3d3b589c3c692bf91820dd77a9a6343bfe45f01d9f0"
+      "sha256": "3bf6154030548fa2f0445783e873bc8f4795ebf554df514eca6de162a3412479"
     },
     {
       "count": 62,
       "name": "rfe-fever-facts",
       "path": "/gpt/rfe/fever/facts.json",
-      "sha256": "2094072528a16ad96fc69d5baeb4f8255ae0d0cedcc8eb60d7b00cda75d22563"
+      "sha256": "79b9536f2ef663d9e465166029a597d7574f6048c703c0f16dbdb376117c3033"
     },
     {
       "count": 62,
       "name": "rfe-fever-questions",
       "path": "/gpt/rfe/fever/questions.json",
-      "sha256": "7fc994bc3bc34badfff423b1f92ab9ef545d156c715258342f1340860b95fa6c"
+      "sha256": "0d90066ce39e18e2abb23f50b05d038ab9e6aff63eaf050fc44f4064797ff1b0"
     },
     {
       "count": 136,
       "name": "rfe-fever-rules",
       "path": "/gpt/rfe/fever/rules.json",
-      "sha256": "3f8cde81b3e27476c71e932352c65c98ef2f4726559eac4e6a52498ced375a70"
+      "sha256": "eda4c2a5713757ab4d1932f24882f9f7dfb3e35e8e552f893ee75917fb4cce28"
     },
     {
       "count": 67,
       "name": "rfe-focal_weakness_numbness-facts",
       "path": "/gpt/rfe/focal_weakness_numbness/facts.json",
-      "sha256": "664f3692dede288380faca17d08ced64d410a8bc8b822428a4d042352ee654ab"
+      "sha256": "cfa70ab776dba57a51d73feeca11729380ab4f152562c8c390e0ce4350b52e36"
     },
     {
       "count": 67,
       "name": "rfe-focal_weakness_numbness-questions",
       "path": "/gpt/rfe/focal_weakness_numbness/questions.json",
-      "sha256": "aec3a2530d0d1d48d77a42096fb30508ecd23d3de9aa6999b226ef5d856acfc1"
+      "sha256": "b3fb922f7d2da03c5acbae1d6e980beba4297737c17a24f70dd05a607375504a"
     },
     {
       "count": 156,
       "name": "rfe-focal_weakness_numbness-rules",
       "path": "/gpt/rfe/focal_weakness_numbness/rules.json",
-      "sha256": "006f2468e75a041c030bfa321ac45d528318c9fbd183fc986ba900743ff321a2"
+      "sha256": "e1e6b5886b824bfe9e273b67b0d4de3b44ae3b4a2665a5d8a08ebed1af9e8512"
     },
     {
       "count": 67,
       "name": "rfe-focal_weakness_numbness-rules-completion",
       "path": "/gpt/rfe/focal_weakness_numbness/rules/completion.json",
-      "sha256": "01d49b9fa866cb4014c39930c0deb9550a43d4bc95e530c5011496deb79ce7a4"
+      "sha256": "cfc9eb7c481cc52dc064e4bfe72bb74c29615dc3d00488e35643e9ee91308957"
     },
     {
       "count": 67,
       "name": "rfe-focal_weakness_numbness-rules-priority",
       "path": "/gpt/rfe/focal_weakness_numbness/rules/priority.json",
-      "sha256": "7b6db9ba740021fbf741c7cddb40c68540ca4b07c461b3fe329721b7e3c79271"
+      "sha256": "a099ec9a3a57ef7b9114e1e3a44a7fb9f1593c1af3126440423dd9f24f343f07"
     },
     {
       "count": 55,
       "name": "rfe-gait_falls_concern-facts",
       "path": "/gpt/rfe/gait_falls_concern/facts.json",
-      "sha256": "d457adac4f371e309b5d74e35b0d9b6bfde0cf7057d2d0c5adaa3d3863bf6070"
+      "sha256": "968eb5cd1905dd2398235b66ca8282136cbe905878ceebd41bd52daebe8aa361"
     },
     {
       "count": 55,
       "name": "rfe-gait_falls_concern-questions",
       "path": "/gpt/rfe/gait_falls_concern/questions.json",
-      "sha256": "2fc3128417a7dcefe8c7510201bdf43d00bd68b24931735163d1a68ff6d7cb6a"
+      "sha256": "50f277c11f90840948a1de4ef8b91b9e527c1c1a0e47ffac597d5dbd5c940cf3"
     },
     {
       "count": 123,
       "name": "rfe-gait_falls_concern-rules",
       "path": "/gpt/rfe/gait_falls_concern/rules.json",
-      "sha256": "c01aabcb7ffe611c583a4572d077c54312ad07f490b4c446b3d1bd99e5531658"
+      "sha256": "127499c9ab244aeaaadb5fbc5cae9103c3b335b2329b8e66b6714dbc663ed0be"
     },
     {
       "count": 76,
       "name": "rfe-headache-facts",
       "path": "/gpt/rfe/headache/facts.json",
-      "sha256": "f342911a305ed01e8cc6484bcfc7137236f218bc2c3da9594c4bc5e55573a379"
+      "sha256": "462a4b79826d406b1f9108dbe6c306a66a6f1c39c9c8f4b9b5a6837a7928a037"
     },
     {
       "count": 76,
       "name": "rfe-headache-questions",
       "path": "/gpt/rfe/headache/questions.json",
-      "sha256": "3489ae4383bd332f098b9c23b9911b69bf8a5d2fd7389b2f988020177eb58d2b"
+      "sha256": "861e240c03f23192dd1a2701aaf6439512314da7d3499c2a7533fa23f6d97571"
     },
     {
       "count": 173,
       "name": "rfe-headache-rules",
       "path": "/gpt/rfe/headache/rules.json",
-      "sha256": "b74284212e5db8416613c31dc2d76493c773f31af23a49354f6d5ca61c5a9ab3"
+      "sha256": "f062babbfd1cfb051718f2d6ac35dc2de19a88f04ca1330f13a71e6641b5363a"
     },
     {
       "count": 74,
       "name": "rfe-headache-rules-completion",
       "path": "/gpt/rfe/headache/rules/completion.json",
-      "sha256": "064a7c9fc57336dc10d8d8bc85f96c209cea607d031cece1a0e02f093b110b7f"
+      "sha256": "2ff5b4b2e1dcf5cc7145d9de56bb52cd9c9a24e75cfb02a0b2d0b2910c82a737"
     },
     {
       "count": 76,
       "name": "rfe-headache-rules-priority",
       "path": "/gpt/rfe/headache/rules/priority.json",
-      "sha256": "2fb541fe21698b522462f444e0d000e63669a770dad7275c373c2299071d93bd"
+      "sha256": "ce0e4f61c0d5a82b2ffb2af23e4fefe9fd3dcddda67b3326ed4e460de2f91cca"
     },
     {
       "count": 71,
       "name": "rfe-hypertension_follow_up-facts",
       "path": "/gpt/rfe/hypertension_follow_up/facts.json",
-      "sha256": "33e219ffb5f07415d6b738912712428bc5ded249f4ec430edef421cbfbcc96d5"
+      "sha256": "054a69758231930a3c34bb8f09805384884a45416f2d7adc7a2659c5398ff427"
     },
     {
       "count": 71,
       "name": "rfe-hypertension_follow_up-questions",
       "path": "/gpt/rfe/hypertension_follow_up/questions.json",
-      "sha256": "b94ab1606abdfde38efd4507ddad6e34ef965a97eedb7d223084d5020c2be55e"
+      "sha256": "94e2f9eb1192393ee95d22e01b4239e33374b9a7f7dd7384a3f60e949b78e97b"
     },
     {
       "count": 152,
       "name": "rfe-hypertension_follow_up-rules",
       "path": "/gpt/rfe/hypertension_follow_up/rules.json",
-      "sha256": "45647263c7b6c2034ef069a75d4d6c71c097a44797b9aa7bf9e4745696f22f01"
+      "sha256": "8fc001d7f5940cbb6288d11d6ec7c33cc14237ca1af307f543709a346260ea5d"
     },
     {
       "count": 71,
       "name": "rfe-hypertension_follow_up-rules-completion",
       "path": "/gpt/rfe/hypertension_follow_up/rules/completion.json",
-      "sha256": "202baafd33c61e92425f7e220049c79b06a616ef6da1fc71879d39e2bdf9fc9a"
+      "sha256": "551fa85a47a99649a433a59c87d99655b70158ce128acc0d40bbef95cc556873"
     },
     {
       "count": 71,
       "name": "rfe-hypertension_follow_up-rules-priority",
       "path": "/gpt/rfe/hypertension_follow_up/rules/priority.json",
-      "sha256": "30ffa71af37df8ae4ff61b01222035efbf8e76c41784e06c39d00e82294213d3"
+      "sha256": "5fa7fc46da44132b7e96bcf76868880d1fcd1c7bef8f22e9b58ce83ae701a9d6"
     },
     {
       "count": 83,
       "name": "rfe-joint_limb_complaint-facts",
       "path": "/gpt/rfe/joint_limb_complaint/facts.json",
-      "sha256": "950c1e0792c978f0a5bbe74a5451244ed14c6886d19713effa2023f949a3b42e"
+      "sha256": "376c839d08a1c85b312183a5f48f281f4a1a9289b5d2a568a699164147548724"
     },
     {
       "count": 83,
       "name": "rfe-joint_limb_complaint-questions",
       "path": "/gpt/rfe/joint_limb_complaint/questions.json",
-      "sha256": "e5eb46a487b1ad682b0b0202d66f6326253e14a0c5b6e0ce10ec4f0d2558cad6"
+      "sha256": "f159072c5d45ee31b47410c5f16594802f6a8a4eab0a2ea2be79c687f5ce862c"
     },
     {
       "count": 179,
       "name": "rfe-joint_limb_complaint-rules",
       "path": "/gpt/rfe/joint_limb_complaint/rules.json",
-      "sha256": "5cd4f55471a2b950522fe5db192aa32bf9308ad1531c31791765d69950e1e0fb"
+      "sha256": "00c37264cb3c5c302deda2a9da36a34c8c6428778d4ec501bef9d6d28425a9af"
     },
     {
       "count": 81,
       "name": "rfe-joint_limb_complaint-rules-completion",
       "path": "/gpt/rfe/joint_limb_complaint/rules/completion.json",
-      "sha256": "d886efcced3d70786e0a43497a306c8323e973898cd1e4dd8ae8c9249669a615"
+      "sha256": "cce6480e26d3b4555e9292b1d77e356d935286aac6a23dd598a93ebf2f4f192c"
     },
     {
       "count": 83,
       "name": "rfe-joint_limb_complaint-rules-priority",
       "path": "/gpt/rfe/joint_limb_complaint/rules/priority.json",
-      "sha256": "c3508379f9d1e528809cf295da9dc9a9dc14143a48389922ce507edf4412caf9"
+      "sha256": "c8e65eac865ee990320f530da4a653143e41cc9ae1a5ca105060d059be5e82bd"
     },
     {
       "count": 48,
       "name": "rfe-kidney_function_ckd_follow_up-facts",
       "path": "/gpt/rfe/kidney_function_ckd_follow_up/facts.json",
-      "sha256": "f5636551bb28f0a6646f94c52a3e52a65c4a8480e2c2c54e94a622a3c3a6338d"
+      "sha256": "3b40ca83fb442e7f671c0f11726dc55de2bd19d50d88dd0f142d162919563646"
     },
     {
       "count": 48,
       "name": "rfe-kidney_function_ckd_follow_up-questions",
       "path": "/gpt/rfe/kidney_function_ckd_follow_up/questions.json",
-      "sha256": "ac9615150707961e73654d7503dfbd389d4cbad8208092f0eebd5159c27bf33c"
+      "sha256": "7989b0020457d7f6917042beb73c5655fe65c2667aaef0f64d60ff3b0a278dd3"
     },
     {
       "count": 109,
       "name": "rfe-kidney_function_ckd_follow_up-rules",
       "path": "/gpt/rfe/kidney_function_ckd_follow_up/rules.json",
-      "sha256": "3980b191a34dc72dc806f27a1bcf11f48c702ab72835c32307ba080ed841e999"
+      "sha256": "49a885b342268a7da344b52216dd9fa3e1028d6dd2875f1c77525a26ce83c680"
     },
     {
       "count": 41,
       "name": "rfe-liver_function_chronic_follow_up-facts",
       "path": "/gpt/rfe/liver_function_chronic_follow_up/facts.json",
-      "sha256": "badf1eb3d2c0068a1035ba763979b63d803582e43ceed2c64064ecbdb2a7de9d"
+      "sha256": "9bf62ddab1226c6cf62618289afdc67c2f12b9bf7fa67be19066f8e35dc95cf8"
     },
     {
       "count": 41,
       "name": "rfe-liver_function_chronic_follow_up-questions",
       "path": "/gpt/rfe/liver_function_chronic_follow_up/questions.json",
-      "sha256": "f20fc463e05208fd5661a2ab4244bc4bb080f3b79183ef9768cb51a5e290b403"
+      "sha256": "6bc536abe56b0af2baab8f53b80874aa591df420da36f5092c068053c3628c6e"
     },
     {
       "count": 95,
       "name": "rfe-liver_function_chronic_follow_up-rules",
       "path": "/gpt/rfe/liver_function_chronic_follow_up/rules.json",
-      "sha256": "8a2467cd541a6f8715c57d7cbcc1b5fe33b15a553fed7bb8a94636882b9a19f1"
+      "sha256": "d43cfff3b07fd41647c8a0a3f58e39fc23cf2f4e8024a91d338e0c4690b4d095"
     },
     {
       "count": 60,
       "name": "rfe-lump_lymph_node-facts",
       "path": "/gpt/rfe/lump_lymph_node/facts.json",
-      "sha256": "cc67a2b7e486c6ba2af55afa084fa28a17282b24274ed51fc7e24b080a9bb7a7"
+      "sha256": "19e671d86db4feb9553be173cbca479ae518de3ba7af1d0c58143f79b7e88ddf"
     },
     {
       "count": 60,
       "name": "rfe-lump_lymph_node-questions",
       "path": "/gpt/rfe/lump_lymph_node/questions.json",
-      "sha256": "c9c221b98f614cd1163a48492a3de251142b42c15df28e467d32591bd869d72c"
+      "sha256": "cc40d0b5277573c9bda8d75d4755985bb18f218b16c843b92bde59071cfd72d9"
     },
     {
       "count": 135,
       "name": "rfe-lump_lymph_node-rules",
       "path": "/gpt/rfe/lump_lymph_node/rules.json",
-      "sha256": "31b1237021699071691ef32f88b2b8156d2d1b604fcb4c95d07e2b8613bd223e"
+      "sha256": "d6f646d7e3b9c097a91ac29cbfacdb4c14568a1ce5e3a720fa4b263c3ef87123"
     },
     {
       "count": 67,
       "name": "rfe-medication_review-facts",
       "path": "/gpt/rfe/medication_review/facts.json",
-      "sha256": "a35aa7c4612c19c15f5c21abaee5f871c0b97a198bfe02f24d610ff5fc13f45c"
+      "sha256": "6e88555485c8beefe05e62a98ec0362f8df6e30aea4e37ec0853fdd6a409aa19"
     },
     {
       "count": 67,
       "name": "rfe-medication_review-questions",
       "path": "/gpt/rfe/medication_review/questions.json",
-      "sha256": "883522ad4765ac55053d13c4712ab19156e976895e9bbfc4d0290d11122b6f41"
+      "sha256": "d0494c28fcad0c3a6f5f4d1d796f4082a6e272719b3643b527313d50ddedff8f"
     },
     {
       "count": 144,
       "name": "rfe-medication_review-rules",
       "path": "/gpt/rfe/medication_review/rules.json",
-      "sha256": "514f89da0736bd13f33ba6cc00c2d2b9cd1117ca40545b26169f884e00e03cba"
+      "sha256": "5a3e1132d23bf9e8260d84ffd15922b3fae1c0eb243d8c1d998e9227fdbd657a"
     },
     {
       "count": 67,
       "name": "rfe-medication_review-rules-completion",
       "path": "/gpt/rfe/medication_review/rules/completion.json",
-      "sha256": "bff81a63fde6d7aea308366a76fa8eb12bc021c35b5db963fb954ffb60fd9a20"
+      "sha256": "d259cae332ee68d1d5576932ace05f63e261156ab072791df1d42b5980773dc9"
     },
     {
       "count": 67,
       "name": "rfe-medication_review-rules-priority",
       "path": "/gpt/rfe/medication_review/rules/priority.json",
-      "sha256": "94fdac9a0dea72ee45b47fe7da1623618996752322e90b466d613999a105bc19"
+      "sha256": "dd6c5f2d4bb63d936c687215111a0d70ecddf07372d6f85357b354d70724c8c5"
     },
     {
       "count": 64,
       "name": "rfe-memory_cognitive_concern-facts",
       "path": "/gpt/rfe/memory_cognitive_concern/facts.json",
-      "sha256": "92833664938e542f9c9f62157e89f8013e6aaac216bb1207230e8bed54e31a12"
+      "sha256": "71217d0f151fb59afed4e179c8805937aee149cb04d7e3fcbd0fee6c42ef058f"
     },
     {
       "count": 64,
       "name": "rfe-memory_cognitive_concern-questions",
       "path": "/gpt/rfe/memory_cognitive_concern/questions.json",
-      "sha256": "4cb5c8622c9a1d6d32d3fd769e7dee2fc0f1328e81d161b989aaa722ef6d2b25"
+      "sha256": "7f9ad896225782f28c4dc122e737da57a6ae9108ed6c45a7e11e30375918e0ea"
     },
     {
       "count": 146,
       "name": "rfe-memory_cognitive_concern-rules",
       "path": "/gpt/rfe/memory_cognitive_concern/rules.json",
-      "sha256": "e07dbe05adb1ab438645ee64b2665b44b214ceca3217dc37ad56f6602092272f"
+      "sha256": "8cdbe7c6338416a04d5232053d55397bfbc15488ead7baa11e3293a24dc7c541"
     },
     {
       "count": 64,
       "name": "rfe-memory_cognitive_concern-rules-completion",
       "path": "/gpt/rfe/memory_cognitive_concern/rules/completion.json",
-      "sha256": "b51b3e8fa7f37573b96914fc7f9475a0d4370227871c6c911beb5eac9d79cc26"
+      "sha256": "1d6c0e38e2bc236a065764a570685cd72c925876c0c2253db71327c93040bd5d"
     },
     {
       "count": 64,
       "name": "rfe-memory_cognitive_concern-rules-priority",
       "path": "/gpt/rfe/memory_cognitive_concern/rules/priority.json",
-      "sha256": "1f90dfb78b71d072f958776a0f2da678445be7eabc5944acc29321d5a9489001"
+      "sha256": "dba9069a699440fda37f515ae978202af3db255e8fca7bb84ba4c73725a1923f"
     },
     {
       "count": 51,
       "name": "rfe-menstrual_uterine_bleeding-facts",
       "path": "/gpt/rfe/menstrual_uterine_bleeding/facts.json",
-      "sha256": "1884d7bd20fd76ca6bd4ca6c937f9d471f5d2d7637c25ee0c287482f325a1e70"
+      "sha256": "6c48c196a4d8768107a7444de6db3b244be8bc0880a3192539912d8287a5fcab"
     },
     {
       "count": 51,
       "name": "rfe-menstrual_uterine_bleeding-questions",
       "path": "/gpt/rfe/menstrual_uterine_bleeding/questions.json",
-      "sha256": "f6c34c8a72a4b84fab57397a54b4a5835b8c4e40d4f78ed3fd1ee58b622a85d8"
+      "sha256": "b4960f04a34a2d32847cd016ea4183cf8941a006ade6ab67c13ca53c3ba65ecd"
     },
     {
       "count": 113,
       "name": "rfe-menstrual_uterine_bleeding-rules",
       "path": "/gpt/rfe/menstrual_uterine_bleeding/rules.json",
-      "sha256": "30a1e63013d42f1af12131fea2f8e7af2eddebb09f4bfc06b316f61ba9ec1c6e"
+      "sha256": "c0e24762b68d6014570e3d892cec310fd654e020e41d48b36a35016d7615ef35"
     },
     {
       "count": 66,
       "name": "rfe-mental_health_sleep-facts",
       "path": "/gpt/rfe/mental_health_sleep/facts.json",
-      "sha256": "c6c4a3ac0626b14e0d9179bf25bcbc9cc5ff58194f9de8b5b2c75c5baa4f2431"
+      "sha256": "c0214938b169801d2667610897fd7893023804fd6b6b540a0cd5badf04179b77"
     },
     {
       "count": 66,
       "name": "rfe-mental_health_sleep-questions",
       "path": "/gpt/rfe/mental_health_sleep/questions.json",
-      "sha256": "b24353c9171b5923643bd70f65a8d2180ca60584df4bca4bb397f5378d95049e"
+      "sha256": "49ebaadc60691e67e4b9633fa2548c82293fab9ddd3b76933c3e0b4cc9140a46"
     },
     {
       "count": 144,
       "name": "rfe-mental_health_sleep-rules",
       "path": "/gpt/rfe/mental_health_sleep/rules.json",
-      "sha256": "7ce7c79ce7574e5851699b8e127bc58c3c243c8d8b85d9a30d1d4f0968d4d258"
+      "sha256": "9e5b0dd4813a0e731a882777dcc32a5a31cf3d052b508b5ab956172f52d8523d"
     },
     {
       "count": 66,
       "name": "rfe-mental_health_sleep-rules-completion",
       "path": "/gpt/rfe/mental_health_sleep/rules/completion.json",
-      "sha256": "4724c2d60bcb909907de715b07ddbc0b317448df87db99f4448d355e8b3a6805"
+      "sha256": "14f7058de7eb7a5f3b2bab86810370c6a8d18991ada54df8a5a1ef7592d68171"
     },
     {
       "count": 66,
       "name": "rfe-mental_health_sleep-rules-priority",
       "path": "/gpt/rfe/mental_health_sleep/rules/priority.json",
-      "sha256": "baf644ffaf25963c9e7f4ab50ee413cb2e97c8c90e5415c1d83ce92256e5e91c"
+      "sha256": "0bfffa159af11363cda88b458f6f41da81d68bb4ed0b3cc3a5af999c0c0ff0e5"
     },
     {
       "count": 42,
       "name": "rfe-neck_pain-facts",
       "path": "/gpt/rfe/neck_pain/facts.json",
-      "sha256": "aba483094cf1eb8ca891831b3a219b1332599e9f015fe7e3d6f331a00e2253cf"
+      "sha256": "d09aacc95cba86cff2810ae4ad8ea308978e5324d44357b5ad7cb9012c16d85c"
     },
     {
       "count": 42,
       "name": "rfe-neck_pain-questions",
       "path": "/gpt/rfe/neck_pain/questions.json",
-      "sha256": "b965d6a03d5369a0b75e16fb9bae66815d24679487d0dfafd4a5312045cbe311"
+      "sha256": "2cca6197fdb04082a957d32f0089bb6184f256efa0c6fc715eb692ce570d8b7e"
     },
     {
       "count": 95,
       "name": "rfe-neck_pain-rules",
       "path": "/gpt/rfe/neck_pain/rules.json",
-      "sha256": "e5ef6c5a46906a88d850e110dbe020d83fc7e92c3400f5217eae279fdf52f4c1"
+      "sha256": "5bd202552535aa790f586522c83f9da5e3da4be3ae3e2d694beb17c5d285b6a9"
     },
     {
       "count": 71,
       "name": "rfe-oral_dental_symptoms-facts",
       "path": "/gpt/rfe/oral_dental_symptoms/facts.json",
-      "sha256": "f4608edcb320b924f179292174ea7e19b3b267ee0a2e45e7ab19057b6acce304"
+      "sha256": "3febdac09bc4aadd637fd2594b5e5b7d4f069179f63e187cfc566b1582bc532a"
     },
     {
       "count": 71,
       "name": "rfe-oral_dental_symptoms-questions",
       "path": "/gpt/rfe/oral_dental_symptoms/questions.json",
-      "sha256": "7ca08e84691602abc0e19a48dc0d15abb01efd180b64c5600d8ebe0e1e233aaa"
+      "sha256": "27cd891ad230defd0c92ea447d88711389b7a77a38fedc2b74b1fe77a3910dfe"
     },
     {
       "count": 162,
       "name": "rfe-oral_dental_symptoms-rules",
       "path": "/gpt/rfe/oral_dental_symptoms/rules.json",
-      "sha256": "a030fd582bf577ac1b15cb4c76cf09c9dbabeb43751edb45a6fe3c4b95b1f08d"
+      "sha256": "d7c498fadb52a3ccba1452e7b9a69cb7b47052114d0f1b2c515d8c8080bdde79"
     },
     {
       "count": 70,
       "name": "rfe-oral_dental_symptoms-rules-completion",
       "path": "/gpt/rfe/oral_dental_symptoms/rules/completion.json",
-      "sha256": "d5c4d51675462dc6ad36a3a3ebe28a073312b582f6a695382ec28093fe636d53"
+      "sha256": "e5ff1a89d643ee4b4774ccd09adf881ac44dc2c759851e1c2240166b1ea52375"
     },
     {
       "count": 71,
       "name": "rfe-oral_dental_symptoms-rules-priority",
       "path": "/gpt/rfe/oral_dental_symptoms/rules/priority.json",
-      "sha256": "f315af3e1f8dd182bebe1b1cdc243b47fdc69129ec58ba7ab9d6c9eaa782343f"
+      "sha256": "b2494c9e3406570435a358be024bbe5da88904ea693e8b967abf3f3d53a41951"
     },
     {
       "count": 69,
       "name": "rfe-palpitations-facts",
       "path": "/gpt/rfe/palpitations/facts.json",
-      "sha256": "f7061a3f72bc5767219425582a3d589244fb28446ebb2443bf556d88681cb2b0"
+      "sha256": "548d98b16c250f7b57625f5e86da5d10ecdb8d18999e9120a213ea1eccdeac3b"
     },
     {
       "count": 69,
       "name": "rfe-palpitations-questions",
       "path": "/gpt/rfe/palpitations/questions.json",
-      "sha256": "28b4500fcedb9642504cd7f750462a74fdba20108562cf38e43d688a20963cce"
+      "sha256": "55f00735935449734be8ea51eb9ff3fbbe16f6e9e510ad09cf9615173a6707e4"
     },
     {
       "count": 147,
       "name": "rfe-palpitations-rules",
       "path": "/gpt/rfe/palpitations/rules.json",
-      "sha256": "a4705a58a381e961ca22ee83b9fc088d032af10e186e428cc3c45dbf51b0876c"
+      "sha256": "6474a99192c4c880682f87c45aed70e2a9bc76da3fee60fcf1a16d71d8c37b34"
     },
     {
       "count": 68,
       "name": "rfe-palpitations-rules-completion",
       "path": "/gpt/rfe/palpitations/rules/completion.json",
-      "sha256": "6686f1d47cc2cdab772b6be873d3f95056a060e78b2af0e3b7904cbb51769aa5"
+      "sha256": "4c3d498b65d99669df0a5da6bd83b0b1361f2b8020ce0d6f10422258e6c324ef"
     },
     {
       "count": 69,
       "name": "rfe-palpitations-rules-priority",
       "path": "/gpt/rfe/palpitations/rules/priority.json",
-      "sha256": "f30ad01bdfc70b2b4e8181841baf89dbe7b4cc84e729c5d0f23320ef70f6a3e6"
+      "sha256": "af53cc3252a1661b8bdfb832ec7f7bf88427e30fbfade121adb121ab27a10003"
     },
     {
       "count": 61,
       "name": "rfe-pediatric_growth_development-facts",
       "path": "/gpt/rfe/pediatric_growth_development/facts.json",
-      "sha256": "1e8147dc20cbfae468dbad7a63904ea491d635efd829b7bf642b69440b41d049"
+      "sha256": "aeda60888d66bc396b3e3b485753cc2b418e4ff94affd35eae7ac4efda828c74"
     },
     {
       "count": 61,
       "name": "rfe-pediatric_growth_development-questions",
       "path": "/gpt/rfe/pediatric_growth_development/questions.json",
-      "sha256": "47c555c43b521e708fd61eef6585a1059213e79dfcc4b50b379acb44fa59b154"
+      "sha256": "cdf919ac33dd2dc92c62c23dd8171c4e9d9bb90a995ab23619a9b56b4f42f26d"
     },
     {
       "count": 135,
       "name": "rfe-pediatric_growth_development-rules",
       "path": "/gpt/rfe/pediatric_growth_development/rules.json",
-      "sha256": "75dfc72701f51bfdcd9cdd044320a33dcb60a41f5ad0045f2859e6701e6bcebc"
+      "sha256": "b0733a7008f3dcc59bc178669529ccad015756d46aca0cf90320be4fbd7186fa"
     },
     {
       "count": 61,
       "name": "rfe-pediatric_growth_development-rules-completion",
       "path": "/gpt/rfe/pediatric_growth_development/rules/completion.json",
-      "sha256": "352bd3912d151589fe340d5434b35958428e3402ee9b0569b3e505a8d676743e"
+      "sha256": "3606e0fc8e3af1599ade41ee4d0666952bccde9dccba2fe7e399e057f7bb0d29"
     },
     {
       "count": 61,
       "name": "rfe-pediatric_growth_development-rules-priority",
       "path": "/gpt/rfe/pediatric_growth_development/rules/priority.json",
-      "sha256": "32eaf96c535c4ca7f7d22d81053d1f1f7a45470363e74b9e34d3c19f007eaa4f"
+      "sha256": "248f9a59571120be437747172de4562c7ffd1a1d5b8201d853409df67c9fbd48"
     },
     {
       "count": 86,
       "name": "rfe-pregnancy_postpartum_concern-facts",
       "path": "/gpt/rfe/pregnancy_postpartum_concern/facts.json",
-      "sha256": "ff2fa15e7736bcafe08f2cc2c6b871408f3e2c4f10202d093f445c26f9cd337b"
+      "sha256": "941078b1f97123d14cdb02a30eeebbc78f2d8c2fe054d68ed76cc1ea5901ad72"
     },
     {
       "count": 86,
       "name": "rfe-pregnancy_postpartum_concern-questions",
       "path": "/gpt/rfe/pregnancy_postpartum_concern/questions.json",
-      "sha256": "17078be21d675919b216a115e1b8f7878af27966187e4424e346725dd864137d"
+      "sha256": "eccd479e025d70c68b0eb2720221bfdf00b11900b06b1ebf87f700911d187493"
     },
     {
       "count": 196,
       "name": "rfe-pregnancy_postpartum_concern-rules",
       "path": "/gpt/rfe/pregnancy_postpartum_concern/rules.json",
-      "sha256": "21afbe26b51ebe874e2fcaf20f099f93109a6abd9cede0e86c8638a6a99f05ff"
+      "sha256": "8144376e631394d8f868f127c0839d42bf8d387f55588a40098b24ec6359cc46"
     },
     {
       "count": 86,
       "name": "rfe-pregnancy_postpartum_concern-rules-completion",
       "path": "/gpt/rfe/pregnancy_postpartum_concern/rules/completion.json",
-      "sha256": "fe641318c37d68dc7877f8f325b6794ec9696e547afa3b36f8722b579f347c42"
+      "sha256": "2d60466b49db26a6290d19883ecab3059b4482f5466b96aaae231d97c481e7c3"
     },
     {
       "count": 86,
       "name": "rfe-pregnancy_postpartum_concern-rules-priority",
       "path": "/gpt/rfe/pregnancy_postpartum_concern/rules/priority.json",
-      "sha256": "70e9f4862f5416381adcf6a261d9b1bc848757912d370bf479dee5aa0d68586a"
+      "sha256": "759987d16b37214b86b5a91f322c3a4dcf7632fcfe633d8d26f6759a9a305964"
     },
     {
       "count": 51,
       "name": "rfe-reproductive_genital_symptoms-facts",
       "path": "/gpt/rfe/reproductive_genital_symptoms/facts.json",
-      "sha256": "435aa0969ae832917fc09ceed030899e6975ea34f50947416bb75fe1949686f5"
+      "sha256": "26700ed30d9338cd5fcef1437b1479c437716cd9eb4e105cbcc2558f811364ea"
     },
     {
       "count": 51,
       "name": "rfe-reproductive_genital_symptoms-questions",
       "path": "/gpt/rfe/reproductive_genital_symptoms/questions.json",
-      "sha256": "75d0612eb71e4b49fac6b0e36df0a77b146bccab80922b3b8b1e29e56cf37de2"
+      "sha256": "6b75975795952d0174a73e589d52a2e14a8aa5dea2ced5a1371a5aa6a1c32cb2"
     },
     {
       "count": 116,
       "name": "rfe-reproductive_genital_symptoms-rules",
       "path": "/gpt/rfe/reproductive_genital_symptoms/rules.json",
-      "sha256": "431e04efbc019aa5593afa1b033a05c56c5c14576ae5709e83f5b8b7670d8d6c"
+      "sha256": "5dc5896934e4d8b0cb539da0c15b3b8efb42da9fd9fb9fd20d8bd9d48aa3bc88"
     },
     {
       "count": 51,
       "name": "rfe-seizure_event_follow_up-facts",
       "path": "/gpt/rfe/seizure_event_follow_up/facts.json",
-      "sha256": "2f0c7941581f22815792d0ed0f2cacd101a9e0c44514fdffc92d1b0e97460ce4"
+      "sha256": "5f89f7bb0851329d46378cd56b437ed93d66ab234d8dc8e4b741a3d73840da5c"
     },
     {
       "count": 51,
       "name": "rfe-seizure_event_follow_up-questions",
       "path": "/gpt/rfe/seizure_event_follow_up/questions.json",
-      "sha256": "d63b32861756734bc80755805449b94d776e45ad524de4c2b03dfa992f99b961"
+      "sha256": "f8c4a0aef0617fb8505c8b935d21ee4aa509b5b55e699d9c86cf8a62e395c781"
     },
     {
       "count": 115,
       "name": "rfe-seizure_event_follow_up-rules",
       "path": "/gpt/rfe/seizure_event_follow_up/rules.json",
-      "sha256": "45f661917c7834aa24fdd1e7e6adb5478e4ea4daea5e9f814c16e5a64ea3408a"
+      "sha256": "f5afd0ea5902fe335d464d2d73317d07e3d02e3c1fcb4915ea297e09bccd793b"
     },
     {
       "count": 70,
       "name": "rfe-skin_complaint-facts",
       "path": "/gpt/rfe/skin_complaint/facts.json",
-      "sha256": "b8cea6130805d04cf4af926d3602df5b5512201f6a40b87ebb01d674b054b71a"
+      "sha256": "5f99543163a4b7d4934d1afcd5aaf3556e0571c6c2cd21a9fe79815ce4ada026"
     },
     {
       "count": 70,
       "name": "rfe-skin_complaint-questions",
       "path": "/gpt/rfe/skin_complaint/questions.json",
-      "sha256": "a063bfcdf2f89a6cb93ab0b74622bf5f3237bcfad37b2e63fe0b87185da5f576"
+      "sha256": "e9b237bee492a63f55bd7ffb4b1333f7f35c9916e17e5dd1f68afcfe4d064630"
     },
     {
       "count": 153,
       "name": "rfe-skin_complaint-rules",
       "path": "/gpt/rfe/skin_complaint/rules.json",
-      "sha256": "3dc5c43e1c83c92445878b2e242d1b2bfdbac7767eec9837cd2cab7696be3955"
+      "sha256": "da355d8ad630bd2f30d95dcc2b9f81e4c093f8edb09a47d50043b8e5911a9e9b"
     },
     {
       "count": 68,
       "name": "rfe-skin_complaint-rules-completion",
       "path": "/gpt/rfe/skin_complaint/rules/completion.json",
-      "sha256": "44985beb1b4b0c16beb81a9d969bd5760f4b9539a8b9e9be724ea57c93863af1"
+      "sha256": "5394210ebe7a3a0cff8002012ce404ae2326c14dd8bddcff5723d0d5a30f83b3"
     },
     {
       "count": 70,
       "name": "rfe-skin_complaint-rules-priority",
       "path": "/gpt/rfe/skin_complaint/rules/priority.json",
-      "sha256": "916b733437c7efa563dfbb8d9b144b4f1e980f0fe0ef9a3e2e938393639b6266"
+      "sha256": "3d21a65186a817f37066c2d0e025419fb3f37f9c5581981155a34eaf72f93343"
     },
     {
       "count": 52,
       "name": "rfe-thyroid_concern_follow_up-facts",
       "path": "/gpt/rfe/thyroid_concern_follow_up/facts.json",
-      "sha256": "f3339f6027743a943b287e0593d5e44eebf7e24377de0d59fa8c210134b7bfa3"
+      "sha256": "e3ed7b7abab3aef87501adf6e33fe267a007aedbf54e618603614e47ac1e12d9"
     },
     {
       "count": 52,
       "name": "rfe-thyroid_concern_follow_up-questions",
       "path": "/gpt/rfe/thyroid_concern_follow_up/questions.json",
-      "sha256": "af05c4bc49fc9b997ed7d076d457fb68cd128510b79ef6faa4fc9b125aecce19"
+      "sha256": "2a6e04134942581622b58748ed2c32200bc301c366ae1b96b527f68144cbdbed"
     },
     {
       "count": 116,
       "name": "rfe-thyroid_concern_follow_up-rules",
       "path": "/gpt/rfe/thyroid_concern_follow_up/rules.json",
-      "sha256": "f65311ed816f76d7c3f9b903a575baebba1652ed32db25582fbd52a6752b0acf"
+      "sha256": "2805ca9b3a136426983cf62a9944c255fd2e2aac3f4f30c150f2b62183239f5b"
     },
     {
       "count": 56,
       "name": "rfe-tremor_movement_concern-facts",
       "path": "/gpt/rfe/tremor_movement_concern/facts.json",
-      "sha256": "2398650e9024f7fc3ba75743f0507d893e74a66f21a072eddaaf95d77c7a2e2b"
+      "sha256": "64f3e40d8d9452c331f16d9ba540f95184cd16408fffc17f2931b1bffe0323c5"
     },
     {
       "count": 56,
       "name": "rfe-tremor_movement_concern-questions",
       "path": "/gpt/rfe/tremor_movement_concern/questions.json",
-      "sha256": "5a476cfbfad0ebf25211a73dbe5f623dd1618f319a089c64496b2957bddd8d89"
+      "sha256": "cbc5f08d4d666c7d7d679d84ced9461739128713642c2a8bc439611871f5c6dc"
     },
     {
       "count": 125,
       "name": "rfe-tremor_movement_concern-rules",
       "path": "/gpt/rfe/tremor_movement_concern/rules.json",
-      "sha256": "dd4125e538c1e3009c8699eca371a1d0fb3e3ea9e1dcc5987d2cdac7d8786969"
+      "sha256": "070ab121259229b688b3489d271ff994cf8daee6e1a7c3963ddbb32496d18276"
     },
     {
       "count": 41,
       "name": "rfe-upper_respiratory_symptoms-facts",
       "path": "/gpt/rfe/upper_respiratory_symptoms/facts.json",
-      "sha256": "bddea19dc4a60fed84766b15d5883e05804944e9e98519a691d37b315f46b606"
+      "sha256": "6a3d4e1b8e670cc1848b4dc35f28bf1170565bd1044892ab829323d958bd99f3"
     },
     {
       "count": 41,
       "name": "rfe-upper_respiratory_symptoms-questions",
       "path": "/gpt/rfe/upper_respiratory_symptoms/questions.json",
-      "sha256": "cc124078e296f9e22fda84751a939e01ad9ebe5e54e4c5b81eaddea30ba8abc2"
+      "sha256": "751609339f26a3543520b4fa31457a8ba3feca471e2dc0a92c63529b816183ea"
     },
     {
       "count": 91,
       "name": "rfe-upper_respiratory_symptoms-rules",
       "path": "/gpt/rfe/upper_respiratory_symptoms/rules.json",
-      "sha256": "3d93351fd2fcf2e2d6f591aa3606e3afa0ce72fd1667f0f63565f7d4a11dbd84"
+      "sha256": "c0088da4a97ce405d0f1c551ffcdd27f55a333515ef2511823dc1c5f9c96b0f0"
     },
     {
       "count": 74,
       "name": "rfe-urinary_symptoms-facts",
       "path": "/gpt/rfe/urinary_symptoms/facts.json",
-      "sha256": "9d1d8c4a7a4cc3e08c16d52992ccc1e56184d326813eb92f7ba96afa801c3789"
+      "sha256": "c74a3f9a3ec1611a979985d164826c536e5fda8a120501731195d8909fbaec47"
     },
     {
       "count": 74,
       "name": "rfe-urinary_symptoms-questions",
       "path": "/gpt/rfe/urinary_symptoms/questions.json",
-      "sha256": "ab49a90f5d73582f8fbaacb7964c817bba30ba0c2fd93ab69b74ba3331f43f4a"
+      "sha256": "60b023f63f8c508901fb90917dcb24ee555cf7b5491014e733e425087e7c233a"
     },
     {
       "count": 158,
       "name": "rfe-urinary_symptoms-rules",
       "path": "/gpt/rfe/urinary_symptoms/rules.json",
-      "sha256": "b3cd0562518a6d4ad752e0dd4876abeec1bde4a47b61f08d08050d8055fc3adf"
+      "sha256": "e8762c3cb1e6209a1b393a8ba836c528d20149470f1c1fa9d4e579dc592d3dd6"
     },
     {
       "count": 72,
       "name": "rfe-urinary_symptoms-rules-completion",
       "path": "/gpt/rfe/urinary_symptoms/rules/completion.json",
-      "sha256": "c4c5aef6846675c86a0358af4cb360db98f8a466527ca14f74803617d71fd0d1"
+      "sha256": "65d506b752909124407a6c7c5e161109b1513111afbbcf910823a7478f407930"
     },
     {
       "count": 74,
       "name": "rfe-urinary_symptoms-rules-priority",
       "path": "/gpt/rfe/urinary_symptoms/rules/priority.json",
-      "sha256": "1b08ce95a64c5254dd4ff96f397e2d7706f5fa498ae43bbd1859b50fc998cd96"
+      "sha256": "2e817bbd45d9ebae3e8bc6087ab315dfdb75ec2a5bf38397317429675bb5f3b9"
     },
     {
       "count": 74,
       "name": "rfe-vomiting_diarrhea-facts",
       "path": "/gpt/rfe/vomiting_diarrhea/facts.json",
-      "sha256": "965695a10331d494dbce549d2cc4629e95b8aaa27a25edf464339c6a9b794ef6"
+      "sha256": "f7aee6427207dcde99491fb9f81cc3b62a371d75cd2b14b46d46215d0b6c9e22"
     },
     {
       "count": 74,
       "name": "rfe-vomiting_diarrhea-questions",
       "path": "/gpt/rfe/vomiting_diarrhea/questions.json",
-      "sha256": "4cc718cb173ea2d8e1aa902b97decc1d384df74cad5f931559de72ab973ad2a0"
+      "sha256": "dbd6045be967e8d29ad8af9492bcd490a02c9e1c4a585aba7405ec1a83b5e129"
     },
     {
       "count": 164,
       "name": "rfe-vomiting_diarrhea-rules",
       "path": "/gpt/rfe/vomiting_diarrhea/rules.json",
-      "sha256": "2b57f7d802b8ac2265f03cdc54cd116c89cb70821c0c4c44f2fd3c83f29fecfc"
+      "sha256": "3fab2f21c55c69b652fce632dc64d7b1d06f3b28f8eb09cd3da2461fad5128a6"
     },
     {
       "count": 73,
       "name": "rfe-vomiting_diarrhea-rules-completion",
       "path": "/gpt/rfe/vomiting_diarrhea/rules/completion.json",
-      "sha256": "7f5e43e283f66ced0fd3189c12413c03a5d36f51060629480e775b23d8fd5a95"
+      "sha256": "0fb551b613a3f4c191ef327f1ec58bb00bc1af788f2a1d15018078e4be7e5df0"
     },
     {
       "count": 74,
       "name": "rfe-vomiting_diarrhea-rules-priority",
       "path": "/gpt/rfe/vomiting_diarrhea/rules/priority.json",
-      "sha256": "e429007d22108d0ca56cb798670467bcd58543df1a11e58849b0aeea617936d5"
+      "sha256": "306d850ef63100c5acad8f5ff4c31a0da2a3c41e7031c97a0a6e38a91bfd3654"
     },
     {
       "count": 78,
       "name": "rfe-weight_constitutional_change-facts",
       "path": "/gpt/rfe/weight_constitutional_change/facts.json",
-      "sha256": "0a5daaf1b983476d5aa26315cfa777ebe2bbe5c84146da06a61f0d8bc938d52d"
+      "sha256": "425e4586754085bd78b41d67856d38f9605a55772310535d42cdbde1b476b2a4"
     },
     {
       "count": 78,
       "name": "rfe-weight_constitutional_change-questions",
       "path": "/gpt/rfe/weight_constitutional_change/questions.json",
-      "sha256": "f24954b22a2b3563cc11653cd481059917e29db4cfa8db22a9e7011e36582324"
+      "sha256": "3f2e51c3ddc4235ffce5cf60ece101eac746c996782280725221ddcafb085915"
     },
     {
       "count": 170,
       "name": "rfe-weight_constitutional_change-rules",
       "path": "/gpt/rfe/weight_constitutional_change/rules.json",
-      "sha256": "41854600665c016b5394f27ab67d831abf958e4ad3db9449a487cb5e0bd83ca9"
+      "sha256": "e82b44292bb7e99e2afa54b1a5484fe391740228d501ef50af80b596dae32c97"
     },
     {
       "count": 76,
       "name": "rfe-weight_constitutional_change-rules-completion",
       "path": "/gpt/rfe/weight_constitutional_change/rules/completion.json",
-      "sha256": "82a9bf771572897b0a8eb10913b0abc125819ef6146c7f432c2f47241372ebe6"
+      "sha256": "14dfd54a5fae89132039ba9ac96829117b3dbc8571ee66b2631062857ba65f9b"
     },
     {
       "count": 78,
       "name": "rfe-weight_constitutional_change-rules-priority",
       "path": "/gpt/rfe/weight_constitutional_change/rules/priority.json",
-      "sha256": "e712593001b94f0951e9c898c9715a82c0f4b9ec17978a143115496b6face993"
+      "sha256": "2aea49f770a1a33754bd5f315badd650156d97a1c40d8e8d4bec840af5bf4d7c"
     },
     {
       "count": 62,
       "name": "rfe-wound_minor_injury-facts",
       "path": "/gpt/rfe/wound_minor_injury/facts.json",
-      "sha256": "5960b8e0949ce754bf1e5ec040219db7d853e37906a9859335a48c8f46ba11f6"
+      "sha256": "f0cd2e9da4e1e645c3c6b3aee4e20e32d9c357c884f23894734ef4ee8b7c3824"
     },
     {
       "count": 62,
       "name": "rfe-wound_minor_injury-questions",
       "path": "/gpt/rfe/wound_minor_injury/questions.json",
-      "sha256": "6e7ab134e278d4fe68115f128f746a2a34f833515bbb29168ceef11f2ea3dcf9"
+      "sha256": "40e688ab8840e10048bd9233445bc70b71922ce20355eb9c5eff9ad26af62f7f"
     },
     {
       "count": 146,
       "name": "rfe-wound_minor_injury-rules",
       "path": "/gpt/rfe/wound_minor_injury/rules.json",
-      "sha256": "a1f6dd3dee28c77e3c35b6cab7e33b65e43aab786b459a6e0106a87124a0a515"
+      "sha256": "0a9d34f9cf3fcc70f1fc3577a1bec34742b9119ba15ad99ad7587eac915f1f93"
     },
     {
       "count": 61,
       "name": "rfe-wound_minor_injury-rules-completion",
       "path": "/gpt/rfe/wound_minor_injury/rules/completion.json",
-      "sha256": "0513cee177f57f2b898cb058daf96301d0f593beb10ade24365498931d99d353"
+      "sha256": "4bdb041173d575cb743306a8ea2acebd0202bc3e650294c1ef59a98debf93df8"
     },
     {
       "count": 62,
       "name": "rfe-wound_minor_injury-rules-priority",
       "path": "/gpt/rfe/wound_minor_injury/rules/priority.json",
-      "sha256": "3fd74e425445af885d4678f93694a056f1296dd4d193938e2980824831d40a5b"
+      "sha256": "9d4434f0fb02a2ba3c385bbc72b501ad4121bbd6c83c53cb6d8dfb794b9555a7"
     },
     {
       "count": 625,
       "name": "safety-rules",
       "path": "/gpt/safety-rules.json",
-      "sha256": "79adcfe8b821d487b734ff37b98af11897ef003fbdf9c38b90502b508982e53e"
+      "sha256": "36078c120a9e599237dc80de1da7c100852c455b68faea7b2dfd1818c42c1c96"
     },
     {
       "count": 10,
@@ -6097,5 +6085,5 @@
       "uscdi_plus_domain_maturity_must_be_preserved": true
     }
   },
-  "version": "1.45.0"
+  "version": "1.46.0"
 }

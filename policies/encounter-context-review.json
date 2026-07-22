@@ -1,6 +1,6 @@
 {
   "id": "policy.encounter-context-review",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "status": "research_only",
   "review_status": "unreviewed",
   "encounter_context": {
@@ -101,18 +101,17 @@
       "unprompted_fact_reference": "U{positive_integer}",
       "edit_commands": ["수정 {review_number}", "수정 Q{positive_integer}", "수정 U{positive_integer}"],
       "review_complete_command_ko": "종료 확인",
-      "instruction_ko": "수정할 항목은 '수정 2', '수정 Q2' 또는 '수정 U1'처럼 입력해 주세요. 수정할 내용이 없으면 '종료 확인'이라고 입력해 주세요.",
+      "instruction_ko": "수정할 항목은 '수정 2', '수정 Q2' 또는 '수정 U1'처럼 입력해 주세요. 수정할 내용이 없으면 '종료 확인'이라고 입력해 주세요. 이 명령을 입력하면 추가 확인 없이 설문이 종료·확정됩니다.",
       "do_not_show_completion_options_in_same_turn_as_review_rows": true,
-      "return_to_review_after_each_edit": true
+      "return_to_review_after_each_edit": true,
+      "review_complete_command_is_final_confirmation": true,
+      "do_not_ask_a_second_completion_question_after_review_complete_command": true
     },
-    "confirmation_question_ko": "설문을 어떻게 마칠까요?",
-    "options": [
-      {"number": 1, "code": "complete", "display_ko": "설문 종료 및 결과 확정"},
-      {"number": 2, "code": "continue_or_edit", "display_ko": "답변 추가·수정"},
-      {"number": 3, "code": "stop", "display_ko": "설문 중단"},
-      {"number": 4, "code": "unknown", "display_ko": "잘 모르겠음"},
-      {"number": 5, "code": "decline", "display_ko": "답변하지 않음"}
-    ],
+    "confirmation_source": "exact_review_complete_command",
+    "on_review_complete_command": "mark_completed_and_produce_finalized_result_immediately",
+    "before_review_user_finish_request": "show_numbered_review_and_wait_for_review_complete_command",
+    "user_wants_more_changes": "use_edit_command_before_review_complete_command",
+    "explicit_stop_command": "mark_stopped_without_finalizing_as_completed",
     "do_not_mark_completed_before_confirmation": true,
     "do_not_produce_finalized_result_before_confirmation": true,
     "do_not_present_differential_management_or_test_guidance_during_review": true,
@@ -630,6 +629,15 @@
     "never_assume_another_chat_answered_baseline_history": true,
     "only_reuse_baseline_facts_explicit_in_current_conversation_or_current_upload": true,
     "recency_gate_question_ko": "이 서비스에서 기본 건강정보를 처음 작성하시나요? 아니라면 진단·수술·복용약·알레르기·가족력·직업·흡연·음주 정보를 마지막으로 확인하거나 수정한 시기를 알려주세요.",
+    "explain_before_recency_gate_ko": "기본 건강정보는 초회 작성, 마지막 확인 시점이 불명확한 경우, 항목별 갱신 주기가 지난 경우 또는 변경 내용이 있을 때만 다시 확인합니다. 현재 복용약은 3개월, 진단·수술·알레르기·가족력·직업·흡연·음주는 1년을 기본 확인 주기로 사용합니다. 진료 전에 의료진에게 최신 정보를 전달하기 위한 과정이며, 최근 확인된 항목은 반복하지 않습니다.",
+    "explain_before_first_due_group_ko": "진료 전 의료진에게 최신 정보를 전달하기 위해 갱신 확인이 필요한 기본 건강정보만 질문하겠습니다. 현재 복용약은 3개월, 그 밖의 기본 병력은 1년 기준이며 이미 최근 확인된 항목은 다시 묻지 않습니다.",
+    "show_explanation_only_when_recency_gate_or_one_or_more_baseline_groups_are_due": true,
+    "do_not_show_explanation_or_baseline_inventory_when_no_group_is_due": true,
+    "do_not_claim_all_baseline_groups_have_a_three_month_interval": true,
+    "interval_summary": {
+      "medication_current_days": 90,
+      "other_baseline_groups_days": 365
+    },
     "do_not_ask_separate_recency_question_per_group": true,
     "ask_one_due_baseline_group_per_question": true,
     "do_not_merge_diagnosis_and_procedure_history_into_one_binary_question": true,
@@ -694,6 +702,6 @@
     "created_at": "2026-07-14T00:00:00Z",
     "source_refs": ["docs/context/002-encounter-context.md", "docs/context/017-clinical-memory.md"],
     "review_status": "unreviewed",
-    "version": "0.7.0"
+    "version": "0.8.0"
   }
 }

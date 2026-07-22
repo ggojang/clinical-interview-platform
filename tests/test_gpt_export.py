@@ -54,6 +54,8 @@ class GptExportTests(unittest.TestCase):
         self.assertEqual(completion["review_number_edit_command_example"], "수정 2")
         self.assertEqual(completion["review_complete_command"], "종료 확인")
         self.assertFalse(completion["completion_options_share_review_turn"])
+        self.assertTrue(completion["review_complete_command_directly_completes"])
+        self.assertFalse(completion["followup_completion_question_after_review_command"])
         self.assertTrue(
             completion["first_or_unknown_encounter_baseline_must_be_resolved_before_review"]
         )
@@ -737,12 +739,19 @@ class GptExportTests(unittest.TestCase):
                 review_phase["do_not_show_completion_options_in_same_turn_as_review_rows"]
             )
             self.assertEqual(review_phase["review_complete_command_ko"], "종료 확인")
+            self.assertTrue(review_phase["review_complete_command_is_final_confirmation"])
+            self.assertTrue(
+                review_phase[
+                    "do_not_ask_a_second_completion_question_after_review_complete_command"
+                ]
+            )
             self.assertIn("수정 {review_number}", review_phase["edit_commands"])
-            option_numbers = [
-                option["number"] for option in completion_policy["options"]
-            ]
-            self.assertEqual(option_numbers, [1, 2, 3, 4, 5])
-            self.assertEqual(len(option_numbers), len(set(option_numbers)))
+            self.assertNotIn("confirmation_question_ko", completion_policy)
+            self.assertNotIn("options", completion_policy)
+            self.assertEqual(
+                completion_policy["on_review_complete_command"],
+                "mark_completed_and_produce_finalized_result_immediately",
+            )
             fhir_status = completion_policy[
                 "future_fhir_r4_questionnaire_response_status"
             ]
@@ -1043,6 +1052,20 @@ class GptExportTests(unittest.TestCase):
             )
             self.assertEqual(
                 review_policy["groups"]["history.conditions"]["interval_days"], 365
+            )
+            self.assertTrue(
+                review_policy[
+                    "show_explanation_only_when_recency_gate_or_one_or_more_baseline_groups_are_due"
+                ]
+            )
+            self.assertTrue(
+                review_policy[
+                    "do_not_claim_all_baseline_groups_have_a_three_month_interval"
+                ]
+            )
+            self.assertEqual(
+                review_policy["interval_summary"],
+                {"medication_current_days": 90, "other_baseline_groups_days": 365},
             )
             self.assertEqual(
                 review_policy["groups"]["history.procedures"]["fact_ids"],
