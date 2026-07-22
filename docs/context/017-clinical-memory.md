@@ -135,6 +135,24 @@ Evidence includes
 
 A normalized value never replaces raw evidence.
 
+## Relative Temporal Evidence
+
+Patient-reported relative time is preserved at the greatest supported precision.
+
+For example, `방금`, `좀 전에`, and `조금 전` are stored as a qualitative
+`just_now` relation with the original expression retained in encounter memory.
+If the active question also uses a broad choice such as `within_24_hours`, that
+choice is stored only as a secondary derived bucket. It never replaces the more
+specific reported expression or normalized relation.
+
+An unambiguous relative-time answer satisfies the current Question and advances
+the interview. Only genuinely vague or conflicting temporal language requires a
+clarification using the same Question reference.
+
+Raw temporal expressions remain encounter evidence. They are not copied into
+repository feedback, analytics, Knowledge, or regression fixtures derived from
+real patient conversations.
+
 ---
 
 # Merge Rules

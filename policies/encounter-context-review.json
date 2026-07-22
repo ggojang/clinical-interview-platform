@@ -1,6 +1,6 @@
 {
   "id": "policy.encounter-context-review",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "status": "research_only",
   "review_status": "unreviewed",
   "encounter_context": {
@@ -272,6 +272,79 @@
     ],
     "provenance_marker": "출처: [공동 작업 지식] 응답 재확인 정책 · [AI 표현] 재질문"
   },
+  "temporal_free_text_normalization": {
+    "scope": "adaptive_interview_conversation_state",
+    "applies_to": [
+      "symptom_onset",
+      "episode_onset",
+      "duration_start",
+      "time_since_event"
+    ],
+    "core_rule": "preserve_the_more_specific_patient_report_and_add_a_coarse_choice_bucket_only_as_a_secondary_derived_value",
+    "unambiguous_free_text_satisfies_current_question": true,
+    "advance_to_next_question_after_storage": true,
+    "do_not_repeat_current_question_after_successful_mapping": true,
+    "storage": {
+      "reported_expression": "preserve_exactly_in_current_conversation_clinical_memory_only",
+      "normalized_relation": "store_the_closest_supported_qualitative_or_quantitative_temporal_value",
+      "coarse_option_bucket": "store_only_when_applicable_without_replacing_the_reported_or_normalized_value",
+      "precision": "record_as_exact_approximate_or_patient_reported_qualitative",
+      "anchor": "retain_the_conversation_time_or_calendar_context_needed_to_interpret_relative_time",
+      "provenance": "user_report_plus_normalization_method"
+    },
+    "korean_examples": [
+      {
+        "expressions": ["방금", "좀 전에", "조금 전", "막 시작"],
+        "normalized_relation": "just_now",
+        "coarse_option_bucket": "within_24_hours",
+        "precision": "patient_reported_qualitative",
+        "clarification_required": false
+      },
+      {
+        "expressions": ["몇 시간 전"],
+        "normalized_relation": "hours_ago_unspecified",
+        "coarse_option_bucket": "within_24_hours",
+        "precision": "patient_reported_qualitative",
+        "clarification_required": false
+      },
+      {
+        "expressions": ["오늘 아침", "오늘 새벽", "오늘 오후"],
+        "normalized_relation": "today_time_of_day",
+        "coarse_option_bucket": "within_24_hours",
+        "precision": "patient_reported_qualitative",
+        "clarification_required": false
+      },
+      {
+        "expressions": ["어제", "그저께"],
+        "normalized_relation": "calendar_relative_day",
+        "coarse_option_bucket": null,
+        "precision": "patient_reported_qualitative",
+        "clarification_required": false,
+        "note": "do_not_claim_an_elapsed_hour_bucket_without_resolving_the_calendar_anchor"
+      },
+      {
+        "expressions": ["최근", "예전부터", "한참 전"],
+        "normalized_relation": "ambiguous_relative_time",
+        "coarse_option_bucket": null,
+        "precision": "unknown",
+        "clarification_required": true
+      }
+    ],
+    "example_outcome": {
+      "input": "좀 전에",
+      "reported_expression": "좀 전에",
+      "normalized_relation": "just_now",
+      "coarse_option_bucket": "within_24_hours",
+      "precision": "patient_reported_qualitative",
+      "question_status": "answered",
+      "next_action": "advance_to_next_question"
+    },
+    "privacy": {
+      "raw_expression_stays_in_current_conversation": true,
+      "raw_expression_must_not_enter_repository_feedback_or_analytics": true
+    },
+    "provenance_marker": "출처: [공동 작업 지식] 상대 시점 정규화 정책 · [사용자 제공] 원문 표현"
+  },
   "test_access_limit_notice": {
     "show_once_per_conversation": true,
     "timing": "after_reason_for_encounter_before_first_question",
@@ -538,6 +611,6 @@
     "created_at": "2026-07-14T00:00:00Z",
     "source_refs": ["docs/context/002-encounter-context.md", "docs/context/017-clinical-memory.md"],
     "review_status": "unreviewed",
-    "version": "0.4.0"
+    "version": "0.5.0"
   }
 }

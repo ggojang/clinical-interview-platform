@@ -60,6 +60,24 @@ class GptExportTests(unittest.TestCase):
         self.assertTrue(completion["another_chat_is_not_reusable_clinical_memory"])
         self.assertFalse(completion["diagnosis_claim_allowed"])
 
+        temporal = fixture["cases"][1]
+        self.assertEqual(
+            temporal["expected_temporal_memory"]["normalized_relation"],
+            "just_now",
+        )
+        self.assertEqual(
+            temporal["expected_temporal_memory"]["coarse_option_bucket"],
+            "within_24_hours",
+        )
+        self.assertEqual(
+            temporal["expected_temporal_memory"]["precision"],
+            "patient_reported_qualitative",
+        )
+        self.assertFalse(temporal["expected_flow"]["repeat_q1"])
+        self.assertEqual(
+            temporal["expected_flow"]["next_new_question_reference"], "Q2"
+        )
+
     def test_export_is_deterministic_and_response_free(self):
         with tempfile.TemporaryDirectory() as first, tempfile.TemporaryDirectory() as second:
             first_path = Path(first)
@@ -789,6 +807,16 @@ class GptExportTests(unittest.TestCase):
             self.assertTrue(
                 clarification["safety"]["urgent_or_emergency_routing_precedes_clarification"]
             )
+            temporal = manifest["temporal_free_text_normalization_policy"]
+            self.assertTrue(temporal["unambiguous_free_text_satisfies_current_question"])
+            self.assertTrue(temporal["advance_to_next_question_after_storage"])
+            self.assertTrue(
+                temporal["do_not_repeat_current_question_after_successful_mapping"]
+            )
+            outcome = temporal["example_outcome"]
+            self.assertEqual(outcome["normalized_relation"], "just_now")
+            self.assertEqual(outcome["coarse_option_bucket"], "within_24_hours")
+            self.assertEqual(outcome["next_action"], "advance_to_next_question")
             self.assertTrue(
                 clarification["retry_policy"]["never_force_data_absent_reason_without_explicit_user_choice"]
             )
