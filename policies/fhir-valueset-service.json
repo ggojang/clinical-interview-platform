@@ -1,6 +1,6 @@
 {
   "id": "policy.fhir-valueset-service",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "status": "research_only",
   "review_status": "unreviewed",
   "purpose": "Use STOM FHIR R4 ValueSet services for Build-Time terminology discovery, expansion and validation without coupling Interview Runtime to a terminology server.",
@@ -32,6 +32,24 @@
     "timeout_seconds": 20
   },
   "value_set_workflow": {
+    "loinc_official_answer_lists": {
+      "scope": "all_official_LL_answer_lists_exposed_by_STOM",
+      "aggregate_canonical": "http://loinc.org/vs/ll",
+      "individual_canonical_pattern": "http://loinc.org/vs/{LL-code}",
+      "registration": [
+        "catalog_every_LL_identifier_canonical_display_and_observed_member_count",
+        "preserve_the_official_LOINC_canonical",
+        "resolve_each_individual_canonical_with_ValueSet_expand_at_build_time",
+        "audit_aggregate_completeness_and_every_individual_expansion",
+        "record_aggregate_ValueSet_and_LOINC_CodeSystem_versions_separately",
+        "bind_only_an_applicable_verified_LL_canonical_in_Questionnaire.answerValueSet",
+        "do_not_embed_unused_answer_lists_in_compiled_packages"
+      ],
+      "server_publication": "do_not_create_redundant_resources_when_STOM_already_resolves_the_official_canonical",
+      "project_namespace": "a-loinc_is_reserved_for_project_owned_non_LL_LOINC_coded_sets",
+      "version_mismatch_behavior": "retain_both_versions_and_emit_a_quality_warning",
+      "runtime_dependency": false
+    },
     "reference_first_reconciliation": [
       "identify_reference_canonical_version_and_membership_definition",
       "search_same_canonical_and_version",
@@ -96,6 +114,18 @@
       "post_write_canonical_verified": 284,
       "post_publication_dry_run_unchanged": 284,
       "representative_snomed_local_and_mixed_validation": "passed"
+    },
+    "loinc_answer_lists": {
+      "aggregate_canonical": "http://loinc.org/vs/ll",
+      "aggregate_valueset_version": "2.80",
+      "loinc_codesystem_version": "2.82",
+      "version_alignment": "metadata_mismatch",
+      "answer_list_count": 4955,
+      "individual_expansion_checked": 4955,
+      "individual_expansion_failures": 0,
+      "zero_member_lists": 0,
+      "membership_total": 33944,
+      "server_resources_created": 0
     }
   },
   "safety_boundaries": {
@@ -117,6 +147,10 @@
     "source_refs": [
       "http://localhost:8088/fhir/metadata",
       "http://localhost:8088/fhir/ValueSet",
+      "http://localhost:8088/fhir/ValueSet/loinc-answer-lists",
+      "http://loinc.org/vs/ll",
+      "https://loinc.org/fhir/",
+      "https://loinc.org/answer-file/",
       "http://hl7.org/fhir/R4/valueset-operation-expand.html",
       "http://hl7.org/fhir/R4/valueset-operation-validate-code.html"
     ],

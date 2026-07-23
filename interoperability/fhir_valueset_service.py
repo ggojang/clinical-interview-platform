@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 import os
 from concurrent.futures import ThreadPoolExecutor
+import re
 from typing import Any, Callable
 from urllib.error import HTTPError, URLError
 from urllib.parse import quote, urlencode
@@ -18,6 +19,10 @@ from urllib.request import Request, urlopen
 DEFAULT_BASE_URL = "http://localhost:8088/fhir"
 REMOTE_STOM_BASE_URL = "https://stom.infoclinic.co/fhir"
 DEFAULT_TIMEOUT_SECONDS = 20
+LOINC_SYSTEM_URL = "http://loinc.org"
+LOINC_ANSWER_LIST_AGGREGATE_URL = "http://loinc.org/vs/ll"
+LOINC_ANSWER_LIST_CANONICAL_PREFIX = "http://loinc.org/vs/"
+LOINC_ANSWER_LIST_CODE_PATTERN = re.compile(r"^LL[0-9]+-[0-9]+$")
 
 
 class FhirValueSetServiceError(RuntimeError):
@@ -196,6 +201,107 @@ class FhirValueSetService:
             expected={"ValueSet"},
         )
 
+    @staticmethod
+    def _parameters_to_dict(response: dict[str, Any]) -> dict[str, Any]:
+        result: dict[str, Any] = {"resource": response}
+        for parameter in response.get("parameter", []):
+            name = parameter.get("name")
+            if not name:
+                continue
+            value_key = next(
+                (key for key in parameter if key.startswith("value")),
+                None,
+            )
+            if value_key:
+                result[name] = parameter[value_key]
+        return result
+
+    def lookup_codesystem_code(
+        self,
+        system_url: str,
+        *,
+        code: str,
+        version: str | None = None,
+    ) -> dict[str, Any]:
+        """Return Build-Time display and version metadata for one code."""
+        params = {"system": system_url, "code": code}
+        if version:
+            params["version"] = version
+        response = self._get(
+            "CodeSystem/$lookup",
+            params,
+            expected={"Parameters"},
+        )
+        result = self._parameters_to_dict(response)
+        if result.get("name") is None and result.get("display") is None:
+            raise FhirValueSetServiceError(
+                "CodeSystem $lookup did not return code metadata"
+            )
+        return result
+
+    def list_loinc_answer_lists(
+        self,
+        *,
+        count: int = 10000,
+    ) -> list[dict[str, Any]]:
+        """Return every official LL identifier advertised by STOM."""
+        resource = self.expand(
+            LOINC_ANSWER_LIST_AGGREGATE_URL,
+            count=count,
+        )
+        expansion = resource.get("expansion", {})
+        members = expansion.get("contains", [])
+        total = expansion.get("total")
+        if not isinstance(total, int) or total != len(members):
+            raise FhirValueSetServiceError(
+                "LOINC Answer List aggregate expansion is incomplete"
+            )
+        codes: set[str] = set()
+        for member in members:
+            code = member.get("code")
+            if (
+                member.get("system") != LOINC_SYSTEM_URL
+                or not isinstance(code, str)
+                or not LOINC_ANSWER_LIST_CODE_PATTERN.fullmatch(code)
+            ):
+                raise FhirValueSetServiceError(
+                    "LOINC Answer List aggregate contains an invalid member"
+                )
+            if code in codes:
+                raise FhirValueSetServiceError(
+                    f"duplicate LOINC Answer List identifier: {code}"
+                )
+            codes.add(code)
+        return members
+
+    def expand_loinc_answer_list(
+        self,
+        answer_list_code: str,
+        *,
+        count: int | None = None,
+    ) -> dict[str, Any]:
+        """Expand one official LL canonical without persisting a duplicate."""
+        if not LOINC_ANSWER_LIST_CODE_PATTERN.fullmatch(answer_list_code):
+            raise ValueError(
+                f"invalid LOINC Answer List identifier: {answer_list_code}"
+            )
+        canonical = (
+            LOINC_ANSWER_LIST_CANONICAL_PREFIX + answer_list_code
+        )
+        resource = self.expand(canonical, count=count)
+        if resource.get("url") != canonical:
+            raise FhirValueSetServiceError(
+                "LOINC Answer List expansion returned another canonical"
+            )
+        expansion = resource.get("expansion")
+        if not isinstance(expansion, dict) or not isinstance(
+            expansion.get("total"), int
+        ):
+            raise FhirValueSetServiceError(
+                "LOINC Answer List expansion did not return a total"
+            )
+        return resource
+
     def validate_code(
         self,
         canonical_url: str,
@@ -219,17 +325,7 @@ class FhirValueSetService:
             params,
             expected={"Parameters"},
         )
-        result: dict[str, Any] = {"resource": response}
-        for parameter in response.get("parameter", []):
-            name = parameter.get("name")
-            if not name:
-                continue
-            value_key = next(
-                (key for key in parameter if key.startswith("value")),
-                None,
-            )
-            if value_key:
-                result[name] = parameter[value_key]
+        result = self._parameters_to_dict(response)
         if not isinstance(result.get("result"), bool):
             raise FhirValueSetServiceError(
                 "ValueSet $validate-code did not return a boolean result"
@@ -255,17 +351,7 @@ class FhirValueSetService:
             params,
             expected={"Parameters"},
         )
-        result: dict[str, Any] = {"resource": response}
-        for parameter in response.get("parameter", []):
-            name = parameter.get("name")
-            if not name:
-                continue
-            value_key = next(
-                (key for key in parameter if key.startswith("value")),
-                None,
-            )
-            if value_key:
-                result[name] = parameter[value_key]
+        result = self._parameters_to_dict(response)
         if not isinstance(result.get("result"), bool):
             raise FhirValueSetServiceError(
                 "CodeSystem $validate-code did not return a boolean result"

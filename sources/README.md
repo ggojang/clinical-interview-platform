@@ -2,6 +2,16 @@
 
 Build-Time Source Manifests live in `manifests/`.
 
+Build-Time terminology reference indexes live in `catalogs/`. The complete
+LOINC LL Answer List catalog preserves official canonicals and observed member
+counts from STOM without duplicating those reference ValueSets on the server.
+It is regenerated and audited with:
+
+```bash
+python3 tools/terminology/build_loinc_answer_list_catalog.py
+python3 tools/validator/audit_loinc_answer_lists.py
+```
+
 A manifest records identity, version, path, digest, completeness, licensing status,
 limitations, and provenance. Runtime never reads external sources or this directory
 during an interview.

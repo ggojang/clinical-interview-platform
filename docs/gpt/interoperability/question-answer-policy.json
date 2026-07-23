@@ -3,6 +3,7 @@
     "answer_value_set_required_for_coded_choice": true,
     "answer_value_set_selection": {
       "all_answers_verified_SNOMED_CT": "a-sct-{semantic-name}",
+      "application_extension_of_reference": "a-extended-{semantic-name}",
       "local_companion_for_every_dynamic_coded_fact": "a-local-{fact-name}",
       "no_standard_answer_mapping": "a-local-{fact-name}",
       "official_LOINC_answer_list": "a-loinc-{LL-code-or-semantic-name}",
@@ -32,12 +33,14 @@
       "a-sct-yes-no",
       "a-local-yes-no",
       "a-sct-mild-moderate-severe",
-      "a-mixed-symptom-course"
+      "a-mixed-symptom-course",
+      "a-extended-context-specific-symptom-course"
     ],
     "fhir_id_max_length": 64,
     "id_pattern": "a-{scope}-{semantic-name}",
     "long_id_rule": "truncate_the_slug_and_append_a_stable_SHA256_suffix",
     "scopes": {
+      "extended": "separate_application_ValueSet_importing_an_unchanged_reference_and_adding_verified_codes",
       "local": "only_clinical_interview_local_answer_codes",
       "loinc": "official_LOINC_LA_answer_codes_or_external_answer_list",
       "mixed": "SNOMED_CT_where_verified_and_local_codes_for_the_remaining_answers",
@@ -53,6 +56,19 @@
     "preserve_local_code_alongside_standard_code": true,
     "question": "Questionnaire.item.code",
     "question_response_link": "Questionnaire.item.linkId_equals_QuestionnaireResponse.item.linkId"
+  },
+  "fhir_valueset_service": {
+    "closed_projection": "choice_for_required_closed_or_source_defined_items",
+    "dynamic_projection": "open-choice_when_out_of_reference_standard_answers_are_clinically_permitted",
+    "extension_rule": "create_a_separate_a-extended_ValueSet_that_imports_the_reference",
+    "external_standard_valueset_rule": "resolve_by_canonical_and_optional_version_then_expand_and_validate_code",
+    "policy_id": "policy.fhir-valueset-service",
+    "primary_build_time_base_url": "http://localhost:8088/fhir",
+    "project_valueset_rule": "generate_and_validate_locally_until_an_explicit_authorized_publication_step",
+    "reference_preservation": "reuse_if_present_or_publish_unchanged_if_absent",
+    "reference_reconciliation": "canonical_and_version_then_normalized_membership_content",
+    "remote_fallback_base_url": "https://stom.infoclinic.co/fhir",
+    "runtime_lookup_required": false
   },
   "id": "policy.question-answer-terminology-binding",
   "mapping_relations": [
@@ -100,6 +116,7 @@
       "https://docs.snomed.org/snomed-ct-practical-guides/snomed-ct-starter-guide/6-snomed-ct-concept-model",
       "https://docs.snomed.org/implementation-guides/implementation-fact-sheets/snomed-ct-clinical-decision-support-systems-and-cql",
       "source.stom.fhir-r4-terminology-server",
+      "policy.fhir-valueset-service",
       "docs/context/024-interoperability-and-fhir.md"
     ],
     "version": "0.1.0"
@@ -163,5 +180,5 @@
     "LOINC": "2.82",
     "SNOMED_CT_International": "http://snomed.info/sct/900000000000207008/version/20260701"
   },
-  "version": "0.2.0"
+  "version": "0.4.0"
 }

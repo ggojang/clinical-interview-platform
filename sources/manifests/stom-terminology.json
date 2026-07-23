@@ -1,6 +1,6 @@
 {
   "id": "source-manifest.stom-terminology",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "status": "research_only",
   "review_status": "unreviewed",
   "acquired_at": "2026-07-14T00:00:00Z",
@@ -58,7 +58,10 @@
         "FHIR ValueSet full read by id",
         "FHIR ValueSet $expand",
         "FHIR ValueSet $validate-code",
-        "FHIR CodeSystem $validate-code for proposed extension codes"
+        "FHIR CodeSystem $validate-code for proposed extension codes",
+        "FHIR CodeSystem $lookup",
+        "complete LOINC LL Answer List aggregate discovery",
+        "individual LOINC LL Answer List dynamic expansion"
       ],
       "valueset_service_observation": {
         "endpoint": "http://localhost:8088/fhir",
@@ -86,6 +89,21 @@
           "reference_mutation_performed": false,
           "server_type_search_returns_summary_only": true,
           "full_content_comparison_method": "canonical search or explicit full read by id"
+        },
+        "loinc_answer_list_catalog": {
+          "catalog": "sources/catalogs/loinc-answer-lists-stom.json",
+          "aggregate_canonical": "http://loinc.org/vs/ll",
+          "aggregate_valueset_version": "2.80",
+          "loinc_codesystem_version": "2.82",
+          "version_alignment": "metadata_mismatch",
+          "answer_list_count": 4955,
+          "membership_total": 33944,
+          "individual_expansion_checked": 4955,
+          "individual_expansion_failures": 0,
+          "zero_member_lists": 0,
+          "registration_mode": "reference_catalog_and_dynamic_resolution",
+          "server_resources_created": 0,
+          "runtime_dependency": false
         }
       }
     }
@@ -106,7 +124,9 @@
     "ValueSet create, update and delete are declared by the local server, but this reconciliation publisher authorizes only explicit authenticated creation of absent resources.",
     "Project-owned a-sct, a-loinc, a-local and a-mixed ValueSets must pass local validation and collision checks before publication.",
     "Reference ValueSets are reused when canonical/version and normalized membership match; membership-equivalent resources under another canonical are reported but not substituted; absent references are created unchanged, while extensions are separate a-extended resources.",
-    "STOM ValueSet type search returns summary resources without version or compose, so content comparison uses canonical full-resource search or explicit full read by id."
+    "STOM ValueSet type search returns summary resources without version or compose, so content comparison uses canonical full-resource search or explicit full read by id.",
+    "The STOM LOINC Answer List aggregate ValueSet reports version 2.80 while the observed LOINC CodeSystem reports 2.82; both versions are retained and the catalog is unreviewed/research_only until release alignment is resolved.",
+    "Official LOINC LL Answer Lists are cataloged by their official canonical and dynamically expanded at Build Time; they are not duplicated as persisted project resources."
   ],
   "provenance": {
     "created_by": {"type": "ai", "id": "codex-gpt5"},
@@ -117,9 +137,11 @@
       "http://localhost:8088/fhir/metadata",
       "coverage/stom-fhir-valueset-latest.json",
       "coverage/stom-fhir-valueset-publication-latest.json",
-      "coverage/reference-valueset-reconciliation-latest.json"
+      "coverage/reference-valueset-reconciliation-latest.json",
+      "sources/catalogs/loinc-answer-lists-stom.json",
+      "coverage/loinc-answer-list-catalog-latest.json"
     ],
     "review_status": "unreviewed",
-    "version": "0.7.0"
+    "version": "0.8.0"
   }
 }

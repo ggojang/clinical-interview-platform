@@ -557,7 +557,10 @@ Coded clinical answers follow `SNOMED CT → local answer code` and every dynami
 coded answer set has a complete FHIR R4 ValueSet. ValueSet ids follow
 `a-{sct|loinc|local|mixed}-{semantic-name}`. A complete SNOMED set uses
 `a-sct-*`; a partial mapping uses `a-mixed-*`; every coded Fact also has an
-`a-local-*` companion. Official LOINC LL Answer Lists use `a-loinc-*`.
+`a-local-*` companion. An applicable official LOINC LL Answer List keeps its
+official `http://loinc.org/vs/{LL-code}` canonical and is never renamed as a
+project `a-loinc-*` resource. The `a-loinc-*` namespace is reserved for
+project-owned LOINC-coded sets that are not official LL Answer Lists.
 Clinical yes/no interoperability projection uses the SNOMED-coded
 `a-sct-yes-no` ValueSet, while a receiving profile may still explicitly require
 a primitive FHIR boolean. Numeric, quantity, date, date-time and narrative
@@ -573,6 +576,19 @@ Answer Lists, HL7 FHIR and US Core artifacts, NLM VSAC when access and licensing
 allow, SNOMED CT implementation artifacts, and STOM. All terminology lookup and
 verification occurs at Build Time; compiled Runtime behavior remains
 terminology-service independent.
+
+Every official LOINC LL Answer List exposed by STOM is registered in the
+repository reference catalog. Registration means preserving the official
+identifier, canonical URL, display, observed member count and provenance; it
+does not mean creating thousands of duplicate ValueSet resources on STOM.
+STOM resolves each official canonical dynamically at Build Time. A
+Questionnaire item binds directly to the official LL canonical only when that
+Answer List has been selected and verified for the question. Unused lists are
+discoverable references and are not embedded in compiled Runtime packages.
+The catalog and every individual canonical are periodically audited. A
+version difference between the aggregate LL ValueSet metadata and the LOINC
+CodeSystem is recorded as a terminology-quality warning rather than silently
+reported as aligned.
 
 STOM FHIR R4 ValueSet integration initially uses
 `http://localhost:8088/fhir` as the primary Build-Time endpoint and

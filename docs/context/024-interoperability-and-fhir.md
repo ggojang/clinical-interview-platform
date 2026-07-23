@@ -107,6 +107,12 @@ Partially mapped choices use a complete mixed ValueSet rather than an incomplete
 SNOMED-only list. Numeric, date, narrative and UCUM quantity values are not
 forced into artificial answer codes.
 
+Official LOINC LL Answer Lists are reference ValueSets, not project-generated
+`a-loinc-*` resources. They retain `http://loinc.org/vs/{LL-code}` and are
+bound directly through `Questionnaire.item.answerValueSet` when applicable.
+The `a-loinc-*` namespace is used only for project-owned LOINC-coded sets that
+are not official LL lists.
+
 Source-defined fixed questionnaires are excluded from automatic mapping. Their
 official wording and answer lists remain authoritative unless an explicit
 mapping request is verified against the source instrument.
@@ -120,6 +126,19 @@ endpoint is `http://localhost:8088/fhir`; the remote fallback is
 `https://stom.infoclinic.co/fhir`. External standard ValueSets are resolved by
 canonical URL and optional version, expanded with `ValueSet/$expand`, and
 candidate coded answers are checked with `ValueSet/$validate-code`.
+
+The complete official LL collection exposed by STOM is indexed in
+`sources/catalogs/loinc-answer-lists-stom.json`. Each entry preserves its LL
+identifier, official canonical, display, observed member count and resolution
+mode. STOM dynamically expands every indexed canonical, so the platform does
+not create duplicate persisted ValueSet resources. The complete catalog and
+all individual canonicals are audited at Build Time; only the selected
+Answer Lists are referenced by a Questionnaire or compiled package.
+
+The STOM aggregate LL resource and LOINC CodeSystem may report different
+release versions. Both observed versions remain in provenance and the
+difference is a visible quality warning. It is never normalized away or used
+to claim false release alignment.
 
 Project-owned `a-sct-*`, `a-loinc-*`, `a-local-*`, and `a-mixed-*` ValueSets are
 generated and validated in the repository. They are not assumed to exist on

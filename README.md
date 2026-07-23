@@ -69,6 +69,8 @@ python tools/validator/audit_uscdi_interoperability.py --output coverage/uscdi-i
 python tools/validator/audit_question_answer_terminology.py --output coverage/question-answer-terminology-latest.json
 python tools/validator/check_fhir_valueset_service.py --base-url http://localhost:8088/fhir --output coverage/stom-fhir-valueset-latest.json
 python tools/validator/audit_reference_valuesets.py --base-url http://localhost:8088/fhir --output coverage/reference-valueset-reconciliation-latest.json
+python tools/terminology/build_loinc_answer_list_catalog.py --base-url http://localhost:8088/fhir
+python tools/validator/audit_loinc_answer_lists.py --base-url http://localhost:8088/fhir --output coverage/loinc-answer-list-catalog-latest.json
 python tools/fhir/build_question_answer_codesystems.py
 python tools/fhir/build_answer_valuesets.py
 python tools/fhir/publish_answer_valuesets.py --base-url http://localhost:8088/fhir

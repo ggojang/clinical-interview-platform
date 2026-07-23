@@ -14,6 +14,12 @@ from interoperability.fhir_valueset_service import (
     DEFAULT_BASE_URL,
     FhirValueSetService,
     FhirValueSetServiceError,
+    LOINC_ANSWER_LIST_AGGREGATE_URL,
+)
+from interoperability.loinc_answer_list_catalog import (
+    LoincAnswerListCatalogError,
+    answer_list_canonical,
+    validate_catalog,
 )
 
 
@@ -69,6 +75,46 @@ class FakeTransport:
                 }],
             }
         if parsed.path.endswith("/ValueSet/$expand"):
+            if query["url"][0] == LOINC_ANSWER_LIST_AGGREGATE_URL:
+                return 200, {
+                    "resourceType": "ValueSet",
+                    "url": query["url"][0],
+                    "expansion": {
+                        "total": 2,
+                        "contains": [
+                            {
+                                "system": "http://loinc.org",
+                                "code": "LL1-9",
+                                "display": "Yes/no",
+                            },
+                            {
+                                "system": "http://loinc.org",
+                                "code": "LL2201-3",
+                                "display": "Smoking status",
+                            },
+                        ],
+                    },
+                }
+            if query["url"][0].startswith("http://loinc.org/vs/LL"):
+                return 200, {
+                    "resourceType": "ValueSet",
+                    "url": query["url"][0],
+                    "expansion": {
+                        "total": 2,
+                        "contains": [
+                            {
+                                "system": "http://loinc.org",
+                                "code": "LA32-8",
+                                "display": "No",
+                            },
+                            {
+                                "system": "http://loinc.org",
+                                "code": "LA33-6",
+                                "display": "Yes",
+                            },
+                        ],
+                    },
+                }
             return 200, {
                 "resourceType": "ValueSet",
                 "url": query["url"][0],
@@ -78,6 +124,18 @@ class FakeTransport:
                         {"system": SYSTEM, "code": "N", "display": "No"},
                     ]
                 },
+            }
+        if parsed.path.endswith("/CodeSystem/$lookup"):
+            return 200, {
+                "resourceType": "Parameters",
+                "parameter": [
+                    {"name": "name", "valueString": "LOINC"},
+                    {"name": "version", "valueString": "2.82"},
+                    {
+                        "name": "display",
+                        "valueString": "Current smoking status answer list",
+                    },
+                ],
             }
         if parsed.path.endswith("/ValueSet/$validate-code"):
             valid = query["code"][0] in {"Y", "N"}
@@ -162,6 +220,80 @@ class FhirValueSetServiceTest(unittest.TestCase):
         )
         self.assertTrue(result["result"])
         self.assertEqual(result["display"], "Unknown (qualifier value)")
+
+    def test_complete_loinc_answer_list_discovery_and_resolution(self):
+        members = self.service.list_loinc_answer_lists()
+        self.assertEqual([item["code"] for item in members], [
+            "LL1-9",
+            "LL2201-3",
+        ])
+        expansion = self.service.expand_loinc_answer_list(
+            "LL2201-3",
+            count=0,
+        )
+        self.assertEqual(expansion["expansion"]["total"], 2)
+        metadata = self.service.lookup_codesystem_code(
+            "http://loinc.org",
+            code="LL2201-3",
+        )
+        self.assertEqual(metadata["version"], "2.82")
+
+    def test_invalid_loinc_answer_list_identifier_is_rejected(self):
+        with self.assertRaises(ValueError):
+            self.service.expand_loinc_answer_list("not-an-LL-code")
+
+    def test_loinc_answer_list_catalog_validation(self):
+        entries = [
+            {
+                "code": "LL1-9",
+                "canonical": answer_list_canonical("LL1-9"),
+                "display": "Yes/no",
+                "member_count": 2,
+                "resolution": "stom_dynamic_expand",
+            },
+            {
+                "code": "LL2201-3",
+                "canonical": answer_list_canonical("LL2201-3"),
+                "display": "Smoking status",
+                "member_count": 8,
+                "resolution": "stom_dynamic_expand",
+            },
+        ]
+        catalog = {
+            "id": "catalog.loinc-answer-lists",
+            "status": "research_only",
+            "review_status": "unreviewed",
+            "aggregate_canonical": LOINC_ANSWER_LIST_AGGREGATE_URL,
+            "total": 2,
+            "membership_total": 10,
+            "entries": entries,
+        }
+        self.assertEqual(
+            validate_catalog(catalog),
+            {"answer_list_count": 2, "membership_total": 10},
+        )
+        catalog["entries"].append(dict(entries[0]))
+        catalog["total"] = 3
+        catalog["membership_total"] = 12
+        with self.assertRaises(LoincAnswerListCatalogError):
+            validate_catalog(catalog)
+
+    def test_repository_contains_complete_loinc_answer_list_catalog(self):
+        root = Path(__file__).resolve().parents[1]
+        catalog = json.loads(
+            (
+                root
+                / "sources"
+                / "catalogs"
+                / "loinc-answer-lists-stom.json"
+            ).read_text(encoding="utf-8")
+        )
+        result = validate_catalog(catalog)
+        self.assertEqual(result["answer_list_count"], 4955)
+        self.assertEqual(result["membership_total"], 33944)
+        self.assertEqual(catalog["server_resources_created"], 0)
+        self.assertFalse(catalog["runtime_dependency"])
+        self.assertEqual(catalog["version_alignment"], "metadata_mismatch")
 
     def test_validate_code_requires_boolean_result(self):
         def invalid_transport(url: str, timeout: int):

@@ -32,6 +32,76 @@
         "HIRA therapeutic-material search and detail lookup"
       ],
       "version": "1.0.0"
+    },
+    {
+      "capability_statement": "http://localhost:8088/fhir/metadata",
+      "complete": false,
+      "digest": "live_service_not_cached",
+      "fhir_version": "4.0.1",
+      "id": "source.stom.fhir-r4-terminology-server.local",
+      "kind": "terminology_server",
+      "last_monitored_at": "2026-07-23",
+      "license_status": "local_research_environment",
+      "monitor_interval_days": 30,
+      "monitor_profile": "terminology_server",
+      "next_monitor_at": "2026-08-22",
+      "publisher": "Infoclinic",
+      "title": "Local STOM FHIR R4 Terminology Server",
+      "url": "http://localhost:8088/fhir",
+      "valueset_service_observation": {
+        "checked_at": "2026-07-23",
+        "endpoint": "http://localhost:8088/fhir",
+        "expand_result": "pass",
+        "fhir_version": "4.0.1",
+        "loinc_answer_list_catalog": {
+          "aggregate_canonical": "http://loinc.org/vs/ll",
+          "aggregate_valueset_version": "2.80",
+          "answer_list_count": 4955,
+          "catalog": "sources/catalogs/loinc-answer-lists-stom.json",
+          "individual_expansion_checked": 4955,
+          "individual_expansion_failures": 0,
+          "loinc_codesystem_version": "2.82",
+          "membership_total": 33944,
+          "registration_mode": "reference_catalog_and_dynamic_resolution",
+          "runtime_dependency": false,
+          "server_resources_created": 0,
+          "version_alignment": "metadata_mismatch",
+          "zero_member_lists": 0
+        },
+        "probe_canonical": "http://terminology.hl7.org/ValueSet/yes-no-unknown-not-applicable",
+        "project_valueset_publication": {
+          "authenticated_header": "X-API-Key",
+          "created": 284,
+          "post_publication_dry_run_unchanged": 284,
+          "post_write_canonical_verified": 284,
+          "resource_count": 284,
+          "secret_recorded": false
+        },
+        "reference_reconciliation": {
+          "canonical_content_conflict": 0,
+          "full_content_comparison_method": "canonical search or explicit full read by id",
+          "project_content_duplicate_groups": 0,
+          "project_valueset_count": 284,
+          "reference_mutation_performed": false,
+          "reuse_exact_reference": 284,
+          "server_type_search_returns_summary_only": true
+        },
+        "resource_count_before_project_publication": 2568,
+        "search_result": "pass",
+        "software": "STOM Terminology Server 1.0.0",
+        "validate_code_valid_and_invalid_results": "pass"
+      },
+      "verified_read_operations": [
+        "FHIR ValueSet canonical search",
+        "FHIR ValueSet full read by id",
+        "FHIR ValueSet $expand",
+        "FHIR ValueSet $validate-code",
+        "FHIR CodeSystem $validate-code for proposed extension codes",
+        "FHIR CodeSystem $lookup",
+        "complete LOINC LL Answer List aggregate discovery",
+        "individual LOINC LL Answer List dynamic expansion"
+      ],
+      "version": "1.0.0"
     }
   ],
   "id": "source-manifest.stom-terminology",
@@ -47,7 +117,13 @@
     "When both SNOMED CT and KCD/HIRA codings are verified, both remain available with an explicit mapping relation; label similarity alone is insufficient for equivalence.",
     "Only minimal de-identified normalized terms may be sent at Runtime.",
     "The service is optional at Runtime; failure must not block safety assessment or the interview.",
-    "Production use requires licensing, privacy, availability and conformance review."
+    "Production use requires licensing, privacy, availability and conformance review.",
+    "ValueSet create, update and delete are declared by the local server, but this reconciliation publisher authorizes only explicit authenticated creation of absent resources.",
+    "Project-owned a-sct, a-loinc, a-local and a-mixed ValueSets must pass local validation and collision checks before publication.",
+    "Reference ValueSets are reused when canonical/version and normalized membership match; membership-equivalent resources under another canonical are reported but not substituted; absent references are created unchanged, while extensions are separate a-extended resources.",
+    "STOM ValueSet type search returns summary resources without version or compose, so content comparison uses canonical full-resource search or explicit full read by id.",
+    "The STOM LOINC Answer List aggregate ValueSet reports version 2.80 while the observed LOINC CodeSystem reports 2.82; both versions are retained and the catalog is unreviewed/research_only until release alignment is resolved.",
+    "Official LOINC LL Answer Lists are cataloged by their official canonical and dynamically expanded at Build Time; they are not duplicated as persisted project resources."
   ],
   "provenance": {
     "created_at": "2026-07-14T00:00:00Z",
@@ -58,11 +134,17 @@
     "review_status": "unreviewed",
     "source_refs": [
       "https://stom.infoclinic.co/fhir/metadata",
-      "https://stom.infoclinic.co/v2/api-docs"
+      "https://stom.infoclinic.co/v2/api-docs",
+      "http://localhost:8088/fhir/metadata",
+      "coverage/stom-fhir-valueset-latest.json",
+      "coverage/stom-fhir-valueset-publication-latest.json",
+      "coverage/reference-valueset-reconciliation-latest.json",
+      "sources/catalogs/loinc-answer-lists-stom.json",
+      "coverage/loinc-answer-list-catalog-latest.json"
     ],
-    "version": "0.5.0"
+    "version": "0.8.0"
   },
   "review_status": "unreviewed",
   "status": "research_only",
-  "version": "0.5.0"
+  "version": "0.8.0"
 }
