@@ -51,9 +51,10 @@ def main() -> int:
         base_url=args.base_url,
         api_key=api_key,
     )
+    catalog = publisher.read_service.list_valuesets(full=True)
     results = []
     for entry in bundle["entry"]:
-        plan = publisher.plan(entry["resource"])
+        plan = publisher.plan(entry["resource"], catalog=catalog)
         if args.apply:
             results.append(publisher.apply(plan))
         else:

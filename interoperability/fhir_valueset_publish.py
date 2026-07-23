@@ -13,10 +13,8 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote
 from urllib.request import Request, urlopen
 
-from interoperability.fhir_valueset_service import (
-    FhirValueSetService,
-    FhirValueSetServiceError,
-)
+from interoperability.fhir_valueset_service import FhirValueSetService
+from interoperability.fhir_valueset_reconcile import reconcile_reference
 
 
 WriteTransport = Callable[
@@ -92,15 +90,6 @@ def _urllib_write_transport(
         raise FhirValueSetPublishError(f"FHIR write failed: {exc}") from exc
 
 
-def _without_server_metadata(resource: dict[str, Any]) -> dict[str, Any]:
-    normalized = deepcopy(resource)
-    meta = normalized.get("meta")
-    if isinstance(meta, dict):
-        meta.pop("versionId", None)
-        meta.pop("lastUpdated", None)
-    return normalized
-
-
 class FhirValueSetPublisher:
     """Idempotently publish ValueSets with an explicit administrator token."""
 
@@ -153,14 +142,23 @@ class FhirValueSetPublisher:
             )
         return resource
 
-    def plan(self, resource: dict[str, Any]) -> dict[str, Any]:
+    def plan(
+        self,
+        resource: dict[str, Any],
+        *,
+        catalog: list[dict[str, Any]] | None = None,
+    ) -> dict[str, Any]:
         if resource.get("resourceType") != "ValueSet":
             raise FhirValueSetPublishError("only ValueSet resources are supported")
         canonical = resource.get("url")
         identifier = resource.get("id")
         if not canonical or not identifier:
             raise FhirValueSetPublishError("ValueSet requires id and canonical url")
-        matches = self.read_service.search_by_canonical(canonical, count=2)
+        matches = self.read_service.search_by_canonical(
+            canonical,
+            version=resource.get("version"),
+            count=2,
+        )
         if len(matches) > 1:
             raise FhirValueSetPublishError(
                 f"multiple server ValueSets use canonical {canonical}"
@@ -172,20 +170,41 @@ class FhirValueSetPublisher:
                 raise FhirValueSetPublishError(
                     f"server ValueSet has no id: {canonical}"
                 )
-            candidate = deepcopy(resource)
-            candidate["id"] = server_id
-            unchanged = (
-                _without_server_metadata(current)
-                == _without_server_metadata(candidate)
-            )
+            reconciliation = reconcile_reference(resource, matches)
+            if reconciliation["action"] == "canonical_content_conflict":
+                raise FhirValueSetPublishError(
+                    "refusing to overwrite canonical/version with different "
+                    f"membership: {canonical}|{resource.get('version')}"
+                )
             return {
-                "action": "unchanged" if unchanged else "update",
+                "action": "reuse_exact_reference",
                 "canonical": canonical,
                 "local_id": identifier,
                 "server_id": server_id,
                 "server_version_id": current.get("meta", {}).get("versionId"),
-                "resource": candidate,
+                "membership_fingerprint": reconciliation[
+                    "membership_fingerprint"
+                ],
+                "resource": deepcopy(resource),
             }
+        if catalog is not None:
+            reconciliation = reconcile_reference(resource, catalog)
+            if reconciliation["action"] == "canonical_content_conflict":
+                raise FhirValueSetPublishError(
+                    "refusing to overwrite canonical/version with different "
+                    f"membership: {canonical}|{resource.get('version')}"
+                )
+            if reconciliation["action"] == "reuse_exact_reference":
+                return {
+                    "action": "reuse_exact_reference",
+                    "canonical": canonical,
+                    "local_id": identifier,
+                    "server_id": reconciliation.get("server_id"),
+                    "membership_fingerprint": reconciliation[
+                        "membership_fingerprint"
+                    ],
+                    "resource": deepcopy(resource),
+                }
         collision = self._read_by_id(identifier)
         if collision is not None:
             raise FhirValueSetPublishError(
@@ -198,23 +217,36 @@ class FhirValueSetPublisher:
             "local_id": identifier,
             "server_id": identifier,
             "server_version_id": None,
+            **(
+                {
+                    "membership_fingerprint": reconciliation[
+                        "membership_fingerprint"
+                    ],
+                    "content_equivalent_candidates": reconciliation.get(
+                        "content_equivalent_candidates", []
+                    ),
+                }
+                if catalog is not None
+                else {}
+            ),
             "resource": deepcopy(resource),
         }
 
     def apply(self, plan: dict[str, Any]) -> dict[str, Any]:
         action = plan["action"]
-        if action == "unchanged":
+        if action in {
+            "unchanged",
+            "reuse_exact_reference",
+        }:
             return {
                 key: value
                 for key, value in plan.items()
                 if key != "resource"
             }
-        if action not in {"create", "update"}:
+        if action != "create":
             raise FhirValueSetPublishError(f"unsupported action: {action}")
         server_id = plan["server_id"]
         headers = {"X-API-Key": self.api_key}
-        if action == "update" and plan.get("server_version_id"):
-            headers["If-Match"] = f'W/"{plan["server_version_id"]}"'
         status, response, _ = self._write_transport(
             "PUT",
             f"{self.base_url}/ValueSet/{quote(server_id, safe='')}",
@@ -231,10 +263,18 @@ class FhirValueSetPublisher:
             raise FhirValueSetPublishError(
                 f"FHIR write returned {response.get('resourceType')}, not ValueSet"
             )
-        matches = self.read_service.search_by_canonical(
-            plan["canonical"],
-            count=2,
-        )
+        version = plan["resource"].get("version")
+        if version:
+            matches = self.read_service.search_by_canonical(
+                plan["canonical"],
+                version=version,
+                count=2,
+            )
+        else:
+            matches = self.read_service.search_by_canonical(
+                plan["canonical"],
+                count=2,
+            )
         if len(matches) != 1:
             raise FhirValueSetPublishError(
                 f"canonical verification returned {len(matches)} matches "

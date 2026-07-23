@@ -8,9 +8,10 @@ from __future__ import annotations
 
 import json
 import os
+from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Callable
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlencode
+from urllib.parse import quote, urlencode
 from urllib.request import Request, urlopen
 
 
@@ -134,6 +135,46 @@ class FhirValueSetService:
             and (version is None or entry["resource"].get("version") == version)
         ]
 
+    def read_valueset(self, identifier: str) -> dict[str, Any]:
+        return self._get(
+            f"ValueSet/{quote(identifier, safe='')}",
+            expected={"ValueSet"},
+        )
+
+    def list_valuesets(
+        self,
+        *,
+        count: int = 10000,
+        full: bool = False,
+        workers: int = 16,
+    ) -> list[dict[str, Any]]:
+        """Return the ValueSet catalog, optionally resolving every full resource.
+
+        STOM currently returns summary resources for a ValueSet type search even
+        with ``_summary=false``. Full content comparison therefore requires
+        explicit reads by id and is kept opt-in.
+        """
+        bundle = self._get(
+            "ValueSet",
+            {"_count": str(count)},
+            expected={"Bundle"},
+        )
+        resources = [
+            entry["resource"]
+            for entry in bundle.get("entry", [])
+            if entry.get("resource", {}).get("resourceType") == "ValueSet"
+        ]
+        if not full:
+            return resources
+        identifiers = [
+            resource["id"]
+            for resource in resources
+            if resource.get("id")
+        ]
+        with ThreadPoolExecutor(max_workers=max(1, workers)) as executor:
+            complete = list(executor.map(self.read_valueset, identifiers))
+        return complete
+
     def expand(
         self,
         canonical_url: str,
@@ -192,5 +233,41 @@ class FhirValueSetService:
         if not isinstance(result.get("result"), bool):
             raise FhirValueSetServiceError(
                 "ValueSet $validate-code did not return a boolean result"
+            )
+        return result
+
+    def validate_codesystem_code(
+        self,
+        system_url: str,
+        *,
+        code: str,
+        version: str | None = None,
+        display: str | None = None,
+    ) -> dict[str, Any]:
+        """Verify a proposed out-of-reference standard code at Build Time."""
+        params = {"url": system_url, "code": code}
+        if version:
+            params["version"] = version
+        if display:
+            params["display"] = display
+        response = self._get(
+            "CodeSystem/$validate-code",
+            params,
+            expected={"Parameters"},
+        )
+        result: dict[str, Any] = {"resource": response}
+        for parameter in response.get("parameter", []):
+            name = parameter.get("name")
+            if not name:
+                continue
+            value_key = next(
+                (key for key in parameter if key.startswith("value")),
+                None,
+            )
+            if value_key:
+                result[name] = parameter[value_key]
+        if not isinstance(result.get("result"), bool):
+            raise FhirValueSetServiceError(
+                "CodeSystem $validate-code did not return a boolean result"
             )
         return result

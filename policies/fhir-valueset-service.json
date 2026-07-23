@@ -1,6 +1,6 @@
 {
   "id": "policy.fhir-valueset-service",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "status": "research_only",
   "review_status": "unreviewed",
   "purpose": "Use STOM FHIR R4 ValueSet services for Build-Time terminology discovery, expansion and validation without coupling Interview Runtime to a terminology server.",
@@ -32,6 +32,16 @@
     "timeout_seconds": 20
   },
   "value_set_workflow": {
+    "reference_first_reconciliation": [
+      "identify_reference_canonical_version_and_membership_definition",
+      "search_same_canonical_and_version",
+      "compare_normalized_compose_or_expansion_membership",
+      "reuse_an_exact_reference_when_present",
+      "report_content_equivalent_resources_with_other_canonicals_as_duplicate_candidates_only",
+      "never_substitute_a_different_canonical_based_only_on_membership_equivalence",
+      "if_absent_publish_the_reference_resource_without_semantic_modification",
+      "never_overwrite_a_canonical_version_with_different_membership"
+    ],
     "external_standard_valueset": [
       "search_by_canonical_url_and_optional_version",
       "expand_with_canonical_url",
@@ -45,8 +55,21 @@
       "do_not_assume_the_server_knows_the_project_canonical",
       "publish_or_register_only_in_an_explicit_authenticated_deployment_step",
       "search_canonical_and_check_id_collision_before_create",
-      "use_server_version_id_with_If-Match_before_update",
+      "reuse_an_existing_identical_canonical_version_without_writing",
+      "refuse_an_existing_canonical_version_with_different_membership",
+      "never_update_an_existing_ValueSet_through_the_reconciliation_publisher",
       "verify_returned_canonical_after_write"
+    ],
+    "application_extension": [
+      "never_add_codes_to_the_reference_ValueSet",
+      "create_a_separate_a-extended-{semantic-name}_ValueSet",
+      "import_the_reference_as_compose.include.valueSet_with_version_when_available",
+      "add_only_needed_individually_verified_standard_codes",
+      "require_verification_source_for_every_added_code",
+      "allow_local_codes_only_by_explicit_exception",
+      "record_the_reference_canonical_in_origin_extension_and_purpose",
+      "use_open-choice_for_dynamic_extensible_question_projection",
+      "retain_choice_for_closed_required_or_source_defined_items"
     ],
     "source_defined_fixed_questionnaire": "excluded_from_automatic_mapping_and_valueset_replacement_unless_explicitly_requested",
     "server_failure": "use_only_a_versioned_previously_verified_artifact_or_local_compiled_ValueSet_and_mark_live_verification_unavailable"
@@ -64,7 +87,7 @@
     "valueset_total_before_project_publication": 2568,
     "observed_interactions": ["create", "delete", "read", "search-type", "update"],
     "observed_operations": ["$compare", "$expand", "$validate-code"],
-    "mutation_operations_authorized_for_this_platform": false,
+    "mutation_operations_authorized_for_this_platform": "explicit_authenticated_PUT_only",
     "probe_valueset": "http://terminology.hl7.org/ValueSet/yes-no-unknown-not-applicable",
     "probe_result": "search_expand_validate_code_passed",
     "project_publication": {
@@ -83,7 +106,10 @@
     "label_similarity_does_not_establish_equivalence": true,
     "no_automatic_POST_PUT_DELETE": true,
     "explicit_authenticated_PUT_for_publication": true,
-    "no_patient_text_or_response_is_sent": true
+    "no_patient_text_or_response_is_sent": true,
+    "reference_valueset_is_never_mutated": true,
+    "content_equivalence_does_not_erase_reference_provenance": true,
+    "fixed_instrument_valuesets_are_closed_unless_explicitly_authorized": true
   },
   "provenance": {
     "created_by": {"type": "ai", "id": "codex-gpt5"},

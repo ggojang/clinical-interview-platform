@@ -88,6 +88,20 @@ class FakeTransport:
                     {"name": "display", "valueString": "Yes" if valid else ""},
                 ],
             }
+        if parsed.path.endswith("/CodeSystem/$validate-code"):
+            valid = query["code"][0] == "261665006"
+            return 200, {
+                "resourceType": "Parameters",
+                "parameter": [
+                    {"name": "result", "valueBoolean": valid},
+                    {
+                        "name": "display",
+                        "valueString": "Unknown (qualifier value)",
+                    },
+                    {"name": "system", "valueUri": query["url"][0]},
+                    {"name": "code", "valueCode": query["code"][0]},
+                ],
+            }
         raise AssertionError(f"unexpected URL: {url}")
 
 
@@ -140,6 +154,14 @@ class FhirValueSetServiceTest(unittest.TestCase):
         for url in self.transport.urls:
             self.assertIn("_format=json", url)
             self.assertNotIn("/_history", url)
+
+    def test_out_of_reference_standard_code_uses_codesystem_validation(self):
+        result = self.service.validate_codesystem_code(
+            "http://snomed.info/sct",
+            code="261665006",
+        )
+        self.assertTrue(result["result"])
+        self.assertEqual(result["display"], "Unknown (qualifier value)")
 
     def test_validate_code_requires_boolean_result(self):
         def invalid_transport(url: str, timeout: int):
@@ -212,6 +234,45 @@ class FhirValueSetServiceTest(unittest.TestCase):
         self.assertFalse(result["response_body_present"])
         self.assertTrue(result["post_write_canonical_verified"])
         self.assertNotIn("not-recorded", json.dumps(result))
+
+    def test_publication_verifies_the_created_version(self):
+        resource = {
+            "resourceType": "ValueSet",
+            "id": "versioned-reference",
+            "url": "https://example.org/fhir/ValueSet/versioned-reference",
+            "version": "2.0.0",
+            "status": "active",
+            "compose": {
+                "include": [{
+                    "system": "http://snomed.info/sct",
+                    "concept": [{"code": "373066001"}],
+                }]
+            },
+        }
+        observed = {}
+
+        class ReadService:
+            def search_by_canonical(
+                self, canonical, version=None, count=2
+            ):
+                observed["version"] = version
+                return [{**resource, "url": canonical}]
+
+        publisher = FhirValueSetPublisher(
+            base_url=DEFAULT_BASE_URL,
+            api_key="not-recorded",
+            read_service=ReadService(),
+            write_transport=lambda *args: (201, {}, {}),
+        )
+        publisher.apply({
+            "action": "create",
+            "canonical": resource["url"],
+            "local_id": resource["id"],
+            "server_id": resource["id"],
+            "server_version_id": None,
+            "resource": resource,
+        })
+        self.assertEqual(observed["version"], "2.0.0")
 
     def test_dotenv_token_is_loaded_without_logging_contract(self):
         with tempfile.TemporaryDirectory() as directory:

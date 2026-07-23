@@ -68,9 +68,12 @@ python tools/validator/validate.py
 python tools/validator/audit_uscdi_interoperability.py --output coverage/uscdi-interoperability-latest.json
 python tools/validator/audit_question_answer_terminology.py --output coverage/question-answer-terminology-latest.json
 python tools/validator/check_fhir_valueset_service.py --base-url http://localhost:8088/fhir --output coverage/stom-fhir-valueset-latest.json
+python tools/validator/audit_reference_valuesets.py --base-url http://localhost:8088/fhir --output coverage/reference-valueset-reconciliation-latest.json
 python tools/fhir/build_question_answer_codesystems.py
 python tools/fhir/build_answer_valuesets.py
 python tools/fhir/publish_answer_valuesets.py --base-url http://localhost:8088/fhir
+python tools/fhir/reconcile_reference_valueset.py --reference-file /path/to/reference-valueset.json --base-url http://localhost:8088/fhir
+python tools/fhir/build_extended_valueset.py --reference-file /path/to/reference-valueset.json --additions-file /path/to/verified-additions.json --semantic-name example --title "Extended example answers" --description "Application-specific extension" --date 2026-07-23 --output /tmp/a-extended-example.json
 # Authenticated publication (TERM_ADMIN_TOKEN is read without being logged):
 python tools/fhir/publish_answer_valuesets.py --base-url http://localhost:8088/fhir --env-file /path/to/.env.local --apply --output coverage/stom-fhir-valueset-publication-latest.json
 python builder/build_knowledge.py --profile cough --report builder/latest-report.json

@@ -126,9 +126,31 @@ generated and validated in the repository. They are not assumed to exist on
 STOM and are never silently uploaded. Server registration is a separate,
 explicitly invoked deployment action using `TERM_ADMIN_TOKEN` as an
 `X-API-Key`. Publication first checks canonical duplicates and resource-id
-collisions, uses `If-Match` for an existing version, and verifies the returned
-canonical. A terminology-server failure cannot block an interview or change a
-clinical safety decision.
+collisions. An existing identical canonical/version is reused without a write,
+and an existing canonical/version with different membership is rejected. The
+reconciliation publisher only creates absent ValueSets and never updates an
+existing ValueSet. It verifies the returned canonical after creation. A
+terminology-server failure cannot block an interview or change a clinical
+safety decision.
+
+Reference ValueSets are reconciled before creation. The Builder first checks
+canonical URL and version, then compares an order- and display-insensitive
+fingerprint of `compose` or a materialized `expansion`. An identical existing
+ValueSet with the same canonical/version is reused. Matching membership under a
+different canonical is reported as a duplicate-content candidate, but never
+substituted because canonical identity is semantically significant. If the
+requested canonical/version is absent, the reference ValueSet is published
+without semantic modification. A canonical/version collision with different
+membership is an error and is never overwritten.
+
+An application-specific extension never edits the reference. It creates a
+separate `a-extended-*` ValueSet whose first `compose.include.valueSet` imports
+the versioned reference canonical and whose remaining includes contain only
+needed, individually verified additional codes. Every additional code records
+its verification source; local codes require an explicit exception. Dynamic
+extensible items project as FHIR R4 `open-choice`. Required closed items and
+source-defined instruments remain `choice` and retain their official answer
+sets.
 
 The complete policy is defined in
 `policies/question-answer-terminology-binding.json` and
