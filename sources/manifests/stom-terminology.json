@@ -1,6 +1,6 @@
 {
   "id": "source-manifest.stom-terminology",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "status": "research_only",
   "review_status": "unreviewed",
   "acquired_at": "2026-07-14T00:00:00Z",
@@ -36,6 +36,47 @@
         "HIRA medication search and detail lookup",
         "HIRA therapeutic-material search and detail lookup"
       ]
+    },
+    {
+      "id": "source.stom.fhir-r4-terminology-server.local",
+      "kind": "terminology_server",
+      "publisher": "Infoclinic",
+      "title": "Local STOM FHIR R4 Terminology Server",
+      "version": "1.0.0",
+      "fhir_version": "4.0.1",
+      "url": "http://localhost:8088/fhir",
+      "capability_statement": "http://localhost:8088/fhir/metadata",
+      "license_status": "local_research_environment",
+      "complete": false,
+      "digest": "live_service_not_cached",
+      "monitor_profile": "terminology_server",
+      "monitor_interval_days": 30,
+      "last_monitored_at": "2026-07-23",
+      "next_monitor_at": "2026-08-22",
+      "verified_read_operations": [
+        "FHIR ValueSet canonical search",
+        "FHIR ValueSet $expand",
+        "FHIR ValueSet $validate-code"
+      ],
+      "valueset_service_observation": {
+        "endpoint": "http://localhost:8088/fhir",
+        "checked_at": "2026-07-23",
+        "fhir_version": "4.0.1",
+        "software": "STOM Terminology Server 1.0.0",
+        "resource_count_before_project_publication": 2568,
+        "probe_canonical": "http://terminology.hl7.org/ValueSet/yes-no-unknown-not-applicable",
+        "search_result": "pass",
+        "expand_result": "pass",
+        "validate_code_valid_and_invalid_results": "pass",
+        "project_valueset_publication": {
+          "authenticated_header": "X-API-Key",
+          "secret_recorded": false,
+          "resource_count": 284,
+          "created": 284,
+          "post_write_canonical_verified": 284,
+          "post_publication_dry_run_unchanged": 284
+        }
+      }
     }
   ],
   "limitations": [
@@ -50,16 +91,21 @@
     "When both SNOMED CT and KCD/HIRA codings are verified, both remain available with an explicit mapping relation; label similarity alone is insufficient for equivalence.",
     "Only minimal de-identified normalized terms may be sent at Runtime.",
     "The service is optional at Runtime; failure must not block safety assessment or the interview.",
-    "Production use requires licensing, privacy, availability and conformance review."
+    "Production use requires licensing, privacy, availability and conformance review.",
+    "ValueSet create, update and delete are declared by the local server, but only explicit authenticated PUT publication is authorized for this platform.",
+    "Project-owned a-sct, a-loinc, a-local and a-mixed ValueSets must pass local validation and collision checks before publication."
   ],
   "provenance": {
     "created_by": {"type": "ai", "id": "codex-gpt5"},
     "created_at": "2026-07-14T00:00:00Z",
     "source_refs": [
       "https://stom.infoclinic.co/fhir/metadata",
-      "https://stom.infoclinic.co/v2/api-docs"
+      "https://stom.infoclinic.co/v2/api-docs",
+      "http://localhost:8088/fhir/metadata",
+      "coverage/stom-fhir-valueset-latest.json",
+      "coverage/stom-fhir-valueset-publication-latest.json"
     ],
     "review_status": "unreviewed",
-    "version": "0.5.0"
+    "version": "0.6.0"
   }
 }

@@ -115,8 +115,24 @@ Mapping search checks official LOINC panels and Answer Lists, HL7 FHIR and US
 Core artifacts, NLM VSAC where access and licensing permit, SNOMED CT
 implementation artifacts, and STOM before a new local code is accepted.
 
+STOM FHIR R4 ValueSet services are used at Build Time. The initial primary
+endpoint is `http://localhost:8088/fhir`; the remote fallback is
+`https://stom.infoclinic.co/fhir`. External standard ValueSets are resolved by
+canonical URL and optional version, expanded with `ValueSet/$expand`, and
+candidate coded answers are checked with `ValueSet/$validate-code`.
+
+Project-owned `a-sct-*`, `a-loinc-*`, `a-local-*`, and `a-mixed-*` ValueSets are
+generated and validated in the repository. They are not assumed to exist on
+STOM and are never silently uploaded. Server registration is a separate,
+explicitly invoked deployment action using `TERM_ADMIN_TOKEN` as an
+`X-API-Key`. Publication first checks canonical duplicates and resource-id
+collisions, uses `If-Match` for an existing version, and verifies the returned
+canonical. A terminology-server failure cannot block an interview or change a
+clinical safety decision.
+
 The complete policy is defined in
-`policies/question-answer-terminology-binding.json`.
+`policies/question-answer-terminology-binding.json` and
+`policies/fhir-valueset-service.json`.
 
 ---
 
@@ -253,6 +269,11 @@ STOM is a Build-Time terminology provider.
 Runtime never communicates with STOM.
 
 Acquired terminology content is cached, versioned and licensed before use.
+
+The ValueSet adapter is GET-only and supports capability discovery, canonical
+search, expansion and code validation. Although the server may advertise
+create, update and delete interactions, those interactions are outside this
+adapter's authority.
 
 ---
 

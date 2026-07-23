@@ -1,0 +1,99 @@
+{
+  "id": "policy.fhir-valueset-service",
+  "version": "0.1.0",
+  "status": "research_only",
+  "review_status": "unreviewed",
+  "purpose": "Use STOM FHIR R4 ValueSet services for Build-Time terminology discovery, expansion and validation without coupling Interview Runtime to a terminology server.",
+  "endpoint_order": [
+    {
+      "id": "stom-local",
+      "base_url": "http://localhost:8088/fhir",
+      "priority": 1,
+      "role": "primary_build_time",
+      "availability": "local_environment"
+    },
+    {
+      "id": "stom-remote",
+      "base_url": "https://stom.infoclinic.co/fhir",
+      "priority": 2,
+      "role": "remote_build_time_fallback",
+      "availability": "network_and_authorization_dependent"
+    }
+  ],
+  "configuration": {
+    "environment_variable": "CLINICAL_INTERVIEW_FHIR_TERMINOLOGY_BASE_URL",
+    "default_base_url": "http://localhost:8088/fhir",
+    "fhir_version": "4.0.1",
+    "read_only_terminology_adapter": true,
+    "allowed_terminology_http_methods": ["GET"],
+    "authenticated_publication_method": "PUT",
+    "authenticated_publication_header": "X-API-Key",
+    "authenticated_publication_token_variable": "TERM_ADMIN_TOKEN",
+    "timeout_seconds": 20
+  },
+  "value_set_workflow": {
+    "external_standard_valueset": [
+      "search_by_canonical_url_and_optional_version",
+      "expand_with_canonical_url",
+      "validate_candidate_code_with_canonical_url_system_code",
+      "record_server_software_terminology_version_timestamp_and_result",
+      "reference_the_verified_canonical_in_Questionnaire.answerValueSet"
+    ],
+    "project_generated_valueset": [
+      "build_a-sct_a-loinc_a-local_or_a-mixed_resource_in_repository",
+      "validate_complete_compose_and_local_code_coverage",
+      "do_not_assume_the_server_knows_the_project_canonical",
+      "publish_or_register_only_in_an_explicit_authenticated_deployment_step",
+      "search_canonical_and_check_id_collision_before_create",
+      "use_server_version_id_with_If-Match_before_update",
+      "verify_returned_canonical_after_write"
+    ],
+    "source_defined_fixed_questionnaire": "excluded_from_automatic_mapping_and_valueset_replacement_unless_explicitly_requested",
+    "server_failure": "use_only_a_versioned_previously_verified_artifact_or_local_compiled_ValueSet_and_mark_live_verification_unavailable"
+  },
+  "required_capabilities": {
+    "resource": "ValueSet",
+    "interactions": ["read", "search-type"],
+    "operations": ["$expand", "$validate-code"]
+  },
+  "observed_local_server": {
+    "checked_at": "2026-07-23",
+    "software_name": "STOM Terminology Server",
+    "software_version": "1.0.0",
+    "fhir_version": "4.0.1",
+    "valueset_total_before_project_publication": 2568,
+    "observed_interactions": ["create", "delete", "read", "search-type", "update"],
+    "observed_operations": ["$compare", "$expand", "$validate-code"],
+    "mutation_operations_authorized_for_this_platform": false,
+    "probe_valueset": "http://terminology.hl7.org/ValueSet/yes-no-unknown-not-applicable",
+    "probe_result": "search_expand_validate_code_passed",
+    "project_publication": {
+      "resource_count": 284,
+      "created": 284,
+      "post_write_canonical_verified": 284,
+      "post_publication_dry_run_unchanged": 284,
+      "representative_snomed_local_and_mixed_validation": "passed"
+    }
+  },
+  "safety_boundaries": {
+    "runtime_terminology_lookup_required": false,
+    "terminology_result_does_not_select_questions": true,
+    "terminology_result_does_not_set_urgency": true,
+    "terminology_result_does_not_establish_diagnosis": true,
+    "label_similarity_does_not_establish_equivalence": true,
+    "no_automatic_POST_PUT_DELETE": true,
+    "explicit_authenticated_PUT_for_publication": true,
+    "no_patient_text_or_response_is_sent": true
+  },
+  "provenance": {
+    "created_by": {"type": "ai", "id": "codex-gpt5"},
+    "created_at": "2026-07-23T00:00:00Z",
+    "source_refs": [
+      "http://localhost:8088/fhir/metadata",
+      "http://localhost:8088/fhir/ValueSet",
+      "http://hl7.org/fhir/R4/valueset-operation-expand.html",
+      "http://hl7.org/fhir/R4/valueset-operation-validate-code.html"
+    ],
+    "review_status": "unreviewed"
+  }
+}

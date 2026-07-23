@@ -67,8 +67,12 @@ Python 3.11+ is recommended. No third-party package is required for the starter 
 python tools/validator/validate.py
 python tools/validator/audit_uscdi_interoperability.py --output coverage/uscdi-interoperability-latest.json
 python tools/validator/audit_question_answer_terminology.py --output coverage/question-answer-terminology-latest.json
+python tools/validator/check_fhir_valueset_service.py --base-url http://localhost:8088/fhir --output coverage/stom-fhir-valueset-latest.json
 python tools/fhir/build_question_answer_codesystems.py
 python tools/fhir/build_answer_valuesets.py
+python tools/fhir/publish_answer_valuesets.py --base-url http://localhost:8088/fhir
+# Authenticated publication (TERM_ADMIN_TOKEN is read without being logged):
+python tools/fhir/publish_answer_valuesets.py --base-url http://localhost:8088/fhir --env-file /path/to/.env.local --apply --output coverage/stom-fhir-valueset-publication-latest.json
 python builder/build_knowledge.py --profile cough --report builder/latest-report.json
 python builder/build_knowledge.py --profile fever --report builder/latest-fever-report.json
 python builder/build_knowledge.py --profile dyspnea --report builder/latest-dyspnea-report.json
