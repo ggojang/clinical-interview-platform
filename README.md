@@ -66,6 +66,8 @@ Python 3.11+ is recommended. No third-party package is required for the starter 
 ```bash
 python tools/validator/validate.py
 python tools/validator/audit_uscdi_interoperability.py --output coverage/uscdi-interoperability-latest.json
+python tools/validator/audit_question_answer_terminology.py --output coverage/question-answer-terminology-latest.json
+python tools/fhir/build_question_answer_codesystems.py
 python builder/build_knowledge.py --profile cough --report builder/latest-report.json
 python builder/build_knowledge.py --profile fever --report builder/latest-fever-report.json
 python builder/build_knowledge.py --profile dyspnea --report builder/latest-dyspnea-report.json

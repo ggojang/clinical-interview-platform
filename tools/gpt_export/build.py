@@ -7,7 +7,13 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import sys
 from typing import Any
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
+
+from interoperability.question_answer import enrich_clinician_context
 
 
 VERSION = "1.46.0"
@@ -496,9 +502,10 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
     workflow_facts = load_json(
         root / "knowledge" / "shared" / "encounter-workflow-facts.json"
     )
-    clinician_context = sanitize(
+    clinician_context, _ = enrich_clinician_context(
         load_json(root / "knowledge" / "shared" / "clinician-submission-context.json")
     )
+    clinician_context = sanitize(clinician_context)
     uscdi_core = sanitize(load_json(
         root / "mappings" / "interoperability" / "uscdi-v6-core.json"
     ))
@@ -511,11 +518,23 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
     uscdi_coverage = sanitize(load_json(
         root / "coverage" / "uscdi-interoperability-latest.json"
     ))
+    question_answer_policy = sanitize(load_json(
+        root / "policies" / "question-answer-terminology-binding.json"
+    ))
+    question_answer_registry = sanitize(load_json(
+        root / "mappings" / "terminology" / "question-answer-bindings.json"
+    ))
+    question_answer_coverage = sanitize(load_json(
+        root / "coverage" / "question-answer-terminology-latest.json"
+    ))
     for document, resource_type in (
         (uscdi_core, "UscdiCoreInteroperabilityOverlay"),
         (uscdi_plus, "UscdiPlusDomainOverlayCatalog"),
         (uscdi_policy, "UscdiInteroperabilityPolicy"),
         (uscdi_coverage, "UscdiInteroperabilityCoverageReport"),
+        (question_answer_policy, "QuestionAnswerTerminologyPolicy"),
+        (question_answer_registry, "QuestionAnswerTerminologyRegistry"),
+        (question_answer_coverage, "QuestionAnswerTerminologyCoverageReport"),
     ):
         document["resource_type"] = resource_type
         document["contains_patient_responses"] = False
@@ -650,6 +669,9 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
         "interoperability/uscdi-plus-domain-overlays.json": uscdi_plus,
         "interoperability/uscdi-policy.json": uscdi_policy,
         "interoperability/uscdi-coverage.json": uscdi_coverage,
+        "interoperability/question-answer-policy.json": question_answer_policy,
+        "interoperability/question-answer-bindings.json": question_answer_registry,
+        "interoperability/question-answer-coverage.json": question_answer_coverage,
         "hira-adequacy-assessments.json": hira_assessment_catalog,
     }
     resources.update(hira_programs)
@@ -918,6 +940,9 @@ def build(root: Path, output: Path) -> dict[str, Any]:
         "uscdi_interoperability_policy": resources[
             "interoperability/uscdi-policy.json"
         ],
+        "question_answer_terminology_policy": resources[
+            "interoperability/question-answer-policy.json"
+        ],
         "preferred_loading": {
             "catalog_operation": "getReasonForEncounters",
             "common_operation": "getCommonInterviewFacts",
@@ -927,6 +952,11 @@ def build(root: Path, output: Path) -> dict[str, Any]:
                 "/gpt/interoperability/uscdi-plus-domain-overlays.json",
                 "/gpt/interoperability/uscdi-policy.json",
                 "/gpt/interoperability/uscdi-coverage.json"
+            ],
+            "question_answer_terminology": [
+                "/gpt/interoperability/question-answer-policy.json",
+                "/gpt/interoperability/question-answer-bindings.json",
+                "/gpt/interoperability/question-answer-coverage.json"
             ],
             "rfe_operations": [
                 "getReasonForEncounterRules",

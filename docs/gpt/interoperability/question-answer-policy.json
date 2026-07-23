@@ -1,0 +1,106 @@
+{
+  "answer_binding": {
+    "coded_clinical_answers": "use_verified_SNOMED_CT_when_the_answer_concept_is_represented",
+    "data_absent_rule": "unknown_declined_not_asked_and_not_applicable_states_are_not_negative_answers_and_use_FHIR_DataAbsentReason_when_semantically_applicable",
+    "local_fallback_required": true,
+    "preferred_system_order": [
+      "http://snomed.info/sct",
+      "https://ggojang.github.io/clinical-interview-platform/fhir/CodeSystem/clinical-interview-answer"
+    ],
+    "primitive_answers": {
+      "boolean": "QuestionnaireResponse.answer.valueBoolean",
+      "date": "QuestionnaireResponse.answer.valueDate",
+      "dateTime": "QuestionnaireResponse.answer.valueDateTime",
+      "integer": "QuestionnaireResponse.answer.valueInteger",
+      "quantity": "QuestionnaireResponse.answer.valueQuantity_with_UCUM_when_a_unit_is_known",
+      "rule": "do_not_invent_a_SNOMED_or_local_answer_code_for_a_literal_measurement_date_or_narrative",
+      "string": "QuestionnaireResponse.answer.valueString"
+    },
+    "source_defined_instrument_answers": "retain_the_official_answer_code_system_and_answer_list;_add_SNOMED_only_when_a_verified_equivalent_exists"
+  },
+  "contains_patient_responses": false,
+  "fhir_r4_projection": {
+    "coded_answer_option": "Questionnaire.item.answerOption.valueCoding_or_answerValueSet",
+    "coded_response": "QuestionnaireResponse.item.answer.valueCoding",
+    "literal_response": "QuestionnaireResponse.item.answer.value_x",
+    "preserve_local_code_alongside_standard_code": true,
+    "question": "Questionnaire.item.code",
+    "question_response_link": "Questionnaire.item.linkId_equals_QuestionnaireResponse.item.linkId"
+  },
+  "id": "policy.question-answer-terminology-binding",
+  "mapping_relations": [
+    "exact",
+    "equivalent",
+    "broader",
+    "narrower",
+    "partial",
+    "related",
+    "unmapped"
+  ],
+  "mapping_requirements": [
+    "internal_object_identifier",
+    "system",
+    "code",
+    "display",
+    "mapping_relation",
+    "terminology_version",
+    "verification_source",
+    "verified_at",
+    "review_status",
+    "confidence"
+  ],
+  "provenance": {
+    "created_at": "2026-07-23T00:00:00Z",
+    "created_by": {
+      "id": "codex-gpt5",
+      "type": "ai"
+    },
+    "review_status": "unreviewed",
+    "source_refs": [
+      "https://hl7.org/fhir/R4/questionnaire.html",
+      "https://loinc.org/fhir/",
+      "https://loinc.org/answer-file/",
+      "https://docs.snomed.org/snomed-ct-practical-guides/snomed-ct-starter-guide/6-snomed-ct-concept-model",
+      "source.stom.fhir-r4-terminology-server",
+      "docs/context/024-interoperability-and-fhir.md"
+    ],
+    "version": "0.1.0"
+  },
+  "purpose": "Bind every interview question and coded answer without overstating semantic equivalence.",
+  "question_binding": {
+    "fhir_item_code_rule": "emit_the_local_code_and_only_verified_exact_or_equivalent_standard_mappings",
+    "local_code_is_internal_question_id": true,
+    "local_fallback_required": true,
+    "loinc_use": "preferred_for_a_verified_observable_or_assessment_question",
+    "non_equivalent_mapping_rule": "retain_in_mapping_metadata_but_do_not_emit_as_an_equivalent_Questionnaire.item.code",
+    "preferred_system_order": [
+      "http://loinc.org",
+      "http://snomed.info/sct",
+      "https://ggojang.github.io/clinical-interview-platform/fhir/CodeSystem/clinical-interview-question"
+    ],
+    "snomed_use": "secondary_for_a_verified_observable_entity_or_related_clinical_semantic"
+  },
+  "refresh": {
+    "interval_days": 30,
+    "last_verified_at": "2026-07-23",
+    "next_verification_at": "2026-08-22",
+    "policy_id": "policy.knowledge-refresh",
+    "profile": "terminology_server"
+  },
+  "resource_type": "QuestionAnswerTerminologyPolicy",
+  "review_status": "unreviewed",
+  "safety_boundaries": {
+    "composite_question_cannot_inherit_an_atomic_code_as_exact": true,
+    "label_similarity_cannot_establish_equivalence": true,
+    "never_convert_unknown_or_declined_to_false": true,
+    "runtime_terminology_lookup_required": false,
+    "terminology_mapping_does_not_control_question_priority_or_safety": true,
+    "unmapped_does_not_block_research_test_collection": true
+  },
+  "status": "research_only",
+  "terminology_versions": {
+    "LOINC": "2.82",
+    "SNOMED_CT_International": "http://snomed.info/sct/900000000000207008/version/20260701"
+  },
+  "version": "0.1.0"
+}

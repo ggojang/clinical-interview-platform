@@ -234,6 +234,15 @@
           "telephone",
           "video"
         ],
+        "semantic_binding": {
+          "standard_mappings": [
+            {
+              "code": "81680005",
+              "mapping_relation": "related",
+              "system": "http://snomed.info/sct"
+            }
+          ]
+        },
         "template_id": "question.neck-pain.site-laterality",
         "wording": "목 앞·뒤·옆, 목덜미 또는 어깨선 중 정확한 부위와 왼쪽·오른쪽·가운데, 퍼지는 범위를 알려주세요."
       },
@@ -267,6 +276,15 @@
           "telephone",
           "video"
         ],
+        "semantic_binding": {
+          "standard_mappings": [
+            {
+              "code": "161882006",
+              "mapping_relation": "related",
+              "system": "http://snomed.info/sct"
+            }
+          ]
+        },
         "template_id": "question.neck-pain.meningeal-warning",
         "wording": "발열과 심한 두통·목 경직이 함께 있으면서 혼란, 반복 구토, 빛이 몹시 불편함 또는 눌러도 사라지지 않는 발진이 있나요?"
       },
@@ -520,6 +538,15 @@
           "telephone",
           "video"
         ],
+        "semantic_binding": {
+          "standard_mappings": [
+            {
+              "code": "54404000",
+              "mapping_relation": "related",
+              "system": "http://snomed.info/sct"
+            }
+          ]
+        },
         "template_id": "question.neck-pain.radiation",
         "wording": "통증이나 이상감각이 뒤통수·어깨·날개뼈·팔·손 또는 가슴으로 뻗치나요? 어느 쪽 어느 손가락까지인지 알려주세요."
       },
@@ -7832,6 +7859,10 @@
           "established_cervical_condition_followup",
           "other_unclear"
         ],
+        "answer_semantic_binding": {
+          "policy_id": "policy.question-answer-terminology-binding",
+          "strategy": "SNOMED_CT_then_local_coded_fallback"
+        },
         "description": "",
         "display": "Primary Neck Presentation",
         "extraction_cues": [],
@@ -9033,6 +9064,15 @@
           ],
           "version": "0.1.0"
         },
+        "semantic_binding": {
+          "standard_mappings": [
+            {
+              "code": "161882006",
+              "mapping_relation": "related",
+              "system": "http://snomed.info/sct"
+            }
+          ]
+        },
         "source_manifest": "source-manifest.primary-care-neck-pain-research",
         "status": "research_only",
         "type": "QuestionTemplate",
@@ -9429,6 +9469,15 @@
           ],
           "version": "0.1.0"
         },
+        "semantic_binding": {
+          "standard_mappings": [
+            {
+              "code": "54404000",
+              "mapping_relation": "related",
+              "system": "http://snomed.info/sct"
+            }
+          ]
+        },
         "source_manifest": "source-manifest.primary-care-neck-pain-research",
         "status": "research_only",
         "type": "QuestionTemplate",
@@ -9572,6 +9621,15 @@
             "source.stom.neck-pain.20260716"
           ],
           "version": "0.1.0"
+        },
+        "semantic_binding": {
+          "standard_mappings": [
+            {
+              "code": "81680005",
+              "mapping_relation": "related",
+              "system": "http://snomed.info/sct"
+            }
+          ]
         },
         "source_manifest": "source-manifest.primary-care-neck-pain-research",
         "status": "research_only",
@@ -11145,9 +11203,61 @@
       "sources/manifests/primary-care-neck-pain.json",
       "mappings/interoperability/uscdi-v6-core.json",
       "mappings/interoperability/uscdi-plus-domain-overlays.json",
-      "policies/uscdi-interoperability-overlay.json"
+      "policies/uscdi-interoperability-overlay.json",
+      "mappings/terminology/question-answer-bindings.json",
+      "policies/question-answer-terminology-binding.json"
     ],
     "version": "0.1.0"
+  },
+  "question_answer_terminology": {
+    "boolean_snomed_semantic_equivalents": {
+      "false": {
+        "code": "373067005",
+        "mapping_relation": "equivalent",
+        "system": "http://snomed.info/sct"
+      },
+      "true": {
+        "code": "373066001",
+        "mapping_relation": "equivalent",
+        "system": "http://snomed.info/sct"
+      }
+    },
+    "coverage": {
+      "boolean_primitive_question_count": 10,
+      "coded_answer_local_fallback_count": 6,
+      "coded_answer_snomed_count": 0,
+      "coded_answer_snomed_percent": 0.0,
+      "coded_answer_value_count": 6,
+      "data_absent_option_count": 0,
+      "other_primitive_question_count": 31,
+      "question_count": 42,
+      "question_local_code_count": 42,
+      "question_local_only_count": 39,
+      "question_loinc_exact_or_equivalent_count": 0,
+      "question_loinc_exact_or_equivalent_percent": 0.0,
+      "question_loinc_partial_or_related_count": 0,
+      "question_snomed_secondary_count": 3
+    },
+    "local_answer_code_pattern": "{fact_id}--{internal_value}",
+    "local_answer_code_system": "https://ggojang.github.io/clinical-interview-platform/fhir/CodeSystem/clinical-interview-answer",
+    "local_question_code_is_template_id": true,
+    "local_question_code_system": "https://ggojang.github.io/clinical-interview-platform/fhir/CodeSystem/clinical-interview-question",
+    "policy_id": "policy.question-answer-terminology-binding",
+    "policy_version": "0.1.0",
+    "primitive_answer_projection": {
+      "boolean": "QuestionnaireResponse.answer.valueBoolean",
+      "date": "QuestionnaireResponse.answer.valueDate",
+      "dateTime": "QuestionnaireResponse.answer.valueDateTime",
+      "integer": "QuestionnaireResponse.answer.valueInteger",
+      "quantity": "QuestionnaireResponse.answer.valueQuantity_with_UCUM_when_a_unit_is_known",
+      "rule": "do_not_invent_a_SNOMED_or_local_answer_code_for_a_literal_measurement_date_or_narrative",
+      "string": "QuestionnaireResponse.answer.valueString"
+    },
+    "registry_id": "mapping.question-answer-bindings",
+    "registry_version": "0.1.0",
+    "review_status": "unreviewed",
+    "runtime_terminology_lookup_required": false,
+    "status": "research_only"
   },
   "refresh_policy": {
     "calculation": {
@@ -15793,7 +15903,7 @@
       "rfe.neck_pain"
     ]
   },
-  "semantic_digest": "sha256:52b466404b8fc795e1f5cc36c1bcb7619b21dfd22a19ff2ab6291f944c49aef1",
+  "semantic_digest": "sha256:ffd7f8fc94b7495ae3295ad14c47b85d2b9fd7ddd69ba896d81bbb751cf7ac57",
   "simulations": [
     {
       "expected": {

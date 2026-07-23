@@ -1908,6 +1908,10 @@
         "all_due",
         "current"
       ],
+      "answer_semantic_binding": {
+        "policy_id": "policy.question-answer-terminology-binding",
+        "strategy": "SNOMED_CT_then_local_coded_fallback"
+      },
       "display": "Longitudinal Context Review State",
       "display_ko": "기본 건강정보 확인 시점",
       "id": "encounter.context_review_state",
@@ -1945,6 +1949,22 @@
         "another_clinical_context",
         "not_clinically_relevant"
       ],
+      "answer_semantic_binding": {
+        "policy_id": "policy.question-answer-terminology-binding",
+        "snomed_mappings": {
+          "female": {
+            "code": "248152002",
+            "mapping_relation": "equivalent",
+            "system": "http://snomed.info/sct"
+          },
+          "male": {
+            "code": "248153007",
+            "mapping_relation": "equivalent",
+            "system": "http://snomed.info/sct"
+          }
+        },
+        "strategy": "SNOMED_CT_then_local_coded_fallback"
+      },
       "display": "Sex or Anatomy Context Relevant to Clinical Care",
       "display_ko": "진료에 필요한 성별·해부학적 정보",
       "id": "patient.sex_for_clinical_care",
@@ -2050,6 +2070,27 @@
         "former",
         "never"
       ],
+      "answer_semantic_binding": {
+        "policy_id": "policy.question-answer-terminology-binding",
+        "snomed_mappings": {
+          "current": {
+            "code": "449868002",
+            "mapping_relation": "narrower",
+            "system": "http://snomed.info/sct"
+          },
+          "former": {
+            "code": "8517006",
+            "mapping_relation": "equivalent",
+            "system": "http://snomed.info/sct"
+          },
+          "never": {
+            "code": "266919005",
+            "mapping_relation": "equivalent",
+            "system": "http://snomed.info/sct"
+          }
+        },
+        "strategy": "SNOMED_CT_then_local_coded_fallback"
+      },
       "display": "Smoking Status",
       "display_ko": "흡연 상태",
       "id": "patient.smoking.status",
@@ -2186,6 +2227,25 @@
     ],
     "version": "0.2.0"
   },
+  "question_answer_terminology": {
+    "coverage": {
+      "question_count": 20,
+      "question_local_code_count": 20,
+      "question_local_only_count": 10,
+      "question_loinc_exact_or_equivalent_count": 6,
+      "question_loinc_exact_or_equivalent_percent": 30.0,
+      "question_loinc_partial_or_related_count": 4,
+      "question_snomed_secondary_count": 0
+    },
+    "local_answer_code_pattern": "{fact_id}--{internal_value}",
+    "local_answer_code_system": "https://ggojang.github.io/clinical-interview-platform/fhir/CodeSystem/clinical-interview-answer",
+    "local_question_code_is_template_id": true,
+    "local_question_code_system": "https://ggojang.github.io/clinical-interview-platform/fhir/CodeSystem/clinical-interview-question",
+    "policy_id": "policy.question-answer-terminology-binding",
+    "registry_id": "mapping.question-answer-bindings",
+    "review_status": "unreviewed",
+    "status": "research_only"
+  },
   "questions": [
     {
       "answer_code_map": {
@@ -2208,6 +2268,21 @@
     {
       "fact_id": "patient.age_years",
       "priority": 90,
+      "semantic_binding": {
+        "fhir_standard_item_codes": [
+          {
+            "code": "30525-0",
+            "system": "http://loinc.org"
+          }
+        ],
+        "standard_mappings": [
+          {
+            "code": "30525-0",
+            "mapping_relation": "equivalent",
+            "system": "http://loinc.org"
+          }
+        ]
+      },
       "template_id": "question.clinician-context.age",
       "wording": "만 나이는 몇 세인가요? 생년월일이나 이름은 입력하지 않아도 됩니다."
     },
@@ -2221,6 +2296,15 @@
       },
       "fact_id": "patient.sex_for_clinical_care",
       "priority": 85,
+      "semantic_binding": {
+        "standard_mappings": [
+          {
+            "code": "46098-0",
+            "mapping_relation": "partial",
+            "system": "http://loinc.org"
+          }
+        ]
+      },
       "template_id": "question.clinician-context.sex",
       "wording": "현재 진료 판단에 필요한 성별 또는 해부학적 정보를 선택해 주세요. 1 여성, 2 남성, 3 간성·성분화 변이, 4 그 밖의 진료 관련 정보, 5 현재 문제에는 관련 없음"
     },
@@ -2233,30 +2317,87 @@
     {
       "fact_id": "history.procedure.past",
       "priority": 75,
+      "semantic_binding": {
+        "standard_mappings": [
+          {
+            "code": "10167-5",
+            "mapping_relation": "partial",
+            "system": "http://loinc.org"
+          }
+        ]
+      },
       "template_id": "question.clinician-context.procedures",
       "wording": "받은 수술·주요 시술을 명칭, 시기, 이유, 중요한 합병증과 함께 알려주세요. 없으면 '없음'이라고 답해 주세요."
     },
     {
       "fact_id": "medication.current",
       "priority": 70,
+      "semantic_binding": {
+        "standard_mappings": [
+          {
+            "code": "10160-0",
+            "mapping_relation": "partial",
+            "system": "http://loinc.org"
+          }
+        ]
+      },
       "template_id": "question.clinician-context.medications",
       "wording": "현재 사용하는 처방약·일반약·건강기능식품을 제품명 또는 성분명, 용량, 투여 경로, 횟수, 복용 이유와 함께 알려주세요. 없으면 '없음'이라고 답해 주세요."
     },
     {
       "fact_id": "allergy.current",
       "priority": 65,
+      "semantic_binding": {
+        "fhir_standard_item_codes": [
+          {
+            "code": "106203-3",
+            "system": "http://loinc.org"
+          }
+        ],
+        "standard_mappings": [
+          {
+            "code": "106203-3",
+            "mapping_relation": "equivalent",
+            "system": "http://loinc.org"
+          }
+        ]
+      },
       "template_id": "question.clinician-context.allergies",
       "wording": "약물·음식·기타 알레르기가 있다면 원인, 나타난 반응, 심한 정도를 알려주세요. 없으면 '없음'이라고 답해 주세요."
     },
     {
       "fact_id": "history.family",
       "priority": 60,
+      "semantic_binding": {
+        "fhir_standard_item_codes": [
+          {
+            "code": "8670-2",
+            "system": "http://loinc.org"
+          }
+        ],
+        "standard_mappings": [
+          {
+            "code": "8670-2",
+            "mapping_relation": "equivalent",
+            "system": "http://loinc.org"
+          }
+        ]
+      },
       "template_id": "question.clinician-context.family-history",
       "wording": "부모·형제자매·자녀 등 가까운 가족의 주요 질환을 가족관계, 질환명, 발병 나이와 함께 알려주세요. 없으면 '없음'이라고 답해 주세요."
     },
     {
       "fact_id": "occupation.current",
       "priority": 55,
+      "semantic_binding": {
+        "standard_mappings": [
+          {
+            "code": "11341-5",
+            "mapping_relation": "partial",
+            "system": "http://loinc.org"
+          }
+        ]
+      },
       "template_id": "question.clinician-context.occupation",
       "wording": "현재·최근 직업, 종사 기간과 분진·화학물질·감염·소음·반복동작·교대근무 등 관련 노출을 알려주세요."
     },
@@ -2268,6 +2409,21 @@
       },
       "fact_id": "patient.smoking.status",
       "priority": 50,
+      "semantic_binding": {
+        "fhir_standard_item_codes": [
+          {
+            "code": "72166-2",
+            "system": "http://loinc.org"
+          }
+        ],
+        "standard_mappings": [
+          {
+            "code": "72166-2",
+            "mapping_relation": "equivalent",
+            "system": "http://loinc.org"
+          }
+        ]
+      },
       "template_id": "question.clinician-context.smoking-status",
       "wording": "흡연 상태를 선택해 주세요. 1 현재 흡연, 2 과거 흡연, 3 평생 비흡연"
     },
@@ -2280,6 +2436,21 @@
     {
       "fact_id": "patient.alcohol.pattern",
       "priority": 40,
+      "semantic_binding": {
+        "fhir_standard_item_codes": [
+          {
+            "code": "106630-7",
+            "system": "http://loinc.org"
+          }
+        ],
+        "standard_mappings": [
+          {
+            "code": "106630-7",
+            "mapping_relation": "equivalent",
+            "system": "http://loinc.org"
+          }
+        ]
+      },
       "template_id": "question.clinician-context.alcohol",
       "wording": "음주 여부, 주당 빈도, 술 종류와 한 번에 마시는 양을 알려주세요. 마시지 않으면 '없음'이라고 답해 주세요."
     },
@@ -2292,6 +2463,21 @@
     {
       "fact_id": "preventive.immunization.history",
       "priority": 18,
+      "semantic_binding": {
+        "fhir_standard_item_codes": [
+          {
+            "code": "11369-6",
+            "system": "http://loinc.org"
+          }
+        ],
+        "standard_mappings": [
+          {
+            "code": "11369-6",
+            "mapping_relation": "equivalent",
+            "system": "http://loinc.org"
+          }
+        ]
+      },
       "template_id": "question.clinician-context.preventive-immunization",
       "wording": "예방접종 이력을 확인하겠습니다. 접종한 백신의 이름, 접종 시기와 차수를 아는 범위에서 알려주시고, 접종기록이 있으면 그 출처도 알려주세요. 기억나지 않는 항목은 모른다고 답할 수 있습니다."
     },

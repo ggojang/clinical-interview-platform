@@ -91,6 +91,20 @@ LOINC mapping includes
 - confidence
 - provenance
 
+For questionnaire projection, a verified LOINC code is the preferred external
+code for an observable or assessment question. SNOMED CT is the secondary
+question semantic when an appropriate observable or related clinical concept
+is verified. Every question also retains a stable local code. Composite
+questions do not receive an atomic LOINC code as an exact mapping.
+
+Clinical coded answers prefer verified SNOMED CT concepts and otherwise use a
+context-qualified local answer code. FHIR primitive values and UCUM quantities
+are not forced into artificial answer codes. Source-defined answer lists for
+official instruments remain authoritative for that instrument.
+
+The complete policy is defined in
+`policies/question-answer-terminology-binding.json`.
+
 ---
 
 # ICPC-2

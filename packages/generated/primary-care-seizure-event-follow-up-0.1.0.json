@@ -188,6 +188,15 @@
           "telephone",
           "video"
         ],
+        "semantic_binding": {
+          "standard_mappings": [
+            {
+              "code": "419045004",
+              "mapping_relation": "related",
+              "system": "http://snomed.info/sct"
+            }
+          ]
+        },
         "template_id": "question.seizure-event-follow-up.awareness",
         "wording": "사건 중 말이나 지시에 반응했는지, 주변을 인식했는지, 기억이 남아 있는지 알려주세요."
       },
@@ -408,6 +417,15 @@
           "telephone",
           "video"
         ],
+        "semantic_binding": {
+          "standard_mappings": [
+            {
+              "code": "84757009",
+              "mapping_relation": "related",
+              "system": "http://snomed.info/sct"
+            }
+          ]
+        },
         "template_id": "question.seizure-event-follow-up.diagnosis",
         "wording": "뇌전증 진단명·발작 유형, 진단 시기와 담당 의료기관·최근 진료일을 알려주세요."
       },
@@ -628,6 +646,15 @@
           "telephone",
           "video"
         ],
+        "semantic_binding": {
+          "standard_mappings": [
+            {
+              "code": "91175000",
+              "mapping_relation": "related",
+              "system": "http://snomed.info/sct"
+            }
+          ]
+        },
         "template_id": "question.seizure-event-follow-up.motor-pattern",
         "wording": "몸이 굳음·규칙적 떨림·불규칙한 움찔거림이 있었는지, 어느 부위가 어떤 순서로 움직였는지 알려주세요."
       },
@@ -7650,6 +7677,15 @@
           ],
           "version": "0.1.0"
         },
+        "semantic_binding": {
+          "standard_mappings": [
+            {
+              "code": "419045004",
+              "mapping_relation": "related",
+              "system": "http://snomed.info/sct"
+            }
+          ]
+        },
         "source_manifest": "source-manifest.primary-care-seizure-event-follow-up-research",
         "status": "research_only",
         "type": "QuestionTemplate",
@@ -7865,6 +7901,15 @@
             "source.stom.seizure.20260716"
           ],
           "version": "0.1.0"
+        },
+        "semantic_binding": {
+          "standard_mappings": [
+            {
+              "code": "84757009",
+              "mapping_relation": "related",
+              "system": "http://snomed.info/sct"
+            }
+          ]
         },
         "source_manifest": "source-manifest.primary-care-seizure-event-follow-up-research",
         "status": "research_only",
@@ -8441,6 +8486,15 @@
             "source.stom.seizure.20260716"
           ],
           "version": "0.1.0"
+        },
+        "semantic_binding": {
+          "standard_mappings": [
+            {
+              "code": "91175000",
+              "mapping_relation": "related",
+              "system": "http://snomed.info/sct"
+            }
+          ]
         },
         "source_manifest": "source-manifest.primary-care-seizure-event-follow-up-research",
         "status": "research_only",
@@ -11076,6 +11130,10 @@
           "alternative_event_unclear",
           "other_unclear"
         ],
+        "answer_semantic_binding": {
+          "policy_id": "policy.question-answer-terminology-binding",
+          "strategy": "SNOMED_CT_then_local_coded_fallback"
+        },
         "description": "",
         "display": "Primary Seizure Presentation",
         "extraction_cues": [],
@@ -13172,9 +13230,61 @@
       "sources/manifests/primary-care-seizure-event-follow-up.json",
       "mappings/interoperability/uscdi-v6-core.json",
       "mappings/interoperability/uscdi-plus-domain-overlays.json",
-      "policies/uscdi-interoperability-overlay.json"
+      "policies/uscdi-interoperability-overlay.json",
+      "mappings/terminology/question-answer-bindings.json",
+      "policies/question-answer-terminology-binding.json"
     ],
     "version": "0.1.0"
+  },
+  "question_answer_terminology": {
+    "boolean_snomed_semantic_equivalents": {
+      "false": {
+        "code": "373067005",
+        "mapping_relation": "equivalent",
+        "system": "http://snomed.info/sct"
+      },
+      "true": {
+        "code": "373066001",
+        "mapping_relation": "equivalent",
+        "system": "http://snomed.info/sct"
+      }
+    },
+    "coverage": {
+      "boolean_primitive_question_count": 12,
+      "coded_answer_local_fallback_count": 6,
+      "coded_answer_snomed_count": 0,
+      "coded_answer_snomed_percent": 0.0,
+      "coded_answer_value_count": 6,
+      "data_absent_option_count": 0,
+      "other_primitive_question_count": 38,
+      "question_count": 51,
+      "question_local_code_count": 51,
+      "question_local_only_count": 48,
+      "question_loinc_exact_or_equivalent_count": 0,
+      "question_loinc_exact_or_equivalent_percent": 0.0,
+      "question_loinc_partial_or_related_count": 0,
+      "question_snomed_secondary_count": 3
+    },
+    "local_answer_code_pattern": "{fact_id}--{internal_value}",
+    "local_answer_code_system": "https://ggojang.github.io/clinical-interview-platform/fhir/CodeSystem/clinical-interview-answer",
+    "local_question_code_is_template_id": true,
+    "local_question_code_system": "https://ggojang.github.io/clinical-interview-platform/fhir/CodeSystem/clinical-interview-question",
+    "policy_id": "policy.question-answer-terminology-binding",
+    "policy_version": "0.1.0",
+    "primitive_answer_projection": {
+      "boolean": "QuestionnaireResponse.answer.valueBoolean",
+      "date": "QuestionnaireResponse.answer.valueDate",
+      "dateTime": "QuestionnaireResponse.answer.valueDateTime",
+      "integer": "QuestionnaireResponse.answer.valueInteger",
+      "quantity": "QuestionnaireResponse.answer.valueQuantity_with_UCUM_when_a_unit_is_known",
+      "rule": "do_not_invent_a_SNOMED_or_local_answer_code_for_a_literal_measurement_date_or_narrative",
+      "string": "QuestionnaireResponse.answer.valueString"
+    },
+    "registry_id": "mapping.question-answer-bindings",
+    "registry_version": "0.1.0",
+    "review_status": "unreviewed",
+    "runtime_terminology_lookup_required": false,
+    "status": "research_only"
   },
   "refresh_policy": {
     "calculation": {
@@ -18749,7 +18859,7 @@
       "rfe.seizure_event_follow_up"
     ]
   },
-  "semantic_digest": "sha256:94acd410d02330dad442595dec9d9d48024fe40f8019085417759defbb0f3718",
+  "semantic_digest": "sha256:879a19f6e150dd50a9ea5f7f80df78f06938f3b7b4f7d0cf90b7ce4a9587bff2",
   "simulations": [
     {
       "expected": {

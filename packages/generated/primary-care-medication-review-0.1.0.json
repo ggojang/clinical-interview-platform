@@ -747,6 +747,15 @@
           "telephone",
           "video"
         ],
+        "semantic_binding": {
+          "standard_mappings": [
+            {
+              "code": "182836005",
+              "mapping_relation": "related",
+              "system": "http://snomed.info/sct"
+            }
+          ]
+        },
         "template_id": "question.medication-review.requested",
         "wording": "복용 중인 약을 확인하고 안전성·효과·불편을 함께 검토하려는 방문이 맞나요?"
       },
@@ -11560,6 +11569,10 @@
           "family_history_only",
           "uncertain"
         ],
+        "answer_semantic_binding": {
+          "policy_id": "policy.question-answer-terminology-binding",
+          "strategy": "SNOMED_CT_then_local_coded_fallback"
+        },
         "description": "",
         "display": "Drug Allergy Intolerance or Uncertain Label",
         "extraction_cues": [],
@@ -11761,6 +11774,10 @@
           "none_known",
           "unable_to_ascertain"
         ],
+        "answer_semantic_binding": {
+          "policy_id": "policy.question-answer-terminology-binding",
+          "strategy": "SNOMED_CT_then_local_coded_fallback"
+        },
         "description": "",
         "display": "Drug Allergy Status",
         "extraction_cues": [],
@@ -13434,6 +13451,13 @@
           "partly_known",
           "unknown"
         ],
+        "answer_semantic_binding": {
+          "data_absent_reason_mappings": {
+            "unknown": "asked-unknown"
+          },
+          "policy_id": "policy.question-answer-terminology-binding",
+          "strategy": "SNOMED_CT_then_local_coded_fallback"
+        },
         "description": "",
         "display": "Medicine Indications Known",
         "extraction_cues": [],
@@ -14028,6 +14052,22 @@
           "weekly_or_more",
           "almost_daily"
         ],
+        "answer_semantic_binding": {
+          "policy_id": "policy.question-answer-terminology-binding",
+          "snomed_mappings": {
+            "none": {
+              "code": "260413007",
+              "mapping_relation": "equivalent",
+              "system": "http://snomed.info/sct"
+            },
+            "rare": {
+              "code": "89292003",
+              "mapping_relation": "equivalent",
+              "system": "http://snomed.info/sct"
+            }
+          },
+          "strategy": "SNOMED_CT_then_local_coded_fallback"
+        },
         "description": "",
         "display": "Missed Dose Frequency",
         "extraction_cues": [],
@@ -14426,6 +14466,17 @@
           "none",
           "uncertain"
         ],
+        "answer_semantic_binding": {
+          "policy_id": "policy.question-answer-terminology-binding",
+          "snomed_mappings": {
+            "none": {
+              "code": "260413007",
+              "mapping_relation": "equivalent",
+              "system": "http://snomed.info/sct"
+            }
+          },
+          "strategy": "SNOMED_CT_then_local_coded_fallback"
+        },
         "description": "",
         "display": "Perceived Medicine Benefit",
         "extraction_cues": [],
@@ -14729,6 +14780,17 @@
           "post_discharge",
           "other"
         ],
+        "answer_semantic_binding": {
+          "policy_id": "policy.question-answer-terminology-binding",
+          "snomed_mappings": {
+            "other": {
+              "code": "74964007",
+              "mapping_relation": "equivalent",
+              "system": "http://snomed.info/sct"
+            }
+          },
+          "strategy": "SNOMED_CT_then_local_coded_fallback"
+        },
         "description": "",
         "display": "Medication Review Purpose",
         "extraction_cues": [],
@@ -17548,6 +17610,15 @@
             "source.stom.mrcm.medication-review.20260714"
           ],
           "version": "0.1.0"
+        },
+        "semantic_binding": {
+          "standard_mappings": [
+            {
+              "code": "182836005",
+              "mapping_relation": "related",
+              "system": "http://snomed.info/sct"
+            }
+          ]
         },
         "source_manifest": "source-manifest.primary-care-medication-review-research",
         "status": "research_only",
@@ -20658,9 +20729,61 @@
       "sources/manifests/primary-care-medication-review.json",
       "mappings/interoperability/uscdi-v6-core.json",
       "mappings/interoperability/uscdi-plus-domain-overlays.json",
-      "policies/uscdi-interoperability-overlay.json"
+      "policies/uscdi-interoperability-overlay.json",
+      "mappings/terminology/question-answer-bindings.json",
+      "policies/question-answer-terminology-binding.json"
     ],
     "version": "0.1.0"
+  },
+  "question_answer_terminology": {
+    "boolean_snomed_semantic_equivalents": {
+      "false": {
+        "code": "373067005",
+        "mapping_relation": "equivalent",
+        "system": "http://snomed.info/sct"
+      },
+      "true": {
+        "code": "373066001",
+        "mapping_relation": "equivalent",
+        "system": "http://snomed.info/sct"
+      }
+    },
+    "coverage": {
+      "boolean_primitive_question_count": 20,
+      "coded_answer_local_fallback_count": 24,
+      "coded_answer_snomed_count": 4,
+      "coded_answer_snomed_percent": 16.7,
+      "coded_answer_value_count": 24,
+      "data_absent_option_count": 1,
+      "other_primitive_question_count": 41,
+      "question_count": 67,
+      "question_local_code_count": 67,
+      "question_local_only_count": 66,
+      "question_loinc_exact_or_equivalent_count": 0,
+      "question_loinc_exact_or_equivalent_percent": 0.0,
+      "question_loinc_partial_or_related_count": 0,
+      "question_snomed_secondary_count": 1
+    },
+    "local_answer_code_pattern": "{fact_id}--{internal_value}",
+    "local_answer_code_system": "https://ggojang.github.io/clinical-interview-platform/fhir/CodeSystem/clinical-interview-answer",
+    "local_question_code_is_template_id": true,
+    "local_question_code_system": "https://ggojang.github.io/clinical-interview-platform/fhir/CodeSystem/clinical-interview-question",
+    "policy_id": "policy.question-answer-terminology-binding",
+    "policy_version": "0.1.0",
+    "primitive_answer_projection": {
+      "boolean": "QuestionnaireResponse.answer.valueBoolean",
+      "date": "QuestionnaireResponse.answer.valueDate",
+      "dateTime": "QuestionnaireResponse.answer.valueDateTime",
+      "integer": "QuestionnaireResponse.answer.valueInteger",
+      "quantity": "QuestionnaireResponse.answer.valueQuantity_with_UCUM_when_a_unit_is_known",
+      "rule": "do_not_invent_a_SNOMED_or_local_answer_code_for_a_literal_measurement_date_or_narrative",
+      "string": "QuestionnaireResponse.answer.valueString"
+    },
+    "registry_id": "mapping.question-answer-bindings",
+    "registry_version": "0.1.0",
+    "review_status": "unreviewed",
+    "runtime_terminology_lookup_required": false,
+    "status": "research_only"
   },
   "refresh_policy": {
     "calculation": {
@@ -28439,7 +28562,7 @@
       "rfe.medication_review"
     ]
   },
-  "semantic_digest": "sha256:d8092585e09403fccef0cb98b13a9c6de241e7b5b8e5d39b5ee545a1ec10b378",
+  "semantic_digest": "sha256:2ccd8d95e198947f16ffb39b731060c1193d72dc4e5fc8f6d371bf4451de9786",
   "simulations": [
     {
       "expected": {
@@ -29217,7 +29340,7 @@
       },
       {
         "complete": true,
-        "digest": "sha256:86a42723a025b32b11d4ea3f8e7993dec8f4b829593bbfae483a98cf66e1eec1",
+        "digest": "sha256:4ce9e678bb19aae1cefd8866ca8fa894843e792f88c64bace0e7b6e50197dcd1",
         "id": "source.repository.context",
         "kind": "repository_specification",
         "language": "en",

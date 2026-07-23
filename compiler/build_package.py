@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from interoperability.uscdi import build_package_interoperability_coverage
+from interoperability.question_answer import enrich_graph
 
 DEFAULT_GRAPH = ROOT / "knowledge/graph/primary-care-cough.json"
 DEFAULT_RULES = ROOT / "rules/primary-care-cough.json"
@@ -746,6 +747,7 @@ def build_indexes(
                     {"data_absent_code_map": q["data_absent_code_map"]}
                     if "data_absent_code_map" in q else {}
                 ),
+                **({"semantic_binding": q["semantic_binding"]} if "semantic_binding" in q else {}),
             }
         elif edge["type"] == "REQUIRES":
             target_facts.setdefault(edge["from"], []).append(edge["to"])
@@ -934,6 +936,7 @@ def compile_package(
     graph, rule_graph, completion_policy, pain_assessment = apply_hira_pain_assessment(
         profile, graph, rule_graph, completion_policy
     )
+    graph, question_answer_terminology = enrich_graph(graph)
     clinician_submission_context = load_json(CLINICIAN_SUBMISSION_CONTEXT)
     node_index = validate_graph(graph)
     sorted_rules = validate_rules(rule_graph, node_index, production)
@@ -1116,6 +1119,7 @@ def compile_package(
             "session_facts": [context_facts["interview.additional_comment"]],
         },
         "interoperability_coverage": interoperability_coverage,
+        "question_answer_terminology": question_answer_terminology,
         "simulations": simulations,
         "coverage": package_coverage,
         "compatibility": {
@@ -1134,6 +1138,8 @@ def compile_package(
                 "mappings/interoperability/uscdi-v6-core.json",
                 "mappings/interoperability/uscdi-plus-domain-overlays.json",
                 "policies/uscdi-interoperability-overlay.json",
+                "mappings/terminology/question-answer-bindings.json",
+                "policies/question-answer-terminology-binding.json",
             ],
             "review_status": "unreviewed",
             "version": "0.1.0",
@@ -1179,6 +1185,29 @@ def validate_package(package: dict[str, Any]) -> None:
     for element in interoperability.get("core", {}).get("elements", []):
         if element.get("mapping_status") not in allowed_mapping_statuses:
             raise CompilationError("USCDI element has unsupported mapping status")
+    question_answer = package.get("question_answer_terminology")
+    if not isinstance(question_answer, dict):
+        raise CompilationError("package missing question-answer terminology Coverage")
+    qa_coverage = question_answer.get("coverage", {})
+    if qa_coverage.get("question_count") != qa_coverage.get(
+        "question_local_code_count"
+    ):
+        raise CompilationError("not every question has a local fallback code")
+    for node in graph.get("nodes", []):
+        if node.get("type") == "QuestionTemplate":
+            binding = node.get("semantic_binding", {})
+            mappings = {
+                (mapping.get("system"), mapping.get("code")): mapping
+                for mapping in binding.get("standard_mappings", [])
+            }
+            for coding in binding.get("fhir_standard_item_codes", []):
+                mapping = mappings.get((coding.get("system"), coding.get("code")))
+                if not mapping or mapping.get("mapping_relation") not in {
+                    "exact", "equivalent"
+                }:
+                    raise CompilationError(
+                        f"{node.get('id')}: non-equivalent mapping selected for FHIR"
+                    )
 
 
 def main() -> None:
