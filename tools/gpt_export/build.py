@@ -24,6 +24,8 @@ PRIVATE_KEYS = {
 }
 COMPACT_DROP_KEYS = {
     "provenance", "refresh", "source_manifest", "usage_modes", "version",
+    "local_answer_value_set", "fhir_item_type", "fhir_response_type",
+    "value_set_strategy",
 }
 
 

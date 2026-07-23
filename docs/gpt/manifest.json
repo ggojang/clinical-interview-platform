@@ -2192,8 +2192,13 @@
           "current"
         ],
         "answer_semantic_binding": {
+          "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-local-encounter-context-review-state-coded-first-en-a449f48305",
+          "fhir_item_type": "choice",
+          "fhir_response_type": "valueCoding",
+          "local_answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-local-encounter-context-review-state-coded-first-en-a449f48305",
           "policy_id": "policy.question-answer-terminology-binding",
-          "strategy": "SNOMED_CT_then_local_coded_fallback"
+          "strategy": "SNOMED_CT_then_local_coded_fallback",
+          "value_set_strategy": "complete_local"
         },
         "display": "Longitudinal Context Review State",
         "display_ko": "기본 건강정보 확인 시점",
@@ -2233,20 +2238,27 @@
           "not_clinically_relevant"
         ],
         "answer_semantic_binding": {
+          "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-mixed-patient-sex-for-clinical-care-coded-female-ma-dea27302b7",
+          "fhir_item_type": "choice",
+          "fhir_response_type": "valueCoding",
+          "local_answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-local-patient-sex-for-clinical-care-coded-female-ma-6d9fee6ae9",
           "policy_id": "policy.question-answer-terminology-binding",
           "snomed_mappings": {
             "female": {
               "code": "248152002",
+              "display": "Female",
               "mapping_relation": "equivalent",
               "system": "http://snomed.info/sct"
             },
             "male": {
               "code": "248153007",
+              "display": "Male",
               "mapping_relation": "equivalent",
               "system": "http://snomed.info/sct"
             }
           },
-          "strategy": "SNOMED_CT_then_local_coded_fallback"
+          "strategy": "SNOMED_CT_then_local_coded_fallback",
+          "value_set_strategy": "complete_mixed_SNOMED_CT_and_local"
         },
         "display": "Sex or Anatomy Context Relevant to Clinical Care",
         "display_ko": "진료에 필요한 성별·해부학적 정보",
@@ -2354,25 +2366,33 @@
           "never"
         ],
         "answer_semantic_binding": {
+          "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-sct-current-former-never",
+          "fhir_item_type": "choice",
+          "fhir_response_type": "valueCoding",
+          "local_answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-local-patient-smoking-status-coded-current-former-never",
           "policy_id": "policy.question-answer-terminology-binding",
           "snomed_mappings": {
             "current": {
               "code": "449868002",
+              "display": "Smokes tobacco daily",
               "mapping_relation": "narrower",
               "system": "http://snomed.info/sct"
             },
             "former": {
               "code": "8517006",
+              "display": "Ex-smoker",
               "mapping_relation": "equivalent",
               "system": "http://snomed.info/sct"
             },
             "never": {
               "code": "266919005",
+              "display": "Never smoked tobacco",
               "mapping_relation": "equivalent",
               "system": "http://snomed.info/sct"
             }
           },
-          "strategy": "SNOMED_CT_then_local_coded_fallback"
+          "strategy": "SNOMED_CT_then_local_coded_fallback",
+          "value_set_strategy": "complete_SNOMED_CT"
         },
         "display": "Smoking Status",
         "display_ko": "흡연 상태",
@@ -2511,6 +2531,7 @@
       "version": "0.2.0"
     },
     "question_answer_terminology": {
+      "answer_value_set_naming_rule": "a-{sct|loinc|local|mixed}-{semantic-name}",
       "coverage": {
         "question_count": 20,
         "question_local_code_count": 20,
@@ -4408,6 +4429,14 @@
   },
   "question_answer_terminology_policy": {
     "answer_binding": {
+      "answer_value_set_required_for_coded_choice": true,
+      "answer_value_set_selection": {
+        "all_answers_verified_SNOMED_CT": "a-sct-{semantic-name}",
+        "local_companion_for_every_dynamic_coded_fact": "a-local-{fact-name}",
+        "no_standard_answer_mapping": "a-local-{fact-name}",
+        "official_LOINC_answer_list": "a-loinc-{LL-code-or-semantic-name}",
+        "some_answers_verified_SNOMED_CT": "a-mixed-{fact-name}"
+      },
       "coded_clinical_answers": "use_verified_SNOMED_CT_when_the_answer_concept_is_represented",
       "data_absent_rule": "unknown_declined_not_asked_and_not_applicable_states_are_not_negative_answers_and_use_FHIR_DataAbsentReason_when_semantically_applicable",
       "local_fallback_required": true,
@@ -4416,7 +4445,7 @@
         "https://ggojang.github.io/clinical-interview-platform/fhir/CodeSystem/clinical-interview-answer"
       ],
       "primitive_answers": {
-        "boolean": "QuestionnaireResponse.answer.valueBoolean",
+        "boolean": "QuestionnaireResponse.answer.valueBoolean_only_when_the_receiving_profile_explicitly_requires_a_primitive_boolean;_clinical_yes_no_defaults_to_a_coded_choice",
         "date": "QuestionnaireResponse.answer.valueDate",
         "dateTime": "QuestionnaireResponse.answer.valueDateTime",
         "integer": "QuestionnaireResponse.answer.valueInteger",
@@ -4425,6 +4454,25 @@
         "string": "QuestionnaireResponse.answer.valueString"
       },
       "source_defined_instrument_answers": "retain_the_official_answer_code_system_and_answer_list;_add_SNOMED_only_when_a_verified_equivalent_exists"
+    },
+    "answer_value_set_naming": {
+      "canonical_base": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/",
+      "examples": [
+        "a-sct-yes-no",
+        "a-local-yes-no",
+        "a-sct-mild-moderate-severe",
+        "a-mixed-symptom-course"
+      ],
+      "fhir_id_max_length": 64,
+      "id_pattern": "a-{scope}-{semantic-name}",
+      "long_id_rule": "truncate_the_slug_and_append_a_stable_SHA256_suffix",
+      "scopes": {
+        "local": "only_clinical_interview_local_answer_codes",
+        "loinc": "official_LOINC_LA_answer_codes_or_external_answer_list",
+        "mixed": "SNOMED_CT_where_verified_and_local_codes_for_the_remaining_answers",
+        "sct": "only_SNOMED_CT_codes"
+      },
+      "version_rule": "terminology_and_content_versions_are_resource_metadata_not_part_of_the_id"
     },
     "contains_patient_responses": false,
     "fhir_r4_projection": {
@@ -4457,6 +4505,13 @@
       "review_status",
       "confidence"
     ],
+    "mapping_scope": {
+      "do_not_rewrite_fixed_question_text_for_mapping": true,
+      "dynamic_ai_generated_interview_questions": "included",
+      "fixed_questionnaire_exception": "map_only_after_an_explicit_instruction_and_verification_against_the_official_instrument_or_standard_artifact",
+      "reusable_clinician_submission_questions": "included",
+      "source_defined_fixed_questionnaires": "excluded_by_default"
+    },
     "provenance": {
       "created_at": "2026-07-23T00:00:00Z",
       "created_by": {
@@ -4468,13 +4523,29 @@
         "https://hl7.org/fhir/R4/questionnaire.html",
         "https://loinc.org/fhir/",
         "https://loinc.org/answer-file/",
+        "https://hl7.org/fhir/R4/valueset.html",
+        "https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-questionnaireresponse.html",
+        "https://ecqi.healthit.gov/tool/value-set-authority-center-vsac",
         "https://docs.snomed.org/snomed-ct-practical-guides/snomed-ct-starter-guide/6-snomed-ct-concept-model",
+        "https://docs.snomed.org/implementation-guides/implementation-fact-sheets/snomed-ct-clinical-decision-support-systems-and-cql",
         "source.stom.fhir-r4-terminology-server",
         "docs/context/024-interoperability-and-fhir.md"
       ],
       "version": "0.1.0"
     },
     "purpose": "Bind every interview question and coded answer without overstating semantic equivalence.",
+    "question_atomicity": {
+      "composite_question_action": "split_into_atomic_questions_before_attempting_LOINC_or_SNOMED_equivalence",
+      "composite_question_fallback": "retain_local_question_code_and_add_to_refactoring_queue",
+      "definition": "one_question_collects_one_answer-bearing_clinical_data_element",
+      "exact_or_equivalent_mapping_requires_verified_atomic_fact": true,
+      "examples": {
+        "atomic": "current_pain_NRS_score",
+        "composite": "language_interpreter_hearing_vision_literacy_and_digital_support"
+      },
+      "quality_review": "run_repository_wide_atomicity_and_mapping_simulation_on_every_terminology_change_and_periodically_with_autonomous_simulation",
+      "required_before_standard_mapping": true
+    },
     "question_binding": {
       "fhir_item_code_rule": "emit_the_local_code_and_only_verified_exact_or_equivalent_standard_mappings",
       "local_code_is_internal_question_id": true,
@@ -4488,6 +4559,15 @@
       ],
       "snomed_use": "secondary_for_a_verified_observable_entity_or_related_clinical_semantic"
     },
+    "reference_search_priority": [
+      "official_LOINC_panel_Questionnaire_and_Answer_List_ValueSet",
+      "HL7_FHIR_core_profiles_examples_and_implementation_guides",
+      "HL7_US_Core_profiles_examples_and_required_ValueSets",
+      "NLM_VSAC_published_ValueSets_when_access_and_license_allow",
+      "SNOMED_International_implementation_guides_reference_sets_and_ECL",
+      "STOM_verified_terminology_content",
+      "new_local_code_only_after_the_above_sources_are_checked"
+    ],
     "refresh": {
       "interval_days": 30,
       "last_verified_at": "2026-07-23",
@@ -4499,8 +4579,10 @@
     "review_status": "unreviewed",
     "safety_boundaries": {
       "composite_question_cannot_inherit_an_atomic_code_as_exact": true,
+      "fixed_questionnaire_is_not_automatically_mapped": true,
       "label_similarity_cannot_establish_equivalence": true,
       "never_convert_unknown_or_declined_to_false": true,
+      "partial_answer_mapping_requires_a_complete_mixed_or_local_ValueSet": true,
       "runtime_terminology_lookup_required": false,
       "terminology_mapping_does_not_control_question_priority_or_safety": true,
       "unmapped_does_not_block_research_test_collection": true
@@ -4510,7 +4592,7 @@
       "LOINC": "2.82",
       "SNOMED_CT_International": "http://snomed.info/sct/900000000000207008/version/20260701"
     },
-    "version": "0.1.0"
+    "version": "0.2.0"
   },
   "question_choice_semantic_alignment_policy": {
     "binary_single_proposition": {
@@ -4725,13 +4807,13 @@
       "count": 0,
       "name": "clinician-submission-context",
       "path": "/gpt/clinician-submission-context.json",
-      "sha256": "c05120e942ae50601f7ad0a5c2708fbf322d2cf2303de8e81b0ec73d18509fd4"
+      "sha256": "ca6bb1c70532a0d312051be529affed1de5d6a1918ade960f602379df9889c8f"
     },
     {
       "count": 70,
       "name": "common-facts",
       "path": "/gpt/common-facts.json",
-      "sha256": "c1805f48a4561bcf3745c9cbc9feb90f5b8e39a40a3608bcc097ab5146e60ccd"
+      "sha256": "461f0f652b4a5cdfaffa9539b3e295fa776e88ae3e1cda0a268d7f16b64b2588"
     },
     {
       "count": 2747,
@@ -4749,19 +4831,19 @@
       "count": 0,
       "name": "interoperability-question-answer-bindings",
       "path": "/gpt/interoperability/question-answer-bindings.json",
-      "sha256": "c77d4505e8880228f4b3fc6bd1d7f096576227ddc9e2d842566bfdc00b888e3f"
+      "sha256": "dab696c245b777e4c362b4a17961b9e11333554c4c996d7053bd8d9fe4196303"
     },
     {
       "count": 0,
       "name": "interoperability-question-answer-coverage",
       "path": "/gpt/interoperability/question-answer-coverage.json",
-      "sha256": "2523f476208a1b1faded6aa70487cd6b9a5169ce136d7c1d16e2bf3be69d053c"
+      "sha256": "206afe1bbd5f35d8d2ccd887c010546623565c258377863e2f14105b542a1218"
     },
     {
       "count": 0,
       "name": "interoperability-question-answer-policy",
       "path": "/gpt/interoperability/question-answer-policy.json",
-      "sha256": "d9ccd034bf12ea1bbeba84256a8f65c2857c8db507f1efe738b8a0744f4e7a54"
+      "sha256": "85ae4439bd40c7b3c7d99b4239e74a369bdfff2b28407479493be40434c00657"
     },
     {
       "count": 0,
@@ -4857,7 +4939,7 @@
       "count": 75,
       "name": "rfe-abdominal_pain-facts",
       "path": "/gpt/rfe/abdominal_pain/facts.json",
-      "sha256": "b43970a6b936b21eb85a288c3a85776f95f529d495297f12e79f5856b290e1b4"
+      "sha256": "009cadc46c639493e90321730ac89ad550d36394d234f6f81a38d74f7ac38207"
     },
     {
       "count": 75,
@@ -4887,7 +4969,7 @@
       "count": 47,
       "name": "rfe-allergy_concern-facts",
       "path": "/gpt/rfe/allergy_concern/facts.json",
-      "sha256": "b2706bf304e9cb0b6e6449b1ac5a0f4336329de43d2b0ca8f8ff72ab37441f08"
+      "sha256": "70bdcab2e43bebff3cea3db120acf6f92fb4a8626404c12ded6221081378da86"
     },
     {
       "count": 47,
@@ -4905,7 +4987,7 @@
       "count": 48,
       "name": "rfe-anemia_concern_follow_up-facts",
       "path": "/gpt/rfe/anemia_concern_follow_up/facts.json",
-      "sha256": "098039efd9920890d463daca9965ddc4bce80a0bde932c94821b29953837313d"
+      "sha256": "10ec3c35ffc3a68c370c72fab4b9039c499b530962a5bbfbfe72f9ee60df1108"
     },
     {
       "count": 48,
@@ -4923,7 +5005,7 @@
       "count": 61,
       "name": "rfe-asthma_copd_follow_up-facts",
       "path": "/gpt/rfe/asthma_copd_follow_up/facts.json",
-      "sha256": "dad40caa59df64fbfc400db8a84c35784b3abc61fe8b18f6c77d5732b4d91191"
+      "sha256": "d2dd58dd767da6ccae09556965ccaef0adb346a2392704f7ac658c45c622d2ea"
     },
     {
       "count": 61,
@@ -4941,7 +5023,7 @@
       "count": 68,
       "name": "rfe-back_pain-facts",
       "path": "/gpt/rfe/back_pain/facts.json",
-      "sha256": "32785348b1c13914b67823ea493e64f25f35b42fc3386f311904e2278a3ce57c"
+      "sha256": "d3cb84dba62ba5214c3c9574aae2da5ae9aead1a824d0ca21dd2dcb2fadde9ed"
     },
     {
       "count": 68,
@@ -4971,7 +5053,7 @@
       "count": 67,
       "name": "rfe-bowel_symptoms-facts",
       "path": "/gpt/rfe/bowel_symptoms/facts.json",
-      "sha256": "ac5683d0f691e9ee6f04e7c077f5c80e72aef5b8093e0315ec72c080727c0c14"
+      "sha256": "f374712eee85e0d0919a01796084e0f25668643946c437516c641812fe836261"
     },
     {
       "count": 67,
@@ -5001,7 +5083,7 @@
       "count": 53,
       "name": "rfe-breast_symptoms-facts",
       "path": "/gpt/rfe/breast_symptoms/facts.json",
-      "sha256": "8c170ec3fcaad040cdf714a39313ba8c7c55bed31b79ec6614dbdfaf7ab4eeea"
+      "sha256": "94d030438da0695e4591f5aa9d2ff9a9c3319aa1cd43fa05efbc31282d3b7ac6"
     },
     {
       "count": 53,
@@ -5019,7 +5101,7 @@
       "count": 73,
       "name": "rfe-chest_pain-facts",
       "path": "/gpt/rfe/chest_pain/facts.json",
-      "sha256": "91ce760fa0019ddbe42b7dedac82551e1b47b1ad67904039fb1e672c7aa375e6"
+      "sha256": "99eb7c7c9500d75263887d10225f812004dcf3cdc6b99e10e54753487a1a6f9d"
     },
     {
       "count": 73,
@@ -5049,7 +5131,7 @@
       "count": 70,
       "name": "rfe-cough-facts",
       "path": "/gpt/rfe/cough/facts.json",
-      "sha256": "4ac5deb0b546de27d4273d27d1ca9d675b5d54b7ae23ea0868737e849a26e007"
+      "sha256": "b1f15ab00cba51f6e1aa76806f742e0d3952349317691a993378ed200d83400a"
     },
     {
       "count": 70,
@@ -5079,7 +5161,7 @@
       "count": 54,
       "name": "rfe-diabetes_follow_up-facts",
       "path": "/gpt/rfe/diabetes_follow_up/facts.json",
-      "sha256": "a421f631f18ed837be7dfdb3b4d45a8fa51b4ac9dbf8e3eb9fc160d663650caa"
+      "sha256": "491a3a0c4f5b023110ba74ff4297128807b32085ea8d6ed341a955626f7213e4"
     },
     {
       "count": 54,
@@ -5097,7 +5179,7 @@
       "count": 73,
       "name": "rfe-dizziness_syncope-facts",
       "path": "/gpt/rfe/dizziness_syncope/facts.json",
-      "sha256": "92f6013c520ca3a089971665d8a672bcb9ecb9c3e29849284b2c17ebafeba739"
+      "sha256": "6db7ef6badf74ca5c2131c9e4a5e2e31884a7cc304fe2413cef300a7f497fe4c"
     },
     {
       "count": 73,
@@ -5127,7 +5209,7 @@
       "count": 52,
       "name": "rfe-dyspepsia_reflux-facts",
       "path": "/gpt/rfe/dyspepsia_reflux/facts.json",
-      "sha256": "84d212798667e239cd43e4c63c39f14e157fac5e52e1955198a78ea43a9aaa3e"
+      "sha256": "fb2f4cc0496a0548f75c839037befa9f7b52b1e1bdee17d959e95219b43dc1ec"
     },
     {
       "count": 52,
@@ -5145,7 +5227,7 @@
       "count": 74,
       "name": "rfe-dyspnea-facts",
       "path": "/gpt/rfe/dyspnea/facts.json",
-      "sha256": "4bf085acc531342fc1dc3b884d53a8daf7a127bc0babf92c39cd6805bc3fb7b1"
+      "sha256": "619fa05ddb90fab14a5728e1901f0108a9572aac1849845de0a8f438415dca30"
     },
     {
       "count": 74,
@@ -5175,7 +5257,7 @@
       "count": 46,
       "name": "rfe-ear_hearing_symptoms-facts",
       "path": "/gpt/rfe/ear_hearing_symptoms/facts.json",
-      "sha256": "8a068d93e1514e41c347d77c3596056eb7d02c3f4df9078b6d30dd7ebf3046df"
+      "sha256": "4020aaa1021ea3fd0ac5e9c5603daaf4e1997a43beaa4c3118fb812ac693e80b"
     },
     {
       "count": 46,
@@ -5193,7 +5275,7 @@
       "count": 69,
       "name": "rfe-edema-facts",
       "path": "/gpt/rfe/edema/facts.json",
-      "sha256": "d7ca2c3b15db83aa9fe8495738ac86d663e9b8c43cc5a7d25c8e93af65bdf22b"
+      "sha256": "d54e800e95d0a09e480c12a05992de70c9aa4c1c1b26d8ddd784404eaccab011"
     },
     {
       "count": 69,
@@ -5211,7 +5293,7 @@
       "count": 44,
       "name": "rfe-epistaxis-facts",
       "path": "/gpt/rfe/epistaxis/facts.json",
-      "sha256": "cab429541f9843a18535b8b5ea457004b4b088837572b9d0b05cdc8f769cb687"
+      "sha256": "7b3c122ac1fcd9caf679327acd7eac622d22564a6c047829cc56fa8dbeeddac0"
     },
     {
       "count": 44,
@@ -5229,7 +5311,7 @@
       "count": 45,
       "name": "rfe-eye_symptoms-facts",
       "path": "/gpt/rfe/eye_symptoms/facts.json",
-      "sha256": "5063571791d4754cc0fecf09f669b382f6dfb9ad369f4ab9a6e81c8ec08d18de"
+      "sha256": "967cfc493fd4d2489781371641e9c5cd9a1eb7cec9205d36b03e23522400a997"
     },
     {
       "count": 45,
@@ -5247,7 +5329,7 @@
       "count": 75,
       "name": "rfe-fatigue-facts",
       "path": "/gpt/rfe/fatigue/facts.json",
-      "sha256": "2ac9dc79433b542c9ffa6917f84b162bacd65864efa47fc7fd438fa30bd937f2"
+      "sha256": "54770ee5b7c42148efa26422ab26450172855960badbd785ec7d2a012240b337"
     },
     {
       "count": 75,
@@ -5277,7 +5359,7 @@
       "count": 62,
       "name": "rfe-fever-facts",
       "path": "/gpt/rfe/fever/facts.json",
-      "sha256": "a73c40d70b56a0083b42ff6f7e7caca1466f8c03b05247a75676c0aafd3cf6a3"
+      "sha256": "7f8abf8bf3c013e132a63b761cdd7950c754e9793de3a2948def8ef01dbcd8f0"
     },
     {
       "count": 62,
@@ -5295,7 +5377,7 @@
       "count": 67,
       "name": "rfe-focal_weakness_numbness-facts",
       "path": "/gpt/rfe/focal_weakness_numbness/facts.json",
-      "sha256": "3017a9d6b7e94ccabc5660efa8f82f6df54bb694c7907d230d950de1a680b609"
+      "sha256": "f1396786efdef66ab6c4eb6c8a045d9bc4390d3d59dda88e4df7f6f837cc5df0"
     },
     {
       "count": 67,
@@ -5325,7 +5407,7 @@
       "count": 55,
       "name": "rfe-gait_falls_concern-facts",
       "path": "/gpt/rfe/gait_falls_concern/facts.json",
-      "sha256": "b2dd4493e4df94f89e79e013601838ef76c45691e0c3a8c20b5531b3f50a40c9"
+      "sha256": "25f6e7b9a8f99d17865b307bf7bc148d92a17d917ee8a98371a200f356320ae6"
     },
     {
       "count": 55,
@@ -5343,7 +5425,7 @@
       "count": 76,
       "name": "rfe-headache-facts",
       "path": "/gpt/rfe/headache/facts.json",
-      "sha256": "1f647215c773e53c2c1215aab32eb029df3c5e6743793ed21fc318d8bf25ed72"
+      "sha256": "232eaee8b53f3d5894f3e9cf50d1b6442cf4e7ffc73d51704dd75d8aacc83138"
     },
     {
       "count": 76,
@@ -5373,7 +5455,7 @@
       "count": 71,
       "name": "rfe-hypertension_follow_up-facts",
       "path": "/gpt/rfe/hypertension_follow_up/facts.json",
-      "sha256": "356f8f1ad8deb38e965d3240deb03f2d0b1522f76b02d434d2e6368b2a2445df"
+      "sha256": "6d55c675ec0f6b0cf0120e95af1ceb46206933b845914ee7d48ce9cd319ebff0"
     },
     {
       "count": 71,
@@ -5403,7 +5485,7 @@
       "count": 83,
       "name": "rfe-joint_limb_complaint-facts",
       "path": "/gpt/rfe/joint_limb_complaint/facts.json",
-      "sha256": "82d95e5ca71a2e22501826abbd4767f5563cd051a0764bcc034c6b2b9f02102a"
+      "sha256": "842df471e308ef1f9202ce283e78cc16ecaaf342c92c81761929efca2e5a6bed"
     },
     {
       "count": 83,
@@ -5433,7 +5515,7 @@
       "count": 48,
       "name": "rfe-kidney_function_ckd_follow_up-facts",
       "path": "/gpt/rfe/kidney_function_ckd_follow_up/facts.json",
-      "sha256": "d2075729ee93756570a3e873b0994a070fe2bff3ff35f45ca0fa115a6394ae3f"
+      "sha256": "965d2628cddf6f8d0f34f05b056625971d320e0022c70edb60f794a0b0d24cad"
     },
     {
       "count": 48,
@@ -5451,7 +5533,7 @@
       "count": 41,
       "name": "rfe-liver_function_chronic_follow_up-facts",
       "path": "/gpt/rfe/liver_function_chronic_follow_up/facts.json",
-      "sha256": "499b653e5dac10a6217faf0445ffe616e32db248b3dac9291acf145572c74ea2"
+      "sha256": "d4d574a0d8311b9d91db61c7ff83066a87efd2f41a17d2696ec1bbeb82ad862e"
     },
     {
       "count": 41,
@@ -5469,7 +5551,7 @@
       "count": 60,
       "name": "rfe-lump_lymph_node-facts",
       "path": "/gpt/rfe/lump_lymph_node/facts.json",
-      "sha256": "cadb5cca592918d8090abb9b65dd0e78dc26123f009738ca45aebdc42e55d185"
+      "sha256": "0a7080efe94e2d9e3a9d490eac500485d63c6b6a704258d739625a5243f179a8"
     },
     {
       "count": 60,
@@ -5487,7 +5569,7 @@
       "count": 67,
       "name": "rfe-medication_review-facts",
       "path": "/gpt/rfe/medication_review/facts.json",
-      "sha256": "6bfdf4290df367a0a0c0d596fb7085379b6cef7bed43b15b07ff7a99cc9ef8de"
+      "sha256": "b8e3d06bf9afcec68c11fe8d9d3ef96572196ab16188da521937d2651ad473a2"
     },
     {
       "count": 67,
@@ -5517,7 +5599,7 @@
       "count": 64,
       "name": "rfe-memory_cognitive_concern-facts",
       "path": "/gpt/rfe/memory_cognitive_concern/facts.json",
-      "sha256": "371a0d000ab3d83d6cd64cadbda664e87de3a9148c90c38566ba10bfe040e85d"
+      "sha256": "3283115d973e2ea120ffaa04308c0c7906a862733079a8f376232a2265ad439e"
     },
     {
       "count": 64,
@@ -5547,7 +5629,7 @@
       "count": 51,
       "name": "rfe-menstrual_uterine_bleeding-facts",
       "path": "/gpt/rfe/menstrual_uterine_bleeding/facts.json",
-      "sha256": "283258f055859b4b01e54d421576bb0f1291db5b8387567848f059b22ff97fd3"
+      "sha256": "3ec503beca1ecfcb4c31f3d972e85b7d584faaa9d90e91b102da6e2b67aa2cf0"
     },
     {
       "count": 51,
@@ -5565,7 +5647,7 @@
       "count": 66,
       "name": "rfe-mental_health_sleep-facts",
       "path": "/gpt/rfe/mental_health_sleep/facts.json",
-      "sha256": "d2e52c4df110ce1fe24dbaef7d2290f9894d807b0f428914790183893875c279"
+      "sha256": "845959edbe347761d2ab20e8c94d2ef0a44ce0fd1d49e09008957035cff7e994"
     },
     {
       "count": 66,
@@ -5595,7 +5677,7 @@
       "count": 42,
       "name": "rfe-neck_pain-facts",
       "path": "/gpt/rfe/neck_pain/facts.json",
-      "sha256": "85f722cb95e6fc92e644983137d932543a38def938cf40fd310d389cb6d45d4a"
+      "sha256": "d1b36a0169bba5a7a0708f3ded4f6977dc12f1c4ce4650394fed0174f55bbf76"
     },
     {
       "count": 42,
@@ -5613,7 +5695,7 @@
       "count": 71,
       "name": "rfe-oral_dental_symptoms-facts",
       "path": "/gpt/rfe/oral_dental_symptoms/facts.json",
-      "sha256": "6261860c8186f164a8b28ccec5c09ed5bde0a1a02ab2ed02f7f01ab18d480e0a"
+      "sha256": "0d53a878e54e0ef53bf991fb0f51fcc55e683f0cb21a6fade1d5bb1d1ec279b8"
     },
     {
       "count": 71,
@@ -5643,7 +5725,7 @@
       "count": 69,
       "name": "rfe-palpitations-facts",
       "path": "/gpt/rfe/palpitations/facts.json",
-      "sha256": "5bbb52e4f9800c8177241d90ac44eb08eaa0c5c75151d8006ff006c2724c4cc2"
+      "sha256": "1ee6a5d10d19f7f97b7bcbf2c22f31a56a7250c017451d755e702c41cc339d4c"
     },
     {
       "count": 69,
@@ -5673,7 +5755,7 @@
       "count": 61,
       "name": "rfe-pediatric_growth_development-facts",
       "path": "/gpt/rfe/pediatric_growth_development/facts.json",
-      "sha256": "5c253911bf4f7f9ed4df063d5befc0c2c336edeb05a47e4670116321b297e612"
+      "sha256": "937d43d70a786734c6794879133ee72179127d8b686cd8e74c93508f0e018887"
     },
     {
       "count": 61,
@@ -5703,7 +5785,7 @@
       "count": 86,
       "name": "rfe-pregnancy_postpartum_concern-facts",
       "path": "/gpt/rfe/pregnancy_postpartum_concern/facts.json",
-      "sha256": "0ccc2723f5690d21a94697d8131fc17284aec4d9024771447302092d92b62d2b"
+      "sha256": "420229a0292ee8447bfe5009e6171630b1b6079d4734a97cc4ee1becef03350b"
     },
     {
       "count": 86,
@@ -5733,7 +5815,7 @@
       "count": 51,
       "name": "rfe-reproductive_genital_symptoms-facts",
       "path": "/gpt/rfe/reproductive_genital_symptoms/facts.json",
-      "sha256": "dbe0ff8d0282a042d2e66a7e0ea4061fa771fe16c32e91c58f805c5a84aded68"
+      "sha256": "484be72222cf43c616663af14b3533605bfad0dd940c904590ac7147d4cde0e8"
     },
     {
       "count": 51,
@@ -5751,7 +5833,7 @@
       "count": 51,
       "name": "rfe-seizure_event_follow_up-facts",
       "path": "/gpt/rfe/seizure_event_follow_up/facts.json",
-      "sha256": "38d2bf8f728b88c4af644f1a717089e5bf82a6074cc07326547984ee34796f65"
+      "sha256": "60adbc91c38ef63aa572d9b903e26961c2c179821c646d5a0d635e832da167dc"
     },
     {
       "count": 51,
@@ -5769,7 +5851,7 @@
       "count": 70,
       "name": "rfe-skin_complaint-facts",
       "path": "/gpt/rfe/skin_complaint/facts.json",
-      "sha256": "1e4a51b9128904878bf419d6cf9e4ab48d347e7daba017d6808872216f65ae0a"
+      "sha256": "8607439f9e73b5411391154e247d34902cd82faa551c23367b05020780a126ec"
     },
     {
       "count": 70,
@@ -5799,7 +5881,7 @@
       "count": 52,
       "name": "rfe-thyroid_concern_follow_up-facts",
       "path": "/gpt/rfe/thyroid_concern_follow_up/facts.json",
-      "sha256": "6b0302e2294f3c3070301cc5fe2c2504f039d323e3ab390bc12ee0164fbe1d1c"
+      "sha256": "4feeb8be4242aa2cbde8bac21f73bb1cd96cea68d3c32609a0269857c81d7107"
     },
     {
       "count": 52,
@@ -5817,7 +5899,7 @@
       "count": 56,
       "name": "rfe-tremor_movement_concern-facts",
       "path": "/gpt/rfe/tremor_movement_concern/facts.json",
-      "sha256": "dd3de89b9e6218144fb74294d91a8979020389174846063fd8df4b32aee95fcc"
+      "sha256": "0a3702ff87f9d7a797b12f1f59771f5f332d71940a245fb347e0eb4cc34890a2"
     },
     {
       "count": 56,
@@ -5835,7 +5917,7 @@
       "count": 57,
       "name": "rfe-upper_respiratory_symptoms-facts",
       "path": "/gpt/rfe/upper_respiratory_symptoms/facts.json",
-      "sha256": "524f84638d8ef4e927d76c8952ed53232064af72038873623e56d3d413e4e841"
+      "sha256": "093918e53d4500f503ca3c2797ea1a1b378d9defc70b65d53d26e01bbfafd9ca"
     },
     {
       "count": 57,
@@ -5853,7 +5935,7 @@
       "count": 74,
       "name": "rfe-urinary_symptoms-facts",
       "path": "/gpt/rfe/urinary_symptoms/facts.json",
-      "sha256": "897a6fc434ce095905d30eadac91f2ae77869d9a72a29e82b87ae3b5af783142"
+      "sha256": "e97ee759cfa8a13d4f1ee50c1bc2e38117681ea3cd62b98a180365f027c6dbe8"
     },
     {
       "count": 74,
@@ -5883,7 +5965,7 @@
       "count": 74,
       "name": "rfe-vomiting_diarrhea-facts",
       "path": "/gpt/rfe/vomiting_diarrhea/facts.json",
-      "sha256": "7ecc4a4f14d3a9978cd40a0fbb993900f66995f809b82867d83ef57e20354849"
+      "sha256": "dc4b770e2b08edded912b00aaa803495f1f5340f1fbaeff04ad9902a13ad0f54"
     },
     {
       "count": 74,
@@ -5913,7 +5995,7 @@
       "count": 78,
       "name": "rfe-weight_constitutional_change-facts",
       "path": "/gpt/rfe/weight_constitutional_change/facts.json",
-      "sha256": "04d778d80f71fa0278ed3e9a9aede01092b21a89e41870d91686e0fa5720de4c"
+      "sha256": "1d5404eeb500957a63fda6dcd5d6e979432537640c3ab8c284ad85f5758e835e"
     },
     {
       "count": 78,
@@ -5943,7 +6025,7 @@
       "count": 62,
       "name": "rfe-wound_minor_injury-facts",
       "path": "/gpt/rfe/wound_minor_injury/facts.json",
-      "sha256": "fd6a9103e2c9523ec3b9d99ed093df9322959859ad62936de957d34645910958"
+      "sha256": "b72cc058ca8dab7126a97f7a6be3f878bd2fc7c484946e5e8c1dfc1fecb628f0"
     },
     {
       "count": 62,

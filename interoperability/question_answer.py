@@ -6,8 +6,10 @@ overlay and never changes interview priority, safety, routing, or completion.
 from __future__ import annotations
 
 from copy import deepcopy
+import hashlib
 import json
 from pathlib import Path
+import re
 from typing import Any
 
 
@@ -25,6 +27,9 @@ LOCAL_ANSWER = (
     "https://ggojang.github.io/clinical-interview-platform/fhir/"
     "CodeSystem/clinical-interview-answer"
 )
+VALUESET_BASE = (
+    "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet"
+)
 
 
 def load_documents() -> tuple[dict[str, Any], dict[str, Any]]:
@@ -40,6 +45,7 @@ def validate_documents(policy: dict[str, Any], registry: dict[str, Any]) -> None
     if policy.get("review_status") != "unreviewed":
         raise ValueError("question-answer terminology policy must remain unreviewed")
     allowed_relations = set(policy["mapping_relations"])
+    atomic_facts = set(registry["verified_atomic_question_fact_ids"])
     verification = registry["verification"]
     for fact_id, mappings in registry["question_mappings"].items():
         if not fact_id or not mappings:
@@ -53,11 +59,69 @@ def validate_documents(policy: dict[str, Any], registry: dict[str, Any]) -> None
                 raise ValueError(f"{fact_id}: mapping requires code and display")
             if not 0 <= float(mapping["confidence"]) <= 1:
                 raise ValueError(f"{fact_id}: invalid mapping confidence")
+            if (
+                mapping["relation"] in {"exact", "equivalent"}
+                and fact_id not in atomic_facts
+            ):
+                raise ValueError(
+                    f"{fact_id}: exact/equivalent mapping requires verified atomicity"
+                )
     for mapping in registry["generic_snomed_answer_mappings"].values():
         if not mapping.get("code") or not mapping.get("display"):
             raise ValueError("generic SNOMED answer mapping is incomplete")
     if not verification.get("verified_at") or not verification.get("verification_source"):
         raise ValueError("terminology registry verification metadata is incomplete")
+
+
+def answer_valueset_id(scope: str, semantic_name: str) -> str:
+    """Return a deterministic FHIR id following the a-{scope}-{name} rule."""
+    if scope not in {"sct", "loinc", "local", "mixed"}:
+        raise ValueError(f"unsupported answer ValueSet scope: {scope}")
+    slug = re.sub(r"[^a-z0-9]+", "-", semantic_name.lower()).strip("-")
+    prefix = f"a-{scope}-"
+    candidate = prefix + (slug or "answers")
+    if len(candidate) <= 64:
+        return candidate
+    digest = hashlib.sha256(candidate.encode("utf-8")).hexdigest()[:10]
+    return f"{candidate[:53].rstrip('-')}-{digest}"
+
+
+def answer_valueset_url(identifier: str) -> str:
+    return f"{VALUESET_BASE}/{identifier}"
+
+
+def assess_question_atomicity(
+    question: dict[str, Any],
+    fact: dict[str, Any],
+    registry: dict[str, Any],
+) -> dict[str, Any]:
+    """Classify mapping fitness without changing Runtime question behavior."""
+    if fact["id"] in set(registry["verified_atomic_question_fact_ids"]):
+        return {
+            "status": "atomic_verified",
+            "standard_mapping_eligible": True,
+            "signals": ["verified_atomic_fact_registry"],
+        }
+    wording = str(question.get("wording") or question.get("display") or "")
+    signals = []
+    if "_and_" in fact["id"]:
+        signals.append("fact_id_contains_and")
+    separators = {
+        "middle_dot_list": wording.count("·"),
+        "comma_list": wording.count(",") + wording.count("，"),
+        "and_conjunction": wording.count(" 및 ") + wording.count(" 그리고 "),
+        "slash_list": wording.count("/"),
+    }
+    if sum(separators.values()) >= 2:
+        signals.append("wording_contains_multiple_semantic_list_markers")
+    if len(fact.get("allowed_values", [])) > 12:
+        signals.append("large_multidimensional_answer_list")
+    composite = bool(signals)
+    return {
+        "status": "composite_candidate" if composite else "atomic_candidate",
+        "standard_mapping_eligible": False,
+        "signals": signals,
+    }
 
 
 def _standard_mapping(
@@ -161,6 +225,7 @@ def _snomed_answer(
     return {
         "system": SNOMED,
         "code": mapping["code"],
+        "display": mapping["display"],
         "mapping_relation": mapping.get("relation", "equivalent"),
     }
 
@@ -172,7 +237,16 @@ def _answer_binding(
 ) -> dict[str, Any] | None:
     value_type = fact.get("value_type")
     if value_type == "boolean":
-        return None
+        standard_id = answer_valueset_id("sct", "yes-no")
+        local_id = answer_valueset_id("local", "yes-no")
+        return {
+            "strategy": "SNOMED_CT_coded_yes_no_with_local_fallback",
+            "policy_id": policy["id"],
+            "answer_value_set": answer_valueset_url(standard_id),
+            "local_answer_value_set": answer_valueset_url(local_id),
+            "fhir_item_type": "choice",
+            "fhir_response_type": "valueCoding",
+        }
     allowed_values = fact.get("allowed_values")
     if allowed_values:
         snomed_mappings = {}
@@ -193,6 +267,31 @@ def _answer_binding(
             result["snomed_mappings"] = snomed_mappings
         if data_absent_mappings:
             result["data_absent_reason_mappings"] = data_absent_mappings
+        coded_values = [
+            token for token in allowed_values
+            if token not in data_absent_mappings
+        ]
+        answer_shape = "-".join(coded_values)
+        local_id = answer_valueset_id(
+            "local", f"{fact['id']}-{value_type}-{answer_shape}"
+        )
+        if coded_values and all(token in snomed_mappings for token in coded_values):
+            preferred_id = answer_valueset_id(
+                "sct", "-".join(sorted(coded_values))
+            )
+            result["value_set_strategy"] = "complete_SNOMED_CT"
+        elif any(token in snomed_mappings for token in coded_values):
+            preferred_id = answer_valueset_id(
+                "mixed", f"{fact['id']}-{value_type}-{answer_shape}"
+            )
+            result["value_set_strategy"] = "complete_mixed_SNOMED_CT_and_local"
+        else:
+            preferred_id = local_id
+            result["value_set_strategy"] = "complete_local"
+        result["answer_value_set"] = answer_valueset_url(preferred_id)
+        result["local_answer_value_set"] = answer_valueset_url(local_id)
+        result["fhir_item_type"] = "choice"
+        result["fhir_response_type"] = "valueCoding"
         return result
     return None
 
@@ -235,6 +334,7 @@ def enrich_graph(graph: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]
             "true": _snomed_answer("boolean", "yes", registry),
             "false": _snomed_answer("boolean", "no", registry),
         },
+        "answer_value_set_naming_rule": "a-{sct|loinc|local|mixed}-{semantic-name}",
         "coverage": coverage,
     }
 
@@ -296,6 +396,7 @@ def enrich_clinician_context(
         "local_question_code_is_template_id": True,
         "local_answer_code_system": LOCAL_ANSWER,
         "local_answer_code_pattern": "{fact_id}--{internal_value}",
+        "answer_value_set_naming_rule": "a-{sct|loinc|local|mixed}-{semantic-name}",
         "coverage": coverage,
     }
     return enriched, coverage

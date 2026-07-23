@@ -1,6 +1,6 @@
 # Question and Answer Terminology Bindings
 
-Version: 0.1 (Draft)
+Version: 0.2 (Draft)
 
 Status: `research_only`
 
@@ -27,28 +27,56 @@ mapping metadata and are not represented as equivalent
 
 ## Composite questions
 
-A question that requests multiple observations in one sentence cannot inherit
-one atomic LOINC code as an exact mapping. It keeps its local code until it is
-split into atomic items or a matching standard item is verified. A partial
-mapping may be recorded for search and gap analysis.
+A standard-mapped question collects exactly one answer-bearing clinical data
+element. A question that requests multiple observations in one sentence cannot
+inherit one atomic LOINC code as an exact mapping. It keeps its local code and
+enters the atomic refactoring queue until it is split into separate items. A
+partial mapping may be recorded for search and gap analysis, but is never
+projected as an equivalent `Questionnaire.item.code`.
+
+Every terminology audit re-runs the atomicity gate. The audit intentionally
+tests atomic, composite, fixed-instrument, standard-answer, mixed-answer,
+local-answer and absent-answer cases in the same way that clinical simulation
+tests Runtime behavior.
 
 ## Answers
 
 Clinical choice answers use a verified SNOMED CT concept when possible. Every
 remaining coded choice receives a context-qualified local answer code.
 
-Boolean, numeric, quantity, date, date-time, and narrative answers are values,
-not answer concepts. They use the matching FHIR R4 `value[x]` type. Quantity
-units use UCUM when known. Boolean values may carry documented SNOMED semantic
-equivalents, but a FHIR boolean Questionnaire item is answered with
-`valueBoolean`.
+Numeric, quantity, date, date-time, and narrative answers use the matching FHIR
+R4 `value[x]` type. Quantity units use UCUM when known. The interoperability
+projection represents clinical yes/no as a coded `choice` using
+`a-sct-yes-no`; `valueBoolean` remains available only when a receiving profile
+explicitly requires a primitive boolean.
+
+Every coded dynamic answer set has a FHIR R4 `ValueSet`:
+
+- `a-sct-{semantic-name}` contains only verified SNOMED CT concepts.
+- `a-loinc-{LL-code-or-semantic-name}` preserves an official LOINC answer list.
+- `a-local-{fact-name}` contains only local fallback codes.
+- `a-mixed-{fact-name}` uses SNOMED CT where verified and local codes for the
+  remaining choices.
+
+Every coded Fact has a complete local companion ValueSet. A fully mapped set
+uses an `a-sct-*` ValueSet as the preferred `answerValueSet`; a partially mapped
+set uses a complete `a-mixed-*` ValueSet; an unmapped set uses `a-local-*`.
+FHIR ids are limited to 64 characters. Long semantic names are truncated and
+receive a stable SHA-256 suffix. Terminology versions belong in resource
+metadata, not in the id.
 
 Unknown, declined, and similar absence states are not negative clinical answers.
 They are preserved as `dataAbsentReason` when applicable.
 
-Official fixed instruments retain their source-defined question and answer
-codes and normative answer lists. They are not silently replaced by SNOMED CT
-or LOINC codes.
+Source-defined fixed instruments, including the patient-experience
+questionnaire, are excluded from automatic mapping. They retain their official
+wording, source-defined question and answer codes, and normative answer lists.
+Mapping occurs only after an explicit instruction and verification against the
+official instrument or standard artifact.
+
+Before creating a local mapping, Build Time searches official LOINC panels and
+answer lists, HL7 FHIR and US Core artifacts, NLM VSAC when licensing and access
+allow, SNOMED CT implementation artifacts and STOM.
 
 ## Build-time boundary
 
@@ -62,6 +90,7 @@ completion.
 - Question identity: `Questionnaire.item.linkId`
 - Question codings: `Questionnaire.item.code`
 - Coded option: `Questionnaire.item.answerOption.valueCoding`
+- Reusable coded option set: `Questionnaire.item.answerValueSet`
 - Coded response: `QuestionnaireResponse.item.answer.valueCoding`
 - Literal response: the matching `QuestionnaireResponse.item.answer.value[x]`
 - Questionnaire/response linkage: matching `linkId`

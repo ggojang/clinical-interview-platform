@@ -1194,6 +1194,14 @@ def validate_package(package: dict[str, Any]) -> None:
     ):
         raise CompilationError("not every question has a local fallback code")
     for node in graph.get("nodes", []):
+        if node.get("type") == "Fact" and (
+            node.get("value_type") == "boolean" or node.get("allowed_values")
+        ):
+            answer_binding = node.get("answer_semantic_binding", {})
+            if not answer_binding.get("answer_value_set"):
+                raise CompilationError(
+                    f"{node.get('id')}: coded answer missing complete ValueSet"
+                )
         if node.get("type") == "QuestionTemplate":
             binding = node.get("semantic_binding", {})
             mappings = {

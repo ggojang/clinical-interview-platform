@@ -1,4 +1,14 @@
 {
+  "answer_valuesets": {
+    "bundle_id": "clinical-interview-answer-valuesets",
+    "counts_by_scope": {
+      "local": 202,
+      "mixed": 77,
+      "sct": 5
+    },
+    "id_rule": "a-{sct|loinc|local|mixed}-{semantic-name}",
+    "resource_count": 284
+  },
   "clinician_submission_context": {
     "id": "knowledge.shared.clinician-submission-context",
     "question_count": 20,
@@ -10,7 +20,8 @@
     "question_snomed_secondary_count": 0
   },
   "fixed_questionnaire_inventory": {
-    "binding_policy": "source-defined local question and answer codes are retained; no unverified LOINC or SNOMED equivalence is asserted",
+    "automatic_standard_mapping_count": 0,
+    "binding_policy": "excluded from automatic terminology mapping; source-defined question and answer codes are retained unless explicit mapping was requested and verified",
     "question_count": 26,
     "questionnaire_id": "kr-patient-experience-evaluation-5th-2025"
   },
@@ -19,11 +30,865 @@
     "Counts are package occurrences; reusable Facts may appear in more than one package.",
     "A local code provides stable identity but does not imply external semantic equivalence.",
     "Composite questions remain local until split or a standard concept is verified.",
+    "Fixed source-defined questionnaires are excluded from automatic mapping unless explicitly requested.",
     "Primitive measurements, dates, booleans, and narratives use FHIR value types rather than artificial answer codes."
   ],
+  "mapping_quality_simulation": {
+    "passed": true,
+    "scenarios": [
+      "atomic_question_standard_mapping_gate",
+      "composite_question_refactoring_queue",
+      "fixed_instrument_default_exclusion",
+      "complete_SNOMED_answer_ValueSet",
+      "mixed_SNOMED_and_local_answer_ValueSet",
+      "complete_local_answer_ValueSet",
+      "dataAbsentReason_exclusion_from_answer_ValueSet",
+      "FHIR_id_length_and_uniqueness"
+    ]
+  },
   "package_count": 46,
   "passed": true,
   "policy_id": "policy.question-answer-terminology-binding",
+  "question_atomicity": {
+    "composite_refactoring_queue_count": 1979,
+    "composite_refactoring_queue_sample": [
+      {
+        "fact_id": "symptom.abdominal_pain.location",
+        "question_id": "question.abdominal_pain.location",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "allergy.angioedema_sites",
+        "question_id": "question.allergy-concern.angioedema-sites",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "allergy.drug_generic_brand_strength_formulation",
+        "question_id": "question.allergy-concern.drug-identity",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "allergy.known_allergies_and_avoidance",
+        "question_id": "question.allergy-concern.known-allergies",
+        "signals": [
+          "fact_id_contains_and",
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "allergy.skin_lesion_type",
+        "question_id": "question.allergy-concern.skin-type",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "anemia.latest_cbc_and_reference_range",
+        "question_id": "question.anemia-concern-follow-up.cbc",
+        "signals": [
+          "fact_id_contains_and",
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "resp_followup.activity_limitation",
+        "question_id": "question.asthma-copd-follow-up.activity-limit",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "resp_followup.copd_cough_sputum_and_change",
+        "question_id": "question.asthma-copd-follow-up.copd-sputum",
+        "signals": [
+          "fact_id_contains_and",
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "resp_followup.smoking_vaping_and_pack_years",
+        "question_id": "question.asthma-copd-follow-up.smoking",
+        "signals": [
+          "fact_id_contains_and",
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "symptom.back_pain.location",
+        "question_id": "question.back-pain.location",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "symptom.back_pain.severity",
+        "question_id": "question.back-pain.severity",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "symptom.blood_appearance",
+        "question_id": "question.bowel-symptoms.blood-appearance",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "breast.new_nipple_retraction_ulcer_or_persistent_eczema",
+        "question_id": "question.breast-symptoms.nipple-change-warning",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "breast.nipple_inversion_retraction_or_direction_change",
+        "question_id": "question.breast-symptoms.nipple-retraction",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "breast.pain_present",
+        "question_id": "question.breast-symptoms.pain-present",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "breast.prior_mastitis_abscess_recurrence_and_culture",
+        "question_id": "question.breast-symptoms.prior-infection",
+        "signals": [
+          "fact_id_contains_and",
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "symptom.chest_pain.severity",
+        "question_id": "question.chest-pain.severity",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "chest_pain.exact_site_side_area_depth_and_tender_point",
+        "question_id": "question.chest-pain.site-detail",
+        "signals": [
+          "fact_id_contains_and",
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "medication.current",
+        "question_id": "question.clinician-context.medications",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "occupation.current",
+        "question_id": "question.clinician-context.occupation",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "history.procedure.past",
+        "question_id": "question.clinician-context.procedures",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "patient.sex_for_clinical_care",
+        "question_id": "question.clinician-context.sex",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "diabetes.current_severe_hypoglycemia",
+        "question_id": "question.diabetes-follow-up.current-severe-hypoglycemia",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "diabetes.dka_symptom_cluster",
+        "question_id": "question.diabetes-follow-up.dka-symptoms",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "diabetes.marked_hyperglycemia_with_confusion_or_dehydration",
+        "question_id": "question.diabetes-follow-up.hyperglycemic-crisis",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "diabetes.foot_ulcer_with_sepsis_ischaemia_deep_infection_or_gangrene",
+        "question_id": "question.diabetes-follow-up.limb-threatening-foot",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "symptom.dizziness.current",
+        "question_id": "question.dizziness-syncope.current",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "symptom.dizziness.severity",
+        "question_id": "question.dizziness-syncope.severity",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "dyspepsia.exact_location_and_radiation",
+        "question_id": "question.dyspepsia-reflux.location",
+        "signals": [
+          "fact_id_contains_and",
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "dyspepsia.nausea_vomiting_characteristics",
+        "question_id": "question.dyspepsia-reflux.nausea-vomiting",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "ear.discharge_character",
+        "question_id": "question.ear-hearing-symptoms.discharge-character",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "ear.hearing_function_impact",
+        "question_id": "question.ear-hearing-symptoms.hearing-impact",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "ear.pain_severity",
+        "question_id": "question.ear-hearing-symptoms.pain-severity",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "ear.tinnitus_sound_character",
+        "question_id": "question.ear-hearing-symptoms.tinnitus-sound",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "symptom.edema.current",
+        "question_id": "question.edema.current",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "symptom.edema.location",
+        "question_id": "question.edema.location",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "symptom.edema.pitting",
+        "question_id": "question.edema.pitting",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "epistaxis.known_bleeding_platelet_liver_kidney_or_blood_disorder",
+        "question_id": "question.epistaxis.bleeding-conditions",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "epistaxis.current_bleeding_status_and_last_seen",
+        "question_id": "question.epistaxis.current-status",
+        "signals": [
+          "fact_id_contains_and",
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "epistaxis.family_history_bleeding_or_hht_features",
+        "question_id": "question.epistaxis.family",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "epistaxis.episode_frequency_and_time_pattern",
+        "question_id": "question.epistaxis.frequency",
+        "signals": [
+          "fact_id_contains_and",
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "eye.discharge_character",
+        "question_id": "question.eye-symptoms.discharge",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "eye.eyelid_swelling_lump_or_droop",
+        "question_id": "question.eye-symptoms.eyelid-problem",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "eye.new_or_increased_flashes_floaters",
+        "question_id": "question.eye-symptoms.flashes-floaters",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "eye.foreign_body_sensation_after_exposure",
+        "question_id": "question.eye-symptoms.foreign-body",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "eye.visual_change_type",
+        "question_id": "question.eye-symptoms.visual-type",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "symptom.fatigue.current",
+        "question_id": "question.fatigue.current",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "symptom.fatigue.severity",
+        "question_id": "question.fatigue.severity",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "symptom.chills",
+        "question_id": "question.fever.chills",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "symptom.objective_motor_task_loss",
+        "question_id": "question.focal-neurology.motor-task",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "symptom.focal_neurology.region",
+        "question_id": "question.focal-neurology.region",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "symptom.sensory_quality",
+        "question_id": "question.focal-neurology.sensory-quality",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "falls.loss_of_consciousness_amnesia_and_recovery",
+        "question_id": "question.gait-falls-concern.awareness",
+        "signals": [
+          "fact_id_contains_and"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "falls.falls_and_near_falls_last_twelve_months",
+        "question_id": "question.gait-falls-concern.fall-history",
+        "signals": [
+          "fact_id_contains_and"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "falls.fear_confidence_and_activity_restriction",
+        "question_id": "question.gait-falls-concern.fear",
+        "signals": [
+          "fact_id_contains_and",
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "falls.gait_balance_onset_course_and_variability",
+        "question_id": "question.gait-falls-concern.gait-course",
+        "signals": [
+          "fact_id_contains_and",
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "symptom.headache.current",
+        "question_id": "question.headache.current",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "symptom.headache.location",
+        "question_id": "question.headache.location",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "symptom.joint_limb.location",
+        "question_id": "question.joint-limb.location",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "joint_limb.exact_structure_site_side_surface_depth_and_distribution",
+        "question_id": "question.joint-limb.site-detail",
+        "signals": [
+          "fact_id_contains_and",
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "kidney.urine_acr_pcr_and_collection_context",
+        "question_id": "question.kidney-function-ckd-follow-up.acr",
+        "signals": [
+          "fact_id_contains_and",
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "kidney.ckd_cause_stage_and_diagnosis_date",
+        "question_id": "question.kidney-function-ckd-follow-up.diagnosis",
+        "signals": [
+          "fact_id_contains_and",
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "kidney.dialysis_modality_schedule_and_last_session",
+        "question_id": "question.kidney-function-ckd-follow-up.dialysis-schedule",
+        "signals": [
+          "fact_id_contains_and",
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "kidney.prior_aki_dates_causes_and_recovery",
+        "question_id": "question.kidney-function-ckd-follow-up.prior-aki",
+        "signals": [
+          "fact_id_contains_and",
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "kidney.transplant_date_donor_and_baseline_function",
+        "question_id": "question.kidney-function-ckd-follow-up.transplant",
+        "signals": [
+          "fact_id_contains_and",
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "liver.diagnosis_cause_stage_and_date",
+        "question_id": "question.liver-function-chronic-follow-up.diagnosis",
+        "signals": [
+          "fact_id_contains_and",
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "liver.encephalopathy_lactulose_and_bowel_target",
+        "question_id": "question.liver-function-chronic-follow-up.encephalopathy-management",
+        "signals": [
+          "fact_id_contains_and",
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "liver.latest_ast_alt_alp_ggt_and_reference",
+        "question_id": "question.liver-function-chronic-follow-up.enzymes",
+        "signals": [
+          "fact_id_contains_and",
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "liver.abdominal_distension_edema_and_weight",
+        "question_id": "question.liver-function-chronic-follow-up.fluid",
+        "signals": [
+          "fact_id_contains_and",
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "liver.rapid_jaundice_with_systemic_illness",
+        "question_id": "question.liver-function-chronic-follow-up.rapid-jaundice",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "lump.abdominal_pelvic_location_and_distension",
+        "question_id": "question.lump-lymph-node.abdomen-detail",
+        "signals": [
+          "fact_id_contains_and",
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "lump.node_regions",
+        "question_id": "question.lump-lymph-node.node-regions",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "medication.review.requested",
+        "question_id": "question.medication-review.requested",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "cognition.attention_and_following_conversation",
+        "question_id": "question.memory-cognitive-concern.attention",
+        "signals": [
+          "fact_id_contains_and"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "cognition.orientation_person_place_time",
+        "question_id": "question.memory-cognitive-concern.orientation",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "cognition.recent_event_memory",
+        "question_id": "question.memory-cognitive-concern.recent-memory",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "cognition.word_finding_and_naming",
+        "question_id": "question.memory-cognitive-concern.word-finding",
+        "signals": [
+          "fact_id_contains_and"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "menstrual.cycle_interval_regularity_and_change_from_baseline",
+        "question_id": "question.menstrual-uterine-bleeding.cycle",
+        "signals": [
+          "fact_id_contains_and"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "menstrual.pain_timing_site_laterality_and_course",
+        "question_id": "question.menstrual-uterine-bleeding.pain-pattern",
+        "signals": [
+          "fact_id_contains_and",
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "menstrual.pad_tampon_cup_type_saturation_and_change_interval",
+        "question_id": "question.menstrual-uterine-bleeding.product-quantification",
+        "signals": [
+          "fact_id_contains_and",
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "symptom.excessive_anxiety_or_worry",
+        "question_id": "question.mental-health-sleep.anxiety",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "symptom.low_mood",
+        "question_id": "question.mental-health-sleep.low-mood",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "sleep.main_problem",
+        "question_id": "question.mental-health-sleep.sleep-type",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "neck.fever_severe_headache_stiffness_confusion_or_rash",
+        "question_id": "question.neck-pain.meningeal-warning",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "neck.radiation_to_head_shoulder_arm_hand_or_chest",
+        "question_id": "question.neck-pain.radiation",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "neck.exact_site_laterality_and_extent",
+        "question_id": "question.neck-pain.site-laterality",
+        "signals": [
+          "fact_id_contains_and",
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "oral.gum_bleeding_pattern",
+        "question_id": "question.oral-dental-symptoms.gum-bleeding",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "oral.lesion_type",
+        "question_id": "question.oral-dental-symptoms.lesion-type",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "oral.pus_draining_pimple_or_bad_taste",
+        "question_id": "question.oral-dental-symptoms.pus-bad-taste",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "oral.serious_face_or_jaw_trauma",
+        "question_id": "question.oral-dental-symptoms.serious-trauma",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "oral.difficulty_swallowing_saliva_due_to_swelling",
+        "question_id": "question.oral-dental-symptoms.swallowing-compromise",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "pediatric.current_length_or_height_date_and_method",
+        "question_id": "question.pediatric-growth-development.current-height",
+        "signals": [
+          "fact_id_contains_and"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "pediatric.current_weight_date_method_and_clothing",
+        "question_id": "question.pediatric-growth-development.current-weight",
+        "signals": [
+          "fact_id_contains_and",
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "pregnancy.contraction_frequency_duration_and_strength",
+        "question_id": "question.pregnancy-postpartum-concern.contractions",
+        "signals": [
+          "fact_id_contains_and"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "postpartum.delivery_date_mode_and_complications",
+        "question_id": "question.pregnancy-postpartum-concern.delivery-detail",
+        "signals": [
+          "fact_id_contains_and",
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "pregnancy.fluid_leak_time_amount_color_odor",
+        "question_id": "question.pregnancy-postpartum-concern.fluid-leak",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "postpartum.psychosis_or_mania",
+        "question_id": "question.pregnancy-postpartum-concern.postpartum-psychosis",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "pregnancy.severe_headache_vision_or_upper_abdominal_pain",
+        "question_id": "question.pregnancy-postpartum-concern.preeclampsia-warning",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "pregnancy.stage",
+        "question_id": "question.pregnancy-postpartum-concern.stage",
+        "signals": [
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      },
+      {
+        "fact_id": "seizure.awareness_and_responsiveness",
+        "question_id": "question.seizure-event-follow-up.awareness",
+        "signals": [
+          "fact_id_contains_and",
+          "wording_contains_multiple_semantic_list_markers"
+        ],
+        "standard_mapping_present": true
+      }
+    ],
+    "counts": {
+      "atomic_candidate": 816,
+      "atomic_verified": 46,
+      "composite_candidate": 1979
+    },
+    "invalid_exact_or_equivalent_mapping_count": 0,
+    "invalid_exact_or_equivalent_mapping_question_ids": []
+  },
   "registry_id": "mapping.question-answer-bindings",
   "results": [
     {

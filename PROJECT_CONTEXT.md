@@ -548,16 +548,31 @@ secondary. Every Question Template identifier is also a stable code in the
 local Clinical Interview Question CodeSystem, so an unmapped question is never
 left without round-trip identity. Composite questions do not inherit one
 atomic LOINC code as an exact mapping; broader, narrower, partial and related
-mappings remain explicit metadata.
+mappings remain explicit metadata. A question must collect one answer-bearing
+clinical data element before an exact or equivalent standard mapping can be
+selected. Terminology audits repeatedly identify composite candidates and
+place them in an atomic-refactoring queue.
 
-Coded clinical answers follow `SNOMED CT → local answer code`. Boolean,
-numeric, quantity, date, date-time and narrative answers use their FHIR R4
-primitive value types, with UCUM for known units, rather than invented answer
-concepts. Boolean values have verified SNOMED semantic equivalents but remain
-`valueBoolean` in QuestionnaireResponse. Unknown and declined states are never
-encoded as negative answers. Official fixed instruments retain their
-source-defined answer lists. All terminology lookup and verification occurs at
-Build Time; compiled Runtime behavior remains terminology-service independent.
+Coded clinical answers follow `SNOMED CT → local answer code` and every dynamic
+coded answer set has a complete FHIR R4 ValueSet. ValueSet ids follow
+`a-{sct|loinc|local|mixed}-{semantic-name}`. A complete SNOMED set uses
+`a-sct-*`; a partial mapping uses `a-mixed-*`; every coded Fact also has an
+`a-local-*` companion. Official LOINC LL Answer Lists use `a-loinc-*`.
+Clinical yes/no interoperability projection uses the SNOMED-coded
+`a-sct-yes-no` ValueSet, while a receiving profile may still explicitly require
+a primitive FHIR boolean. Numeric, quantity, date, date-time and narrative
+answers use their FHIR R4 primitive value types, with UCUM for known units,
+rather than invented answer concepts. Unknown and declined states are never
+encoded as negative answers.
+
+Source-defined fixed instruments, including the patient-experience
+questionnaire, are excluded from automatic question and answer mapping unless
+an explicit instruction requests it and the official artifact is verified.
+Before creating a local mapping, Build Time searches official LOINC panels and
+Answer Lists, HL7 FHIR and US Core artifacts, NLM VSAC when access and licensing
+allow, SNOMED CT implementation artifacts, and STOM. All terminology lookup and
+verification occurs at Build Time; compiled Runtime behavior remains
+terminology-service independent.
 
 Korean claim-code alignment is a separate, reactive interoperability projection. It is activated only when a user supplies a claim code, claim-catalog name or medication product name, requests verification, or provides a document or scan containing an explicit code or name. Routine symptoms, Clinical Facts, AI-generated differentials, and suggested tests or treatments never trigger proactive claim lookup. Diagnosis candidates bind to a versioned KCD-8 or KCD-9 classification while retaining the original SNOMED CT and Clinical Memory semantics. Procedures, medications and therapeutic materials bind only to their matching HIRA EDI code systems. A claim code never establishes a diagnosis or controls question priority, safety, differential diagnosis or escalation. Ambiguous search results remain unresolved, and group-level therapeutic-material results are not treated as final item codes.
 
@@ -702,7 +717,7 @@ A presentation may not exist for vaccination, health checks, medication review o
 
 # 25. Current Repository State
 
-The current implementation is an early multi-RFE executable Knowledge Factory with forty-six independently compiled Primary Care Knowledge Package profiles. Every dynamic question now has a complete local CodeSystem identity, verified LOINC and secondary SNOMED CT mappings are compiled where available, and coded answer choices use verified SNOMED CT or a context-qualified local fallback. Repository-wide mapping Coverage is computed rather than inferred. The gait and falls profile distinguishes an acute fall, recurrent falls, gait or balance change, fear or near-falls, post-injury follow-up and known mobility-condition follow-up. The epistaxis profile records current bleeding, pressure response, observable amount, duration, frequency, laterality, trauma, antithrombotic and bleeding history. The paediatric growth and development profile preserves dated raw growth measurements and their source, corrected-age context, skills never acquired versus lost, development across domains and settings, feeding, sensory, perinatal, family, education, social, standardized-screen provenance, intervention and family goals. It does not calculate centiles, reproduce licensed screening instruments or infer a diagnosis. The tremor and movement-concern profile records body distribution and side, rest-posture-action-task relationship, rhythm and modifiability, slowness, stiffness, gait, other involuntary movements, bulbar and non-motor features, medicines, stimulants, alcohol, metabolic and toxin context, prior evaluation, function and hazardous-activity safety. It preserves movement classification and diagnostic uncertainty, does not interpret patient video, and does not recommend medication changes.
+The current implementation is an early multi-RFE executable Knowledge Factory with forty-six independently compiled Primary Care Knowledge Package profiles. Every dynamic question now has a complete local CodeSystem identity, verified LOINC and secondary SNOMED CT mappings are compiled where available, and coded answer choices use verified SNOMED CT or a context-qualified local fallback. Complete answer ValueSets are generated for SNOMED-only, mixed SNOMED/local and local-only choices, and a repository-wide atomicity gate prevents composite candidates from receiving exact or equivalent standard question mappings. Repository-wide mapping Coverage is computed rather than inferred. The gait and falls profile distinguishes an acute fall, recurrent falls, gait or balance change, fear or near-falls, post-injury follow-up and known mobility-condition follow-up. The epistaxis profile records current bleeding, pressure response, observable amount, duration, frequency, laterality, trauma, antithrombotic and bleeding history. The paediatric growth and development profile preserves dated raw growth measurements and their source, corrected-age context, skills never acquired versus lost, development across domains and settings, feeding, sensory, perinatal, family, education, social, standardized-screen provenance, intervention and family goals. It does not calculate centiles, reproduce licensed screening instruments or infer a diagnosis. The tremor and movement-concern profile records body distribution and side, rest-posture-action-task relationship, rhythm and modifiability, slowness, stiffness, gait, other involuntary movements, bulbar and non-motor features, medicines, stimulants, alcohol, metabolic and toxin context, prior evaluation, function and hazardous-activity safety. It preserves movement classification and diagnostic uncertainty, does not interpret patient video, and does not recommend medication changes.
 
 The dedicated breast-symptom profile separates breast lump, pain, nipple discharge, nipple or skin change, inflammatory or lactation concern, injury or implant concern and prior-test or treatment follow-up from the generic lump workflow. It records exact site and laterality as separate Facts, requires a raw 0–10 NRS when breast pain is present, captures professional reproductive, lactation, personal and family cancer-risk, medicine, procedure, implant, imaging and treatment history, and preserves patient-observed lump features as distinct from a clinician examination. Severe systemic illness, uncontrolled bleeding, rapidly progressive infection, abscess concern and implant or trauma warning features can trigger escalation; new unexplained lump, concerning spontaneous discharge and new nipple or skin change remain time-sensitive clarification signals rather than inferred diagnoses. Its STOM and MRCM results are Build-Time metadata only, and inconclusive laterality reference-set status prevents asserted post-coordination.
 

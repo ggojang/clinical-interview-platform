@@ -13,7 +13,12 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
 from compiler.build_package import PACKAGE_PROFILES, compile_package
-from interoperability.question_answer import enrich_clinician_context, load_documents
+from interoperability.question_answer import (
+    assess_question_atomicity,
+    enrich_clinician_context,
+    load_documents,
+)
+from tools.fhir.build_answer_valuesets import build as build_answer_valuesets
 
 
 def run() -> dict[str, Any]:
@@ -21,6 +26,7 @@ def run() -> dict[str, Any]:
     rows = []
     totals: dict[str, int] = {}
     unique_questions: dict[str, dict[str, Any]] = {}
+    unique_question_facts: dict[str, dict[str, Any]] = {}
     unique_coded_answers: dict[str, bool] = {}
     unique_data_absent_answers: set[str] = set()
     passed = True
@@ -41,6 +47,9 @@ def run() -> dict[str, Any]:
             if node.get("type") != "QuestionTemplate":
                 continue
             unique_questions.setdefault(node["id"], node)
+            unique_question_facts.setdefault(
+                node["id"], facts[question_facts[node["id"]]]
+            )
             answer = facts[question_facts[node["id"]]].get(
                 "answer_semantic_binding", {}
             )
@@ -84,14 +93,25 @@ def run() -> dict[str, Any]:
         ).read_text(encoding="utf-8")
     )
     fixed_items = []
+    fixed_standard_mapping_count = 0
 
     def walk(items: list[dict[str, Any]]) -> None:
+        nonlocal fixed_standard_mapping_count
         for item in items:
             if item.get("type") in {"choice", "integer"}:
                 fixed_items.append(item)
+            fixed_standard_mapping_count += sum(
+                coding.get("system") in {
+                    "http://loinc.org",
+                    "http://snomed.info/sct",
+                }
+                for coding in item.get("code", [])
+            )
             walk(item.get("item", []))
 
     walk(fixed_questionnaire["item"])
+    if fixed_standard_mapping_count:
+        passed = False
     clinician_context, clinician_coverage = enrich_clinician_context(json.loads(
         (
             ROOT / "knowledge/shared/clinician-submission-context.json"
@@ -101,9 +121,11 @@ def run() -> dict[str, Any]:
     for question in clinician_context["questions"]:
         unique_questions.setdefault(question["template_id"], {
             "id": question["template_id"],
+            "wording": question["wording"],
             "semantic_binding": question.get("semantic_binding", {}),
         })
         fact = context_facts[question["fact_id"]]
+        unique_question_facts.setdefault(question["template_id"], fact)
         answer = fact.get("answer_semantic_binding", {})
         absent = answer.get("data_absent_reason_mappings", {})
         snomed = answer.get("snomed_mappings", {})
@@ -151,6 +173,46 @@ def run() -> dict[str, Any]:
         unique_local_only += not mappings
     unique_total = len(unique_questions)
     unique_answer_total = len(unique_coded_answers)
+    atomicity_counts: dict[str, int] = {}
+    composite_candidates = []
+    invalid_standard_atomicity = []
+    for question_id, question in unique_questions.items():
+        fact = unique_question_facts[question_id]
+        atomicity = assess_question_atomicity(question, fact, registry)
+        atomicity_counts[atomicity["status"]] = (
+            atomicity_counts.get(atomicity["status"], 0) + 1
+        )
+        mappings = question.get("semantic_binding", {}).get(
+            "standard_mappings", []
+        )
+        selected_standard = any(
+            item["mapping_relation"] in {"exact", "equivalent"}
+            for item in mappings
+        )
+        if selected_standard and not atomicity["standard_mapping_eligible"]:
+            invalid_standard_atomicity.append(question_id)
+        if atomicity["status"] == "composite_candidate":
+            composite_candidates.append({
+                "question_id": question_id,
+                "fact_id": fact["id"],
+                "signals": atomicity["signals"],
+                "standard_mapping_present": bool(mappings),
+            })
+    composite_candidates.sort(
+        key=lambda item: (
+            not item["standard_mapping_present"],
+            item["question_id"],
+        )
+    )
+    if invalid_standard_atomicity:
+        passed = False
+
+    value_set_bundle = build_answer_valuesets()
+    value_set_counts: dict[str, int] = {}
+    for entry in value_set_bundle["entry"]:
+        identifier = entry["resource"]["id"]
+        scope = identifier.split("-", 2)[1]
+        value_set_counts[scope] = value_set_counts.get(scope, 0) + 1
     unique_summary = {
         "question_count": unique_total,
         "question_loinc_exact_or_equivalent_count": unique_loinc_exact,
@@ -188,16 +250,49 @@ def run() -> dict[str, Any]:
         "fixed_questionnaire_inventory": {
             "questionnaire_id": fixed_questionnaire["id"],
             "question_count": len(fixed_items),
+            "automatic_standard_mapping_count": fixed_standard_mapping_count,
             "binding_policy": (
-                "source-defined local question and answer codes are retained; "
-                "no unverified LOINC or SNOMED equivalence is asserted"
+                "excluded from automatic terminology mapping; source-defined "
+                "question and answer codes are retained unless explicit mapping "
+                "was requested and verified"
             ),
+        },
+        "question_atomicity": {
+            "counts": atomicity_counts,
+            "invalid_exact_or_equivalent_mapping_count": len(
+                invalid_standard_atomicity
+            ),
+            "invalid_exact_or_equivalent_mapping_question_ids": (
+                invalid_standard_atomicity
+            ),
+            "composite_refactoring_queue_count": len(composite_candidates),
+            "composite_refactoring_queue_sample": composite_candidates[:100],
+        },
+        "answer_valuesets": {
+            "bundle_id": value_set_bundle["id"],
+            "resource_count": len(value_set_bundle["entry"]),
+            "counts_by_scope": value_set_counts,
+            "id_rule": "a-{sct|loinc|local|mixed}-{semantic-name}",
+        },
+        "mapping_quality_simulation": {
+            "passed": not invalid_standard_atomicity,
+            "scenarios": [
+                "atomic_question_standard_mapping_gate",
+                "composite_question_refactoring_queue",
+                "fixed_instrument_default_exclusion",
+                "complete_SNOMED_answer_ValueSet",
+                "mixed_SNOMED_and_local_answer_ValueSet",
+                "complete_local_answer_ValueSet",
+                "dataAbsentReason_exclusion_from_answer_ValueSet",
+                "FHIR_id_length_and_uniqueness",
+            ],
         },
         "results": rows,
         "limitations": [
             "Counts are package occurrences; reusable Facts may appear in more than one package.",
             "A local code provides stable identity but does not imply external semantic equivalence.",
             "Composite questions remain local until split or a standard concept is verified.",
+            "Fixed source-defined questionnaires are excluded from automatic mapping unless explicitly requested.",
             "Primitive measurements, dates, booleans, and narratives use FHIR value types rather than artificial answer codes.",
         ],
     }

@@ -89,6 +89,9 @@ def build() -> tuple[dict[str, Any], dict[str, Any]]:
         if previous != candidate:
             raise ValueError(f"conflicting local answer code: {code}")
 
+    add_answer("boolean--yes", "yes", "boolean", "yes")
+    add_answer("boolean--no", "no", "boolean", "no")
+
     for profile in PACKAGE_PROFILES:
         graph = compile_package(profile=profile)["knowledge_graph"]
         question_facts = {

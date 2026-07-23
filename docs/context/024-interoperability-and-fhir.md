@@ -95,12 +95,25 @@ For questionnaire projection, a verified LOINC code is the preferred external
 code for an observable or assessment question. SNOMED CT is the secondary
 question semantic when an appropriate observable or related clinical concept
 is verified. Every question also retains a stable local code. Composite
-questions do not receive an atomic LOINC code as an exact mapping.
+questions do not receive an atomic LOINC code as an exact mapping and enter an
+explicit atomic-refactoring queue. Exact or equivalent standard mapping is
+permitted only after the question is verified to collect one answer-bearing
+clinical data element.
 
 Clinical coded answers prefer verified SNOMED CT concepts and otherwise use a
-context-qualified local answer code. FHIR primitive values and UCUM quantities
-are not forced into artificial answer codes. Source-defined answer lists for
-official instruments remain authoritative for that instrument.
+context-qualified local answer code. Reusable answer choices are published as
+FHIR R4 ValueSets: `a-sct-*`, `a-loinc-*`, `a-local-*`, or `a-mixed-*`.
+Partially mapped choices use a complete mixed ValueSet rather than an incomplete
+SNOMED-only list. Numeric, date, narrative and UCUM quantity values are not
+forced into artificial answer codes.
+
+Source-defined fixed questionnaires are excluded from automatic mapping. Their
+official wording and answer lists remain authoritative unless an explicit
+mapping request is verified against the source instrument.
+
+Mapping search checks official LOINC panels and Answer Lists, HL7 FHIR and US
+Core artifacts, NLM VSAC where access and licensing permit, SNOMED CT
+implementation artifacts, and STOM before a new local code is accepted.
 
 The complete policy is defined in
 `policies/question-answer-terminology-binding.json`.

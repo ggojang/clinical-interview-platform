@@ -1,5 +1,13 @@
 {
   "answer_binding": {
+    "answer_value_set_required_for_coded_choice": true,
+    "answer_value_set_selection": {
+      "all_answers_verified_SNOMED_CT": "a-sct-{semantic-name}",
+      "local_companion_for_every_dynamic_coded_fact": "a-local-{fact-name}",
+      "no_standard_answer_mapping": "a-local-{fact-name}",
+      "official_LOINC_answer_list": "a-loinc-{LL-code-or-semantic-name}",
+      "some_answers_verified_SNOMED_CT": "a-mixed-{fact-name}"
+    },
     "coded_clinical_answers": "use_verified_SNOMED_CT_when_the_answer_concept_is_represented",
     "data_absent_rule": "unknown_declined_not_asked_and_not_applicable_states_are_not_negative_answers_and_use_FHIR_DataAbsentReason_when_semantically_applicable",
     "local_fallback_required": true,
@@ -8,7 +16,7 @@
       "https://ggojang.github.io/clinical-interview-platform/fhir/CodeSystem/clinical-interview-answer"
     ],
     "primitive_answers": {
-      "boolean": "QuestionnaireResponse.answer.valueBoolean",
+      "boolean": "QuestionnaireResponse.answer.valueBoolean_only_when_the_receiving_profile_explicitly_requires_a_primitive_boolean;_clinical_yes_no_defaults_to_a_coded_choice",
       "date": "QuestionnaireResponse.answer.valueDate",
       "dateTime": "QuestionnaireResponse.answer.valueDateTime",
       "integer": "QuestionnaireResponse.answer.valueInteger",
@@ -17,6 +25,25 @@
       "string": "QuestionnaireResponse.answer.valueString"
     },
     "source_defined_instrument_answers": "retain_the_official_answer_code_system_and_answer_list;_add_SNOMED_only_when_a_verified_equivalent_exists"
+  },
+  "answer_value_set_naming": {
+    "canonical_base": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/",
+    "examples": [
+      "a-sct-yes-no",
+      "a-local-yes-no",
+      "a-sct-mild-moderate-severe",
+      "a-mixed-symptom-course"
+    ],
+    "fhir_id_max_length": 64,
+    "id_pattern": "a-{scope}-{semantic-name}",
+    "long_id_rule": "truncate_the_slug_and_append_a_stable_SHA256_suffix",
+    "scopes": {
+      "local": "only_clinical_interview_local_answer_codes",
+      "loinc": "official_LOINC_LA_answer_codes_or_external_answer_list",
+      "mixed": "SNOMED_CT_where_verified_and_local_codes_for_the_remaining_answers",
+      "sct": "only_SNOMED_CT_codes"
+    },
+    "version_rule": "terminology_and_content_versions_are_resource_metadata_not_part_of_the_id"
   },
   "contains_patient_responses": false,
   "fhir_r4_projection": {
@@ -49,6 +76,13 @@
     "review_status",
     "confidence"
   ],
+  "mapping_scope": {
+    "do_not_rewrite_fixed_question_text_for_mapping": true,
+    "dynamic_ai_generated_interview_questions": "included",
+    "fixed_questionnaire_exception": "map_only_after_an_explicit_instruction_and_verification_against_the_official_instrument_or_standard_artifact",
+    "reusable_clinician_submission_questions": "included",
+    "source_defined_fixed_questionnaires": "excluded_by_default"
+  },
   "provenance": {
     "created_at": "2026-07-23T00:00:00Z",
     "created_by": {
@@ -60,13 +94,29 @@
       "https://hl7.org/fhir/R4/questionnaire.html",
       "https://loinc.org/fhir/",
       "https://loinc.org/answer-file/",
+      "https://hl7.org/fhir/R4/valueset.html",
+      "https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-questionnaireresponse.html",
+      "https://ecqi.healthit.gov/tool/value-set-authority-center-vsac",
       "https://docs.snomed.org/snomed-ct-practical-guides/snomed-ct-starter-guide/6-snomed-ct-concept-model",
+      "https://docs.snomed.org/implementation-guides/implementation-fact-sheets/snomed-ct-clinical-decision-support-systems-and-cql",
       "source.stom.fhir-r4-terminology-server",
       "docs/context/024-interoperability-and-fhir.md"
     ],
     "version": "0.1.0"
   },
   "purpose": "Bind every interview question and coded answer without overstating semantic equivalence.",
+  "question_atomicity": {
+    "composite_question_action": "split_into_atomic_questions_before_attempting_LOINC_or_SNOMED_equivalence",
+    "composite_question_fallback": "retain_local_question_code_and_add_to_refactoring_queue",
+    "definition": "one_question_collects_one_answer-bearing_clinical_data_element",
+    "exact_or_equivalent_mapping_requires_verified_atomic_fact": true,
+    "examples": {
+      "atomic": "current_pain_NRS_score",
+      "composite": "language_interpreter_hearing_vision_literacy_and_digital_support"
+    },
+    "quality_review": "run_repository_wide_atomicity_and_mapping_simulation_on_every_terminology_change_and_periodically_with_autonomous_simulation",
+    "required_before_standard_mapping": true
+  },
   "question_binding": {
     "fhir_item_code_rule": "emit_the_local_code_and_only_verified_exact_or_equivalent_standard_mappings",
     "local_code_is_internal_question_id": true,
@@ -80,6 +130,15 @@
     ],
     "snomed_use": "secondary_for_a_verified_observable_entity_or_related_clinical_semantic"
   },
+  "reference_search_priority": [
+    "official_LOINC_panel_Questionnaire_and_Answer_List_ValueSet",
+    "HL7_FHIR_core_profiles_examples_and_implementation_guides",
+    "HL7_US_Core_profiles_examples_and_required_ValueSets",
+    "NLM_VSAC_published_ValueSets_when_access_and_license_allow",
+    "SNOMED_International_implementation_guides_reference_sets_and_ECL",
+    "STOM_verified_terminology_content",
+    "new_local_code_only_after_the_above_sources_are_checked"
+  ],
   "refresh": {
     "interval_days": 30,
     "last_verified_at": "2026-07-23",
@@ -91,8 +150,10 @@
   "review_status": "unreviewed",
   "safety_boundaries": {
     "composite_question_cannot_inherit_an_atomic_code_as_exact": true,
+    "fixed_questionnaire_is_not_automatically_mapped": true,
     "label_similarity_cannot_establish_equivalence": true,
     "never_convert_unknown_or_declined_to_false": true,
+    "partial_answer_mapping_requires_a_complete_mixed_or_local_ValueSet": true,
     "runtime_terminology_lookup_required": false,
     "terminology_mapping_does_not_control_question_priority_or_safety": true,
     "unmapped_does_not_block_research_test_collection": true
@@ -102,5 +163,5 @@
     "LOINC": "2.82",
     "SNOMED_CT_International": "http://snomed.info/sct/900000000000207008/version/20260701"
   },
-  "version": "0.1.0"
+  "version": "0.2.0"
 }

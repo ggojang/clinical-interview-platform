@@ -9,8 +9,15 @@ from compiler.build_package import PACKAGE_PROFILES, compile_package
 from interoperability.question_answer import (
     LOCAL_ANSWER,
     LOCAL_QUESTION,
+    VALUESET_BASE,
+    answer_valueset_id,
+    assess_question_atomicity,
     enrich_clinician_context,
     load_documents,
+)
+from tools.fhir.build_answer_valuesets import (
+    build as build_answer_valuesets,
+    validate as validate_answer_valuesets,
 )
 from tools.fhir.build_question_answer_codesystems import build, validate
 from tools.gpt_export.build import build as build_gpt_export
@@ -107,12 +114,12 @@ class QuestionAnswerTerminologyTest(unittest.TestCase):
             "asked-unknown",
         )
 
-    def test_boolean_uses_value_boolean_with_snomed_semantics(self):
+    def test_boolean_supports_profile_primitive_and_prefers_coded_yes_no(self):
         package = compile_package(profile="headache")
         binding = package["question_answer_terminology"]
-        self.assertEqual(
+        self.assertIn(
+            "valueBoolean_only_when",
             binding["primitive_answer_projection"]["boolean"],
-            "QuestionnaireResponse.answer.valueBoolean",
         )
         self.assertEqual(
             binding["boolean_snomed_semantic_equivalents"]["true"]["code"],
@@ -121,6 +128,19 @@ class QuestionAnswerTerminologyTest(unittest.TestCase):
         self.assertEqual(
             binding["boolean_snomed_semantic_equivalents"]["false"]["code"],
             "373067005",
+        )
+        boolean_fact = next(
+            node for node in package["knowledge_graph"]["nodes"]
+            if node.get("type") == "Fact"
+            and node.get("value_type") == "boolean"
+        )
+        self.assertEqual(
+            boolean_fact["answer_semantic_binding"]["answer_value_set"],
+            f"{VALUESET_BASE}/a-sct-yes-no",
+        )
+        self.assertEqual(
+            boolean_fact["answer_semantic_binding"]["fhir_response_type"],
+            "valueCoding",
         )
 
     def test_clinician_submission_questions_are_bound_for_gpt_export(self):
@@ -155,6 +175,53 @@ class QuestionAnswerTerminologyTest(unittest.TestCase):
         self.assertEqual(answer["url"], LOCAL_ANSWER)
         self.assertGreater(question["count"], 2500)
         self.assertGreater(answer["count"], 500)
+        answer_codes = {concept["code"] for concept in answer["concept"]}
+        self.assertTrue({"boolean--yes", "boolean--no"} <= answer_codes)
+
+    def test_answer_valuesets_are_complete_named_and_valid(self):
+        bundle = build_answer_valuesets()
+        validate_answer_valuesets(bundle)
+        resources = {
+            entry["resource"]["id"]: entry["resource"]
+            for entry in bundle["entry"]
+        }
+        self.assertIn("a-sct-yes-no", resources)
+        self.assertIn("a-local-yes-no", resources)
+        self.assertTrue(any(key.startswith("a-mixed-") for key in resources))
+        self.assertTrue(any(key.startswith("a-local-") for key in resources))
+        yes_no_systems = {
+            include["system"]
+            for include in resources["a-sct-yes-no"]["compose"]["include"]
+        }
+        self.assertEqual(yes_no_systems, {"http://snomed.info/sct"})
+        self.assertLessEqual(
+            len(answer_valueset_id("local", "x" * 200)), 64
+        )
+
+    def test_exact_standard_mappings_require_verified_atomic_questions(self):
+        _, registry = load_documents()
+        for profile in PACKAGE_PROFILES:
+            package = compile_package(profile=profile)
+            graph = package["knowledge_graph"]
+            nodes = {node["id"]: node for node in graph["nodes"]}
+            for edge in graph["edges"]:
+                if edge.get("type") != "COLLECTS":
+                    continue
+                question = nodes[edge["from"]]
+                fact = nodes[edge["to"]]
+                selected = any(
+                    mapping["mapping_relation"] in {"exact", "equivalent"}
+                    for mapping in question.get(
+                        "semantic_binding", {}
+                    ).get("standard_mappings", [])
+                )
+                if selected:
+                    atomicity = assess_question_atomicity(
+                        question, fact, registry
+                    )
+                    self.assertEqual(
+                        atomicity["status"], "atomic_verified"
+                    )
 
     def test_repository_wide_audit_passes(self):
         report = run_audit()
@@ -170,6 +237,22 @@ class QuestionAnswerTerminologyTest(unittest.TestCase):
         )
         self.assertGreater(totals["question_loinc_exact_or_equivalent_count"], 0)
         self.assertGreater(totals["coded_answer_snomed_count"], 0)
+        self.assertEqual(
+            report["question_atomicity"][
+                "invalid_exact_or_equivalent_mapping_count"
+            ],
+            0,
+        )
+        self.assertGreater(
+            report["question_atomicity"][
+                "composite_refactoring_queue_count"
+            ],
+            0,
+        )
+        self.assertGreater(
+            report["answer_valuesets"]["resource_count"], 100
+        )
+        self.assertTrue(report["mapping_quality_simulation"]["passed"])
 
     def test_gpt_export_exposes_binding_resources_and_enriched_questions(self):
         with tempfile.TemporaryDirectory() as output:
