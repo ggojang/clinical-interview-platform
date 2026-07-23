@@ -17,5 +17,7 @@ python3 sources/check_refresh.py --manifest sources/manifests/primary-care-fever
 python3 sources/check_refresh.py --manifest sources/manifests/primary-care-dyspnea-research.json
 ```
 
-This command schedules checks only. It does not access the network or claim that
-an upstream source was reviewed.
+With no `--manifest`, the command checks every `*-research.json` manifest. Use
+`--manifest` only when intentionally narrowing the report to one profile. The
+command schedules checks only. It does not access the network or claim that an
+upstream source was reviewed.

@@ -11,6 +11,13 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_MANIFEST = ROOT / "sources/manifests/respiratory-cough-research.json"
 
 
+def manifest_paths_for_check(manifest_path: Path | None = None) -> list[Path]:
+    """Return the explicit manifest, or every research manifest by default."""
+    if manifest_path is not None:
+        return [manifest_path.resolve()]
+    return sorted((ROOT / "sources/manifests").glob("*-research.json"))
+
+
 def due_sources(
     as_of: date,
     manifest_path: Path = DEFAULT_MANIFEST,
@@ -59,18 +66,20 @@ def due_sources_from_manifests(
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--as-of", type=date.fromisoformat, default=date.today())
-    parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
+    parser.add_argument(
+        "--manifest", type=Path,
+        help="Limit the report to one manifest. The default scans all research manifests.",
+    )
     parser.add_argument(
         "--all", action="store_true",
-        help="Report every research source manifest instead of one manifest.",
+        help="Deprecated compatibility flag; all research manifests are already the default.",
     )
     parser.add_argument("--network-actions-executed", action="store_true")
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
-    paths = (
-        sorted((ROOT / "sources/manifests").glob("*-research.json"))
-        if args.all else [args.manifest.resolve()]
-    )
+    if args.all and args.manifest:
+        parser.error("--all and --manifest cannot be used together")
+    paths = manifest_paths_for_check(args.manifest)
     report = due_sources_from_manifests(
         args.as_of,
         paths,

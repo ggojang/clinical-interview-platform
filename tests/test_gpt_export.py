@@ -561,7 +561,7 @@ class GptExportTests(unittest.TestCase):
                     encoding="utf-8"
                 )
             )
-            self.assertEqual(upper["count"], 41)
+            self.assertEqual(upper["count"], 57)
             palpitations = json.loads(
                 (output_path / "rfe/palpitations/facts.json").read_text(encoding="utf-8")
             )

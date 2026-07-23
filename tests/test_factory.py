@@ -25,11 +25,21 @@ from runtime.package import (
     PackageLoadError, load_package,
 )
 from runtime.session import InterviewSession, extract
-from sources.check_refresh import due_sources
+from sources.check_refresh import due_sources, manifest_paths_for_check
 from tools.validator.audit_expansion_queue import run as run_expansion_audit
 
 
 class CompilerTests(unittest.TestCase):
+    def test_refresh_cli_defaults_to_every_research_manifest(self):
+        paths = manifest_paths_for_check()
+        names = {path.name for path in paths}
+        self.assertGreater(len(paths), 1)
+        self.assertIn("respiratory-cough-research.json", names)
+        self.assertIn("primary-care-upper-respiratory-symptoms-research.json", names)
+
+        explicit = paths[0]
+        self.assertEqual(manifest_paths_for_check(explicit), [explicit.resolve()])
+
     def test_fever_builder_does_not_absorb_nested_fatigue_fragment(self):
         report = build_knowledge("fever")
         self.assertEqual(
@@ -637,11 +647,29 @@ class CompilerTests(unittest.TestCase):
             node["id"] for node in first["knowledge_graph"]["nodes"]
             if node["type"] == "Fact"
         }
-        self.assertEqual(len(facts), 41)
+        self.assertEqual(len(facts), 57)
         self.assertEqual(facts, set(first["indexes"]["questions_by_fact"]))
         self.assertEqual(first["coverage"]["total_safety_rules"], 10)
         self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 10)
         self.assertEqual(first["coverage"]["uncovered_safety_rules"], [])
+        completion = first["interview_completion_policy"]
+        self.assertIn(
+            "upper_respiratory.information_source_and_reliability",
+            completion["required_facts"]["routine"],
+        )
+        branches = completion["conditional_required_facts"][0]["cases"]
+        self.assertIn(
+            "upper_respiratory.prior_examination_swab_tests_and_results",
+            branches["sore_throat"],
+        )
+        self.assertIn(
+            "upper_respiratory.prior_imaging_and_results",
+            branches["facial_pain"],
+        )
+        self.assertNotIn(
+            "upper_respiratory.prior_imaging_and_results",
+            completion["required_facts"]["routine"],
+        )
 
     def test_upper_respiratory_mrcm_preserves_unsupported_nasal_discharge(self):
         mapping = json.loads(
@@ -1860,7 +1888,7 @@ class PackageRuntimeTests(unittest.TestCase):
     def test_upper_respiratory_simulation_evaluation_passes(self):
         report = run_evaluation(UPPER_RESPIRATORY_SYMPTOMS_PACKAGE)
         self.assertTrue(report["passed"])
-        self.assertEqual(report["case_count"], 11)
+        self.assertEqual(report["case_count"], 14)
         self.assertLessEqual(max(item["turns"] for item in report["results"]), 40)
 
     def test_upper_respiratory_runtime_uses_grouped_rfe(self):

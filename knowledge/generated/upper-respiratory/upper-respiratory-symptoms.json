@@ -52,6 +52,11 @@
       "display": "Context"
     },
     {
+      "id": "group.upper-respiratory.clinician-handoff",
+      "type": "ClinicalGroup",
+      "display": "Clinician Handoff"
+    },
+    {
       "id": "hypothesis.upper-respiratory.immediate-safety",
       "type": "Hypothesis",
       "display": "Immediate Upper Airway Safety Warning Pattern"
@@ -1728,6 +1733,582 @@
       ],
       "supports": [
         "group.upper-respiratory.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "upper_respiratory.information_source_and_reliability",
+        "display": "Information Source and Reliability",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.upper-respiratory.information-source",
+        "display": "Information Source and Reliability",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.information-source",
+        "wording": "답변은 본인이 직접 하는지, 보호자가 대신하는지와 확인이 어려운 내용이 있는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 77,
+          "reason": "handoff_source"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.clinician-handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "upper_respiratory.timeline_course_and_episode_pattern",
+        "display": "Timeline Course and Episode Pattern",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.upper-respiratory.timeline-course",
+        "display": "Timeline Course and Episode Pattern",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.timeline-course",
+        "wording": "정확한 시작 시점, 이후 좋아지는지·악화하는지·변함없는지, 하루 중 달라지는 양상을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 101,
+          "reason": "clinician_timeline"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.context",
+        "group.upper-respiratory.clinician-handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "upper_respiratory.exact_site_laterality_and_spread",
+        "display": "Exact Site Laterality and Spread",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.upper-respiratory.site-laterality",
+        "display": "Exact Site Laterality and Spread",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.site-laterality",
+        "wording": "불편한 정확한 부위와 한쪽·양쪽 여부, 귀·턱·목 등으로 퍼지는 느낌이 있으면 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 100,
+          "reason": "clinician_location"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.throat",
+        "group.upper-respiratory.nasal-sinus",
+        "group.upper-respiratory.clinician-handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "observation.body_temperature",
+        "display": "Body Temperature",
+        "value_type": "quantity"
+      },
+      "target": {
+        "id": "target.upper-respiratory.temperature",
+        "display": "Body Temperature",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.temperature",
+        "wording": "체온을 쟀다면 가장 높았던 수치와 잰 시각을 알려주세요. 재지 않았다면 재지 않음으로 답해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 99,
+          "reason": "measured_fever_context"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.context",
+        "group.upper-respiratory.clinician-handoff"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "upper_respiratory.associated_symptoms_detail",
+        "display": "Associated Symptoms Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.upper-respiratory.associated-symptoms",
+        "display": "Associated Symptoms Detail",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.associated-symptoms",
+        "wording": "귀 통증, 두통, 몸살, 발진, 구토·설사 등 함께 있는 증상을 모두 알려주세요. 없으면 없음으로 답해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 76,
+          "reason": "clinician_associated_symptoms"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.context",
+        "group.upper-respiratory.clinician-handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "upper_respiratory.functional_impact_sleep_work_school_intake",
+        "display": "Functional Impact on Sleep Work School and Intake",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.upper-respiratory.functional-impact",
+        "display": "Functional Impact on Sleep Work School and Intake",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.functional-impact",
+        "wording": "수면, 식사·수분 섭취, 말하기, 직장·학교생활에 어느 정도 지장이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 75,
+          "reason": "clinician_function"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.context",
+        "group.upper-respiratory.clinician-handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "upper_respiratory.previous_episodes_and_baseline",
+        "display": "Previous Episodes and Baseline",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.upper-respiratory.previous-episodes",
+        "display": "Previous Episodes and Baseline",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.previous-episodes",
+        "wording": "이전에도 비슷한 증상이 있었는지, 있었다면 빈도와 평소 상태로 돌아왔는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 74,
+          "reason": "recurrence_handoff"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.context",
+        "group.upper-respiratory.clinician-handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "upper_respiratory.current_medicines_and_response",
+        "display": "Current Medicines and Response",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.upper-respiratory.medicines-response",
+        "display": "Current Medicines and Response",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.medicines-response",
+        "wording": "현재 복용 중인 약과 이번 증상에 사용한 약의 이름·용량·시각·효과 또는 부작용을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 73,
+          "reason": "medicine_handoff"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.context",
+        "group.upper-respiratory.clinician-handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "upper_respiratory.recent_antibiotic_use_and_response",
+        "display": "Recent Antibiotic Use and Response",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.upper-respiratory.antibiotic-history",
+        "display": "Recent Antibiotic Use and Response",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.antibiotic-history",
+        "wording": "최근 항생제를 복용했다면 이름, 시작·종료일, 복용 누락, 효과와 부작용을 알려주세요. 없으면 없음으로 답해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 72,
+          "reason": "antibiotic_handoff"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.context",
+        "group.upper-respiratory.clinician-handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "upper_respiratory.medicine_allergies_and_reactions",
+        "display": "Medicine Allergies and Reactions",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.upper-respiratory.medicine-allergy",
+        "display": "Medicine Allergies and Reactions",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.medicine-allergy",
+        "wording": "약물 알레르기나 심한 부작용이 있다면 약 이름과 반응을 알려주세요. 없으면 없음으로 답해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 71,
+          "reason": "allergy_handoff"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.context",
+        "group.upper-respiratory.clinician-handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "upper_respiratory.age_pregnancy_and_high_risk_context",
+        "display": "Age Pregnancy and High Risk Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.upper-respiratory.high-risk-context",
+        "display": "Age Pregnancy and High Risk Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.high-risk-context",
+        "wording": "영유아·고령, 임신·산후, 만성질환·면역저하 등 진료에 참고할 상황이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 70,
+          "reason": "risk_handoff"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.context",
+        "group.upper-respiratory.clinician-handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "upper_respiratory.prior_examination_swab_tests_and_results",
+        "display": "Prior Examination Swab Tests and Results",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.upper-respiratory.prior-tests",
+        "display": "Prior Examination Swab Tests and Results",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.prior-tests",
+        "wording": "이번 증상으로 진찰, 신속검사·배양검사 등 검사를 받았다면 날짜, 검사명, 결과와 정보 출처를 알려주세요. 받지 않았다면 받지 않음으로 답해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 69,
+          "reason": "test_handoff"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.context",
+        "group.upper-respiratory.clinician-handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "upper_respiratory.prior_imaging_and_results",
+        "display": "Prior Imaging and Results",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.upper-respiratory.prior-imaging",
+        "display": "Prior Imaging and Results",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.prior-imaging",
+        "wording": "이번 증상으로 영상검사를 받았다면 날짜, 검사명, 결과와 정보 출처를 알려주세요. 받지 않았다면 받지 않음으로 답해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 68,
+          "reason": "imaging_handoff"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.nasal-sinus",
+        "group.upper-respiratory.clinician-handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "upper_respiratory.ent_dental_history_and_recent_procedure",
+        "display": "ENT Dental History and Recent Procedure",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.upper-respiratory.ent-dental-history",
+        "display": "ENT Dental History and Recent Procedure",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.ent-dental-history",
+        "wording": "관련된 귀·코·목 또는 치과 질환, 수술·시술·치료가 있다면 종류와 시기를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 67,
+          "reason": "history_handoff"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.throat",
+        "group.upper-respiratory.nasal-sinus",
+        "group.upper-respiratory.clinician-handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "upper_respiratory.patient_concern_goal_and_other_rfe",
+        "display": "Patient Concern Goal and Other Reason for Encounter",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.upper-respiratory.patient-goal",
+        "display": "Patient Concern Goal and Other Reason for Encounter",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.patient-goal",
+        "wording": "가장 걱정되는 점, 진료에서 확인받고 싶은 점, 함께 상담할 다른 문제가 있으면 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 66,
+          "reason": "patient_priority"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.clinician-handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "upper_respiratory.conflicting_information_and_unverified_items",
+        "display": "Conflicting Information and Unverified Items",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.upper-respiratory.conflict-unverified",
+        "display": "Conflicting Information and Unverified Items",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.conflict-unverified",
+        "wording": "기억과 기록이 다르거나 아직 확인하지 못한 정보가 있으면 무엇인지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 65,
+          "reason": "handoff_uncertainty"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.clinician-handoff"
       ]
     }
   ],

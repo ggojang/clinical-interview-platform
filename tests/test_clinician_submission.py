@@ -251,6 +251,33 @@ class ClinicianSubmissionContextTest(unittest.TestCase):
         self.assertIn("encounter.rfe.functional_impact", required)
         self.assertIn("encounter.rfe.patient_concern_and_expectation", required)
 
+    def test_upper_respiratory_profile_has_previsit_handoff_and_branching(self):
+        package = compile_package(profile="upper_respiratory_symptoms")
+        facts = {
+            node["id"] for node in package["knowledge_graph"]["nodes"]
+            if node["type"] == "Fact"
+        }
+        for fact_id in {
+            "upper_respiratory.information_source_and_reliability",
+            "upper_respiratory.timeline_course_and_episode_pattern",
+            "upper_respiratory.functional_impact_sleep_work_school_intake",
+            "upper_respiratory.current_medicines_and_response",
+            "upper_respiratory.patient_concern_goal_and_other_rfe",
+            "upper_respiratory.conflicting_information_and_unverified_items",
+        }:
+            self.assertIn(fact_id, facts)
+        completion = package["interview_completion_policy"]
+        self.assertEqual(
+            completion["conditional_required_facts"][0]["selector_fact"],
+            "symptom.upper_respiratory.main_type",
+        )
+        self.assertLessEqual(
+            len(completion["required_facts"]["always"])
+            + len(completion["required_facts"]["routine"])
+            + len(completion["conditional_required_facts"][0]["cases"]["sore_throat"]),
+            completion["question_budget"]["routine"],
+        )
+
     def test_skin_profile_has_detailed_clinician_handoff_and_regression_coverage(self):
         package = compile_package(profile="skin_complaint")
         facts = {

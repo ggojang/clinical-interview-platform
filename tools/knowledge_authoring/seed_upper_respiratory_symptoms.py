@@ -26,6 +26,7 @@ G = {
     "allergy": "group.upper-respiratory.allergic",
     "voice": "group.upper-respiratory.voice-persistence",
     "context": "group.upper-respiratory.context",
+    "handoff": "group.upper-respiratory.clinician-handoff",
 }
 
 CHARACTERIZE = ["intent.characterize_symptom"]
@@ -82,6 +83,22 @@ def build_fragment():
         q("exposure.sick_contact", "Sick Contact", "boolean", "sick-contact", "가족, 직장 또는 학교에 비슷한 증상이 있는 사람이 있나요?", 80, "infectious_context", [G["context"]], DIFFERENTIATE, reuse_existing=True),
         q("patient.smoking_or_inhaled_irritant", "Smoking or Inhaled Irritant Exposure", "boolean", "smoke-irritant", "흡연·전자담배를 하거나 연기·먼지·화학 자극에 노출되나요?", 79, "irritant_context", [G["context"], G["voice"]], RISK),
         q("treatment.upper_respiratory_self_care_response", "Upper Respiratory Self-care Response", "coded", "self-care", "수분 섭취, 가글, 일반 진통제·비강 세척·알레르기약 등을 사용했다면 좋아짐, 변화 없음, 악화 중 무엇인가요? 안 해봤다면 안 해봄으로 답해 주세요.", 78, "management_context", [G["context"]], RISK, allowed_values=["not_tried", "improved", "unchanged", "worsened"]),
+        q("upper_respiratory.information_source_and_reliability", "Information Source and Reliability", "string", "information-source", "답변은 본인이 직접 하는지, 보호자가 대신하는지와 확인이 어려운 내용이 있는지 알려주세요.", 77, "handoff_source", [G["handoff"]], RISK),
+        q("upper_respiratory.timeline_course_and_episode_pattern", "Timeline Course and Episode Pattern", "string", "timeline-course", "정확한 시작 시점, 이후 좋아지는지·악화하는지·변함없는지, 하루 중 달라지는 양상을 알려주세요.", 101, "clinician_timeline", [G["context"], G["handoff"]], CHARACTERIZE),
+        q("upper_respiratory.exact_site_laterality_and_spread", "Exact Site Laterality and Spread", "string", "site-laterality", "불편한 정확한 부위와 한쪽·양쪽 여부, 귀·턱·목 등으로 퍼지는 느낌이 있으면 알려주세요.", 100, "clinician_location", [G["throat"], G["nasal"], G["handoff"]], CHARACTERIZE),
+        q("observation.body_temperature", "Body Temperature", "quantity", "temperature", "체온을 쟀다면 가장 높았던 수치와 잰 시각을 알려주세요. 재지 않았다면 재지 않음으로 답해 주세요.", 99, "measured_fever_context", [G["context"], G["handoff"]], CHARACTERIZE, reuse_existing=True),
+        q("upper_respiratory.associated_symptoms_detail", "Associated Symptoms Detail", "string", "associated-symptoms", "귀 통증, 두통, 몸살, 발진, 구토·설사 등 함께 있는 증상을 모두 알려주세요. 없으면 없음으로 답해 주세요.", 76, "clinician_associated_symptoms", [G["context"], G["handoff"]], DIFFERENTIATE),
+        q("upper_respiratory.functional_impact_sleep_work_school_intake", "Functional Impact on Sleep Work School and Intake", "string", "functional-impact", "수면, 식사·수분 섭취, 말하기, 직장·학교생활에 어느 정도 지장이 있나요?", 75, "clinician_function", [G["context"], G["handoff"]], CHARACTERIZE),
+        q("upper_respiratory.previous_episodes_and_baseline", "Previous Episodes and Baseline", "string", "previous-episodes", "이전에도 비슷한 증상이 있었는지, 있었다면 빈도와 평소 상태로 돌아왔는지 알려주세요.", 74, "recurrence_handoff", [G["context"], G["handoff"]], RISK),
+        q("upper_respiratory.current_medicines_and_response", "Current Medicines and Response", "string", "medicines-response", "현재 복용 중인 약과 이번 증상에 사용한 약의 이름·용량·시각·효과 또는 부작용을 알려주세요.", 73, "medicine_handoff", [G["context"], G["handoff"]], RISK),
+        q("upper_respiratory.recent_antibiotic_use_and_response", "Recent Antibiotic Use and Response", "string", "antibiotic-history", "최근 항생제를 복용했다면 이름, 시작·종료일, 복용 누락, 효과와 부작용을 알려주세요. 없으면 없음으로 답해 주세요.", 72, "antibiotic_handoff", [G["context"], G["handoff"]], RISK),
+        q("upper_respiratory.medicine_allergies_and_reactions", "Medicine Allergies and Reactions", "string", "medicine-allergy", "약물 알레르기나 심한 부작용이 있다면 약 이름과 반응을 알려주세요. 없으면 없음으로 답해 주세요.", 71, "allergy_handoff", [G["context"], G["handoff"]], RISK),
+        q("upper_respiratory.age_pregnancy_and_high_risk_context", "Age Pregnancy and High Risk Context", "string", "high-risk-context", "영유아·고령, 임신·산후, 만성질환·면역저하 등 진료에 참고할 상황이 있나요?", 70, "risk_handoff", [G["context"], G["handoff"]], RISK),
+        q("upper_respiratory.prior_examination_swab_tests_and_results", "Prior Examination Swab Tests and Results", "string", "prior-tests", "이번 증상으로 진찰, 신속검사·배양검사 등 검사를 받았다면 날짜, 검사명, 결과와 정보 출처를 알려주세요. 받지 않았다면 받지 않음으로 답해 주세요.", 69, "test_handoff", [G["context"], G["handoff"]], RISK),
+        q("upper_respiratory.prior_imaging_and_results", "Prior Imaging and Results", "string", "prior-imaging", "이번 증상으로 영상검사를 받았다면 날짜, 검사명, 결과와 정보 출처를 알려주세요. 받지 않았다면 받지 않음으로 답해 주세요.", 68, "imaging_handoff", [G["nasal"], G["handoff"]], RISK),
+        q("upper_respiratory.ent_dental_history_and_recent_procedure", "ENT Dental History and Recent Procedure", "string", "ent-dental-history", "관련된 귀·코·목 또는 치과 질환, 수술·시술·치료가 있다면 종류와 시기를 알려주세요.", 67, "history_handoff", [G["throat"], G["nasal"], G["handoff"]], RISK),
+        q("upper_respiratory.patient_concern_goal_and_other_rfe", "Patient Concern Goal and Other Reason for Encounter", "string", "patient-goal", "가장 걱정되는 점, 진료에서 확인받고 싶은 점, 함께 상담할 다른 문제가 있으면 알려주세요.", 66, "patient_priority", [G["handoff"]], RISK),
+        q("upper_respiratory.conflicting_information_and_unverified_items", "Conflicting Information and Unverified Items", "string", "conflict-unverified", "기억과 기록이 다르거나 아직 확인하지 못한 정보가 있으면 무엇인지 알려주세요.", 65, "handoff_uncertainty", [G["handoff"]], RISK),
     ]
     rules = [
         safety_rule(PREFIX, "breathing-stridor", {"fact": "symptom.severe_breathing_or_stridor", "equals": True}, "emergency", 1000),
@@ -148,6 +165,80 @@ def build_mrcm():
     }
 
 
+def build_completion_policy(fragment):
+    policy = completion_policy(
+        prefix="upper-respiratory-symptoms", fragment=fragment,
+        presentation_fact="symptom.upper_respiratory.current", question_budget=40,
+        source_refs=SOURCES,
+    )
+    policy["required_facts"]["routine"] = [
+        "symptom.upper_respiratory.main_type",
+        "symptom.duration",
+        "symptom.upper_respiratory.onset",
+        "symptom.upper_respiratory.severity",
+        "upper_respiratory.information_source_and_reliability",
+        "upper_respiratory.timeline_course_and_episode_pattern",
+        "upper_respiratory.exact_site_laterality_and_spread",
+        "observation.body_temperature",
+        "upper_respiratory.associated_symptoms_detail",
+        "upper_respiratory.functional_impact_sleep_work_school_intake",
+        "upper_respiratory.current_medicines_and_response",
+        "upper_respiratory.medicine_allergies_and_reactions",
+        "upper_respiratory.age_pregnancy_and_high_risk_context",
+        "upper_respiratory.patient_concern_goal_and_other_rfe",
+        "upper_respiratory.conflicting_information_and_unverified_items",
+    ]
+    nasal = [
+        "symptom.nasal_obstruction", "symptom.nasal_discharge",
+        "symptom.unilateral_purulent_nasal_discharge",
+        "symptom.facial_pain_or_pressure",
+        "symptom.double_worsening_after_initial_improvement",
+        "symptom.reduced_or_lost_smell",
+        "upper_respiratory.recent_antibiotic_use_and_response",
+        "upper_respiratory.prior_examination_swab_tests_and_results",
+        "upper_respiratory.prior_imaging_and_results",
+        "upper_respiratory.ent_dental_history_and_recent_procedure",
+    ]
+    policy["conditional_required_facts"] = [{
+        "selector_fact": "symptom.upper_respiratory.main_type",
+        "cases": {
+            "sore_throat": [
+                "symptom.throat_pain", "symptom.painful_swallowing",
+                "observation.tonsillar_exudate_or_pus",
+                "symptom.tender_anterior_neck_nodes", "symptom.cough",
+                "upper_respiratory.recent_antibiotic_use_and_response",
+                "upper_respiratory.prior_examination_swab_tests_and_results",
+                "upper_respiratory.ent_dental_history_and_recent_procedure",
+            ],
+            "nasal_obstruction": nasal,
+            "nasal_discharge": nasal,
+            "facial_pain": nasal,
+            "sneezing_itch": [
+                "symptom.sneezing_or_itchy_nose",
+                "symptom.itchy_red_watery_eyes",
+                "exposure.upper_respiratory_allergen",
+                "treatment.upper_respiratory_self_care_response",
+                "upper_respiratory.previous_episodes_and_baseline",
+            ],
+            "hoarseness": [
+                "symptom.hoarseness",
+                "symptom.hoarseness_persistent_three_weeks",
+                "symptom.persistent_mouth_ulcer_or_neck_lump",
+                "patient.smoking_or_inhaled_irritant",
+                "upper_respiratory.previous_episodes_and_baseline",
+                "upper_respiratory.ent_dental_history_and_recent_procedure",
+            ],
+            "other": [
+                "symptom.upper_respiratory.recurrent",
+                "exposure.sick_contact",
+                "treatment.upper_respiratory_self_care_response",
+                "upper_respiratory.previous_episodes_and_baseline",
+            ],
+        },
+    }]
+    return policy
+
+
 def build_sources():
     definitions = [
         ("source.nhs.sore-throat.2024", "NHS", "Sore throat", "reviewed-2024-04-08", "https://www.nhs.uk/symptoms/sore-throat/", "public_health_guidance", 7),
@@ -158,6 +249,13 @@ def build_sources():
     ]
     artifacts = []
     for sid, publisher, title, version, url, profile, days in definitions:
+        last_monitored = "2026-07-14" if profile == "terminology_server" else "2026-07-22"
+        if profile == "terminology_server":
+            next_monitor = "2026-08-13"
+        elif publisher == "NICE":
+            next_monitor = "2026-07-23"
+        else:
+            next_monitor = "2026-07-29"
         artifacts.append({
             "id": sid,
             "kind": "terminology_mrcm_query_summary" if profile == "terminology_server" else "clinical_guidance_metadata",
@@ -166,9 +264,13 @@ def build_sources():
             "digest": "live_response_summary_not_raw_cache" if profile == "terminology_server" else "metadata_only_not_cached",
             "license_status": "restricted" if publisher != "NHS" else "unknown",
             "complete": False, "monitor_profile": profile, "monitor_interval_days": days,
-            "last_monitored_at": "2026-07-14",
-            "next_monitor_at": "2026-08-13" if days == 30 else ("2026-07-21" if days == 7 else "2026-07-15"),
-            "assertions": ["Build-Time metadata only; Runtime does not browse this source and the generated clinical content remains unreviewed."],
+            "last_monitored_at": last_monitored,
+            "next_monitor_at": next_monitor,
+            "monitor_result": "current_official_source_confirmed_no_replacement_identified",
+            "assertions": [
+                "Build-Time metadata only; Runtime does not browse this source and the generated clinical content remains unreviewed.",
+                "The official page was checked for current symptom history, expected course, reassessment and complication context; no source text is reproduced at Runtime.",
+            ],
         })
     research = {
         "id": "source-manifest.primary-care-upper-respiratory-symptoms-research",
@@ -232,19 +334,31 @@ def build_cases(fragment):
             },
             "provenance": provenance(SOURCES),
         }
-    hidden = {}
-    for item in fragment["entries"]:
-        fact = item["fact"]
-        fid = fact["id"]
-        if fact["value_type"] == "boolean":
-            hidden[fid] = {"value": fid == "symptom.upper_respiratory.current"}
-        elif fact["value_type"] == "quantity":
-            hidden[fid] = {"value": {"amount": 3, "unit": "days"}}
-        elif fact["value_type"] == "coded":
-            hidden[fid] = {"value": fact.get("allowed_values", ["none"])[0]}
-        else:
-            hidden[fid] = {"value": "없음"}
-    declined = "exposure.upper_respiratory_allergen"
+    policy = build_completion_policy(fragment)
+    by_id = {item["fact"]["id"]: item["fact"] for item in fragment["entries"]}
+
+    def routine_hidden(branch):
+        required = set(
+            policy["required_facts"]["always"]
+            + policy["required_facts"]["routine"]
+            + policy["conditional_required_facts"][0]["cases"][branch]
+        )
+        hidden = {}
+        for fid in required:
+            fact = by_id[fid]
+            if fact["value_type"] == "boolean":
+                hidden[fid] = {"value": fid == "symptom.upper_respiratory.current"}
+            elif fact["value_type"] == "quantity":
+                hidden[fid] = {"value": {"amount": 37.2, "unit": "Cel"}} if fid == "observation.body_temperature" else {"value": {"amount": 3, "unit": "days"}}
+            elif fact["value_type"] == "coded":
+                hidden[fid] = {"value": fact.get("allowed_values", ["none"])[0]}
+            else:
+                hidden[fid] = {"value": "없음"}
+        hidden["symptom.upper_respiratory.main_type"] = {"value": branch}
+        return hidden
+
+    hidden = routine_hidden("nasal_obstruction")
+    declined = "upper_respiratory.prior_imaging_and_results"
     hidden.pop(declined)
     cases["UPPER-DATA-ABSENT-001.json"] = {
         "id": "UPPER-DATA-ABSENT-001", "simulation_language": "ko",
@@ -259,6 +373,57 @@ def build_cases(fragment):
             "forbidden_assertions": ["diagnosis.common_cold", "recommendation.antibiotic"],
         },
         "provenance": provenance(["source.nice.ng84.sore-throat.2025", "specifications/clinical-memory.md"]),
+    }
+    child = routine_hidden("sore_throat")
+    child["upper_respiratory.information_source_and_reliability"] = {"value": "보호자가 답변하며 아이가 직접 표현한 내용은 제한적"}
+    child["upper_respiratory.age_pregnancy_and_high_risk_context"] = {"value": "4세 아동, 보호자 대리 답변"}
+    child.pop("observation.body_temperature")
+    cases["UPPER-CHILD-PROXY-SORE-THROAT-001.json"] = {
+        "id": "UPPER-CHILD-PROXY-SORE-THROAT-001", "simulation_language": "ko",
+        "persona": {"age": 4, "response_source": "proxy_report"},
+        "initial_statement": {"ko": "아이 목이 아프다고 해서 보호자가 대신 답합니다."},
+        "hidden_state": child,
+        "response_behavior": {"observation.body_temperature": {"dataAbsentReason": "not-performed"}},
+        "expected": {
+            "expected_data_absent_reasons": {"observation.body_temperature": "not-performed"},
+            "expected_safety_level": "routine",
+            "expected_stop_reason": "required_targets_addressed_with_absent_data",
+            "expected_max_turns": 40,
+            "forbidden_assertions": ["diagnosis.strep_throat", "recommendation.antibiotic"],
+        },
+        "provenance": provenance(["source.nice.ng84.sore-throat.2025", "specifications/clinical-memory.md"]),
+    }
+    voice = routine_hidden("hoarseness")
+    voice["symptom.hoarseness"] = {"value": True}
+    voice["symptom.hoarseness_persistent_three_weeks"] = {"value": True}
+    voice["patient.smoking_or_inhaled_irritant"] = {"value": True}
+    voice["upper_respiratory.conflicting_information_and_unverified_items"] = {"value": "본인은 2주라고 하나 이전 기록에는 4주로 적혀 있어 의료진 확인 필요"}
+    cases["UPPER-PERSISTENT-HOARSENESS-HANDOFF-001.json"] = {
+        "id": "UPPER-PERSISTENT-HOARSENESS-HANDOFF-001", "simulation_language": "ko",
+        "persona": {"age": 58}, "initial_statement": {"ko": "목소리가 계속 쉬어 있고 작업장에서 먼지를 마셔요."},
+        "hidden_state": voice,
+        "expected": {
+            "expected_safety_level": "routine", "expected_stop_reason": "all_required_targets_resolved",
+            "expected_max_turns": 40,
+            "forbidden_assertions": ["diagnosis.laryngeal_cancer", "diagnosis.laryngitis"],
+        },
+        "provenance": provenance(SOURCES),
+    }
+    sinus = routine_hidden("facial_pain")
+    sinus["symptom.facial_pain_or_pressure"] = {"value": "moderate"}
+    sinus["upper_respiratory.recent_antibiotic_use_and_response"] = {"value": "5일 전 처방 항생제를 시작했으나 이름은 모름; 호전 없음"}
+    sinus["upper_respiratory.prior_examination_swab_tests_and_results"] = {"value": "동네의원 진찰, 검사명과 결과는 확인되지 않음"}
+    sinus["upper_respiratory.patient_concern_goal_and_other_rfe"] = {"value": "얼굴 통증과 함께 새 귀 통증도 의료진에게 전달 희망"}
+    cases["UPPER-SINUS-PRIOR-TREATMENT-MULTI-RFE-001.json"] = {
+        "id": "UPPER-SINUS-PRIOR-TREATMENT-MULTI-RFE-001", "simulation_language": "ko",
+        "persona": {"age": 46}, "initial_statement": {"ko": "얼굴이 아프고 코가 막히는데 귀도 새로 아파요."},
+        "hidden_state": sinus,
+        "expected": {
+            "expected_safety_level": "routine", "expected_stop_reason": "all_required_targets_resolved",
+            "expected_max_turns": 40,
+            "forbidden_assertions": ["diagnosis.bacterial_sinusitis", "recommendation.antibiotic"],
+        },
+        "provenance": provenance(["source.nice.ng79.sinusitis.2026", "specifications/reasoning-loop.md"]),
     }
     return cases
 
@@ -275,11 +440,7 @@ def main():
         ],
     )
     primary, research = build_sources()
-    policy = completion_policy(
-        prefix="upper-respiratory-symptoms", fragment=fragment,
-        presentation_fact="symptom.upper_respiratory.current", question_budget=40,
-        source_refs=SOURCES,
-    )
+    policy = build_completion_policy(fragment)
     for path, document in [
         ("knowledge/base/primary-care-upper-respiratory-symptoms.json", graph),
         ("rules/base/primary-care-upper-respiratory-symptoms.json", rules),
