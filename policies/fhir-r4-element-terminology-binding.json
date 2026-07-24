@@ -1,0 +1,76 @@
+{
+  "id": "policy.fhir-r4-element-terminology-binding",
+  "version": "0.1.0",
+  "status": "research_only",
+  "review_status": "unreviewed",
+  "fhir_version": "4.0.1",
+  "purpose": "Apply the terminology binding of the actual target FHIR R4 element before the platform's generic SNOMED CT answer preference.",
+  "scope": {
+    "resource_registry": "all base FHIR R4 resource StructureDefinitions published in profiles-resources.json",
+    "application": "only facts with an explicit exact or equivalent mapping to a target FHIR element",
+    "candidate_targets": "discover and report the element binding but do not change answer coding",
+    "source_defined_fixed_questionnaires": "excluded unless separately authorized and verified"
+  },
+  "precedence": [
+    "source_defined_questionnaire_answer_binding_when_explicitly_in_scope",
+    "target_fhir_r4_element_binding",
+    "verified_snomed_ct_answer_mapping",
+    "local_answer_code_fallback"
+  ],
+  "binding_strength_rules": {
+    "required": {
+      "use_bound_value_set": true,
+      "allow_outside_code": false,
+      "questionnaire_item_type": "choice",
+      "validation": "selected coded answers must validate in the bound ValueSet"
+    },
+    "extensible": {
+      "use_bound_value_set": true,
+      "allow_outside_code": true,
+      "questionnaire_item_type": "open-choice",
+      "validation": "use the bound ValueSet when it contains an applicable concept; otherwise preserve the outside coding or text and the reason"
+    },
+    "preferred": {
+      "use_bound_value_set": true,
+      "allow_outside_code": true,
+      "questionnaire_item_type": "open-choice",
+      "validation": "prefer the bound ValueSet and retain an auditable outside mapping when needed"
+    },
+    "example": {
+      "use_bound_value_set": true,
+      "allow_outside_code": true,
+      "questionnaire_item_type": "open-choice",
+      "validation": "use the example ValueSet when suitable without treating it as a closed clinical universe"
+    }
+  },
+  "projection": {
+    "questionnaire": "Questionnaire.item.answerValueSet receives the effective canonical and item.type follows binding strength",
+    "questionnaire_response": "QuestionnaireResponse.answer.valueCoding preserves the system, code, display, and version selected under the effective binding",
+    "resource": "the same coding is validated again against the mapped target element before resource projection",
+    "data_absent": "dataAbsentReason remains separate from the clinical answer ValueSet",
+    "generic_binding_preservation": "retain the generic SNOMED/local ValueSet as fallback metadata even when an element binding takes precedence"
+  },
+  "runtime": {
+    "uses_compiled_registry_only": true,
+    "live_fhir_spec_lookup": false,
+    "live_terminology_lookup_required": false,
+    "terminology_failure_must_not_change_interview_safety_or_routing": true
+  },
+  "refresh": {
+    "profile": "interoperability_standard",
+    "interval_days": 7,
+    "last_verified_at": "2026-07-24",
+    "next_verification_at": "2026-07-31",
+    "policy_id": "policy.knowledge-refresh"
+  },
+  "provenance": {
+    "source": "https://hl7.org/fhir/R4/profiles-resources.json",
+    "source_kind": "official_hl7_fhir_r4_structuredefinition_bundle",
+    "retrieved_at": "2026-07-24",
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "review_status": "unreviewed"
+  }
+}

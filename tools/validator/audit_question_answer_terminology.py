@@ -13,6 +13,9 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
 from compiler.build_package import PACKAGE_PROFILES, compile_package
+from interoperability.fhir_r4_bindings import (
+    load_documents as load_fhir_binding_documents,
+)
 from interoperability.question_answer import (
     assess_question_atomicity,
     enrich_clinician_context,
@@ -23,12 +26,18 @@ from tools.fhir.build_answer_valuesets import build as build_answer_valuesets
 
 def run() -> dict[str, Any]:
     policy, registry = load_documents()
+    fhir_policy, fhir_registry, fact_element_mappings = (
+        load_fhir_binding_documents()
+    )
     rows = []
     totals: dict[str, int] = {}
     unique_questions: dict[str, dict[str, Any]] = {}
     unique_question_facts: dict[str, dict[str, Any]] = {}
     unique_coded_answers: dict[str, bool] = {}
     unique_data_absent_answers: set[str] = set()
+    effective_fhir_element_facts: set[str] = set()
+    candidate_fhir_element_facts: set[str] = set()
+    fhir_binding_conflicts: list[str] = []
     passed = True
     for profile in PACKAGE_PROFILES:
         package = compile_package(profile=profile)
@@ -54,6 +63,12 @@ def run() -> dict[str, Any]:
                 "answer_semantic_binding", {}
             )
             fact = facts[question_facts[node["id"]]]
+            if fact.get("fhir_r4_element_bindings"):
+                candidate_fhir_element_facts.add(fact["id"])
+            if answer.get("fhir_element_binding"):
+                effective_fhir_element_facts.add(fact["id"])
+            if answer.get("fhir_element_binding_conflict"):
+                fhir_binding_conflicts.append(fact["id"])
             absent = answer.get("data_absent_reason_mappings", {})
             snomed = answer.get("snomed_mappings", {})
             for token in fact.get("allowed_values", []):
@@ -127,6 +142,12 @@ def run() -> dict[str, Any]:
         fact = context_facts[question["fact_id"]]
         unique_question_facts.setdefault(question["template_id"], fact)
         answer = fact.get("answer_semantic_binding", {})
+        if fact.get("fhir_r4_element_bindings"):
+            candidate_fhir_element_facts.add(fact["id"])
+        if answer.get("fhir_element_binding"):
+            effective_fhir_element_facts.add(fact["id"])
+        if answer.get("fhir_element_binding_conflict"):
+            fhir_binding_conflicts.append(fact["id"])
         absent = answer.get("data_absent_reason_mappings", {})
         snomed = answer.get("snomed_mappings", {})
         for token in fact.get("allowed_values", []):
@@ -206,6 +227,8 @@ def run() -> dict[str, Any]:
     )
     if invalid_standard_atomicity:
         passed = False
+    if fhir_binding_conflicts:
+        passed = False
 
     value_set_bundle = build_answer_valuesets()
     value_set_counts: dict[str, int] = {}
@@ -268,6 +291,22 @@ def run() -> dict[str, Any]:
             "composite_refactoring_queue_count": len(composite_candidates),
             "composite_refactoring_queue_sample": composite_candidates[:100],
         },
+        "fhir_r4_element_bindings": {
+            "policy_id": fhir_policy["id"],
+            "registry_id": fhir_registry["id"],
+            "fhir_version": fhir_registry["fhir_version"],
+            "resource_count": fhir_registry["resource_count"],
+            "element_binding_count": fhir_registry["binding_count"],
+            "fact_element_mapping_count": len(
+                fact_element_mappings["mappings"]
+            ),
+            "candidate_fact_count": len(candidate_fhir_element_facts),
+            "effective_fact_count": len(effective_fhir_element_facts),
+            "effective_fact_ids": sorted(effective_fhir_element_facts),
+            "binding_conflict_count": len(set(fhir_binding_conflicts)),
+            "binding_conflict_fact_ids": sorted(set(fhir_binding_conflicts)),
+            "passed": not fhir_binding_conflicts,
+        },
         "answer_valuesets": {
             "bundle_id": value_set_bundle["id"],
             "resource_count": len(value_set_bundle["entry"]),
@@ -275,7 +314,10 @@ def run() -> dict[str, Any]:
             "id_rule": "a-{sct|loinc|local|mixed}-{semantic-name}",
         },
         "mapping_quality_simulation": {
-            "passed": not invalid_standard_atomicity,
+            "passed": (
+                not invalid_standard_atomicity
+                and not fhir_binding_conflicts
+            ),
             "scenarios": [
                 "atomic_question_standard_mapping_gate",
                 "composite_question_refactoring_queue",
@@ -285,6 +327,9 @@ def run() -> dict[str, Any]:
                 "complete_local_answer_ValueSet",
                 "dataAbsentReason_exclusion_from_answer_ValueSet",
                 "FHIR_id_length_and_uniqueness",
+                "FHIR_R4_target_element_binding_precedence",
+                "FHIR_R4_binding_strength_projection",
+                "FHIR_R4_multiple_target_binding_conflict_detection",
             ],
         },
         "results": rows,

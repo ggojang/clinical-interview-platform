@@ -107,6 +107,25 @@ Partially mapped choices use a complete mixed ValueSet rather than an incomplete
 SNOMED-only list. Numeric, date, narrative and UCUM quantity values are not
 forced into artificial answer codes.
 
+The generic SNOMED-first answer rule does not override a binding on the actual
+target FHIR R4 element. A Build-Time registry generated from the official R4
+base StructureDefinitions records required, extensible, preferred and example
+bindings for all base resources. An exact or equivalent Fact-to-element mapping
+activates the official canonical as the effective
+`Questionnaire.item.answerValueSet`; candidate, partial and related mappings
+remain annotations only. Required bindings use closed `choice`. Extensible,
+preferred and example bindings use `open-choice` unless a verified profile
+requires a narrower shape. The compiled package preserves the generic
+SNOMED/local ValueSet as fallback metadata, and Runtime never downloads the
+FHIR specification or a terminology expansion.
+
+`history.family.relationship` is the initial active example. It maps to
+`FamilyMemberHistory.relationship`, uses
+`http://terminology.hl7.org/ValueSet/v3-FamilyMember`, and records prepared
+answers with the HL7 v3 RoleCode system. The existing narrative family-history
+Fact remains available for multiple conditions and details; the relationship
+question is atomic and repeatable for future FamilyMemberHistory projection.
+
 Official LOINC LL Answer Lists are reference ValueSets, not project-generated
 `a-loinc-*` resources. They retain `http://loinc.org/vs/{LL-code}` and are
 bound directly through `Questionnaire.item.answerValueSet` when applicable.

@@ -1,6 +1,6 @@
 # Question and Answer Terminology Bindings
 
-Version: 0.2 (Draft)
+Version: 0.3 (Draft)
 
 Status: `research_only`
 
@@ -15,7 +15,8 @@ round-trip identity even when a standard code exists.
 
 ```text
 Question: LOINC -> SNOMED CT -> local question code
-Coded answer: SNOMED CT -> local answer code
+Coded answer: target FHIR R4 element ValueSet (when applicable)
+              -> SNOMED CT -> local answer code
 Literal answer: FHIR primitive + UCUM where applicable
 ```
 
@@ -43,6 +44,27 @@ tests Runtime behavior.
 
 Clinical choice answers use a verified SNOMED CT concept when possible. Every
 remaining coded choice receives a context-qualified local answer code.
+
+This generic preference is subordinate to the terminology binding of the
+actual target FHIR R4 element. When a Fact has a verified exact or equivalent
+mapping to such an element, the compiled binding uses that element's official
+ValueSet canonical and strength. Required bindings are closed `choice` items.
+Extensible, preferred and example bindings are `open-choice` unless a more
+specific verified profile requires otherwise. The generic SNOMED/local
+ValueSet remains as fallback metadata rather than replacing the resource
+binding.
+
+The offline R4 registry is generated at Build Time from the official
+`profiles-resources.json` StructureDefinition bundle. It covers every base R4
+resource and is never downloaded at interview Runtime. Candidate, partial or
+related Fact-to-element mappings are reported for review but cannot change the
+answer binding.
+
+For example, `history.family.relationship` maps to
+`FamilyMemberHistory.relationship`, so it uses
+`http://terminology.hl7.org/ValueSet/v3-FamilyMember` and RoleCode answers such
+as `MTH` for mother. Because the R4 binding strength is `example`, the item
+remains open to a relationship not represented by the prepared choices.
 
 Numeric, quantity, date, date-time, and narrative answers use the matching FHIR
 R4 `value[x]` type. Quantity units use UCUM when known. The interoperability
@@ -97,3 +119,8 @@ completion.
 
 The local coding is retained with verified standard codings so round-trip
 projection does not lose repository identity.
+
+Before resource projection, the selected coding is validated again against the
+effective target element binding. If one internal Fact targets two elements
+whose required ValueSets differ, projection is split by resource rather than
+silently choosing one ValueSet.

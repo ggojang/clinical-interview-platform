@@ -1,6 +1,6 @@
 {
   "id": "policy.question-answer-terminology-binding",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "status": "research_only",
   "review_status": "unreviewed",
   "purpose": "Bind every interview question and coded answer without overstating semantic equivalence.",
@@ -37,7 +37,9 @@
     "do_not_rewrite_fixed_question_text_for_mapping": true
   },
   "answer_binding": {
+    "precedence_rule": "when an exact or equivalent target FHIR R4 element mapping exists, apply that element's official ValueSet binding before the generic SNOMED CT preference",
     "preferred_system_order": [
+      "target_FHIR_R4_element_ValueSet_when_applicable",
       "http://snomed.info/sct",
       "https://ggojang.github.io/clinical-interview-platform/fhir/CodeSystem/clinical-interview-answer"
     ],
@@ -135,7 +137,9 @@
     "coded_response": "QuestionnaireResponse.item.answer.valueCoding",
     "literal_response": "QuestionnaireResponse.item.answer.value_x",
     "question_response_link": "Questionnaire.item.linkId_equals_QuestionnaireResponse.item.linkId",
-    "preserve_local_code_alongside_standard_code": true
+    "preserve_local_code_alongside_standard_code": true,
+    "resource_element_binding_policy": "policy.fhir-r4-element-terminology-binding",
+    "element_binding_rule": "required_extensible_preferred_and_example_bindings_are_applied_according_to_strength_when_the_internal_Fact_has_an_exact_or_equivalent_target_element_mapping"
   },
   "reference_search_priority": [
     "official_LOINC_panel_Questionnaire_and_Answer_List_ValueSet",

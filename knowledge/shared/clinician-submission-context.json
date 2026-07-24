@@ -1,6 +1,6 @@
 {
   "id": "knowledge.shared.clinician-submission-context",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "status": "research_only",
   "review_status": "unreviewed",
   "usage_modes": [
@@ -147,6 +147,33 @@
       "display_ko": "가족력",
       "value_type": "string",
       "report_field": "history.family",
+      "status": "research_only",
+      "review_status": "unreviewed"
+    },
+    {
+      "id": "history.family.relationship",
+      "type": "Fact",
+      "display": "Relationship to Family Member",
+      "display_ko": "가족력 대상자와의 관계",
+      "value_type": "coded",
+      "cardinality": "0..*",
+      "allowed_values": [
+        "mother",
+        "father",
+        "parent",
+        "sibling",
+        "brother",
+        "sister",
+        "child",
+        "son",
+        "daughter",
+        "grandparent",
+        "spouse"
+      ],
+      "report_field": "history.family_members.relationship",
+      "fhir_r4_targets": [
+        "FamilyMemberHistory.relationship"
+      ],
       "status": "research_only",
       "review_status": "unreviewed"
     },
@@ -353,6 +380,31 @@
       "fact_id": "history.family",
       "wording": "부모·형제자매·자녀 등 가까운 가족의 주요 질환을 가족관계, 질환명, 발병 나이와 함께 알려주세요. 없으면 '없음'이라고 답해 주세요.",
       "priority": 60
+    },
+    {
+      "template_id": "question.clinician-context.family-relationship",
+      "fact_id": "history.family.relationship",
+      "wording": "말씀하신 가족력의 대상자는 환자와 어떤 관계인가요? 한 명씩 어머니, 아버지, 형제자매, 자녀 등으로 답해 주세요.",
+      "answer_code_map": {
+        "1": "mother",
+        "2": "father",
+        "3": "parent",
+        "4": "sibling",
+        "5": "brother",
+        "6": "sister",
+        "7": "child",
+        "8": "son",
+        "9": "daughter",
+        "10": "grandparent",
+        "11": "spouse"
+      },
+      "accept_free_text": true,
+      "repeatable": true,
+      "activation": {
+        "after_fact": "history.family",
+        "when_family_history_present": true
+      },
+      "priority": 59
     },
     {
       "template_id": "question.clinician-context.occupation",
@@ -2279,6 +2331,7 @@
         "id": "family_and_social_history",
         "fact_ids": [
           "history.family",
+          "history.family.relationship",
           "occupation.current",
           "patient.smoking.status",
           "patient.smoking.exposure_detail",

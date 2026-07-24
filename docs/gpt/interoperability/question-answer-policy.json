@@ -12,7 +12,9 @@
     "coded_clinical_answers": "use_verified_SNOMED_CT_when_the_answer_concept_is_represented",
     "data_absent_rule": "unknown_declined_not_asked_and_not_applicable_states_are_not_negative_answers_and_use_FHIR_DataAbsentReason_when_semantically_applicable",
     "local_fallback_required": true,
+    "precedence_rule": "when an exact or equivalent target FHIR R4 element mapping exists, apply that element's official ValueSet binding before the generic SNOMED CT preference",
     "preferred_system_order": [
+      "target_FHIR_R4_element_ValueSet_when_applicable",
       "http://snomed.info/sct",
       "https://ggojang.github.io/clinical-interview-platform/fhir/CodeSystem/clinical-interview-answer"
     ],
@@ -52,10 +54,12 @@
   "fhir_r4_projection": {
     "coded_answer_option": "Questionnaire.item.answerOption.valueCoding_or_answerValueSet",
     "coded_response": "QuestionnaireResponse.item.answer.valueCoding",
+    "element_binding_rule": "required_extensible_preferred_and_example_bindings_are_applied_according_to_strength_when_the_internal_Fact_has_an_exact_or_equivalent_target_element_mapping",
     "literal_response": "QuestionnaireResponse.item.answer.value_x",
     "preserve_local_code_alongside_standard_code": true,
     "question": "Questionnaire.item.code",
-    "question_response_link": "Questionnaire.item.linkId_equals_QuestionnaireResponse.item.linkId"
+    "question_response_link": "Questionnaire.item.linkId_equals_QuestionnaireResponse.item.linkId",
+    "resource_element_binding_policy": "policy.fhir-r4-element-terminology-binding"
   },
   "fhir_valueset_service": {
     "closed_projection": "choice_for_required_closed_or_source_defined_items",
@@ -180,5 +184,5 @@
     "LOINC": "2.82",
     "SNOMED_CT_International": "http://snomed.info/sct/900000000000207008/version/20260701"
   },
-  "version": "0.4.0"
+  "version": "0.5.0"
 }

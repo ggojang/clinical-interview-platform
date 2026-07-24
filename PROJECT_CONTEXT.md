@@ -553,8 +553,18 @@ clinical data element before an exact or equivalent standard mapping can be
 selected. Terminology audits repeatedly identify composite candidates and
 place them in an atomic-refactoring queue.
 
-Coded clinical answers follow `SNOMED CT → local answer code` and every dynamic
-coded answer set has a complete FHIR R4 ValueSet. ValueSet ids follow
+Coded clinical answers generally follow `SNOMED CT → local answer code`.
+However, when an internal Fact has a verified exact or equivalent mapping to a
+target FHIR R4 element with an official ValueSet binding, that element binding
+and its required, extensible, preferred or example strength take precedence.
+The complete offline registry is generated at Build Time from the official R4
+base resource StructureDefinitions; Runtime never queries the FHIR
+specification. Candidate or partial element mappings do not change answer
+coding. The generic SNOMED/local binding is retained as fallback metadata, and
+incompatible required bindings across multiple target resources require split
+projection rather than silent selection.
+
+Every dynamic coded answer set has a complete FHIR R4 ValueSet. ValueSet ids follow
 `a-{sct|loinc|local|mixed}-{semantic-name}`. A complete SNOMED set uses
 `a-sct-*`; a partial mapping uses `a-mixed-*`; every coded Fact also has an
 `a-local-*` companion. An applicable official LOINC LL Answer List keeps its

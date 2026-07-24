@@ -12,6 +12,7 @@ from pathlib import Path
 import re
 from typing import Any
 
+from interoperability.fhir_r4_bindings import apply_element_bindings
 
 ROOT = Path(__file__).resolve().parents[1]
 POLICY_PATH = ROOT / "policies/question-answer-terminology-binding.json"
@@ -314,6 +315,11 @@ def enrich_graph(graph: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]
         if binding["standard_mappings"]:
             question["semantic_binding"] = binding
         answer_binding = _answer_binding(fact, policy, registry)
+        answer_binding, fhir_targets = apply_element_bindings(
+            fact, answer_binding
+        )
+        if fhir_targets:
+            fact["fhir_r4_element_bindings"] = fhir_targets
         if answer_binding:
             fact["answer_semantic_binding"] = answer_binding
     coverage = build_coverage(enriched)
@@ -335,6 +341,12 @@ def enrich_graph(graph: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]
             "false": _snomed_answer("boolean", "no", registry),
         },
         "answer_value_set_naming_rule": "a-{sct|loinc|local|mixed}-{semantic-name}",
+        "fhir_r4_element_binding_policy": (
+            "policy.fhir-r4-element-terminology-binding"
+        ),
+        "answer_binding_precedence": (
+            "target_FHIR_R4_element_then_SNOMED_CT_then_local"
+        ),
         "coverage": coverage,
     }
 
@@ -358,6 +370,11 @@ def enrich_clinician_context(
         if binding["standard_mappings"]:
             question["semantic_binding"] = binding
         answer_binding = _answer_binding(fact, policy, registry)
+        answer_binding, fhir_targets = apply_element_bindings(
+            fact, answer_binding
+        )
+        if fhir_targets:
+            fact["fhir_r4_element_bindings"] = fhir_targets
         if answer_binding:
             fact["answer_semantic_binding"] = answer_binding
     question_count = len(enriched["questions"])
@@ -365,6 +382,8 @@ def enrich_clinician_context(
     loinc_non_equivalent = 0
     snomed_secondary = 0
     local_only = 0
+    fhir_element_bound = 0
+    fhir_element_candidates = 0
     for question in enriched["questions"]:
         mappings = question.get("semantic_binding", {}).get("standard_mappings", [])
         loinc = [item for item in mappings if item["system"] == LOINC]
@@ -376,6 +395,13 @@ def enrich_clinician_context(
         )
         snomed_secondary += any(item["system"] == SNOMED for item in mappings)
         local_only += not mappings
+        fact = facts[question["fact_id"]]
+        fhir_element_bound += bool(
+            fact.get("answer_semantic_binding", {}).get("fhir_element_binding")
+        )
+        fhir_element_candidates += bool(
+            fact.get("fhir_r4_element_bindings")
+        )
     coverage = {
         "question_count": question_count,
         "question_loinc_exact_or_equivalent_count": loinc_equivalent,
@@ -386,6 +412,8 @@ def enrich_clinician_context(
         "question_loinc_exact_or_equivalent_percent": round(
             loinc_equivalent * 100 / question_count, 1
         ) if question_count else 0.0,
+        "fhir_r4_element_bound_question_count": fhir_element_bound,
+        "fhir_r4_element_candidate_question_count": fhir_element_candidates,
     }
     enriched["question_answer_terminology"] = {
         "policy_id": policy["id"],
@@ -397,6 +425,12 @@ def enrich_clinician_context(
         "local_answer_code_system": LOCAL_ANSWER,
         "local_answer_code_pattern": "{fact_id}--{internal_value}",
         "answer_value_set_naming_rule": "a-{sct|loinc|local|mixed}-{semantic-name}",
+        "fhir_r4_element_binding_policy": (
+            "policy.fhir-r4-element-terminology-binding"
+        ),
+        "answer_binding_precedence": (
+            "target_FHIR_R4_element_then_SNOMED_CT_then_local"
+        ),
         "coverage": coverage,
     }
     return enriched, coverage
@@ -424,6 +458,8 @@ def build_coverage(graph: dict[str, Any]) -> dict[str, Any]:
     data_absent_values = 0
     primitive_answer_questions = 0
     boolean_answer_questions = 0
+    fhir_element_bound_questions = 0
+    fhir_element_candidate_questions = 0
     for question in questions:
         mappings = question.get("semantic_binding", {}).get("standard_mappings", [])
         loinc = [item for item in mappings if item["system"] == LOINC]
@@ -438,6 +474,11 @@ def build_coverage(graph: dict[str, Any]) -> dict[str, Any]:
         local_only += not mappings
         fact = facts[question_facts[question["id"]]]
         answer = fact.get("answer_semantic_binding", {})
+        fhir_targets = fact.get("fhir_r4_element_bindings", [])
+        fhir_element_bound_questions += bool(
+            answer.get("fhir_element_binding")
+        )
+        fhir_element_candidate_questions += bool(fhir_targets)
         if fact.get("value_type") == "boolean":
             boolean_answer_questions += 1
         elif not fact.get("allowed_values"):
@@ -472,4 +513,8 @@ def build_coverage(graph: dict[str, Any]) -> dict[str, Any]:
         "data_absent_option_count": data_absent_values,
         "boolean_primitive_question_count": boolean_answer_questions,
         "other_primitive_question_count": primitive_answer_questions,
+        "fhir_r4_element_bound_question_count": fhir_element_bound_questions,
+        "fhir_r4_element_candidate_question_count": (
+            fhir_element_candidate_questions
+        ),
     }

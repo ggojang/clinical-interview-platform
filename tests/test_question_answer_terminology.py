@@ -36,10 +36,18 @@ class QuestionAnswerTerminologyTest(unittest.TestCase):
         )
         self.assertEqual(
             policy["answer_binding"]["preferred_system_order"],
-            ["http://snomed.info/sct", LOCAL_ANSWER],
+            [
+                "target_FHIR_R4_element_ValueSet_when_applicable",
+                "http://snomed.info/sct",
+                LOCAL_ANSWER,
+            ],
         )
         self.assertEqual(registry["verification"]["loinc_version"], "2.82")
         self.assertIn("/version/20260701", registry["verification"]["snomed_version"])
+        self.assertEqual(
+            policy["fhir_r4_projection"]["resource_element_binding_policy"],
+            "policy.fhir-r4-element-terminology-binding",
+        )
 
     def test_every_dynamic_question_has_local_code_and_answer_strategy(self):
         for profile in PACKAGE_PROFILES:
@@ -263,6 +271,9 @@ class QuestionAnswerTerminologyTest(unittest.TestCase):
                 "/gpt/interoperability/question-answer-policy.json",
                 "/gpt/interoperability/question-answer-bindings.json",
                 "/gpt/interoperability/question-answer-coverage.json",
+                "/gpt/interoperability/fhir-r4-element-binding-policy.json",
+                "/gpt/interoperability/fhir-r4-fact-element-mappings.json",
+                "/gpt/interoperability/fhir-r4-resource-element-bindings.json",
             } <= paths)
             context = json.loads(
                 (output_path / "clinician-submission-context.json")
@@ -284,6 +295,9 @@ class QuestionAnswerTerminologyTest(unittest.TestCase):
         self.assertIn("operationId: getQuestionAnswerTerminologyPolicy", schema)
         self.assertIn("operationId: getQuestionAnswerTerminologyBindings", schema)
         self.assertIn("operationId: getQuestionAnswerTerminologyCoverage", schema)
+        self.assertIn("operationId: getFhirR4ElementBindingPolicy", schema)
+        self.assertIn("operationId: getFhirR4FactElementMappings", schema)
+        self.assertIn("operationId: getFhirR4ResourceElementBindings", schema)
 
 
 if __name__ == "__main__":

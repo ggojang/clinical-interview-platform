@@ -16,8 +16,8 @@ sys.path.insert(0, str(ROOT))
 from interoperability.question_answer import enrich_clinician_context
 
 
-VERSION = "1.46.0"
-GENERATED_AT = "2026-07-22T00:00:00Z"
+VERSION = "1.47.0"
+GENERATED_AT = "2026-07-24T00:00:00Z"
 PRIVATE_KEYS = {
     "raw_text", "raw_input", "patient_response", "patient_responses",
     "questionnaire_response", "conversation", "transcript", "evidence",
@@ -80,11 +80,20 @@ def envelope(resource_type: str, items: list[dict[str, Any]]) -> dict[str, Any]:
 def compact(value: Any) -> Any:
     """Remove repeated build metadata while preserving runtime semantics."""
     if isinstance(value, dict):
-        return {
+        result = {
             key: compact(item)
             for key, item in sorted(value.items())
             if key not in COMPACT_DROP_KEYS and key.lower() not in PRIVATE_KEYS
         }
+        if value.get("fhir_element_binding"):
+            for key in (
+                "fhir_item_type",
+                "fhir_response_type",
+                "value_set_strategy",
+            ):
+                if key in value:
+                    result[key] = compact(value[key])
+        return result
     if isinstance(value, list):
         return [compact(item) for item in value]
     return value
@@ -529,6 +538,16 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
     question_answer_coverage = sanitize(load_json(
         root / "coverage" / "question-answer-terminology-latest.json"
     ))
+    fhir_element_binding_policy = sanitize(load_json(
+        root / "policies" / "fhir-r4-element-terminology-binding.json"
+    ))
+    fhir_fact_element_mappings = sanitize(load_json(
+        root / "mappings" / "fhir" / "r4" / "fact-element-mappings.json"
+    ))
+    fhir_element_binding_registry = sanitize(load_json(
+        root / "mappings" / "fhir" / "r4"
+        / "resource-element-bindings.json"
+    ))
     for document, resource_type in (
         (uscdi_core, "UscdiCoreInteroperabilityOverlay"),
         (uscdi_plus, "UscdiPlusDomainOverlayCatalog"),
@@ -537,6 +556,12 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
         (question_answer_policy, "QuestionAnswerTerminologyPolicy"),
         (question_answer_registry, "QuestionAnswerTerminologyRegistry"),
         (question_answer_coverage, "QuestionAnswerTerminologyCoverageReport"),
+        (fhir_element_binding_policy, "FhirR4ElementBindingPolicy"),
+        (fhir_fact_element_mappings, "FhirR4FactElementMappingRegistry"),
+        (
+            fhir_element_binding_registry,
+            "FhirR4ResourceElementBindingRegistry",
+        ),
     ):
         document["resource_type"] = resource_type
         document["contains_patient_responses"] = False
@@ -674,6 +699,15 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
         "interoperability/question-answer-policy.json": question_answer_policy,
         "interoperability/question-answer-bindings.json": question_answer_registry,
         "interoperability/question-answer-coverage.json": question_answer_coverage,
+        "interoperability/fhir-r4-element-binding-policy.json": (
+            fhir_element_binding_policy
+        ),
+        "interoperability/fhir-r4-fact-element-mappings.json": (
+            fhir_fact_element_mappings
+        ),
+        "interoperability/fhir-r4-resource-element-bindings.json": (
+            fhir_element_binding_registry
+        ),
         "hira-adequacy-assessments.json": hira_assessment_catalog,
     }
     resources.update(hira_programs)
@@ -721,7 +755,16 @@ def build(root: Path, output: Path) -> dict[str, Any]:
                 "count",
                 document.get(
                     "question_count",
-                    len(document.get("entries", document.get("question_groups", []))),
+                    document.get(
+                        "binding_count",
+                        len(document.get(
+                            "entries",
+                            document.get(
+                                "question_groups",
+                                document.get("mappings", []),
+                            ),
+                        )),
+                    ),
                 ),
             ),
         })
@@ -945,6 +988,9 @@ def build(root: Path, output: Path) -> dict[str, Any]:
         "question_answer_terminology_policy": resources[
             "interoperability/question-answer-policy.json"
         ],
+        "fhir_r4_element_binding_policy": resources[
+            "interoperability/fhir-r4-element-binding-policy.json"
+        ],
         "preferred_loading": {
             "catalog_operation": "getReasonForEncounters",
             "common_operation": "getCommonInterviewFacts",
@@ -958,8 +1004,14 @@ def build(root: Path, output: Path) -> dict[str, Any]:
             "question_answer_terminology": [
                 "/gpt/interoperability/question-answer-policy.json",
                 "/gpt/interoperability/question-answer-bindings.json",
-                "/gpt/interoperability/question-answer-coverage.json"
+                "/gpt/interoperability/question-answer-coverage.json",
+                "/gpt/interoperability/fhir-r4-element-binding-policy.json",
+                "/gpt/interoperability/fhir-r4-fact-element-mappings.json"
             ],
+            "full_fhir_r4_element_binding_registry_on_demand": (
+                "/gpt/interoperability/"
+                "fhir-r4-resource-element-bindings.json"
+            ),
             "rfe_operations": [
                 "getReasonForEncounterRules",
                 "getReasonForEncounterQuestions",
