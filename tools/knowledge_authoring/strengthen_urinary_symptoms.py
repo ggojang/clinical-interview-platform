@@ -8,6 +8,8 @@ from profile_support import ROOT, entry, write_json
 
 
 P = "urinary"
+OLD_PREGNANCY_FACT = "pregnancy.possible"
+PREGNANCY_STATUS_FACT = "pregnancy.possibility_status"
 FRAGMENT = "knowledge/generated/genitourinary/urinary-symptoms/urinary-symptoms.json"
 POLICY = "policies/primary-care-urinary-symptoms-completion.json"
 CLINICIAN = "knowledge/shared/clinician-submission-context.json"
@@ -38,6 +40,17 @@ def load(path: str) -> dict:
     return json.loads((ROOT / path).read_text(encoding="utf-8"))
 
 
+def replace_fact_id(value):
+    """Separate the urinary coded status from the shared boolean Fact."""
+    if isinstance(value, dict):
+        return {key: replace_fact_id(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [replace_fact_id(item) for item in value]
+    if value == OLD_PREGNANCY_FACT:
+        return PREGNANCY_STATUS_FACT
+    return value
+
+
 def provenance(source_refs: list[str]) -> dict:
     return {
         "created_by": {"type": "ai", "id": "codex-gpt5"},
@@ -66,7 +79,7 @@ def question(
 
 
 def build_fragment() -> dict:
-    doc = load(FRAGMENT)
+    doc = replace_fact_id(load(FRAGMENT))
     additions = [
         question("urinary.patient_words_first_change_main_concern", "Patient Description and Main Concern", "string", "patient-words", "처음 달라졌다고 느낀 배뇨 상태, 지금 가장 불편한 점과 가장 걱정되는 점을 본인의 표현으로 알려주세요.", 129, "routing", C),
         question("urinary.first_latest_onset_course_baseline_and_fluctuation", "Detailed Onset Course and Baseline", "string", "course", "처음과 가장 최근 증상의 시작 날짜·상황, 갑작스럽거나 서서히 시작했는지, 지속·반복·악화·호전 양상과 평소 배뇨 상태를 알려주세요.", 128, "course", C + R),
@@ -136,7 +149,7 @@ def build_policy(doc: dict) -> dict:
         "urinary.patient_goal_preference_expected_help_additional_comment_and_other_rfe",
         "history.recurrent_uti",
         "device.urinary_catheter_present",
-        "pregnancy.possible",
+        PREGNANCY_STATUS_FACT,
         "history.diabetes",
         "patient.immunocompromised",
         "patient.male_urinary_anatomy",

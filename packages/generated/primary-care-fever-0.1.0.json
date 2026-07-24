@@ -3,7 +3,7 @@
     "id": "knowledge.shared.clinician-submission-context",
     "resource_ref": "knowledge/shared/clinician-submission-context.json",
     "review_status": "unreviewed",
-    "semantic_digest": "sha256:e18c181a12a61c671e74e6e099f996956e3def058daaa0a8064f3e8c7e611759",
+    "semantic_digest": "sha256:1157db19bfcfd6e1044170a80aa9599e804054b0eaffba30c29de47428b64d06",
     "session_facts": [
       {
         "display": "Unprompted Additional Comment",
@@ -829,7 +829,7 @@
         "template_id": "question.fever.sore-throat",
         "wording": "목 통증이나 삼키기 어려움이 있나요?"
       },
-      "symptom.systemic_unwellness": {
+      "symptom.systemically_unwell": {
         "language": "ko",
         "mode": [
           "chat",
@@ -1015,7 +1015,7 @@
         "symptom.sore_throat"
       ],
       "target.fever.systemic-unwellness": [
-        "symptom.systemic_unwellness"
+        "symptom.systemically_unwell"
       ],
       "target.fever.temperature": [
         "observation.body_temperature"
@@ -1573,7 +1573,7 @@
         "observation.body_temperature",
         "symptom.chills",
         "symptom.duration",
-        "symptom.systemic_unwellness"
+        "symptom.systemically_unwell"
       ]
     },
     "status": "research_only",
@@ -7010,7 +7010,7 @@
       },
       {
         "from": "question.fever.systemic-unwellness",
-        "id": "edge.generated.question_fever_systemic_unwellness.collects.symptom_systemic_unwellness",
+        "id": "edge.generated.question_fever_systemic_unwellness.collects.symptom_systemically_unwell",
         "provenance": {
           "created_at": "2026-07-14T00:00:00Z",
           "created_by": {
@@ -7031,7 +7031,7 @@
           "version": "0.1.0"
         },
         "status": "research_only",
-        "to": "symptom.systemic_unwellness",
+        "to": "symptom.systemically_unwell",
         "type": "COLLECTS",
         "usage_modes": [
           "research_test",
@@ -7722,8 +7722,8 @@
         "version": "0.1.0"
       },
       {
-        "from": "symptom.systemic_unwellness",
-        "id": "edge.generated.symptom_systemic_unwellness.supports.group_fever_function",
+        "from": "symptom.systemically_unwell",
+        "id": "edge.generated.symptom_systemically_unwell.supports.group_fever_function",
         "provenance": {
           "created_at": "2026-07-14T00:00:00Z",
           "created_by": {
@@ -7753,8 +7753,8 @@
         "version": "0.1.0"
       },
       {
-        "from": "symptom.systemic_unwellness",
-        "id": "edge.generated.symptom_systemic_unwellness.supports.group_fever_safety",
+        "from": "symptom.systemically_unwell",
+        "id": "edge.generated.symptom_systemically_unwell.supports.group_fever_safety",
         "provenance": {
           "created_at": "2026-07-14T00:00:00Z",
           "created_by": {
@@ -9397,7 +9397,7 @@
       },
       {
         "from": "target.fever.systemic-unwellness",
-        "id": "edge.generated.target_fever_systemic_unwellness.requires.symptom_systemic_unwellness",
+        "id": "edge.generated.target_fever_systemic_unwellness.requires.symptom_systemically_unwell",
         "provenance": {
           "created_at": "2026-07-14T00:00:00Z",
           "created_by": {
@@ -9418,7 +9418,7 @@
           "version": "0.1.0"
         },
         "status": "research_only",
-        "to": "symptom.systemic_unwellness",
+        "to": "symptom.systemically_unwell",
         "type": "REQUIRES",
         "usage_modes": [
           "research_test",
@@ -14678,7 +14678,7 @@
         "wording": "목 통증이나 삼키기 어려움이 있나요?"
       },
       {
-        "collects": "symptom.systemic_unwellness",
+        "collects": "symptom.systemically_unwell",
         "display": "열과 함께 평소와 달리 전반적으로 매우 아프거나 처진 상태인가요?",
         "id": "question.fever.systemic-unwellness",
         "language": "ko",
@@ -15721,15 +15721,10 @@
           "policy_id": "policy.question-answer-terminology-binding",
           "strategy": "SNOMED_CT_coded_yes_no_with_local_fallback"
         },
+        "description": "",
         "display": "Systemically Unwell",
-        "extraction_cues": [
-          "severely unwell",
-          "very unwell",
-          "unusually unwell",
-          "매우 아파",
-          "상태가 아주 안 좋"
-        ],
-        "id": "symptom.systemic_unwellness",
+        "extraction_cues": [],
+        "id": "symptom.systemically_unwell",
         "provenance": {
           "created_at": "2026-07-14T00:00:00Z",
           "created_by": {
@@ -15738,10 +15733,32 @@
           },
           "review_status": "unreviewed",
           "source_refs": [
-            "knowledge/graph/primary-care-cough.json"
+            "source.nice.ng253.sepsis-adults.2025",
+            "source.nice.ng254.sepsis-under16.2025",
+            "source.nice.ng255.sepsis-pregnancy.2026",
+            "source.nice.ng240.meningitis.2024",
+            "source.cdc.yellow-book.post-travel-fever.2026",
+            "source.nhs.fever-adults.2023",
+            "source.nhs.fever-children.2026",
+            "source.stom.fever.20260716"
           ],
           "version": "0.1.0"
         },
+        "refresh": {
+          "class": "clinical_guideline",
+          "full_review_interval_days": 180,
+          "last_assessed_at": "2026-07-16",
+          "monitor_interval_days": 1,
+          "next_full_review_at": "2027-01-12",
+          "next_monitor_at": "2026-07-17",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          },
+          "policy_id": "policy.knowledge-refresh"
+        },
+        "safety_relevant": true,
+        "source_manifest": "source-manifest.primary-care-fever-research",
         "status": "research_only",
         "type": "Fact",
         "usage_modes": [
@@ -17586,7 +17603,7 @@
           "version": "0.1.0"
         },
         "required_facts": [
-          "symptom.systemic_unwellness"
+          "symptom.systemically_unwell"
         ],
         "source_manifest": "source-manifest.primary-care-fever-research",
         "status": "research_only",
@@ -18125,7 +18142,7 @@
     "local_question_code_is_template_id": true,
     "local_question_code_system": "https://ggojang.github.io/clinical-interview-platform/fhir/CodeSystem/clinical-interview-question",
     "policy_id": "policy.question-answer-terminology-binding",
-    "policy_version": "0.2.0",
+    "policy_version": "0.4.0",
     "primitive_answer_projection": {
       "boolean": "QuestionnaireResponse.answer.valueBoolean_only_when_the_receiving_profile_explicitly_requires_a_primitive_boolean;_clinical_yes_no_defaults_to_a_coded_choice",
       "date": "QuestionnaireResponse.answer.valueDate",
@@ -25303,7 +25320,7 @@
       "rfe.fever"
     ]
   },
-  "semantic_digest": "sha256:89b90bca289673a14227bbd62f1d63f272f6ef46f1be9d8863b3f7245647d012",
+  "semantic_digest": "sha256:9c11d5ddbf8c04e0cf6a2680a875e491ed7abf5ce7f41e1863f78e37bd7b8db2",
   "simulations": [
     {
       "expected": {
@@ -25991,7 +26008,7 @@
       },
       {
         "complete": true,
-        "digest": "sha256:c06d7463ebc2e7ea42cba387fb0f56d9327f6a2bbb4aac07a28af156edb877ad",
+        "digest": "sha256:98ebad2271974e3377fe654a84cb1ae58f2a1a305bc99df3a826a6bc454db70f",
         "id": "source.generated.fever",
         "kind": "generated_clinical_knowledge",
         "language": "en",
@@ -26024,7 +26041,7 @@
       },
       {
         "complete": true,
-        "digest": "sha256:ddbc01fe53fd5a3abd74a618ab5a636767ea2d4195eafa6f261359b9745e02a9",
+        "digest": "sha256:335fea0cf3400f055fed09c6613b7df26402efe30921af3e7533d69419548089",
         "id": "source.policy.fever",
         "kind": "runtime_policy",
         "language": "en",

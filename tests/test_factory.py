@@ -321,8 +321,10 @@ class CompilerTests(unittest.TestCase):
         }
         self.assertTrue({
             "symptom.duration", "symptom.dyspnea",
-            "patient.immunocompromised", "symptom.systemic_unwellness",
+            "patient.immunocompromised",
         } <= cough_facts & fever_facts)
+        self.assertIn("symptom.systemic_unwellness", cough_facts)
+        self.assertIn("symptom.systemically_unwell", fever_facts)
 
     def test_dyspnea_package_is_deterministic_and_question_complete(self):
         first = compile_package(profile="dyspnea")
@@ -1571,6 +1573,39 @@ class PackageRuntimeTests(unittest.TestCase):
         self.assertEqual(session.memory.state(expected), "known")
         self.assertNotEqual(resolved["selected_question"]["fact_id"], expected)
 
+    def test_repeated_unrecognized_answer_offers_explicit_recovery(self):
+        session = InterviewSession("answer-clarification-recovery")
+        first = session.process("I have had a cough for 4 days.")
+        expected = first["selected_question"]["fact_id"]
+
+        first_retry = session.process("9")
+        second_retry = session.process("9")
+        third_retry = session.process("9")
+
+        self.assertEqual(first_retry["selected_question"]["fact_id"], expected)
+        self.assertEqual(second_retry["selected_question"]["fact_id"], expected)
+        self.assertEqual(third_retry["selected_question"]["fact_id"], expected)
+        self.assertEqual(
+            second_retry["selected_question"]["reason"],
+            "answer_not_understood_recovery_options",
+        )
+        self.assertEqual(
+            second_retry["answer_clarification"]["reason"],
+            "repeated_answer_not_understood",
+        )
+        self.assertTrue(
+            second_retry["answer_clarification"][
+                "clarification_attempt_limit_reached"
+            ]
+        )
+        self.assertEqual(second_retry["answer_clarification"]["attempt"], 2)
+        self.assertEqual(third_retry["answer_clarification"]["attempt"], 2)
+        self.assertEqual(
+            second_retry["answer_clarification"]["recovery_options_offered"],
+            ["free_text_retry", "asked-unknown", "asked-declined"],
+        )
+        self.assertEqual(session.memory.state(expected), "not_asked")
+
     def test_safety_reassessment_precedes_answer_clarification(self):
         session = InterviewSession("answer-clarification-safety")
         session.process("I have had a cough for 4 days.")
@@ -1691,6 +1726,25 @@ class PackageRuntimeTests(unittest.TestCase):
         self.assertIn("gastrointestinal.abdominal_pain", state["active_patterns"])
         self.assertEqual(
             state["package"]["id"], "package.primary-care-abdominal-pain"
+        )
+
+    def test_abdominal_pain_boolean_pregnancy_fact_activates_pattern(self):
+        session = InterviewSession(
+            "abdominal-pregnancy-pattern", package_path=ABDOMINAL_PAIN_PACKAGE
+        )
+        session.memory.merge(
+            "pregnancy.possible",
+            {
+                "value": True,
+                "normalized": True,
+                "source": {"type": "patient", "text": "예"},
+                "confidence": 1.0,
+            },
+        )
+        session._update_abdominal_pain_patterns()
+        self.assertIn(
+            "abdominal_pain.pregnancy_related_features",
+            session.active_patterns,
         )
 
     def test_abdominal_pain_research_package_is_rejected_in_production(self):

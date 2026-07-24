@@ -25,7 +25,14 @@ D, R = ["intent.differentiate_common_causes"], ["intent.risk_assessment"]
 
 
 def Q(fid, display, value_type, key, wording, score, group, intents, **kwargs):
-    return entry(P, fid, display, value_type, key, wording, score, key, [G[group]], intents=intents, **kwargs)
+    fact_overrides = kwargs.pop("fact_overrides", None)
+    item = entry(
+        P, fid, display, value_type, key, wording, score, key, [G[group]],
+        intents=intents, **kwargs,
+    )
+    if fact_overrides:
+        item["fact"].update(fact_overrides)
+    return item
 
 
 def fragment():
@@ -100,7 +107,7 @@ def fragment():
         Q("fatigue.palpitations_dizziness_exertional_dyspnea_pallor_and_exercise_tolerance", "Cardiopulmonary and Pallor Detail", "string", "cardiopulmonary", "두근거림·어지럼·창백함·활동 시 숨참과 이전보다 줄어든 운동 가능 거리를 알려주세요.", 124, "cardiopulmonary", D),
         Q("fatigue.bleeding_menses_gi_urine_bruising_donation_and_recent_loss", "Bleeding History", "string", "bleeding-history", "월경량 증가, 코피·잇몸출혈·멍, 혈뇨·혈변, 헌혈·수술·출산 등 최근 혈액 손실이 있었나요?", 123, "cardiopulmonary", D + R),
         Q("fatigue.chest_pain_character_radiation_trigger_duration_and_nrs_context", "Chest Pain Detail", "string", "chest-pain-detail", "가슴 통증이 있다면 위치·양상·퍼지는 곳·유발 상황·지속시간을 알려주세요.", 122, "cardiopulmonary", D),
-        Q("pain.nrs_score", "Pain NRS 0 to 10", "quantity", "pain-nrs", "통증이 있다면 지금 또는 가장 심할 때를 0에서 10 사이 숫자로 알려주세요.", 121, "cardiopulmonary", C, reuse_existing=True),
+        Q("pain.nrs_score", "Pain NRS 0 to 10", "integer", "pain-nrs", "통증이 있다면 지금 또는 가장 심할 때를 0에서 10 사이 숫자로 알려주세요.", 121, "cardiopulmonary", C, fact_overrides={"minimum": 0, "maximum": 10, "scale": {"type": "NRS", "minimum": 0, "maximum": 10, "lower_anchor": "no_pain", "upper_anchor": "worst_imaginable_pain"}, "must_preserve_raw_score": True, "required_when_pain_applies": True}, reuse_existing=True),
         Q("fatigue.edema_orthopnea_nocturnal_breathlessness_and_weight_gain", "Fluid and Positional Breathing Features", "string", "fluid-breathing", "다리 붓기·갑작스러운 체중 증가, 누우면 숨참, 밤에 숨이 차서 깨는 증상이 있나요?", 120, "cardiopulmonary", D),
 
         Q("symptom.thirst_and_polyuria", "Thirst and Polyuria", "boolean", "thirst-polyuria", "갈증이 심하고 소변량이나 야간 소변 횟수가 늘었나요?", 117, "metabolic", D, reuse_existing=True),

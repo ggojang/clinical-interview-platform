@@ -17,6 +17,7 @@ from runtime.package import DEFAULT_PACKAGE, load_package
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
+MAX_CLARIFICATION_ATTEMPTS = 2
 
 
 def duration_class(value: Any) -> str | None:
@@ -712,12 +713,20 @@ class InterviewSession:
             and safety["level"] not in {"urgent", "emergency"}
             and turn < self.max_turns
         ):
-            self.clarification_counts[expected_fact] = (
-                self.clarification_counts.get(expected_fact, 0) + 1
+            self.clarification_counts[expected_fact] = min(
+                self.clarification_counts.get(expected_fact, 0) + 1,
+                MAX_CLARIFICATION_ATTEMPTS,
+            )
+            clarification_exhausted = (
+                self.clarification_counts[expected_fact]
+                >= MAX_CLARIFICATION_ATTEMPTS
+                and not mandatory_answer_missing
             )
             clarification_reason = (
                 "mandatory_answer_required"
                 if mandatory_answer_missing
+                else "answer_not_understood_recovery_options"
+                if clarification_exhausted
                 else "answer_not_understood_reconfirmation"
             )
             question = self._question_for_fact(expected_fact, clarification_reason)
@@ -838,6 +847,16 @@ class InterviewSession:
         if mandatory:
             payload["unknown_or_declined_options_offered"] = False
             payload["completion_blocked_until_known"] = True
+        elif attempt >= MAX_CLARIFICATION_ATTEMPTS:
+            payload["reason"] = "repeated_answer_not_understood"
+            payload["message_ko"] = (
+                "응답을 두 번 이해하지 못했습니다. 내용을 다시 직접 입력하거나 "
+                "'잘 모르겠음' 또는 '답변하지 않음'이라고 입력해 주세요."
+            )
+            payload["recovery_options_offered"] = [
+                "free_text_retry", "asked-unknown", "asked-declined"
+            ]
+            payload["clarification_attempt_limit_reached"] = True
         payload["value_type"] = node.get("value_type")
         return payload
 
@@ -1116,7 +1135,7 @@ class InterviewSession:
             "symptom.urinary_symptoms", "symptom.unable_to_urinate",
         )):
             active.append("abdominal_pain.urinary_features")
-        if self.memory.value("pregnancy.possible") == "possible" or any(
+        if self.memory.value("pregnancy.possible") is True or any(
             self.memory.value(item) is True for item in (
                 "symptom.missed_period", "symptom.vaginal_bleeding_or_discharge",
                 "symptom.shoulder_tip_pain",
@@ -1603,7 +1622,7 @@ class InterviewSession:
     def _update_fever_patterns(self) -> None:
         active = ["systemic.fever"]
         if any(self.memory.value(item) is True for item in (
-            "symptom.confusion", "symptom.severe_pain", "symptom.systemic_unwellness",
+            "symptom.confusion", "symptom.severe_pain", "symptom.systemically_unwell",
         )):
             active.append("fever.systemic_infection_warning")
         if any(self.memory.value(item) is True for item in (

@@ -200,6 +200,21 @@ class PainAssessmentTest(unittest.TestCase):
             package["interview_completion_policy"]["must_be_known_facts"],
         )
 
+    def test_fatigue_reuses_integer_nrs_and_accepts_numeric_answer(self):
+        package = compile_package(profile="fatigue")
+        pain = next(
+            node for node in package["knowledge_graph"]["nodes"]
+            if node["id"] == "pain.nrs_score"
+        )
+        self.assertEqual(pain["value_type"], "integer")
+        self.assertEqual((pain["minimum"], pain["maximum"]), (0, 10))
+
+        session = self._session("fatigue")
+        session.last_question_fact = "pain.nrs_score"
+        state = session.process("5")
+        self.assertEqual(session.memory.value("pain.nrs_score"), 5)
+        self.assertIsNone(state["answer_clarification"])
+
 
 if __name__ == "__main__":
     unittest.main()
