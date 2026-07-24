@@ -37,6 +37,7 @@ class QuestionAnswerTerminologyTest(unittest.TestCase):
         self.assertEqual(
             policy["answer_binding"]["preferred_system_order"],
             [
+                "selected_KR_Core_V2_profile_element_ValueSet_when_applicable",
                 "target_FHIR_R4_element_ValueSet_when_applicable",
                 "http://snomed.info/sct",
                 LOCAL_ANSWER,

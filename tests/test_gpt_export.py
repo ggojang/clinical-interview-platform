@@ -207,6 +207,9 @@ class GptExportTests(unittest.TestCase):
                 "questionnaires-patient-experience-5th-2025-metadata",
                 "questionnaires-patient-experience-5th-2025-sections-1",
                 "questionnaires-patient-experience-5th-2025-sections-8",
+                "interoperability-kr-core-v2-policy",
+                "interoperability-kr-core-v2-coverage",
+                "interoperability-kr-core-v2-profile-element-bindings",
             }.issubset(names))
             for resource in manifest["resources"]:
                 self.assertEqual(len(resource["sha256"]), 64)

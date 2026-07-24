@@ -12,8 +12,9 @@
     "coded_clinical_answers": "use_verified_SNOMED_CT_when_the_answer_concept_is_represented",
     "data_absent_rule": "unknown_declined_not_asked_and_not_applicable_states_are_not_negative_answers_and_use_FHIR_DataAbsentReason_when_semantically_applicable",
     "local_fallback_required": true,
-    "precedence_rule": "when an exact or equivalent target FHIR R4 element mapping exists, apply that element's official ValueSet binding before the generic SNOMED CT preference",
+    "precedence_rule": "when an exact or equivalent target element mapping exists, apply the explicitly selected KR Core V2 profile element binding for Korean projection, otherwise the base FHIR R4 element binding, before the generic SNOMED CT preference",
     "preferred_system_order": [
+      "selected_KR_Core_V2_profile_element_ValueSet_when_applicable",
       "target_FHIR_R4_element_ValueSet_when_applicable",
       "http://snomed.info/sct",
       "https://ggojang.github.io/clinical-interview-platform/fhir/CodeSystem/clinical-interview-answer"
@@ -54,7 +55,8 @@
   "fhir_r4_projection": {
     "coded_answer_option": "Questionnaire.item.answerOption.valueCoding_or_answerValueSet",
     "coded_response": "QuestionnaireResponse.item.answer.valueCoding",
-    "element_binding_rule": "required_extensible_preferred_and_example_bindings_are_applied_according_to_strength_when_the_internal_Fact_has_an_exact_or_equivalent_target_element_mapping",
+    "element_binding_rule": "required_extensible_preferred_and_example_bindings_are_applied_according_to_strength_when_the_internal_Fact_has_an_exact_or_equivalent_target_element_mapping; an explicitly selected KR Core V2 profile takes precedence over the base FHIR R4 binding for Korean resource projection",
+    "kr_core_v2_overlay_policy": "policy.kr-core-v2-interoperability-overlay",
     "literal_response": "QuestionnaireResponse.item.answer.value_x",
     "preserve_local_code_alongside_standard_code": true,
     "question": "Questionnaire.item.code",
@@ -104,7 +106,7 @@
     "source_defined_fixed_questionnaires": "excluded_by_default"
   },
   "provenance": {
-    "created_at": "2026-07-23T00:00:00Z",
+    "created_at": "2026-07-24T00:00:00Z",
     "created_by": {
       "id": "codex-gpt5",
       "type": "ai"
@@ -115,6 +117,8 @@
       "https://loinc.org/fhir/",
       "https://loinc.org/answer-file/",
       "https://hl7.org/fhir/R4/valueset.html",
+      "https://www.hl7korea.or.kr/fhir/krcore/index.html",
+      "https://www.hl7korea.or.kr/fhir/krcore/STU2/package.tgz",
       "https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-questionnaireresponse.html",
       "https://ecqi.healthit.gov/tool/value-set-authority-center-vsac",
       "https://docs.snomed.org/snomed-ct-practical-guides/snomed-ct-starter-guide/6-snomed-ct-concept-model",
@@ -154,6 +158,7 @@
   "reference_search_priority": [
     "official_LOINC_panel_Questionnaire_and_Answer_List_ValueSet",
     "HL7_FHIR_core_profiles_examples_and_implementation_guides",
+    "HL7_Korea_KR_Core_V2_profiles_examples_and_required_ValueSets_for_Korean_projection",
     "HL7_US_Core_profiles_examples_and_required_ValueSets",
     "NLM_VSAC_published_ValueSets_when_access_and_license_allow",
     "SNOMED_International_implementation_guides_reference_sets_and_ECL",
@@ -162,8 +167,8 @@
   ],
   "refresh": {
     "interval_days": 30,
-    "last_verified_at": "2026-07-23",
-    "next_verification_at": "2026-08-22",
+    "last_verified_at": "2026-07-24",
+    "next_verification_at": "2026-08-23",
     "policy_id": "policy.knowledge-refresh",
     "profile": "terminology_server"
   },
@@ -184,5 +189,5 @@
     "LOINC": "2.82",
     "SNOMED_CT_International": "http://snomed.info/sct/900000000000207008/version/20260701"
   },
-  "version": "0.5.0"
+  "version": "0.6.0"
 }

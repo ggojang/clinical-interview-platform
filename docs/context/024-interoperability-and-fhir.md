@@ -119,6 +119,34 @@ requires a narrower shape. The compiled package preserves the generic
 SNOMED/local ValueSet as fallback metadata, and Runtime never downloads the
 FHIR specification or a terminology expansion.
 
+Korean resource projection adds the official KR Core V2
+`hl7.fhir.kr.core#2.0.0` overlay. A selected KR Core StructureDefinition and
+its element binding take precedence over the base FHIR R4 element binding.
+Selection is explicit and context-specific because a resource such as
+DiagnosticReport has separate laboratory, imaging, pathology and function-test
+profiles. A sliced element also requires its exact element id; the unsliced path
+alone is not sufficient. If selected profiles have incompatible bindings, the
+projection is split rather than merged.
+
+KR Core V2 has no Questionnaire or QuestionnaireResponse profile. The
+interview form therefore remains an FHIR R4 Questionnaire and its answers an
+FHIR R4 QuestionnaireResponse. When those answers are later projected into
+Patient, Condition, AllergyIntolerance, Observation, DiagnosticReport,
+MedicationRequest, Medication, Immunization, Procedure or another supported
+resource, the applicable KR Core profile is declared in `meta.profile` and its
+Must Support, cardinality and terminology constraints are checked. Missing
+required data is reported and is never fabricated or converted into a clinical
+negative answer.
+
+The KR Core V2 NPM terminology is already loaded in STOM. The repository stores
+the resource-profile and Extension registry plus the ValueSet canonical catalog
+only; it does not duplicate ValueSet membership or CodeSystem concepts. Build
+Time discovers, expands and validates the official canonicals through STOM.
+Runtime consumes compiled bindings without a live terminology or profile
+lookup. The KR Core
+chief-complaint Condition profile is an export representation only and does not
+replace Reason for Encounter as the interview entry abstraction.
+
 `history.family.relationship` is the initial active example. It maps to
 `FamilyMemberHistory.relationship`, uses
 `http://terminology.hl7.org/ValueSet/v3-FamilyMember`, and records prepared
@@ -192,7 +220,10 @@ sets.
 
 The complete policy is defined in
 `policies/question-answer-terminology-binding.json` and
-`policies/fhir-valueset-service.json`.
+`policies/fhir-valueset-service.json`. Base-resource and Korean profile
+precedence are defined in
+`policies/fhir-r4-element-terminology-binding.json` and
+`policies/kr-core-v2-interoperability-overlay.json`.
 
 ---
 

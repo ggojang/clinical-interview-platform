@@ -67,6 +67,8 @@ Python 3.11+ is recommended. No third-party package is required for the starter 
 python tools/validator/validate.py
 python tools/validator/audit_uscdi_interoperability.py --output coverage/uscdi-interoperability-latest.json
 python tools/validator/audit_question_answer_terminology.py --output coverage/question-answer-terminology-latest.json
+python tools/fhir/build_kr_core_v2_registry.py --package-tgz /path/to/hl7.fhir.kr.core-2.0.0.tgz
+python tools/validator/audit_kr_core_v2.py --base-url https://stom.infoclinic.co/fhir --output coverage/kr-core-v2-interoperability-latest.json
 python tools/validator/check_fhir_valueset_service.py --base-url http://localhost:8088/fhir --output coverage/stom-fhir-valueset-latest.json
 python tools/validator/audit_reference_valuesets.py --base-url http://localhost:8088/fhir --output coverage/reference-valueset-reconciliation-latest.json
 python tools/terminology/build_loinc_answer_list_catalog.py --base-url http://localhost:8088/fhir

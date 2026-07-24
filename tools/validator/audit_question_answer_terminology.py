@@ -16,6 +16,9 @@ from compiler.build_package import PACKAGE_PROFILES, compile_package
 from interoperability.fhir_r4_bindings import (
     load_documents as load_fhir_binding_documents,
 )
+from interoperability.kr_core_v2 import (
+    load_documents as load_kr_core_v2_documents,
+)
 from interoperability.question_answer import (
     assess_question_atomicity,
     enrich_clinician_context,
@@ -29,6 +32,7 @@ def run() -> dict[str, Any]:
     fhir_policy, fhir_registry, fact_element_mappings = (
         load_fhir_binding_documents()
     )
+    kr_core_policy, kr_core_registry = load_kr_core_v2_documents()
     rows = []
     totals: dict[str, int] = {}
     unique_questions: dict[str, dict[str, Any]] = {}
@@ -307,6 +311,29 @@ def run() -> dict[str, Any]:
             "binding_conflict_fact_ids": sorted(set(fhir_binding_conflicts)),
             "passed": not fhir_binding_conflicts,
         },
+        "kr_core_v2_overlay": {
+            "policy_id": kr_core_policy["id"],
+            "registry_id": kr_core_registry["id"],
+            "package": (
+                f"{kr_core_registry['package']['name']}#"
+                f"{kr_core_registry['package']['version']}"
+            ),
+            "fhir_version": kr_core_registry["package"]["fhir_version"],
+            "profile_count": kr_core_registry["profile_count"],
+            "extension_count": kr_core_registry["extension_count"],
+            "structure_definition_count": kr_core_registry[
+                "structure_definition_count"
+            ],
+            "constraint_count": kr_core_registry["constraint_count"],
+            "element_binding_count": kr_core_registry["binding_count"],
+            "defined_value_set_count": (
+                kr_core_registry["defined_value_set_count"]
+            ),
+            "terminology_content_embedded": False,
+            "questionnaire_profile_defined": False,
+            "profile_selection": "explicit_export_context_required",
+            "passed": True,
+        },
         "answer_valuesets": {
             "bundle_id": value_set_bundle["id"],
             "resource_count": len(value_set_bundle["entry"]),
@@ -331,6 +358,10 @@ def run() -> dict[str, Any]:
                 "FHIR_R4_binding_strength_projection",
                 "FHIR_R4_multiple_target_binding_conflict_detection",
                 "FHIR_R4_required_binding_choice_and_response_enforcement",
+                "KR_Core_V2_profile_binding_precedes_base_FHIR_for_Korean_projection",
+                "KR_Core_V2_sliced_element_requires_exact_element_id",
+                "KR_Core_V2_incompatible_profiles_require_split_projection",
+                "KR_Core_V2_terminology_referenced_by_STOM_canonical_without_duplication",
                 "runtime_exposes_compiled_ValueSet_choices_without_live_lookup",
             ],
         },

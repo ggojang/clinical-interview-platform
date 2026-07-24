@@ -16,7 +16,7 @@ sys.path.insert(0, str(ROOT))
 from interoperability.question_answer import enrich_clinician_context
 
 
-VERSION = "1.47.0"
+VERSION = "1.48.0"
 GENERATED_AT = "2026-07-24T00:00:00Z"
 PRIVATE_KEYS = {
     "raw_text", "raw_input", "patient_response", "patient_responses",
@@ -548,6 +548,16 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
         root / "mappings" / "fhir" / "r4"
         / "resource-element-bindings.json"
     ))
+    kr_core_v2_policy = sanitize(load_json(
+        root / "policies" / "kr-core-v2-interoperability-overlay.json"
+    ))
+    kr_core_v2_registry = sanitize(load_json(
+        root / "mappings" / "fhir" / "kr-core-v2"
+        / "profile-element-bindings.json"
+    ))
+    kr_core_v2_coverage = sanitize(load_json(
+        root / "coverage" / "kr-core-v2-interoperability-latest.json"
+    ))
     for document, resource_type in (
         (uscdi_core, "UscdiCoreInteroperabilityOverlay"),
         (uscdi_plus, "UscdiPlusDomainOverlayCatalog"),
@@ -562,6 +572,9 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
             fhir_element_binding_registry,
             "FhirR4ResourceElementBindingRegistry",
         ),
+        (kr_core_v2_policy, "KrCoreV2InteroperabilityPolicy"),
+        (kr_core_v2_registry, "KrCoreV2ProfileElementBindingRegistry"),
+        (kr_core_v2_coverage, "KrCoreV2InteroperabilityCoverageReport"),
     ):
         document["resource_type"] = resource_type
         document["contains_patient_responses"] = False
@@ -708,6 +721,11 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
         "interoperability/fhir-r4-resource-element-bindings.json": (
             fhir_element_binding_registry
         ),
+        "interoperability/kr-core-v2-policy.json": kr_core_v2_policy,
+        "interoperability/kr-core-v2-profile-element-bindings.json": (
+            kr_core_v2_registry
+        ),
+        "interoperability/kr-core-v2-coverage.json": kr_core_v2_coverage,
         "hira-adequacy-assessments.json": hira_assessment_catalog,
     }
     resources.update(hira_programs)
@@ -991,6 +1009,9 @@ def build(root: Path, output: Path) -> dict[str, Any]:
         "fhir_r4_element_binding_policy": resources[
             "interoperability/fhir-r4-element-binding-policy.json"
         ],
+        "kr_core_v2_interoperability_policy": resources[
+            "interoperability/kr-core-v2-policy.json"
+        ],
         "preferred_loading": {
             "catalog_operation": "getReasonForEncounters",
             "common_operation": "getCommonInterviewFacts",
@@ -1011,6 +1032,14 @@ def build(root: Path, output: Path) -> dict[str, Any]:
             "full_fhir_r4_element_binding_registry_on_demand": (
                 "/gpt/interoperability/"
                 "fhir-r4-resource-element-bindings.json"
+            ),
+            "kr_core_v2_interoperability": [
+                "/gpt/interoperability/kr-core-v2-policy.json",
+                "/gpt/interoperability/kr-core-v2-coverage.json"
+            ],
+            "full_kr_core_v2_profile_registry_on_demand": (
+                "/gpt/interoperability/"
+                "kr-core-v2-profile-element-bindings.json"
             ),
             "rfe_operations": [
                 "getReasonForEncounterRules",

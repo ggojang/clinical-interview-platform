@@ -564,6 +564,29 @@ coding. The generic SNOMED/local binding is retained as fallback metadata, and
 incompatible required bindings across multiple target resources require split
 projection rather than silent selection.
 
+For Korean exchange, the official `hl7.fhir.kr.core#2.0.0` package is a
+jurisdictional overlay above base FHIR R4. An explicitly selected KR Core V2
+profile and its element binding take precedence over the base-resource binding.
+Profile selection requires export context because one FHIR resource type may
+have several KR Core profiles, such as laboratory, imaging, pathology and
+function-test DiagnosticReports. Incompatible profile bindings require split
+projection. Must Support and minimum-cardinality gaps are reported for later
+completion and are never filled with invented patient data. KR Core V2 defines
+no Questionnaire or QuestionnaireResponse profile, so interview forms remain
+FHIR R4 while downstream Patient, Condition, AllergyIntolerance, Observation,
+DiagnosticReport, MedicationRequest, Medication, Immunization and Procedure
+resources use the applicable KR Core profile. The KR Core chief-complaint
+Condition profile is only an exchange projection and does not replace Reason
+for Encounter as the platform's first clinical abstraction.
+
+KR Core V2 terminology content is already loaded in STOM. The repository keeps
+only official profile and Extension constraints, ValueSet canonical metadata
+and verification results; it does not duplicate the ValueSet expansions or
+CodeSystem concepts.
+Build Time discovers the canonical through STOM and validates codes as needed.
+Runtime uses only compiled metadata and never performs a live KR Core or STOM
+lookup.
+
 Every dynamic coded answer set has a complete FHIR R4 ValueSet. ValueSet ids follow
 `a-{sct|loinc|local|mixed}-{semantic-name}`. A complete SNOMED set uses
 `a-sct-*`; a partial mapping uses `a-mixed-*`; every coded Fact also has an

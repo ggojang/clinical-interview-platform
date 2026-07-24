@@ -7,6 +7,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+from interoperability.kr_core_v2 import binding_for_selected_profiles
+
 
 ROOT = Path(__file__).resolve().parents[1]
 POLICY_PATH = ROOT / "policies/fhir-r4-element-terminology-binding.json"
@@ -139,23 +141,38 @@ def fact_target_mappings(
 def apply_element_bindings(
     fact: dict[str, Any],
     generic_answer_binding: dict[str, Any] | None,
+    *,
+    selected_kr_core_profiles: list[str] | None = None,
 ) -> tuple[dict[str, Any] | None, list[dict[str, Any]]]:
     """Return the effective answer binding and all discovered FHIR targets."""
     policy, registry, mappings = load_documents()
     discovered: list[dict[str, Any]] = []
     activating: list[tuple[dict[str, Any], dict[str, Any]]] = []
     for mapping in fact_target_mappings(fact, mappings):
-        target = binding_for_element(
+        base_target = binding_for_element(
             mapping["element_path"],
             resource=mapping["resource"],
             registry=registry,
         )
+        kr_core_target = None
+        if selected_kr_core_profiles:
+            kr_core_target = binding_for_selected_profiles(
+                selected_kr_core_profiles,
+                mapping["resource"],
+                mapping["element_path"],
+                element_id=mapping.get("kr_core_v2_element_id"),
+            )
+        target = kr_core_target or base_target
         if target is None:
             discovered.append({
                 **mapping,
                 "binding_status": "target_has_no_bound_valueset",
             })
             continue
+        structure_definition = (
+            target["profile"]["url"]
+            if kr_core_target else target["structure_definition"]
+        )
         summary = {
             "resource": mapping["resource"],
             "element_path": mapping["element_path"],
@@ -164,7 +181,11 @@ def apply_element_bindings(
             "binding_strength": target["binding"]["strength"],
             "value_set": target["binding"]["value_set"],
             "fhir_version": FHIR_VERSION,
-            "structure_definition": target["structure_definition"],
+            "structure_definition": structure_definition,
+            "binding_source": (
+                "kr_core_v2_profile"
+                if kr_core_target else "base_fhir_r4"
+            ),
             "binding_status": (
                 "effective_candidate"
                 if mapping["mapping_relation"] in ACTIVATING_RELATIONS
@@ -174,6 +195,12 @@ def apply_element_bindings(
         if mapping.get("answer_code_mappings"):
             summary["answer_code_mappings"] = deepcopy(
                 mapping["answer_code_mappings"]
+            )
+        if kr_core_target:
+            summary["jurisdiction"] = "KR"
+            summary["kr_core_version"] = "2.0.0"
+            summary["selected_profiles"] = deepcopy(
+                kr_core_target["selected_profiles"]
             )
         discovered.append(summary)
         if mapping["mapping_relation"] in ACTIVATING_RELATIONS:
@@ -227,9 +254,21 @@ def apply_element_bindings(
             "value_set": target["binding"]["value_set"],
             "allow_outside_code": strength_rule["allow_outside_code"],
             "fhir_version": FHIR_VERSION,
-            "structure_definition": target["structure_definition"],
+            "structure_definition": (
+                target["profile"]["url"]
+                if target.get("profile") else target["structure_definition"]
+            ),
         },
     })
+    if target.get("profile"):
+        effective["fhir_element_binding"].update({
+            "jurisdiction": "KR",
+            "kr_core_version": "2.0.0",
+            "selected_profiles": deepcopy(target["selected_profiles"]),
+            "binding_source": "kr_core_v2_profile",
+        })
+    else:
+        effective["fhir_element_binding"]["binding_source"] = "base_fhir_r4"
     if mapping.get("answer_code_mappings"):
         effective["fhir_bound_answer_mappings"] = deepcopy(
             mapping["answer_code_mappings"]

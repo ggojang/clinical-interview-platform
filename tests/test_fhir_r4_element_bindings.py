@@ -196,6 +196,12 @@ class FhirR4ElementBindingsTest(unittest.TestCase):
             "history.family.relationship",
             section["effective_fact_ids"],
         )
+        kr_core = report["kr_core_v2_overlay"]
+        self.assertTrue(kr_core["passed"])
+        self.assertEqual(kr_core["package"], "hl7.fhir.kr.core#2.0.0")
+        self.assertEqual(kr_core["profile_count"], 31)
+        self.assertEqual(kr_core["defined_value_set_count"], 20)
+        self.assertFalse(kr_core["terminology_content_embedded"])
 
 
 if __name__ == "__main__":

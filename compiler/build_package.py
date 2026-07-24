@@ -18,6 +18,9 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from interoperability.uscdi import build_package_interoperability_coverage
+from interoperability.kr_core_v2 import (
+    load_documents as load_kr_core_v2_documents,
+)
 from interoperability.question_answer import enrich_clinician_context, enrich_graph
 
 DEFAULT_GRAPH = ROOT / "knowledge/graph/primary-care-cough.json"
@@ -1065,6 +1068,28 @@ def compile_package(
         package_fact_ids=all_fact_ids,
         clinician_context_fact_ids=context_facts,
     )
+    kr_core_policy, kr_core_registry = load_kr_core_v2_documents()
+    interoperability_coverage["kr_core_v2"] = {
+        "policy_id": kr_core_policy["id"],
+        "registry_id": kr_core_registry["id"],
+        "package": (
+            f"{kr_core_registry['package']['name']}#"
+            f"{kr_core_registry['package']['version']}"
+        ),
+        "fhir_version": kr_core_registry["package"]["fhir_version"],
+        "jurisdiction": "KR",
+        "profile_count": kr_core_registry["profile_count"],
+        "extension_count": kr_core_registry["extension_count"],
+        "defined_value_set_count": (
+            kr_core_registry["defined_value_set_count"]
+        ),
+        "terminology_service": "STOM FHIR R4",
+        "terminology_content_embedded": False,
+        "profile_selection": "explicit_export_context_required",
+        "questionnaire_profile_defined": False,
+        "clinical_authority": False,
+        "completion_authority": False,
+    }
     package_coverage = coverage(node_index, indexes, simulations, sorted_rules)
     package_coverage["interoperability"] = {
         "framework": "USCDI",
@@ -1075,6 +1100,18 @@ def compile_package(
         "applicable_uscdi_plus_domains": [
             item["domain_id"] for item in interoperability_coverage["uscdi_plus_domains"]
         ],
+        "kr_core_v2": {
+            "package": interoperability_coverage["kr_core_v2"]["package"],
+            "profile_count": interoperability_coverage["kr_core_v2"][
+                "profile_count"
+            ],
+            "extension_count": interoperability_coverage["kr_core_v2"][
+                "extension_count"
+            ],
+            "profile_selection": interoperability_coverage["kr_core_v2"][
+                "profile_selection"
+            ],
+        },
         "clinical_authority": False,
     }
 
@@ -1162,6 +1199,11 @@ def compile_package(
                 "policies/uscdi-interoperability-overlay.json",
                 "mappings/terminology/question-answer-bindings.json",
                 "policies/question-answer-terminology-binding.json",
+                "policies/fhir-r4-element-terminology-binding.json",
+                "mappings/fhir/r4/fact-element-mappings.json",
+                "mappings/fhir/r4/resource-element-bindings.json",
+                "policies/kr-core-v2-interoperability-overlay.json",
+                "mappings/fhir/kr-core-v2/profile-element-bindings.json",
             ],
             "review_status": "unreviewed",
             "version": "0.1.0",
@@ -1200,6 +1242,19 @@ def validate_package(package: dict[str, Any]) -> None:
         raise CompilationError("USCDI interoperability Coverage cannot control completion")
     if interoperability.get("core", {}).get("framework_version") != "v6":
         raise CompilationError("unsupported USCDI core baseline")
+    kr_core_v2 = interoperability.get("kr_core_v2")
+    if not isinstance(kr_core_v2, dict):
+        raise CompilationError("package missing KR Core V2 interoperability overlay")
+    if kr_core_v2.get("package") != "hl7.fhir.kr.core#2.0.0":
+        raise CompilationError("unsupported KR Core package")
+    if kr_core_v2.get("fhir_version") != "4.0.1":
+        raise CompilationError("KR Core V2 must use FHIR R4 4.0.1")
+    if kr_core_v2.get("clinical_authority") is not False:
+        raise CompilationError("KR Core V2 cannot control clinical behavior")
+    if kr_core_v2.get("completion_authority") is not False:
+        raise CompilationError("KR Core V2 cannot control completion")
+    if kr_core_v2.get("terminology_content_embedded") is not False:
+        raise CompilationError("KR Core terminology content must remain external")
     allowed_mapping_statuses = {
         "exact", "partial", "broader", "narrower", "contextual", "unmapped",
         "not_patient_collectable",

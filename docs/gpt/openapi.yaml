@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Clinical Interview Research Knowledge
-  version: 1.46.0
+  version: 1.48.0
   description: Read-only, research-only Knowledge and Fact resources. No patient data is accepted.
 servers:
   - url: https://ggojang.github.io/clinical-interview-platform
@@ -258,6 +258,36 @@ paths:
       responses:
         '200':
           description: All named ValueSet bindings extracted from official FHIR R4 base resource StructureDefinitions
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/JsonDocument'}
+  /gpt/interoperability/kr-core-v2-policy.json:
+    get:
+      operationId: getKrCoreV2InteroperabilityPolicy
+      summary: Get KR Core V2 profile-selection and terminology precedence rules for Korean FHIR projection
+      responses:
+        '200':
+          description: Research-only KR Core V2 interoperability policy without patient responses
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/JsonDocument'}
+  /gpt/interoperability/kr-core-v2-coverage.json:
+    get:
+      operationId: getKrCoreV2InteroperabilityCoverage
+      summary: Get KR Core V2 profile coverage and STOM canonical-discovery results
+      responses:
+        '200':
+          description: Research-only KR Core V2 profile and terminology coverage report
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/JsonDocument'}
+  /gpt/interoperability/kr-core-v2-profile-element-bindings.json:
+    get:
+      operationId: getKrCoreV2ProfileElementBindings
+      summary: Get the on-demand KR Core V2 profile constraint and element-binding registry
+      responses:
+        '200':
+          description: Canonical-only KR Core V2 registry without duplicated terminology content or patient responses
           content:
             application/json:
               schema: {$ref: '#/components/schemas/JsonDocument'}

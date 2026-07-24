@@ -1,0 +1,76 @@
+{
+  "contains_patient_responses": false,
+  "fhir_version": "4.0.1",
+  "id": "policy.kr-core-v2-interoperability-overlay",
+  "jurisdiction": "KR",
+  "package": "hl7.fhir.kr.core#2.0.0",
+  "precedence": [
+    "source_defined_questionnaire_binding_when_explicitly_in_scope",
+    "selected_kr_core_v2_profile_element_binding",
+    "base_fhir_r4_element_binding",
+    "verified_snomed_ct_answer_mapping",
+    "local_answer_code_fallback"
+  ],
+  "profile_selection": {
+    "explicit_context_required": true,
+    "multiple_compatible_profiles": "A shared element binding may be used when every selected profile has the same strength and canonical ValueSet.",
+    "multiple_incompatible_profiles": "Split the projection by target profile; do not merge incompatible bindings.",
+    "resource_without_kr_core_profile": "Use base FHIR R4 and report that KR Core V2 has no corresponding profile.",
+    "rule": "A KR Core profile must be selected from encounter, result, medication, immunization or export context. Resource type alone is insufficient when more than one KR Core profile exists."
+  },
+  "projection": {
+    "data_absent": "FHIR dataAbsentReason and platform absent-data states remain separate from clinical answer ValueSets.",
+    "meta_profile": "Projected resources declare the selected KR Core StructureDefinition canonical in meta.profile.",
+    "must_support": "Must Support and minimum-cardinality gaps are reported for clinician or system completion; they are not silently fabricated.",
+    "questionnaire_item": "Questionnaire.item.answerValueSet uses the effective binding when the question directly collects that projected element.",
+    "terminology_binding": "The selected profile element binding replaces the base FHIR binding when it is more specific."
+  },
+  "provenance": {
+    "created_by": {
+      "id": "codex-gpt5",
+      "type": "ai"
+    },
+    "official_implementation_guide": "https://www.hl7korea.or.kr/fhir/krcore/index.html",
+    "package_published_at": "2025-08-29",
+    "review_status": "unreviewed",
+    "source": "https://www.hl7korea.or.kr/fhir/krcore/STU2/package.tgz",
+    "source_kind": "official_hl7_korea_fhir_npm_package",
+    "verified_at": "2026-07-24"
+  },
+  "purpose": "Apply KR Core V2 resource profiles, element constraints and terminology bindings when Clinical Interview data is projected for Korean FHIR exchange.",
+  "refresh": {
+    "interval_days": 7,
+    "last_verified_at": "2026-07-24",
+    "next_verification_at": "2026-07-31",
+    "policy_id": "policy.knowledge-refresh",
+    "profile": "interoperability_standard"
+  },
+  "resource_type": "KrCoreV2InteroperabilityPolicy",
+  "review_status": "unreviewed",
+  "runtime": {
+    "live_kr_core_package_lookup": false,
+    "live_stom_lookup": false,
+    "terminology_or_profile_failure_must_not_change_safety_or_routing": true,
+    "uses_compiled_registry_only": true
+  },
+  "scope": {
+    "clinical_collection": "KR Core constraints inform interoperability projection and missing-data reporting but do not independently create clinical questions, change safety routing or declare interview completion.",
+    "questionnaire": "KR Core V2 does not define a Questionnaire or QuestionnaireResponse profile; dynamic and fixed instruments remain FHIR R4 resources unless a separately authorized Korean questionnaire profile is supplied.",
+    "resource_projection": "Patient, Condition, AllergyIntolerance, Observation, DiagnosticReport, MedicationRequest, Medication, Immunization, Procedure and other supported resources use an explicitly selected KR Core V2 profile and applicable KR Core Extension.",
+    "terminology": "KR Core ValueSet and CodeSystem content is already loaded in STOM and is referenced by canonical URL rather than duplicated in this repository."
+  },
+  "status": "research_only",
+  "terminology_service": {
+    "base_url": "https://stom.infoclinic.co/fhir",
+    "build_time_operations": [
+      "GET /ValueSet?url={canonical}",
+      "GET /ValueSet/{id}",
+      "GET /ValueSet/$expand?url={canonical}",
+      "POST /ValueSet/$validate-code"
+    ],
+    "canonical_discovery_required": true,
+    "missing_canonical_behavior": "retain the canonical reference, mark terminology verification incomplete and block a conformance claim; clinical interview safety behavior remains unchanged",
+    "runtime_live_lookup": false
+  },
+  "version": "0.1.0"
+}
