@@ -1,6 +1,6 @@
 {
   "id": "simulation.clinician-previsit-handoff-cases",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "status": "synthetic",
   "contains_real_patient_data": false,
   "coverage_scope": "all_implemented_symptom_packages",
@@ -29,6 +29,18 @@
       "id": "HANDOFF-CONFLICTING-ANSWER",
       "condition": "two incompatible answers are preserved",
       "expected": ["conflicting_fact_ids", "no_silent_overwrite"]
+    },
+    {
+      "id": "HANDOFF-MEDICATION-STATUS-REQUIRED-VALUESET",
+      "condition": "a first-encounter medication entry is reviewed for clinician submission",
+      "expected": [
+        "one_atomic_status_question_per_medication_entry",
+        "official_MedicationStatement_status_choices",
+        "required_binding_disallows_outside_code",
+        "QuestionnaireResponse_valueCoding_ready",
+        "unknown_preserved_as_official_status_code",
+        "no_local_code_fallback_for_required_binding"
+      ]
     }
   ],
   "required_entry_fields": [

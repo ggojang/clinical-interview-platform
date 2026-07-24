@@ -140,6 +140,34 @@ class ClinicianSubmissionContextTest(unittest.TestCase):
         self.assertEqual(entries["patient.height_cm"]["dataAbsentReason"], "not-asked")
         self.assertEqual(handoff["format"], "non_fhir_structured_summary")
 
+    def test_required_fhir_valueset_choices_are_exposed_to_runtime(self):
+        session = self._session()
+        question = session._question_for_fact(
+            "medication.statement.status",
+            "synthetic_fhir_choice_test",
+        )
+        self.assertEqual(
+            question["answer_value_set"],
+            "http://hl7.org/fhir/ValueSet/medication-statement-status|4.0.1",
+        )
+        self.assertEqual(question["answer_binding_strength"], "required")
+        self.assertFalse(question["allow_free_text"])
+        self.assertEqual(
+            [item["input"] for item in question["answer_options"]],
+            [str(number) for number in range(1, 9)],
+        )
+        self.assertEqual(
+            question["answer_options"][4]["coding"],
+            {
+                "system": (
+                    "http://hl7.org/fhir/CodeSystem/"
+                    "medication-statement-status"
+                ),
+                "code": "on-hold",
+                "display": "On Hold",
+            },
+        )
+
     def test_handoff_exposes_conflicts_across_package_and_shared_facts(self):
         session = self._session()
         session.memory.merge(

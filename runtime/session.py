@@ -430,6 +430,12 @@ class InterviewSession:
         from compiler.build_package import semantic_digest
         if semantic_digest(document) != reference.get("semantic_digest"):
             raise ValueError("clinician submission context semantic digest mismatch")
+        compiled_bindings = reference.get("compiled_fact_bindings", {})
+        for item in document.get("facts", []):
+            binding = compiled_bindings.get(item.get("id"), {})
+            for key in ("answer_semantic_binding", "fhir_r4_element_bindings"):
+                if key in binding:
+                    item[key] = deepcopy(binding[key])
         self.package["_resolved_clinician_submission_context"] = document
         return document
 
@@ -976,14 +982,49 @@ class InterviewSession:
         template = self._questions_by_fact().get(fact_id)
         if not template:
             return None
-        return {
+        return self._decorate_question({
             "target_id": self._target_for_fact(fact_id),
             "fact_id": fact_id,
             "template_id": template["template_id"],
             "text": template["wording"],
             "score": 1000,
             "reason": reason,
-        }
+        })
+
+    def _decorate_question(self, question: dict[str, Any]) -> dict[str, Any]:
+        """Expose compiled coded choices and their effective FHIR binding."""
+        fact_id = question["fact_id"]
+        node = self._fact_node(fact_id) or {}
+        template = self._questions_by_fact().get(fact_id, {})
+        binding = node.get("answer_semantic_binding", {})
+        code_map = template.get("answer_code_map", {})
+        bound = binding.get("fhir_bound_answer_mappings", {})
+        snomed = binding.get("snomed_mappings", {})
+        options = []
+        for input_code, internal_value in code_map.items():
+            option = {
+                "input": input_code,
+                "internal_value": internal_value,
+            }
+            coding = bound.get(internal_value) or snomed.get(internal_value)
+            if coding:
+                option["coding"] = {
+                    key: coding[key]
+                    for key in ("system", "code", "display")
+                    if key in coding
+                }
+            options.append(option)
+        if options:
+            question["answer_options"] = options
+        if binding.get("answer_value_set"):
+            question["answer_value_set"] = binding["answer_value_set"]
+        element_binding = binding.get("fhir_element_binding")
+        if element_binding:
+            question["answer_binding_strength"] = element_binding["strength"]
+            question["allow_free_text"] = element_binding["allow_outside_code"]
+        elif "accept_free_text" in template:
+            question["allow_free_text"] = bool(template["accept_free_text"])
+        return question
 
     def _fact_nodes(self) -> list[dict[str, Any]]:
         nodes = [
@@ -1832,14 +1873,14 @@ class InterviewSession:
             if conflict["status"] == "unresolved" and conflict["fact_id"] in questions:
                 fact_id = conflict["fact_id"]
                 template = questions[fact_id]
-                return {
+                return self._decorate_question({
                     "target_id": self._target_for_fact(fact_id),
                     "fact_id": fact_id,
                     "template_id": template["template_id"],
                     "text": f"I heard different answers about this. {template['wording']}",
                     "score": 900,
                     "reason": "contradiction_resolution",
-                }
+                })
 
         candidates: list[dict[str, Any]] = []
         for rule in self.package["rule_graph"]["rules"]:
@@ -1877,7 +1918,7 @@ class InterviewSession:
                 continue
             base_score = rule["priority"]
             score = base_score + (200 if fact_id in required_facts else 0)
-            candidates.append({
+            candidates.append(self._decorate_question({
                 "target_id": target,
                 "fact_id": fact_id,
                 "template_id": template["template_id"],
@@ -1886,7 +1927,7 @@ class InterviewSession:
                 "base_score": base_score,
                 "reason": rule["then"].get("reason", rule["id"]),
                 "rule_id": rule["id"],
-            })
+            }))
         package_required = self._package_required_facts(classification, self._safety())
         package_missing = [
             fact_id for fact_id in package_required
@@ -1905,7 +1946,7 @@ class InterviewSession:
                     continue
                 if fact_id in self.asked:
                     continue
-                shared_candidates.append({
+                shared_candidates.append(self._decorate_question({
                     "target_id": "target.clinician_submission_context",
                     "fact_id": fact_id,
                     "template_id": template["template_id"],
@@ -1914,7 +1955,7 @@ class InterviewSession:
                     "base_score": int(template.get("priority", 0)),
                     "reason": "clinician_submission_context_completion",
                     "rule_id": template["template_id"],
-                })
+                }))
             if shared_candidates:
                 return max(
                     shared_candidates,

@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from interoperability.uscdi import build_package_interoperability_coverage
-from interoperability.question_answer import enrich_graph
+from interoperability.question_answer import enrich_clinician_context, enrich_graph
 
 DEFAULT_GRAPH = ROOT / "knowledge/graph/primary-care-cough.json"
 DEFAULT_RULES = ROOT / "rules/primary-care-cough.json"
@@ -938,6 +938,9 @@ def compile_package(
     )
     graph, question_answer_terminology = enrich_graph(graph)
     clinician_submission_context = load_json(CLINICIAN_SUBMISSION_CONTEXT)
+    compiled_clinician_context, clinician_question_answer_coverage = (
+        enrich_clinician_context(clinician_submission_context)
+    )
     node_index = validate_graph(graph)
     sorted_rules = validate_rules(rule_graph, node_index, production)
     validate_sources(sources, production)
@@ -1117,6 +1120,25 @@ def compile_package(
             "resource_ref": str(CLINICIAN_SUBMISSION_CONTEXT.relative_to(ROOT)),
             "semantic_digest": semantic_digest(clinician_submission_context),
             "session_facts": [context_facts["interview.additional_comment"]],
+            "compiled_fact_bindings": {
+                item["id"]: {
+                    key: deepcopy(item[key])
+                    for key in (
+                        "answer_semantic_binding",
+                        "fhir_r4_element_bindings",
+                    )
+                    if key in item
+                }
+                for item in compiled_clinician_context["facts"]
+                if any(
+                    key in item
+                    for key in (
+                        "answer_semantic_binding",
+                        "fhir_r4_element_bindings",
+                    )
+                )
+            },
+            "question_answer_coverage": clinician_question_answer_coverage,
         },
         "interoperability_coverage": interoperability_coverage,
         "question_answer_terminology": question_answer_terminology,

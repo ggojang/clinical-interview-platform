@@ -197,6 +197,19 @@ def apply_element_bindings(
     if strength not in ALLOWED_STRENGTHS:
         raise ValueError(f"unsupported FHIR binding strength: {strength}")
     strength_rule = policy["binding_strength_rules"][strength]
+    if strength == "required" and fact.get("allowed_values"):
+        absent = set(
+            (generic_answer_binding or {})
+            .get("data_absent_reason_mappings", {})
+        )
+        expected = set(fact["allowed_values"]) - absent
+        mapped = set(mapping.get("answer_code_mappings", {}))
+        missing = sorted(expected - mapped)
+        if missing:
+            raise ValueError(
+                f"{fact['id']}: required FHIR element binding has no "
+                f"answer coding for {', '.join(missing)}"
+            )
     effective = deepcopy(generic_answer_binding) or {}
     if effective.get("answer_value_set"):
         effective["generic_answer_value_set"] = effective["answer_value_set"]
@@ -251,6 +264,12 @@ def questionnaire_response_answer_projection(
     coding = binding.get("fhir_bound_answer_mappings", {}).get(internal_value)
     if coding:
         return {"valueCoding": deepcopy(coding)}
+    element_binding = binding.get("fhir_element_binding", {})
+    if element_binding.get("strength") == "required":
+        raise ValueError(
+            f"{fact['id']}: {internal_value!r} cannot be projected outside "
+            f"required ValueSet {element_binding.get('value_set')}"
+        )
     coding = binding.get("snomed_mappings", {}).get(internal_value)
     if coding:
         return {

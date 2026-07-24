@@ -330,6 +330,8 @@ def run() -> dict[str, Any]:
                 "FHIR_R4_target_element_binding_precedence",
                 "FHIR_R4_binding_strength_projection",
                 "FHIR_R4_multiple_target_binding_conflict_detection",
+                "FHIR_R4_required_binding_choice_and_response_enforcement",
+                "runtime_exposes_compiled_ValueSet_choices_without_live_lookup",
             ],
         },
         "results": rows,

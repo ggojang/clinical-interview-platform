@@ -20,6 +20,12 @@ FAMILY_VALUE_SET = (
     "http://terminology.hl7.org/ValueSet/v3-FamilyMember"
 )
 ROLE_CODE = "http://terminology.hl7.org/CodeSystem/v3-RoleCode"
+MEDICATION_STATUS_VALUE_SET = (
+    "http://hl7.org/fhir/ValueSet/medication-statement-status|4.0.1"
+)
+MEDICATION_STATUS_CODE = (
+    "http://hl7.org/fhir/CodeSystem/medication-statement-status"
+)
 
 
 class FhirR4ElementBindingsTest(unittest.TestCase):
@@ -88,7 +94,7 @@ class FhirR4ElementBindingsTest(unittest.TestCase):
             },
         )
         self.assertEqual(
-            coverage["fhir_r4_element_bound_question_count"], 1
+            coverage["fhir_r4_element_bound_question_count"], 2
         )
 
     def test_candidate_target_is_annotation_only(self):
@@ -106,6 +112,59 @@ class FhirR4ElementBindingsTest(unittest.TestCase):
         self.assertEqual(effective, generic)
         self.assertEqual(targets[0]["binding_status"], "annotation_only")
         self.assertEqual(targets[0]["mapping_relation"], "candidate")
+
+    def test_required_medication_status_binding_is_closed_and_coded(self):
+        source = json.loads(
+            (
+                ROOT / "knowledge/shared/clinician-submission-context.json"
+            ).read_text(encoding="utf-8")
+        )
+        context, coverage = enrich_clinician_context(source)
+        fact = next(
+            item for item in context["facts"]
+            if item["id"] == "medication.statement.status"
+        )
+        binding = fact["answer_semantic_binding"]
+        self.assertEqual(binding["answer_value_set"], MEDICATION_STATUS_VALUE_SET)
+        self.assertEqual(binding["fhir_item_type"], "choice")
+        self.assertFalse(
+            binding["fhir_element_binding"]["allow_outside_code"]
+        )
+        self.assertEqual(
+            set(binding["fhir_bound_answer_mappings"]),
+            set(fact["allowed_values"]),
+        )
+        self.assertEqual(
+            questionnaire_response_answer_projection(fact, "on_hold"),
+            {
+                "valueCoding": {
+                    "system": MEDICATION_STATUS_CODE,
+                    "code": "on-hold",
+                    "display": "On Hold",
+                }
+            },
+        )
+        with self.assertRaisesRegex(ValueError, "cannot be projected outside"):
+            questionnaire_response_answer_projection(fact, "paused_by_patient")
+        self.assertEqual(
+            coverage["fhir_r4_element_bound_question_count"], 2
+        )
+
+    def test_required_binding_rejects_incomplete_internal_mapping(self):
+        with self.assertRaisesRegex(
+            ValueError, "required FHIR element binding has no answer coding"
+        ):
+            apply_element_bindings(
+                {
+                    "id": "medication.statement.status",
+                    "type": "Fact",
+                    "value_type": "coded",
+                    "allowed_values": ["active", "unmapped_internal_status"],
+                },
+                {
+                    "answer_value_set": "https://example.org/ValueSet/generic",
+                },
+            )
 
     def test_incompatible_multi_resource_bindings_require_split(self):
         fact = {
