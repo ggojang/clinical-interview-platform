@@ -162,8 +162,28 @@
       "id": "rule.diabetes-follow-up.safety.hyperglycemic-crisis",
       "priority": 1000,
       "when": {
-        "fact": "diabetes.marked_hyperglycemia_with_confusion_or_dehydration",
-        "equals": true
+        "all": [
+          {
+            "fact": "diabetes.current_glucose_above_emergency_threshold",
+            "equals": true
+          },
+          {
+            "any": [
+              {
+                "fact": "diabetes.current_confusion",
+                "equals": true
+              },
+              {
+                "fact": "diabetes.current_difficult_to_wake",
+                "equals": true
+              },
+              {
+                "fact": "diabetes.current_minimal_urine_output",
+                "equals": true
+              }
+            ]
+          }
+        ]
       },
       "then": {
         "safety_level": "emergency",
@@ -653,29 +673,21 @@
     },
     {
       "fact": {
-        "id": "diabetes.marked_hyperglycemia_with_confusion_or_dehydration",
-        "display": "Marked Hyperglycemia with Confusion or Dehydration",
+        "id": "diabetes.current_glucose_above_emergency_threshold",
+        "display": "Current Glucose above Personal Emergency Threshold",
         "value_type": "boolean",
-        "safety_relevant": true,
-        "terminology_binding": {
-          "system": "http://snomed.info/sct",
-          "code": "80394007"
-        },
-        "mrcm_validation": {
-          "ref": "mapping.snomed-mrcm.diabetes-follow-up",
-          "status": "provisional_pass"
-        }
+        "safety_relevant": true
       },
       "target": {
-        "id": "target.diabetes-follow-up.hyperglycemic-crisis",
-        "display": "Marked Hyperglycemia with Confusion or Dehydration",
+        "id": "target.diabetes-follow-up.glucose-emergency-threshold",
+        "display": "Current Glucose above Personal Emergency Threshold",
         "intents": [
           "intent.screen_red_flags"
         ]
       },
       "question": {
-        "id": "question.diabetes-follow-up.hyperglycemic-crisis",
-        "wording": "혈당이 매우 높으면서 심한 탈수, 기운 없음, 졸림·혼란 또는 의식 변화가 있나요?",
+        "id": "question.diabetes-follow-up.glucose-emergency-threshold",
+        "wording": "현재 측정한 혈당이 의료진에게 안내받은 응급 상한보다 높나요?",
         "language": "ko",
         "mode": [
           "chat",
@@ -688,7 +700,115 @@
         {
           "branch": "any",
           "score": 122,
-          "reason": "hyperglycemic-crisis"
+          "reason": "glucose-emergency-threshold"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.acute-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.current_confusion",
+        "display": "Current Confusion",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.current-confusion",
+        "display": "Current Confusion",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.current-confusion",
+        "wording": "지금 평소와 달리 시간·장소·상황을 파악하기 어렵나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 122,
+          "reason": "current-confusion"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.acute-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.current_difficult_to_wake",
+        "display": "Currently Difficult to Wake",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.difficult-to-wake",
+        "display": "Currently Difficult to Wake",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.difficult-to-wake",
+        "wording": "지금 평소보다 깨우기 어렵나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 122,
+          "reason": "difficult-to-wake"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.acute-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.current_minimal_urine_output",
+        "display": "Current Minimal Urine Output",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.minimal-urine-output",
+        "display": "Current Minimal Urine Output",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.minimal-urine-output",
+        "wording": "오늘 소변이 거의 나오지 않나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 122,
+          "reason": "minimal-urine-output"
         }
       ],
       "supports": [

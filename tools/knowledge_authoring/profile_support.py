@@ -212,8 +212,9 @@ def completion_policy(
     def collect(condition: dict[str, Any]) -> None:
         if "fact" in condition and condition["fact"] not in safety_facts:
             safety_facts.append(condition["fact"])
-        for child in condition.get("all", []):
-            collect(child)
+        for operator in ("all", "any"):
+            for child in condition.get(operator, []):
+                collect(child)
     for item in fragment["safety_rules"]:
         collect(item["when"])
     fact_ids = [item["fact"]["id"] for item in fragment["entries"]]
