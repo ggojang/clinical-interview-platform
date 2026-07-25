@@ -846,12 +846,23 @@ class CompilerTests(unittest.TestCase):
     def test_diabetes_follow_up_package_is_complete(self):
         package = compile_package(profile="diabetes_follow_up")
         facts = {n["id"] for n in package["knowledge_graph"]["nodes"] if n["type"] == "Fact"}
-        self.assertEqual(len(facts), 54)
+        self.assertEqual(len(facts), 56)
         self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
-        self.assertEqual(package["coverage"]["total_safety_rules"], 11)
-        self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 11)
+        self.assertEqual(package["coverage"]["total_safety_rules"], 13)
+        self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 13)
         self.assertEqual(package["coverage"]["uncovered_safety_rules"], [])
         self.assertEqual(package["coverage"]["data_absent_reason_simulations"], 1)
+        self.assertNotIn("diabetes.current_severe_hypoglycemia", facts)
+        self.assertNotIn(
+            "diabetes.current_glucose_below_54_or_persistent_below_70",
+            facts,
+        )
+        self.assertTrue({
+            "diabetes.current_hypoglycemia_normal_response",
+            "diabetes.current_hypoglycemia_self_treatment_ability",
+            "diabetes.current_glucose_below_54",
+            "diabetes.current_glucose_remains_below_70_after_treatment",
+        } <= facts)
         type_conditional, focus_conditional = package["interview_completion_policy"]["conditional_required_facts"]
         self.assertEqual(type_conditional["selector_fact"], "diabetes.type_or_context")
         self.assertEqual(set(type_conditional["cases"]), {"type1", "type2", "gestational_or_pregnancy", "other", "unclear"})

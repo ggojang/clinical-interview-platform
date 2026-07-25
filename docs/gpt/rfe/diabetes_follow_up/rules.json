@@ -1,25 +1,11 @@
 {
   "contains_patient_responses": false,
-  "count": 120,
+  "count": 126,
   "encounter_contexts": [
     "context.primary_care"
   ],
   "generated_at": "2026-07-24T00:00:00Z",
   "items": [
-    {
-      "id": "rule.diabetes-follow-up.safety.current-severe-hypoglycemia",
-      "priority": 1000,
-      "then": {
-        "action": "human_handoff",
-        "safety_level": "emergency",
-        "suppress_routine": true
-      },
-      "type": "safety",
-      "when": {
-        "equals": true,
-        "fact": "diabetes.current_severe_hypoglycemia"
-      }
-    },
     {
       "id": "rule.diabetes-follow-up.safety.dka-symptoms-ketones",
       "priority": 1000,
@@ -79,6 +65,34 @@
       }
     },
     {
+      "id": "rule.diabetes-follow-up.safety.hypoglycemia-abnormal-response",
+      "priority": 1000,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": false,
+        "fact": "diabetes.current_hypoglycemia_normal_response"
+      }
+    },
+    {
+      "id": "rule.diabetes-follow-up.safety.hypoglycemia-needs-assistance",
+      "priority": 1000,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": false,
+        "fact": "diabetes.current_hypoglycemia_self_treatment_ability"
+      }
+    },
+    {
       "id": "rule.diabetes-follow-up.safety.insulin-interruption-dka",
       "priority": 1000,
       "then": {
@@ -129,6 +143,20 @@
       }
     },
     {
+      "id": "rule.diabetes-follow-up.safety.current-glucose-below-54",
+      "priority": 970,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "diabetes.current_glucose_below_54"
+      }
+    },
+    {
       "id": "rule.diabetes-follow-up.safety.persistent-current-hypoglycemia",
       "priority": 960,
       "then": {
@@ -139,7 +167,7 @@
       "type": "safety",
       "when": {
         "equals": true,
-        "fact": "diabetes.current_glucose_below_54_or_persistent_below_70"
+        "fact": "diabetes.current_glucose_remains_below_70_after_treatment"
       }
     },
     {
@@ -227,36 +255,64 @@
       }
     },
     {
-      "id": "rule.generated.priority.any.current-severe-hypoglycemia",
+      "id": "rule.generated.priority.any.hypoglycemia-normal-response",
       "priority": 127,
       "then": {
-        "reason": "current-severe-hypoglycemia",
-        "target": "target.diabetes-follow-up.current-severe-hypoglycemia"
+        "reason": "hypoglycemia-normal-response",
+        "target": "target.diabetes-follow-up.hypoglycemia-normal-response"
       },
       "type": "priority",
       "when": {
         "target_state": {
-          "target.diabetes-follow-up.current-severe-hypoglycemia": "active"
+          "target.diabetes-follow-up.hypoglycemia-normal-response": "active"
         }
       }
     },
     {
-      "id": "rule.generated.priority.any.current-low-glucose",
+      "id": "rule.generated.priority.any.hypoglycemia-self-treatment",
       "priority": 126,
       "then": {
-        "reason": "current-low-glucose",
-        "target": "target.diabetes-follow-up.current-low-glucose"
+        "reason": "hypoglycemia-self-treatment",
+        "target": "target.diabetes-follow-up.hypoglycemia-self-treatment"
       },
       "type": "priority",
       "when": {
         "target_state": {
-          "target.diabetes-follow-up.current-low-glucose": "active"
+          "target.diabetes-follow-up.hypoglycemia-self-treatment": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.current-glucose-below-54",
+      "priority": 125,
+      "then": {
+        "reason": "current-glucose-below-54",
+        "target": "target.diabetes-follow-up.current-glucose-below-54"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.current-glucose-below-54": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.current-glucose-below-70-after-treatment",
+      "priority": 124,
+      "then": {
+        "reason": "current-glucose-below-70-after-treatment",
+        "target": "target.diabetes-follow-up.current-glucose-below-70-after-treatment"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.current-glucose-below-70-after-treatment": "active"
         }
       }
     },
     {
       "id": "rule.generated.priority.any.dka-symptoms",
-      "priority": 125,
+      "priority": 123,
       "then": {
         "reason": "dka-symptoms",
         "target": "target.diabetes-follow-up.dka-symptoms"
@@ -265,20 +321,6 @@
       "when": {
         "target_state": {
           "target.diabetes-follow-up.dka-symptoms": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.high-ketones",
-      "priority": 124,
-      "then": {
-        "reason": "high-ketones",
-        "target": "target.diabetes-follow-up.high-ketones"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.diabetes-follow-up.high-ketones": "active"
         }
       }
     },
@@ -293,6 +335,20 @@
       "when": {
         "target_state": {
           "target.diabetes-follow-up.vomiting-dehydration": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.high-ketones",
+      "priority": 122,
+      "then": {
+        "reason": "high-ketones",
+        "target": "target.diabetes-follow-up.high-ketones"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.high-ketones": "active"
         }
       }
     },
@@ -1041,7 +1097,7 @@
       }
     },
     {
-      "id": "rule.generated.complete.current-low-glucose",
+      "id": "rule.generated.complete.current-glucose-below-54",
       "priority": 50,
       "then": {
         "target_state": "satisfied"
@@ -1049,11 +1105,11 @@
       "type": "completion",
       "when": {
         "facts_resolved": "all_required",
-        "target": "target.diabetes-follow-up.current-low-glucose"
+        "target": "target.diabetes-follow-up.current-glucose-below-54"
       }
     },
     {
-      "id": "rule.generated.complete.current-severe-hypoglycemia",
+      "id": "rule.generated.complete.current-glucose-below-70-after-treatment",
       "priority": 50,
       "then": {
         "target_state": "satisfied"
@@ -1061,7 +1117,7 @@
       "type": "completion",
       "when": {
         "facts_resolved": "all_required",
-        "target": "target.diabetes-follow-up.current-severe-hypoglycemia"
+        "target": "target.diabetes-follow-up.current-glucose-below-70-after-treatment"
       }
     },
     {
@@ -1269,6 +1325,18 @@
       }
     },
     {
+      "id": "rule.generated.complete.hypoglycemia-normal-response",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.hypoglycemia-normal-response"
+      }
+    },
+    {
       "id": "rule.generated.complete.hypoglycemia-preparedness",
       "priority": 50,
       "then": {
@@ -1278,6 +1346,18 @@
       "when": {
         "facts_resolved": "all_required",
         "target": "target.diabetes-follow-up.hypoglycemia-preparedness"
+      }
+    },
+    {
+      "id": "rule.generated.complete.hypoglycemia-self-treatment",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.hypoglycemia-self-treatment"
       }
     },
     {
@@ -1615,7 +1695,7 @@
       "complete": false,
       "id": "source.ada.soc2026.ckd",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-07-16",
+      "last_monitored_at": "2026-07-25",
       "license_status": "restricted",
       "monitor_interval_days": 1,
       "publisher": "American Diabetes Association",
@@ -1627,7 +1707,7 @@
       "complete": false,
       "id": "source.ada.soc2026.glycemic-goals",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-07-16",
+      "last_monitored_at": "2026-07-25",
       "license_status": "restricted",
       "monitor_interval_days": 1,
       "publisher": "American Diabetes Association",
@@ -1639,7 +1719,7 @@
       "complete": false,
       "id": "source.ada.soc2026.retina-neuropathy-foot",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-07-16",
+      "last_monitored_at": "2026-07-25",
       "license_status": "restricted",
       "monitor_interval_days": 1,
       "publisher": "American Diabetes Association",
@@ -1651,25 +1731,25 @@
       "complete": false,
       "id": "source.nhs.dka.2026",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-07-14",
+      "last_monitored_at": "2026-07-25",
       "license_status": "unknown",
       "monitor_interval_days": 7,
       "publisher": "NHS",
       "title": "Diabetic ketoacidosis",
       "url": "https://www.nhs.uk/conditions/diabetic-ketoacidosis/",
-      "version": "accessed-2026-07-14"
+      "version": "page-reviewed-2023-06-08;checked-2026-07-25"
     },
     {
       "complete": false,
       "id": "source.nhs.hypoglycaemia.2026",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-07-14",
+      "last_monitored_at": "2026-07-25",
       "license_status": "unknown",
       "monitor_interval_days": 7,
       "publisher": "NHS",
       "title": "Low blood sugar (hypoglycaemia)",
       "url": "https://www.nhs.uk/conditions/low-blood-sugar-hypoglycaemia/",
-      "version": "accessed-2026-07-14"
+      "version": "page-reviewed-2023-08-03;checked-2026-07-25"
     },
     {
       "complete": false,
@@ -1687,7 +1767,7 @@
       "complete": false,
       "id": "source.nice.ng19.diabetic-foot.2025",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-07-14",
+      "last_monitored_at": "2026-07-25",
       "license_status": "restricted",
       "monitor_interval_days": 7,
       "publisher": "NICE",

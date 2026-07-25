@@ -430,6 +430,17 @@ The Source Cache contains acquired material.
 
 It does not contain reviewed Knowledge Graph objects.
 
+Repository implementation:
+
+`docs/source/` is the human-inspectable archive for official downloadable
+source documents. A file may be committed there only when its official origin,
+version or publication date, acquisition date, canonical URL, checksum and
+license status are known, and repository redistribution is permitted.
+
+Restricted or redistribution-uncertain source text is not committed. Only its
+metadata and canonical URL are retained in `sources/manifests/`, with the
+license limitation and incomplete acquisition state made explicit.
+
 Immutability
 
 A cached source response is immutable.

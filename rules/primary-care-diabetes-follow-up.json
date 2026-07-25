@@ -91,8 +91,8 @@
       }
     },
     {
-      "id": "rule.diabetes-follow-up.safety.current-severe-hypoglycemia",
-      "priority": 1000,
+      "id": "rule.diabetes-follow-up.safety.current-glucose-below-54",
+      "priority": 970,
       "provenance": {
         "created_at": "2026-07-14T00:00:00Z",
         "created_by": {
@@ -123,7 +123,7 @@
       "status": "research_only",
       "then": {
         "action": "human_handoff",
-        "safety_level": "emergency",
+        "safety_level": "urgent",
         "suppress_routine": true
       },
       "type": "safety",
@@ -134,7 +134,7 @@
       "version": "0.1.0",
       "when": {
         "equals": true,
-        "fact": "diabetes.current_severe_hypoglycemia"
+        "fact": "diabetes.current_glucose_below_54"
       }
     },
     {
@@ -292,6 +292,100 @@
       "when": {
         "equals": true,
         "fact": "diabetes.marked_hyperglycemia_with_confusion_or_dehydration"
+      }
+    },
+    {
+      "id": "rule.diabetes-follow-up.safety.hypoglycemia-abnormal-response",
+      "priority": 1000,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.ada.soc2026.glycemic-goals",
+          "source.ada.soc2026.ckd",
+          "source.ada.soc2026.retina-neuropathy-foot",
+          "source.nice.ng28.diabetes-type2.2026",
+          "source.nice.ng17.diabetes-type1",
+          "source.nice.ng19.diabetic-foot.2025",
+          "source.nhs.dka.2026",
+          "source.nhs.hypoglycaemia.2026",
+          "source.stom.diabetes.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "equals": false,
+        "fact": "diabetes.current_hypoglycemia_normal_response"
+      }
+    },
+    {
+      "id": "rule.diabetes-follow-up.safety.hypoglycemia-needs-assistance",
+      "priority": 1000,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.ada.soc2026.glycemic-goals",
+          "source.ada.soc2026.ckd",
+          "source.ada.soc2026.retina-neuropathy-foot",
+          "source.nice.ng28.diabetes-type2.2026",
+          "source.nice.ng17.diabetes-type1",
+          "source.nice.ng19.diabetic-foot.2025",
+          "source.nhs.dka.2026",
+          "source.nhs.hypoglycaemia.2026",
+          "source.stom.diabetes.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "equals": false,
+        "fact": "diabetes.current_hypoglycemia_self_treatment_ability"
       }
     },
     {
@@ -487,7 +581,7 @@
       "version": "0.1.0",
       "when": {
         "equals": true,
-        "fact": "diabetes.current_glucose_below_54_or_persistent_below_70"
+        "fact": "diabetes.current_glucose_remains_below_70_after_treatment"
       }
     },
     {
@@ -942,7 +1036,7 @@
       }
     },
     {
-      "id": "rule.generated.complete.current-low-glucose",
+      "id": "rule.generated.complete.current-glucose-below-54",
       "priority": 50,
       "provenance": {
         "created_at": "2026-07-14T00:00:00Z",
@@ -989,11 +1083,11 @@
       "version": "0.1.0",
       "when": {
         "facts_resolved": "all_required",
-        "target": "target.diabetes-follow-up.current-low-glucose"
+        "target": "target.diabetes-follow-up.current-glucose-below-54"
       }
     },
     {
-      "id": "rule.generated.complete.current-severe-hypoglycemia",
+      "id": "rule.generated.complete.current-glucose-below-70-after-treatment",
       "priority": 50,
       "provenance": {
         "created_at": "2026-07-14T00:00:00Z",
@@ -1040,7 +1134,7 @@
       "version": "0.1.0",
       "when": {
         "facts_resolved": "all_required",
-        "target": "target.diabetes-follow-up.current-severe-hypoglycemia"
+        "target": "target.diabetes-follow-up.current-glucose-below-70-after-treatment"
       }
     },
     {
@@ -1911,6 +2005,57 @@
       }
     },
     {
+      "id": "rule.generated.complete.hypoglycemia-normal-response",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.ada.soc2026.glycemic-goals",
+          "source.ada.soc2026.ckd",
+          "source.ada.soc2026.retina-neuropathy-foot",
+          "source.nice.ng28.diabetes-type2.2026",
+          "source.nice.ng17.diabetes-type1",
+          "source.nice.ng19.diabetic-foot.2025",
+          "source.nhs.dka.2026",
+          "source.nhs.hypoglycaemia.2026",
+          "source.stom.diabetes.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.hypoglycemia-normal-response"
+      }
+    },
+    {
       "id": "rule.generated.complete.hypoglycemia-preparedness",
       "priority": 50,
       "provenance": {
@@ -1959,6 +2104,57 @@
       "when": {
         "facts_resolved": "all_required",
         "target": "target.diabetes-follow-up.hypoglycemia-preparedness"
+      }
+    },
+    {
+      "id": "rule.generated.complete.hypoglycemia-self-treatment",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.ada.soc2026.glycemic-goals",
+          "source.ada.soc2026.ckd",
+          "source.ada.soc2026.retina-neuropathy-foot",
+          "source.nice.ng28.diabetes-type2.2026",
+          "source.nice.ng17.diabetes-type1",
+          "source.nice.ng19.diabetic-foot.2025",
+          "source.nhs.dka.2026",
+          "source.nhs.hypoglycaemia.2026",
+          "source.stom.diabetes.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.hypoglycemia-self-treatment"
       }
     },
     {
@@ -3710,8 +3906,8 @@
       }
     },
     {
-      "id": "rule.generated.priority.any.current-low-glucose",
-      "priority": 126,
+      "id": "rule.generated.priority.any.current-glucose-below-54",
+      "priority": 125,
       "provenance": {
         "created_at": "2026-07-14T00:00:00Z",
         "created_by": {
@@ -3747,8 +3943,8 @@
       },
       "status": "research_only",
       "then": {
-        "reason": "current-low-glucose",
-        "target": "target.diabetes-follow-up.current-low-glucose"
+        "reason": "current-glucose-below-54",
+        "target": "target.diabetes-follow-up.current-glucose-below-54"
       },
       "type": "priority",
       "usage_modes": [
@@ -3758,13 +3954,13 @@
       "version": "0.1.0",
       "when": {
         "target_state": {
-          "target.diabetes-follow-up.current-low-glucose": "active"
+          "target.diabetes-follow-up.current-glucose-below-54": "active"
         }
       }
     },
     {
-      "id": "rule.generated.priority.any.current-severe-hypoglycemia",
-      "priority": 127,
+      "id": "rule.generated.priority.any.current-glucose-below-70-after-treatment",
+      "priority": 124,
       "provenance": {
         "created_at": "2026-07-14T00:00:00Z",
         "created_by": {
@@ -3800,8 +3996,8 @@
       },
       "status": "research_only",
       "then": {
-        "reason": "current-severe-hypoglycemia",
-        "target": "target.diabetes-follow-up.current-severe-hypoglycemia"
+        "reason": "current-glucose-below-70-after-treatment",
+        "target": "target.diabetes-follow-up.current-glucose-below-70-after-treatment"
       },
       "type": "priority",
       "usage_modes": [
@@ -3811,7 +4007,7 @@
       "version": "0.1.0",
       "when": {
         "target_state": {
-          "target.diabetes-follow-up.current-severe-hypoglycemia": "active"
+          "target.diabetes-follow-up.current-glucose-below-70-after-treatment": "active"
         }
       }
     },
@@ -3923,7 +4119,7 @@
     },
     {
       "id": "rule.generated.priority.any.dka-symptoms",
-      "priority": 125,
+      "priority": 123,
       "provenance": {
         "created_at": "2026-07-14T00:00:00Z",
         "created_by": {
@@ -4453,7 +4649,7 @@
     },
     {
       "id": "rule.generated.priority.any.high-ketones",
-      "priority": 124,
+      "priority": 122,
       "provenance": {
         "created_at": "2026-07-14T00:00:00Z",
         "created_by": {
@@ -4717,6 +4913,59 @@
       }
     },
     {
+      "id": "rule.generated.priority.any.hypoglycemia-normal-response",
+      "priority": 127,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.ada.soc2026.glycemic-goals",
+          "source.ada.soc2026.ckd",
+          "source.ada.soc2026.retina-neuropathy-foot",
+          "source.nice.ng28.diabetes-type2.2026",
+          "source.nice.ng17.diabetes-type1",
+          "source.nice.ng19.diabetic-foot.2025",
+          "source.nhs.dka.2026",
+          "source.nhs.hypoglycaemia.2026",
+          "source.stom.diabetes.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "hypoglycemia-normal-response",
+        "target": "target.diabetes-follow-up.hypoglycemia-normal-response"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.hypoglycemia-normal-response": "active"
+        }
+      }
+    },
+    {
       "id": "rule.generated.priority.any.hypoglycemia-preparedness",
       "priority": 96,
       "provenance": {
@@ -4766,6 +5015,59 @@
       "when": {
         "target_state": {
           "target.diabetes-follow-up.hypoglycemia-preparedness": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.hypoglycemia-self-treatment",
+      "priority": 126,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.ada.soc2026.glycemic-goals",
+          "source.ada.soc2026.ckd",
+          "source.ada.soc2026.retina-neuropathy-foot",
+          "source.nice.ng28.diabetes-type2.2026",
+          "source.nice.ng17.diabetes-type1",
+          "source.nice.ng19.diabetic-foot.2025",
+          "source.nhs.dka.2026",
+          "source.nhs.hypoglycaemia.2026",
+          "source.stom.diabetes.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "hypoglycemia-self-treatment",
+        "target": "target.diabetes-follow-up.hypoglycemia-self-treatment"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.hypoglycemia-self-treatment": "active"
         }
       }
     },

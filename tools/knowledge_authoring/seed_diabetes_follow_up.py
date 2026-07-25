@@ -30,10 +30,12 @@ def fragment():
         Q("diabetes.type_or_context", "Diabetes Type or Context", "coded", "type-context", "알고 있는 당뇨병 유형은 1형, 2형, 임신성, 기타·불확실 중 무엇인가요?", 129, [G["routing"]], C, allowed_values=["type1", "type2", "gestational_or_pregnancy", "other", "unclear"]),
         Q("diabetes.primary_follow_up_focus", "Primary Diabetes Follow-up Focus", "coded", "primary-focus", "이번 방문의 주된 목적은 혈당 조절 확인, 약물·저혈당, 합병증 점검, 기기·교육, 기타 중 무엇인가요?", 128, [G["routing"]], C, allowed_values=["glycemic_control", "medication_hypoglycemia", "complication_screening", "device_education", "other_unclear"]),
 
-        Q("diabetes.current_severe_hypoglycemia", "Current Severe Hypoglycemia", "boolean", "current-severe-hypoglycemia", "지금 저혈당이 의심되면서 의식이 흐리거나 경련, 삼키기 어려움, 다른 사람 도움 없이는 회복하기 어려운 상태인가요?", 127, [G["acute-safety"], G["medication-hypoglycemia"]], S, safety_relevant=True, terminology_binding={"system": SN, "code": "302866003"}, mrcm_ref=M),
-        Q("diabetes.current_glucose_below_54_or_persistent_below_70", "Current Clinically Important Hypoglycemia", "boolean", "current-low-glucose", "현재 혈당이 54 mg/dL 미만이거나, 70 mg/dL 미만이면서 당 섭취 후에도 계속 낮나요?", 126, [G["acute-safety"], G["medication-hypoglycemia"]], S, safety_relevant=True),
-        Q("diabetes.dka_symptom_cluster", "Diabetic Ketoacidosis Symptom Cluster", "boolean", "dka-symptoms", "심한 갈증·잦은 소변과 함께 메스꺼움·구토, 복통, 깊거나 빠른 호흡, 과일 냄새 같은 숨, 심한 졸림·혼란이 있나요?", 125, [G["acute-safety"]], S, safety_relevant=True, terminology_binding={"system": SN, "code": "111556005"}, mrcm_ref=M),
-        Q("diabetes.moderate_large_ketones_or_high_ketone", "Moderate or Large Ketones", "boolean", "high-ketones", "혈액 케톤이 높다고 나오거나 소변 케톤이 중등도·대량으로 나왔나요?", 124, [G["acute-safety"], G["type1-insulin"]], S, safety_relevant=True),
+        Q("diabetes.current_hypoglycemia_normal_response", "Normal Response during Suspected Hypoglycemia", "boolean", "hypoglycemia-normal-response", "지금 저혈당이 의심되는 상태에서 부르면 평소처럼 반응할 수 있나요?", 127, [G["acute-safety"], G["medication-hypoglycemia"]], S, safety_relevant=True),
+        Q("diabetes.current_hypoglycemia_self_treatment_ability", "Self-treatment Ability during Suspected Hypoglycemia", "boolean", "hypoglycemia-self-treatment", "지금 저혈당을 스스로 당을 섭취해 처치할 수 있나요?", 126, [G["acute-safety"], G["medication-hypoglycemia"]], S, safety_relevant=True),
+        Q("diabetes.current_glucose_below_54", "Current Glucose below 54 mg/dL", "boolean", "current-glucose-below-54", "현재 측정한 혈당이 54 mg/dL 미만인가요?", 125, [G["acute-safety"], G["medication-hypoglycemia"]], S, safety_relevant=True),
+        Q("diabetes.current_glucose_remains_below_70_after_treatment", "Glucose below 70 mg/dL after Treatment", "boolean", "current-glucose-below-70-after-treatment", "당을 섭취하고 15분 뒤 다시 측정한 혈당이 70 mg/dL 미만인가요?", 124, [G["acute-safety"], G["medication-hypoglycemia"]], S, safety_relevant=True),
+        Q("diabetes.dka_symptom_cluster", "Diabetic Ketoacidosis Symptom Cluster", "boolean", "dka-symptoms", "심한 갈증·잦은 소변과 함께 메스꺼움·구토, 복통, 깊거나 빠른 호흡, 과일 냄새 같은 숨, 심한 졸림·혼란이 있나요?", 123, [G["acute-safety"]], S, safety_relevant=True, terminology_binding={"system": SN, "code": "111556005"}, mrcm_ref=M),
+        Q("diabetes.moderate_large_ketones_or_high_ketone", "Moderate or Large Ketones", "boolean", "high-ketones", "혈액 케톤이 높다고 나오거나 소변 케톤이 중등도·대량으로 나왔나요?", 122, [G["acute-safety"], G["type1-insulin"]], S, safety_relevant=True),
         Q("diabetes.repeated_vomiting_or_cannot_keep_fluids", "Repeated Vomiting or Unable to Keep Fluids", "boolean", "vomiting-dehydration", "반복해서 토하거나 물을 마셔도 유지할 수 없나요?", 123, [G["acute-safety"]], S, safety_relevant=True),
         Q("diabetes.marked_hyperglycemia_with_confusion_or_dehydration", "Marked Hyperglycemia with Confusion or Dehydration", "boolean", "hyperglycemic-crisis", "혈당이 매우 높으면서 심한 탈수, 기운 없음, 졸림·혼란 또는 의식 변화가 있나요?", 122, [G["acute-safety"]], S, safety_relevant=True, terminology_binding={"system": SN, "code": "80394007"}, mrcm_ref=M),
         Q("diabetes.suspected_insulin_delivery_interruption", "Suspected Insulin Delivery Interruption", "boolean", "insulin-interruption", "인슐린 주사를 여러 번 거르거나 펌프·주입세트 이상으로 인슐린 공급이 중단됐나요?", 121, [G["acute-safety"], G["type1-insulin"]], S, safety_relevant=True),
@@ -88,8 +90,10 @@ def fragment():
     ]
     dka = {"fact": "diabetes.dka_symptom_cluster", "equals": True}
     rules = [
-        safety_rule(P, "current-severe-hypoglycemia", {"fact": "diabetes.current_severe_hypoglycemia", "equals": True}, "emergency", 1000),
-        safety_rule(P, "persistent-current-hypoglycemia", {"fact": "diabetes.current_glucose_below_54_or_persistent_below_70", "equals": True}, "urgent", 960),
+        safety_rule(P, "hypoglycemia-abnormal-response", {"fact": "diabetes.current_hypoglycemia_normal_response", "equals": False}, "emergency", 1000),
+        safety_rule(P, "hypoglycemia-needs-assistance", {"fact": "diabetes.current_hypoglycemia_self_treatment_ability", "equals": False}, "emergency", 1000),
+        safety_rule(P, "current-glucose-below-54", {"fact": "diabetes.current_glucose_below_54", "equals": True}, "urgent", 970),
+        safety_rule(P, "persistent-current-hypoglycemia", {"fact": "diabetes.current_glucose_remains_below_70_after_treatment", "equals": True}, "urgent", 960),
         safety_rule(P, "dka-symptoms-ketones", {"all": [dka, {"fact": "diabetes.moderate_large_ketones_or_high_ketone", "equals": True}]}, "emergency", 1000),
         safety_rule(P, "dka-symptoms-vomiting", {"all": [dka, {"fact": "diabetes.repeated_vomiting_or_cannot_keep_fluids", "equals": True}]}, "emergency", 1000),
         safety_rule(P, "hyperglycemic-crisis", {"fact": "diabetes.marked_hyperglycemia_with_confusion_or_dehydration", "equals": True}, "emergency", 1000),
@@ -139,11 +143,49 @@ def source_docs():
         ("source.nice.ng28.diabetes-type2.2026", "NICE", "Type 2 diabetes in adults: management", "NG28-updated-2026-02-18", "https://www.nice.org.uk/guidance/ng28", "clinical_guideline", 1),
         ("source.nice.ng17.diabetes-type1", "NICE", "Type 1 diabetes in adults: diagnosis and management", "NG17", "https://www.nice.org.uk/guidance/ng17/chapter/recommendations", "clinical_guideline", 1),
         ("source.nice.ng19.diabetic-foot.2025", "NICE", "Diabetic foot problems: prevention and management", "NG19-reviewed-2025-07-03", "https://www.nice.org.uk/guidance/ng19/chapter/Recommendations", "clinical_guideline", 1),
-        ("source.nhs.dka.2026", "NHS", "Diabetic ketoacidosis", "accessed-2026-07-14", "https://www.nhs.uk/conditions/diabetic-ketoacidosis/", "public_health_guidance", 7),
-        ("source.nhs.hypoglycaemia.2026", "NHS", "Low blood sugar (hypoglycaemia)", "accessed-2026-07-14", "https://www.nhs.uk/conditions/low-blood-sugar-hypoglycaemia/", "public_health_guidance", 7),
+        ("source.nhs.dka.2026", "NHS", "Diabetic ketoacidosis", "page-reviewed-2023-06-08;checked-2026-07-25", "https://www.nhs.uk/conditions/diabetic-ketoacidosis/", "public_health_guidance", 7),
+        ("source.nhs.hypoglycaemia.2026", "NHS", "Low blood sugar (hypoglycaemia)", "page-reviewed-2023-08-03;checked-2026-07-25", "https://www.nhs.uk/conditions/low-blood-sugar-hypoglycaemia/", "public_health_guidance", 7),
         ("source.stom.diabetes.20260714", "Infoclinic", "STOM diabetes terminology and MRCM summary", "SNOMEDCT-20260701", "https://stom.infoclinic.co", "terminology_server", 30),
     ]
-    arts = [{"id": i, "kind": "terminology_mrcm_query_summary" if profile == "terminology_server" else "clinical_guidance_metadata", "publisher": pub, "title": title, "version": ver, "url": url, "language": "en", "digest": "live_response_summary_not_raw_cache" if profile == "terminology_server" else "metadata_only_not_cached", "license_status": "restricted" if pub in {"NICE", "American Diabetes Association", "Infoclinic"} else "unknown", "complete": False, "monitor_profile": profile, "monitor_interval_days": days, "last_monitored_at": "2026-07-14", "next_monitor_at": "2026-08-13" if days == 30 else ("2026-07-21" if days == 7 else "2026-07-15"), "assertions": ["Build-Time only; Runtime does not browse; content remains unreviewed."]} for i, pub, title, ver, url, profile, days in defs]
+    verified_now = {
+        "source.ada.soc2026.glycemic-goals",
+        "source.ada.soc2026.ckd",
+        "source.ada.soc2026.retina-neuropathy-foot",
+        "source.nice.ng19.diabetic-foot.2025",
+        "source.nhs.dka.2026",
+        "source.nhs.hypoglycaemia.2026",
+    }
+    arts = []
+    for i, pub, title, ver, url, profile, days in defs:
+        checked = i in verified_now
+        arts.append({
+            "id": i,
+            "kind": "terminology_mrcm_query_summary" if profile == "terminology_server" else "clinical_guidance_metadata",
+            "publisher": pub,
+            "title": title,
+            "version": ver,
+            "url": url,
+            "language": "en",
+            "digest": "live_response_summary_not_raw_cache" if profile == "terminology_server" else "metadata_only_not_cached",
+            "license_status": "restricted" if pub in {"NICE", "American Diabetes Association", "Infoclinic"} else "unknown",
+            "complete": False,
+            "monitor_profile": profile,
+            "monitor_interval_days": days,
+            "last_monitored_at": "2026-07-25" if checked else "2026-07-14",
+            "next_monitor_at": (
+                "2026-07-26" if checked and days == 1 else
+                "2026-08-01" if checked and days == 7 else
+                "2026-08-13" if days == 30 else
+                "2026-07-21" if days == 7 else
+                "2026-07-15"
+            ),
+            "monitor_result": (
+                "current_official_source_confirmed_no_version_change"
+                if checked else "not_due_existing_metadata_preserved"
+                if days == 30 else "due_not_reviewed_in_this_run"
+            ),
+            "assertions": ["Build-Time only; Runtime does not browse; content remains unreviewed."],
+        })
     research = {"id": "source-manifest.primary-care-diabetes-follow-up-research", "version": VERSION, "acquired_at": CREATED_AT, "status": "research_only", "artifacts": arts, "provenance": provenance([x[0] for x in defs])}
     paths = [("source.repository.foundation", "repository_specification", "FOUNDATION.md", True), ("source.generated.diabetes-follow-up", "generated_clinical_knowledge", "knowledge/generated/endocrine/diabetes-follow-up/diabetes-follow-up.json", True), ("source.mapping.diabetes-follow-up", "terminology_mapping", "mappings/terminology/snomed-mrcm-diabetes-follow-up.json", False), ("source.external.diabetes-follow-up", "external_source_manifest", "sources/manifests/primary-care-diabetes-follow-up-research.json", False), ("source.policy.diabetes-follow-up", "runtime_policy", "policies/primary-care-diabetes-follow-up-completion.json", True)]
     primary = {"id": "source-manifest.primary-care-diabetes-follow-up", "version": VERSION, "acquired_at": CREATED_AT, "artifacts": [{"id": i, "kind": kind, "publisher": "clinical-interview-platform", "version": VERSION, "language": "en", "path": path, "digest": "computed_at_build", "license_status": "allowed" if complete else "unknown", "complete": complete} for i, kind, path, complete in paths], "provenance": provenance(["FOUNDATION.md", "PROJECT_CONTEXT.md"])}
@@ -167,6 +209,8 @@ def cases(f):
         if fact["value_type"] == "boolean": hidden[fid] = {"value": fid == "diabetes.follow_up.requested"}
         elif fact["value_type"] == "coded": hidden[fid] = {"value": fact.get("allowed_values", ["unclear"])[-1]}
         else: hidden[fid] = {"value": "없음"}
+    hidden["diabetes.current_hypoglycemia_normal_response"] = {"value": True}
+    hidden["diabetes.current_hypoglycemia_self_treatment_ability"] = {"value": True}
     hidden["diabetes.type_or_context"] = {"value": "type2"}; hidden["diabetes.primary_follow_up_focus"] = {"value": "glycemic_control"}
     declined = "medication.diabetes_current_list"; hidden.pop(declined)
     out["DM-TYPE2-DATA-ABSENT.json"] = {"id": "DM-TYPE2-DATA-ABSENT", "simulation_language": "ko", "persona": {"age": 57}, "initial_statement": {"ko": "2형 당뇨 정기 검진을 받으러 왔어요."}, "hidden_state": hidden, "response_behavior": {declined: {"dataAbsentReason": "asked-declined"}}, "expected": {"expected_data_absent_reasons": {declined: "asked-declined"}, "expected_safety_level": "routine", "expected_stop_reason": "required_targets_addressed_with_absent_data", "expected_max_turns": 70, "forbidden_assertions": ["diagnosis.controlled_diabetes", "recommendation.change_medication"]}, "provenance": provenance(["source.nice.ng28.diabetes-type2.2026", "specifications/clinical-memory.md"])}

@@ -65,11 +65,11 @@
   "group_hypothesis_edges": [],
   "safety_rules": [
     {
-      "id": "rule.diabetes-follow-up.safety.current-severe-hypoglycemia",
+      "id": "rule.diabetes-follow-up.safety.hypoglycemia-abnormal-response",
       "priority": 1000,
       "when": {
-        "fact": "diabetes.current_severe_hypoglycemia",
-        "equals": true
+        "fact": "diabetes.current_hypoglycemia_normal_response",
+        "equals": false
       },
       "then": {
         "safety_level": "emergency",
@@ -78,10 +78,36 @@
       }
     },
     {
+      "id": "rule.diabetes-follow-up.safety.hypoglycemia-needs-assistance",
+      "priority": 1000,
+      "when": {
+        "fact": "diabetes.current_hypoglycemia_self_treatment_ability",
+        "equals": false
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.diabetes-follow-up.safety.current-glucose-below-54",
+      "priority": 970,
+      "when": {
+        "fact": "diabetes.current_glucose_below_54",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
       "id": "rule.diabetes-follow-up.safety.persistent-current-hypoglycemia",
       "priority": 960,
       "when": {
-        "fact": "diabetes.current_glucose_below_54_or_persistent_below_70",
+        "fact": "diabetes.current_glucose_remains_below_70_after_treatment",
         "equals": true
       },
       "then": {
@@ -362,29 +388,21 @@
     },
     {
       "fact": {
-        "id": "diabetes.current_severe_hypoglycemia",
-        "display": "Current Severe Hypoglycemia",
+        "id": "diabetes.current_hypoglycemia_normal_response",
+        "display": "Normal Response during Suspected Hypoglycemia",
         "value_type": "boolean",
-        "safety_relevant": true,
-        "terminology_binding": {
-          "system": "http://snomed.info/sct",
-          "code": "302866003"
-        },
-        "mrcm_validation": {
-          "ref": "mapping.snomed-mrcm.diabetes-follow-up",
-          "status": "provisional_pass"
-        }
+        "safety_relevant": true
       },
       "target": {
-        "id": "target.diabetes-follow-up.current-severe-hypoglycemia",
-        "display": "Current Severe Hypoglycemia",
+        "id": "target.diabetes-follow-up.hypoglycemia-normal-response",
+        "display": "Normal Response during Suspected Hypoglycemia",
         "intents": [
           "intent.screen_red_flags"
         ]
       },
       "question": {
-        "id": "question.diabetes-follow-up.current-severe-hypoglycemia",
-        "wording": "지금 저혈당이 의심되면서 의식이 흐리거나 경련, 삼키기 어려움, 다른 사람 도움 없이는 회복하기 어려운 상태인가요?",
+        "id": "question.diabetes-follow-up.hypoglycemia-normal-response",
+        "wording": "지금 저혈당이 의심되는 상태에서 부르면 평소처럼 반응할 수 있나요?",
         "language": "ko",
         "mode": [
           "chat",
@@ -397,7 +415,7 @@
         {
           "branch": "any",
           "score": 127,
-          "reason": "current-severe-hypoglycemia"
+          "reason": "hypoglycemia-normal-response"
         }
       ],
       "supports": [
@@ -407,21 +425,21 @@
     },
     {
       "fact": {
-        "id": "diabetes.current_glucose_below_54_or_persistent_below_70",
-        "display": "Current Clinically Important Hypoglycemia",
+        "id": "diabetes.current_hypoglycemia_self_treatment_ability",
+        "display": "Self-treatment Ability during Suspected Hypoglycemia",
         "value_type": "boolean",
         "safety_relevant": true
       },
       "target": {
-        "id": "target.diabetes-follow-up.current-low-glucose",
-        "display": "Current Clinically Important Hypoglycemia",
+        "id": "target.diabetes-follow-up.hypoglycemia-self-treatment",
+        "display": "Self-treatment Ability during Suspected Hypoglycemia",
         "intents": [
           "intent.screen_red_flags"
         ]
       },
       "question": {
-        "id": "question.diabetes-follow-up.current-low-glucose",
-        "wording": "현재 혈당이 54 mg/dL 미만이거나, 70 mg/dL 미만이면서 당 섭취 후에도 계속 낮나요?",
+        "id": "question.diabetes-follow-up.hypoglycemia-self-treatment",
+        "wording": "지금 저혈당을 스스로 당을 섭취해 처치할 수 있나요?",
         "language": "ko",
         "mode": [
           "chat",
@@ -434,7 +452,81 @@
         {
           "branch": "any",
           "score": 126,
-          "reason": "current-low-glucose"
+          "reason": "hypoglycemia-self-treatment"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.acute-safety",
+        "group.diabetes-follow-up.medication-hypoglycemia"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.current_glucose_below_54",
+        "display": "Current Glucose below 54 mg/dL",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.current-glucose-below-54",
+        "display": "Current Glucose below 54 mg/dL",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.current-glucose-below-54",
+        "wording": "현재 측정한 혈당이 54 mg/dL 미만인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 125,
+          "reason": "current-glucose-below-54"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.acute-safety",
+        "group.diabetes-follow-up.medication-hypoglycemia"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.current_glucose_remains_below_70_after_treatment",
+        "display": "Glucose below 70 mg/dL after Treatment",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.current-glucose-below-70-after-treatment",
+        "display": "Glucose below 70 mg/dL after Treatment",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.current-glucose-below-70-after-treatment",
+        "wording": "당을 섭취하고 15분 뒤 다시 측정한 혈당이 70 mg/dL 미만인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 124,
+          "reason": "current-glucose-below-70-after-treatment"
         }
       ],
       "supports": [
@@ -478,7 +570,7 @@
       "priority": [
         {
           "branch": "any",
-          "score": 125,
+          "score": 123,
           "reason": "dka-symptoms"
         }
       ],
@@ -514,7 +606,7 @@
       "priority": [
         {
           "branch": "any",
-          "score": 124,
+          "score": 122,
           "reason": "high-ketones"
         }
       ],
