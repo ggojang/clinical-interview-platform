@@ -164,6 +164,28 @@ Source-defined fixed questionnaires are excluded from automatic mapping. Their
 official wording and answer lists remain authoritative unless an explicit
 mapping request is verified against the source instrument.
 
+Australian AU Base, Sparked AUCDI and AU Core are non-authoritative,
+cross-jurisdiction structural references. They may reveal missing FHIR
+elements, provenance, cardinality and clinician-handoff data, but do not
+replace FHIR R4 or KR Core V2 in Korean deployment and do not create questions.
+Australian Smart Forms and SDC artifacts may inform prepopulation,
+`enableWhen`, repeatable groups and extraction. CI builds and source-defined
+Australian questionnaires are not production conformance artifacts and are
+not imported automatically.
+
+openEHR CKM archetypes and templates may compare Fact granularity and classify
+required data as patient askable, clinician observed, derived or record
+prepopulated. A template requirement does not itself require a patient
+question. Archetype `at` and `ac` codes remain local identifiers, and every
+artifact requires version, lifecycle and license verification.
+
+HL7 CPG, CQL/ELM and FHIR Library, PlanDefinition and ActivityDefinition are
+future projections of the internal Rule Graph. GDL2 is a secondary research
+cross-validation projection, and CDS Hooks is an external workflow adapter
+only. None controls Runtime, clinical safety, priority, completion, diagnosis
+or orders. Current packages expose projection-readiness metadata and report
+that no executable projection was emitted.
+
 Mapping search checks official LOINC panels and Answer Lists, HL7 FHIR and US
 Core artifacts, NLM VSAC where access and licensing permit, SNOMED CT
 implementation artifacts, and STOM before a new local code is accepted.

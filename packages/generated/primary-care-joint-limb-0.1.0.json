@@ -376,9 +376,95 @@
   },
   "compatibility": {
     "clinical_memory_schema": "0.2.0",
+    "computable_knowledge_overlay": "0.1.0",
     "rule_language": "0.1.0",
     "runtime_max_tested": "0.1.0",
     "runtime_min": "0.1.0"
+  },
+  "computable_knowledge": {
+    "authority": {
+      "clinical": false,
+      "completion": false,
+      "diagnosis": false,
+      "orders": false,
+      "priority": false,
+      "safety": false
+    },
+    "contains_patient_responses": false,
+    "deployment_jurisdiction": "KR",
+    "encountered_rule_types": [
+      "activation",
+      "completion",
+      "priority",
+      "safety"
+    ],
+    "fixed_questionnaire_automatic_mapping": false,
+    "framework_ids": [
+      "hl7-au-base",
+      "sparked-aucdi",
+      "hl7-au-core",
+      "aehrc-smart-health-checks",
+      "openehr-ckm",
+      "hl7-cpg",
+      "hl7-cql",
+      "hl7-fhir-clinical-reasoning",
+      "hl7-cds-hooks",
+      "openehr-gdl2"
+    ],
+    "id": "coverage.computable-knowledge-standards",
+    "limitations": [
+      "No CQL, ELM or GDL2 execution-engine conformance has been established.",
+      "No PlanDefinition or ActivityDefinition is authorized to create an order.",
+      "Australian and openEHR artifacts are structural references only in Korean deployment."
+    ],
+    "projection_outputs": {
+      "activity_definition_emitted": false,
+      "cds_hooks_dependency": false,
+      "cql_emitted": false,
+      "elm_emitted": false,
+      "fhir_library_emitted": false,
+      "gdl2_emitted": false,
+      "plan_definition_emitted": false
+    },
+    "review_status": "unreviewed",
+    "rule_projection_readiness": [
+      {
+        "cql_role": "Boolean applicability expression",
+        "emission_status": "metadata_only_not_emitted",
+        "fhir_clinical_reasoning_role": "PlanDefinition.action.condition",
+        "gdl2_role": "precondition",
+        "rule_type": "activation"
+      },
+      {
+        "cql_role": "Boolean completion expression",
+        "emission_status": "metadata_only_not_emitted",
+        "fhir_clinical_reasoning_role": "PlanDefinition action condition",
+        "gdl2_role": "when condition",
+        "rule_type": "completion"
+      },
+      {
+        "cql_role": "Ordinal derivation expression",
+        "emission_status": "metadata_only_not_emitted",
+        "fhir_clinical_reasoning_role": "PlanDefinition.action.priority",
+        "gdl2_role": "rule priority metadata",
+        "rule_type": "priority"
+      },
+      {
+        "cql_role": "Boolean safety expression",
+        "emission_status": "metadata_only_not_emitted",
+        "fhir_clinical_reasoning_role": "PlanDefinition action condition without order authority",
+        "gdl2_role": "when condition and advisory output",
+        "rule_type": "safety"
+      }
+    ],
+    "runtime_external_lookup": false,
+    "source_of_truth": {
+      "behavior": "Rule Graph",
+      "knowledge": "Knowledge Graph",
+      "runtime": "compiled Knowledge Package"
+    },
+    "status": "research_only",
+    "version": "0.1.0"
   },
   "coverage": {
     "data_absent_reason_simulations": 2,
@@ -24967,7 +25053,10 @@
       "mappings/fhir/r4/fact-element-mappings.json",
       "mappings/fhir/r4/resource-element-bindings.json",
       "policies/kr-core-v2-interoperability-overlay.json",
-      "mappings/fhir/kr-core-v2/profile-element-bindings.json"
+      "mappings/fhir/kr-core-v2/profile-element-bindings.json",
+      "mappings/interoperability/computable-knowledge-standards.json",
+      "policies/computable-knowledge-standards-overlay.json",
+      "sources/manifests/computable-knowledge-standards-research.json"
     ],
     "version": "0.1.0"
   },
@@ -34392,7 +34481,7 @@
       "rfe.joint_limb_complaint"
     ]
   },
-  "semantic_digest": "sha256:8548c4a768b830667e4595bd6c902ce9622bbe520cbc479117642ff56c5bbb31",
+  "semantic_digest": "sha256:ba4d2e42f5170db1d0dd9cd2835658263c31f7c4bc07a36a2d6c4ba52c8e3782",
   "simulations": [
     {
       "expected": {

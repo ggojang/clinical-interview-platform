@@ -563,6 +563,16 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
     kr_core_v2_coverage = sanitize(load_json(
         root / "coverage" / "kr-core-v2-interoperability-latest.json"
     ))
+    computable_knowledge_policy = sanitize(load_json(
+        root / "policies" / "computable-knowledge-standards-overlay.json"
+    ))
+    computable_knowledge_registry = sanitize(load_json(
+        root / "mappings" / "interoperability"
+        / "computable-knowledge-standards.json"
+    ))
+    computable_knowledge_coverage = sanitize(load_json(
+        root / "coverage" / "computable-knowledge-standards-latest.json"
+    ))
     for document, resource_type in (
         (uscdi_core, "UscdiCoreInteroperabilityOverlay"),
         (uscdi_plus, "UscdiPlusDomainOverlayCatalog"),
@@ -580,6 +590,15 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
         (kr_core_v2_policy, "KrCoreV2InteroperabilityPolicy"),
         (kr_core_v2_registry, "KrCoreV2ProfileElementBindingRegistry"),
         (kr_core_v2_coverage, "KrCoreV2InteroperabilityCoverageReport"),
+        (computable_knowledge_policy, "ComputableKnowledgeStandardsPolicy"),
+        (
+            computable_knowledge_registry,
+            "ComputableKnowledgeStandardsRegistry",
+        ),
+        (
+            computable_knowledge_coverage,
+            "ComputableKnowledgeStandardsCoverageReport",
+        ),
     ):
         document["resource_type"] = resource_type
         document["contains_patient_responses"] = False
@@ -732,6 +751,15 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
             kr_core_v2_registry
         ),
         "interoperability/kr-core-v2-coverage.json": kr_core_v2_coverage,
+        "interoperability/computable-knowledge-policy.json": (
+            computable_knowledge_policy
+        ),
+        "interoperability/computable-knowledge-registry.json": (
+            computable_knowledge_registry
+        ),
+        "interoperability/computable-knowledge-coverage.json": (
+            computable_knowledge_coverage
+        ),
         "hira-adequacy-assessments.json": hira_assessment_catalog,
     }
     resources.update(hira_programs)
@@ -1018,6 +1046,9 @@ def build(root: Path, output: Path) -> dict[str, Any]:
         "kr_core_v2_interoperability_policy": resources[
             "interoperability/kr-core-v2-policy.json"
         ],
+        "computable_knowledge_standards_policy": resources[
+            "interoperability/computable-knowledge-policy.json"
+        ],
         "preferred_loading": {
             "catalog_operation": "getReasonForEncounters",
             "common_operation": "getCommonInterviewFacts",
@@ -1048,6 +1079,11 @@ def build(root: Path, output: Path) -> dict[str, Any]:
                 "/gpt/interoperability/"
                 "kr-core-v2-profile-element-bindings.json"
             ),
+            "computable_knowledge_standards": [
+                "/gpt/interoperability/computable-knowledge-policy.json",
+                "/gpt/interoperability/computable-knowledge-registry.json",
+                "/gpt/interoperability/computable-knowledge-coverage.json"
+            ],
             "rfe_operations": [
                 "getReasonForEncounterRules",
                 "getReasonForEncounterQuestions",

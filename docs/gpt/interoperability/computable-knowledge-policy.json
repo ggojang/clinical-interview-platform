@@ -1,0 +1,112 @@
+{
+  "australian_content": {
+    "allowed": [
+      "FHIR R4 profiling patterns",
+      "AUCDI data-group and element comparison",
+      "Questionnaire and SDC workflow patterns",
+      "terminology and cardinality gap detection"
+    ],
+    "prohibited": [
+      "automatic activation of Australian clinical rules",
+      "automatic use of Australian jurisdictional identifiers, Medicare rules, PBS rules or AMT codes in Korean deployment",
+      "claiming AU Core conformance without profile validation",
+      "importing source-defined questionnaires as dynamic interview knowledge"
+    ]
+  },
+  "authority_boundary": {
+    "clinical_question_authority": false,
+    "clinical_safety_rule_authority": false,
+    "completion_rule_authority": false,
+    "diagnosis_authority": false,
+    "gap_detection_allowed": true,
+    "order_or_treatment_authority": false,
+    "question_priority_authority": false,
+    "runtime_execution_authority": false,
+    "semantic_crosswalk_allowed": true,
+    "simulation_cross_validation_allowed": true,
+    "structural_reference_allowed": true
+  },
+  "computable_rule_projection": {
+    "canonical_source": "Rule Graph",
+    "cds_hooks": "External workflow adapter only; never the internal rule language or Runtime decision source.",
+    "cql_elm": "Optional primary standards projection for expressions after review and engine conformance testing.",
+    "current_emission_state": "metadata_only_not_emitted",
+    "fhir_activity_definition": "Optional atomic activity definition; interview packages cannot generate clinical orders.",
+    "fhir_library": "Optional container for reviewed CQL/ELM and dependencies.",
+    "fhir_plan_definition": "Optional exchange and orchestration projection; it does not prove an action was ordered or performed.",
+    "gdl2": "Secondary research cross-validation projection only because the specification is trial-use and no repository engine conformance has been established."
+  },
+  "contains_patient_responses": false,
+  "deployment_jurisdiction": "KR",
+  "fixed_questionnaires": {
+    "automatic_import": false,
+    "automatic_mapping": false,
+    "rule": "Source-defined fixed questionnaires remain excluded unless explicitly requested and verified against an authoritative original."
+  },
+  "id": "policy.computable-knowledge-standards-overlay",
+  "openehr_content": {
+    "archetype_role": "Reusable clinical model and data-quality cross-check at Build Time.",
+    "artifact_license_required": true,
+    "local_codes": "openEHR at-codes and ac-codes are local model identifiers and must not be represented as LOINC or SNOMED CT mappings.",
+    "opt_role": "Flattened compiled-model pattern; not a Runtime dependency.",
+    "required_field_classification": [
+      "patient_askable",
+      "clinician_observed",
+      "derived",
+      "record_prepopulated"
+    ],
+    "template_role": "Use-case assembly and required-field classification reference at Build Time."
+  },
+  "precedence": [
+    "internal_fact_and_rule_identity",
+    "fhir_r4",
+    "kr_core_v2_selected_profile",
+    "international_standard_terminology",
+    "verified_foreign_reference_structure",
+    "local_fallback"
+  ],
+  "provenance": {
+    "created_at": "2026-07-25T00:00:00Z",
+    "created_by": {
+      "id": "codex-gpt5",
+      "type": "ai"
+    },
+    "review_status": "unreviewed",
+    "source_refs": [
+      "sources/manifests/computable-knowledge-standards-research.json"
+    ]
+  },
+  "purpose": "Use Australian FHIR, openEHR and HL7 clinical-reasoning artifacts as Build-Time structure, mapping and cross-validation references without transferring foreign jurisdiction or executable clinical authority into the Korean Clinical Interview Runtime.",
+  "refresh": {
+    "interval_days": 7,
+    "last_verified_at": "2026-07-25",
+    "next_verification_at": "2026-08-01",
+    "policy_id": "policy.knowledge-refresh",
+    "profile": "interoperability_standard"
+  },
+  "release_gates": {
+    "bidirectional_semantic_diff_required": true,
+    "clinical_review_required": true,
+    "expression_engine_conformance_required": true,
+    "positive_negative_ambiguous_simulation_required": true,
+    "runtime_external_dependency_forbidden": true,
+    "source_license_verified": true,
+    "source_version_pinned": true
+  },
+  "resource_type": "ComputableKnowledgeStandardsPolicy",
+  "review_status": "unreviewed",
+  "runtime": {
+    "executes_internal_compiled_rules_only": true,
+    "external_compilation": false,
+    "external_lookup": false,
+    "external_rule_interpretation": false,
+    "terminology_or_projection_failure_must_not_change_safety": true
+  },
+  "source_of_truth": {
+    "behavior": "Rule Graph",
+    "knowledge": "Knowledge Graph",
+    "runtime_artifact": "compiled Knowledge Package"
+  },
+  "status": "research_only",
+  "version": "0.1.0"
+}

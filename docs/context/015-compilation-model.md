@@ -90,6 +90,12 @@ The Compiler produces
 - simulation report
 - integrity digest
 
+Compilation may also produce reviewed standards projections such as CQL/ELM,
+FHIR Library, PlanDefinition or ActivityDefinition, and a secondary GDL2
+cross-validation artifact. Until an expression engine and semantic-diff suite
+are qualified, the package records projection readiness only and explicitly
+marks every projection as not emitted.
+
 No patient or session state exists in Compiler output.
 
 ---

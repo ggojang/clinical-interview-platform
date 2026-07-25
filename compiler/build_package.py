@@ -18,6 +18,10 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from interoperability.uscdi import build_package_interoperability_coverage
+from interoperability.computable_knowledge import (
+    build_package_computable_knowledge_coverage,
+    validate_package_computable_knowledge,
+)
 from interoperability.kr_core_v2 import (
     load_documents as load_kr_core_v2_documents,
 )
@@ -1114,6 +1118,9 @@ def compile_package(
         },
         "clinical_authority": False,
     }
+    computable_knowledge = build_package_computable_knowledge_coverage(
+        sorted_rules
+    )
 
     package: dict[str, Any] = {
         "package_id": config["package_id"],
@@ -1178,6 +1185,7 @@ def compile_package(
             "question_answer_coverage": clinician_question_answer_coverage,
         },
         "interoperability_coverage": interoperability_coverage,
+        "computable_knowledge": computable_knowledge,
         "question_answer_terminology": question_answer_terminology,
         "simulations": simulations,
         "coverage": package_coverage,
@@ -1186,6 +1194,7 @@ def compile_package(
             "runtime_max_tested": "0.1.0",
             "rule_language": "0.1.0",
             "clinical_memory_schema": "0.2.0",
+            "computable_knowledge_overlay": "0.1.0",
         },
         "provenance": {
             "created_by": {"type": "compiler", "id": "compiler.build_package"},
@@ -1204,6 +1213,9 @@ def compile_package(
                 "mappings/fhir/r4/resource-element-bindings.json",
                 "policies/kr-core-v2-interoperability-overlay.json",
                 "mappings/fhir/kr-core-v2/profile-element-bindings.json",
+                "mappings/interoperability/computable-knowledge-standards.json",
+                "policies/computable-knowledge-standards-overlay.json",
+                "sources/manifests/computable-knowledge-standards-research.json",
             ],
             "review_status": "unreviewed",
             "version": "0.1.0",
@@ -1255,6 +1267,10 @@ def validate_package(package: dict[str, Any]) -> None:
         raise CompilationError("KR Core V2 cannot control completion")
     if kr_core_v2.get("terminology_content_embedded") is not False:
         raise CompilationError("KR Core terminology content must remain external")
+    try:
+        validate_package_computable_knowledge(package)
+    except ValueError as exc:
+        raise CompilationError(str(exc)) from exc
     allowed_mapping_statuses = {
         "exact", "partial", "broader", "narrower", "contextual", "unmapped",
         "not_patient_collectable",

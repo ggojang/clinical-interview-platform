@@ -18,6 +18,12 @@ The Rule Graph is executable.
 
 The Runtime executes the Rule Graph.
 
+The Rule Graph is also the sole canonical behavior source for any future
+computable-knowledge projection. HL7 CQL/ELM, FHIR Library,
+PlanDefinition/ActivityDefinition and openEHR GDL2 may be generated only as
+reviewed Build-Time projections. They never become a second independent rule
+authoring source, and Runtime never compiles or downloads them.
+
 ---
 
 # Why Rule Graph Exists

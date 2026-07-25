@@ -780,6 +780,7 @@ A presentation may not exist for vaccination, health checks, medication review o
 - docs/context/031-knowledge-refresh-policy.md — source monitoring and knowledge re-review cadence
 - docs/context/032-clinician-submission-context.md — reusable clinician pre-visit minimum dataset and handoff
 - docs/context/033-uscdi-interoperability-overlay.md — USCDI v6 and USCDI+ as non-clinical interoperability Coverage overlays
+- docs/context/034-computable-knowledge-standards-overlay.md — AU Base, Sparked AUCDI/AU Core, openEHR CKM/GDL2 and HL7 CDS/CPG/CQL as non-authoritative Build-Time references
 
 ---
 
