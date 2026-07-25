@@ -113,10 +113,29 @@ def assess_question_atomicity(
         "and_conjunction": wording.count(" 및 ") + wording.count(" 그리고 "),
         "slash_list": wording.count("/"),
     }
-    if sum(separators.values()) >= 2:
-        signals.append("wording_contains_multiple_semantic_list_markers")
-    if len(fact.get("allowed_values", [])) > 12:
-        signals.append("large_multidimensional_answer_list")
+    list_marker_count = sum(separators.values())
+    is_single_dimension_choice = bool(fact.get("allowed_values")) or any(
+        marker in wording
+        for marker in (
+            "중 어디",
+            "중 어느",
+            "중 가장",
+            "어디에 가깝",
+            "어느 쪽",
+        )
+    )
+    requests_multiple_narrative_attributes = (
+        not is_single_dimension_choice
+        and list_marker_count >= 2
+        and (
+            separators["comma_list"] > 0
+            or separators["and_conjunction"] > 0
+            or "함께 알려" in wording
+            or "각각 알려" in wording
+        )
+    )
+    if requests_multiple_narrative_attributes:
+        signals.append("wording_requests_multiple_narrative_attributes")
     composite = bool(signals)
     return {
         "status": "composite_candidate" if composite else "atomic_candidate",

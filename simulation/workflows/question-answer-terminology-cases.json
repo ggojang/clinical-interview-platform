@@ -1,0 +1,82 @@
+{
+  "id": "simulation.question-answer-terminology-cases",
+  "version": "0.1.0",
+  "status": "synthetic",
+  "contains_real_patient_data": false,
+  "cases": [
+    {
+      "id": "MAPPING-ATOMIC-CODED-LOCATION-CHOICES",
+      "question": {
+        "wording": "통증이 가장 심한 곳은 윗배 중앙, 오른쪽 윗배, 왼쪽 윗배, 배꼽 주위, 오른쪽 아랫배, 왼쪽 아랫배, 아랫배 중앙·골반, 옆구리, 전반적·이동성 중 어디인가요?"
+      },
+      "fact": {
+        "id": "synthetic.abdominal_pain.location",
+        "value_type": "coded",
+        "allowed_values": [
+          "epigastric",
+          "right_upper",
+          "left_upper",
+          "periumbilical",
+          "right_lower",
+          "left_lower",
+          "suprapubic_or_pelvic",
+          "flank",
+          "generalized_or_migratory"
+        ]
+      },
+      "expected_atomicity": "atomic_candidate",
+      "rationale": "여러 보기는 한 개의 임상 의미인 통증 위치의 값 영역이며 별도 answer-bearing 의미가 아니다."
+    },
+    {
+      "id": "MAPPING-ATOMIC-FREE-TEXT-ANATOMICAL-SITE",
+      "question": {
+        "wording": "통증이 있는 머리·얼굴·목 위쪽의 정확한 부위를 알려주세요."
+      },
+      "fact": {
+        "id": "synthetic.headache.location",
+        "value_type": "string"
+      },
+      "expected_atomicity": "atomic_candidate",
+      "rationale": "해부학적 예시가 여럿이어도 응답은 하나의 위치 의미를 수집한다."
+    },
+    {
+      "id": "MAPPING-COMPOSITE-MEDICATION-ATTRIBUTES",
+      "question": {
+        "wording": "현재 사용하는 약을 제품명 또는 성분명, 용량, 투여 경로, 횟수, 복용 이유와 함께 알려주세요."
+      },
+      "fact": {
+        "id": "synthetic.medication.current",
+        "value_type": "string"
+      },
+      "expected_atomicity": "composite_candidate",
+      "expected_signal": "wording_requests_multiple_narrative_attributes",
+      "rationale": "약물 정체성, 용량, 경로, 빈도와 적응증은 각각 독립적으로 답변·수정·FHIR 투영되어야 한다."
+    },
+    {
+      "id": "MAPPING-COMPOSITE-LOCATION-AND-RADIATION",
+      "question": {
+        "wording": "불편한 곳과 퍼지는 곳을 알려주세요."
+      },
+      "fact": {
+        "id": "synthetic.location_and_radiation",
+        "value_type": "string"
+      },
+      "expected_atomicity": "composite_candidate",
+      "expected_signal": "fact_id_contains_and",
+      "rationale": "원발 위치와 방사 위치는 별도 임상 의미다."
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-25T00:21:03Z",
+    "source_refs": [
+      "policies/question-answer-terminology-binding.json",
+      "docs/context/021-simulation-model.md"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

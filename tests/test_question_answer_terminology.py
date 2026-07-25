@@ -232,6 +232,30 @@ class QuestionAnswerTerminologyTest(unittest.TestCase):
                         atomicity["status"], "atomic_verified"
                     )
 
+    def test_atomicity_distinguishes_choice_lists_from_multi_attribute_prompts(self):
+        _, registry = load_documents()
+        fixture = json.loads(
+            (
+                ROOT
+                / "simulation"
+                / "workflows"
+                / "question-answer-terminology-cases.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertFalse(fixture["contains_real_patient_data"])
+        for case in fixture["cases"]:
+            with self.subTest(case=case["id"]):
+                result = assess_question_atomicity(
+                    case["question"], case["fact"], registry
+                )
+                self.assertEqual(
+                    result["status"], case["expected_atomicity"]
+                )
+                if case.get("expected_signal"):
+                    self.assertIn(
+                        case["expected_signal"], result["signals"]
+                    )
+
     def test_repository_wide_audit_passes(self):
         report = run_audit()
         self.assertTrue(report["passed"])
