@@ -8,6 +8,7 @@ from pathlib import Path
 from compiler.build_package import PACKAGE_PROFILES, compile_package
 from interoperability.uscdi import (
     CORE_MAPPING,
+    DRAFT_WATCH_MAPPING,
     PLUS_MAPPING,
     POLICY,
     SOURCE_MANIFEST,
@@ -25,7 +26,8 @@ class UscdiInteroperabilityTest(unittest.TestCase):
         result = validate_overlay_documents()
         self.assertEqual(result["core_element_count"], 21)
         self.assertEqual(result["domain_count"], 4)
-        self.assertEqual(result["source_artifact_count"], 5)
+        self.assertEqual(result["draft_watch_element_count"], 11)
+        self.assertEqual(result["source_artifact_count"], 6)
         policy = json.loads(POLICY.read_text(encoding="utf-8"))
         self.assertFalse(policy["authority_boundary"]["clinical_question_authority"])
         self.assertFalse(policy["authority_boundary"]["clinical_safety_rule_authority"])
@@ -52,6 +54,36 @@ class UscdiInteroperabilityTest(unittest.TestCase):
                     package["coverage"]["interoperability"]["coverage_percent"],
                     overlay["core"]["coverage_percent"],
                 )
+                draft = overlay["draft_watch"]
+                self.assertEqual(
+                    draft["binding_status"],
+                    "nonbinding_draft_watch",
+                )
+                self.assertFalse(draft["baseline_replacement_authority"])
+                self.assertFalse(draft["clinical_authority"])
+                self.assertFalse(draft["completion_authority"])
+
+    def test_draft_v7_tobacco_watch_does_not_overstate_smoking_status(self):
+        package = compile_package(profile="cough")
+        draft = package["interoperability_coverage"]["draft_watch"]
+        tobacco = next(
+            item
+            for item in draft["elements"]
+            if item["element_id"] == "uscdi-draft-v7.tobacco-use"
+        )
+        self.assertIn("patient.smoking.status", tobacco["matched_fact_ids"])
+        self.assertIn(tobacco["mapping_status"], {"narrower", "partial"})
+        self.assertNotEqual(tobacco["mapping_status"], "exact")
+        self.assertIn(
+            "electronic-cigarette",
+            tobacco["limitation"],
+        )
+        draft_document = json.loads(
+            DRAFT_WATCH_MAPPING.read_text(encoding="utf-8")
+        )
+        self.assertFalse(
+            draft_document["authority_boundary"]["clinical_question_authority"]
+        )
 
     def test_record_only_uscdi_gaps_do_not_become_required_questions(self):
         package = compile_package(profile="cough")
@@ -117,7 +149,20 @@ class UscdiInteroperabilityTest(unittest.TestCase):
         manifest = json.loads(SOURCE_MANIFEST.read_text(encoding="utf-8"))
         self.assertTrue(all(item["monitor_profile"] == "interoperability_standard" for item in manifest["artifacts"]))
         self.assertTrue(all(item["monitor_interval_days"] == 7 for item in manifest["artifacts"]))
-        self.assertTrue(all(item["next_monitor_at"] == "2026-07-23" for item in manifest["artifacts"]))
+        self.assertTrue(
+            all(
+                item["last_monitored_at"] == "2026-07-24"
+                and item["next_monitor_at"] == "2026-07-31"
+                for item in manifest["artifacts"]
+            )
+        )
+        draft = next(
+            item
+            for item in manifest["artifacts"]
+            if item["id"] == "source.uscdi.draft-v7.standards-bulletin.2026-1"
+        )
+        self.assertEqual(draft["last_monitored_at"], "2026-07-24")
+        self.assertEqual(draft["next_monitor_at"], "2026-07-31")
 
     def test_repository_wide_uscdi_audit_passes(self):
         report = run_audit()
@@ -131,12 +176,14 @@ class UscdiInteroperabilityTest(unittest.TestCase):
             paths = {item["path"] for item in manifest["resources"]}
             self.assertTrue({
                 "/gpt/interoperability/uscdi-v6-core.json",
+                "/gpt/interoperability/uscdi-v7-draft-watch.json",
                 "/gpt/interoperability/uscdi-plus-domain-overlays.json",
                 "/gpt/interoperability/uscdi-policy.json",
                 "/gpt/interoperability/uscdi-coverage.json",
             } <= paths)
             for name in (
-                "uscdi-v6-core.json", "uscdi-plus-domain-overlays.json",
+                "uscdi-v6-core.json", "uscdi-v7-draft-watch.json",
+                "uscdi-plus-domain-overlays.json",
                 "uscdi-policy.json", "uscdi-coverage.json",
             ):
                 resource = json.loads(
@@ -145,6 +192,7 @@ class UscdiInteroperabilityTest(unittest.TestCase):
                 self.assertFalse(resource["contains_patient_responses"])
         schema = (ROOT / "docs/gpt/openapi.yaml").read_text(encoding="utf-8")
         self.assertIn("operationId: getUscdiV6CoreOverlay", schema)
+        self.assertIn("operationId: getUscdiV7DraftWatch", schema)
         self.assertIn("operationId: getUscdiPlusDomainOverlays", schema)
         self.assertIn("operationId: getUscdiInteroperabilityPolicy", schema)
         self.assertIn("operationId: getUscdiInteroperabilityCoverage", schema)
@@ -162,6 +210,9 @@ class UscdiInteroperabilityTest(unittest.TestCase):
             "dataAbsentReason_preserved",
             "multiple_overlays_preserved",
             "deployment_jurisdiction_KR",
+            "smoking_status_mapping_narrower",
+            "acute_reaction_severity_not_equivalent_to_criticality",
+            "medication_statement_not_proof_of_administration",
         } <= expected)
 
 

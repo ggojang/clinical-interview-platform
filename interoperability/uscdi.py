@@ -14,6 +14,9 @@ from typing import Any, Iterable
 ROOT = Path(__file__).resolve().parents[1]
 CORE_MAPPING = ROOT / "mappings/interoperability/uscdi-v6-core.json"
 PLUS_MAPPING = ROOT / "mappings/interoperability/uscdi-plus-domain-overlays.json"
+DRAFT_WATCH_MAPPING = (
+    ROOT / "mappings/interoperability/uscdi-v7-draft-watch.json"
+)
 POLICY = ROOT / "policies/uscdi-interoperability-overlay.json"
 SOURCE_MANIFEST = ROOT / "sources/manifests/uscdi-interoperability-research.json"
 
@@ -60,14 +63,33 @@ def _matched_selectors(
 
 
 def validate_overlay_documents() -> dict[str, Any]:
-    core, plus, policy, source = (
-        load(CORE_MAPPING), load(PLUS_MAPPING), load(POLICY), load(SOURCE_MANIFEST)
+    core, plus, draft, policy, source = (
+        load(CORE_MAPPING),
+        load(PLUS_MAPPING),
+        load(DRAFT_WATCH_MAPPING),
+        load(POLICY),
+        load(SOURCE_MANIFEST),
     )
     errors: list[str] = []
     if core.get("status") != "research_only" or core.get("review_status") != "unreviewed":
         errors.append("USCDI core mapping must remain research_only/unreviewed")
     if plus.get("status") != "research_only" or plus.get("review_status") != "unreviewed":
         errors.append("USCDI+ mapping must remain research_only/unreviewed")
+    if draft.get("status") != "research_only" or draft.get("review_status") != "unreviewed":
+        errors.append("USCDI draft watch must remain research_only/unreviewed")
+    if draft.get("binding_status") != "nonbinding_draft_watch":
+        errors.append("USCDI draft watch must remain explicitly nonbinding")
+    if draft.get("selected_element_count") != len(draft.get("selected_elements", [])):
+        errors.append("USCDI draft watch selected element count mismatch")
+    draft_authority = draft.get("authority_boundary", {})
+    for key in (
+        "clinical_question_authority",
+        "clinical_safety_rule_authority",
+        "completion_rule_authority",
+        "baseline_replacement_authority",
+    ):
+        if draft_authority.get(key) is not False:
+            errors.append(f"USCDI draft watch must not gain {key}")
     if policy.get("authority_boundary", {}).get("clinical_question_authority") is not False:
         errors.append("USCDI overlay must not control clinical questions")
     if policy.get("authority_boundary", {}).get("clinical_safety_rule_authority") is not False:
@@ -92,6 +114,24 @@ def validate_overlay_documents() -> dict[str, Any]:
                     re.compile(selector.get("value", ""))
                 except re.error as exc:
                     errors.append(f"{element_id}: invalid regex: {exc}")
+    draft_ids: set[str] = set()
+    for element in draft.get("selected_elements", []):
+        element_id = element.get("id")
+        if not element_id or element_id in draft_ids:
+            errors.append(f"duplicate or missing USCDI draft element id: {element_id!r}")
+        draft_ids.add(element_id)
+        if element.get("collection_role") not in ALLOWED_COLLECTION_ROLES:
+            errors.append(f"{element_id}: unsupported draft collection role")
+        for selector in element.get("selectors", []):
+            if selector.get("kind") not in {"exact", "prefix", "regex"}:
+                errors.append(f"{element_id}: unsupported draft selector kind")
+            if selector.get("mapping_status") not in ALLOWED_MAPPING_STATUSES:
+                errors.append(f"{element_id}: unsupported draft mapping status")
+            if selector.get("kind") == "regex":
+                try:
+                    re.compile(selector.get("value", ""))
+                except re.error as exc:
+                    errors.append(f"{element_id}: invalid draft regex: {exc}")
     domain_ids = [item.get("id") for item in plus.get("domains", [])]
     if len(domain_ids) != len(set(domain_ids)):
         errors.append("duplicate USCDI+ domain id")
@@ -102,6 +142,7 @@ def validate_overlay_documents() -> dict[str, Any]:
     return {
         "core_element_count": len(core["core_elements"]),
         "domain_count": len(plus["domains"]),
+        "draft_watch_element_count": len(draft["selected_elements"]),
         "source_artifact_count": len(source["artifacts"]),
     }
 
@@ -115,7 +156,12 @@ def build_package_interoperability_coverage(
     runtime_capabilities: Iterable[str] = ("dataAbsentReason",),
 ) -> dict[str, Any]:
     validate_overlay_documents()
-    core, plus, policy = load(CORE_MAPPING), load(PLUS_MAPPING), load(POLICY)
+    core, plus, draft, policy = (
+        load(CORE_MAPPING),
+        load(PLUS_MAPPING),
+        load(DRAFT_WATCH_MAPPING),
+        load(POLICY),
+    )
     package_facts = set(package_fact_ids)
     context_facts = set(clinician_context_fact_ids)
     available = package_facts | context_facts
@@ -176,6 +222,37 @@ def build_package_interoperability_coverage(
             "elements": element_results,
         })
 
+    draft_results = []
+    for element in draft["selected_elements"]:
+        matched, statuses = _matched_selectors(
+            element.get("selectors", []),
+            available,
+        )
+        role = element["collection_role"]
+        if role not in eligible_roles:
+            mapping_status = "not_patient_collectable"
+        elif statuses:
+            mapping_status = max(
+                statuses,
+                key=lambda item: STATUS_PRIORITY.get(item, 0),
+            )
+        else:
+            mapping_status = "unmapped"
+        draft_results.append({
+            "element_id": element["id"],
+            "data_class": element["data_class"],
+            "data_element": element["data_element"],
+            "change_type": element["change_type"],
+            "collection_role": role,
+            "mapping_status": mapping_status,
+            "matched_fact_ids": matched,
+            **(
+                {"limitation": element["limitation"]}
+                if element.get("limitation")
+                else {}
+            ),
+        })
+
     return {
         "id": f"coverage.interoperability.{profile}",
         "version": "0.1.0",
@@ -201,8 +278,37 @@ def build_package_interoperability_coverage(
             "elements": core_results,
         },
         "uscdi_plus_domains": domain_results,
+        "draft_watch": {
+            "framework": "USCDI",
+            "framework_version": draft["framework"]["version"],
+            "binding_status": draft["binding_status"],
+            "baseline_replacement_authority": False,
+            "clinical_authority": False,
+            "completion_authority": False,
+            "selected_element_count": len(draft_results),
+            "mapped_candidate_count": sum(
+                item["mapping_status"]
+                not in {"unmapped", "not_patient_collectable"}
+                for item in draft_results
+            ),
+            "unmapped_element_ids": [
+                item["element_id"]
+                for item in draft_results
+                if item["mapping_status"] == "unmapped"
+            ],
+            "elements": draft_results,
+            "limitations": [
+                "Draft mappings are change surveillance only and do not replace the USCDI v6 baseline.",
+                "Draft gaps do not create or require patient questions.",
+                "Smoking Status is narrower than proposed Tobacco Use and cannot establish complete product coverage.",
+            ],
+        },
         "policy_ref": str(POLICY.relative_to(ROOT)),
-        "mapping_refs": [str(CORE_MAPPING.relative_to(ROOT)), str(PLUS_MAPPING.relative_to(ROOT))],
+        "mapping_refs": [
+            str(CORE_MAPPING.relative_to(ROOT)),
+            str(PLUS_MAPPING.relative_to(ROOT)),
+            str(DRAFT_WATCH_MAPPING.relative_to(ROOT)),
+        ],
         "source_manifest_ref": str(SOURCE_MANIFEST.relative_to(ROOT)),
         "limitations": [
             "Coverage indicates candidate data-population capability, not US certification or conformance.",
@@ -212,7 +318,11 @@ def build_package_interoperability_coverage(
         "provenance": {
             "created_by": {"type": "compiler", "id": "interoperability.uscdi"},
             "created_at": "2026-07-16T00:00:00Z",
-            "source_refs": ["source.uscdi.v6.2025", "source.uscdi-plus.overview.2026"],
+            "source_refs": [
+                "source.uscdi.v6.2025",
+                "source.uscdi-plus.overview.2026",
+                "source.uscdi.draft-v7.standards-bulletin.2026-1",
+            ],
             "review_status": "unreviewed",
             "version": "0.1.0",
         },

@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Clinical Interview Research Knowledge
-  version: 1.48.0
+  version: 1.49.0
   description: Read-only, research-only Knowledge and Fact resources. No patient data is accepted.
 servers:
   - url: https://ggojang.github.io/clinical-interview-platform
@@ -168,6 +168,16 @@ paths:
       responses:
         '200':
           description: Versioned USCDI v6 interoperability overlay without patient responses
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/JsonDocument'}
+  /gpt/interoperability/uscdi-v7-draft-watch.json:
+    get:
+      operationId: getUscdiV7DraftWatch
+      summary: Get the nonbinding Draft USCDI v7 change-watch mapping; it cannot create questions or replace the v6 baseline
+      responses:
+        '200':
+          description: Selected interview-relevant Draft USCDI v7 mapping gaps without patient responses
           content:
             application/json:
               schema: {$ref: '#/components/schemas/JsonDocument'}

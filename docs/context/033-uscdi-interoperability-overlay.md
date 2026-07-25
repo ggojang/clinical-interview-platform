@@ -62,6 +62,13 @@ The baseline is versioned and jurisdiction-limited to the United States.
 
 Draft USCDI versions may be monitored as candidates but are not binding mappings.
 
+Draft USCDI Version 7 is monitored in a separate change-watch overlay. It does
+not replace the Version 6 baseline. Its proposed `Tobacco Use` element is
+broader than cigarette Smoking Status, so a cigarette-only Fact must never be
+reported as complete coverage of electronic cigarettes, vaping, heated
+tobacco, smokeless tobacco or other products. Draft mappings identify gaps only;
+they do not add questions or make existing questions mandatory.
+
 USCDI+ domain maturity is preserved explicitly.
 
 Examples include

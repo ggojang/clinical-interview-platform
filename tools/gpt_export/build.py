@@ -16,7 +16,7 @@ sys.path.insert(0, str(ROOT))
 from interoperability.question_answer import enrich_clinician_context
 
 
-VERSION = "1.48.0"
+VERSION = "1.49.0"
 GENERATED_AT = "2026-07-24T00:00:00Z"
 PRIVATE_KEYS = {
     "raw_text", "raw_input", "patient_response", "patient_responses",
@@ -520,6 +520,11 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
     uscdi_core = sanitize(load_json(
         root / "mappings" / "interoperability" / "uscdi-v6-core.json"
     ))
+    uscdi_draft_watch = sanitize(load_json(
+        root / "mappings" / "interoperability" / "uscdi-v7-draft-watch.json"
+    ))
+    uscdi_draft_watch["resource_type"] = "UscdiDraftChangeWatch"
+    uscdi_draft_watch["contains_patient_responses"] = False
     uscdi_plus = sanitize(load_json(
         root / "mappings" / "interoperability" / "uscdi-plus-domain-overlays.json"
     ))
@@ -706,6 +711,7 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
         "terminology-source.json": terminology_source,
         "clinician-submission-context.json": clinician_context,
         "interoperability/uscdi-v6-core.json": uscdi_core,
+        "interoperability/uscdi-v7-draft-watch.json": uscdi_draft_watch,
         "interoperability/uscdi-plus-domain-overlays.json": uscdi_plus,
         "interoperability/uscdi-policy.json": uscdi_policy,
         "interoperability/uscdi-coverage.json": uscdi_coverage,
@@ -1018,6 +1024,7 @@ def build(root: Path, output: Path) -> dict[str, Any]:
             "clinician_submission_context": "/gpt/clinician-submission-context.json",
             "uscdi_interoperability": [
                 "/gpt/interoperability/uscdi-v6-core.json",
+                "/gpt/interoperability/uscdi-v7-draft-watch.json",
                 "/gpt/interoperability/uscdi-plus-domain-overlays.json",
                 "/gpt/interoperability/uscdi-policy.json",
                 "/gpt/interoperability/uscdi-coverage.json"

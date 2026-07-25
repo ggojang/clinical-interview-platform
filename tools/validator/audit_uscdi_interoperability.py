@@ -32,6 +32,25 @@ def run() -> dict:
         core = overlay["core"]
         if core["mapped_element_count"] > core["eligible_element_count"]:
             failures.append("mapped count exceeds eligible count")
+        draft = overlay["draft_watch"]
+        if draft["binding_status"] != "nonbinding_draft_watch":
+            failures.append("draft watch is not explicitly nonbinding")
+        if draft["baseline_replacement_authority"] is not False:
+            failures.append("draft watch replaced the v6 baseline")
+        if draft["clinical_authority"] is not False:
+            failures.append("draft watch controls clinical behavior")
+        if draft["completion_authority"] is not False:
+            failures.append("draft watch controls completion")
+        tobacco = next(
+            item
+            for item in draft["elements"]
+            if item["element_id"] == "uscdi-draft-v7.tobacco-use"
+        )
+        if (
+            tobacco["mapping_status"] == "exact"
+            or "patient.smoking.status" not in tobacco["matched_fact_ids"]
+        ):
+            failures.append("Smoking Status overstated as complete Tobacco Use")
         results.append({
             "profile": profile,
             "package_id": package["package_id"],
@@ -40,6 +59,12 @@ def run() -> dict:
             "coverage_percent": core["coverage_percent"],
             "uscdi_plus_domains": [
                 item["domain_id"] for item in overlay["uscdi_plus_domains"]
+            ],
+            "draft_watch_mapped_candidate_count": draft[
+                "mapped_candidate_count"
+            ],
+            "draft_watch_unmapped_element_ids": draft[
+                "unmapped_element_ids"
             ],
             "passed": not failures,
             "failures": failures,
