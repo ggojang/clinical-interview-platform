@@ -1,0 +1,116 @@
+{
+  "id": "policy.primary-care-test-result-follow-up-completion",
+  "version": "0.1.0",
+  "status": "research_only",
+  "addressed_fact_states": [
+    "known",
+    "unknown",
+    "not_applicable"
+  ],
+  "required_facts": {
+    "always": [
+      "encounter.result_follow_up.goal",
+      "result.explicit_emergency_instruction",
+      "result.urgent_follow_up_instruction",
+      "result.current_severe_symptom",
+      "result.rapidly_worsening_symptom",
+      "result.abnormal_notice",
+      "result.new_concern",
+      "result.patient_question",
+      "result.expected_outcome"
+    ],
+    "routine": []
+  },
+  "conditional_required_facts": [
+    {
+      "selector_fact": "encounter.result_follow_up.goal",
+      "cases": {
+        "institution_result_check": [
+          "result.additional_comment"
+        ],
+        "interpretation_request": [
+          "result.content.available",
+          "result.test.category",
+          "result.test.name",
+          "result.test.performed_at",
+          "result.report.issued_at",
+          "result.report.status",
+          "result.report.version_or_amendment",
+          "result.performing_organization",
+          "result.report.source",
+          "result.report.readability",
+          "result.value.summary",
+          "result.value.units",
+          "result.reference_range",
+          "result.reported_interpretation",
+          "result.prior_explanation",
+          "result.follow_up_plan",
+          "result.conflict",
+          "result.additional_comment"
+        ],
+        "both": [
+          "result.content.available",
+          "result.test.category",
+          "result.test.name",
+          "result.test.performed_at",
+          "result.report.issued_at",
+          "result.report.status",
+          "result.report.version_or_amendment",
+          "result.performing_organization",
+          "result.report.source",
+          "result.report.readability",
+          "result.value.summary",
+          "result.value.units",
+          "result.reference_range",
+          "result.reported_interpretation",
+          "result.prior_explanation",
+          "result.follow_up_plan",
+          "result.conflict",
+          "result.additional_comment"
+        ],
+        "unknown": [
+          "result.content.available",
+          "result.additional_comment"
+        ]
+      }
+    },
+    {
+      "when": {
+        "fact": "result.new_concern",
+        "equals": true
+      },
+      "required_facts": [
+        "result.related_symptoms",
+        "result.related_symptom_onset",
+        "result.related_symptom_severity"
+      ],
+      "reason": "new_result_related_concern"
+    }
+  ],
+  "clarification_facts_by_rule": {},
+  "question_budget": {
+    "routine": 30,
+    "clarify": 8
+  },
+  "upload_policy": {
+    "institution_result_check": "never_request",
+    "interpretation_request": "request_once_only_if_not_already_available",
+    "both": "request_once_only_if_not_already_available",
+    "unavailable_or_declined": "preserve_dataAbsentReason_and_do_not_repeat"
+  },
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.hl7.fhir-r4.diagnosticreport",
+      "source.hl7.fhir-r4.observation",
+      "source.uscdi.v6.2025",
+      "policy.encounter-context-review"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

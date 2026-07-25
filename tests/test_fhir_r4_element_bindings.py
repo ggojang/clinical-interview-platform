@@ -166,24 +166,41 @@ class FhirR4ElementBindingsTest(unittest.TestCase):
                 },
             )
 
-    def test_incompatible_multi_resource_bindings_require_split(self):
+    def test_report_status_uses_diagnostic_report_and_keeps_observation_as_annotation(self):
         fact = {
             "id": "result.report.status",
             "type": "Fact",
             "value_type": "coded",
+            "allowed_values": [
+                "registered",
+                "partial",
+                "preliminary",
+                "final",
+                "amended",
+                "corrected",
+                "appended",
+                "cancelled",
+                "entered-in-error",
+                "unknown",
+            ],
         }
         effective, targets = apply_element_bindings(fact, {
             "answer_value_set": "https://example.org/ValueSet/generic"
         })
         self.assertEqual(len(targets), 2)
-        conflict = effective["fhir_element_binding_conflict"]
-        self.assertEqual(conflict["status"], "projection_split_required")
         self.assertEqual(
-            {row["value_set"] for row in conflict["targets"]},
-            {
-                "http://hl7.org/fhir/ValueSet/diagnostic-report-status|4.0.1",
-                "http://hl7.org/fhir/ValueSet/observation-status|4.0.1",
-            },
+            effective["answer_value_set"],
+            "http://hl7.org/fhir/ValueSet/diagnostic-report-status|4.0.1",
+        )
+        self.assertNotIn("fhir_element_binding_conflict", effective)
+        by_path = {row["element_path"]: row for row in targets}
+        self.assertEqual(
+            by_path["DiagnosticReport.status"]["binding_status"],
+            "effective_candidate",
+        )
+        self.assertEqual(
+            by_path["Observation.status"]["binding_status"],
+            "annotation_only",
         )
 
     def test_terminology_audit_reports_fhir_element_binding_quality(self):

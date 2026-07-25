@@ -1,0 +1,1239 @@
+{
+  "id": "knowledge.generated.test-result-follow-up",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-test-result-follow-up-research",
+  "default_refresh": {
+    "class": "stable_semantic",
+    "last_assessed_at": "2026-07-25",
+    "monitor_interval_days": 180,
+    "full_review_interval_days": 365,
+    "next_monitor_at": "2027-01-21",
+    "next_full_review_at": "2027-07-25",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.result.goal",
+      "type": "ClinicalGroup",
+      "display": "goal"
+    },
+    {
+      "id": "group.result.safety",
+      "type": "ClinicalGroup",
+      "display": "safety"
+    },
+    {
+      "id": "group.result.identity",
+      "type": "ClinicalGroup",
+      "display": "identity"
+    },
+    {
+      "id": "group.result.content",
+      "type": "ClinicalGroup",
+      "display": "content"
+    },
+    {
+      "id": "group.result.context",
+      "type": "ClinicalGroup",
+      "display": "context"
+    },
+    {
+      "id": "group.result.handoff",
+      "type": "ClinicalGroup",
+      "display": "handoff"
+    }
+  ],
+  "group_hypothesis_edges": [],
+  "safety_rules": [
+    {
+      "id": "rule.test-result-follow-up.safety.explicit-emergency-instruction",
+      "priority": 1000,
+      "when": {
+        "fact": "result.explicit_emergency_instruction",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.test-result-follow-up.safety.explicit-urgent-instruction",
+      "priority": 995,
+      "when": {
+        "fact": "result.urgent_follow_up_instruction",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.test-result-follow-up.safety.severe-current-symptom",
+      "priority": 990,
+      "when": {
+        "fact": "result.current_severe_symptom",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.test-result-follow-up.safety.rapidly-worsening-symptom",
+      "priority": 985,
+      "when": {
+        "fact": "result.rapidly_worsening_symptom",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "encounter.result_follow_up.goal",
+        "display": "Result Follow-up Goal",
+        "value_type": "coded",
+        "allowed_values": [
+          "institution_result_check",
+          "interpretation_request",
+          "both",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.test-result-follow-up.goal",
+        "display": "Result Follow-up Goal",
+        "intents": [
+          "intent.characterize_result_follow_up"
+        ]
+      },
+      "question": {
+        "id": "question.test-result-follow-up.goal",
+        "wording": "오늘은 의료기관에서 검사결과를 확인하려는 것인가요, 검사결과의 판독·설명을 원하는 것인가요, 아니면 둘 다인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 240,
+          "reason": "goal"
+        }
+      ],
+      "supports": [
+        "group.result.goal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "result.explicit_emergency_instruction",
+        "display": "Explicit Emergency Instruction",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.test-result-follow-up.emergency-instruction",
+        "display": "Explicit Emergency Instruction",
+        "intents": [
+          "intent.screen_result_follow_up_safety"
+        ]
+      },
+      "question": {
+        "id": "question.test-result-follow-up.emergency-instruction",
+        "wording": "의료기관에서 이 결과 때문에 지금 즉시 응급실로 가거나 119를 이용하라고 명확히 안내했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 239,
+          "reason": "emergency-instruction"
+        }
+      ],
+      "supports": [
+        "group.result.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "result.urgent_follow_up_instruction",
+        "display": "Explicit Urgent Follow-up Instruction",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.test-result-follow-up.urgent-instruction",
+        "display": "Explicit Urgent Follow-up Instruction",
+        "intents": [
+          "intent.screen_result_follow_up_safety"
+        ]
+      },
+      "question": {
+        "id": "question.test-result-follow-up.urgent-instruction",
+        "wording": "의료기관에서 이 결과를 오늘 또는 매우 빠른 시일 안에 반드시 확인하라고 안내했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 238,
+          "reason": "urgent-instruction"
+        }
+      ],
+      "supports": [
+        "group.result.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "result.current_severe_symptom",
+        "display": "Current Severe Symptom",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.test-result-follow-up.severe-current-symptom",
+        "display": "Current Severe Symptom",
+        "intents": [
+          "intent.screen_result_follow_up_safety"
+        ]
+      },
+      "question": {
+        "id": "question.test-result-follow-up.severe-current-symptom",
+        "wording": "검사 이후 새로 생긴 심한 증상이 현재 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 237,
+          "reason": "severe-current-symptom"
+        }
+      ],
+      "supports": [
+        "group.result.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "result.rapidly_worsening_symptom",
+        "display": "Rapidly Worsening Symptom",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.test-result-follow-up.rapidly-worsening-symptom",
+        "display": "Rapidly Worsening Symptom",
+        "intents": [
+          "intent.screen_result_follow_up_safety"
+        ]
+      },
+      "question": {
+        "id": "question.test-result-follow-up.rapidly-worsening-symptom",
+        "wording": "검사 이후 증상이 빠르게 악화하고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 236,
+          "reason": "rapidly-worsening-symptom"
+        }
+      ],
+      "supports": [
+        "group.result.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "result.abnormal_notice",
+        "display": "Abnormal Result Notice",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.test-result-follow-up.abnormal-notice",
+        "display": "Abnormal Result Notice",
+        "intents": [
+          "intent.prepare_result_clinician_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.test-result-follow-up.abnormal-notice",
+        "wording": "의료기관에서 결과가 비정상 또는 이상 소견이라고 통보했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 230,
+          "reason": "abnormal-notice"
+        }
+      ],
+      "supports": [
+        "group.result.safety",
+        "group.result.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "result.new_concern",
+        "display": "New Concern Related to Result",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.test-result-follow-up.new-concern",
+        "display": "New Concern Related to Result",
+        "intents": [
+          "intent.prepare_result_clinician_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.test-result-follow-up.new-concern",
+        "wording": "검사결과와 관련해 새 증상이나 새로 걱정되는 변화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 229,
+          "reason": "new-concern"
+        }
+      ],
+      "supports": [
+        "group.result.safety",
+        "group.result.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "result.related_symptoms",
+        "display": "Current Symptoms Related to Result",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.test-result-follow-up.related-symptoms",
+        "display": "Current Symptoms Related to Result",
+        "intents": [
+          "intent.prepare_result_clinician_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.test-result-follow-up.related-symptoms",
+        "wording": "새 증상이나 변화가 있다면 무엇인지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 228,
+          "reason": "related-symptoms"
+        }
+      ],
+      "supports": [
+        "group.result.safety",
+        "group.result.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "result.related_symptom_onset",
+        "display": "Related Symptom Onset",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.test-result-follow-up.related-symptom-onset",
+        "display": "Related Symptom Onset",
+        "intents": [
+          "intent.prepare_result_clinician_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.test-result-follow-up.related-symptom-onset",
+        "wording": "그 증상이나 변화는 언제 시작되었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 227,
+          "reason": "related-symptom-onset"
+        }
+      ],
+      "supports": [
+        "group.result.safety",
+        "group.result.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "result.related_symptom_severity",
+        "display": "Related Symptom Severity",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.test-result-follow-up.related-symptom-severity",
+        "display": "Related Symptom Severity",
+        "intents": [
+          "intent.prepare_result_clinician_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.test-result-follow-up.related-symptom-severity",
+        "wording": "그 증상이나 변화의 현재 심한 정도를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 226,
+          "reason": "related-symptom-severity"
+        }
+      ],
+      "supports": [
+        "group.result.safety",
+        "group.result.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "result.patient_question",
+        "display": "Patient Question",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.test-result-follow-up.patient-question",
+        "display": "Patient Question",
+        "intents": [
+          "intent.prepare_result_clinician_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.test-result-follow-up.patient-question",
+        "wording": "이번 결과 확인에서 의료진에게 가장 확인하고 싶은 점은 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 220,
+          "reason": "patient-question"
+        }
+      ],
+      "supports": [
+        "group.result.goal",
+        "group.result.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "result.expected_outcome",
+        "display": "Expected Outcome",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.test-result-follow-up.expected-outcome",
+        "display": "Expected Outcome",
+        "intents": [
+          "intent.prepare_result_clinician_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.test-result-follow-up.expected-outcome",
+        "wording": "이번 결과 확인을 통해 원하는 도움은 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 219,
+          "reason": "expected-outcome"
+        }
+      ],
+      "supports": [
+        "group.result.goal",
+        "group.result.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "result.content.available",
+        "display": "Result Content Availability",
+        "value_type": "coded",
+        "allowed_values": [
+          "provided_in_conversation",
+          "available_at_institution",
+          "not_available",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.test-result-follow-up.content-available",
+        "display": "Result Content Availability",
+        "intents": [
+          "intent.characterize_result_follow_up"
+        ]
+      },
+      "question": {
+        "id": "question.test-result-follow-up.content-available",
+        "wording": "실제 결과 내용은 현재 대화에 제공되어 있나요, 의료기관에만 있나요, 또는 현재 확인할 수 없나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 210,
+          "reason": "content-available"
+        }
+      ],
+      "supports": [
+        "group.result.content"
+      ]
+    },
+    {
+      "fact": {
+        "id": "result.test.category",
+        "display": "Test Category",
+        "value_type": "coded",
+        "allowed_values": [
+          "laboratory",
+          "diagnostic_imaging",
+          "pathology",
+          "procedure_or_function_test",
+          "other",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.test-result-follow-up.test-category",
+        "display": "Test Category",
+        "intents": [
+          "intent.prepare_result_clinician_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.test-result-follow-up.test-category",
+        "wording": "확인하려는 것은 혈액·소변 등 검사, 영상검사, 병리검사, 시술·기능검사, 그 밖의 검사 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 209,
+          "reason": "test-category"
+        }
+      ],
+      "supports": [
+        "group.result.identity"
+      ]
+    },
+    {
+      "fact": {
+        "id": "result.test.name",
+        "display": "Test or Report Name",
+        "value_type": "coded_or_string"
+      },
+      "target": {
+        "id": "target.test-result-follow-up.test-name",
+        "display": "Test or Report Name",
+        "intents": [
+          "intent.prepare_result_clinician_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.test-result-follow-up.test-name",
+        "wording": "검사명 또는 보고서명을 원문에 적힌 그대로 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 208,
+          "reason": "test-name"
+        }
+      ],
+      "supports": [
+        "group.result.identity"
+      ]
+    },
+    {
+      "fact": {
+        "id": "result.test.performed_at",
+        "display": "Clinically Relevant Test Time",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.test-result-follow-up.performed-at",
+        "display": "Clinically Relevant Test Time",
+        "intents": [
+          "intent.prepare_result_clinician_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.test-result-follow-up.performed-at",
+        "wording": "검사를 시행한 날짜를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 207,
+          "reason": "performed-at"
+        }
+      ],
+      "supports": [
+        "group.result.identity"
+      ]
+    },
+    {
+      "fact": {
+        "id": "result.report.issued_at",
+        "display": "Report Issued Time",
+        "value_type": "datetime"
+      },
+      "target": {
+        "id": "target.test-result-follow-up.issued-at",
+        "display": "Report Issued Time",
+        "intents": [
+          "intent.prepare_result_clinician_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.test-result-follow-up.issued-at",
+        "wording": "결과 보고서가 발행된 날짜와 시각이 적혀 있다면 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 206,
+          "reason": "issued-at"
+        }
+      ],
+      "supports": [
+        "group.result.identity"
+      ]
+    },
+    {
+      "fact": {
+        "id": "result.report.status",
+        "display": "Report Status",
+        "value_type": "coded",
+        "allowed_values": [
+          "registered",
+          "partial",
+          "preliminary",
+          "final",
+          "amended",
+          "corrected",
+          "appended",
+          "cancelled",
+          "entered-in-error",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.test-result-follow-up.report-status",
+        "display": "Report Status",
+        "intents": [
+          "intent.prepare_result_clinician_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.test-result-follow-up.report-status",
+        "wording": "보고서 상태가 예비, 최종, 수정 또는 취소 중 무엇으로 표시되어 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 205,
+          "reason": "report-status"
+        }
+      ],
+      "supports": [
+        "group.result.identity"
+      ]
+    },
+    {
+      "fact": {
+        "id": "result.report.version_or_amendment",
+        "display": "Report Version or Amendment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.test-result-follow-up.report-version",
+        "display": "Report Version or Amendment",
+        "intents": [
+          "intent.prepare_result_clinician_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.test-result-follow-up.report-version",
+        "wording": "수정·정정된 보고서라면 버전, 정정 날짜 또는 변경되었다고 표시된 내용을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 204,
+          "reason": "report-version"
+        }
+      ],
+      "supports": [
+        "group.result.identity"
+      ]
+    },
+    {
+      "fact": {
+        "id": "result.performing_organization",
+        "display": "Performing Organization",
+        "value_type": "string_or_reference"
+      },
+      "target": {
+        "id": "target.test-result-follow-up.performing-organization",
+        "display": "Performing Organization",
+        "intents": [
+          "intent.prepare_result_clinician_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.test-result-follow-up.performing-organization",
+        "wording": "검사를 시행하거나 보고서를 발행한 의료기관을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 203,
+          "reason": "performing-organization"
+        }
+      ],
+      "supports": [
+        "group.result.identity"
+      ]
+    },
+    {
+      "fact": {
+        "id": "result.report.source",
+        "display": "Result Information Source",
+        "value_type": "coded",
+        "allowed_values": [
+          "patient_report",
+          "proxy_report",
+          "uploaded_document",
+          "clinical_record",
+          "institution_portal",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.test-result-follow-up.report-source",
+        "display": "Result Information Source",
+        "intents": [
+          "intent.prepare_result_clinician_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.test-result-follow-up.report-source",
+        "wording": "현재 결과 정보는 본인 기억, 보호자 설명, 업로드 문서, 진료기록 또는 의료기관 포털 중 어디에서 확인한 것인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 202,
+          "reason": "report-source"
+        }
+      ],
+      "supports": [
+        "group.result.identity",
+        "group.result.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "result.report.readability",
+        "display": "Report Readability and Completeness",
+        "value_type": "coded",
+        "allowed_values": [
+          "complete_readable",
+          "partial",
+          "unreadable",
+          "not_provided",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.test-result-follow-up.report-readability",
+        "display": "Report Readability and Completeness",
+        "intents": [
+          "intent.prepare_result_clinician_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.test-result-follow-up.report-readability",
+        "wording": "제공된 보고서는 전체가 읽을 수 있나요, 일부만 보이나요, 읽기 어렵거나 제공되지 않았나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 201,
+          "reason": "report-readability"
+        }
+      ],
+      "supports": [
+        "group.result.content"
+      ]
+    },
+    {
+      "fact": {
+        "id": "result.value.summary",
+        "display": "Reported Values or Findings",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.test-result-follow-up.value-summary",
+        "display": "Reported Values or Findings",
+        "intents": [
+          "intent.prepare_result_clinician_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.test-result-follow-up.value-summary",
+        "wording": "보고서에 적힌 수치 또는 소견을 원문 그대로 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 190,
+          "reason": "value-summary"
+        }
+      ],
+      "supports": [
+        "group.result.content"
+      ]
+    },
+    {
+      "fact": {
+        "id": "result.value.units",
+        "display": "Reported Result Units",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.test-result-follow-up.value-units",
+        "display": "Reported Result Units",
+        "intents": [
+          "intent.prepare_result_clinician_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.test-result-follow-up.value-units",
+        "wording": "수치 옆에 적힌 단위를 원문 그대로 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 189,
+          "reason": "value-units"
+        }
+      ],
+      "supports": [
+        "group.result.content"
+      ]
+    },
+    {
+      "fact": {
+        "id": "result.reference_range",
+        "display": "Reported Reference Range",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.test-result-follow-up.reference-range",
+        "display": "Reported Reference Range",
+        "intents": [
+          "intent.prepare_result_clinician_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.test-result-follow-up.reference-range",
+        "wording": "보고서에 적힌 기준범위를 원문 그대로 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 188,
+          "reason": "reference-range"
+        }
+      ],
+      "supports": [
+        "group.result.content"
+      ]
+    },
+    {
+      "fact": {
+        "id": "result.reported_interpretation",
+        "display": "Reported Interpretation or Conclusion",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.test-result-follow-up.reported-interpretation",
+        "display": "Reported Interpretation or Conclusion",
+        "intents": [
+          "intent.prepare_result_clinician_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.test-result-follow-up.reported-interpretation",
+        "wording": "보고서의 판정·결론·Impression 항목에 적힌 내용을 원문 그대로 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 187,
+          "reason": "reported-interpretation"
+        }
+      ],
+      "supports": [
+        "group.result.content"
+      ]
+    },
+    {
+      "fact": {
+        "id": "result.prior_explanation",
+        "display": "Prior Clinician Explanation",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.test-result-follow-up.prior-explanation",
+        "display": "Prior Clinician Explanation",
+        "intents": [
+          "intent.prepare_result_clinician_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.test-result-follow-up.prior-explanation",
+        "wording": "이 결과에 대해 의료진에게 이미 들은 설명이 있다면 그 내용을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 180,
+          "reason": "prior-explanation"
+        }
+      ],
+      "supports": [
+        "group.result.context",
+        "group.result.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "result.follow_up_plan",
+        "display": "Known Follow-up Plan",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.test-result-follow-up.follow-up-plan",
+        "display": "Known Follow-up Plan",
+        "intents": [
+          "intent.prepare_result_clinician_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.test-result-follow-up.follow-up-plan",
+        "wording": "재검, 진료 예약, 약 변경 또는 다른 진료과 방문 등 이미 안내받은 후속 계획이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 179,
+          "reason": "follow-up-plan"
+        }
+      ],
+      "supports": [
+        "group.result.context",
+        "group.result.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "result.conflict",
+        "display": "Conflicting Result Information",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.test-result-follow-up.result-conflict",
+        "display": "Conflicting Result Information",
+        "intents": [
+          "intent.prepare_result_clinician_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.test-result-follow-up.result-conflict",
+        "wording": "문서, 의료기관 안내와 본인이 이해한 내용이 서로 다르다면 각각 어떻게 다른지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 178,
+          "reason": "result-conflict"
+        }
+      ],
+      "supports": [
+        "group.result.content",
+        "group.result.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "result.additional_comment",
+        "display": "Additional Result Follow-up Comment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.test-result-follow-up.additional-comment",
+        "display": "Additional Result Follow-up Comment",
+        "intents": [
+          "intent.prepare_result_clinician_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.test-result-follow-up.additional-comment",
+        "wording": "질문에 없지만 결과를 확인할 의료진에게 추가로 전달할 내용이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 90,
+          "reason": "additional-comment"
+        }
+      ],
+      "supports": [
+        "group.result.handoff"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.hl7.fhir-r4.diagnosticreport",
+      "source.hl7.fhir-r4.observation",
+      "source.uscdi.v6.2025",
+      "policy.encounter-context-review"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

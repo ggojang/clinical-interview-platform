@@ -123,6 +123,17 @@ class QuestionAnswerTerminologyTest(unittest.TestCase):
             "asked-unknown",
         )
 
+    def test_contextual_both_is_not_mapped_to_bilateral_laterality(self):
+        package = compile_package(profile="test_result_follow_up")
+        fact = next(
+            node
+            for node in package["knowledge_graph"]["nodes"]
+            if node.get("id") == "encounter.result_follow_up.goal"
+        )
+        binding = fact["answer_semantic_binding"]
+        self.assertNotIn("both", binding.get("snomed_mappings", {}))
+        self.assertEqual(binding["value_set_strategy"], "complete_local")
+
     def test_boolean_supports_profile_primitive_and_prefers_coded_yes_no(self):
         package = compile_package(profile="headache")
         binding = package["question_answer_terminology"]

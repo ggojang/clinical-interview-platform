@@ -549,7 +549,13 @@ class InterviewSession:
                             .95,
                         )
                 elif (
-                    node.get("value_type") == "string"
+                    node.get("value_type") in {
+                        "string",
+                        "coded_or_string",
+                        "string_or_reference",
+                        "date_or_period",
+                        "datetime",
+                    }
                     and normalized
                     and normalized not in {
                         "i am not sure", "i'm not sure", "not sure",
