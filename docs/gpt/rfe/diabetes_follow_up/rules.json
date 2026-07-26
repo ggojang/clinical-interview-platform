@@ -1,6 +1,6 @@
 {
   "contains_patient_responses": false,
-  "count": 132,
+  "count": 138,
   "encounter_contexts": [
     "context.primary_care"
   ],
@@ -24,8 +24,16 @@
             "fact": "diabetes.dka_symptom_cluster"
           },
           {
-            "equals": true,
-            "fact": "diabetes.moderate_large_ketones_or_high_ketone"
+            "any": [
+              {
+                "equals": true,
+                "fact": "diabetes.current_blood_ketone_high"
+              },
+              {
+                "equals": true,
+                "fact": "diabetes.current_urine_ketone_at_least_moderate"
+              }
+            ]
           }
         ]
       }
@@ -47,8 +55,16 @@
             "fact": "diabetes.dka_symptom_cluster"
           },
           {
-            "equals": true,
-            "fact": "diabetes.repeated_vomiting_or_cannot_keep_fluids"
+            "any": [
+              {
+                "equals": true,
+                "fact": "diabetes.current_repeated_vomiting"
+              },
+              {
+                "equals": true,
+                "fact": "diabetes.current_unable_to_retain_fluids"
+              }
+            ]
           }
         ]
       }
@@ -132,11 +148,19 @@
         "all": [
           {
             "equals": true,
-            "fact": "diabetes.suspected_insulin_delivery_interruption"
+            "fact": "diabetes.dka_symptom_cluster"
           },
           {
-            "equals": true,
-            "fact": "diabetes.dka_symptom_cluster"
+            "any": [
+              {
+                "equals": true,
+                "fact": "diabetes.current_insulin_dose_missed"
+              },
+              {
+                "equals": true,
+                "fact": "diabetes.current_pump_delivery_interrupted"
+              }
+            ]
           }
         ]
       }
@@ -167,8 +191,16 @@
       },
       "type": "safety",
       "when": {
-        "equals": true,
-        "fact": "diabetes.sglt2_use_with_dka_symptoms"
+        "all": [
+          {
+            "equals": true,
+            "fact": "diabetes.dka_symptom_cluster"
+          },
+          {
+            "equals": true,
+            "fact": "diabetes.current_sglt2_inhibitor_use"
+          }
+        ]
       }
     },
     {
@@ -384,12 +416,12 @@
   "package_version": "0.1.0",
   "partitions": [
     {
-      "count": 59,
+      "count": 62,
       "path": "/gpt/rfe/diabetes_follow_up/rules/completion.json",
       "rule_type": "completion"
     },
     {
-      "count": 59,
+      "count": 62,
       "path": "/gpt/rfe/diabetes_follow_up/rules/priority.json",
       "rule_type": "priority"
     }

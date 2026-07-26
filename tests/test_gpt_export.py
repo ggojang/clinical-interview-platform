@@ -593,7 +593,7 @@ class GptExportTests(unittest.TestCase):
             ear = json.loads((output_path / "rfe/ear_hearing_symptoms/facts.json").read_text(encoding="utf-8"))
             self.assertEqual(ear["count"], 46)
             diabetes = json.loads((output_path / "rfe/diabetes_follow_up/facts.json").read_text(encoding="utf-8"))
-            self.assertEqual(diabetes["count"], 59)
+            self.assertEqual(diabetes["count"], 62)
             for slug in implemented:
                 for kind in ("facts", "questions", "rules"):
                     document = json.loads(

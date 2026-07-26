@@ -35,14 +35,17 @@ def fragment():
         Q("diabetes.current_glucose_below_54", "Current Glucose below 54 mg/dL", "boolean", "current-glucose-below-54", "현재 측정한 혈당이 54 mg/dL 미만인가요?", 125, [G["acute-safety"], G["medication-hypoglycemia"]], S, safety_relevant=True),
         Q("diabetes.current_glucose_remains_below_70_after_treatment", "Glucose below 70 mg/dL after Treatment", "boolean", "current-glucose-below-70-after-treatment", "당을 섭취하고 15분 뒤 다시 측정한 혈당이 70 mg/dL 미만인가요?", 124, [G["acute-safety"], G["medication-hypoglycemia"]], S, safety_relevant=True),
         Q("diabetes.dka_symptom_cluster", "Diabetic Ketoacidosis Symptom Cluster", "boolean", "dka-symptoms", "심한 갈증·잦은 소변과 함께 메스꺼움·구토, 복통, 깊거나 빠른 호흡, 과일 냄새 같은 숨, 심한 졸림·혼란이 있나요?", 123, [G["acute-safety"]], S, safety_relevant=True, terminology_binding={"system": SN, "code": "111556005"}, mrcm_ref=M),
-        Q("diabetes.moderate_large_ketones_or_high_ketone", "Moderate or Large Ketones", "boolean", "high-ketones", "혈액 케톤이 높다고 나오거나 소변 케톤이 중등도·대량으로 나왔나요?", 122, [G["acute-safety"], G["type1-insulin"]], S, safety_relevant=True),
-        Q("diabetes.repeated_vomiting_or_cannot_keep_fluids", "Repeated Vomiting or Unable to Keep Fluids", "boolean", "vomiting-dehydration", "반복해서 토하거나 물을 마셔도 유지할 수 없나요?", 123, [G["acute-safety"]], S, safety_relevant=True),
+        Q("diabetes.current_blood_ketone_high", "Current Blood Ketone in High Range", "boolean", "blood-ketone-high", "현재 혈액 케톤 결과가 검사기나 의료진이 안내한 높은 범위인가요?", 122, [G["acute-safety"], G["type1-insulin"]], S, safety_relevant=True),
+        Q("diabetes.current_urine_ketone_at_least_moderate", "Current Urine Ketone at Least Moderate", "boolean", "urine-ketone-moderate", "현재 소변 케톤 결과가 중등도 이상인가요?", 122, [G["acute-safety"], G["type1-insulin"]], S, safety_relevant=True),
+        Q("diabetes.current_repeated_vomiting", "Current Repeated Vomiting", "boolean", "repeated-vomiting", "현재 반복해서 토하고 있나요?", 123, [G["acute-safety"]], S, safety_relevant=True),
+        Q("diabetes.current_unable_to_retain_fluids", "Currently Unable to Retain Fluids", "boolean", "unable-retain-fluids", "현재 물을 마시면 다시 토해서 유지할 수 없나요?", 123, [G["acute-safety"]], S, safety_relevant=True),
         Q("diabetes.current_glucose_above_emergency_threshold", "Current Glucose above Personal Emergency Threshold", "boolean", "glucose-emergency-threshold", "현재 측정한 혈당이 의료진에게 안내받은 응급 상한보다 높나요?", 122, [G["acute-safety"]], S, safety_relevant=True),
         Q("diabetes.current_confusion", "Current Confusion", "boolean", "current-confusion", "지금 평소와 달리 시간·장소·상황을 파악하기 어렵나요?", 122, [G["acute-safety"]], S, safety_relevant=True),
         Q("diabetes.current_difficult_to_wake", "Currently Difficult to Wake", "boolean", "difficult-to-wake", "지금 평소보다 깨우기 어렵나요?", 122, [G["acute-safety"]], S, safety_relevant=True),
         Q("diabetes.current_minimal_urine_output", "Current Minimal Urine Output", "boolean", "minimal-urine-output", "오늘 소변이 거의 나오지 않나요?", 122, [G["acute-safety"]], S, safety_relevant=True),
-        Q("diabetes.suspected_insulin_delivery_interruption", "Suspected Insulin Delivery Interruption", "boolean", "insulin-interruption", "인슐린 주사를 여러 번 거르거나 펌프·주입세트 이상으로 인슐린 공급이 중단됐나요?", 121, [G["acute-safety"], G["type1-insulin"]], S, safety_relevant=True),
-        Q("diabetes.sglt2_use_with_dka_symptoms", "SGLT2 Inhibitor Use with DKA Symptoms", "boolean", "sglt2-dka", "SGLT2 억제제 계열 당뇨약을 복용하면서 혈당 수치와 상관없이 케톤산증 의심 증상이 있나요?", 120, [G["acute-safety"], G["medication-hypoglycemia"]], S, safety_relevant=True),
+        Q("diabetes.current_insulin_dose_missed", "Current Missed Insulin Dose", "boolean", "insulin-dose-missed", "현재 인슐린 투여 일정에서 예정된 투여를 거른 상태인가요?", 121, [G["acute-safety"], G["type1-insulin"]], S, safety_relevant=True),
+        Q("diabetes.current_pump_delivery_interrupted", "Current Insulin Pump Delivery Interruption", "boolean", "pump-delivery-interrupted", "현재 펌프·주입세트 이상으로 인슐린 공급이 중단됐나요?", 121, [G["acute-safety"], G["type1-insulin"]], S, safety_relevant=True),
+        Q("diabetes.current_sglt2_inhibitor_use", "Current SGLT2 Inhibitor Use", "boolean", "sglt2-use", "현재 SGLT2 억제제 계열 당뇨약을 복용 중인가요?", 120, [G["acute-safety"], G["medication-hypoglycemia"]], S, safety_relevant=True),
         Q("diabetes.foot_ulcer_with_sepsis_ischaemia_deep_infection_or_gangrene", "Limb-threatening Diabetic Foot Features", "boolean", "limb-threatening-foot", "발 상처·궤양과 함께 고열·패혈증 의심, 발이 창백하거나 검게 변함, 깊은 감염·뼈 노출 또는 괴저가 있나요?", 119, [G["acute-safety"], G["kidney-eye-foot"]], S, safety_relevant=True, terminology_binding={"system": SN, "code": "371087003"}, mrcm_ref=M),
         Q("diabetes.active_foot_ulcer_infection_or_unexplained_hot_swollen_foot", "Active Diabetic Foot Problem", "boolean", "active-foot-problem", "새 발 궤양·물집·감염, 이유 없이 붉고 뜨겁고 부은 발 또는 낫지 않는 상처가 있나요?", 118, [G["acute-safety"], G["kidney-eye-foot"]], S, safety_relevant=True),
         Q("diabetes.pregnant_or_planning_pregnancy", "Pregnancy or Pregnancy Planning", "coded", "pregnancy-context", "현재 임신 중이거나 임신을 계획하고 있나요?", 117, [G["acute-safety"], G["self-management"]], R, allowed_values=["pregnant", "planning", "not_applicable", "unclear"]),
@@ -97,8 +100,14 @@ def fragment():
         safety_rule(P, "hypoglycemia-needs-assistance", {"fact": "diabetes.current_hypoglycemia_self_treatment_ability", "equals": False}, "emergency", 1000),
         safety_rule(P, "current-glucose-below-54", {"fact": "diabetes.current_glucose_below_54", "equals": True}, "urgent", 970),
         safety_rule(P, "persistent-current-hypoglycemia", {"fact": "diabetes.current_glucose_remains_below_70_after_treatment", "equals": True}, "urgent", 960),
-        safety_rule(P, "dka-symptoms-ketones", {"all": [dka, {"fact": "diabetes.moderate_large_ketones_or_high_ketone", "equals": True}]}, "emergency", 1000),
-        safety_rule(P, "dka-symptoms-vomiting", {"all": [dka, {"fact": "diabetes.repeated_vomiting_or_cannot_keep_fluids", "equals": True}]}, "emergency", 1000),
+        safety_rule(P, "dka-symptoms-ketones", {"all": [dka, {"any": [
+            {"fact": "diabetes.current_blood_ketone_high", "equals": True},
+            {"fact": "diabetes.current_urine_ketone_at_least_moderate", "equals": True},
+        ]}]}, "emergency", 1000),
+        safety_rule(P, "dka-symptoms-vomiting", {"all": [dka, {"any": [
+            {"fact": "diabetes.current_repeated_vomiting", "equals": True},
+            {"fact": "diabetes.current_unable_to_retain_fluids", "equals": True},
+        ]}]}, "emergency", 1000),
         safety_rule(P, "hyperglycemic-crisis", {
             "all": [
                 {"fact": "diabetes.current_glucose_above_emergency_threshold", "equals": True},
@@ -109,8 +118,14 @@ def fragment():
                 ]},
             ],
         }, "emergency", 1000),
-        safety_rule(P, "insulin-interruption-dka", {"all": [{"fact": "diabetes.suspected_insulin_delivery_interruption", "equals": True}, dka]}, "emergency", 1000),
-        safety_rule(P, "sglt2-dka", {"fact": "diabetes.sglt2_use_with_dka_symptoms", "equals": True}, "emergency", 1000),
+        safety_rule(P, "insulin-interruption-dka", {"all": [dka, {"any": [
+            {"fact": "diabetes.current_insulin_dose_missed", "equals": True},
+            {"fact": "diabetes.current_pump_delivery_interrupted", "equals": True},
+        ]}]}, "emergency", 1000),
+        safety_rule(P, "sglt2-dka", {"all": [
+            dka,
+            {"fact": "diabetes.current_sglt2_inhibitor_use", "equals": True},
+        ]}, "emergency", 1000),
         safety_rule(P, "limb-threatening-foot", {"fact": "diabetes.foot_ulcer_with_sepsis_ischaemia_deep_infection_or_gangrene", "equals": True}, "emergency", 1000),
         safety_rule(P, "active-foot-problem", {"fact": "diabetes.active_foot_ulcer_infection_or_unexplained_hot_swollen_foot", "equals": True}, "urgent", 940),
         safety_rule(P, "recent-severe-hypoglycemia", {"fact": "diabetes.severe_hypoglycemia_needing_assistance_history", "equals": True}, "urgent", 900),
@@ -120,7 +135,7 @@ def fragment():
 
 
 def completion(f):
-    p = completion_policy(prefix=P, fragment=f, presentation_fact="diabetes.follow_up.requested", question_budget=42, source_refs=SOURCES)
+    p = completion_policy(prefix=P, fragment=f, presentation_fact="diabetes.follow_up.requested", question_budget=45, source_refs=SOURCES)
     p["required_facts"]["routine"] = [
         "diabetes.type_or_context", "diabetes.primary_follow_up_focus",
         "diabetes.latest_hba1c_value", "diabetes.latest_hba1c_date",

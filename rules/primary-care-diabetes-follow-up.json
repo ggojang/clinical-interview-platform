@@ -186,8 +186,16 @@
             "fact": "diabetes.dka_symptom_cluster"
           },
           {
-            "equals": true,
-            "fact": "diabetes.moderate_large_ketones_or_high_ketone"
+            "any": [
+              {
+                "equals": true,
+                "fact": "diabetes.current_blood_ketone_high"
+              },
+              {
+                "equals": true,
+                "fact": "diabetes.current_urine_ketone_at_least_moderate"
+              }
+            ]
           }
         ]
       }
@@ -241,8 +249,16 @@
             "fact": "diabetes.dka_symptom_cluster"
           },
           {
-            "equals": true,
-            "fact": "diabetes.repeated_vomiting_or_cannot_keep_fluids"
+            "any": [
+              {
+                "equals": true,
+                "fact": "diabetes.current_repeated_vomiting"
+              },
+              {
+                "equals": true,
+                "fact": "diabetes.current_unable_to_retain_fluids"
+              }
+            ]
           }
         ]
       }
@@ -454,11 +470,19 @@
         "all": [
           {
             "equals": true,
-            "fact": "diabetes.suspected_insulin_delivery_interruption"
+            "fact": "diabetes.dka_symptom_cluster"
           },
           {
-            "equals": true,
-            "fact": "diabetes.dka_symptom_cluster"
+            "any": [
+              {
+                "equals": true,
+                "fact": "diabetes.current_insulin_dose_missed"
+              },
+              {
+                "equals": true,
+                "fact": "diabetes.current_pump_delivery_interrupted"
+              }
+            ]
           }
         ]
       }
@@ -694,8 +718,16 @@
       ],
       "version": "0.1.0",
       "when": {
-        "equals": true,
-        "fact": "diabetes.sglt2_use_with_dka_symptoms"
+        "all": [
+          {
+            "equals": true,
+            "fact": "diabetes.dka_symptom_cluster"
+          },
+          {
+            "equals": true,
+            "fact": "diabetes.current_sglt2_inhibitor_use"
+          }
+        ]
       }
     },
     {
@@ -1002,6 +1034,57 @@
       "when": {
         "facts_resolved": "all_required",
         "target": "target.diabetes-follow-up.alcohol"
+      }
+    },
+    {
+      "id": "rule.generated.complete.blood-ketone-high",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.ada.soc2026.glycemic-goals",
+          "source.ada.soc2026.ckd",
+          "source.ada.soc2026.retina-neuropathy-foot",
+          "source.nice.ng28.diabetes-type2.2026",
+          "source.nice.ng17.diabetes-type1",
+          "source.nice.ng19.diabetic-foot.2025",
+          "source.nhs.dka.2026",
+          "source.nhs.hypoglycaemia.2026",
+          "source.stom.diabetes.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.blood-ketone-high"
       }
     },
     {
@@ -1923,57 +2006,6 @@
       }
     },
     {
-      "id": "rule.generated.complete.high-ketones",
-      "priority": 50,
-      "provenance": {
-        "created_at": "2026-07-14T00:00:00Z",
-        "created_by": {
-          "id": "codex-gpt5",
-          "type": "ai"
-        },
-        "review_status": "unreviewed",
-        "source_refs": [
-          "source.ada.soc2026.glycemic-goals",
-          "source.ada.soc2026.ckd",
-          "source.ada.soc2026.retina-neuropathy-foot",
-          "source.nice.ng28.diabetes-type2.2026",
-          "source.nice.ng17.diabetes-type1",
-          "source.nice.ng19.diabetic-foot.2025",
-          "source.nhs.dka.2026",
-          "source.nhs.hypoglycaemia.2026",
-          "source.stom.diabetes.20260714"
-        ],
-        "version": "0.1.0"
-      },
-      "refresh": {
-        "class": "clinical_guideline",
-        "full_review_interval_days": 180,
-        "last_assessed_at": "2026-07-14",
-        "monitor_interval_days": 1,
-        "next_full_review_at": "2027-01-10",
-        "next_monitor_at": "2026-07-15",
-        "overdue_behavior": {
-          "production": "exclude_or_require_review",
-          "research_test": "allow_with_warning"
-        },
-        "policy_id": "policy.knowledge-refresh"
-      },
-      "status": "research_only",
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "usage_modes": [
-        "research_test",
-        "simulation"
-      ],
-      "version": "0.1.0",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.diabetes-follow-up.high-ketones"
-      }
-    },
-    {
       "id": "rule.generated.complete.hyperglycemia-symptoms",
       "priority": 50,
       "provenance": {
@@ -2331,7 +2363,7 @@
       }
     },
     {
-      "id": "rule.generated.complete.insulin-interruption",
+      "id": "rule.generated.complete.insulin-dose-missed",
       "priority": 50,
       "provenance": {
         "created_at": "2026-07-14T00:00:00Z",
@@ -2378,7 +2410,7 @@
       "version": "0.1.0",
       "when": {
         "facts_resolved": "all_required",
-        "target": "target.diabetes-follow-up.insulin-interruption"
+        "target": "target.diabetes-follow-up.insulin-dose-missed"
       }
     },
     {
@@ -3096,6 +3128,57 @@
       }
     },
     {
+      "id": "rule.generated.complete.pump-delivery-interrupted",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.ada.soc2026.glycemic-goals",
+          "source.ada.soc2026.ckd",
+          "source.ada.soc2026.retina-neuropathy-foot",
+          "source.nice.ng28.diabetes-type2.2026",
+          "source.nice.ng17.diabetes-type1",
+          "source.nice.ng19.diabetic-foot.2025",
+          "source.nhs.dka.2026",
+          "source.nhs.hypoglycaemia.2026",
+          "source.stom.diabetes.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.pump-delivery-interrupted"
+      }
+    },
+    {
       "id": "rule.generated.complete.recent-change",
       "priority": 50,
       "provenance": {
@@ -3195,6 +3278,57 @@
       "when": {
         "facts_resolved": "all_required",
         "target": "target.diabetes-follow-up.recent-glucose-context"
+      }
+    },
+    {
+      "id": "rule.generated.complete.repeated-vomiting",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.ada.soc2026.glycemic-goals",
+          "source.ada.soc2026.ckd",
+          "source.ada.soc2026.retina-neuropathy-foot",
+          "source.nice.ng28.diabetes-type2.2026",
+          "source.nice.ng17.diabetes-type1",
+          "source.nice.ng19.diabetic-foot.2025",
+          "source.nhs.dka.2026",
+          "source.nhs.hypoglycaemia.2026",
+          "source.stom.diabetes.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.repeated-vomiting"
       }
     },
     {
@@ -3351,7 +3485,7 @@
       }
     },
     {
-      "id": "rule.generated.complete.sglt2-dka",
+      "id": "rule.generated.complete.sglt2-use",
       "priority": 50,
       "provenance": {
         "created_at": "2026-07-14T00:00:00Z",
@@ -3398,7 +3532,7 @@
       "version": "0.1.0",
       "when": {
         "facts_resolved": "all_required",
-        "target": "target.diabetes-follow-up.sglt2-dka"
+        "target": "target.diabetes-follow-up.sglt2-use"
       }
     },
     {
@@ -3555,6 +3689,108 @@
       }
     },
     {
+      "id": "rule.generated.complete.unable-retain-fluids",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.ada.soc2026.glycemic-goals",
+          "source.ada.soc2026.ckd",
+          "source.ada.soc2026.retina-neuropathy-foot",
+          "source.nice.ng28.diabetes-type2.2026",
+          "source.nice.ng17.diabetes-type1",
+          "source.nice.ng19.diabetic-foot.2025",
+          "source.nhs.dka.2026",
+          "source.nhs.hypoglycaemia.2026",
+          "source.stom.diabetes.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.unable-retain-fluids"
+      }
+    },
+    {
+      "id": "rule.generated.complete.urine-ketone-moderate",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.ada.soc2026.glycemic-goals",
+          "source.ada.soc2026.ckd",
+          "source.ada.soc2026.retina-neuropathy-foot",
+          "source.nice.ng28.diabetes-type2.2026",
+          "source.nice.ng17.diabetes-type1",
+          "source.nice.ng19.diabetic-foot.2025",
+          "source.nhs.dka.2026",
+          "source.nhs.hypoglycaemia.2026",
+          "source.stom.diabetes.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.diabetes-follow-up.urine-ketone-moderate"
+      }
+    },
+    {
       "id": "rule.generated.complete.vision-change",
       "priority": 50,
       "provenance": {
@@ -3603,57 +3839,6 @@
       "when": {
         "facts_resolved": "all_required",
         "target": "target.diabetes-follow-up.vision-change"
-      }
-    },
-    {
-      "id": "rule.generated.complete.vomiting-dehydration",
-      "priority": 50,
-      "provenance": {
-        "created_at": "2026-07-14T00:00:00Z",
-        "created_by": {
-          "id": "codex-gpt5",
-          "type": "ai"
-        },
-        "review_status": "unreviewed",
-        "source_refs": [
-          "source.ada.soc2026.glycemic-goals",
-          "source.ada.soc2026.ckd",
-          "source.ada.soc2026.retina-neuropathy-foot",
-          "source.nice.ng28.diabetes-type2.2026",
-          "source.nice.ng17.diabetes-type1",
-          "source.nice.ng19.diabetic-foot.2025",
-          "source.nhs.dka.2026",
-          "source.nhs.hypoglycaemia.2026",
-          "source.stom.diabetes.20260714"
-        ],
-        "version": "0.1.0"
-      },
-      "refresh": {
-        "class": "clinical_guideline",
-        "full_review_interval_days": 180,
-        "last_assessed_at": "2026-07-14",
-        "monitor_interval_days": 1,
-        "next_full_review_at": "2027-01-10",
-        "next_monitor_at": "2026-07-15",
-        "overdue_behavior": {
-          "production": "exclude_or_require_review",
-          "research_test": "allow_with_warning"
-        },
-        "policy_id": "policy.knowledge-refresh"
-      },
-      "status": "research_only",
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "usage_modes": [
-        "research_test",
-        "simulation"
-      ],
-      "version": "0.1.0",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.diabetes-follow-up.vomiting-dehydration"
       }
     },
     {
@@ -4022,6 +4207,59 @@
       "when": {
         "target_state": {
           "target.diabetes-follow-up.alcohol": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.blood-ketone-high",
+      "priority": 122,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.ada.soc2026.glycemic-goals",
+          "source.ada.soc2026.ckd",
+          "source.ada.soc2026.retina-neuropathy-foot",
+          "source.nice.ng28.diabetes-type2.2026",
+          "source.nice.ng17.diabetes-type1",
+          "source.nice.ng19.diabetic-foot.2025",
+          "source.nhs.dka.2026",
+          "source.nhs.hypoglycaemia.2026",
+          "source.stom.diabetes.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "blood-ketone-high",
+        "target": "target.diabetes-follow-up.blood-ketone-high"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.blood-ketone-high": "active"
         }
       }
     },
@@ -4980,59 +5218,6 @@
       }
     },
     {
-      "id": "rule.generated.priority.any.high-ketones",
-      "priority": 122,
-      "provenance": {
-        "created_at": "2026-07-14T00:00:00Z",
-        "created_by": {
-          "id": "codex-gpt5",
-          "type": "ai"
-        },
-        "review_status": "unreviewed",
-        "source_refs": [
-          "source.ada.soc2026.glycemic-goals",
-          "source.ada.soc2026.ckd",
-          "source.ada.soc2026.retina-neuropathy-foot",
-          "source.nice.ng28.diabetes-type2.2026",
-          "source.nice.ng17.diabetes-type1",
-          "source.nice.ng19.diabetic-foot.2025",
-          "source.nhs.dka.2026",
-          "source.nhs.hypoglycaemia.2026",
-          "source.stom.diabetes.20260714"
-        ],
-        "version": "0.1.0"
-      },
-      "refresh": {
-        "class": "clinical_guideline",
-        "full_review_interval_days": 180,
-        "last_assessed_at": "2026-07-14",
-        "monitor_interval_days": 1,
-        "next_full_review_at": "2027-01-10",
-        "next_monitor_at": "2026-07-15",
-        "overdue_behavior": {
-          "production": "exclude_or_require_review",
-          "research_test": "allow_with_warning"
-        },
-        "policy_id": "policy.knowledge-refresh"
-      },
-      "status": "research_only",
-      "then": {
-        "reason": "high-ketones",
-        "target": "target.diabetes-follow-up.high-ketones"
-      },
-      "type": "priority",
-      "usage_modes": [
-        "research_test",
-        "simulation"
-      ],
-      "version": "0.1.0",
-      "when": {
-        "target_state": {
-          "target.diabetes-follow-up.high-ketones": "active"
-        }
-      }
-    },
-    {
       "id": "rule.generated.priority.any.hyperglycemia-symptoms",
       "priority": 112,
       "provenance": {
@@ -5404,7 +5589,7 @@
       }
     },
     {
-      "id": "rule.generated.priority.any.insulin-interruption",
+      "id": "rule.generated.priority.any.insulin-dose-missed",
       "priority": 121,
       "provenance": {
         "created_at": "2026-07-14T00:00:00Z",
@@ -5441,8 +5626,8 @@
       },
       "status": "research_only",
       "then": {
-        "reason": "insulin-interruption",
-        "target": "target.diabetes-follow-up.insulin-interruption"
+        "reason": "insulin-dose-missed",
+        "target": "target.diabetes-follow-up.insulin-dose-missed"
       },
       "type": "priority",
       "usage_modes": [
@@ -5452,7 +5637,7 @@
       "version": "0.1.0",
       "when": {
         "target_state": {
-          "target.diabetes-follow-up.insulin-interruption": "active"
+          "target.diabetes-follow-up.insulin-dose-missed": "active"
         }
       }
     },
@@ -6199,6 +6384,59 @@
       }
     },
     {
+      "id": "rule.generated.priority.any.pump-delivery-interrupted",
+      "priority": 121,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.ada.soc2026.glycemic-goals",
+          "source.ada.soc2026.ckd",
+          "source.ada.soc2026.retina-neuropathy-foot",
+          "source.nice.ng28.diabetes-type2.2026",
+          "source.nice.ng17.diabetes-type1",
+          "source.nice.ng19.diabetic-foot.2025",
+          "source.nhs.dka.2026",
+          "source.nhs.hypoglycaemia.2026",
+          "source.stom.diabetes.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "pump-delivery-interrupted",
+        "target": "target.diabetes-follow-up.pump-delivery-interrupted"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.pump-delivery-interrupted": "active"
+        }
+      }
+    },
+    {
       "id": "rule.generated.priority.any.recent-change",
       "priority": 105,
       "provenance": {
@@ -6301,6 +6539,59 @@
       "when": {
         "target_state": {
           "target.diabetes-follow-up.recent-glucose-context": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.repeated-vomiting",
+      "priority": 123,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.ada.soc2026.glycemic-goals",
+          "source.ada.soc2026.ckd",
+          "source.ada.soc2026.retina-neuropathy-foot",
+          "source.nice.ng28.diabetes-type2.2026",
+          "source.nice.ng17.diabetes-type1",
+          "source.nice.ng19.diabetic-foot.2025",
+          "source.nhs.dka.2026",
+          "source.nhs.hypoglycaemia.2026",
+          "source.stom.diabetes.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "repeated-vomiting",
+        "target": "target.diabetes-follow-up.repeated-vomiting"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.repeated-vomiting": "active"
         }
       }
     },
@@ -6464,7 +6755,7 @@
       }
     },
     {
-      "id": "rule.generated.priority.any.sglt2-dka",
+      "id": "rule.generated.priority.any.sglt2-use",
       "priority": 120,
       "provenance": {
         "created_at": "2026-07-14T00:00:00Z",
@@ -6501,8 +6792,8 @@
       },
       "status": "research_only",
       "then": {
-        "reason": "sglt2-dka",
-        "target": "target.diabetes-follow-up.sglt2-dka"
+        "reason": "sglt2-use",
+        "target": "target.diabetes-follow-up.sglt2-use"
       },
       "type": "priority",
       "usage_modes": [
@@ -6512,7 +6803,7 @@
       "version": "0.1.0",
       "when": {
         "target_state": {
-          "target.diabetes-follow-up.sglt2-dka": "active"
+          "target.diabetes-follow-up.sglt2-use": "active"
         }
       }
     },
@@ -6676,6 +6967,112 @@
       }
     },
     {
+      "id": "rule.generated.priority.any.unable-retain-fluids",
+      "priority": 123,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.ada.soc2026.glycemic-goals",
+          "source.ada.soc2026.ckd",
+          "source.ada.soc2026.retina-neuropathy-foot",
+          "source.nice.ng28.diabetes-type2.2026",
+          "source.nice.ng17.diabetes-type1",
+          "source.nice.ng19.diabetic-foot.2025",
+          "source.nhs.dka.2026",
+          "source.nhs.hypoglycaemia.2026",
+          "source.stom.diabetes.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "unable-retain-fluids",
+        "target": "target.diabetes-follow-up.unable-retain-fluids"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.unable-retain-fluids": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.urine-ketone-moderate",
+      "priority": 122,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.ada.soc2026.glycemic-goals",
+          "source.ada.soc2026.ckd",
+          "source.ada.soc2026.retina-neuropathy-foot",
+          "source.nice.ng28.diabetes-type2.2026",
+          "source.nice.ng17.diabetes-type1",
+          "source.nice.ng19.diabetic-foot.2025",
+          "source.nhs.dka.2026",
+          "source.nhs.hypoglycaemia.2026",
+          "source.stom.diabetes.20260714"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-07-14",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-10",
+        "next_monitor_at": "2026-07-15",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "urine-ketone-moderate",
+        "target": "target.diabetes-follow-up.urine-ketone-moderate"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.diabetes-follow-up.urine-ketone-moderate": "active"
+        }
+      }
+    },
+    {
       "id": "rule.generated.priority.any.vision-change",
       "priority": 105,
       "provenance": {
@@ -6725,59 +7122,6 @@
       "when": {
         "target_state": {
           "target.diabetes-follow-up.vision-change": "active"
-        }
-      }
-    },
-    {
-      "id": "rule.generated.priority.any.vomiting-dehydration",
-      "priority": 123,
-      "provenance": {
-        "created_at": "2026-07-14T00:00:00Z",
-        "created_by": {
-          "id": "codex-gpt5",
-          "type": "ai"
-        },
-        "review_status": "unreviewed",
-        "source_refs": [
-          "source.ada.soc2026.glycemic-goals",
-          "source.ada.soc2026.ckd",
-          "source.ada.soc2026.retina-neuropathy-foot",
-          "source.nice.ng28.diabetes-type2.2026",
-          "source.nice.ng17.diabetes-type1",
-          "source.nice.ng19.diabetic-foot.2025",
-          "source.nhs.dka.2026",
-          "source.nhs.hypoglycaemia.2026",
-          "source.stom.diabetes.20260714"
-        ],
-        "version": "0.1.0"
-      },
-      "refresh": {
-        "class": "clinical_guideline",
-        "full_review_interval_days": 180,
-        "last_assessed_at": "2026-07-14",
-        "monitor_interval_days": 1,
-        "next_full_review_at": "2027-01-10",
-        "next_monitor_at": "2026-07-15",
-        "overdue_behavior": {
-          "production": "exclude_or_require_review",
-          "research_test": "allow_with_warning"
-        },
-        "policy_id": "policy.knowledge-refresh"
-      },
-      "status": "research_only",
-      "then": {
-        "reason": "vomiting-dehydration",
-        "target": "target.diabetes-follow-up.vomiting-dehydration"
-      },
-      "type": "priority",
-      "usage_modes": [
-        "research_test",
-        "simulation"
-      ],
-      "version": "0.1.0",
-      "when": {
-        "target_state": {
-          "target.diabetes-follow-up.vomiting-dehydration": "active"
         }
       }
     },

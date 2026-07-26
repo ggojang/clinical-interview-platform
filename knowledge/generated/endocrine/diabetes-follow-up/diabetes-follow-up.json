@@ -126,8 +126,16 @@
             "equals": true
           },
           {
-            "fact": "diabetes.moderate_large_ketones_or_high_ketone",
-            "equals": true
+            "any": [
+              {
+                "fact": "diabetes.current_blood_ketone_high",
+                "equals": true
+              },
+              {
+                "fact": "diabetes.current_urine_ketone_at_least_moderate",
+                "equals": true
+              }
+            ]
           }
         ]
       },
@@ -147,8 +155,16 @@
             "equals": true
           },
           {
-            "fact": "diabetes.repeated_vomiting_or_cannot_keep_fluids",
-            "equals": true
+            "any": [
+              {
+                "fact": "diabetes.current_repeated_vomiting",
+                "equals": true
+              },
+              {
+                "fact": "diabetes.current_unable_to_retain_fluids",
+                "equals": true
+              }
+            ]
           }
         ]
       },
@@ -197,12 +213,20 @@
       "when": {
         "all": [
           {
-            "fact": "diabetes.suspected_insulin_delivery_interruption",
+            "fact": "diabetes.dka_symptom_cluster",
             "equals": true
           },
           {
-            "fact": "diabetes.dka_symptom_cluster",
-            "equals": true
+            "any": [
+              {
+                "fact": "diabetes.current_insulin_dose_missed",
+                "equals": true
+              },
+              {
+                "fact": "diabetes.current_pump_delivery_interrupted",
+                "equals": true
+              }
+            ]
           }
         ]
       },
@@ -216,8 +240,16 @@
       "id": "rule.diabetes-follow-up.safety.sglt2-dka",
       "priority": 1000,
       "when": {
-        "fact": "diabetes.sglt2_use_with_dka_symptoms",
-        "equals": true
+        "all": [
+          {
+            "fact": "diabetes.dka_symptom_cluster",
+            "equals": true
+          },
+          {
+            "fact": "diabetes.current_sglt2_inhibitor_use",
+            "equals": true
+          }
+        ]
       },
       "then": {
         "safety_level": "emergency",
@@ -600,21 +632,21 @@
     },
     {
       "fact": {
-        "id": "diabetes.moderate_large_ketones_or_high_ketone",
-        "display": "Moderate or Large Ketones",
+        "id": "diabetes.current_blood_ketone_high",
+        "display": "Current Blood Ketone in High Range",
         "value_type": "boolean",
         "safety_relevant": true
       },
       "target": {
-        "id": "target.diabetes-follow-up.high-ketones",
-        "display": "Moderate or Large Ketones",
+        "id": "target.diabetes-follow-up.blood-ketone-high",
+        "display": "Current Blood Ketone in High Range",
         "intents": [
           "intent.screen_red_flags"
         ]
       },
       "question": {
-        "id": "question.diabetes-follow-up.high-ketones",
-        "wording": "혈액 케톤이 높다고 나오거나 소변 케톤이 중등도·대량으로 나왔나요?",
+        "id": "question.diabetes-follow-up.blood-ketone-high",
+        "wording": "현재 혈액 케톤 결과가 검사기나 의료진이 안내한 높은 범위인가요?",
         "language": "ko",
         "mode": [
           "chat",
@@ -627,7 +659,7 @@
         {
           "branch": "any",
           "score": 122,
-          "reason": "high-ketones"
+          "reason": "blood-ketone-high"
         }
       ],
       "supports": [
@@ -637,21 +669,58 @@
     },
     {
       "fact": {
-        "id": "diabetes.repeated_vomiting_or_cannot_keep_fluids",
-        "display": "Repeated Vomiting or Unable to Keep Fluids",
+        "id": "diabetes.current_urine_ketone_at_least_moderate",
+        "display": "Current Urine Ketone at Least Moderate",
         "value_type": "boolean",
         "safety_relevant": true
       },
       "target": {
-        "id": "target.diabetes-follow-up.vomiting-dehydration",
-        "display": "Repeated Vomiting or Unable to Keep Fluids",
+        "id": "target.diabetes-follow-up.urine-ketone-moderate",
+        "display": "Current Urine Ketone at Least Moderate",
         "intents": [
           "intent.screen_red_flags"
         ]
       },
       "question": {
-        "id": "question.diabetes-follow-up.vomiting-dehydration",
-        "wording": "반복해서 토하거나 물을 마셔도 유지할 수 없나요?",
+        "id": "question.diabetes-follow-up.urine-ketone-moderate",
+        "wording": "현재 소변 케톤 결과가 중등도 이상인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 122,
+          "reason": "urine-ketone-moderate"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.acute-safety",
+        "group.diabetes-follow-up.type1-insulin"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.current_repeated_vomiting",
+        "display": "Current Repeated Vomiting",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.repeated-vomiting",
+        "display": "Current Repeated Vomiting",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.repeated-vomiting",
+        "wording": "현재 반복해서 토하고 있나요?",
         "language": "ko",
         "mode": [
           "chat",
@@ -664,7 +733,43 @@
         {
           "branch": "any",
           "score": 123,
-          "reason": "vomiting-dehydration"
+          "reason": "repeated-vomiting"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.acute-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.current_unable_to_retain_fluids",
+        "display": "Currently Unable to Retain Fluids",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.unable-retain-fluids",
+        "display": "Currently Unable to Retain Fluids",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.unable-retain-fluids",
+        "wording": "현재 물을 마시면 다시 토해서 유지할 수 없나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 123,
+          "reason": "unable-retain-fluids"
         }
       ],
       "supports": [
@@ -817,21 +922,21 @@
     },
     {
       "fact": {
-        "id": "diabetes.suspected_insulin_delivery_interruption",
-        "display": "Suspected Insulin Delivery Interruption",
+        "id": "diabetes.current_insulin_dose_missed",
+        "display": "Current Missed Insulin Dose",
         "value_type": "boolean",
         "safety_relevant": true
       },
       "target": {
-        "id": "target.diabetes-follow-up.insulin-interruption",
-        "display": "Suspected Insulin Delivery Interruption",
+        "id": "target.diabetes-follow-up.insulin-dose-missed",
+        "display": "Current Missed Insulin Dose",
         "intents": [
           "intent.screen_red_flags"
         ]
       },
       "question": {
-        "id": "question.diabetes-follow-up.insulin-interruption",
-        "wording": "인슐린 주사를 여러 번 거르거나 펌프·주입세트 이상으로 인슐린 공급이 중단됐나요?",
+        "id": "question.diabetes-follow-up.insulin-dose-missed",
+        "wording": "현재 인슐린 투여 일정에서 예정된 투여를 거른 상태인가요?",
         "language": "ko",
         "mode": [
           "chat",
@@ -844,7 +949,7 @@
         {
           "branch": "any",
           "score": 121,
-          "reason": "insulin-interruption"
+          "reason": "insulin-dose-missed"
         }
       ],
       "supports": [
@@ -854,21 +959,58 @@
     },
     {
       "fact": {
-        "id": "diabetes.sglt2_use_with_dka_symptoms",
-        "display": "SGLT2 Inhibitor Use with DKA Symptoms",
+        "id": "diabetes.current_pump_delivery_interrupted",
+        "display": "Current Insulin Pump Delivery Interruption",
         "value_type": "boolean",
         "safety_relevant": true
       },
       "target": {
-        "id": "target.diabetes-follow-up.sglt2-dka",
-        "display": "SGLT2 Inhibitor Use with DKA Symptoms",
+        "id": "target.diabetes-follow-up.pump-delivery-interrupted",
+        "display": "Current Insulin Pump Delivery Interruption",
         "intents": [
           "intent.screen_red_flags"
         ]
       },
       "question": {
-        "id": "question.diabetes-follow-up.sglt2-dka",
-        "wording": "SGLT2 억제제 계열 당뇨약을 복용하면서 혈당 수치와 상관없이 케톤산증 의심 증상이 있나요?",
+        "id": "question.diabetes-follow-up.pump-delivery-interrupted",
+        "wording": "현재 펌프·주입세트 이상으로 인슐린 공급이 중단됐나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 121,
+          "reason": "pump-delivery-interrupted"
+        }
+      ],
+      "supports": [
+        "group.diabetes-follow-up.acute-safety",
+        "group.diabetes-follow-up.type1-insulin"
+      ]
+    },
+    {
+      "fact": {
+        "id": "diabetes.current_sglt2_inhibitor_use",
+        "display": "Current SGLT2 Inhibitor Use",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.diabetes-follow-up.sglt2-use",
+        "display": "Current SGLT2 Inhibitor Use",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.diabetes-follow-up.sglt2-use",
+        "wording": "현재 SGLT2 억제제 계열 당뇨약을 복용 중인가요?",
         "language": "ko",
         "mode": [
           "chat",
@@ -881,7 +1023,7 @@
         {
           "branch": "any",
           "score": 120,
-          "reason": "sglt2-dka"
+          "reason": "sglt2-use"
         }
       ],
       "supports": [
