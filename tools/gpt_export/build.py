@@ -505,6 +505,28 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
 
     screening["contains_patient_responses"] = False
     catalog = sanitize(load_json(root / "knowledge" / "catalog" / "primary-care-rfe.json"))
+    alias_targets: dict[str, set[str]] = {}
+    for entry in catalog["entries"]:
+        for alias in entry.get("aliases", []):
+            normalized = alias.strip().casefold()
+            alias_targets.setdefault(normalized, set()).add(entry["id"])
+    detected_collisions = {
+        alias: sorted(targets)
+        for alias, targets in alias_targets.items()
+        if len(targets) > 1
+    }
+    declared_collisions = {
+        item["alias"].strip().casefold(): sorted(item["candidate_rfe_ids"])
+        for item in catalog.get("routing_policy", {}).get("ambiguous_aliases", [])
+    }
+    if declared_collisions != detected_collisions:
+        raise RuntimeError(
+            "RFE alias collisions must be declared exactly in routing_policy: "
+            f"detected={detected_collisions!r}, declared={declared_collisions!r}"
+        )
+    catalog["routing_policy"]["detected_alias_collision_count"] = len(
+        detected_collisions
+    )
     catalog["resource_type"] = "ReasonForEncounterCatalog"
     catalog["review_status"] = "unreviewed"
     catalog["usage_modes"] = ["research_test", "simulation"]
@@ -854,6 +876,9 @@ def build(root: Path, output: Path) -> dict[str, Any]:
             "first_question_ko": "오늘 어떤 이유로 오셨나요? 불편한 증상이나 상담받고 싶은 내용을 자유롭게 말씀해 주세요.",
             "use_first_message_when_present": True,
             "confirm_only_when_ambiguous": True,
+            "ambiguity_routing": resources["reason-for-encounters.json"][
+                "routing_policy"
+            ],
             "catalog": [
                 {
                     key: entry[key]

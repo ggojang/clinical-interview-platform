@@ -489,6 +489,65 @@ class GptExportTests(unittest.TestCase):
                 if entry["id"] in planned
             ))
 
+            routing = catalog["routing_policy"]
+            self.assertEqual(
+                routing["exact_alias_collision_behavior"],
+                "clarify_before_package_load",
+            )
+            self.assertTrue(routing["priority_tier_must_not_break_alias_ties"])
+            self.assertEqual(routing["detected_alias_collision_count"], 2)
+            ambiguous = {
+                item["alias"]: item for item in routing["ambiguous_aliases"]
+            }
+            self.assertEqual(set(ambiguous), {"목이 아파요", "넘어졌어요"})
+            self.assertEqual(
+                set(ambiguous["목이 아파요"]["candidate_rfe_ids"]),
+                {"rfe.upper_respiratory_symptoms", "rfe.neck_pain"},
+            )
+            self.assertEqual(
+                set(ambiguous["넘어졌어요"]["candidate_rfe_ids"]),
+                {"rfe.wound_minor_injury", "rfe.gait_falls_concern"},
+            )
+            for item in ambiguous.values():
+                self.assertEqual(
+                    [option["code"] for option in item["options"]],
+                    ["1", "2", "3", "4"],
+                )
+                self.assertEqual(len(item["options"][-1]["rfe_ids"]), 0)
+
+            manifest = json.loads(
+                (output_path / "manifest.json").read_text(encoding="utf-8")
+            )
+            self.assertEqual(
+                manifest["interview_entry"]["ambiguity_routing"], routing
+            )
+            routing_simulation = json.loads(
+                (
+                    ROOT
+                    / "simulation/workflows/rfe-routing-ambiguity-cases.json"
+                ).read_text(encoding="utf-8")
+            )
+            collision_cases = {
+                item["synthetic_input"]: item
+                for item in routing_simulation["cases"]
+                if item["candidate_rfe_ids"]
+            }
+            self.assertEqual(set(collision_cases), set(ambiguous))
+            for alias, item in collision_cases.items():
+                self.assertEqual(
+                    set(item["candidate_rfe_ids"]),
+                    set(ambiguous[alias]["candidate_rfe_ids"]),
+                )
+                self.assertFalse(
+                    item["expected"]["load_package_before_clarification"]
+                )
+            unmapped = next(
+                item for item in routing_simulation["cases"]
+                if not item["candidate_rfe_ids"]
+            )
+            self.assertFalse(unmapped["expected"]["force_existing_package"])
+            self.assertTrue(unmapped["expected"]["record_mapping_gap"])
+
             dysphagia = next(
                 entry for entry in catalog["entries"]
                 if entry["id"] == "rfe.dyspepsia_reflux"

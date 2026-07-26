@@ -53,6 +53,42 @@
     {"id": "rfe.preventive_care", "display": "Preventive Care", "display_ko": "건강검진 또는 예방관리", "aliases": ["건강검진", "검진 받으러 왔어요", "예방관리", "preventive care", "health check"], "priority_tier": 3, "implementation_status": "implemented", "package_id": "knowledge.kr-national-health-screening-2026"},
     {"id": "rfe.patient_experience_evaluation", "display": "Inpatient Patient Experience Evaluation", "display_ko": "입원 환자경험평가", "aliases": ["환자경험평가", "환자 경험 평가", "입원 경험 설문", "입원 환자경험 설문", "5차 환자경험평가", "환자경험 설문", "patient experience survey"], "priority_tier": 3, "implementation_status": "implemented_questionnaire", "questionnaire_id": "kr-patient-experience-evaluation-5th-2025", "activation_mode": "confirmation_required", "activation_prompt_ko": "환자경험평가 설문을 작성하시겠습니까?"}
   ],
+  "routing_policy": {
+    "exact_alias_collision_behavior": "clarify_before_package_load",
+    "priority_tier_must_not_break_alias_ties": true,
+    "preserve_original_reason_for_encounter_text": true,
+    "allow_multi_rfe_when_more_than_one_option_applies": true,
+    "ambiguous_aliases": [
+      {
+        "alias": "목이 아파요",
+        "candidate_rfe_ids": [
+          "rfe.upper_respiratory_symptoms",
+          "rfe.neck_pain"
+        ],
+        "clarification_question_ko": "아픈 곳이 목구멍 안쪽인가요, 아니면 목 뒤·옆의 근육이나 경추 부위인가요?",
+        "options": [
+          {"code": "1", "label_ko": "목구멍 안쪽·삼킬 때 불편", "rfe_ids": ["rfe.upper_respiratory_symptoms"]},
+          {"code": "2", "label_ko": "목 뒤·옆·근육·경추 통증", "rfe_ids": ["rfe.neck_pain"]},
+          {"code": "3", "label_ko": "둘 다", "rfe_ids": ["rfe.upper_respiratory_symptoms", "rfe.neck_pain"]},
+          {"code": "4", "label_ko": "잘 모르겠음", "rfe_ids": []}
+        ]
+      },
+      {
+        "alias": "넘어졌어요",
+        "candidate_rfe_ids": [
+          "rfe.wound_minor_injury",
+          "rfe.gait_falls_concern"
+        ],
+        "clarification_question_ko": "이번에 넘어져 생긴 부상 문진이 필요한가요, 아니면 반복 낙상이나 보행 불안의 원인 문진이 필요한가요?",
+        "options": [
+          {"code": "1", "label_ko": "이번 낙상으로 생긴 상처·통증·부상", "rfe_ids": ["rfe.wound_minor_injury"]},
+          {"code": "2", "label_ko": "반복 낙상·보행 불안", "rfe_ids": ["rfe.gait_falls_concern"]},
+          {"code": "3", "label_ko": "둘 다", "rfe_ids": ["rfe.wound_minor_injury", "rfe.gait_falls_concern"]},
+          {"code": "4", "label_ko": "잘 모르겠음", "rfe_ids": []}
+        ]
+      }
+    ]
+  },
   "principles": {
     "fact_identity": "Reuse an existing Fact identifier when meaning and value semantics are unchanged.",
     "package_boundary": "Each implemented Reason for Encounter compiles independently.",
