@@ -63,6 +63,7 @@
         "복통",
         "배가 아파요",
         "배 아픔",
+        "명치가 아파요",
         "abdominal pain"
       ],
       "display": "Abdominal Pain",
@@ -928,13 +929,50 @@
       "docs/context/003-primary-care-scope.md",
       "PROJECT_CONTEXT.md"
     ],
-    "version": "0.1.0"
+    "version": "0.1.1"
   },
   "resource_type": "ReasonForEncounterCatalog",
   "review_status": "unreviewed",
   "routing_policy": {
     "allow_multi_rfe_when_more_than_one_option_applies": true,
     "ambiguous_aliases": [
+      {
+        "alias": "명치가 아파요",
+        "candidate_rfe_ids": [
+          "rfe.abdominal_pain",
+          "rfe.dyspepsia_reflux"
+        ],
+        "clarification_question_ko": "명치 부위의 통증 자체를 중심으로 문진할까요, 아니면 속쓰림·소화불량·신물 역류 같은 위장 증상을 중심으로 문진할까요?",
+        "options": [
+          {
+            "code": "1",
+            "label_ko": "명치·윗배 통증이 주된 불편",
+            "rfe_ids": [
+              "rfe.abdominal_pain"
+            ]
+          },
+          {
+            "code": "2",
+            "label_ko": "속쓰림·소화불량·신물 역류가 주된 불편",
+            "rfe_ids": [
+              "rfe.dyspepsia_reflux"
+            ]
+          },
+          {
+            "code": "3",
+            "label_ko": "둘 다",
+            "rfe_ids": [
+              "rfe.abdominal_pain",
+              "rfe.dyspepsia_reflux"
+            ]
+          },
+          {
+            "code": "4",
+            "label_ko": "잘 모르겠음",
+            "rfe_ids": []
+          }
+        ]
+      },
       {
         "alias": "목이 아파요",
         "candidate_rfe_ids": [
@@ -1010,7 +1048,7 @@
         ]
       }
     ],
-    "detected_alias_collision_count": 2,
+    "detected_alias_collision_count": 3,
     "exact_alias_collision_behavior": "clarify_before_package_load",
     "preserve_original_reason_for_encounter_text": true,
     "priority_tier_must_not_break_alias_ties": true
@@ -1020,5 +1058,5 @@
     "research_test",
     "simulation"
   ],
-  "version": "0.5.0"
+  "version": "0.5.1"
 }

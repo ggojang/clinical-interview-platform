@@ -495,11 +495,18 @@ class GptExportTests(unittest.TestCase):
                 "clarify_before_package_load",
             )
             self.assertTrue(routing["priority_tier_must_not_break_alias_ties"])
-            self.assertEqual(routing["detected_alias_collision_count"], 2)
+            self.assertEqual(routing["detected_alias_collision_count"], 3)
             ambiguous = {
                 item["alias"]: item for item in routing["ambiguous_aliases"]
             }
-            self.assertEqual(set(ambiguous), {"목이 아파요", "넘어졌어요"})
+            self.assertEqual(
+                set(ambiguous),
+                {"명치가 아파요", "목이 아파요", "넘어졌어요"},
+            )
+            self.assertEqual(
+                set(ambiguous["명치가 아파요"]["candidate_rfe_ids"]),
+                {"rfe.abdominal_pain", "rfe.dyspepsia_reflux"},
+            )
             self.assertEqual(
                 set(ambiguous["목이 아파요"]["candidate_rfe_ids"]),
                 {"rfe.upper_respiratory_symptoms", "rfe.neck_pain"},

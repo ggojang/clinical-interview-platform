@@ -1,13 +1,13 @@
 {
   "id": "catalog.primary-care-reason-for-encounter",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "status": "research_only",
   "entries": [
     {"id": "rfe.cough", "display": "Cough", "display_ko": "기침", "aliases": ["기침", "해수", "기침이 나요", "cough"], "priority_tier": 1, "implementation_status": "implemented", "package_id": "package.primary-care-cough"},
     {"id": "rfe.fever", "display": "Fever", "display_ko": "발열", "aliases": ["발열", "열", "열이 나요", "fever"], "priority_tier": 1, "implementation_status": "implemented", "package_id": "package.primary-care-fever"},
     {"id": "rfe.dyspnea", "display": "Breathing Difficulty", "display_ko": "호흡곤란", "aliases": ["호흡곤란", "숨참", "숨이 차요", "breathing difficulty", "dyspnea"], "priority_tier": 1, "implementation_status": "implemented", "package_id": "package.primary-care-dyspnea"},
     {"id": "rfe.chest_pain", "display": "Chest Pain", "display_ko": "흉통", "aliases": ["흉통", "가슴 통증", "가슴이 아파요", "chest pain"], "priority_tier": 1, "implementation_status": "implemented", "package_id": "package.primary-care-chest-pain"},
-    {"id": "rfe.abdominal_pain", "display": "Abdominal Pain", "display_ko": "복통", "aliases": ["복통", "배가 아파요", "배 아픔", "abdominal pain"], "priority_tier": 1, "implementation_status": "implemented", "package_id": "package.primary-care-abdominal-pain"},
+    {"id": "rfe.abdominal_pain", "display": "Abdominal Pain", "display_ko": "복통", "aliases": ["복통", "배가 아파요", "배 아픔", "명치가 아파요", "abdominal pain"], "priority_tier": 1, "implementation_status": "implemented", "package_id": "package.primary-care-abdominal-pain"},
     {"id": "rfe.headache", "display": "Headache", "display_ko": "두통", "aliases": ["두통", "머리가 아파요", "headache"], "priority_tier": 2, "implementation_status": "implemented", "package_id": "package.primary-care-headache"},
     {"id": "rfe.dizziness_syncope", "display": "Dizziness or Syncope", "display_ko": "어지럼 또는 실신", "aliases": ["어지럼", "어지러워요", "실신", "dizziness", "syncope"], "priority_tier": 2, "implementation_status": "implemented", "package_id": "package.primary-care-dizziness-syncope"},
     {"id": "rfe.vomiting_diarrhea", "display": "Vomiting or Diarrhea", "display_ko": "구토 또는 설사", "aliases": ["구토", "토해요", "설사", "vomiting", "diarrhea"], "priority_tier": 2, "implementation_status": "implemented", "package_id": "package.primary-care-vomiting-diarrhea"},
@@ -60,6 +60,20 @@
     "allow_multi_rfe_when_more_than_one_option_applies": true,
     "ambiguous_aliases": [
       {
+        "alias": "명치가 아파요",
+        "candidate_rfe_ids": [
+          "rfe.abdominal_pain",
+          "rfe.dyspepsia_reflux"
+        ],
+        "clarification_question_ko": "명치 부위의 통증 자체를 중심으로 문진할까요, 아니면 속쓰림·소화불량·신물 역류 같은 위장 증상을 중심으로 문진할까요?",
+        "options": [
+          {"code": "1", "label_ko": "명치·윗배 통증이 주된 불편", "rfe_ids": ["rfe.abdominal_pain"]},
+          {"code": "2", "label_ko": "속쓰림·소화불량·신물 역류가 주된 불편", "rfe_ids": ["rfe.dyspepsia_reflux"]},
+          {"code": "3", "label_ko": "둘 다", "rfe_ids": ["rfe.abdominal_pain", "rfe.dyspepsia_reflux"]},
+          {"code": "4", "label_ko": "잘 모르겠음", "rfe_ids": []}
+        ]
+      },
+      {
         "alias": "목이 아파요",
         "candidate_rfe_ids": [
           "rfe.upper_respiratory_symptoms",
@@ -100,6 +114,6 @@
     "created_at": "2026-07-14T00:00:00Z",
     "source_refs": ["docs/context/003-primary-care-scope.md", "PROJECT_CONTEXT.md"],
     "review_status": "unreviewed",
-    "version": "0.1.0"
+    "version": "0.1.1"
   }
 }
