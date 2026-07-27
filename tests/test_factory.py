@@ -846,7 +846,7 @@ class CompilerTests(unittest.TestCase):
     def test_diabetes_follow_up_package_is_complete(self):
         package = compile_package(profile="diabetes_follow_up")
         facts = {n["id"] for n in package["knowledge_graph"]["nodes"] if n["type"] == "Fact"}
-        self.assertEqual(len(facts), 62)
+        self.assertEqual(len(facts), 69)
         self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
         self.assertEqual(package["coverage"]["total_safety_rules"], 13)
         self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 13)
@@ -877,6 +877,7 @@ class CompilerTests(unittest.TestCase):
             "diabetes.sglt2_use_with_dka_symptoms",
             facts,
         )
+        self.assertNotIn("diabetes.dka_symptom_cluster", facts)
         self.assertTrue({
             "diabetes.current_hypoglycemia_normal_response",
             "diabetes.current_hypoglycemia_self_treatment_ability",
@@ -893,6 +894,14 @@ class CompilerTests(unittest.TestCase):
             "diabetes.current_insulin_dose_missed",
             "diabetes.current_pump_delivery_interrupted",
             "diabetes.current_sglt2_inhibitor_use",
+            "diabetes.current_excessive_thirst",
+            "diabetes.current_frequent_urination",
+            "diabetes.current_nausea",
+            "diabetes.current_abdominal_pain",
+            "diabetes.current_rapid_breathing",
+            "diabetes.current_deep_labored_breathing",
+            "diabetes.current_fruity_breath",
+            "diabetes.current_marked_drowsiness",
         } <= facts)
         safety_always = set(
             package["interview_completion_policy"]["required_facts"]["always"]

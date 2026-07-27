@@ -34,7 +34,14 @@ def fragment():
         Q("diabetes.current_hypoglycemia_self_treatment_ability", "Self-treatment Ability during Suspected Hypoglycemia", "boolean", "hypoglycemia-self-treatment", "지금 저혈당을 스스로 당을 섭취해 처치할 수 있나요?", 126, [G["acute-safety"], G["medication-hypoglycemia"]], S, safety_relevant=True),
         Q("diabetes.current_glucose_below_54", "Current Glucose below 54 mg/dL", "boolean", "current-glucose-below-54", "현재 측정한 혈당이 54 mg/dL 미만인가요?", 125, [G["acute-safety"], G["medication-hypoglycemia"]], S, safety_relevant=True),
         Q("diabetes.current_glucose_remains_below_70_after_treatment", "Glucose below 70 mg/dL after Treatment", "boolean", "current-glucose-below-70-after-treatment", "당을 섭취하고 15분 뒤 다시 측정한 혈당이 70 mg/dL 미만인가요?", 124, [G["acute-safety"], G["medication-hypoglycemia"]], S, safety_relevant=True),
-        Q("diabetes.dka_symptom_cluster", "Diabetic Ketoacidosis Symptom Cluster", "boolean", "dka-symptoms", "심한 갈증·잦은 소변과 함께 메스꺼움·구토, 복통, 깊거나 빠른 호흡, 과일 냄새 같은 숨, 심한 졸림·혼란이 있나요?", 123, [G["acute-safety"]], S, safety_relevant=True, terminology_binding={"system": SN, "code": "111556005"}, mrcm_ref=M),
+        Q("diabetes.current_excessive_thirst", "Current Excessive Thirst", "boolean", "excessive-thirst", "지금 평소보다 매우 심하게 목이 마른가요?", 123, [G["acute-safety"]], S, safety_relevant=True),
+        Q("diabetes.current_frequent_urination", "Current Frequent Urination", "boolean", "frequent-urination", "지금 평소보다 소변을 훨씬 자주 보나요?", 123, [G["acute-safety"]], S, safety_relevant=True),
+        Q("diabetes.current_nausea", "Current Nausea", "boolean", "current-nausea", "지금 메스꺼운가요?", 123, [G["acute-safety"]], S, safety_relevant=True),
+        Q("diabetes.current_abdominal_pain", "Current Abdominal Pain", "boolean", "current-abdominal-pain", "지금 배가 아픈가요?", 123, [G["acute-safety"]], S, safety_relevant=True),
+        Q("diabetes.current_rapid_breathing", "Current Rapid Breathing", "boolean", "rapid-breathing", "지금 평소보다 숨이 빠른가요?", 123, [G["acute-safety"]], S, safety_relevant=True),
+        Q("diabetes.current_deep_labored_breathing", "Current Deep Labored Breathing", "boolean", "deep-labored-breathing", "지금 숨을 유난히 깊고 힘들게 쉬나요?", 123, [G["acute-safety"]], S, safety_relevant=True),
+        Q("diabetes.current_fruity_breath", "Current Fruity Breath", "boolean", "fruity-breath", "지금 숨에서 평소와 다른 달거나 과일 같은 냄새가 난다고 들었거나 느끼나요?", 123, [G["acute-safety"]], S, safety_relevant=True),
+        Q("diabetes.current_marked_drowsiness", "Current Marked Drowsiness", "boolean", "marked-drowsiness", "지금 평소보다 심하게 졸리거나 깨어 있기 어렵나요?", 123, [G["acute-safety"]], S, safety_relevant=True),
         Q("diabetes.current_blood_ketone_high", "Current Blood Ketone in High Range", "boolean", "blood-ketone-high", "현재 혈액 케톤 결과가 검사기나 의료진이 안내한 높은 범위인가요?", 122, [G["acute-safety"], G["type1-insulin"]], S, safety_relevant=True),
         Q("diabetes.current_urine_ketone_at_least_moderate", "Current Urine Ketone at Least Moderate", "boolean", "urine-ketone-moderate", "현재 소변 케톤 결과가 중등도 이상인가요?", 122, [G["acute-safety"], G["type1-insulin"]], S, safety_relevant=True),
         Q("diabetes.current_repeated_vomiting", "Current Repeated Vomiting", "boolean", "repeated-vomiting", "현재 반복해서 토하고 있나요?", 123, [G["acute-safety"]], S, safety_relevant=True),
@@ -65,7 +72,7 @@ def fragment():
         Q("medication.recent_start_stop_dose_change", "Recent Diabetes Medicine Change", "string", "recent-change", "최근 당뇨약·인슐린을 시작·중단·증량·감량한 내용과 시점이 있나요?", 105, [G["medication-hypoglycemia"]], F, reuse_existing=True),
         Q("medication.suspected_adverse_effects", "Suspected Diabetes Medicine Adverse Effects", "string", "adverse-effects", "메스꺼움·설사, 탈수, 생식기 감염, 부종, 체중 변화 등 약과 관련 있다고 생각하는 불편이 있나요?", 104, [G["medication-hypoglycemia"]], F, reuse_existing=True),
         Q("diabetes.hypoglycemia_frequency_and_timing", "Hypoglycemia Frequency and Timing", "string", "hypoglycemia-frequency", "최근 저혈당 또는 70 mg/dL 미만이 얼마나 자주, 주로 언제 발생했나요?", 109, [G["medication-hypoglycemia"]], R),
-        Q("diabetes.severe_hypoglycemia_needing_assistance_history", "Severe Hypoglycemia Requiring Assistance", "boolean", "severe-hypoglycemia-history", "최근 다른 사람의 도움, 글루카곤, 응급진료가 필요했던 심한 저혈당이 있었나요?", 108, [G["medication-hypoglycemia"]], R),
+        Q("diabetes.severe_hypoglycemia_needing_assistance_history", "Severe Hypoglycemia Requiring Assistance", "boolean", "severe-hypoglycemia-history", "최근 다른 사람의 도움, 글루카곤, 응급진료가 필요했던 심한 저혈당이 있었나요?", 124, [G["acute-safety"], G["medication-hypoglycemia"]], S + R),
         Q("diabetes.impaired_hypoglycemia_awareness", "Impaired Hypoglycemia Awareness", "boolean", "hypoglycemia-awareness", "혈당이 많이 낮아질 때까지 떨림·식은땀·허기 같은 경고 증상을 잘 느끼지 못하나요?", 107, [G["medication-hypoglycemia"]], R),
         Q("diabetes.hypoglycemia_treatment_and_glucagon_access", "Hypoglycemia Treatment and Glucagon Access", "string", "hypoglycemia-preparedness", "빠른 당 섭취 방법을 알고 준비해 두었는지, 필요하면 글루카곤과 사용 가능한 보호자가 있는지 알려주세요.", 96, [G["medication-hypoglycemia"], G["self-management"]], F),
         Q("diabetes.insulin_regimen_delivery_site_and_technique", "Insulin Regimen Delivery Site and Technique", "string", "insulin-technique", "인슐린 사용 중이면 주사·펌프 방식, 주입 부위 교대와 피부 멍울·누출 문제가 있나요?", 103, [G["type1-insulin"], G["medication-hypoglycemia"]], F),
@@ -75,7 +82,7 @@ def fragment():
         Q("diabetes.latest_uacr_albuminuria_and_date", "Latest Urine Albumin Assessment", "string", "albuminuria", "최근 소변 알부민/크레아티닌비(UACR) 또는 단백뇨 결과와 검사 날짜를 알려주세요.", 100, [G["kidney-eye-foot"]], R),
         Q("diabetes.rapid_kidney_decline_or_increasing_albuminuria_known", "Rapid Kidney Decline or Rising Albuminuria", "boolean", "kidney-progression", "신장기능이 빠르게 떨어지거나 소변 단백이 계속 증가한다는 말을 들었나요?", 99, [G["kidney-eye-foot"]], R),
         Q("diabetes.retinal_screening_date_and_result", "Retinal Screening Date and Result", "string", "retinal-screening", "최근 당뇨망막검사·안저검사 날짜와 결과, 다음 일정이 있나요?", 100, [G["kidney-eye-foot"]], R),
-        Q("diabetes.new_vision_change", "New Vision Change", "boolean", "vision-change", "최근 갑작스럽거나 새로 생긴 시력 저하·시야 변화가 있나요?", 105, [G["kidney-eye-foot"]], R),
+        Q("diabetes.new_vision_change", "New Vision Change", "boolean", "vision-change", "최근 갑작스럽거나 새로 생긴 시력 저하·시야 변화가 있나요?", 124, [G["acute-safety"], G["kidney-eye-foot"]], S + R),
         Q("diabetes.foot_numbness_burning_pain_or_sensation_loss", "Foot Neuropathy Symptoms", "boolean", "foot-neuropathy", "발의 저림·화끈거림·통증, 감각 둔화 또는 상처를 잘 못 느끼는 증상이 있나요?", 99, [G["kidney-eye-foot"]], R),
         Q("diabetes.foot_exam_date_and_risk_result", "Foot Examination and Risk Result", "string", "foot-exam", "최근 발 피부·변형·감각·맥박 검사를 언제 받았고 위험도 결과는 어땠나요?", 98, [G["kidney-eye-foot"]], R),
         Q("diabetes.prior_foot_ulcer_amputation_or_charcot", "Prior Foot Ulcer Amputation or Charcot Foot", "boolean", "foot-history", "과거 발 궤양, 절단, 샤르코 발 또는 발 혈관 시술 병력이 있나요?", 97, [G["kidney-eye-foot"]], R),
@@ -94,17 +101,40 @@ def fragment():
         Q("diabetes.vaccination_and_preventive_care_review", "Vaccination and Preventive Care Review", "string", "preventive-review", "예방접종과 연령·성별에 맞는 일반 건강검진을 최근에 확인했나요?", 84, [G["self-management"]], F),
         Q("diabetes.patient_goal_or_question", "Patient Goal or Question", "string", "patient-goal", "이번 추적관리에서 가장 확인하거나 개선하고 싶은 점은 무엇인가요?", 83, [G["routing"], G["self-management"]], F),
     ]
-    dka = {"fact": "diabetes.dka_symptom_cluster", "equals": True}
+    # A DKA warning pattern is expressed only with atomic patient-reportable
+    # Facts.  Nausea and abdominal pain, and thirst and urinary frequency, are
+    # paired to avoid escalating from one common non-specific symptom alone.
+    dka_non_vomiting_warning = {"any": [
+        {"all": [
+            {"fact": "diabetes.current_excessive_thirst", "equals": True},
+            {"fact": "diabetes.current_frequent_urination", "equals": True},
+        ]},
+        {"all": [
+            {"fact": "diabetes.current_nausea", "equals": True},
+            {"fact": "diabetes.current_abdominal_pain", "equals": True},
+        ]},
+        {"fact": "diabetes.current_rapid_breathing", "equals": True},
+        {"fact": "diabetes.current_deep_labored_breathing", "equals": True},
+        {"fact": "diabetes.current_fruity_breath", "equals": True},
+        {"fact": "diabetes.current_marked_drowsiness", "equals": True},
+        {"fact": "diabetes.current_confusion", "equals": True},
+        {"fact": "diabetes.current_difficult_to_wake", "equals": True},
+    ]}
+    dka_warning = {"any": [
+        *dka_non_vomiting_warning["any"],
+        {"fact": "diabetes.current_repeated_vomiting", "equals": True},
+        {"fact": "diabetes.current_unable_to_retain_fluids", "equals": True},
+    ]}
     rules = [
         safety_rule(P, "hypoglycemia-abnormal-response", {"fact": "diabetes.current_hypoglycemia_normal_response", "equals": False}, "emergency", 1000),
         safety_rule(P, "hypoglycemia-needs-assistance", {"fact": "diabetes.current_hypoglycemia_self_treatment_ability", "equals": False}, "emergency", 1000),
         safety_rule(P, "current-glucose-below-54", {"fact": "diabetes.current_glucose_below_54", "equals": True}, "urgent", 970),
         safety_rule(P, "persistent-current-hypoglycemia", {"fact": "diabetes.current_glucose_remains_below_70_after_treatment", "equals": True}, "urgent", 960),
-        safety_rule(P, "dka-symptoms-ketones", {"all": [dka, {"any": [
+        safety_rule(P, "dka-symptoms-ketones", {"all": [dka_warning, {"any": [
             {"fact": "diabetes.current_blood_ketone_high", "equals": True},
             {"fact": "diabetes.current_urine_ketone_at_least_moderate", "equals": True},
         ]}]}, "emergency", 1000),
-        safety_rule(P, "dka-symptoms-vomiting", {"all": [dka, {"any": [
+        safety_rule(P, "dka-symptoms-vomiting", {"all": [dka_non_vomiting_warning, {"any": [
             {"fact": "diabetes.current_repeated_vomiting", "equals": True},
             {"fact": "diabetes.current_unable_to_retain_fluids", "equals": True},
         ]}]}, "emergency", 1000),
@@ -118,12 +148,12 @@ def fragment():
                 ]},
             ],
         }, "emergency", 1000),
-        safety_rule(P, "insulin-interruption-dka", {"all": [dka, {"any": [
+        safety_rule(P, "insulin-interruption-dka", {"all": [dka_warning, {"any": [
             {"fact": "diabetes.current_insulin_dose_missed", "equals": True},
             {"fact": "diabetes.current_pump_delivery_interrupted", "equals": True},
         ]}]}, "emergency", 1000),
         safety_rule(P, "sglt2-dka", {"all": [
-            dka,
+            dka_warning,
             {"fact": "diabetes.current_sglt2_inhibitor_use", "equals": True},
         ]}, "emergency", 1000),
         safety_rule(P, "limb-threatening-foot", {"fact": "diabetes.foot_ulcer_with_sepsis_ischaemia_deep_infection_or_gangrene", "equals": True}, "emergency", 1000),
@@ -135,7 +165,7 @@ def fragment():
 
 
 def completion(f):
-    p = completion_policy(prefix=P, fragment=f, presentation_fact="diabetes.follow_up.requested", question_budget=45, source_refs=SOURCES)
+    p = completion_policy(prefix=P, fragment=f, presentation_fact="diabetes.follow_up.requested", question_budget=52, source_refs=SOURCES)
     p["required_facts"]["routine"] = [
         "diabetes.type_or_context", "diabetes.primary_follow_up_focus",
         "diabetes.latest_hba1c_value", "diabetes.latest_hba1c_date",
@@ -174,19 +204,20 @@ def source_docs():
         ("source.nhs.hypoglycaemia.2026", "NHS", "Low blood sugar (hypoglycaemia)", "page-reviewed-2023-08-03;checked-2026-07-25", "https://www.nhs.uk/conditions/low-blood-sugar-hypoglycaemia/", "public_health_guidance", 7),
         ("source.stom.diabetes.20260714", "Infoclinic", "STOM diabetes terminology and MRCM summary", "SNOMEDCT-20260701", "https://stom.infoclinic.co", "terminology_server", 30),
     ]
-    verified_now = {
-        "source.ada.soc2026.glycemic-goals",
-        "source.ada.soc2026.ckd",
-        "source.ada.soc2026.retina-neuropathy-foot",
-        "source.nice.ng28.diabetes-type2.2026",
-        "source.nice.ng17.diabetes-type1",
-        "source.nice.ng19.diabetic-foot.2025",
-        "source.nhs.dka.2026",
-        "source.nhs.hypoglycaemia.2026",
+    checked_dates = {
+        "source.ada.soc2026.glycemic-goals": "2026-07-26",
+        "source.ada.soc2026.ckd": "2026-07-26",
+        "source.ada.soc2026.retina-neuropathy-foot": "2026-07-26",
+        "source.nice.ng28.diabetes-type2.2026": "2026-07-26",
+        "source.nice.ng17.diabetes-type1": "2026-07-26",
+        "source.nice.ng19.diabetic-foot.2025": "2026-07-26",
+        "source.nhs.dka.2026": "2026-07-25",
+        "source.nhs.hypoglycaemia.2026": "2026-07-25",
     }
     arts = []
     for i, pub, title, ver, url, profile, days in defs:
-        checked = i in verified_now
+        checked = i in checked_dates
+        checked_at = checked_dates.get(i, "2026-07-14")
         arts.append({
             "id": i,
             "kind": "terminology_mrcm_query_summary" if profile == "terminology_server" else "clinical_guidance_metadata",
@@ -200,10 +231,11 @@ def source_docs():
             "complete": False,
             "monitor_profile": profile,
             "monitor_interval_days": days,
-            "last_monitored_at": "2026-07-25" if checked else "2026-07-14",
+            "last_monitored_at": checked_at,
             "next_monitor_at": (
-                "2026-07-26" if checked and days == 1 else
-                "2026-08-01" if checked and days == 7 else
+                "2026-07-27" if checked_at == "2026-07-26" and days == 1 else
+                "2026-07-26" if checked_at == "2026-07-25" and days == 1 else
+                "2026-08-01" if checked_at == "2026-07-25" and days == 7 else
                 "2026-08-13" if days == 30 else
                 "2026-07-21" if days == 7 else
                 "2026-07-15"
@@ -252,7 +284,13 @@ def cases(f):
             suffix = f"-{variant}" if len(states) > 1 else ""
             case_id = f"DM-{key.upper()}{suffix}"
             out[f"{case_id}.json"] = {"id": case_id, "simulation_language": "ko", "persona": {"age": 31 + i + variant - 1}, "initial_statement": {"ko": "당뇨병 정기 진료를 받으러 왔어요."}, "hidden_state": hidden, "expected": {"expected_safety_level": level, "expected_safety_action": "human_handoff", "expected_stop_reason": f"{level}_escalation", "expected_triggered_rules_contains": [rule["id"]], "expected_max_turns": 35, "forbidden_assertions": ["diagnosis.diabetic_ketoacidosis", "diagnosis.hyperosmolar_state", "recommendation.change_insulin_dose"]}, "provenance": provenance(SOURCES)}
-    policy = completion(f); required = set(policy["required_facts"]["always"] + policy["required_facts"]["routine"] + policy["conditional_required_facts"][0]["cases"]["type2"])
+    policy = completion(f)
+    required = set(
+        policy["required_facts"]["always"]
+        + policy["required_facts"]["routine"]
+        + policy["conditional_required_facts"][0]["cases"]["type2"]
+        + policy["conditional_required_facts"][1]["cases"]["glycemic_control"]
+    )
     by_id = {x["fact"]["id"]: x["fact"] for x in f["entries"]}; hidden = {}
     for fid in required:
         fact = by_id[fid]
@@ -264,6 +302,29 @@ def cases(f):
     hidden["diabetes.type_or_context"] = {"value": "type2"}; hidden["diabetes.primary_follow_up_focus"] = {"value": "glycemic_control"}
     declined = "medication.diabetes_current_list"; hidden.pop(declined)
     out["DM-TYPE2-DATA-ABSENT.json"] = {"id": "DM-TYPE2-DATA-ABSENT", "simulation_language": "ko", "persona": {"age": 57}, "initial_statement": {"ko": "2형 당뇨 정기 검진을 받으러 왔어요."}, "hidden_state": hidden, "response_behavior": {declined: {"dataAbsentReason": "asked-declined"}}, "expected": {"expected_data_absent_reasons": {declined: "asked-declined"}, "expected_safety_level": "routine", "expected_stop_reason": "required_targets_addressed_with_absent_data", "expected_max_turns": 70, "forbidden_assertions": ["diagnosis.controlled_diabetes", "recommendation.change_medication"]}, "provenance": provenance(["source.nice.ng28.diabetes-type2.2026", "specifications/clinical-memory.md"])}
+    thirst_only = {**hidden, declined: {"value": "없음"}}
+    thirst_only["diabetes.current_excessive_thirst"] = {"value": True}
+    thirst_only["diabetes.current_frequent_urination"] = {"value": False}
+    out["DM-DKA-INCOMPLETE-THIRST-ONLY.json"] = {
+        "id": "DM-DKA-INCOMPLETE-THIRST-ONLY",
+        "simulation_language": "ko",
+        "persona": {"age": 49},
+        "initial_statement": {"ko": "당뇨 추적진료인데 오늘 유난히 목이 마릅니다."},
+        "hidden_state": thirst_only,
+        "expected": {
+            "expected_safety_level": "routine",
+            "expected_stop_reason": "all_required_targets_resolved",
+            "expected_max_turns": 75,
+            "forbidden_assertions": [
+                "diagnosis.diabetic_ketoacidosis",
+                "recommendation.change_insulin_dose",
+            ],
+        },
+        "provenance": provenance([
+            "source.ada.soc2026.glycemic-goals",
+            "source.nice.ng17.diabetes-type1",
+        ]),
+    }
     return out
 
 
