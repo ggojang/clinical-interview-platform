@@ -71,6 +71,14 @@ def evaluate_case(case_path: Path, package_path: Path) -> dict[str, Any]:
             failures.append(
                 f"expected known Fact mismatch: {fact_id}={expected_value!r}"
             )
+    expected_handoff = expected.get("expected_clinician_handoff")
+    if expected_handoff is not None:
+        actual_handoff = state.get("clinician_handoff") is not None
+        if actual_handoff != expected_handoff:
+            failures.append(
+                "clinician handoff presence mismatch: "
+                f"expected {expected_handoff}, got {actual_handoff}"
+            )
     for fact_id, expected_reason in expected.get(
         "expected_data_absent_reasons", {}
     ).items():

@@ -127,10 +127,36 @@
       }
     },
     {
-      "id": "rule.asthma-copd-follow-up.safety.chest-syncope",
+      "id": "rule.asthma-copd-follow-up.safety.chest-pain",
       "priority": 990,
       "when": {
-        "fact": "resp_followup.chest_pain_syncope_or_new_arrhythmia",
+        "fact": "resp_followup.current_new_or_severe_chest_pain",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.asthma-copd-follow-up.safety.syncope",
+      "priority": 990,
+      "when": {
+        "fact": "resp_followup.current_syncope",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.asthma-copd-follow-up.safety.new-arrhythmia",
+      "priority": 990,
+      "when": {
+        "fact": "resp_followup.current_new_sustained_irregular_palpitations",
         "equals": true
       },
       "then": {
@@ -484,21 +510,25 @@
     },
     {
       "fact": {
-        "id": "resp_followup.chest_pain_syncope_or_new_arrhythmia",
-        "display": "Chest Pain Syncope or New Arrhythmia",
+        "id": "resp_followup.current_new_or_severe_chest_pain",
+        "display": "Current New or Severe Chest Pain",
         "value_type": "boolean",
-        "safety_relevant": true
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "29857009"
+        }
       },
       "target": {
-        "id": "target.asthma-copd-follow-up.chest-syncope",
-        "display": "Chest Pain Syncope or New Arrhythmia",
+        "id": "target.asthma-copd-follow-up.chest-pain",
+        "display": "Current New or Severe Chest Pain",
         "intents": [
           "intent.screen_red_flags"
         ]
       },
       "question": {
-        "id": "question.asthma-copd-follow-up.chest-syncope",
-        "wording": "호흡 악화와 함께 새롭거나 심한 가슴통증, 실신 또는 매우 불규칙한 두근거림이 있나요?",
+        "id": "question.asthma-copd-follow-up.chest-pain",
+        "wording": "호흡 악화와 함께 새롭거나 심한 가슴통증이 있나요?",
         "language": "ko",
         "mode": [
           "chat",
@@ -511,7 +541,87 @@
         {
           "branch": "any",
           "score": 174,
-          "reason": "chest-syncope"
+          "reason": "chest-pain"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.current_syncope",
+        "display": "Current Syncope",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "271594007"
+        }
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.syncope",
+        "display": "Current Syncope",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.syncope",
+        "wording": "호흡 악화와 함께 실신했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 174,
+          "reason": "syncope"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.current_new_sustained_irregular_palpitations",
+        "display": "Current New Sustained Irregular Palpitations",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "80313002"
+        }
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.new-arrhythmia",
+        "display": "Current New Sustained Irregular Palpitations",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.new-arrhythmia",
+        "wording": "호흡 악화와 함께 새로 생긴 매우 불규칙한 두근거림이 지속되나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 174,
+          "reason": "new-arrhythmia"
         }
       ],
       "supports": [
@@ -2477,7 +2587,7 @@
     "source_refs": [
       "source.nice.ng245.asthma.2025",
       "source.nice.ng115.copd.2025",
-      "source.gina.strategy.2025",
+      "source.gina.strategy.2026",
       "source.gold.report.2026",
       "source.stom.asthma-copd-follow-up.20260715"
     ],

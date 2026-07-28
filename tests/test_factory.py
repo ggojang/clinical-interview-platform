@@ -1081,10 +1081,52 @@ class CompilerTests(unittest.TestCase):
         }
         self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
         self.assertGreaterEqual(len(facts), 60)
-        self.assertEqual(package["coverage"]["total_safety_rules"], 13)
-        self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 13)
+        self.assertEqual(package["coverage"]["total_safety_rules"], 15)
+        self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 15)
         self.assertEqual(package["coverage"]["uncovered_safety_rules"], [])
         self.assertEqual(package["coverage"]["data_absent_reason_simulations"], 1)
+        self.assertNotIn(
+            "resp_followup.chest_pain_syncope_or_new_arrhythmia", facts
+        )
+        self.assertTrue({
+            "resp_followup.current_new_or_severe_chest_pain",
+            "resp_followup.current_syncope",
+            "resp_followup.current_new_sustained_irregular_palpitations",
+        } <= facts)
+        self.assertGreaterEqual(package["coverage"]["simulation_count"], 17)
+        handoff_case = next(
+            item for item in package["simulations"]
+            if item["id"] == "RESP-FOLLOWUP-COPD-MODERATE-EXACERBATION-HANDOFF"
+        )
+        handoff_fixture = json.loads(
+            (Path(__file__).resolve().parents[1] / handoff_case["path"])
+            .read_text(encoding="utf-8")
+        )
+        self.assertTrue(handoff_fixture["clinician_submission"])
+        self.assertTrue(handoff_fixture["expected"]["expected_clinician_handoff"])
+        question_codes = {
+            node.get("collects"): {
+                item.get("code")
+                for item in node.get("semantic_binding", {}).get(
+                    "standard_mappings", []
+                )
+            }
+            for node in package["knowledge_graph"]["nodes"]
+            if node.get("type") == "QuestionTemplate" and node.get("collects")
+        }
+        self.assertIn(
+            "29857009",
+            question_codes["resp_followup.current_new_or_severe_chest_pain"],
+        )
+        self.assertIn(
+            "271594007", question_codes["resp_followup.current_syncope"]
+        )
+        self.assertIn(
+            "80313002",
+            question_codes[
+                "resp_followup.current_new_sustained_irregular_palpitations"
+            ],
+        )
         conditional = package["interview_completion_policy"]["conditional_required_facts"][0]
         self.assertEqual(conditional["selector_fact"], "resp_followup.condition_group")
         self.assertEqual(
