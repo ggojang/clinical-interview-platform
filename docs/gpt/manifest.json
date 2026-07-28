@@ -32,15 +32,18 @@
       "choice_question_guidance_ko": "번호로 답하거나, 보기에 없으면 내용을 직접 입력해 주세요.",
       "display_choice_question_guidance_every_time": true,
       "display_format": "Q{positive_integer}",
+      "display_response_guidance_every_dynamic_question": true,
       "edit_command_uses_question_reference": "수정 Q{positive_integer}",
       "enumerated_unknown_and_decline_follow_global_option_policy": true,
       "every_displayed_answer_option_has_visible_number": true,
+      "fixed_source_questionnaire_exception": "preserve_the_official_response_constraints_and_wording",
       "mandatory_or_source_constrained_value_still_requires_valid_input": true,
       "mandatory_or_source_preserving_exception_may_omit_metadata_options": true,
       "map_unlisted_free_text_to_fact_when_unambiguous": true,
       "monotonic_within_encounter": true,
       "never_reset_after_answer": true,
       "numbered_options_are_shortcuts_not_a_closed_answer_set": true,
+      "open_question_guidance_ko": "내용을 자유롭게 입력해 주세요. 예시가 있더라도 그대로 고를 필요는 없습니다.",
       "repeat_or_clarification_reuses_same_reference": true
     },
     "reason_for_encounter_enters_interview_not_general_medical_consultation": true
@@ -369,8 +372,14 @@
             "history.family.relationship",
             "occupation.current",
             "patient.smoking.status",
-            "patient.smoking.exposure_detail",
-            "patient.alcohol.pattern"
+            "patient.smoking.product_types",
+            "patient.smoking.cigarettes_per_day",
+            "patient.smoking.duration_years",
+            "patient.smoking.quit_timing",
+            "patient.alcohol.use_status",
+            "patient.alcohol.beverage_types",
+            "patient.alcohol.frequency",
+            "patient.alcohol.amount_per_occasion"
           ],
           "id": "family_and_social_history"
         },
@@ -2138,8 +2147,7 @@
               "history.family",
               "occupation.current",
               "patient.smoking.status",
-              "patient.smoking.exposure_detail",
-              "patient.alcohol.pattern"
+              "patient.alcohol.use_status"
             ],
             "current": [],
             "first_encounter": [
@@ -2150,8 +2158,7 @@
               "history.family",
               "occupation.current",
               "patient.smoking.status",
-              "patient.smoking.exposure_detail",
-              "patient.alcohol.pattern"
+              "patient.alcohol.use_status"
             ],
             "medication_due": [
               "medication.current"
@@ -2165,10 +2172,44 @@
             "history.family",
             "occupation.current",
             "patient.smoking.status",
-            "patient.smoking.exposure_detail",
-            "patient.alcohol.pattern"
+            "patient.alcohol.use_status"
           ],
           "selector_fact": "encounter.context_review_state"
+        },
+        {
+          "cases": {
+            "current": [
+              "patient.smoking.product_types",
+              "patient.smoking.cigarettes_per_day",
+              "patient.smoking.duration_years"
+            ],
+            "former": [
+              "patient.smoking.product_types",
+              "patient.smoking.cigarettes_per_day",
+              "patient.smoking.duration_years",
+              "patient.smoking.quit_timing"
+            ],
+            "never": []
+          },
+          "default_when_selector_data_absent": [],
+          "selector_fact": "patient.smoking.status"
+        },
+        {
+          "cases": {
+            "current": [
+              "patient.alcohol.beverage_types",
+              "patient.alcohol.frequency",
+              "patient.alcohol.amount_per_occasion"
+            ],
+            "former": [
+              "patient.alcohol.beverage_types",
+              "patient.alcohol.frequency",
+              "patient.alcohol.amount_per_occasion"
+            ],
+            "never": []
+          },
+          "default_when_selector_data_absent": [],
+          "selector_fact": "patient.alcohol.use_status"
         }
       ],
       "data_absent_states_count_as_resolved": [
@@ -2184,6 +2225,19 @@
         "medication.statement.status",
         "history.immunization.relevant",
         "preventive.immunization.history"
+      ],
+      "social_history_atomic_prefill_source_facts": [
+        "patient.smoking.status",
+        "patient.smoking.product_types",
+        "patient.alcohol.use_status",
+        "patient.alcohol.beverage_types",
+        "cough.smoking_vaping_cannabis_pack_years_last_use_and_change",
+        "dyspnea.smoking_vaping_pack_years_passive_exposure_and_change",
+        "resp_followup.smoking_vaping_and_pack_years",
+        "lifestyle.alcohol_pattern",
+        "liver.alcohol_pattern_and_last_use",
+        "movement.alcohol_amount_pattern_last_use_relief_and_withdrawal",
+        "palpitations.caffeine_energy_alcohol_nicotine_amount_timing_change"
       ]
     },
     "facts": [
@@ -2739,10 +2793,158 @@
         "value_type": "string"
       },
       {
+        "allowed_values": [
+          "combustible_cigarette",
+          "heated_tobacco",
+          "electronic_cigarette",
+          "cigar_or_pipe",
+          "smokeless_tobacco",
+          "other"
+        ],
+        "answer_semantic_binding": {
+          "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-mixed-patient-smoking-product-types-coded-or-string-196b605451",
+          "fhir_item_type": "choice",
+          "fhir_response_type": "valueCoding",
+          "local_answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-local-patient-smoking-product-types-coded-or-string-3123f4b97c",
+          "policy_id": "policy.question-answer-terminology-binding",
+          "snomed_mappings": {
+            "other": {
+              "code": "74964007",
+              "display": "Other",
+              "mapping_relation": "equivalent",
+              "system": "http://snomed.info/sct"
+            }
+          },
+          "strategy": "SNOMED_CT_then_local_coded_fallback",
+          "value_set_strategy": "complete_mixed_SNOMED_CT_and_local"
+        },
+        "display": "Tobacco and Nicotine Product Types",
+        "display_ko": "사용한 담배·니코틴 제품 종류",
+        "id": "patient.smoking.product_types",
+        "report_field": "social.smoking_product_types",
+        "review_status": "unreviewed",
+        "status": "research_only",
+        "type": "Fact",
+        "value_type": "coded_or_string"
+      },
+      {
+        "display": "Combustible Cigarettes per Day",
+        "display_ko": "일반담배 하루 흡연량",
+        "id": "patient.smoking.cigarettes_per_day",
+        "minimum": 0,
+        "report_field": "social.cigarettes_per_day",
+        "review_status": "unreviewed",
+        "status": "research_only",
+        "type": "Fact",
+        "unit": "{cigarette}/d",
+        "value_type": "quantity"
+      },
+      {
+        "display": "Total Smoking Duration",
+        "display_ko": "총 흡연기간",
+        "id": "patient.smoking.duration_years",
+        "minimum": 0,
+        "report_field": "social.smoking_duration_years",
+        "review_status": "unreviewed",
+        "status": "research_only",
+        "type": "Fact",
+        "unit": "a",
+        "value_type": "quantity"
+      },
+      {
+        "display": "Smoking Cessation Timing",
+        "display_ko": "금연 시점",
+        "id": "patient.smoking.quit_timing",
+        "report_field": "social.smoking_quit_timing",
+        "review_status": "unreviewed",
+        "status": "research_only",
+        "type": "Fact",
+        "value_type": "date_or_period"
+      },
+      {
         "display": "Alcohol Use Pattern",
         "display_ko": "음주 빈도와 양",
         "id": "patient.alcohol.pattern",
         "report_field": "social.alcohol_pattern",
+        "review_status": "unreviewed",
+        "status": "research_only",
+        "type": "Fact",
+        "value_type": "string"
+      },
+      {
+        "allowed_values": [
+          "current",
+          "former",
+          "never"
+        ],
+        "answer_semantic_binding": {
+          "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-local-patient-alcohol-use-status-coded-current-former-never",
+          "fhir_item_type": "choice",
+          "fhir_response_type": "valueCoding",
+          "local_answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-local-patient-alcohol-use-status-coded-current-former-never",
+          "policy_id": "policy.question-answer-terminology-binding",
+          "strategy": "SNOMED_CT_then_local_coded_fallback",
+          "value_set_strategy": "complete_local"
+        },
+        "display": "Alcohol Use Status",
+        "display_ko": "음주 상태",
+        "id": "patient.alcohol.use_status",
+        "report_field": "social.alcohol_use_status",
+        "review_status": "unreviewed",
+        "status": "research_only",
+        "type": "Fact",
+        "value_type": "coded"
+      },
+      {
+        "allowed_values": [
+          "soju",
+          "beer",
+          "makgeolli",
+          "wine",
+          "spirits",
+          "other"
+        ],
+        "answer_semantic_binding": {
+          "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-mixed-patient-alcohol-beverage-types-coded-or-strin-b19be623b9",
+          "fhir_item_type": "choice",
+          "fhir_response_type": "valueCoding",
+          "local_answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-local-patient-alcohol-beverage-types-coded-or-strin-039f003b40",
+          "policy_id": "policy.question-answer-terminology-binding",
+          "snomed_mappings": {
+            "other": {
+              "code": "74964007",
+              "display": "Other",
+              "mapping_relation": "equivalent",
+              "system": "http://snomed.info/sct"
+            }
+          },
+          "strategy": "SNOMED_CT_then_local_coded_fallback",
+          "value_set_strategy": "complete_mixed_SNOMED_CT_and_local"
+        },
+        "display": "Alcoholic Beverage Types",
+        "display_ko": "주로 마시는 술 종류",
+        "id": "patient.alcohol.beverage_types",
+        "report_field": "social.alcohol_beverage_types",
+        "review_status": "unreviewed",
+        "status": "research_only",
+        "type": "Fact",
+        "value_type": "coded_or_string"
+      },
+      {
+        "display": "Alcohol Drinking Frequency",
+        "display_ko": "음주 빈도",
+        "id": "patient.alcohol.frequency",
+        "report_field": "social.alcohol_frequency",
+        "review_status": "unreviewed",
+        "status": "research_only",
+        "type": "Fact",
+        "value_type": "string"
+      },
+      {
+        "display": "Alcohol Amount per Occasion",
+        "display_ko": "1회 음주량",
+        "id": "patient.alcohol.amount_per_occasion",
+        "report_field": "social.alcohol_amount_per_occasion",
         "review_status": "unreviewed",
         "status": "research_only",
         "type": "Fact",
@@ -2848,12 +3050,15 @@
       },
       "review_status": "unreviewed",
       "source_refs": [
+        "PROJECT_CONTEXT.md",
         "docs/context/002-encounter-context.md",
         "docs/context/005-fact.md",
         "docs/context/017-clinical-memory.md",
-        "policies/encounter-context-review.json"
+        "policies/encounter-context-review.json",
+        "policies/question-answer-terminology-binding.json",
+        "simulation/workflows/adaptive-interview-turn-contract-cases.json"
       ],
-      "version": "0.3.0"
+      "version": "0.6.0"
     },
     "question_answer_terminology": {
       "answer_binding_precedence": "target_FHIR_R4_element_then_SNOMED_CT_then_local",
@@ -2861,11 +3066,11 @@
       "coverage": {
         "fhir_r4_element_bound_question_count": 2,
         "fhir_r4_element_candidate_question_count": 2,
-        "question_count": 22,
-        "question_local_code_count": 22,
-        "question_local_only_count": 12,
-        "question_loinc_exact_or_equivalent_count": 5,
-        "question_loinc_exact_or_equivalent_percent": 22.7,
+        "question_count": 29,
+        "question_local_code_count": 29,
+        "question_local_only_count": 20,
+        "question_loinc_exact_or_equivalent_count": 4,
+        "question_loinc_exact_or_equivalent_percent": 13.8,
         "question_loinc_partial_or_related_count": 5,
         "question_snomed_secondary_count": 0
       },
@@ -3103,10 +3308,28 @@
         "wording": "현재·최근 직업, 종사 기간과 분진·화학물질·감염·소음·반복동작·교대근무 등 관련 노출을 알려주세요."
       },
       {
+        "accept_free_text": true,
         "answer_code_map": {
           "1": "current",
           "2": "former",
           "3": "never"
+        },
+        "answer_text_cues": {
+          "current": [
+            "현재 흡연",
+            "지금 피",
+            "흡연 중"
+          ],
+          "former": [
+            "과거 흡연",
+            "금연",
+            "예전에 피"
+          ],
+          "never": [
+            "평생 비흡연",
+            "피운 적 없",
+            "비흡연"
+          ]
         },
         "fact_id": "patient.smoking.status",
         "priority": 50,
@@ -3135,25 +3358,99 @@
         "wording": "흡연 또는 간접흡연 노출이 있다면 하루 양, 기간, 중단 시점과 계산 가능한 경우 갑년(pack-years)을 알려주세요. 없으면 '없음'이라고 답해 주세요."
       },
       {
-        "fact_id": "patient.alcohol.pattern",
-        "priority": 40,
-        "semantic_binding": {
-          "fhir_standard_item_codes": [
-            {
-              "code": "106630-7",
-              "system": "http://loinc.org"
-            }
+        "accept_free_text": true,
+        "answer_code_map": {
+          "1": "combustible_cigarette",
+          "2": "heated_tobacco",
+          "3": "electronic_cigarette",
+          "4": "cigar_or_pipe",
+          "5": "smokeless_tobacco",
+          "6": "other"
+        },
+        "fact_id": "patient.smoking.product_types",
+        "priority": 49,
+        "template_id": "question.clinician-context.smoking-product-types",
+        "wording": "현재 또는 과거에 사용한 제품을 모두 알려주세요. 1 일반담배, 2 궐련형 전자담배, 3 액상형 전자담배, 4 시가·파이프, 5 무연담배, 6 기타"
+      },
+      {
+        "accept_free_text": true,
+        "fact_id": "patient.smoking.cigarettes_per_day",
+        "priority": 48,
+        "template_id": "question.clinician-context.smoking-cigarettes-per-day",
+        "wording": "일반담배를 피우거나 피웠다면 하루 평균 몇 개비였나요? 일반담배를 사용하지 않았다면 '0개비'라고 답해 주세요."
+      },
+      {
+        "accept_free_text": true,
+        "fact_id": "patient.smoking.duration_years",
+        "priority": 47,
+        "template_id": "question.clinician-context.smoking-duration-years",
+        "wording": "담배·전자담배를 사용한 총 기간은 몇 년인가요? 중단한 기간이 있다면 실제 사용기간을 합해 알려주세요."
+      },
+      {
+        "accept_free_text": true,
+        "fact_id": "patient.smoking.quit_timing",
+        "priority": 46,
+        "template_id": "question.clinician-context.smoking-quit-timing",
+        "wording": "마지막으로 담배·전자담배를 사용한 때 또는 금연을 시작한 때는 언제인가요? 정확한 날짜를 모르면 대략적인 기간을 알려주세요."
+      },
+      {
+        "accept_free_text": true,
+        "answer_code_map": {
+          "1": "current",
+          "2": "former",
+          "3": "never"
+        },
+        "answer_text_cues": {
+          "current": [
+            "현재 음주",
+            "술을 마",
+            "가끔 마",
+            "음주 중"
           ],
-          "standard_mappings": [
-            {
-              "code": "106630-7",
-              "mapping_relation": "equivalent",
-              "system": "http://loinc.org"
-            }
+          "former": [
+            "과거 음주",
+            "현재 금주",
+            "술을 끊"
+          ],
+          "never": [
+            "평생 비음주",
+            "마신 적 없",
+            "술을 안 마"
           ]
         },
-        "template_id": "question.clinician-context.alcohol",
-        "wording": "음주 여부, 주당 빈도, 술 종류와 한 번에 마시는 양을 알려주세요. 마시지 않으면 '없음'이라고 답해 주세요."
+        "fact_id": "patient.alcohol.use_status",
+        "priority": 40,
+        "template_id": "question.clinician-context.alcohol-status",
+        "wording": "음주 상태를 선택해 주세요. 1 현재 음주, 2 과거 음주 후 현재 금주, 3 평생 비음주"
+      },
+      {
+        "accept_free_text": true,
+        "answer_code_map": {
+          "1": "soju",
+          "2": "beer",
+          "3": "makgeolli",
+          "4": "wine",
+          "5": "spirits",
+          "6": "other"
+        },
+        "fact_id": "patient.alcohol.beverage_types",
+        "priority": 39,
+        "template_id": "question.clinician-context.alcohol-beverage-types",
+        "wording": "주로 마시거나 마셨던 술 종류를 모두 알려주세요. 1 소주, 2 맥주, 3 막걸리, 4 와인, 5 위스키·증류주, 6 기타"
+      },
+      {
+        "accept_free_text": true,
+        "fact_id": "patient.alcohol.frequency",
+        "priority": 38,
+        "template_id": "question.clinician-context.alcohol-frequency",
+        "wording": "평균적으로 얼마나 자주 술을 마시나요? 예: 주 2회, 월 1회, 거의 매일"
+      },
+      {
+        "accept_free_text": true,
+        "fact_id": "patient.alcohol.amount_per_occasion",
+        "priority": 37,
+        "template_id": "question.clinician-context.alcohol-amount-per-occasion",
+        "wording": "한 번 마실 때 보통 술 종류별로 얼마나 마시나요? 예: 소주 1병, 맥주 500mL 2잔"
       },
       {
         "fact_id": "clinical.measurements.available",
@@ -3219,7 +3516,7 @@
       "research_test",
       "simulation"
     ],
-    "version": "0.5.0"
+    "version": "0.6.0"
   },
   "completion_handoff_policy": {
     "before_review_user_finish_request": "show_numbered_review_and_wait_for_review_complete_command",
@@ -4901,18 +5198,27 @@
         "question_ko": "현재 또는 최근의 직업과 업무 중 주요 노출을 알려주세요."
       },
       "social.alcohol": {
+        "conditional_detail_rule": "ask_beverage_frequency_and_amount_only_for_current_or_former_use",
         "fact_ids": [
-          "patient.alcohol.pattern"
+          "patient.alcohol.use_status",
+          "patient.alcohol.beverage_types",
+          "patient.alcohol.frequency",
+          "patient.alcohol.amount_per_occasion"
         ],
         "interval_days": 365,
-        "question_ko": "음주 여부와 빈도, 한 번에 마시는 양을 알려주세요."
+        "question_ko": "음주 상태를 먼저 확인한 뒤 해당되는 경우 주종, 빈도와 1회 음주량을 각각 확인합니다."
       },
       "social.smoking": {
+        "conditional_detail_rule": "ask_product_amount_duration_and_when_applicable_quit_timing_only_for_current_or_former_use",
         "fact_ids": [
-          "patient.smoking.status"
+          "patient.smoking.status",
+          "patient.smoking.product_types",
+          "patient.smoking.cigarettes_per_day",
+          "patient.smoking.duration_years",
+          "patient.smoking.quit_timing"
         ],
         "interval_days": 365,
-        "question_ko": "현재 흡연, 과거 흡연, 비흡연 중 어디에 해당하나요?"
+        "question_ko": "흡연 상태를 먼저 확인한 뒤 해당되는 경우 제품 종류, 일반담배 하루 양, 총 기간과 금연 시점을 각각 확인합니다."
       }
     },
     "interval_summary": {
@@ -5633,19 +5939,19 @@
       "count": 0,
       "name": "clinician-submission-context",
       "path": "/gpt/clinician-submission-context.json",
-      "sha256": "cf1f293ccf592dbd010ed26c27fb2994271ab6bdce8acb104491df1614c57c73"
+      "sha256": "ed1a594f2b3dc671f6d9da28fc598a6eb9af10b2f210e0cd21a67819cb5653af"
     },
     {
-      "count": 72,
+      "count": 80,
       "name": "common-facts",
       "path": "/gpt/common-facts.json",
-      "sha256": "1ccf4d247b33a5335c10a49bd6b11e583c42dc97eeb9b36c1bd84c04b836fb73"
+      "sha256": "775dccc1ec1dea3d949e03f0014fa4f23683df3e06ef8a867c7ccc4bfcf183cd"
     },
     {
-      "count": 2783,
+      "count": 2790,
       "name": "facts",
       "path": "/gpt/facts.json",
-      "sha256": "9632bf181b2f04f3300dc2649db7db6fd817e7070f54268db37021190449f030"
+      "sha256": "1b6d62d4a287ee2aa2452b3fb21e43008d937ad414e66a0b41bf9bae29edab63"
     },
     {
       "count": 0,
@@ -5657,7 +5963,7 @@
       "count": 0,
       "name": "interoperability-computable-knowledge-coverage",
       "path": "/gpt/interoperability/computable-knowledge-coverage.json",
-      "sha256": "83e12b8edd956addc0a8f8245ead67aa3e0f8d82000b6c9753074e7597272271"
+      "sha256": "e374cb2a2805cbbedfbcb67e21bbb3cf16f51b5eb53f23a074699ccef562dccb"
     },
     {
       "count": 0,
@@ -5711,13 +6017,13 @@
       "count": 0,
       "name": "interoperability-question-answer-bindings",
       "path": "/gpt/interoperability/question-answer-bindings.json",
-      "sha256": "33a2d9118f5248a22a6248a23d911e32847d6e9a01311c7eafa3981aeb37ca9a"
+      "sha256": "34dd8b60729e3c66ce379047013bfa2b7e768a43168bf375f676f689df9839ff"
     },
     {
       "count": 0,
       "name": "interoperability-question-answer-coverage",
       "path": "/gpt/interoperability/question-answer-coverage.json",
-      "sha256": "ba5181ef5759dbda6ce7674cc639ada8ecb5155e0ae1235a4362c5054a5fb4d0"
+      "sha256": "39441b832a881fe6c6103e2b19fa48e1089166d844b7e5ab1041201436becbb7"
     },
     {
       "count": 0,

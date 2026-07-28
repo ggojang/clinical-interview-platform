@@ -1,6 +1,6 @@
 {
   "id": "policy.encounter-context-review",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "status": "research_only",
   "review_status": "unreviewed",
   "encounter_context": {
@@ -575,6 +575,9 @@
       "numbered_options_are_shortcuts_not_a_closed_answer_set": true,
       "choice_question_guidance_ko": "번호로 답하거나, 보기에 없으면 내용을 직접 입력해 주세요.",
       "display_choice_question_guidance_every_time": true,
+      "open_question_guidance_ko": "내용을 자유롭게 입력해 주세요. 예시가 있더라도 그대로 고를 필요는 없습니다.",
+      "display_response_guidance_every_dynamic_question": true,
+      "fixed_source_questionnaire_exception": "preserve_the_official_response_constraints_and_wording",
       "accept_unlisted_korean_or_english_free_text": true,
       "map_unlisted_free_text_to_fact_when_unambiguous": true,
       "ambiguous_free_text_reuses_same_question_reference_for_clarification": true,
@@ -702,8 +705,29 @@
       "allergy.current": {"interval_days": 365, "fact_ids": ["allergy.current"], "question_ko": "알고 있는 약물·음식·기타 알레르기가 있나요?"},
       "history.family": {"interval_days": 365, "fact_ids": ["history.family"], "question_ko": "부모·형제자매 등 가까운 가족에게 주요 질환이 있었나요?"},
       "occupation.current": {"interval_days": 365, "fact_ids": ["occupation.current"], "question_ko": "현재 또는 최근의 직업과 업무 중 주요 노출을 알려주세요."},
-      "social.smoking": {"interval_days": 365, "fact_ids": ["patient.smoking.status"], "question_ko": "현재 흡연, 과거 흡연, 비흡연 중 어디에 해당하나요?"},
-      "social.alcohol": {"interval_days": 365, "fact_ids": ["patient.alcohol.pattern"], "question_ko": "음주 여부와 빈도, 한 번에 마시는 양을 알려주세요."}
+      "social.smoking": {
+        "interval_days": 365,
+        "fact_ids": [
+          "patient.smoking.status",
+          "patient.smoking.product_types",
+          "patient.smoking.cigarettes_per_day",
+          "patient.smoking.duration_years",
+          "patient.smoking.quit_timing"
+        ],
+        "conditional_detail_rule": "ask_product_amount_duration_and_when_applicable_quit_timing_only_for_current_or_former_use",
+        "question_ko": "흡연 상태를 먼저 확인한 뒤 해당되는 경우 제품 종류, 일반담배 하루 양, 총 기간과 금연 시점을 각각 확인합니다."
+      },
+      "social.alcohol": {
+        "interval_days": 365,
+        "fact_ids": [
+          "patient.alcohol.use_status",
+          "patient.alcohol.beverage_types",
+          "patient.alcohol.frequency",
+          "patient.alcohol.amount_per_occasion"
+        ],
+        "conditional_detail_rule": "ask_beverage_frequency_and_amount_only_for_current_or_former_use",
+        "question_ko": "음주 상태를 먼저 확인한 뒤 해당되는 경우 주종, 빈도와 1회 음주량을 각각 확인합니다."
+      }
     },
     "review_only_due_groups": true,
     "allow_user_reported_change_to_trigger_review": true,
@@ -745,6 +769,6 @@
     "created_at": "2026-07-14T00:00:00Z",
     "source_refs": ["docs/context/002-encounter-context.md", "docs/context/017-clinical-memory.md", "sources/manifests/test-result-follow-up-research.json"],
     "review_status": "unreviewed",
-    "version": "0.13.0"
+    "version": "0.14.0"
   }
 }

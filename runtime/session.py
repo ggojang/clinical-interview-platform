@@ -265,6 +265,146 @@ def extract(text: str, turn: int, expected_fact: str | None = None) -> dict[str,
     return out
 
 
+def extract_atomic_social_history(text: str, turn: int) -> dict[str, dict[str, Any]]:
+    """Safely project explicit details from a richer social-history answer.
+
+    This does not infer use from silence. It only reuses details the patient
+    stated explicitly so later atomic baseline questions are not repeated.
+    """
+    out: dict[str, dict[str, Any]] = {}
+    low = text.lower()
+
+    smoking_context = any(
+        cue in low for cue in (
+            "흡연", "담배", "전자담배", "궐련", "vape", "vaping", "smok",
+        )
+    )
+    if smoking_context:
+        if any(cue in low for cue in ("피운 적 없", "평생 비흡연", "never smoked")):
+            out["patient.smoking.status"] = fact("never", text, turn, .94)
+        elif any(cue in low for cue in ("과거 흡연", "금연", "끊었", "former smoker")):
+            out["patient.smoking.status"] = fact("former", text, turn, .92)
+        elif any(cue in low for cue in ("현재 흡연", "흡연 중", "피우고", "current smoker")):
+            out["patient.smoking.status"] = fact("current", text, turn, .92)
+
+        product_cues = {
+            "combustible_cigarette": ("일반담배", "궐련을", "궐련 담배"),
+            "heated_tobacco": ("궐련형 전자담배", "아이코스", "릴 "),
+            "electronic_cigarette": ("액상형 전자담배", "전자담배", "vape", "vaping"),
+            "cigar_or_pipe": ("시가", "파이프 담배"),
+            "smokeless_tobacco": ("무연담배", "씹는 담배"),
+        }
+        products = [
+            code for code, cues in product_cues.items()
+            if any(cue in low for cue in cues)
+        ]
+        if (
+            "heated_tobacco" in products
+            and "electronic_cigarette" in products
+            and not any(cue in low for cue in ("액상형 전자담배", "vape", "vaping"))
+        ):
+            products.remove("electronic_cigarette")
+        # A general Korean "담배" statement without a vaping/product cue is
+        # ordinarily combustible cigarette use in the patient's wording.
+        if (
+            "담배" in low
+            and not products
+            and not any(cue in low for cue in ("전자담배", "무연담배", "시가", "파이프"))
+        ):
+            products.append("combustible_cigarette")
+        if products:
+            out["patient.smoking.product_types"] = fact(
+                ",".join(dict.fromkeys(products)), text, turn, .88
+            )
+
+        amount = re.search(
+            r"(?:하루|일일)\s*(\d+(?:\.\d+)?)\s*(?:개비|개피)", low
+        )
+        if amount:
+            value = float(amount.group(1))
+            out["patient.smoking.cigarettes_per_day"] = fact(
+                {
+                    "amount": int(value) if value.is_integer() else value,
+                    "unit": "{cigarette}/d",
+                },
+                text,
+                turn,
+                .95,
+            )
+        duration = re.search(
+            r"(?:흡연|담배|전자담배)[^,.]{0,30}?(\d+(?:\.\d+)?)\s*년|"
+            r"(\d+(?:\.\d+)?)\s*년(?:간|째)?\s*"
+            r"(?:피우|피웠|흡연|담배|사용)",
+            low,
+        )
+        if duration:
+            raw = duration.group(1) or duration.group(2)
+            value = float(raw)
+            out["patient.smoking.duration_years"] = fact(
+                {"amount": int(value) if value.is_integer() else value, "unit": "a"},
+                text,
+                turn,
+                .92,
+            )
+        if "금연" in low or "끊었" in low:
+            timing = re.search(
+                r"(?:약\s*)?\d+(?:\.\d+)?\s*(?:년|개월|주)\s*전[^,.]*"
+                r"(?:금연|끊었)|(?:금연|끊었)[^,.]*",
+                text,
+            )
+            out["patient.smoking.quit_timing"] = fact(
+                timing.group(0).strip() if timing else text.strip(), text, turn, .85
+            )
+
+    alcohol_context = any(
+        cue in low for cue in (
+            "음주", "술", "소주", "맥주", "막걸리", "와인", "위스키", "alcohol",
+        )
+    )
+    if alcohol_context:
+        if any(cue in low for cue in ("마신 적 없", "평생 비음주", "술을 안 마", "술 안 마")):
+            out["patient.alcohol.use_status"] = fact("never", text, turn, .94)
+        elif any(cue in low for cue in ("과거 음주", "현재 금주", "술을 끊")):
+            out["patient.alcohol.use_status"] = fact("former", text, turn, .92)
+        elif any(cue in low for cue in ("현재 음주", "음주 중", "가끔 마", "술을 마", "주 1", "주 2", "주 3", "매일")):
+            out["patient.alcohol.use_status"] = fact("current", text, turn, .90)
+
+        beverage_cues = {
+            "soju": ("소주",),
+            "beer": ("맥주", "beer"),
+            "makgeolli": ("막걸리",),
+            "wine": ("와인", "wine"),
+            "spirits": ("위스키", "보드카", "증류주"),
+        }
+        beverages = [
+            code for code, cues in beverage_cues.items()
+            if any(cue in low for cue in cues)
+        ]
+        if beverages:
+            out["patient.alcohol.beverage_types"] = fact(
+                ",".join(beverages), text, turn, .92
+            )
+        frequencies = re.findall(
+            r"(?:주|월)\s*\d+(?:\.\d+)?\s*회|거의\s*매일|매일", text
+        )
+        if frequencies:
+            out["patient.alcohol.frequency"] = fact(
+                ", ".join(dict.fromkeys(frequencies)), text, turn, .92
+            )
+        amounts = re.findall(
+            r"(?:소주|맥주|막걸리|와인|위스키|증류주)?\s*"
+            r"\d+(?:\.\d+)?\s*(?:병|잔|캔|ml|mL|cc)",
+            text,
+        )
+        amounts = [item.strip() for item in amounts if item.strip()]
+        if amounts:
+            out["patient.alcohol.amount_per_occasion"] = fact(
+                ", ".join(dict.fromkeys(amounts)), text, turn, .92
+            )
+
+    return out
+
+
 def _condition_matches(condition: dict[str, Any], memory: ClinicalMemory) -> bool:
     if "all" in condition:
         return all(_condition_matches(item, memory) for item in condition["all"])
@@ -468,6 +608,19 @@ class InterviewSession:
             answer_text = edit_action[2] or ""
         expected_fact = correction_target or self.last_question_fact
         additions = extract(answer_text, turn, expected_fact)
+        social_prefill_sources = set(
+            self._clinician_context().get("completion", {})
+            .get("social_history_atomic_prefill_source_facts", [])
+        )
+        if (
+            self.clinician_submission
+            and expected_fact in social_prefill_sources
+            and not correction_target
+        ):
+            for fact_id, candidate in extract_atomic_social_history(
+                answer_text, turn
+            ).items():
+                additions.setdefault(fact_id, candidate)
         low = answer_text.lower().strip()
         low_normalized = low.rstrip(".!?")
         for node in self._fact_nodes():
@@ -555,6 +708,41 @@ class InterviewSession:
                     minimum = node.get("minimum")
                     maximum = node.get("maximum")
                     if ((minimum is None or numeric_value >= minimum)
+                            and (maximum is None or numeric_value <= maximum)):
+                        additions[expected_fact] = fact(
+                            {"amount": numeric_value, "unit": node["unit"]},
+                            answer_text,
+                            turn,
+                            .95,
+                        )
+                elif (
+                    node.get("value_type") == "quantity"
+                    and node.get("unit")
+                    and (
+                        quantity_match := re.fullmatch(
+                            r"\s*(?:하루\s*)?(\d+(?:\.\d+)?)\s*"
+                            r"(개비|개피|cigarettes?(?:\s+per\s+day)?|년|years?)\s*",
+                            normalized,
+                            re.IGNORECASE,
+                        )
+                    )
+                ):
+                    numeric_value = float(quantity_match.group(1))
+                    supplied_unit = quantity_match.group(2).lower()
+                    expected_unit = node["unit"]
+                    unit_matches = (
+                        expected_unit == "{cigarette}/d"
+                        and supplied_unit not in {"년", "year", "years"}
+                    ) or (
+                        expected_unit == "a"
+                        and supplied_unit in {"년", "year", "years"}
+                    )
+                    if numeric_value.is_integer():
+                        numeric_value = int(numeric_value)
+                    minimum = node.get("minimum")
+                    maximum = node.get("maximum")
+                    if (unit_matches
+                            and (minimum is None or numeric_value >= minimum)
                             and (maximum is None or numeric_value <= maximum)):
                         additions[expected_fact] = fact(
                             {"amount": numeric_value, "unit": node["unit"]},
@@ -1014,7 +1202,7 @@ class InterviewSession:
         })
 
     def _decorate_question(self, question: dict[str, Any]) -> dict[str, Any]:
-        """Expose compiled coded choices and their effective FHIR binding."""
+        """Expose choices, FHIR binding and visible response guidance."""
         fact_id = question["fact_id"]
         node = self._fact_node(fact_id) or {}
         template = self._questions_by_fact().get(fact_id, {})
@@ -1046,6 +1234,26 @@ class InterviewSession:
             question["allow_free_text"] = element_binding["allow_outside_code"]
         elif "accept_free_text" in template:
             question["allow_free_text"] = bool(template["accept_free_text"])
+        else:
+            # Adaptive interview choices are shortcuts, not a closed answer
+            # set. Source-defined fixed questionnaires use a separate path.
+            question["allow_free_text"] = True
+        if options:
+            question["response_instruction_ko"] = (
+                "번호로 답하거나, 보기에 없으면 내용을 직접 입력해 주세요."
+            )
+        else:
+            question["response_instruction_ko"] = (
+                "내용을 자유롭게 입력해 주세요. 예시가 있더라도 그대로 고를 필요는 없습니다."
+            )
+        if element_binding and not element_binding["allow_outside_code"]:
+            question["unlisted_text_handling"] = "clarify_to_required_bound_value"
+            question["response_instruction_ko"] = (
+                "보기에 없으면 내용을 직접 입력할 수 있습니다. 다만 표준 필수값으로 "
+                "저장하기 위해 확인 질문이 이어질 수 있습니다."
+            )
+        else:
+            question["unlisted_text_handling"] = "accept_or_clarify_if_ambiguous"
         return question
 
     def _fact_nodes(self) -> list[dict[str, Any]]:
@@ -1775,11 +1983,18 @@ class InterviewSession:
                 self._clinician_context().get("completion", {})
                 .get("clinician_rfe_minimum", {})
             )
-            required.update(minimum.get("always_required_facts", []))
-            required.update(
+            rfe_specific = (
                 minimum.get("additional_required_facts_by_rfe", {})
                 .get(self.reason_for_encounter, [])
             )
+            # Audited RFE packages already contain detailed, clinician-facing
+            # history, treatment, functional-impact and patient-goal Facts.
+            # The generic fallback questions are retained only for an RFE that
+            # does not have a package-specific clinician minimum.
+            if rfe_specific:
+                required.update(rfe_specific)
+            else:
+                required.update(minimum.get("always_required_facts", []))
         return sorted(required)
 
     def _required_facts(

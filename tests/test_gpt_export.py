@@ -106,6 +106,20 @@ class GptExportTests(unittest.TestCase):
             for item in deduplication["candidate_questions"]
         ))
 
+        social_history = fixture["cases"][4]
+        self.assertEqual(
+            len(social_history["expected_atomic_follow_up_facts"]), 6
+        )
+        self.assertIn(
+            "patient.smoking.exposure_detail",
+            social_history["expected_suppressed_composite_facts"],
+        )
+        self.assertTrue(
+            social_history["expected_flow"][
+                "every_dynamic_question_has_visible_free_text_guidance"
+            ]
+        )
+
     def test_export_is_deterministic_and_response_free(self):
         with tempfile.TemporaryDirectory() as first, tempfile.TemporaryDirectory() as second:
             first_path = Path(first)
@@ -913,6 +927,15 @@ class GptExportTests(unittest.TestCase):
             self.assertEqual(
                 question_identity["choice_question_guidance_ko"],
                 "번호로 답하거나, 보기에 없으면 내용을 직접 입력해 주세요.",
+            )
+            self.assertTrue(
+                question_identity[
+                    "display_response_guidance_every_dynamic_question"
+                ]
+            )
+            self.assertIn(
+                "자유롭게 입력",
+                question_identity["open_question_guidance_ko"],
             )
             self.assertTrue(
                 question_identity["accept_unlisted_korean_or_english_free_text"]

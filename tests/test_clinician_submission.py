@@ -109,7 +109,148 @@ class ClinicianSubmissionContextTest(unittest.TestCase):
             "first_encounter",
         )
         self.assertIn("history.condition.current", state["completion_status"]["required_facts"])
-        self.assertIn("patient.alcohol.pattern", state["completion_status"]["required_facts"])
+        self.assertIn(
+            "patient.alcohol.use_status",
+            state["completion_status"]["required_facts"],
+        )
+        self.assertNotIn(
+            "patient.alcohol.amount_per_occasion",
+            state["completion_status"]["required_facts"],
+        )
+
+    def test_social_history_details_are_atomic_and_conditionally_required(self):
+        session = self._session()
+        session.memory.merge(
+            "encounter.context_review_state",
+            fact("first_encounter", "합성 첫 문진", 1),
+        )
+        session.memory.merge(
+            "patient.smoking.status", fact("current", "현재 흡연", 2)
+        )
+        session.memory.merge(
+            "patient.alcohol.use_status", fact("current", "현재 음주", 3)
+        )
+
+        required = set(session._required_facts(None, session._safety()))
+
+        self.assertTrue({
+            "patient.smoking.product_types",
+            "patient.smoking.cigarettes_per_day",
+            "patient.smoking.duration_years",
+            "patient.alcohol.beverage_types",
+            "patient.alcohol.frequency",
+            "patient.alcohol.amount_per_occasion",
+        } <= required)
+        self.assertNotIn("patient.smoking.exposure_detail", required)
+        self.assertNotIn("patient.alcohol.pattern", required)
+
+    def test_smoking_quantity_accepts_patient_wording_with_unit(self):
+        session = self._session()
+        session.last_question_fact = "patient.smoking.cigarettes_per_day"
+        session.asked = ["patient.smoking.cigarettes_per_day"]
+
+        state = session.process("하루 10개비")
+
+        self.assertEqual(
+            session.memory.value("patient.smoking.cigarettes_per_day"),
+            {"amount": 10, "unit": "{cigarette}/d"},
+        )
+        self.assertIsNone(state["answer_clarification"])
+
+    def test_smoking_quantity_does_not_accept_duration_unit(self):
+        session = self._session()
+        session.last_question_fact = "patient.smoking.cigarettes_per_day"
+        session.asked = ["patient.smoking.cigarettes_per_day"]
+
+        session.process("20년")
+
+        self.assertIsNone(
+            session.memory.value("patient.smoking.cigarettes_per_day")
+        )
+
+    def test_rich_smoking_answer_prefills_atomic_facts_without_reasking(self):
+        session = self._session()
+        rich_fact = "cough.smoking_vaping_cannabis_pack_years_last_use_and_change"
+        session.last_question_fact = rich_fact
+        session.asked = [rich_fact]
+
+        state = session.process(
+            "현재 일반담배를 하루 10개비씩 20년간 피우고 있습니다"
+        )
+
+        self.assertEqual(session.memory.value("patient.smoking.status"), "current")
+        self.assertEqual(
+            session.memory.value("patient.smoking.product_types"),
+            "combustible_cigarette",
+        )
+        self.assertEqual(
+            session.memory.value("patient.smoking.cigarettes_per_day"),
+            {"amount": 10, "unit": "{cigarette}/d"},
+        )
+        self.assertEqual(
+            session.memory.value("patient.smoking.duration_years"),
+            {"amount": 20, "unit": "a"},
+        )
+        missing = set(state["completion_status"]["missing_facts"])
+        self.assertFalse({
+            "patient.smoking.product_types",
+            "patient.smoking.cigarettes_per_day",
+            "patient.smoking.duration_years",
+        } & missing)
+
+    def test_heated_tobacco_is_not_duplicated_as_liquid_e_cigarette(self):
+        session = self._session()
+        rich_fact = "cough.smoking_vaping_cannabis_pack_years_last_use_and_change"
+        session.last_question_fact = rich_fact
+        session.asked = [rich_fact]
+
+        session.process("현재 궐련형 전자담배를 사용하고 있습니다")
+
+        self.assertEqual(
+            session.memory.value("patient.smoking.product_types"),
+            "heated_tobacco",
+        )
+
+    def test_rich_alcohol_answer_prefills_beverage_frequency_and_amount(self):
+        package = compile_package(profile="hypertension_follow_up")
+        temporary = tempfile.NamedTemporaryFile(suffix=".json", delete=False)
+        temporary.close()
+        path = Path(temporary.name)
+        path.write_text(json.dumps(package, ensure_ascii=False), encoding="utf-8")
+        self.addCleanup(path.unlink, missing_ok=True)
+        session = InterviewSession(
+            "clinician-alcohol-prefill",
+            package_path=path,
+            clinician_submission=True,
+        )
+        session.last_question_fact = "lifestyle.alcohol_pattern"
+        session.asked = ["lifestyle.alcohol_pattern"]
+
+        session.process("현재 주 2회 소주 1병 정도 마십니다")
+
+        self.assertEqual(session.memory.value("patient.alcohol.use_status"), "current")
+        self.assertEqual(session.memory.value("patient.alcohol.beverage_types"), "soju")
+        self.assertEqual(session.memory.value("patient.alcohol.frequency"), "주 2회")
+        self.assertEqual(
+            session.memory.value("patient.alcohol.amount_per_occasion"), "소주 1병"
+        )
+
+    def test_every_adaptive_question_exposes_free_text_guidance(self):
+        session = self._session()
+        choice = session._question_for_fact(
+            "patient.smoking.status", "synthetic-guidance"
+        )
+        open_question = session._question_for_fact(
+            "patient.alcohol.frequency", "synthetic-guidance"
+        )
+
+        self.assertEqual(
+            choice["response_instruction_ko"],
+            "번호로 답하거나, 보기에 없으면 내용을 직접 입력해 주세요.",
+        )
+        self.assertTrue(choice["allow_free_text"])
+        self.assertIn("자유롭게 입력", open_question["response_instruction_ko"])
+        self.assertTrue(open_question["allow_free_text"])
 
     def test_natural_language_current_context_skips_baseline_history(self):
         for response in (
@@ -382,8 +523,16 @@ class ClinicianSubmissionContextTest(unittest.TestCase):
             "cough.patient_goal_expectation_additional_comment_and_other_rfe",
             required,
         )
-        self.assertIn("encounter.rfe.functional_impact", required)
-        self.assertIn("encounter.rfe.patient_concern_and_expectation", required)
+        self.assertNotIn("encounter.rfe.functional_impact", required)
+        self.assertIn(
+            "cough.sleep_work_school_voice_eating_activity_and_care_impact",
+            required,
+        )
+        self.assertIn(
+            "cough.smoking_vaping_cannabis_pack_years_last_use_and_change",
+            required,
+        )
+        self.assertNotIn("encounter.rfe.patient_concern_and_expectation", required)
 
     def test_upper_respiratory_profile_has_previsit_handoff_and_branching(self):
         package = compile_package(profile="upper_respiratory_symptoms")
