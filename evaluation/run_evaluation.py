@@ -65,6 +65,9 @@ def evaluate_case(case_path: Path, package_path: Path) -> dict[str, Any]:
     for fact_id in expected.get("expected_selected_facts_contains", []):
         if fact_id not in selected_facts:
             failures.append(f"expected Fact was not selected: {fact_id}")
+    for fact_id in expected.get("expected_selected_facts_excludes", []):
+        if fact_id in selected_facts:
+            failures.append(f"excluded Fact was selected: {fact_id}")
     for fact_id, expected_value in expected.get("expected_known_facts", {}).items():
         record = state.get("facts", {}).get(fact_id, {})
         if record.get("status") != "known" or record.get("value") != expected_value:

@@ -12,6 +12,8 @@ class PatientSimulator:
     def answer(self, fact_id: str) -> str:
         language = self.case.get("simulation_language", "en")
         behavior = self.case.get("response_behavior", {}).get(fact_id, {})
+        if behavior.get("response_text"):
+            return str(behavior["response_text"])
         absent_reason = behavior.get("dataAbsentReason")
         if absent_reason:
             responses = {

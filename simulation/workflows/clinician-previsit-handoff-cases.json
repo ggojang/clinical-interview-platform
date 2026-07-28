@@ -1,6 +1,6 @@
 {
   "id": "simulation.clinician-previsit-handoff-cases",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "status": "synthetic",
   "contains_real_patient_data": false,
   "coverage_scope": "all_implemented_symptom_packages",
@@ -40,6 +40,27 @@
         "QuestionnaireResponse_valueCoding_ready",
         "unknown_preserved_as_official_status_code",
         "no_local_code_fallback_for_required_binding"
+      ]
+    },
+    {
+      "id": "HANDOFF-CURRENT-BASELINE-NATURAL-LANGUAGE",
+      "condition": "the patient states in Korean that baseline information was checked recently and has not changed",
+      "synthetic_response": "최근 확인했고 바뀐 내용이 없습니다",
+      "expected": [
+        "context_review_state_current",
+        "no_clarification_repeat",
+        "skip_nine_longitudinal_baseline_groups",
+        "retain_rfe_specific_and_safety_questions"
+      ]
+    },
+    {
+      "id": "HANDOFF-AMBIGUOUS-BASELINE-RECENCY",
+      "condition": "the patient cannot tell whether baseline information is current or overdue",
+      "synthetic_response": "최근인 것 같기도 하고 오래된 것 같기도 합니다",
+      "expected": [
+        "one_targeted_clarification",
+        "no_runtime_exception",
+        "do_not_assume_current"
       ]
     }
   ],

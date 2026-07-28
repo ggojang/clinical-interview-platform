@@ -509,6 +509,20 @@ class InterviewSession:
                     additions[expected_fact] = fact(
                         answer_code_map[normalized], answer_text, turn, .95
                     )
+                elif template.get("answer_text_cues"):
+                    matched_values = {
+                        internal_value
+                        for internal_value, cues in template["answer_text_cues"].items()
+                        if any(cue.lower() in normalized for cue in cues)
+                    }
+                    if len(matched_values) == 1:
+                        additions[expected_fact] = fact(
+                            matched_values.pop(), answer_text, turn, .93
+                        )
+                    elif normalized in allowed:
+                        additions[expected_fact] = fact(
+                            normalized, answer_text, turn, .92
+                        )
                 elif expected_fact == "symptom.dyspnea" and normalized in {"1", "2"}:
                     additions[expected_fact] = fact(
                         "mild" if normalized == "1" else "none", answer_text, turn, .95
@@ -559,7 +573,7 @@ class InterviewSession:
                     and normalized
                     and normalized not in {
                         "i am not sure", "i'm not sure", "not sure",
-                        "모르겠어요", "잘 모르겠어요",
+                        "모르겠어요", "잘 모르겠어요", "모르겠습니다", "잘 모르겠습니다",
                         "i prefer not to answer", "i'd rather not answer",
                         "prefer not to say", "답하고 싶지 않아요",
                         "말하고 싶지 않아요", "not applicable",
@@ -588,7 +602,7 @@ class InterviewSession:
         # provisional extraction so the canonical absence path can run.
         explicit_absence_phrases = {
             "i am not sure", "i'm not sure", "not sure",
-            "모르겠어요", "잘 모르겠어요",
+            "모르겠어요", "잘 모르겠어요", "모르겠습니다", "잘 모르겠습니다",
             "i prefer not to answer", "i'd rather not answer",
             "prefer not to say", "답하고 싶지 않아요", "말하고 싶지 않아요",
             "not applicable", "does not apply", "해당되지 않아요",
@@ -617,7 +631,7 @@ class InterviewSession:
             elif low_normalized in {
                 "3",
                 "i am not sure", "i'm not sure", "not sure",
-                "모르겠어요", "잘 모르겠어요",
+                "모르겠어요", "잘 모르겠어요", "모르겠습니다", "잘 모르겠습니다",
             }:
                 self.memory.mark_absent(
                     expected_fact, answer_text, "asked-unknown",
@@ -830,10 +844,7 @@ class InterviewSession:
         self, fact_id: str, raw_response: str, attempt: int,
         mandatory: bool = False,
     ) -> dict[str, Any]:
-        node = next(
-            item for item in self.package["knowledge_graph"]["nodes"]
-            if item["type"] == "Fact" and item["id"] == fact_id
-        )
+        node = self._fact_node(fact_id) or {}
         payload = {
             "required": True,
             "fact_id": fact_id,
@@ -850,10 +861,15 @@ class InterviewSession:
                 if mandatory
                 else "응답을 명확히 이해하지 못했습니다. 원래 질문에 다시 답해 주세요."
             ),
-            "binary_numeric_codes": {
-                "1": "yes", "2": "no", "3": "asked-unknown", "4": "asked-declined"
-            },
         }
+        template = self._questions_by_fact().get(fact_id, {})
+        if node.get("value_type") == "boolean":
+            payload["binary_numeric_codes"] = {
+                "1": "yes", "2": "no",
+                "3": "asked-unknown", "4": "asked-declined",
+            }
+        elif template.get("answer_code_map"):
+            payload["coded_numeric_options"] = dict(template["answer_code_map"])
         if node.get("allowed_values"):
             payload["allowed_values"] = list(node["allowed_values"])
         if mandatory:

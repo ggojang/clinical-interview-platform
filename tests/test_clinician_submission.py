@@ -111,6 +111,112 @@ class ClinicianSubmissionContextTest(unittest.TestCase):
         self.assertIn("history.condition.current", state["completion_status"]["required_facts"])
         self.assertIn("patient.alcohol.pattern", state["completion_status"]["required_facts"])
 
+    def test_natural_language_current_context_skips_baseline_history(self):
+        for response in (
+            "최근 확인했고 바뀐 내용이 없습니다",
+            "최근 확인하여 현재 정보입니다",
+        ):
+            with self.subTest(response=response):
+                session = self._session()
+                session.last_question_fact = "encounter.context_review_state"
+                session.asked = ["encounter.context_review_state"]
+
+                state = session.process(response)
+
+                self.assertEqual(
+                    session.memory.value("encounter.context_review_state"),
+                    "current",
+                )
+                self.assertIsNone(state["answer_clarification"])
+                required = set(state["completion_status"]["required_facts"])
+                package_required = set(
+                    session._package_required_facts(None, session._safety())
+                )
+                baseline_only = {
+                    fact_id
+                    for fact_id in {
+                        "history.condition.current",
+                        "history.procedure.past",
+                        "medication.current",
+                        "allergy.current",
+                        "history.family",
+                        "occupation.current",
+                        "patient.smoking.status",
+                        "patient.smoking.exposure_detail",
+                        "patient.alcohol.pattern",
+                    }
+                    if fact_id not in package_required
+                }
+                self.assertTrue(baseline_only)
+                for fact_id in baseline_only:
+                    self.assertNotIn(fact_id, required)
+
+    def test_natural_language_context_review_options_map_to_codes(self):
+        cases = {
+            "처음 작성합니다": "first_encounter",
+            "복용약만 90일 넘게 확인하지 않았습니다": "medication_due",
+            "전체 기본정보를 1년 넘게 확인하지 않았습니다": "all_due",
+            "최근 확인하여 현재 정보입니다": "current",
+        }
+        for response, expected in cases.items():
+            with self.subTest(response=response):
+                session = self._session()
+                session.last_question_fact = "encounter.context_review_state"
+                session.asked = ["encounter.context_review_state"]
+
+                state = session.process(response)
+
+                self.assertEqual(
+                    session.memory.value("encounter.context_review_state"),
+                    expected,
+                )
+                self.assertIsNone(state["answer_clarification"])
+
+    def test_ambiguous_shared_coded_answer_clarifies_without_runtime_error(self):
+        session = self._session()
+        session.last_question_fact = "encounter.context_review_state"
+        session.asked = ["encounter.context_review_state"]
+
+        state = session.process("최근인 것 같기도 하고 오래된 것 같기도 합니다")
+
+        self.assertEqual(
+            state["answer_clarification"]["fact_id"],
+            "encounter.context_review_state",
+        )
+        self.assertEqual(
+            state["answer_clarification"]["value_type"],
+            "coded",
+        )
+        self.assertNotIn(
+            "binary_numeric_codes", state["answer_clarification"],
+        )
+        self.assertEqual(
+            state["answer_clarification"]["coded_numeric_options"],
+            {
+                "1": "first_encounter",
+                "2": "medication_due",
+                "3": "all_due",
+                "4": "current",
+            },
+        )
+
+    def test_polite_unknown_response_is_resolved_without_repeat(self):
+        session = self._session()
+        session.last_question_fact = "encounter.context_review_state"
+        session.asked = ["encounter.context_review_state"]
+
+        state = session.process("잘 모르겠습니다")
+
+        self.assertEqual(
+            session.memory.state("encounter.context_review_state"),
+            "unknown",
+        )
+        self.assertIsNone(state["answer_clarification"])
+        self.assertNotEqual(
+            state["selected_question"]["fact_id"],
+            "encounter.context_review_state",
+        )
+
     def test_initial_proxy_statement_preserves_age_and_additional_request(self):
         session = self._session()
         text = (

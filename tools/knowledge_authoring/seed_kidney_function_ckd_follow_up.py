@@ -166,6 +166,11 @@ def cases(f):
         "persona": {"age": 62},
         "initial_statement": {"ko": "만성콩팥병 정기 진료 전에 최근 검사와 증상을 정리하려고 합니다."},
         "hidden_state": handoff,
+        "response_behavior": {
+            "encounter.context_review_state": {
+                "response_text": "최근 확인했고 바뀐 내용이 없습니다"
+            }
+        },
         "expected": {
             "expected_safety_level": "routine",
             "expected_stop_reason": "required_targets_addressed_with_absent_data",
@@ -176,7 +181,13 @@ def cases(f):
                 "pain.nrs_score": 0,
                 "kidney.daily_activity_impact": "mild",
             },
-            "expected_max_turns": 65,
+            "expected_selected_facts_excludes": [
+                "history.condition.current", "history.procedure.past",
+                "medication.current", "allergy.current", "history.family",
+                "occupation.current", "patient.smoking.status",
+                "patient.smoking.exposure_detail", "patient.alcohol.pattern",
+            ],
+            "expected_max_turns": 56,
             "forbidden_assertions": ["diagnosis.ckd_progression", "diagnosis.uremia", "recommendation.change_medication"],
         },
         "provenance": provenance(["source.kdigo.ckd.2024", "source.nice.ng203.ckd.2025", "specifications/clinical-memory.md"]),
