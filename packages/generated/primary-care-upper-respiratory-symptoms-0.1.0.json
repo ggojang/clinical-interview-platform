@@ -468,7 +468,7 @@
   },
   "coverage": {
     "data_absent_reason_simulations": 2,
-    "facts_with_questions": 57,
+    "facts_with_questions": 58,
     "interoperability": {
       "applicable_uscdi_plus_domains": [
         "uscdi-plus.quality",
@@ -496,19 +496,19 @@
       "ClinicalGroup": 7,
       "ClinicalIntent": 4,
       "EncounterContext": 1,
-      "Fact": 57,
+      "Fact": 58,
       "Hypothesis": 5,
-      "InterviewTarget": 57,
-      "QuestionTemplate": 57,
+      "InterviewTarget": 58,
+      "QuestionTemplate": 58,
       "ReasonForEncounter": 1
     },
-    "required_targets_linked_to_facts": 57,
+    "required_targets_linked_to_facts": 58,
     "reviewed_for_production": false,
-    "safety_rules_with_simulations": 10,
-    "simulation_count": 14,
-    "total_facts": 57,
-    "total_safety_rules": 10,
-    "total_targets": 57,
+    "safety_rules_with_simulations": 11,
+    "simulation_count": 16,
+    "total_facts": 58,
+    "total_safety_rules": 11,
+    "total_targets": 58,
     "uncovered_safety_rules": []
   },
   "indexes": {
@@ -564,17 +564,18 @@
       ],
       "intent.screen_red_flags": [
         "target.upper-respiratory.allergic-swelling",
-        "target.upper-respiratory.breathing-stridor",
         "target.upper-respiratory.confusion",
         "target.upper-respiratory.deep-neck",
         "target.upper-respiratory.dehydration",
         "target.upper-respiratory.drooling",
         "target.upper-respiratory.fever",
         "target.upper-respiratory.immunocompromised",
+        "target.upper-respiratory.inspiratory-stridor",
         "target.upper-respiratory.intracranial",
         "target.upper-respiratory.orbital-swelling",
         "target.upper-respiratory.orbital-vision",
         "target.upper-respiratory.rapid-worsening",
+        "target.upper-respiratory.severe-breathing",
         "target.upper-respiratory.systemically-unwell"
       ]
     },
@@ -836,6 +837,17 @@
         "template_id": "question.upper-respiratory.persistent-hoarseness",
         "wording": "쉰목소리가 3주 이상 계속되거나 점점 심해지나요?"
       },
+      "symptom.inspiratory_stridor": {
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ],
+        "template_id": "question.upper-respiratory.inspiratory-stridor",
+        "wording": "숨을 들이쉴 때 목에서 높고 거친 소리가 나나요?"
+      },
       "symptom.itchy_red_watery_eyes": {
         "language": "ko",
         "mode": [
@@ -942,7 +954,7 @@
         "template_id": "question.upper-respiratory.smell",
         "wording": "후각이 줄거나 없어졌나요?"
       },
-      "symptom.severe_breathing_or_stridor": {
+      "symptom.severe_breathing_difficulty": {
         "language": "ko",
         "mode": [
           "chat",
@@ -950,8 +962,8 @@
           "telephone",
           "video"
         ],
-        "template_id": "question.upper-respiratory.breathing-stridor",
-        "wording": "숨쉬기 어렵거나 들이쉴 때 높은 소리가 나나요?"
+        "template_id": "question.upper-respiratory.severe-breathing",
+        "wording": "현재 숨쉬기가 매우 어렵나요?"
       },
       "symptom.sinus_intracranial_warning": {
         "language": "ko",
@@ -1321,9 +1333,6 @@
       "target.upper-respiratory.associated-symptoms": [
         "upper_respiratory.associated_symptoms_detail"
       ],
-      "target.upper-respiratory.breathing-stridor": [
-        "symptom.severe_breathing_or_stridor"
-      ],
       "target.upper-respiratory.conflict-unverified": [
         "upper_respiratory.conflicting_information_and_unverified_items"
       ],
@@ -1374,6 +1383,9 @@
       ],
       "target.upper-respiratory.information-source": [
         "upper_respiratory.information_source_and_reliability"
+      ],
+      "target.upper-respiratory.inspiratory-stridor": [
+        "symptom.inspiratory_stridor"
       ],
       "target.upper-respiratory.intracranial": [
         "symptom.sinus_intracranial_warning"
@@ -1437,6 +1449,9 @@
       ],
       "target.upper-respiratory.self-care": [
         "treatment.upper_respiratory_self_care_response"
+      ],
+      "target.upper-respiratory.severe-breathing": [
+        "symptom.severe_breathing_difficulty"
       ],
       "target.upper-respiratory.severity": [
         "symptom.upper_respiratory.severity"
@@ -2128,7 +2143,8 @@
     "required_facts": {
       "always": [
         "symptom.upper_respiratory.current",
-        "symptom.severe_breathing_or_stridor",
+        "symptom.severe_breathing_difficulty",
+        "symptom.inspiratory_stridor",
         "symptom.unable_to_swallow_saliva_or_drooling",
         "symptom.upper_respiratory.severe_rapid_worsening",
         "symptom.sudden_lip_tongue_or_throat_swelling",
@@ -3570,33 +3586,6 @@
       },
       {
         "from": "intent.screen_red_flags",
-        "id": "edge.generated.intent_screen_red_flags.generates.target_upper_respiratory_breathing_stridor",
-        "provenance": {
-          "created_at": "2026-07-14T00:00:00Z",
-          "created_by": {
-            "id": "codex-gpt5",
-            "type": "ai"
-          },
-          "review_status": "unreviewed",
-          "source_refs": [
-            "source.nhs.sore-throat.2024",
-            "source.nice.ng84.sore-throat.2025",
-            "source.nice.ng79.sinusitis.2026",
-            "source.nhs.allergic-rhinitis.2026"
-          ],
-          "version": "0.1.0"
-        },
-        "status": "research_only",
-        "to": "target.upper-respiratory.breathing-stridor",
-        "type": "GENERATES",
-        "usage_modes": [
-          "research_test",
-          "simulation"
-        ],
-        "version": "0.1.0"
-      },
-      {
-        "from": "intent.screen_red_flags",
         "id": "edge.generated.intent_screen_red_flags.generates.target_upper_respiratory_confusion",
         "provenance": {
           "created_at": "2026-07-14T00:00:00Z",
@@ -3759,6 +3748,33 @@
       },
       {
         "from": "intent.screen_red_flags",
+        "id": "edge.generated.intent_screen_red_flags.generates.target_upper_respiratory_inspiratory_stridor",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nhs.sore-throat.2024",
+            "source.nice.ng84.sore-throat.2025",
+            "source.nice.ng79.sinusitis.2026",
+            "source.nhs.allergic-rhinitis.2026"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "target.upper-respiratory.inspiratory-stridor",
+        "type": "GENERATES",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "intent.screen_red_flags",
         "id": "edge.generated.intent_screen_red_flags.generates.target_upper_respiratory_intracranial",
         "provenance": {
           "created_at": "2026-07-14T00:00:00Z",
@@ -3858,6 +3874,33 @@
         },
         "status": "research_only",
         "to": "target.upper-respiratory.rapid-worsening",
+        "type": "GENERATES",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "intent.screen_red_flags",
+        "id": "edge.generated.intent_screen_red_flags.generates.target_upper_respiratory_severe_breathing",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nhs.sore-throat.2024",
+            "source.nice.ng84.sore-throat.2025",
+            "source.nice.ng79.sinusitis.2026",
+            "source.nhs.allergic-rhinitis.2026"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "target.upper-respiratory.severe-breathing",
         "type": "GENERATES",
         "usage_modes": [
           "research_test",
@@ -4182,33 +4225,6 @@
         },
         "status": "research_only",
         "to": "upper_respiratory.associated_symptoms_detail",
-        "type": "COLLECTS",
-        "usage_modes": [
-          "research_test",
-          "simulation"
-        ],
-        "version": "0.1.0"
-      },
-      {
-        "from": "question.upper-respiratory.breathing-stridor",
-        "id": "edge.generated.question_upper_respiratory_breathing_stridor.collects.symptom_severe_breathing_or_stridor",
-        "provenance": {
-          "created_at": "2026-07-14T00:00:00Z",
-          "created_by": {
-            "id": "codex-gpt5",
-            "type": "ai"
-          },
-          "review_status": "unreviewed",
-          "source_refs": [
-            "source.nhs.sore-throat.2024",
-            "source.nice.ng84.sore-throat.2025",
-            "source.nice.ng79.sinusitis.2026",
-            "source.nhs.allergic-rhinitis.2026"
-          ],
-          "version": "0.1.0"
-        },
-        "status": "research_only",
-        "to": "symptom.severe_breathing_or_stridor",
         "type": "COLLECTS",
         "usage_modes": [
           "research_test",
@@ -4668,6 +4684,33 @@
         },
         "status": "research_only",
         "to": "upper_respiratory.information_source_and_reliability",
+        "type": "COLLECTS",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "question.upper-respiratory.inspiratory-stridor",
+        "id": "edge.generated.question_upper_respiratory_inspiratory_stridor.collects.symptom_inspiratory_stridor",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nhs.sore-throat.2024",
+            "source.nice.ng84.sore-throat.2025",
+            "source.nice.ng79.sinusitis.2026",
+            "source.nhs.allergic-rhinitis.2026"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "symptom.inspiratory_stridor",
         "type": "COLLECTS",
         "usage_modes": [
           "research_test",
@@ -5235,6 +5278,33 @@
         },
         "status": "research_only",
         "to": "treatment.upper_respiratory_self_care_response",
+        "type": "COLLECTS",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "question.upper-respiratory.severe-breathing",
+        "id": "edge.generated.question_upper_respiratory_severe_breathing.collects.symptom_severe_breathing_difficulty",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nhs.sore-throat.2024",
+            "source.nice.ng84.sore-throat.2025",
+            "source.nice.ng79.sinusitis.2026",
+            "source.nhs.allergic-rhinitis.2026"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "symptom.severe_breathing_difficulty",
         "type": "COLLECTS",
         "usage_modes": [
           "research_test",
@@ -5972,6 +6042,33 @@
         "version": "0.1.0"
       },
       {
+        "from": "symptom.inspiratory_stridor",
+        "id": "edge.generated.symptom_inspiratory_stridor.supports.group_upper_respiratory_immediate_safety",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nhs.sore-throat.2024",
+            "source.nice.ng84.sore-throat.2025",
+            "source.nice.ng79.sinusitis.2026",
+            "source.nhs.allergic-rhinitis.2026"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "group.upper-respiratory.immediate-safety",
+        "type": "SUPPORTS",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
         "from": "symptom.itchy_red_watery_eyes",
         "id": "edge.generated.symptom_itchy_red_watery_eyes.supports.group_upper_respiratory_allergic",
         "provenance": {
@@ -6269,8 +6366,8 @@
         "version": "0.1.0"
       },
       {
-        "from": "symptom.severe_breathing_or_stridor",
-        "id": "edge.generated.symptom_severe_breathing_or_stridor.supports.group_upper_respiratory_immediate_safety",
+        "from": "symptom.severe_breathing_difficulty",
+        "id": "edge.generated.symptom_severe_breathing_difficulty.supports.group_upper_respiratory_immediate_safety",
         "provenance": {
           "created_at": "2026-07-14T00:00:00Z",
           "created_by": {
@@ -6917,33 +7014,6 @@
         "version": "0.1.0"
       },
       {
-        "from": "target.upper-respiratory.breathing-stridor",
-        "id": "edge.generated.target_upper_respiratory_breathing_stridor.requires.symptom_severe_breathing_or_stridor",
-        "provenance": {
-          "created_at": "2026-07-14T00:00:00Z",
-          "created_by": {
-            "id": "codex-gpt5",
-            "type": "ai"
-          },
-          "review_status": "unreviewed",
-          "source_refs": [
-            "source.nhs.sore-throat.2024",
-            "source.nice.ng84.sore-throat.2025",
-            "source.nice.ng79.sinusitis.2026",
-            "source.nhs.allergic-rhinitis.2026"
-          ],
-          "version": "0.1.0"
-        },
-        "status": "research_only",
-        "to": "symptom.severe_breathing_or_stridor",
-        "type": "REQUIRES",
-        "usage_modes": [
-          "research_test",
-          "simulation"
-        ],
-        "version": "0.1.0"
-      },
-      {
         "from": "target.upper-respiratory.conflict-unverified",
         "id": "edge.generated.target_upper_respiratory_conflict_unverified.requires.upper_respiratory_conflicting_information_and_unverified_items",
         "provenance": {
@@ -7395,6 +7465,33 @@
         },
         "status": "research_only",
         "to": "upper_respiratory.information_source_and_reliability",
+        "type": "REQUIRES",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "target.upper-respiratory.inspiratory-stridor",
+        "id": "edge.generated.target_upper_respiratory_inspiratory_stridor.requires.symptom_inspiratory_stridor",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nhs.sore-throat.2024",
+            "source.nice.ng84.sore-throat.2025",
+            "source.nice.ng79.sinusitis.2026",
+            "source.nhs.allergic-rhinitis.2026"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "symptom.inspiratory_stridor",
         "type": "REQUIRES",
         "usage_modes": [
           "research_test",
@@ -7962,6 +8059,33 @@
         },
         "status": "research_only",
         "to": "treatment.upper_respiratory_self_care_response",
+        "type": "REQUIRES",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "target.upper-respiratory.severe-breathing",
+        "id": "edge.generated.target_upper_respiratory_severe_breathing.requires.symptom_severe_breathing_difficulty",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nhs.sore-throat.2024",
+            "source.nice.ng84.sore-throat.2025",
+            "source.nice.ng79.sinusitis.2026",
+            "source.nhs.allergic-rhinitis.2026"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "symptom.severe_breathing_difficulty",
         "type": "REQUIRES",
         "usage_modes": [
           "research_test",
@@ -10107,42 +10231,6 @@
         "wording": "귀 통증, 두통, 몸살, 발진, 구토·설사 등 함께 있는 증상을 모두 알려주세요. 없으면 없음으로 답해 주세요."
       },
       {
-        "collects": "symptom.severe_breathing_or_stridor",
-        "display": "숨쉬기 어렵거나 들이쉴 때 높은 소리가 나나요?",
-        "id": "question.upper-respiratory.breathing-stridor",
-        "language": "ko",
-        "mode": [
-          "chat",
-          "face_to_face",
-          "telephone",
-          "video"
-        ],
-        "provenance": {
-          "created_at": "2026-07-14T00:00:00Z",
-          "created_by": {
-            "id": "codex-gpt5",
-            "type": "ai"
-          },
-          "review_status": "unreviewed",
-          "source_refs": [
-            "source.nhs.sore-throat.2024",
-            "source.nice.ng84.sore-throat.2025",
-            "source.nice.ng79.sinusitis.2026",
-            "source.nhs.allergic-rhinitis.2026"
-          ],
-          "version": "0.1.0"
-        },
-        "source_manifest": "source-manifest.primary-care-upper-respiratory-symptoms-research",
-        "status": "research_only",
-        "type": "QuestionTemplate",
-        "usage_modes": [
-          "research_test",
-          "simulation"
-        ],
-        "version": "0.1.0",
-        "wording": "숨쉬기 어렵거나 들이쉴 때 높은 소리가 나나요?"
-      },
-      {
         "collects": "upper_respiratory.conflicting_information_and_unverified_items",
         "display": "기억과 기록이 다르거나 아직 확인하지 못한 정보가 있으면 무엇인지 알려주세요.",
         "id": "question.upper-respiratory.conflict-unverified",
@@ -10777,6 +10865,42 @@
         ],
         "version": "0.1.0",
         "wording": "답변은 본인이 직접 하는지, 보호자가 대신하는지와 확인이 어려운 내용이 있는지 알려주세요."
+      },
+      {
+        "collects": "symptom.inspiratory_stridor",
+        "display": "숨을 들이쉴 때 목에서 높고 거친 소리가 나나요?",
+        "id": "question.upper-respiratory.inspiratory-stridor",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ],
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nhs.sore-throat.2024",
+            "source.nice.ng84.sore-throat.2025",
+            "source.nice.ng79.sinusitis.2026",
+            "source.nhs.allergic-rhinitis.2026"
+          ],
+          "version": "0.1.0"
+        },
+        "source_manifest": "source-manifest.primary-care-upper-respiratory-symptoms-research",
+        "status": "research_only",
+        "type": "QuestionTemplate",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0",
+        "wording": "숨을 들이쉴 때 목에서 높고 거친 소리가 나나요?"
       },
       {
         "collects": "symptom.sinus_intracranial_warning",
@@ -11551,6 +11675,42 @@
         ],
         "version": "0.1.0",
         "wording": "수분 섭취, 가글, 일반 진통제·비강 세척·알레르기약 등을 사용했다면 좋아짐, 변화 없음, 악화 중 무엇인가요? 안 해봤다면 안 해봄으로 답해 주세요."
+      },
+      {
+        "collects": "symptom.severe_breathing_difficulty",
+        "display": "현재 숨쉬기가 매우 어렵나요?",
+        "id": "question.upper-respiratory.severe-breathing",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ],
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nhs.sore-throat.2024",
+            "source.nice.ng84.sore-throat.2025",
+            "source.nice.ng79.sinusitis.2026",
+            "source.nhs.allergic-rhinitis.2026"
+          ],
+          "version": "0.1.0"
+        },
+        "source_manifest": "source-manifest.primary-care-upper-respiratory-symptoms-research",
+        "status": "research_only",
+        "type": "QuestionTemplate",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0",
+        "wording": "현재 숨쉬기가 매우 어렵나요?"
       },
       {
         "collects": "symptom.upper_respiratory.severity",
@@ -12526,6 +12686,58 @@
           "strategy": "SNOMED_CT_coded_yes_no_with_local_fallback"
         },
         "description": "",
+        "display": "Inspiratory Stridor",
+        "extraction_cues": [],
+        "id": "symptom.inspiratory_stridor",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nhs.sore-throat.2024",
+            "source.nice.ng84.sore-throat.2025",
+            "source.nice.ng79.sinusitis.2026",
+            "source.nhs.allergic-rhinitis.2026"
+          ],
+          "version": "0.1.0"
+        },
+        "refresh": {
+          "class": "clinical_guideline",
+          "full_review_interval_days": 180,
+          "last_assessed_at": "2026-07-14",
+          "monitor_interval_days": 1,
+          "next_full_review_at": "2027-01-10",
+          "next_monitor_at": "2026-07-15",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          },
+          "policy_id": "policy.knowledge-refresh"
+        },
+        "safety_relevant": true,
+        "source_manifest": "source-manifest.primary-care-upper-respiratory-symptoms-research",
+        "status": "research_only",
+        "type": "Fact",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "value_type": "boolean",
+        "version": "0.1.0"
+      },
+      {
+        "answer_semantic_binding": {
+          "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-sct-yes-no",
+          "fhir_item_type": "choice",
+          "fhir_response_type": "valueCoding",
+          "local_answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-local-yes-no",
+          "policy_id": "policy.question-answer-terminology-binding",
+          "strategy": "SNOMED_CT_coded_yes_no_with_local_fallback"
+        },
+        "description": "",
         "display": "Itchy Red Watery Eyes",
         "extraction_cues": [],
         "id": "symptom.itchy_red_watery_eyes",
@@ -12985,9 +13197,9 @@
           "strategy": "SNOMED_CT_coded_yes_no_with_local_fallback"
         },
         "description": "",
-        "display": "Severe Breathing Difficulty or Stridor",
+        "display": "Severe Breathing Difficulty",
         "extraction_cues": [],
-        "id": "symptom.severe_breathing_or_stridor",
+        "id": "symptom.severe_breathing_difficulty",
         "provenance": {
           "created_at": "2026-07-14T00:00:00Z",
           "created_by": {
@@ -13986,36 +14198,6 @@
         "version": "0.1.0"
       },
       {
-        "display": "Severe Breathing Difficulty or Stridor",
-        "id": "target.upper-respiratory.breathing-stridor",
-        "provenance": {
-          "created_at": "2026-07-14T00:00:00Z",
-          "created_by": {
-            "id": "codex-gpt5",
-            "type": "ai"
-          },
-          "review_status": "unreviewed",
-          "source_refs": [
-            "source.nhs.sore-throat.2024",
-            "source.nice.ng84.sore-throat.2025",
-            "source.nice.ng79.sinusitis.2026",
-            "source.nhs.allergic-rhinitis.2026"
-          ],
-          "version": "0.1.0"
-        },
-        "required_facts": [
-          "symptom.severe_breathing_or_stridor"
-        ],
-        "source_manifest": "source-manifest.primary-care-upper-respiratory-symptoms-research",
-        "status": "research_only",
-        "type": "InterviewTarget",
-        "usage_modes": [
-          "research_test",
-          "simulation"
-        ],
-        "version": "0.1.0"
-      },
-      {
         "display": "Conflicting Information and Unverified Items",
         "id": "target.upper-respiratory.conflict-unverified",
         "provenance": {
@@ -14515,6 +14697,36 @@
         },
         "required_facts": [
           "upper_respiratory.information_source_and_reliability"
+        ],
+        "source_manifest": "source-manifest.primary-care-upper-respiratory-symptoms-research",
+        "status": "research_only",
+        "type": "InterviewTarget",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "display": "Inspiratory Stridor",
+        "id": "target.upper-respiratory.inspiratory-stridor",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nhs.sore-throat.2024",
+            "source.nice.ng84.sore-throat.2025",
+            "source.nice.ng79.sinusitis.2026",
+            "source.nhs.allergic-rhinitis.2026"
+          ],
+          "version": "0.1.0"
+        },
+        "required_facts": [
+          "symptom.inspiratory_stridor"
         ],
         "source_manifest": "source-manifest.primary-care-upper-respiratory-symptoms-research",
         "status": "research_only",
@@ -15145,6 +15357,36 @@
         },
         "required_facts": [
           "treatment.upper_respiratory_self_care_response"
+        ],
+        "source_manifest": "source-manifest.primary-care-upper-respiratory-symptoms-research",
+        "status": "research_only",
+        "type": "InterviewTarget",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "display": "Severe Breathing Difficulty",
+        "id": "target.upper-respiratory.severe-breathing",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nhs.sore-throat.2024",
+            "source.nice.ng84.sore-throat.2025",
+            "source.nice.ng79.sinusitis.2026",
+            "source.nhs.allergic-rhinitis.2026"
+          ],
+          "version": "0.1.0"
+        },
+        "required_facts": [
+          "symptom.severe_breathing_difficulty"
         ],
         "source_manifest": "source-manifest.primary-care-upper-respiratory-symptoms-research",
         "status": "research_only",
@@ -16539,7 +16781,7 @@
       }
     },
     "coverage": {
-      "boolean_primitive_question_count": 29,
+      "boolean_primitive_question_count": 30,
       "coded_answer_local_fallback_count": 35,
       "coded_answer_snomed_count": 21,
       "coded_answer_snomed_percent": 60.0,
@@ -16548,11 +16790,11 @@
       "fhir_r4_element_bound_question_count": 0,
       "fhir_r4_element_candidate_question_count": 0,
       "other_primitive_question_count": 19,
-      "question_count": 57,
-      "question_local_code_count": 57,
-      "question_local_only_count": 49,
+      "question_count": 58,
+      "question_local_code_count": 58,
+      "question_local_only_count": 50,
       "question_loinc_exact_or_equivalent_count": 3,
-      "question_loinc_exact_or_equivalent_percent": 5.3,
+      "question_loinc_exact_or_equivalent_percent": 5.2,
       "question_loinc_partial_or_related_count": 0,
       "question_snomed_secondary_count": 5
     },
@@ -16876,48 +17118,6 @@
         }
       },
       {
-        "id": "rule.upper-respiratory.safety.breathing-stridor",
-        "priority": 1000,
-        "provenance": {
-          "created_at": "2026-07-14T00:00:00Z",
-          "created_by": {
-            "id": "codex-gpt5",
-            "type": "ai"
-          },
-          "review_status": "unreviewed",
-          "source_refs": [
-            "source.nhs.sore-throat.2024",
-            "source.nice.ng84.sore-throat.2025",
-            "source.nice.ng79.sinusitis.2026",
-            "source.nhs.allergic-rhinitis.2026"
-          ],
-          "version": "0.1.0"
-        },
-        "refresh": {
-          "class": "safety_critical",
-          "last_assessed_at": "2026-07-14",
-          "next_full_review_at": "2026-10-12",
-          "next_monitor_at": "2026-07-15",
-          "policy_id": "policy.knowledge-refresh"
-        },
-        "status": "research_only",
-        "then": {
-          "action": "human_handoff",
-          "safety_level": "emergency",
-          "suppress_routine": true
-        },
-        "type": "safety",
-        "usage_modes": [
-          "research_test",
-          "simulation"
-        ],
-        "version": "0.1.0",
-        "when": {
-          "equals": true,
-          "fact": "symptom.severe_breathing_or_stridor"
-        }
-      },
-      {
         "id": "rule.upper-respiratory.safety.confusion-systemic",
         "priority": 1000,
         "provenance": {
@@ -16965,6 +17165,48 @@
               "fact": "symptom.fever"
             }
           ]
+        }
+      },
+      {
+        "id": "rule.upper-respiratory.safety.inspiratory-stridor",
+        "priority": 1000,
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nhs.sore-throat.2024",
+            "source.nice.ng84.sore-throat.2025",
+            "source.nice.ng79.sinusitis.2026",
+            "source.nhs.allergic-rhinitis.2026"
+          ],
+          "version": "0.1.0"
+        },
+        "refresh": {
+          "class": "safety_critical",
+          "last_assessed_at": "2026-07-14",
+          "next_full_review_at": "2026-10-12",
+          "next_monitor_at": "2026-07-15",
+          "policy_id": "policy.knowledge-refresh"
+        },
+        "status": "research_only",
+        "then": {
+          "action": "human_handoff",
+          "safety_level": "emergency",
+          "suppress_routine": true
+        },
+        "type": "safety",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0",
+        "when": {
+          "equals": true,
+          "fact": "symptom.inspiratory_stridor"
         }
       },
       {
@@ -17099,6 +17341,48 @@
         "when": {
           "equals": true,
           "fact": "symptom.upper_respiratory.severe_rapid_worsening"
+        }
+      },
+      {
+        "id": "rule.upper-respiratory.safety.severe-breathing",
+        "priority": 1000,
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nhs.sore-throat.2024",
+            "source.nice.ng84.sore-throat.2025",
+            "source.nice.ng79.sinusitis.2026",
+            "source.nhs.allergic-rhinitis.2026"
+          ],
+          "version": "0.1.0"
+        },
+        "refresh": {
+          "class": "safety_critical",
+          "last_assessed_at": "2026-07-14",
+          "next_full_review_at": "2026-10-12",
+          "next_monitor_at": "2026-07-15",
+          "policy_id": "policy.knowledge-refresh"
+        },
+        "status": "research_only",
+        "then": {
+          "action": "human_handoff",
+          "safety_level": "emergency",
+          "suppress_routine": true
+        },
+        "type": "safety",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0",
+        "when": {
+          "equals": true,
+          "fact": "symptom.severe_breathing_difficulty"
         }
       },
       {
@@ -17326,7 +17610,7 @@
         }
       },
       {
-        "id": "rule.generated.priority.any.breathing-stridor",
+        "id": "rule.generated.priority.any.inspiratory-stridor",
         "priority": 129,
         "provenance": {
           "created_at": "2026-07-14T00:00:00Z",
@@ -17359,7 +17643,7 @@
         "status": "research_only",
         "then": {
           "reason": "airway_gate",
-          "target": "target.upper-respiratory.breathing-stridor"
+          "target": "target.upper-respiratory.inspiratory-stridor"
         },
         "type": "priority",
         "usage_modes": [
@@ -17369,7 +17653,55 @@
         "version": "0.1.0",
         "when": {
           "target_state": {
-            "target.upper-respiratory.breathing-stridor": "active"
+            "target.upper-respiratory.inspiratory-stridor": "active"
+          }
+        }
+      },
+      {
+        "id": "rule.generated.priority.any.severe-breathing",
+        "priority": 129,
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nhs.sore-throat.2024",
+            "source.nice.ng84.sore-throat.2025",
+            "source.nice.ng79.sinusitis.2026",
+            "source.nhs.allergic-rhinitis.2026"
+          ],
+          "version": "0.1.0"
+        },
+        "refresh": {
+          "class": "clinical_guideline",
+          "full_review_interval_days": 180,
+          "last_assessed_at": "2026-07-14",
+          "monitor_interval_days": 1,
+          "next_full_review_at": "2027-01-10",
+          "next_monitor_at": "2026-07-15",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          },
+          "policy_id": "policy.knowledge-refresh"
+        },
+        "status": "research_only",
+        "then": {
+          "reason": "airway_gate",
+          "target": "target.upper-respiratory.severe-breathing"
+        },
+        "type": "priority",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0",
+        "when": {
+          "target_state": {
+            "target.upper-respiratory.severe-breathing": "active"
           }
         }
       },
@@ -20180,52 +20512,6 @@
         }
       },
       {
-        "id": "rule.generated.complete.breathing-stridor",
-        "priority": 50,
-        "provenance": {
-          "created_at": "2026-07-14T00:00:00Z",
-          "created_by": {
-            "id": "codex-gpt5",
-            "type": "ai"
-          },
-          "review_status": "unreviewed",
-          "source_refs": [
-            "source.nhs.sore-throat.2024",
-            "source.nice.ng84.sore-throat.2025",
-            "source.nice.ng79.sinusitis.2026",
-            "source.nhs.allergic-rhinitis.2026"
-          ],
-          "version": "0.1.0"
-        },
-        "refresh": {
-          "class": "clinical_guideline",
-          "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
-          "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
-          "overdue_behavior": {
-            "production": "exclude_or_require_review",
-            "research_test": "allow_with_warning"
-          },
-          "policy_id": "policy.knowledge-refresh"
-        },
-        "status": "research_only",
-        "then": {
-          "target_state": "satisfied"
-        },
-        "type": "completion",
-        "usage_modes": [
-          "research_test",
-          "simulation"
-        ],
-        "version": "0.1.0",
-        "when": {
-          "facts_resolved": "all_required",
-          "target": "target.upper-respiratory.breathing-stridor"
-        }
-      },
-      {
         "id": "rule.generated.complete.conflict-unverified",
         "priority": 50,
         "provenance": {
@@ -21005,6 +21291,52 @@
         "when": {
           "facts_resolved": "all_required",
           "target": "target.upper-respiratory.information-source"
+        }
+      },
+      {
+        "id": "rule.generated.complete.inspiratory-stridor",
+        "priority": 50,
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nhs.sore-throat.2024",
+            "source.nice.ng84.sore-throat.2025",
+            "source.nice.ng79.sinusitis.2026",
+            "source.nhs.allergic-rhinitis.2026"
+          ],
+          "version": "0.1.0"
+        },
+        "refresh": {
+          "class": "clinical_guideline",
+          "full_review_interval_days": 180,
+          "last_assessed_at": "2026-07-14",
+          "monitor_interval_days": 1,
+          "next_full_review_at": "2027-01-10",
+          "next_monitor_at": "2026-07-15",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          },
+          "policy_id": "policy.knowledge-refresh"
+        },
+        "status": "research_only",
+        "then": {
+          "target_state": "satisfied"
+        },
+        "type": "completion",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0",
+        "when": {
+          "facts_resolved": "all_required",
+          "target": "target.upper-respiratory.inspiratory-stridor"
         }
       },
       {
@@ -21974,6 +22306,52 @@
         }
       },
       {
+        "id": "rule.generated.complete.severe-breathing",
+        "priority": 50,
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nhs.sore-throat.2024",
+            "source.nice.ng84.sore-throat.2025",
+            "source.nice.ng79.sinusitis.2026",
+            "source.nhs.allergic-rhinitis.2026"
+          ],
+          "version": "0.1.0"
+        },
+        "refresh": {
+          "class": "clinical_guideline",
+          "full_review_interval_days": 180,
+          "last_assessed_at": "2026-07-14",
+          "monitor_interval_days": 1,
+          "next_full_review_at": "2027-01-10",
+          "next_monitor_at": "2026-07-15",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          },
+          "policy_id": "policy.knowledge-refresh"
+        },
+        "status": "research_only",
+        "then": {
+          "target_state": "satisfied"
+        },
+        "type": "completion",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0",
+        "when": {
+          "facts_resolved": "all_required",
+          "target": "target.upper-respiratory.severe-breathing"
+        }
+      },
+      {
         "id": "rule.generated.complete.severity",
         "priority": 50,
         "provenance": {
@@ -22538,8 +22916,43 @@
       "rfe.upper_respiratory_symptoms"
     ]
   },
-  "semantic_digest": "sha256:d997f92f06ab270d47f6ab22bbad7c46eb83c5c60654b64a6bf2493f9cb0472c",
+  "semantic_digest": "sha256:f0a6beb8fb043254a8d949486b55aec44850e52db37e5936ad9a0eee558b9121",
   "simulations": [
+    {
+      "expected": {
+        "expected_clinician_handoff": true,
+        "expected_known_facts": {
+          "pain.nrs_score": 5,
+          "symptom.throat_pain": "moderate",
+          "symptom.upper_respiratory.main_type": "sore_throat",
+          "upper_respiratory.prior_examination_swab_tests_and_results": "이번 증상으로 아직 진찰이나 검사를 받지 않음"
+        },
+        "expected_max_turns": 60,
+        "expected_safety_level": "routine",
+        "expected_stop_reason": "required_targets_addressed_with_absent_data",
+        "forbidden_assertions": [
+          "diagnosis.strep_throat",
+          "diagnosis.laryngitis",
+          "recommendation.antibiotic"
+        ]
+      },
+      "id": "UPPER-ADULT-SORE-THROAT-CLINICIAN-HANDOFF-001",
+      "path": "simulation/patients/upper-respiratory/UPPER-ADULT-SORE-THROAT-CLINICIAN-HANDOFF-001.json",
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.sore-throat.2024",
+          "source.nice.ng84.sore-throat.2025",
+          "specifications/clinical-memory.md"
+        ],
+        "version": "0.1.0"
+      }
+    },
     {
       "expected": {
         "expected_max_turns": 22,
@@ -22557,39 +22970,6 @@
       },
       "id": "UPPER-ALLERGIC-SWELLING-001",
       "path": "simulation/patients/upper-respiratory/UPPER-ALLERGIC-SWELLING-001.json",
-      "provenance": {
-        "created_at": "2026-07-14T00:00:00Z",
-        "created_by": {
-          "id": "codex-gpt5",
-          "type": "ai"
-        },
-        "review_status": "unreviewed",
-        "source_refs": [
-          "source.nhs.sore-throat.2024",
-          "source.nice.ng84.sore-throat.2025",
-          "source.nice.ng79.sinusitis.2026",
-          "source.nhs.allergic-rhinitis.2026"
-        ],
-        "version": "0.1.0"
-      }
-    },
-    {
-      "expected": {
-        "expected_max_turns": 22,
-        "expected_safety_action": "human_handoff",
-        "expected_safety_level": "emergency",
-        "expected_stop_reason": "emergency_escalation",
-        "expected_triggered_rules_contains": [
-          "rule.upper-respiratory.safety.breathing-stridor"
-        ],
-        "forbidden_assertions": [
-          "diagnosis.epiglottitis",
-          "diagnosis.sinusitis",
-          "recommendation.antibiotic"
-        ]
-      },
-      "id": "UPPER-BREATHING-STRIDOR-001",
-      "path": "simulation/patients/upper-respiratory/UPPER-BREATHING-STRIDOR-001.json",
       "provenance": {
         "created_at": "2026-07-14T00:00:00Z",
         "created_by": {
@@ -22803,6 +23183,39 @@
         "expected_safety_level": "emergency",
         "expected_stop_reason": "emergency_escalation",
         "expected_triggered_rules_contains": [
+          "rule.upper-respiratory.safety.inspiratory-stridor"
+        ],
+        "forbidden_assertions": [
+          "diagnosis.epiglottitis",
+          "diagnosis.sinusitis",
+          "recommendation.antibiotic"
+        ]
+      },
+      "id": "UPPER-INSPIRATORY-STRIDOR-001",
+      "path": "simulation/patients/upper-respiratory/UPPER-INSPIRATORY-STRIDOR-001.json",
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.sore-throat.2024",
+          "source.nice.ng84.sore-throat.2025",
+          "source.nice.ng79.sinusitis.2026",
+          "source.nhs.allergic-rhinitis.2026"
+        ],
+        "version": "0.1.0"
+      }
+    },
+    {
+      "expected": {
+        "expected_max_turns": 22,
+        "expected_safety_action": "human_handoff",
+        "expected_safety_level": "emergency",
+        "expected_stop_reason": "emergency_escalation",
+        "expected_triggered_rules_contains": [
           "rule.upper-respiratory.safety.intracranial-warning"
         ],
         "forbidden_assertions": [
@@ -22925,6 +23338,39 @@
     },
     {
       "expected": {
+        "expected_max_turns": 22,
+        "expected_safety_action": "human_handoff",
+        "expected_safety_level": "emergency",
+        "expected_stop_reason": "emergency_escalation",
+        "expected_triggered_rules_contains": [
+          "rule.upper-respiratory.safety.severe-breathing"
+        ],
+        "forbidden_assertions": [
+          "diagnosis.epiglottitis",
+          "diagnosis.sinusitis",
+          "recommendation.antibiotic"
+        ]
+      },
+      "id": "UPPER-SEVERE-BREATHING-001",
+      "path": "simulation/patients/upper-respiratory/UPPER-SEVERE-BREATHING-001.json",
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nhs.sore-throat.2024",
+          "source.nice.ng84.sore-throat.2025",
+          "source.nice.ng79.sinusitis.2026",
+          "source.nhs.allergic-rhinitis.2026"
+        ],
+        "version": "0.1.0"
+      }
+    },
+    {
+      "expected": {
         "expected_max_turns": 40,
         "expected_safety_level": "routine",
         "expected_stop_reason": "all_required_targets_resolved",
@@ -22999,7 +23445,7 @@
       },
       {
         "complete": true,
-        "digest": "sha256:160fdde9f6afae6c03fef96872f222a599aacef9447b9f5f2d4107fa4abc80e3",
+        "digest": "sha256:66feceea3a944dabe7f92ad9709667a825093461338be981f8cddca35d641964",
         "id": "source.repository.context",
         "kind": "repository_specification",
         "language": "en",
@@ -23010,7 +23456,7 @@
       },
       {
         "complete": true,
-        "digest": "sha256:ae8fce3df0c3346ea699d4d882b921151bce949f109d968cf714464c48334acd",
+        "digest": "sha256:1f14a2a2786889f142d011cd992a2fc015f07e8e581b90eeeae02e0a6dd4dafb",
         "id": "source.catalog.primary-care-rfe",
         "kind": "knowledge_catalog",
         "language": "en",
@@ -23032,7 +23478,7 @@
       },
       {
         "complete": true,
-        "digest": "sha256:b29e24b55757bf70227f7009c218c8dfd90ec04706fc2317e63e987d52afdb98",
+        "digest": "sha256:fb9d5bd4abd37f81a56e6d195e2d3f1282ac3cb87973fc2126290ecbbead375c",
         "id": "source.generated.primary-care-upper-respiratory",
         "kind": "generated_clinical_knowledge",
         "language": "en",
@@ -23065,7 +23511,7 @@
       },
       {
         "complete": true,
-        "digest": "sha256:a36f749c867f324a27f193d12830f6801b26411d7c5acb504efc6fc4c26826e1",
+        "digest": "sha256:420c790abd145c9d0a519dbef36a8908428ad19a0064b2637d272153a5c5f790",
         "id": "source.policy.primary-care-upper-respiratory-completion",
         "kind": "runtime_policy",
         "language": "en",

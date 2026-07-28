@@ -1,6 +1,6 @@
 {
   "contains_patient_responses": false,
-  "count": 123,
+  "count": 126,
   "encounter_contexts": [
     "context.primary_care"
   ],
@@ -18,20 +18,6 @@
       "when": {
         "equals": true,
         "fact": "symptom.sudden_lip_tongue_or_throat_swelling"
-      }
-    },
-    {
-      "id": "rule.upper-respiratory.safety.breathing-stridor",
-      "priority": 1000,
-      "then": {
-        "action": "human_handoff",
-        "safety_level": "emergency",
-        "suppress_routine": true
-      },
-      "type": "safety",
-      "when": {
-        "equals": true,
-        "fact": "symptom.severe_breathing_or_stridor"
       }
     },
     {
@@ -54,6 +40,20 @@
             "fact": "symptom.fever"
           }
         ]
+      }
+    },
+    {
+      "id": "rule.upper-respiratory.safety.inspiratory-stridor",
+      "priority": 1000,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "symptom.inspiratory_stridor"
       }
     },
     {
@@ -104,6 +104,20 @@
       "when": {
         "equals": true,
         "fact": "symptom.upper_respiratory.severe_rapid_worsening"
+      }
+    },
+    {
+      "id": "rule.upper-respiratory.safety.severe-breathing",
+      "priority": 1000,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "symptom.severe_breathing_difficulty"
       }
     },
     {
@@ -185,16 +199,30 @@
       }
     },
     {
-      "id": "rule.generated.priority.any.breathing-stridor",
+      "id": "rule.generated.priority.any.inspiratory-stridor",
       "priority": 129,
       "then": {
         "reason": "airway_gate",
-        "target": "target.upper-respiratory.breathing-stridor"
+        "target": "target.upper-respiratory.inspiratory-stridor"
       },
       "type": "priority",
       "when": {
         "target_state": {
-          "target.upper-respiratory.breathing-stridor": "active"
+          "target.upper-respiratory.inspiratory-stridor": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.severe-breathing",
+      "priority": 129,
+      "then": {
+        "reason": "airway_gate",
+        "target": "target.upper-respiratory.severe-breathing"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.upper-respiratory.severe-breathing": "active"
         }
       }
     },
@@ -1025,18 +1053,6 @@
       }
     },
     {
-      "id": "rule.generated.complete.breathing-stridor",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.upper-respiratory.breathing-stridor"
-      }
-    },
-    {
       "id": "rule.generated.complete.conflict-unverified",
       "priority": 50,
       "then": {
@@ -1238,6 +1254,18 @@
       "when": {
         "facts_resolved": "all_required",
         "target": "target.upper-respiratory.information-source"
+      }
+    },
+    {
+      "id": "rule.generated.complete.inspiratory-stridor",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.upper-respiratory.inspiratory-stridor"
       }
     },
     {
@@ -1490,6 +1518,18 @@
       "when": {
         "facts_resolved": "all_required",
         "target": "target.upper-respiratory.self-care"
+      }
+    },
+    {
+      "id": "rule.generated.complete.severe-breathing",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.upper-respiratory.severe-breathing"
       }
     },
     {

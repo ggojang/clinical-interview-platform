@@ -106,10 +106,23 @@
   ],
   "safety_rules": [
     {
-      "id": "rule.upper-respiratory.safety.breathing-stridor",
+      "id": "rule.upper-respiratory.safety.severe-breathing",
       "priority": 1000,
       "when": {
-        "fact": "symptom.severe_breathing_or_stridor",
+        "fact": "symptom.severe_breathing_difficulty",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.upper-respiratory.safety.inspiratory-stridor",
+      "priority": 1000,
+      "when": {
+        "fact": "symptom.inspiratory_stridor",
         "equals": true
       },
       "then": {
@@ -460,21 +473,57 @@
     },
     {
       "fact": {
-        "id": "symptom.severe_breathing_or_stridor",
-        "display": "Severe Breathing Difficulty or Stridor",
+        "id": "symptom.severe_breathing_difficulty",
+        "display": "Severe Breathing Difficulty",
         "value_type": "boolean",
         "safety_relevant": true
       },
       "target": {
-        "id": "target.upper-respiratory.breathing-stridor",
-        "display": "Severe Breathing Difficulty or Stridor",
+        "id": "target.upper-respiratory.severe-breathing",
+        "display": "Severe Breathing Difficulty",
         "intents": [
           "intent.screen_red_flags"
         ]
       },
       "question": {
-        "id": "question.upper-respiratory.breathing-stridor",
-        "wording": "숨쉬기 어렵거나 들이쉴 때 높은 소리가 나나요?",
+        "id": "question.upper-respiratory.severe-breathing",
+        "wording": "현재 숨쉬기가 매우 어렵나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "airway_gate"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.immediate-safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.inspiratory_stridor",
+        "display": "Inspiratory Stridor",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.upper-respiratory.inspiratory-stridor",
+        "display": "Inspiratory Stridor",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.inspiratory-stridor",
+        "wording": "숨을 들이쉴 때 목에서 높고 거친 소리가 나나요?",
         "language": "ko",
         "mode": [
           "chat",
