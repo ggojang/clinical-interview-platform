@@ -1384,11 +1384,26 @@ class CompilerTests(unittest.TestCase):
         package = compile_package(profile="kidney_function_ckd_follow_up")
         facts = {node["id"] for node in package["knowledge_graph"]["nodes"] if node["type"] == "Fact"}
         self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
-        self.assertGreaterEqual(len(facts), 45)
+        self.assertEqual(len(facts), 56)
+        self.assertNotIn("kidney.dyspnea_fatigue_nausea_pruritus_and_cramps", facts)
+        self.assertIn("kidney.fatigue_lethargy_severity", facts)
+        self.assertIn("kidney.reduced_appetite_severity", facts)
+        self.assertIn("pain.nrs_score", facts)
         self.assertEqual(package["coverage"]["total_safety_rules"], 12)
         self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 12)
         self.assertEqual(package["coverage"]["uncovered_safety_rules"], [])
         self.assertEqual(package["coverage"]["data_absent_reason_simulations"], 1)
+        self.assertEqual(package["coverage"]["simulation_count"], 14)
+        handoff = next(
+            item for item in package["simulations"]
+            if item["id"] == "KIDNEY-CKD-CLINICIAN-HANDOFF"
+        )
+        handoff_fixture = json.loads(
+            (Path(__file__).resolve().parents[1] / handoff["path"])
+            .read_text(encoding="utf-8")
+        )
+        self.assertTrue(handoff_fixture["clinician_submission"])
+        self.assertTrue(handoff_fixture["expected"]["expected_clinician_handoff"])
         conditional = package["interview_completion_policy"]["conditional_required_facts"][0]
         self.assertEqual(conditional["selector_fact"], "kidney.primary_group")
         self.assertEqual(set(conditional["cases"]), {"abnormal_kidney_result", "known_ckd_followup", "acute_kidney_change", "proteinuria_or_hematuria", "dialysis_followup", "kidney_transplant_followup", "structural_or_hereditary", "other_unclear"})

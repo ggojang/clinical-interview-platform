@@ -10,7 +10,11 @@ C, S, D, R = ["intent.characterize_symptom"], ["intent.screen_red_flags"], ["int
 
 
 def Q(fid, display, value_type, key, wording, score, groups, intents, **kwargs):
-    return entry(P, fid, display, value_type, key, wording, score, key, groups, intents=intents, **kwargs)
+    fact_overrides = kwargs.pop("fact_overrides", None)
+    result = entry(P, fid, display, value_type, key, wording, score, key, groups, intents=intents, **kwargs)
+    if fact_overrides:
+        result["fact"].update(fact_overrides)
+    return result
 
 
 def fragment():
@@ -40,7 +44,15 @@ def fragment():
         Q("kidney.cbc_iron_pth_and_vitamin_d", "CKD Complication Tests", "string", "complication-tests", "혈색소·철분, PTH·비타민D 등 빈혈·뼈대사 관련 결과를 알려주세요.", 147, [G["common"], G["results"]], R),
         Q("kidney.urine_volume_frequency_and_nocturia", "Urine Volume and Pattern", "string", "urine-pattern", "하루 소변량, 횟수·야간뇨와 최근 증가·감소를 알려주세요.", 146, [G["common"]], C),
         Q("kidney.edema_weight_and_fluid_change", "Oedema Weight and Fluid Change", "string", "fluid", "발·다리·얼굴 부종, 최근 체중 변화와 하루 수분 섭취량을 알려주세요.", 145, [G["common"]], C),
-        Q("kidney.dyspnea_fatigue_nausea_pruritus_and_cramps", "Kidney-related Symptom Burden", "string", "symptoms", "숨참·피로·메스꺼움·식욕저하·가려움·쥐·수면장애가 있나요?", 144, [G["common"]], C),
+        Q("kidney.dyspnea_severity", "Dyspnea Severity", "coded", "dyspnea-severity", "현재 숨참은 없음, 가벼움, 중간, 심함 중 어디에 가깝나요?", 144, [G["common"]], C, allowed_values=["none", "mild", "moderate", "severe"]),
+        Q("kidney.fatigue_lethargy_severity", "Fatigue or Lethargy Severity", "coded", "fatigue-severity", "현재 피로하거나 기운이 없는 정도는 없음, 가벼움, 중간, 심함 중 어디에 가깝나요?", 144, [G["common"]], C, allowed_values=["none", "mild", "moderate", "severe"]),
+        Q("kidney.nausea_severity", "Nausea Severity", "coded", "nausea-severity", "현재 메스꺼움은 없음, 가벼움, 중간, 심함 중 어디에 가깝나요?", 144, [G["common"]], C, allowed_values=["none", "mild", "moderate", "severe"]),
+        Q("kidney.reduced_appetite_severity", "Reduced Appetite Severity", "coded", "appetite-severity", "현재 식욕 저하는 없음, 가벼움, 중간, 심함 중 어디에 가깝나요?", 144, [G["common"]], C, allowed_values=["none", "mild", "moderate", "severe"]),
+        Q("kidney.pruritus_severity", "Pruritus Severity", "coded", "pruritus-severity", "현재 가려움은 없음, 가벼움, 중간, 심함 중 어디에 가깝나요?", 144, [G["common"]], C, allowed_values=["none", "mild", "moderate", "severe"]),
+        Q("kidney.muscle_cramps_severity", "Muscle Cramps Severity", "coded", "cramps-severity", "현재 근육 경련이나 쥐는 없음, 가벼움, 중간, 심함 중 어디에 가깝나요?", 144, [G["common"]], C, allowed_values=["none", "mild", "moderate", "severe"]),
+        Q("kidney.sleep_disturbance_severity", "Sleep Disturbance Severity", "coded", "sleep-severity", "현재 수면 방해는 없음, 가벼움, 중간, 심함 중 어디에 가깝나요?", 144, [G["common"]], C, allowed_values=["none", "mild", "moderate", "severe"]),
+        Q("pain.nrs_score", "Pain NRS 0 to 10", "integer", "pain-nrs", "현재 통증을 0에서 10 사이 숫자로 알려주세요. 0은 통증 없음, 10은 상상할 수 있는 가장 심한 통증입니다.", 144, [G["common"]], C, fact_overrides={"minimum": 0, "maximum": 10, "scale": {"type": "NRS", "minimum": 0, "maximum": 10, "lower_anchor": "no_pain", "upper_anchor": "worst_imaginable_pain"}, "must_preserve_raw_score": True, "required_when_pain_applies": True}, reuse_existing=True),
+        Q("kidney.daily_activity_impact", "Daily Activity Impact", "coded", "activity-impact", "신장질환이나 관련 증상이 일상 활동에 미치는 영향은 없음, 가벼움, 중간, 심함 중 어디에 가깝나요?", 144, [G["common"]], C, allowed_values=["none", "mild", "moderate", "severe"]),
         Q("kidney.home_and_clinic_blood_pressure", "Blood Pressure", "string", "blood-pressure", "가정·진료실 혈압과 맥박, 측정 날짜·자세와 최근 추세를 알려주세요.", 143, [G["common"]], R),
         Q("kidney.current_medicines_doses_and_adherence", "Current Medicines and Adherence", "string", "medicines", "현재 처방약의 이름·용량·복용법, 최근 변경과 빠뜨린 복용을 알려주세요.", 142, [G["common"]], R),
         Q("kidney.acei_arb_sglt2_diuretic_and_mra", "Kidney-protective and Volume Medicines", "string", "renal-medicines", "ACE억제제·ARB·SGLT2억제제·이뇨제·미네랄코르티코이드길항제 사용과 시작·증량일을 알려주세요.", 141, [G["common"]], R),
@@ -75,15 +87,20 @@ def fragment():
 
 def completion(f):
     p = completion_policy(prefix=P, fragment=f, presentation_fact="kidney.primary_group", question_budget=65, source_refs=SOURCES)
-    common = ["kidney.onset_duration_and_course", "kidney.current_symptom_priority", "kidney.ckd_cause_stage_and_diagnosis_date", "kidney.latest_creatinine_egfr_and_reference", "kidney.egfr_creatinine_trend_and_baseline", "kidney.urine_acr_pcr_and_collection_context", "kidney.urinalysis_blood_protein_and_sediment", "kidney.electrolytes_bicarbonate_urea_and_albumin", "kidney.urine_volume_frequency_and_nocturia", "kidney.edema_weight_and_fluid_change", "kidney.dyspnea_fatigue_nausea_pruritus_and_cramps", "kidney.home_and_clinic_blood_pressure", "kidney.current_medicines_doses_and_adherence", "kidney.nsaid_otc_herbal_and_contrast_exposure", "kidney.recent_illness_intake_and_medication_holds", "kidney.diabetes_hypertension_cardiovascular_and_gout", "kidney.other_detail_or_patient_priority"]
+    common = ["kidney.onset_duration_and_course", "kidney.current_symptom_priority", "kidney.ckd_cause_stage_and_diagnosis_date", "kidney.latest_creatinine_egfr_and_reference", "kidney.egfr_creatinine_trend_and_baseline", "kidney.urine_acr_pcr_and_collection_context", "kidney.urinalysis_blood_protein_and_sediment", "kidney.electrolytes_bicarbonate_urea_and_albumin", "kidney.urine_volume_frequency_and_nocturia", "kidney.edema_weight_and_fluid_change", "kidney.dyspnea_severity", "kidney.fatigue_lethargy_severity", "kidney.nausea_severity", "kidney.reduced_appetite_severity", "kidney.pruritus_severity", "kidney.muscle_cramps_severity", "kidney.sleep_disturbance_severity", "pain.nrs_score", "kidney.daily_activity_impact", "kidney.home_and_clinic_blood_pressure", "kidney.current_medicines_doses_and_adherence", "kidney.nsaid_otc_herbal_and_contrast_exposure", "kidney.recent_illness_intake_and_medication_holds", "kidney.diabetes_hypertension_cardiovascular_and_gout", "kidney.other_detail_or_patient_priority"]
     cases = {"abnormal_kidney_result": ["kidney.cbc_iron_pth_and_vitamin_d", "kidney.ultrasound_biopsy_and_kidney_imaging", "kidney.prior_aki_dates_causes_and_recovery"], "known_ckd_followup": ["kidney.acei_arb_sglt2_diuretic_and_mra", "kidney.family_history_and_hereditary_disease", "kidney.diet_salt_protein_potassium_and_phosphate", "kidney.kfre_and_referral_plan"], "acute_kidney_change": ["kidney.prior_aki_dates_causes_and_recovery", "kidney.stones_obstruction_prostate_and_infections", "kidney.ultrasound_biopsy_and_kidney_imaging"], "proteinuria_or_hematuria": ["kidney.autoimmune_systemic_and_glomerular_disease", "kidney.stones_obstruction_prostate_and_infections", "kidney.ultrasound_biopsy_and_kidney_imaging"], "dialysis_followup": ["kidney.dialysis_modality_schedule_and_last_session", "kidney.dialysis_access_type_and_condition", "kidney.dialysis_weight_bp_cramps_and_recovery", "kidney.missed_or_shortened_dialysis"], "kidney_transplant_followup": ["kidney.transplant_date_donor_and_baseline_function", "kidney.immunosuppression_levels_and_adherence", "kidney.transplant_infection_rejection_and_followup"], "structural_or_hereditary": ["kidney.family_history_and_hereditary_disease", "kidney.stones_obstruction_prostate_and_infections", "kidney.ultrasound_biopsy_and_kidney_imaging"], "other_unclear": ["kidney.other_detail_or_patient_priority"]}
     p["required_facts"]["routine"], p["conditional_required_facts"] = common, [{"selector_fact": "kidney.primary_group", "cases": cases}]
     return p
 
 
 def source_docs():
-    defs = [("source.nice.ng203.ckd.2025", "NICE", "Chronic kidney disease: assessment and management", "NG203; current-2025", "https://www.nice.org.uk/guidance/ng203/chapter/Recommendations", "nice_guidance", ["CKD assessment uses eGFR and urine ACR together, trends, cause, progression risk, medicines, comorbidity and individualized monitoring.", "Urgent complications include hyperkalaemia, severe uraemia, acidosis and fluid overload; this package captures warning features and does not calculate diagnosis or treatment eligibility."]), ("source.nice.ng148.aki.2024", "NICE", "Acute kidney injury: prevention, detection and management", "NG148; current-2024", "https://www.nice.org.uk/guidance/ng148/chapter/Recommendations", "nice_guidance", ["Acute illness, oliguria, dehydration, nephrotoxic medicines and recent contrast are relevant to acute kidney injury risk and escalation."]), ("source.kdigo.ckd.2024", "KDIGO", "2024 CKD evaluation and management guideline", "Kidney-International-105-S4S", "https://kdigo.org/wp-content/uploads/2024/03/KDIGO-2024-CKD-Guideline.pdf", "clinical_guideline", ["CKD evaluation and follow-up require cause, GFR, albuminuria, progression, complications, cardiovascular risk, medicines and kidney replacement therapy planning."]), ("source.stom.kidney.20260715", "Infoclinic", "STOM kidney terminology and MRCM summary", "SNOMEDCT-20260701", "https://stom.infoclinic.co", "terminology_server", ["FHIR lookup confirmed active concepts for CKD, acute kidney injury, proteinuria, haematuria, CKD stage 5, kidney transplant and renal dialysis.", "MRCM supports provisional semantic binding only and does not establish stage or urgency."])]
-    artifacts = [{"id": i, "kind": "terminology_mrcm_query_summary" if profile == "terminology_server" else "clinical_guidance_metadata", "publisher": pub, "title": title, "version": version, "url": url, "language": "en", "digest": "live_response_summary_not_raw_cache" if profile == "terminology_server" else "metadata_only_not_cached", "license_status": "restricted" if pub in {"NICE", "Infoclinic", "KDIGO"} else "unknown", "complete": False, "monitor_profile": profile, "last_monitored_at": "2026-07-15", "monitor_result": "current_official_source_confirmed", "assertions": assertions} for i, pub, title, version, url, profile, assertions in defs]
+    defs = [
+        ("source.nice.ng203.ckd.2025", "NICE", "Chronic kidney disease: assessment and management", "NG203; last updated 2021-11-24", "https://www.nice.org.uk/guidance/ng203", "nice_guidance", "sha256:42a54199347c47ffa3d8eafc278c04346a00d1fdd1b92267521f862b18a8160b", "2026-07-28", "current_official_source_confirmed_metadata_corrected", ["CKD assessment uses eGFR and urine ACR together, trends, cause, progression risk, medicines, comorbidity and individualized monitoring.", "Urgent complications include hyperkalaemia, severe uraemia, acidosis and fluid overload; this package captures warning features and does not calculate diagnosis or treatment eligibility."]),
+        ("source.nice.ng148.aki.2024", "NICE", "Acute kidney injury: prevention, detection and management", "NG148; last updated 2024-10-16", "https://www.nice.org.uk/guidance/ng148", "nice_guidance", "sha256:b2195742417512dab1ff07ddafa2cd4d24c3d85e5bdaecfb683174f91141ab8e", "2026-07-28", "current_official_source_confirmed", ["Acute illness, oliguria, dehydration, nephrotoxic medicines and recent contrast are relevant to acute kidney injury risk and escalation."]),
+        ("source.kdigo.ckd.2024", "KDIGO", "2024 CKD evaluation and management guideline", "Kidney International 105 (Suppl 4S), S117-S314", "https://kdigo.org/wp-content/uploads/2024/03/KDIGO-2024-CKD-Guideline.pdf", "clinical_guideline", "sha256:b18db280f7dc889a1a99447b779c0312cd536f939a5180b38894a5d68e4410c0", "2026-07-28", "current_official_source_confirmed", ["CKD evaluation and follow-up require cause, GFR, albuminuria, progression, complications, cardiovascular risk, medicines and kidney replacement therapy planning.", "KDIGO Practice Point 5.2.2.1 supports asking people with progressive CKD about uremic symptoms at each consultation using a standardized validated symptom assessment tool."]),
+        ("source.stom.kidney.20260715", "Infoclinic", "STOM kidney terminology and MRCM summary", "SNOMEDCT-20260701", "https://stom.infoclinic.co", "terminology_server", "live_response_summary_not_raw_cache", "2026-07-15", "current_official_source_confirmed", ["FHIR lookup confirmed active concepts for CKD, acute kidney injury, proteinuria, haematuria, CKD stage 5, kidney transplant and renal dialysis.", "MRCM supports provisional semantic binding only and does not establish stage or urgency."]),
+    ]
+    artifacts = [{"id": i, "kind": "terminology_mrcm_query_summary" if profile == "terminology_server" else "clinical_guidance_metadata", "publisher": pub, "title": title, "version": version, "url": url, "language": "en", "digest": digest, "license_status": "restricted" if pub in {"NICE", "Infoclinic", "KDIGO"} else "unknown", "complete": False, "monitor_profile": profile, "last_monitored_at": last_monitored, "monitor_result": monitor_result, "assertions": assertions} for i, pub, title, version, url, profile, digest, last_monitored, monitor_result, assertions in defs]
     research = {"id": "source-manifest.primary-care-kidney-function-ckd-follow-up-research", "version": VERSION, "acquired_at": ACQUIRED_AT, "status": "research_only", "artifacts": artifacts, "provenance": provenance([x[0] for x in defs])}
     paths = [("source.repository.foundation", "repository_specification", "FOUNDATION.md", True), ("source.generated.kidney", "generated_clinical_knowledge", "knowledge/generated/renal/kidney-function-ckd-follow-up/kidney-function-ckd-follow-up.json", True), ("source.mapping.kidney", "terminology_mapping", "mappings/terminology/snomed-mrcm-kidney-function-ckd-follow-up.json", False), ("source.external.kidney", "external_source_manifest", "sources/manifests/primary-care-kidney-function-ckd-follow-up-research.json", False), ("source.policy.kidney", "runtime_policy", "policies/primary-care-kidney-function-ckd-follow-up-completion.json", True)]
     primary = {"id": "source-manifest.primary-care-kidney-function-ckd-follow-up", "version": VERSION, "acquired_at": ACQUIRED_AT, "artifacts": [{"id": i, "kind": kind, "publisher": "clinical-interview-platform", "version": VERSION, "language": "en", "path": path, "digest": "computed_at_build", "license_status": "allowed" if complete else "unknown", "complete": complete} for i, kind, path, complete in paths], "provenance": provenance(["FOUNDATION.md", "PROJECT_CONTEXT.md"])}
@@ -102,9 +119,68 @@ def cases(f):
         fact = by_id[fid]
         hidden[fid] = {"value": False if fact["value_type"] == "boolean" else fact.get("allowed_values", ["unclear"])[-1] if fact["value_type"] == "coded" else 0 if fact["value_type"] == "integer" else "없음"}
     hidden["kidney.primary_group"] = {"value": "known_ckd_followup"}
+    for fid in (
+        "kidney.dyspnea_severity", "kidney.fatigue_lethargy_severity",
+        "kidney.nausea_severity", "kidney.reduced_appetite_severity",
+        "kidney.pruritus_severity", "kidney.muscle_cramps_severity",
+        "kidney.sleep_disturbance_severity", "kidney.daily_activity_impact",
+    ):
+        hidden[fid] = {"value": "none"}
     declined = "kidney.diet_salt_protein_potassium_and_phosphate"
     hidden.pop(declined)
     out["KIDNEY-CKD-DATA-ABSENT.json"] = {"id": "KIDNEY-CKD-DATA-ABSENT", "simulation_language": "ko", "persona": {"age": 58}, "initial_statement": {"ko": "만성콩팥병 정기 진료예요."}, "hidden_state": hidden, "response_behavior": {declined: {"dataAbsentReason": "asked-unknown"}}, "expected": {"expected_data_absent_reasons": {declined: "asked-unknown"}, "expected_safety_level": "routine", "expected_stop_reason": "required_targets_addressed_with_absent_data", "expected_max_turns": 65, "forbidden_assertions": ["diagnosis.ckd_stage", "diagnosis.dialysis_needed"]}, "provenance": provenance(["source.nice.ng203.ckd.2025", "specifications/clinical-memory.md"])}
+    handoff = {fid: dict(value) for fid, value in hidden.items()}
+    handoff.update({
+        "kidney.onset_duration_and_course": {"value": "3년 전 진단 후 정기 추적 중이며 최근 급격한 악화는 없음"},
+        "kidney.current_symptom_priority": {"value": "최근 오후 피로가 진료에 전달되길 원함"},
+        "kidney.ckd_cause_stage_and_diagnosis_date": {"value": "고혈압 관련 CKD G3b A2로 3년 전 안내받음"},
+        "kidney.latest_creatinine_egfr_and_reference": {"value": "2026-07-20 크레아티닌 1.6 mg/dL, eGFR 42 mL/min/1.73m2"},
+        "kidney.egfr_creatinine_trend_and_baseline": {"value": "지난 1년 eGFR 40~44로 큰 변화 없음"},
+        "kidney.urine_acr_pcr_and_collection_context": {"value": "2026-07-20 첫 아침 소변 ACR 120 mg/g, 재확인 예정"},
+        "kidney.urinalysis_blood_protein_and_sediment": {"value": "단백 양성, 혈뇨나 원주는 없다고 들음"},
+        "kidney.electrolytes_bicarbonate_urea_and_albumin": {"value": "같은 날 칼륨 4.6 mmol/L, 중탄산염 24 mmol/L, 알부민 정상"},
+        "kidney.urine_volume_frequency_and_nocturia": {"value": "소변량 변화 없음, 야간뇨 1회"},
+        "kidney.edema_weight_and_fluid_change": {"value": "부종 없고 최근 체중 변화 없음"},
+        "kidney.fatigue_lethargy_severity": {"value": "mild"},
+        "kidney.daily_activity_impact": {"value": "mild"},
+        "kidney.home_and_clinic_blood_pressure": {"value": "가정혈압 최근 평균 128/76 mmHg"},
+        "kidney.current_medicines_doses_and_adherence": {"value": "처방약을 매일 복용하며 최근 누락 없음"},
+        "kidney.nsaid_otc_herbal_and_contrast_exposure": {"value": "진통소염제·한약·보충제 복용 및 최근 조영제 검사 없음"},
+        "kidney.recent_illness_intake_and_medication_holds": {"value": "최근 구토·설사·발열이나 식사·수분 감소 없음"},
+        "kidney.diabetes_hypertension_cardiovascular_and_gout": {"value": "고혈압 치료 중, 당뇨·심혈관질환·통풍 없음"},
+        "kidney.acei_arb_sglt2_diuretic_and_mra": {"value": "ARB 복용 중이며 최근 용량 변경 없음"},
+        "kidney.family_history_and_hereditary_disease": {"value": "가족의 투석·이식·유전성 신장질환 병력 없음"},
+        "kidney.kfre_and_referral_plan": {"value": "신장내과 정기 추적 중이며 다음 진료에서 위험도를 확인할 예정"},
+        "kidney.other_detail_or_patient_priority": {"value": "검사 추세와 피로가 연관될 수 있는지 의료진에게 확인하고 싶음"},
+    })
+    out["KIDNEY-CKD-CLINICIAN-HANDOFF.json"] = {
+        "id": "KIDNEY-CKD-CLINICIAN-HANDOFF",
+        "simulation_language": "ko",
+        "clinician_submission": True,
+        "encounter_context": {
+            "care_setting": "specialist_clinic", "encounter_type": "follow_up",
+            "interview_initiator": "patient", "interview_mode": "chat",
+            "available_information": ["synthetic_patient_reported_results"],
+            "time_constraint": "routine", "clinical_responsibility": "decision_support",
+        },
+        "persona": {"age": 62},
+        "initial_statement": {"ko": "만성콩팥병 정기 진료 전에 최근 검사와 증상을 정리하려고 합니다."},
+        "hidden_state": handoff,
+        "expected": {
+            "expected_safety_level": "routine",
+            "expected_stop_reason": "required_targets_addressed_with_absent_data",
+            "expected_clinician_handoff": True,
+            "expected_known_facts": {
+                "kidney.primary_group": "known_ckd_followup",
+                "kidney.fatigue_lethargy_severity": "mild",
+                "pain.nrs_score": 0,
+                "kidney.daily_activity_impact": "mild",
+            },
+            "expected_max_turns": 65,
+            "forbidden_assertions": ["diagnosis.ckd_progression", "diagnosis.uremia", "recommendation.change_medication"],
+        },
+        "provenance": provenance(["source.kdigo.ckd.2024", "source.nice.ng203.ckd.2025", "specifications/clinical-memory.md"]),
+    }
     return out
 
 
