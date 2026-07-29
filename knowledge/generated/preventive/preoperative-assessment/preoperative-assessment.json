@@ -1,0 +1,3153 @@
+{
+  "id": "knowledge.generated.preoperative-assessment",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-preoperative-assessment-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-07-29",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-07-30",
+    "next_full_review_at": "2027-01-25",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.preoperative.goal",
+      "type": "ClinicalGroup",
+      "display": "goal"
+    },
+    {
+      "id": "group.preoperative.safety",
+      "type": "ClinicalGroup",
+      "display": "safety"
+    },
+    {
+      "id": "group.preoperative.procedure",
+      "type": "ClinicalGroup",
+      "display": "procedure"
+    },
+    {
+      "id": "group.preoperative.records",
+      "type": "ClinicalGroup",
+      "display": "records"
+    },
+    {
+      "id": "group.preoperative.function",
+      "type": "ClinicalGroup",
+      "display": "function"
+    },
+    {
+      "id": "group.preoperative.cardiopulmonary",
+      "type": "ClinicalGroup",
+      "display": "cardiopulmonary"
+    },
+    {
+      "id": "group.preoperative.conditions",
+      "type": "ClinicalGroup",
+      "display": "conditions"
+    },
+    {
+      "id": "group.preoperative.bleeding",
+      "type": "ClinicalGroup",
+      "display": "bleeding"
+    },
+    {
+      "id": "group.preoperative.medication",
+      "type": "ClinicalGroup",
+      "display": "medication"
+    },
+    {
+      "id": "group.preoperative.anesthesia",
+      "type": "ClinicalGroup",
+      "display": "anesthesia"
+    },
+    {
+      "id": "group.preoperative.preparation",
+      "type": "ClinicalGroup",
+      "display": "preparation"
+    },
+    {
+      "id": "group.preoperative.handoff",
+      "type": "ClinicalGroup",
+      "display": "handoff"
+    }
+  ],
+  "group_hypothesis_edges": [],
+  "safety_rules": [
+    {
+      "id": "rule.preoperative-assessment.safety.current-severe-chest-pain",
+      "priority": 1000,
+      "when": {
+        "fact": "preoperative.current_severe_chest_pain",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.preoperative-assessment.safety.current-rest-dyspnea",
+      "priority": 1000,
+      "when": {
+        "fact": "preoperative.current_rest_dyspnea",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.preoperative-assessment.safety.current-syncope",
+      "priority": 1000,
+      "when": {
+        "fact": "preoperative.current_syncope_or_near_collapse",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.preoperative-assessment.safety.current-unilateral-weakness",
+      "priority": 1000,
+      "when": {
+        "fact": "preoperative.current_new_unilateral_weakness",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.preoperative-assessment.safety.current-speech-difficulty",
+      "priority": 1000,
+      "when": {
+        "fact": "preoperative.current_new_speech_difficulty",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.preoperative-assessment.safety.current-uncontrolled-bleeding",
+      "priority": 1000,
+      "when": {
+        "fact": "preoperative.current_uncontrolled_bleeding",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.preoperative-assessment.safety.current-worsening-illness",
+      "priority": 990,
+      "when": {
+        "fact": "preoperative.current_rapidly_worsening_illness",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "preoperative.primary_group",
+        "display": "Preoperative Interview Goal",
+        "value_type": "coded",
+        "allowed_values": [
+          "scheduled_assessment",
+          "preparation_instruction_review",
+          "prior_test_review",
+          "previous_delay_or_cancellation",
+          "new_health_change",
+          "other_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.preoperative-assessment.primary-group",
+        "display": "Preoperative Interview Goal",
+        "intents": [
+          "intent.preoperative_characterization"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.primary-group",
+        "wording": "이번 문진은 예정 수술 평가, 준비 안내 확인, 기존 검사결과 전달, 과거 연기·취소 후 재평가, 수술 전 새 건강변화 전달 중 무엇에 가깝나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 250,
+          "reason": "primary-group"
+        }
+      ],
+      "supports": [
+        "group.preoperative.goal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.current_severe_chest_pain",
+        "display": "Current Severe Chest Pain",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.preoperative-assessment.current-severe-chest-pain",
+        "display": "Current Severe Chest Pain",
+        "intents": [
+          "intent.preoperative_current_safety"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.current-severe-chest-pain",
+        "wording": "현재 심한 가슴 통증이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 249,
+          "reason": "current-severe-chest-pain"
+        }
+      ],
+      "supports": [
+        "group.preoperative.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.current_rest_dyspnea",
+        "display": "Current Dyspnea at Rest",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.preoperative-assessment.current-rest-dyspnea",
+        "display": "Current Dyspnea at Rest",
+        "intents": [
+          "intent.preoperative_current_safety"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.current-rest-dyspnea",
+        "wording": "현재 가만히 있어도 숨쉬기 어려운가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 248,
+          "reason": "current-rest-dyspnea"
+        }
+      ],
+      "supports": [
+        "group.preoperative.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.current_syncope_or_near_collapse",
+        "display": "Current Syncope or Near Collapse",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.preoperative-assessment.current-syncope",
+        "display": "Current Syncope or Near Collapse",
+        "intents": [
+          "intent.preoperative_current_safety"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.current-syncope",
+        "wording": "현재 의식을 잃었거나 곧 쓰러질 것 같은 상태인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 247,
+          "reason": "current-syncope"
+        }
+      ],
+      "supports": [
+        "group.preoperative.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.current_new_unilateral_weakness",
+        "display": "Current New Unilateral Weakness",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.preoperative-assessment.current-unilateral-weakness",
+        "display": "Current New Unilateral Weakness",
+        "intents": [
+          "intent.preoperative_current_safety"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.current-unilateral-weakness",
+        "wording": "현재 새로 생긴 한쪽 팔다리 힘 빠짐이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 246,
+          "reason": "current-unilateral-weakness"
+        }
+      ],
+      "supports": [
+        "group.preoperative.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.current_new_speech_difficulty",
+        "display": "Current New Speech Difficulty",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.preoperative-assessment.current-speech-difficulty",
+        "display": "Current New Speech Difficulty",
+        "intents": [
+          "intent.preoperative_current_safety"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.current-speech-difficulty",
+        "wording": "현재 새로 생긴 말하기 어려움이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 245,
+          "reason": "current-speech-difficulty"
+        }
+      ],
+      "supports": [
+        "group.preoperative.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.current_uncontrolled_bleeding",
+        "display": "Current Uncontrolled Bleeding",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.preoperative-assessment.current-uncontrolled-bleeding",
+        "display": "Current Uncontrolled Bleeding",
+        "intents": [
+          "intent.preoperative_current_safety"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.current-uncontrolled-bleeding",
+        "wording": "현재 압박해도 멈추지 않는 출혈이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 244,
+          "reason": "current-uncontrolled-bleeding"
+        }
+      ],
+      "supports": [
+        "group.preoperative.safety",
+        "group.preoperative.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.current_rapidly_worsening_illness",
+        "display": "Current Rapidly Worsening Illness",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.preoperative-assessment.current-worsening-illness",
+        "display": "Current Rapidly Worsening Illness",
+        "intents": [
+          "intent.preoperative_current_safety"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.current-worsening-illness",
+        "wording": "현재 새로운 질환이나 증상이 빠르게 악화하고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 243,
+          "reason": "current-worsening-illness"
+        }
+      ],
+      "supports": [
+        "group.preoperative.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.planned_procedure_name",
+        "display": "Planned Procedure Name",
+        "value_type": "coded_or_string"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.procedure-name",
+        "display": "Planned Procedure Name",
+        "intents": [
+          "intent.preoperative_characterization"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.procedure-name",
+        "wording": "예정된 수술 또는 시술의 이름을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 230,
+          "reason": "procedure-name"
+        }
+      ],
+      "supports": [
+        "group.preoperative.procedure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.planned_procedure_site",
+        "display": "Planned Procedure Site",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.procedure-site",
+        "display": "Planned Procedure Site",
+        "intents": [
+          "intent.preoperative_characterization"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.procedure-site",
+        "wording": "수술 또는 시술할 신체 부위를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 229,
+          "reason": "procedure-site"
+        }
+      ],
+      "supports": [
+        "group.preoperative.procedure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.planned_procedure_laterality",
+        "display": "Planned Procedure Laterality",
+        "value_type": "coded",
+        "allowed_values": [
+          "right",
+          "left",
+          "bilateral",
+          "midline",
+          "not_applicable",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.preoperative-assessment.procedure-laterality",
+        "display": "Planned Procedure Laterality",
+        "intents": [
+          "intent.preoperative_characterization"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.procedure-laterality",
+        "wording": "수술 부위는 오른쪽, 왼쪽, 양쪽, 정중앙 또는 해당 없음 중 어디인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 228,
+          "reason": "procedure-laterality"
+        }
+      ],
+      "supports": [
+        "group.preoperative.procedure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.planned_procedure_date",
+        "display": "Planned Procedure Date",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.procedure-date",
+        "display": "Planned Procedure Date",
+        "intents": [
+          "intent.preoperative_characterization"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.procedure-date",
+        "wording": "예정된 수술 또는 시술 날짜를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 227,
+          "reason": "procedure-date"
+        }
+      ],
+      "supports": [
+        "group.preoperative.procedure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.planned_facility",
+        "display": "Planned Facility",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.facility",
+        "display": "Planned Facility",
+        "intents": [
+          "intent.preoperative_characterization"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.facility",
+        "wording": "수술 또는 시술을 받을 의료기관을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 226,
+          "reason": "facility"
+        }
+      ],
+      "supports": [
+        "group.preoperative.procedure",
+        "group.preoperative.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.surgical_specialty",
+        "display": "Surgical Specialty",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.specialty",
+        "display": "Surgical Specialty",
+        "intents": [
+          "intent.preoperative_characterization"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.specialty",
+        "wording": "수술 또는 시술을 담당하는 진료과를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 225,
+          "reason": "specialty"
+        }
+      ],
+      "supports": [
+        "group.preoperative.procedure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.procedure_urgency",
+        "display": "Procedure Urgency",
+        "value_type": "coded",
+        "allowed_values": [
+          "elective",
+          "time_sensitive",
+          "emergency",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.preoperative-assessment.procedure-urgency",
+        "display": "Procedure Urgency",
+        "intents": [
+          "intent.preoperative_characterization"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.procedure-urgency",
+        "wording": "의료진에게 들은 일정은 계획 수술, 신속히 필요한 수술, 응급수술 중 어느 것인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 224,
+          "reason": "procedure-urgency"
+        }
+      ],
+      "supports": [
+        "group.preoperative.procedure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.expected_anesthesia_type",
+        "display": "Expected Anesthesia Type",
+        "value_type": "coded",
+        "allowed_values": [
+          "general",
+          "regional",
+          "sedation",
+          "local",
+          "multiple_or_other",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.preoperative-assessment.anesthesia-type",
+        "display": "Expected Anesthesia Type",
+        "intents": [
+          "intent.preoperative_characterization"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.anesthesia-type",
+        "wording": "안내받은 마취 방법은 전신마취, 부위마취, 진정, 국소마취 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 223,
+          "reason": "anesthesia-type"
+        }
+      ],
+      "supports": [
+        "group.preoperative.procedure",
+        "group.preoperative.anesthesia"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.expected_care_setting",
+        "display": "Expected Care Setting",
+        "value_type": "coded",
+        "allowed_values": [
+          "same_day_discharge",
+          "inpatient",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.preoperative-assessment.care-setting",
+        "display": "Expected Care Setting",
+        "intents": [
+          "intent.preoperative_characterization"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.care-setting",
+        "wording": "당일 귀가, 입원 예정, 아직 미정 중 어느 것인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 222,
+          "reason": "care-setting"
+        }
+      ],
+      "supports": [
+        "group.preoperative.procedure",
+        "group.preoperative.preparation"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.patient_understanding_of_indication",
+        "display": "Patient Understanding of Procedure Indication",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.procedure-indication",
+        "display": "Patient Understanding of Procedure Indication",
+        "intents": [
+          "intent.preoperative_characterization"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.procedure-indication",
+        "wording": "이 수술 또는 시술을 받는 이유를 어떻게 설명 들었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 221,
+          "reason": "procedure-indication"
+        }
+      ],
+      "supports": [
+        "group.preoperative.goal",
+        "group.preoperative.procedure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.information_source",
+        "display": "Preoperative Information Source",
+        "value_type": "coded",
+        "allowed_values": [
+          "booking_document",
+          "clinical_record",
+          "clinician_explanation",
+          "patient_recall",
+          "caregiver_recall",
+          "multiple_sources",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.preoperative-assessment.information-source",
+        "display": "Preoperative Information Source",
+        "intents": [
+          "intent.preoperative_characterization"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.information-source",
+        "wording": "수술 정보는 예약문서, 의료기관 전산기록, 의료진 설명, 본인 또는 보호자 기억 중 어디에서 확인했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 220,
+          "reason": "information-source"
+        }
+      ],
+      "supports": [
+        "group.preoperative.records"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.available_documents",
+        "display": "Available Preoperative Documents",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.available-documents",
+        "display": "Available Preoperative Documents",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.available-documents",
+        "wording": "현재 확인 가능한 예약지, 의뢰서 또는 준비 안내서가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 219,
+          "reason": "available-documents"
+        }
+      ],
+      "supports": [
+        "group.preoperative.records",
+        "group.preoperative.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.information_conflict",
+        "display": "Preoperative Information Conflict",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.information-conflict",
+        "display": "Preoperative Information Conflict",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.information-conflict",
+        "wording": "문서와 의료진 설명 또는 기억 사이에 서로 맞지 않는 내용이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 218,
+          "reason": "information-conflict"
+        }
+      ],
+      "supports": [
+        "group.preoperative.records",
+        "group.preoperative.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.usual_walking_capacity",
+        "display": "Usual Walking Capacity",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.walking-capacity",
+        "display": "Usual Walking Capacity",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.walking-capacity",
+        "wording": "평소 쉬지 않고 걸을 수 있는 거리 또는 시간을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 210,
+          "reason": "walking-capacity"
+        }
+      ],
+      "supports": [
+        "group.preoperative.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.can_climb_two_flights",
+        "display": "Ability to Climb Two Flights",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.stairs-capacity",
+        "display": "Ability to Climb Two Flights",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.stairs-capacity",
+        "wording": "평소 계단 두 층을 쉬지 않고 오를 수 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 209,
+          "reason": "stairs-capacity"
+        }
+      ],
+      "supports": [
+        "group.preoperative.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.independent_self_care",
+        "display": "Independent Self Care",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.self-care",
+        "display": "Independent Self Care",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.self-care",
+        "wording": "평소 씻기, 옷 입기, 식사 같은 기본 일상생활을 혼자 할 수 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 208,
+          "reason": "self-care"
+        }
+      ],
+      "supports": [
+        "group.preoperative.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.mobility_aid",
+        "display": "Mobility Aid",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.mobility-aid",
+        "display": "Mobility Aid",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.mobility-aid",
+        "wording": "평소 이동할 때 사용하는 보행 보조기구가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 207,
+          "reason": "mobility-aid"
+        }
+      ],
+      "supports": [
+        "group.preoperative.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.recent_functional_decline",
+        "display": "Recent Functional Decline",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.functional-decline",
+        "display": "Recent Functional Decline",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.functional-decline",
+        "wording": "최근 평소보다 활동 능력이 줄었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 206,
+          "reason": "functional-decline"
+        }
+      ],
+      "supports": [
+        "group.preoperative.function"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.exertional_chest_pain",
+        "display": "Exertional Chest Pain",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.exertional-chest-pain",
+        "display": "Exertional Chest Pain",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.exertional-chest-pain",
+        "wording": "걷거나 계단을 오를 때 가슴 통증이 생기나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 205,
+          "reason": "exertional-chest-pain"
+        }
+      ],
+      "supports": [
+        "group.preoperative.function",
+        "group.preoperative.cardiopulmonary"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.exertional_dyspnea",
+        "display": "Exertional Dyspnea",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.exertional-dyspnea",
+        "display": "Exertional Dyspnea",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.exertional-dyspnea",
+        "wording": "걷거나 계단을 오를 때 숨이 차서 멈춰야 하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 204,
+          "reason": "exertional-dyspnea"
+        }
+      ],
+      "supports": [
+        "group.preoperative.function",
+        "group.preoperative.cardiopulmonary"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.known_cardiac_condition",
+        "display": "Known Cardiac Condition",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.cardiac-condition",
+        "display": "Known Cardiac Condition",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.cardiac-condition",
+        "wording": "진단받은 심장 또는 혈관 질환이 있다면 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 200,
+          "reason": "cardiac-condition"
+        }
+      ],
+      "supports": [
+        "group.preoperative.cardiopulmonary",
+        "group.preoperative.conditions"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.cardiac_device",
+        "display": "Cardiac Implanted Device",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.cardiac-device",
+        "display": "Cardiac Implanted Device",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.cardiac-device",
+        "wording": "심박동기나 삽입형 제세동기 같은 심장 기기가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 199,
+          "reason": "cardiac-device"
+        }
+      ],
+      "supports": [
+        "group.preoperative.cardiopulmonary",
+        "group.preoperative.conditions"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.known_respiratory_condition",
+        "display": "Known Respiratory Condition",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.respiratory-condition",
+        "display": "Known Respiratory Condition",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.respiratory-condition",
+        "wording": "진단받은 호흡기 질환이 있다면 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 198,
+          "reason": "respiratory-condition"
+        }
+      ],
+      "supports": [
+        "group.preoperative.cardiopulmonary",
+        "group.preoperative.conditions"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.sleep_apnea_diagnosis",
+        "display": "Sleep Apnea Diagnosis",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.sleep-apnea",
+        "display": "Sleep Apnea Diagnosis",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.sleep-apnea",
+        "wording": "수면무호흡증을 진단받았나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 197,
+          "reason": "sleep-apnea"
+        }
+      ],
+      "supports": [
+        "group.preoperative.cardiopulmonary",
+        "group.preoperative.conditions"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.positive_airway_pressure_use",
+        "display": "Positive Airway Pressure Use",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.positive-airway-pressure-use",
+        "display": "Positive Airway Pressure Use",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.positive-airway-pressure-use",
+        "wording": "현재 수면 중 양압기 장비를 사용하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 196,
+          "reason": "positive-airway-pressure-use"
+        }
+      ],
+      "supports": [
+        "group.preoperative.cardiopulmonary",
+        "group.preoperative.preparation"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.positive_airway_pressure_type",
+        "display": "Positive Airway Pressure Type",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.positive-airway-pressure-type",
+        "display": "Positive Airway Pressure Type",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.positive-airway-pressure-type",
+        "wording": "사용하는 양압기 장비의 종류를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 195,
+          "reason": "positive-airway-pressure-type"
+        }
+      ],
+      "supports": [
+        "group.preoperative.cardiopulmonary",
+        "group.preoperative.preparation"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.home_oxygen_use",
+        "display": "Home Oxygen Use",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.home-oxygen",
+        "display": "Home Oxygen Use",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.home-oxygen",
+        "wording": "현재 집에서 산소를 사용하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 194,
+          "reason": "home-oxygen"
+        }
+      ],
+      "supports": [
+        "group.preoperative.cardiopulmonary"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.recent_respiratory_infection",
+        "display": "Recent Respiratory Infection",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.recent-respiratory-infection",
+        "display": "Recent Respiratory Infection",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.recent-respiratory-infection",
+        "wording": "최근 호흡기 감염으로 진료받았나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 193,
+          "reason": "recent-respiratory-infection"
+        }
+      ],
+      "supports": [
+        "group.preoperative.cardiopulmonary",
+        "group.preoperative.conditions"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.recent_infection_timing",
+        "display": "Recent Infection Timing",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.recent-infection-timing",
+        "display": "Recent Infection Timing",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.recent-infection-timing",
+        "wording": "가장 최근 호흡기 감염이 시작된 시기를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 192,
+          "reason": "recent-infection-timing"
+        }
+      ],
+      "supports": [
+        "group.preoperative.cardiopulmonary",
+        "group.preoperative.conditions"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.tobacco_use_status",
+        "display": "Tobacco Use Status",
+        "value_type": "coded",
+        "allowed_values": [
+          "current",
+          "former",
+          "never",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.preoperative-assessment.tobacco-use-status",
+        "display": "Tobacco Use Status",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.tobacco-use-status",
+        "wording": "일반담배 사용 상태는 현재 흡연, 과거 흡연, 비흡연, 잘 모름 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 191,
+          "reason": "tobacco-use-status"
+        }
+      ],
+      "supports": [
+        "group.preoperative.cardiopulmonary",
+        "group.preoperative.conditions"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.combustible_cigarettes_per_day",
+        "display": "Combustible Cigarettes per Day",
+        "value_type": "integer"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.cigarettes-per-day",
+        "display": "Combustible Cigarettes per Day",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.cigarettes-per-day",
+        "wording": "일반담배를 하루 평균 몇 개비 피우거나 피웠나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 190,
+          "reason": "cigarettes-per-day"
+        }
+      ],
+      "supports": [
+        "group.preoperative.cardiopulmonary",
+        "group.preoperative.conditions"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.tobacco_use_duration",
+        "display": "Tobacco Use Duration",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.tobacco-use-duration",
+        "display": "Tobacco Use Duration",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.tobacco-use-duration",
+        "wording": "일반담배를 사용한 총 기간을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 189,
+          "reason": "tobacco-use-duration"
+        }
+      ],
+      "supports": [
+        "group.preoperative.cardiopulmonary",
+        "group.preoperative.conditions"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.vaping_use_status",
+        "display": "Vaping Use Status",
+        "value_type": "coded",
+        "allowed_values": [
+          "current",
+          "former",
+          "never",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.preoperative-assessment.vaping-use-status",
+        "display": "Vaping Use Status",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.vaping-use-status",
+        "wording": "전자담배 사용 상태는 현재 사용, 과거 사용, 사용한 적 없음, 잘 모름 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 188,
+          "reason": "vaping-use-status"
+        }
+      ],
+      "supports": [
+        "group.preoperative.cardiopulmonary",
+        "group.preoperative.conditions"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.vaping_use_frequency",
+        "display": "Vaping Use Frequency",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.vaping-use-frequency",
+        "display": "Vaping Use Frequency",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.vaping-use-frequency",
+        "wording": "전자담배를 사용하는 빈도를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 187,
+          "reason": "vaping-use-frequency"
+        }
+      ],
+      "supports": [
+        "group.preoperative.cardiopulmonary",
+        "group.preoperative.conditions"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.vaping_use_duration",
+        "display": "Vaping Use Duration",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.vaping-use-duration",
+        "display": "Vaping Use Duration",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.vaping-use-duration",
+        "wording": "전자담배를 사용한 총 기간을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 186,
+          "reason": "vaping-use-duration"
+        }
+      ],
+      "supports": [
+        "group.preoperative.cardiopulmonary",
+        "group.preoperative.conditions"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.alcohol_use_status",
+        "display": "Alcohol Use Status",
+        "value_type": "coded",
+        "allowed_values": [
+          "current",
+          "former",
+          "never",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.preoperative-assessment.alcohol-use-status",
+        "display": "Alcohol Use Status",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.alcohol-use-status",
+        "wording": "음주 상태는 현재 음주, 과거 음주, 마신 적 없음, 잘 모름 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 185,
+          "reason": "alcohol-use-status"
+        }
+      ],
+      "supports": [
+        "group.preoperative.conditions"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.alcohol_frequency",
+        "display": "Alcohol Use Frequency",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.alcohol-frequency",
+        "display": "Alcohol Use Frequency",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.alcohol-frequency",
+        "wording": "술을 마시는 빈도를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 184,
+          "reason": "alcohol-frequency"
+        }
+      ],
+      "supports": [
+        "group.preoperative.conditions"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.alcohol_type",
+        "display": "Alcohol Type",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.alcohol-type",
+        "display": "Alcohol Type",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.alcohol-type",
+        "wording": "주로 마시는 술의 종류를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 183,
+          "reason": "alcohol-type"
+        }
+      ],
+      "supports": [
+        "group.preoperative.conditions"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.alcohol_amount_per_occasion",
+        "display": "Alcohol Amount per Occasion",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.alcohol-amount-per-occasion",
+        "display": "Alcohol Amount per Occasion",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.alcohol-amount-per-occasion",
+        "wording": "한 번 마실 때의 양을 종류별 잔 또는 병 기준으로 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 182,
+          "reason": "alcohol-amount-per-occasion"
+        }
+      ],
+      "supports": [
+        "group.preoperative.conditions"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.diabetes_status",
+        "display": "Diabetes Status",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.diabetes-status",
+        "display": "Diabetes Status",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.diabetes-status",
+        "wording": "당뇨병을 진단받았나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 188,
+          "reason": "diabetes-status"
+        }
+      ],
+      "supports": [
+        "group.preoperative.conditions"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.latest_hba1c_value",
+        "display": "Latest HbA1c Value",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.latest-hba1c-value",
+        "display": "Latest HbA1c Value",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.latest-hba1c-value",
+        "wording": "최근 당화혈색소 수치를 알고 있다면 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 181,
+          "reason": "latest-hba1c-value"
+        }
+      ],
+      "supports": [
+        "group.preoperative.conditions",
+        "group.preoperative.records"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.latest_hba1c_date",
+        "display": "Latest HbA1c Date",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.latest-hba1c-date",
+        "display": "Latest HbA1c Date",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.latest-hba1c-date",
+        "wording": "최근 당화혈색소 검사일을 알고 있다면 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 180,
+          "reason": "latest-hba1c-date"
+        }
+      ],
+      "supports": [
+        "group.preoperative.conditions",
+        "group.preoperative.records"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.kidney_disease_status",
+        "display": "Kidney Disease Status",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.kidney-disease",
+        "display": "Kidney Disease Status",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.kidney-disease",
+        "wording": "만성콩팥병 또는 신장기능 저하를 진단받았나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 186,
+          "reason": "kidney-disease"
+        }
+      ],
+      "supports": [
+        "group.preoperative.conditions"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.dialysis_status",
+        "display": "Dialysis Status",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.dialysis-status",
+        "display": "Dialysis Status",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.dialysis-status",
+        "wording": "현재 투석 치료를 받고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 185,
+          "reason": "dialysis-status"
+        }
+      ],
+      "supports": [
+        "group.preoperative.conditions"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.liver_disease_status",
+        "display": "Liver Disease Status",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.liver-disease",
+        "display": "Liver Disease Status",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.liver-disease",
+        "wording": "간경변 또는 만성 간질환을 진단받았나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 184,
+          "reason": "liver-disease"
+        }
+      ],
+      "supports": [
+        "group.preoperative.conditions"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.anemia_status",
+        "display": "Anemia Status",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.anemia-status",
+        "display": "Anemia Status",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.anemia-status",
+        "wording": "빈혈을 진단받았나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 183,
+          "reason": "anemia-status"
+        }
+      ],
+      "supports": [
+        "group.preoperative.conditions",
+        "group.preoperative.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.nutrition_concern",
+        "display": "Nutrition Concern",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.nutrition-concern",
+        "display": "Nutrition Concern",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.nutrition-concern",
+        "wording": "최근 식사량 감소나 영양상태에 대한 우려가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 182,
+          "reason": "nutrition-concern"
+        }
+      ],
+      "supports": [
+        "group.preoperative.conditions"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.unintentional_weight_loss",
+        "display": "Unintentional Weight Loss",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.unintentional-weight-loss",
+        "display": "Unintentional Weight Loss",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.unintentional-weight-loss",
+        "wording": "최근 의도하지 않은 체중 감소가 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 181,
+          "reason": "unintentional-weight-loss"
+        }
+      ],
+      "supports": [
+        "group.preoperative.conditions"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.bleeding_tendency_history",
+        "display": "Bleeding Tendency History",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.bleeding-history",
+        "display": "Bleeding Tendency History",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.bleeding-history",
+        "wording": "작은 상처나 치과 치료 후에도 출혈이 오래 지속된 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 178,
+          "reason": "bleeding-history"
+        }
+      ],
+      "supports": [
+        "group.preoperative.bleeding"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.prior_venous_thromboembolism",
+        "display": "Prior Venous Thromboembolism",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.prior-vte",
+        "display": "Prior Venous Thromboembolism",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.prior-vte",
+        "wording": "과거 다리 혈전 또는 폐색전증을 진단받은 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 177,
+          "reason": "prior-vte"
+        }
+      ],
+      "supports": [
+        "group.preoperative.bleeding",
+        "group.preoperative.conditions"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.current_anticoagulant",
+        "display": "Current Anticoagulant",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.anticoagulant",
+        "display": "Current Anticoagulant",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.anticoagulant",
+        "wording": "현재 복용하거나 주사하는 항응고제가 있다면 이름을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 176,
+          "reason": "anticoagulant"
+        }
+      ],
+      "supports": [
+        "group.preoperative.bleeding",
+        "group.preoperative.medication"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.current_antiplatelet",
+        "display": "Current Antiplatelet",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.antiplatelet",
+        "display": "Current Antiplatelet",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.antiplatelet",
+        "wording": "현재 복용하는 항혈소판제가 있다면 이름을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 175,
+          "reason": "antiplatelet"
+        }
+      ],
+      "supports": [
+        "group.preoperative.bleeding",
+        "group.preoperative.medication"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.current_medicine_list",
+        "display": "Current Medicine List",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.medicine-list",
+        "display": "Current Medicine List",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.medicine-list",
+        "wording": "현재 실제로 사용하는 처방약, 일반약, 한약 또는 보충제를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 174,
+          "reason": "medicine-list"
+        }
+      ],
+      "supports": [
+        "group.preoperative.medication",
+        "group.preoperative.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.medicine_instruction_received",
+        "display": "Perioperative Medicine Instruction Received",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.medicine-instruction",
+        "display": "Perioperative Medicine Instruction Received",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.medicine-instruction",
+        "wording": "수술 전후 약 복용 또는 중단 방법을 의료진에게 안내받았나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 173,
+          "reason": "medicine-instruction"
+        }
+      ],
+      "supports": [
+        "group.preoperative.medication",
+        "group.preoperative.preparation"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.medicine_instruction_question",
+        "display": "Perioperative Medicine Instruction Question",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.medicine-instruction-question",
+        "display": "Perioperative Medicine Instruction Question",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.medicine-instruction-question",
+        "wording": "약 복용 안내에서 이해되지 않거나 서로 다른 내용이 있다면 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 172,
+          "reason": "medicine-instruction-question"
+        }
+      ],
+      "supports": [
+        "group.preoperative.medication",
+        "group.preoperative.preparation",
+        "group.preoperative.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.known_allergy",
+        "display": "Known Allergy",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.known-allergy",
+        "display": "Known Allergy",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.known-allergy",
+        "wording": "약, 음식 또는 의료용품 알레르기가 있다면 원인 물질을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 170,
+          "reason": "known-allergy"
+        }
+      ],
+      "supports": [
+        "group.preoperative.anesthesia",
+        "group.preoperative.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.allergy_reaction",
+        "display": "Allergy Reaction",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.allergy-reaction",
+        "display": "Allergy Reaction",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.allergy-reaction",
+        "wording": "알레르기 때 나타난 반응을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 169,
+          "reason": "allergy-reaction"
+        }
+      ],
+      "supports": [
+        "group.preoperative.anesthesia",
+        "group.preoperative.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.prior_anesthesia_problem",
+        "display": "Prior Anesthesia Problem",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.prior-anesthesia-problem",
+        "display": "Prior Anesthesia Problem",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.prior-anesthesia-problem",
+        "wording": "과거 마취 중 또는 마취 후 문제가 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 168,
+          "reason": "prior-anesthesia-problem"
+        }
+      ],
+      "supports": [
+        "group.preoperative.anesthesia"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.prior_anesthesia_problem_detail",
+        "display": "Prior Anesthesia Problem Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.prior-anesthesia-detail",
+        "display": "Prior Anesthesia Problem Detail",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.prior-anesthesia-detail",
+        "wording": "과거 마취 문제의 증상 또는 의료진 설명을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 167,
+          "reason": "prior-anesthesia-detail"
+        }
+      ],
+      "supports": [
+        "group.preoperative.anesthesia",
+        "group.preoperative.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.difficult_airway_history",
+        "display": "Difficult Airway History",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.difficult-airway",
+        "display": "Difficult Airway History",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.difficult-airway",
+        "wording": "과거 기도삽관이나 마취용 기도 확보가 어렵다는 설명을 들었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 166,
+          "reason": "difficult-airway"
+        }
+      ],
+      "supports": [
+        "group.preoperative.anesthesia"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.postoperative_nausea_history",
+        "display": "Postoperative Nausea or Vomiting History",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.postoperative-nausea",
+        "display": "Postoperative Nausea or Vomiting History",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.postoperative-nausea",
+        "wording": "과거 마취 후 심한 메스꺼움 또는 구토가 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 165,
+          "reason": "postoperative-nausea"
+        }
+      ],
+      "supports": [
+        "group.preoperative.anesthesia"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.family_anesthesia_reaction",
+        "display": "Family Severe Anesthesia Reaction",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.family-anesthesia-reaction",
+        "display": "Family Severe Anesthesia Reaction",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.family-anesthesia-reaction",
+        "wording": "가족 중 마취와 관련해 심한 반응을 겪었다는 사람이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 164,
+          "reason": "family-anesthesia-reaction"
+        }
+      ],
+      "supports": [
+        "group.preoperative.anesthesia"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.dental_or_oral_issue",
+        "display": "Dental or Oral Issue Relevant to Airway",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.dental-oral-issue",
+        "display": "Dental or Oral Issue Relevant to Airway",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.dental-oral-issue",
+        "wording": "흔들리는 치아, 틀니 또는 입 벌리기 어려움이 있다면 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 163,
+          "reason": "dental-oral-issue"
+        }
+      ],
+      "supports": [
+        "group.preoperative.anesthesia"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.pregnancy_possibility",
+        "display": "Pregnancy Possibility",
+        "value_type": "coded",
+        "allowed_values": [
+          "possible",
+          "not_possible",
+          "not_applicable",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.preoperative-assessment.pregnancy-possibility",
+        "display": "Pregnancy Possibility",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.pregnancy-possibility",
+        "wording": "현재 임신 가능성이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 162,
+          "reason": "pregnancy-possibility"
+        }
+      ],
+      "supports": [
+        "group.preoperative.conditions",
+        "group.preoperative.preparation"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.previous_delay_or_cancellation",
+        "display": "Previous Surgical Delay or Cancellation",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.previous-delay",
+        "display": "Previous Surgical Delay or Cancellation",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.previous-delay",
+        "wording": "이 수술 또는 시술이 건강 문제 때문에 연기되거나 취소된 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 160,
+          "reason": "previous-delay"
+        }
+      ],
+      "supports": [
+        "group.preoperative.records",
+        "group.preoperative.goal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.previous_delay_reason",
+        "display": "Previous Delay or Cancellation Reason",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.previous-delay-reason",
+        "display": "Previous Delay or Cancellation Reason",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.previous-delay-reason",
+        "wording": "이전에 연기 또는 취소된 이유를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 159,
+          "reason": "previous-delay-reason"
+        }
+      ],
+      "supports": [
+        "group.preoperative.records",
+        "group.preoperative.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.available_test_results",
+        "display": "Available Preoperative Test Results",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.available-test-results",
+        "display": "Available Preoperative Test Results",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.available-test-results",
+        "wording": "이미 받은 수술 전 검사와 결과가 있다면 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 158,
+          "reason": "available-test-results"
+        }
+      ],
+      "supports": [
+        "group.preoperative.records",
+        "group.preoperative.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.prior_risk_assessment",
+        "display": "Prior Perioperative Risk Assessment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.prior-risk-assessment",
+        "display": "Prior Perioperative Risk Assessment",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.prior-risk-assessment",
+        "wording": "의료진이 사용한 수술 위험평가 도구나 결과를 알고 있다면 그대로 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 157,
+          "reason": "prior-risk-assessment"
+        }
+      ],
+      "supports": [
+        "group.preoperative.records",
+        "group.preoperative.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.fasting_instruction_received",
+        "display": "Fasting Instruction Received",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.fasting-instruction",
+        "display": "Fasting Instruction Received",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.fasting-instruction",
+        "wording": "수술 전 금식 방법을 의료진에게 안내받았나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 156,
+          "reason": "fasting-instruction"
+        }
+      ],
+      "supports": [
+        "group.preoperative.preparation"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.transport_and_home_support",
+        "display": "Transport and Home Support",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.transport-support",
+        "display": "Transport and Home Support",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.transport-support",
+        "wording": "퇴원 후 이동과 집에서 도움을 줄 사람에 관한 준비상태를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 100,
+          "reason": "transport-support"
+        }
+      ],
+      "supports": [
+        "group.preoperative.preparation",
+        "group.preoperative.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.accessibility_or_communication_need",
+        "display": "Accessibility or Communication Need",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.accessibility",
+        "display": "Accessibility or Communication Need",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.accessibility",
+        "wording": "문진과 수술 준비를 위해 필요한 통역 또는 접근성 지원을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 90,
+          "reason": "accessibility"
+        }
+      ],
+      "supports": [
+        "group.preoperative.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.new_health_change",
+        "display": "New Health Change before Surgery",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.new-health-change",
+        "display": "New Health Change before Surgery",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.new-health-change",
+        "wording": "수술 일정이 정해진 뒤 새로 생기거나 달라진 건강 문제를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 85,
+          "reason": "new-health-change"
+        }
+      ],
+      "supports": [
+        "group.preoperative.goal",
+        "group.preoperative.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "preoperative.patient_concern_or_goal",
+        "display": "Patient Preoperative Concern or Goal",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.preoperative-assessment.patient-goal",
+        "display": "Patient Preoperative Concern or Goal",
+        "intents": [
+          "intent.preoperative_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.preoperative-assessment.patient-goal",
+        "wording": "수술 전에 의료진에게 가장 확인하거나 전달하고 싶은 점은 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 80,
+          "reason": "patient-goal"
+        }
+      ],
+      "supports": [
+        "group.preoperative.goal",
+        "group.preoperative.handoff"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nice.ng180.perioperative-care.20260729",
+      "source.nice.ng45.preoperative-tests.20260729",
+      "source.nice.qs216.perioperative-risk.20260701",
+      "source.asa.preanesthesia-evaluation.2012",
+      "source.hl7.fhir-r4.servicerequest",
+      "source.hl7.fhir-r4.riskassessment",
+      "source.stom.preoperative.20260729"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

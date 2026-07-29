@@ -1,0 +1,179 @@
+{
+  "id": "policy.primary-care-preoperative-assessment-completion",
+  "version": "0.1.0",
+  "status": "research_only",
+  "addressed_fact_states": [
+    "known",
+    "unknown",
+    "not_applicable"
+  ],
+  "required_facts": {
+    "always": [
+      "preoperative.primary_group",
+      "preoperative.current_severe_chest_pain",
+      "preoperative.current_rest_dyspnea",
+      "preoperative.current_syncope_or_near_collapse",
+      "preoperative.current_new_unilateral_weakness",
+      "preoperative.current_new_speech_difficulty",
+      "preoperative.current_uncontrolled_bleeding",
+      "preoperative.current_rapidly_worsening_illness"
+    ],
+    "routine": [
+      "preoperative.planned_procedure_name",
+      "preoperative.planned_procedure_site",
+      "preoperative.planned_procedure_laterality",
+      "preoperative.planned_procedure_date",
+      "preoperative.planned_facility",
+      "preoperative.procedure_urgency",
+      "preoperative.expected_anesthesia_type",
+      "preoperative.expected_care_setting",
+      "preoperative.patient_understanding_of_indication",
+      "preoperative.information_source",
+      "preoperative.information_conflict",
+      "preoperative.usual_walking_capacity",
+      "preoperative.can_climb_two_flights",
+      "preoperative.independent_self_care",
+      "preoperative.recent_functional_decline",
+      "preoperative.exertional_chest_pain",
+      "preoperative.exertional_dyspnea",
+      "preoperative.known_cardiac_condition",
+      "preoperative.known_respiratory_condition",
+      "preoperative.sleep_apnea_diagnosis",
+      "preoperative.recent_respiratory_infection",
+      "preoperative.tobacco_use_status",
+      "preoperative.vaping_use_status",
+      "preoperative.alcohol_use_status",
+      "preoperative.diabetes_status",
+      "preoperative.kidney_disease_status",
+      "preoperative.liver_disease_status",
+      "preoperative.anemia_status",
+      "preoperative.nutrition_concern",
+      "preoperative.bleeding_tendency_history",
+      "preoperative.prior_venous_thromboembolism",
+      "preoperative.current_anticoagulant",
+      "preoperative.current_antiplatelet",
+      "preoperative.current_medicine_list",
+      "preoperative.medicine_instruction_received",
+      "preoperative.known_allergy",
+      "preoperative.prior_anesthesia_problem",
+      "preoperative.difficult_airway_history",
+      "preoperative.family_anesthesia_reaction",
+      "preoperative.pregnancy_possibility",
+      "preoperative.previous_delay_or_cancellation",
+      "preoperative.fasting_instruction_received",
+      "preoperative.accessibility_or_communication_need",
+      "preoperative.patient_concern_or_goal"
+    ]
+  },
+  "clarification_facts_by_rule": {},
+  "question_budget": {
+    "routine": 60,
+    "clarify": 12
+  },
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nice.ng180.perioperative-care.20260729",
+      "source.nice.ng45.preoperative-tests.20260729",
+      "source.nice.qs216.perioperative-risk.20260701",
+      "source.asa.preanesthesia-evaluation.2012",
+      "source.hl7.fhir-r4.servicerequest",
+      "source.hl7.fhir-r4.riskassessment",
+      "source.stom.preoperative.20260729"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  },
+  "conditional_required_facts": [
+    {
+      "selector_fact": "preoperative.primary_group",
+      "cases": {
+        "scheduled_assessment": [
+          "preoperative.available_documents"
+        ],
+        "preparation_instruction_review": [
+          "preoperative.available_documents",
+          "preoperative.medicine_instruction_question",
+          "preoperative.transport_and_home_support"
+        ],
+        "prior_test_review": [
+          "preoperative.available_test_results",
+          "preoperative.prior_risk_assessment"
+        ],
+        "previous_delay_or_cancellation": [
+          "preoperative.previous_delay_reason",
+          "preoperative.new_health_change"
+        ],
+        "new_health_change": [
+          "preoperative.new_health_change"
+        ],
+        "other_unclear": [
+          "preoperative.patient_concern_or_goal"
+        ]
+      }
+    },
+    {
+      "selector_fact": "preoperative.tobacco_use_status",
+      "cases": {
+        "current": [
+          "preoperative.combustible_cigarettes_per_day",
+          "preoperative.tobacco_use_duration"
+        ],
+        "former": [
+          "preoperative.combustible_cigarettes_per_day",
+          "preoperative.tobacco_use_duration"
+        ],
+        "never": [],
+        "unknown": []
+      }
+    },
+    {
+      "selector_fact": "preoperative.vaping_use_status",
+      "cases": {
+        "current": [
+          "preoperative.vaping_use_frequency",
+          "preoperative.vaping_use_duration"
+        ],
+        "former": [
+          "preoperative.vaping_use_frequency",
+          "preoperative.vaping_use_duration"
+        ],
+        "never": [],
+        "unknown": []
+      }
+    },
+    {
+      "selector_fact": "preoperative.alcohol_use_status",
+      "cases": {
+        "current": [
+          "preoperative.alcohol_frequency",
+          "preoperative.alcohol_type",
+          "preoperative.alcohol_amount_per_occasion"
+        ],
+        "former": [],
+        "never": [],
+        "unknown": []
+      }
+    },
+    {
+      "when": {
+        "fact": "preoperative.positive_airway_pressure_use",
+        "equals": true
+      },
+      "required_facts": [
+        "preoperative.positive_airway_pressure_type"
+      ]
+    }
+  ],
+  "clinical_boundary": {
+    "fitness_or_clearance_determined": false,
+    "surgery_go_no_go_determined": false,
+    "test_or_medicine_plan_prescribed": false,
+    "risk_score_calculated": false,
+    "requires_local_protocol_and_clinician_review": true
+  }
+}

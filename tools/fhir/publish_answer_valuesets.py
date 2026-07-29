@@ -17,12 +17,37 @@ from interoperability.fhir_valueset_publish import (  # noqa: E402
     FhirValueSetPublisher,
     load_env_value,
 )
-from interoperability.fhir_valueset_service import DEFAULT_BASE_URL  # noqa: E402
+from interoperability.fhir_valueset_service import (  # noqa: E402
+    DEFAULT_BASE_URL,
+    FhirValueSetServiceError,
+)
 from tools.fhir.build_answer_valuesets import (  # noqa: E402
     OUTPUT,
     build,
     validate,
 )
+
+
+def readable_catalog(publisher: FhirValueSetPublisher) -> tuple[list[dict], list[str]]:
+    """Resolve listed resources while preserving evidence of stale server rows.
+
+    A stale summary must not prevent unrelated, canonical-safe publication, but
+    it must remain visible in the publication report because list/read
+    consistency is part of the terminology service contract.
+    """
+    catalog = []
+    missing_ids = []
+    for summary in publisher.read_service.list_valuesets():
+        identifier = summary.get("id")
+        if not identifier:
+            continue
+        try:
+            catalog.append(publisher.read_service.read_valueset(identifier))
+        except FhirValueSetServiceError as exc:
+            if "404" not in str(exc):
+                raise
+            missing_ids.append(identifier)
+    return catalog, sorted(missing_ids)
 
 
 def main() -> int:
@@ -51,7 +76,7 @@ def main() -> int:
         base_url=args.base_url,
         api_key=api_key,
     )
-    catalog = publisher.read_service.list_valuesets(full=True)
+    catalog, catalog_missing_ids = readable_catalog(publisher)
     results = []
     for entry in bundle["entry"]:
         plan = publisher.plan(entry["resource"], catalog=catalog)
@@ -74,6 +99,13 @@ def main() -> int:
             "header": "X-API-Key",
             "token_variable": args.token_variable,
             "secret_recorded": False,
+        },
+        "server_catalog_consistency": {
+            "listed_but_not_readable_count": len(catalog_missing_ids),
+            "listed_but_not_readable_ids": catalog_missing_ids,
+            "publication_continued_for_unrelated_canonicals": bool(
+                catalog_missing_ids
+            ),
         },
         "results": results,
     }

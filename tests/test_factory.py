@@ -156,6 +156,7 @@ class CompilerTests(unittest.TestCase):
             "liver_function_chronic_follow_up",
             "breast_symptoms",
             "immunization_consultation",
+            "preoperative_assessment",
         ):
             with self.subTest(profile=profile), self.assertRaises(CompilationError):
                 compile_package(production=True, profile=profile)
@@ -1410,6 +1411,56 @@ class CompilerTests(unittest.TestCase):
         self.assertEqual(mapping["terminology"]["loinc_version"], "2.82")
         self.assertFalse(mapping["validation"]["clinical_rule_authority"])
         self.assertFalse(mapping["validation"]["question_equivalence_inferred"])
+
+    def test_preoperative_assessment_package_is_complete_and_non_prescriptive(self):
+        package = compile_package(profile="preoperative_assessment")
+        facts = {
+            node["id"] for node in package["knowledge_graph"]["nodes"]
+            if node["type"] == "Fact"
+        }
+        self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
+        self.assertGreaterEqual(len(facts), 65)
+        self.assertEqual(package["coverage"]["total_safety_rules"], 7)
+        self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 7)
+        self.assertEqual(package["coverage"]["uncovered_safety_rules"], [])
+        self.assertEqual(package["coverage"]["data_absent_reason_simulations"], 1)
+        policy = package["interview_completion_policy"]
+        self.assertEqual(
+            policy["conditional_required_facts"][0]["selector_fact"],
+            "preoperative.primary_group",
+        )
+        self.assertIn("preoperative.tobacco_use_status", facts)
+        self.assertIn("preoperative.combustible_cigarettes_per_day", facts)
+        self.assertIn("preoperative.tobacco_use_duration", facts)
+        self.assertIn("preoperative.vaping_use_status", facts)
+        self.assertIn("preoperative.vaping_use_frequency", facts)
+        self.assertIn("preoperative.alcohol_frequency", facts)
+        self.assertIn("preoperative.alcohol_type", facts)
+        self.assertIn("preoperative.alcohol_amount_per_occasion", facts)
+        self.assertNotIn("preoperative.tobacco_or_vaping_use", facts)
+        self.assertNotIn("preoperative.alcohol_use", facts)
+        self.assertEqual(policy["question_budget"]["routine"], 60)
+        self.assertFalse(policy["clinical_boundary"]["fitness_or_clearance_determined"])
+        self.assertFalse(policy["clinical_boundary"]["surgery_go_no_go_determined"])
+        self.assertFalse(policy["clinical_boundary"]["risk_score_calculated"])
+        mapping = json.loads(
+            (Path(__file__).resolve().parents[1]
+             / "mappings/terminology/snomed-mrcm-preoperative-assessment.json")
+            .read_text(encoding="utf-8")
+        )
+        self.assertEqual(mapping["terminology"]["loinc_version"], "2.82")
+        self.assertFalse(mapping["validation"]["clinical_rule_authority"])
+        self.assertFalse(mapping["validation"]["question_equivalence_inferred"])
+        self.assertFalse(mapping["preoperative_semantics"]["fitness_or_clearance_inferred"])
+
+    def test_preoperative_expansion_queue_passes_release_gate_audit(self):
+        root = Path(__file__).resolve().parents[1]
+        report = run_expansion_audit(
+            root / "knowledge/catalog/planned-package-work-queue-v0.7.json"
+        )
+        self.assertTrue(report["passed"])
+        self.assertEqual(report["entry_count"], 1)
+        self.assertEqual(report["queue_status"], "materialized_unreviewed")
 
     def test_kidney_function_ckd_follow_up_package_is_complete(self):
         package = compile_package(profile="kidney_function_ckd_follow_up")

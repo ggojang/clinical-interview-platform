@@ -587,6 +587,20 @@ PACKAGE_PROFILES = {
             ROOT / "sources/manifests/primary-care-immunization-consultation-research.json"
         ],
     },
+    "preoperative_assessment": {
+        "graph": ROOT / "knowledge/graph/primary-care-preoperative-assessment.json",
+        "rules": ROOT / "rules/primary-care-preoperative-assessment.json",
+        "sources": ROOT / "sources/manifests/primary-care-preoperative-assessment.json",
+        "completion_policy": ROOT / "policies/primary-care-preoperative-assessment-completion.json",
+        "output": ROOT / "packages/generated/primary-care-preoperative-assessment-0.1.0.json",
+        "package_id": "package.primary-care-preoperative-assessment",
+        "package_version": "0.1.0",
+        "rfe": "rfe.preoperative_assessment",
+        "simulation_root": ROOT / "simulation/patients/preventive/preoperative-assessment",
+        "research_manifests": [
+            ROOT / "sources/manifests/primary-care-preoperative-assessment-research.json"
+        ],
+    },
 }
 
 ALLOWED_NODE_TYPES = {

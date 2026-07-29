@@ -398,6 +398,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-immunization-consultation.json",
         "version": "0.1.0",
     },
+    "preoperative_assessment": {
+        "base_graph": ROOT / "knowledge/base/primary-care-preoperative-assessment.json",
+        "base_rules": ROOT / "rules/base/primary-care-preoperative-assessment.json",
+        "fragment_root": ROOT / "knowledge/generated/preventive/preoperative-assessment",
+        "output_graph": ROOT / "knowledge/graph/primary-care-preoperative-assessment.json",
+        "output_rules": ROOT / "rules/primary-care-preoperative-assessment.json",
+        "version": "0.1.0",
+    },
 }
 
 
