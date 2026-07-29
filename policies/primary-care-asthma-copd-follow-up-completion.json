@@ -43,7 +43,8 @@
       "resp_followup.relief_air_or_mart_plan",
       "resp_followup.adherence_and_missed_doses",
       "resp_followup.inhaler_technique_last_observed",
-      "resp_followup.smoking_vaping_and_pack_years",
+      "patient.smoking.status",
+      "resp_followup.passive_smoke_exposure_status",
       "resp_followup.written_action_plan",
       "resp_followup.other_detail_or_patient_priority"
     ]
@@ -121,6 +122,35 @@
           "resp_followup.other_detail_or_patient_priority"
         ]
       }
+    },
+    {
+      "selector_fact": "patient.smoking.status",
+      "cases": {
+        "current": [
+          "patient.smoking.product_types",
+          "patient.smoking.cigarettes_per_day",
+          "patient.smoking.duration_years",
+          "resp_followup.pack_years_reported"
+        ],
+        "former": [
+          "patient.smoking.product_types",
+          "patient.smoking.cigarettes_per_day",
+          "patient.smoking.duration_years",
+          "patient.smoking.quit_timing",
+          "resp_followup.pack_years_reported"
+        ],
+        "never": []
+      }
+    },
+    {
+      "when": {
+        "fact": "resp_followup.passive_smoke_exposure_status",
+        "equals": true
+      },
+      "required_facts": [
+        "resp_followup.passive_smoke_exposure_details"
+      ],
+      "reason": "reported_passive_smoke_exposure_requires_context"
     }
   ]
 }

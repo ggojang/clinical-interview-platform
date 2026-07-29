@@ -9,11 +9,11 @@
   "source_manifest": "source-manifest.primary-care-asthma-copd-follow-up-research",
   "default_refresh": {
     "class": "clinical_guideline",
-    "last_assessed_at": "2026-07-14",
+    "last_assessed_at": "2026-07-29",
     "monitor_interval_days": 1,
     "full_review_interval_days": 180,
-    "next_monitor_at": "2026-07-15",
-    "next_full_review_at": "2027-01-10",
+    "next_monitor_at": "2026-07-30",
+    "next_full_review_at": "2027-01-25",
     "policy_id": "policy.knowledge-refresh",
     "overdue_behavior": {
       "production": "exclude_or_require_review",
@@ -1703,28 +1703,25 @@
     },
     {
       "fact": {
-        "id": "resp_followup.smoking_vaping_and_pack_years",
-        "display": "Smoking Vaping and Pack-years",
-        "value_type": "string",
-        "terminology_binding": {
-          "system": "http://snomed.info/sct",
-          "code": "77176002"
-        },
-        "mrcm_validation": {
-          "ref": "mapping.snomed-mrcm.asthma-copd-follow-up",
-          "status": "provisional_pass"
-        }
+        "id": "patient.smoking.status",
+        "display": "Smoking Status",
+        "value_type": "coded",
+        "allowed_values": [
+          "current",
+          "former",
+          "never"
+        ]
       },
       "target": {
-        "id": "target.asthma-copd-follow-up.smoking",
-        "display": "Smoking Vaping and Pack-years",
+        "id": "target.asthma-copd-follow-up.smoking-status",
+        "display": "Smoking Status",
         "intents": [
           "intent.risk_assessment"
         ]
       },
       "question": {
-        "id": "question.asthma-copd-follow-up.smoking",
-        "wording": "현재와 과거의 흡연·전자담배·간접흡연, 하루 양·기간과 갑년(pack-years)을 알려주세요.",
+        "id": "question.asthma-copd-follow-up.smoking-status",
+        "wording": "담배·니코틴 제품 사용 상태를 선택해 주세요. 1 현재 사용, 2 과거 사용 후 중단, 3 평생 사용한 적 없음",
         "language": "ko",
         "mode": [
           "chat",
@@ -1737,7 +1734,272 @@
         {
           "branch": "any",
           "score": 133,
-          "reason": "smoking"
+          "reason": "smoking-status"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.risk"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "patient.smoking.product_types",
+        "display": "Tobacco and Nicotine Product Types",
+        "value_type": "coded_or_string",
+        "allowed_values": [
+          "combustible_cigarette",
+          "heated_tobacco",
+          "electronic_cigarette",
+          "cigar_or_pipe",
+          "smokeless_tobacco",
+          "other"
+        ]
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.smoking-products",
+        "display": "Tobacco and Nicotine Product Types",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.smoking-products",
+        "wording": "현재 또는 과거에 사용한 제품을 모두 알려주세요. 1 일반담배, 2 궐련형 전자담배, 3 액상형 전자담배, 4 시가·파이프, 5 무연담배, 6 기타",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 132,
+          "reason": "smoking-products"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.risk"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "patient.smoking.cigarettes_per_day",
+        "display": "Combustible Cigarettes per Day",
+        "value_type": "quantity",
+        "unit": "{cigarette}/d",
+        "minimum": 0
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.cigarettes-per-day",
+        "display": "Combustible Cigarettes per Day",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.cigarettes-per-day",
+        "wording": "일반담배를 피우거나 피웠다면 하루 평균 몇 개비였나요? 일반담배를 사용하지 않았다면 0개비라고 답해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 131,
+          "reason": "cigarettes-per-day"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.risk"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "patient.smoking.duration_years",
+        "display": "Total Tobacco or Nicotine Use Duration",
+        "value_type": "quantity",
+        "unit": "a",
+        "minimum": 0
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.smoking-duration",
+        "display": "Total Tobacco or Nicotine Use Duration",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.smoking-duration",
+        "wording": "담배·전자담배 등 니코틴 제품을 실제 사용한 총 기간은 몇 년인가요? 중단한 기간은 제외해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 130,
+          "reason": "smoking-duration"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.risk"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "patient.smoking.quit_timing",
+        "display": "Smoking Cessation Timing",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.smoking-quit-timing",
+        "display": "Smoking Cessation Timing",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.smoking-quit-timing",
+        "wording": "과거 사용자라면 마지막으로 사용한 때 또는 금연을 시작한 때는 언제인가요? 정확한 날짜를 모르면 대략적인 기간을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 129,
+          "reason": "smoking-quit-timing"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.risk"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "resp_followup.pack_years_reported",
+        "display": "Recorded Pack-years",
+        "value_type": "quantity",
+        "unit": "{pack-year}",
+        "minimum": 0
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.pack-years",
+        "display": "Recorded Pack-years",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.pack-years",
+        "wording": "의료기록이나 이전 진료에서 확인된 갑년(pack-years) 값이 있나요? 기록된 값을 모르면 모른다고 답해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 128,
+          "reason": "pack-years"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.risk",
+        "group.respiratory-follow-up.copd"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.passive_smoke_exposure_status",
+        "display": "Passive Smoke Exposure Status",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.passive-smoke-status",
+        "display": "Passive Smoke Exposure Status",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.passive-smoke-status",
+        "wording": "현재 또는 과거에 가정이나 직장에서 다른 사람의 담배 연기에 반복 노출된 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 127,
+          "reason": "passive-smoke-status"
+        }
+      ],
+      "supports": [
+        "group.respiratory-follow-up.risk"
+      ]
+    },
+    {
+      "fact": {
+        "id": "resp_followup.passive_smoke_exposure_details",
+        "display": "Passive Smoke Exposure Details",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.asthma-copd-follow-up.passive-smoke-details",
+        "display": "Passive Smoke Exposure Details",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.asthma-copd-follow-up.passive-smoke-details",
+        "wording": "간접흡연에 주로 노출된 장소와 대략적인 기간을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 126,
+          "reason": "passive-smoke-details"
         }
       ],
       "supports": [
@@ -1771,7 +2033,7 @@
       "priority": [
         {
           "branch": "any",
-          "score": 132,
+          "score": 125,
           "reason": "occupation"
         }
       ],

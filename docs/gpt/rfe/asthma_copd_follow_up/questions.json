@@ -1,6 +1,6 @@
 {
   "contains_patient_responses": false,
-  "count": 63,
+  "count": 70,
   "encounter_contexts": [
     "context.primary_care"
   ],
@@ -205,6 +205,20 @@
       "status": "research_only",
       "type": "QuestionTemplate",
       "wording": "호흡 악화와 함께 새롭거나 심한 가슴통증이 있나요?"
+    },
+    {
+      "collects": "patient.smoking.cigarettes_per_day",
+      "id": "question.asthma-copd-follow-up.cigarettes-per-day",
+      "language": "ko",
+      "mode": [
+        "chat",
+        "face_to_face",
+        "telephone",
+        "video"
+      ],
+      "status": "research_only",
+      "type": "QuestionTemplate",
+      "wording": "일반담배를 피우거나 피웠다면 하루 평균 몇 개비였나요? 일반담배를 사용하지 않았다면 0개비라고 답해 주세요."
     },
     {
       "collects": "resp_followup.comorbidities_affecting_control",
@@ -687,6 +701,48 @@
       "wording": "가정 산소의 처방 유량·사용 시간, 실제 사용과 흡연·화기 안전수칙 준수 여부를 알려주세요."
     },
     {
+      "collects": "resp_followup.pack_years_reported",
+      "id": "question.asthma-copd-follow-up.pack-years",
+      "language": "ko",
+      "mode": [
+        "chat",
+        "face_to_face",
+        "telephone",
+        "video"
+      ],
+      "status": "research_only",
+      "type": "QuestionTemplate",
+      "wording": "의료기록이나 이전 진료에서 확인된 갑년(pack-years) 값이 있나요? 기록된 값을 모르면 모른다고 답해 주세요."
+    },
+    {
+      "collects": "resp_followup.passive_smoke_exposure_details",
+      "id": "question.asthma-copd-follow-up.passive-smoke-details",
+      "language": "ko",
+      "mode": [
+        "chat",
+        "face_to_face",
+        "telephone",
+        "video"
+      ],
+      "status": "research_only",
+      "type": "QuestionTemplate",
+      "wording": "간접흡연에 주로 노출된 장소와 대략적인 기간을 알려주세요."
+    },
+    {
+      "collects": "resp_followup.passive_smoke_exposure_status",
+      "id": "question.asthma-copd-follow-up.passive-smoke-status",
+      "language": "ko",
+      "mode": [
+        "chat",
+        "face_to_face",
+        "telephone",
+        "video"
+      ],
+      "status": "research_only",
+      "type": "QuestionTemplate",
+      "wording": "현재 또는 과거에 가정이나 직장에서 다른 사람의 담배 연기에 반복 노출된 적이 있나요?"
+    },
+    {
       "collects": "resp_followup.peak_flow_best_current_and_variability",
       "id": "question.asthma-copd-follow-up.peak-flow",
       "language": "ko",
@@ -813,8 +869,50 @@
       "wording": "목쉼·입안 흰 반점, 떨림·두근거림, 멍·체중 변화 등 약 사용 후 불편한 점이 있나요?"
     },
     {
-      "collects": "resp_followup.smoking_vaping_and_pack_years",
-      "id": "question.asthma-copd-follow-up.smoking",
+      "collects": "patient.smoking.duration_years",
+      "id": "question.asthma-copd-follow-up.smoking-duration",
+      "language": "ko",
+      "mode": [
+        "chat",
+        "face_to_face",
+        "telephone",
+        "video"
+      ],
+      "status": "research_only",
+      "type": "QuestionTemplate",
+      "wording": "담배·전자담배 등 니코틴 제품을 실제 사용한 총 기간은 몇 년인가요? 중단한 기간은 제외해 주세요."
+    },
+    {
+      "collects": "patient.smoking.product_types",
+      "id": "question.asthma-copd-follow-up.smoking-products",
+      "language": "ko",
+      "mode": [
+        "chat",
+        "face_to_face",
+        "telephone",
+        "video"
+      ],
+      "status": "research_only",
+      "type": "QuestionTemplate",
+      "wording": "현재 또는 과거에 사용한 제품을 모두 알려주세요. 1 일반담배, 2 궐련형 전자담배, 3 액상형 전자담배, 4 시가·파이프, 5 무연담배, 6 기타"
+    },
+    {
+      "collects": "patient.smoking.quit_timing",
+      "id": "question.asthma-copd-follow-up.smoking-quit-timing",
+      "language": "ko",
+      "mode": [
+        "chat",
+        "face_to_face",
+        "telephone",
+        "video"
+      ],
+      "status": "research_only",
+      "type": "QuestionTemplate",
+      "wording": "과거 사용자라면 마지막으로 사용한 때 또는 금연을 시작한 때는 언제인가요? 정확한 날짜를 모르면 대략적인 기간을 알려주세요."
+    },
+    {
+      "collects": "patient.smoking.status",
+      "id": "question.asthma-copd-follow-up.smoking-status",
       "language": "ko",
       "mode": [
         "chat",
@@ -823,17 +921,23 @@
         "video"
       ],
       "semantic_binding": {
+        "fhir_standard_item_codes": [
+          {
+            "code": "72166-2",
+            "system": "http://loinc.org"
+          }
+        ],
         "standard_mappings": [
           {
-            "code": "77176002",
-            "mapping_relation": "related",
-            "system": "http://snomed.info/sct"
+            "code": "72166-2",
+            "mapping_relation": "equivalent",
+            "system": "http://loinc.org"
           }
         ]
       },
       "status": "research_only",
       "type": "QuestionTemplate",
-      "wording": "현재와 과거의 흡연·전자담배·간접흡연, 하루 양·기간과 갑년(pack-years)을 알려주세요."
+      "wording": "담배·니코틴 제품 사용 상태를 선택해 주세요. 1 현재 사용, 2 과거 사용 후 중단, 3 평생 사용한 적 없음"
     },
     {
       "collects": "resp_followup.spirometry_date_and_results",
@@ -962,7 +1066,7 @@
       "complete": false,
       "id": "source.gina.strategy.2026",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-07-27",
+      "last_monitored_at": "2026-07-29",
       "license_status": "restricted",
       "monitor_interval_days": 1,
       "publisher": "GINA",
@@ -974,7 +1078,7 @@
       "complete": false,
       "id": "source.gold.report.2026",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-07-27",
+      "last_monitored_at": "2026-07-29",
       "license_status": "restricted",
       "monitor_interval_days": 1,
       "publisher": "GOLD",
@@ -986,7 +1090,7 @@
       "complete": false,
       "id": "source.nice.ng115.copd.2025",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-07-15",
+      "last_monitored_at": "2026-07-29",
       "license_status": "restricted",
       "monitor_interval_days": 7,
       "publisher": "NICE",
@@ -998,7 +1102,7 @@
       "complete": false,
       "id": "source.nice.ng245.asthma.2025",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-07-15",
+      "last_monitored_at": "2026-07-29",
       "license_status": "restricted",
       "monitor_interval_days": 7,
       "publisher": "NICE",

@@ -1109,7 +1109,33 @@ class CompilerTests(unittest.TestCase):
             "resp_followup.current_syncope",
             "resp_followup.current_new_sustained_irregular_palpitations",
         } <= facts)
-        self.assertGreaterEqual(package["coverage"]["simulation_count"], 17)
+        self.assertNotIn("resp_followup.smoking_vaping_and_pack_years", facts)
+        self.assertTrue({
+            "patient.smoking.status",
+            "patient.smoking.product_types",
+            "patient.smoking.cigarettes_per_day",
+            "patient.smoking.duration_years",
+            "patient.smoking.quit_timing",
+            "resp_followup.pack_years_reported",
+            "resp_followup.passive_smoke_exposure_status",
+            "resp_followup.passive_smoke_exposure_details",
+        } <= facts)
+        conditional = {
+            item["selector_fact"]: item["cases"]
+            for item in package["interview_completion_policy"]["conditional_required_facts"]
+            if "selector_fact" in item
+        }
+        self.assertIn("patient.smoking.quit_timing", conditional["patient.smoking.status"]["former"])
+        passive_detail = next(
+            item
+            for item in package["interview_completion_policy"]["conditional_required_facts"]
+            if item.get("when", {}).get("fact") == "resp_followup.passive_smoke_exposure_status"
+        )
+        self.assertEqual(
+            passive_detail["required_facts"],
+            ["resp_followup.passive_smoke_exposure_details"],
+        )
+        self.assertGreaterEqual(package["coverage"]["simulation_count"], 18)
         handoff_case = next(
             item for item in package["simulations"]
             if item["id"] == "RESP-FOLLOWUP-COPD-MODERATE-EXACERBATION-HANDOFF"
@@ -1120,6 +1146,22 @@ class CompilerTests(unittest.TestCase):
         )
         self.assertTrue(handoff_fixture["clinician_submission"])
         self.assertTrue(handoff_fixture["expected"]["expected_clinician_handoff"])
+        smoking_case = next(
+            item for item in package["simulations"]
+            if item["id"] == "RESP-FOLLOWUP-ATOMIC-SMOKING-HANDOFF"
+        )
+        smoking_fixture = json.loads(
+            (Path(__file__).resolve().parents[1] / smoking_case["path"])
+            .read_text(encoding="utf-8")
+        )
+        self.assertIn(
+            "patient.smoking.cigarettes_per_day",
+            smoking_fixture["expected"]["expected_selected_facts_contains"],
+        )
+        self.assertIn(
+            "resp_followup.smoking_vaping_and_pack_years",
+            smoking_fixture["expected"]["expected_selected_facts_excludes"],
+        )
         question_codes = {
             node.get("collects"): {
                 item.get("code")

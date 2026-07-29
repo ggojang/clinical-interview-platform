@@ -95,6 +95,9 @@ def entry(
     terminology_binding: dict[str, Any] | None = None,
     mrcm_ref: str | None = None,
     mrcm_status: str = "provisional_pass",
+    unit: str | None = None,
+    minimum: int | float | None = None,
+    maximum: int | float | None = None,
 ) -> dict[str, Any]:
     fact: dict[str, Any] = {
         "id": fact_id,
@@ -109,6 +112,12 @@ def entry(
         fact["terminology_binding"] = terminology_binding
     if mrcm_ref:
         fact["mrcm_validation"] = {"ref": mrcm_ref, "status": mrcm_status}
+    if unit is not None:
+        fact["unit"] = unit
+    if minimum is not None:
+        fact["minimum"] = minimum
+    if maximum is not None:
+        fact["maximum"] = maximum
     result: dict[str, Any] = {
         "fact": fact,
         "target": {
