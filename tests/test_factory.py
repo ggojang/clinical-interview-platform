@@ -155,6 +155,7 @@ class CompilerTests(unittest.TestCase):
             "kidney_function_ckd_follow_up",
             "liver_function_chronic_follow_up",
             "breast_symptoms",
+            "immunization_consultation",
         ):
             with self.subTest(profile=profile), self.assertRaises(CompilationError):
                 compile_package(production=True, profile=profile)
@@ -1379,6 +1380,36 @@ class CompilerTests(unittest.TestCase):
         self.assertTrue(report["passed"])
         self.assertEqual(report["entry_count"], 1)
         self.assertEqual(report["queue_status"], "materialized_unreviewed")
+
+    def test_immunization_consultation_package_is_complete_and_non_prescriptive(self):
+        package = compile_package(profile="immunization_consultation")
+        facts = {
+            node["id"] for node in package["knowledge_graph"]["nodes"]
+            if node["type"] == "Fact"
+        }
+        self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
+        self.assertGreaterEqual(len(facts), 55)
+        self.assertEqual(package["coverage"]["total_safety_rules"], 8)
+        self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 8)
+        self.assertEqual(package["coverage"]["uncovered_safety_rules"], [])
+        self.assertEqual(package["coverage"]["data_absent_reason_simulations"], 1)
+        policy = package["interview_completion_policy"]
+        self.assertEqual(
+            policy["conditional_required_facts"][0]["selector_fact"],
+            "immunization.primary_group",
+        )
+        self.assertFalse(policy["clinical_boundary"]["vaccine_due_status_inferred"])
+        self.assertFalse(
+            policy["clinical_boundary"]["contraindication_or_eligibility_determined"]
+        )
+        mapping = json.loads(
+            (Path(__file__).resolve().parents[1]
+             / "mappings/terminology/snomed-mrcm-immunization-consultation.json")
+            .read_text(encoding="utf-8")
+        )
+        self.assertEqual(mapping["terminology"]["loinc_version"], "2.82")
+        self.assertFalse(mapping["validation"]["clinical_rule_authority"])
+        self.assertFalse(mapping["validation"]["question_equivalence_inferred"])
 
     def test_kidney_function_ckd_follow_up_package_is_complete(self):
         package = compile_package(profile="kidney_function_ckd_follow_up")

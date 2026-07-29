@@ -1,0 +1,2417 @@
+{
+  "id": "knowledge.generated.immunization-consultation",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-immunization-consultation-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-07-29",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-07-30",
+    "next_full_review_at": "2027-01-25",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.immunization.goal",
+      "type": "ClinicalGroup",
+      "display": "goal"
+    },
+    {
+      "id": "group.immunization.safety",
+      "type": "ClinicalGroup",
+      "display": "safety"
+    },
+    {
+      "id": "group.immunization.record",
+      "type": "ClinicalGroup",
+      "display": "record"
+    },
+    {
+      "id": "group.immunization.vaccine",
+      "type": "ClinicalGroup",
+      "display": "vaccine"
+    },
+    {
+      "id": "group.immunization.contraindication",
+      "type": "ClinicalGroup",
+      "display": "contraindication"
+    },
+    {
+      "id": "group.immunization.timing",
+      "type": "ClinicalGroup",
+      "display": "timing"
+    },
+    {
+      "id": "group.immunization.special-population",
+      "type": "ClinicalGroup",
+      "display": "special-population"
+    },
+    {
+      "id": "group.immunization.post-vaccine",
+      "type": "ClinicalGroup",
+      "display": "post-vaccine"
+    },
+    {
+      "id": "group.immunization.handoff",
+      "type": "ClinicalGroup",
+      "display": "handoff"
+    }
+  ],
+  "group_hypothesis_edges": [],
+  "safety_rules": [
+    {
+      "id": "rule.immunization-consultation.safety.current-breathing-warning",
+      "priority": 1000,
+      "when": {
+        "fact": "immunization.current_breathing_difficulty_after_vaccine",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.immunization-consultation.safety.current-airway-swelling-warning",
+      "priority": 1000,
+      "when": {
+        "fact": "immunization.current_throat_or_tongue_swelling_after_vaccine",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.immunization-consultation.safety.current-collapse-warning",
+      "priority": 1000,
+      "when": {
+        "fact": "immunization.current_collapse_or_near_syncope_after_vaccine",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.immunization-consultation.safety.current-responsiveness-warning",
+      "priority": 1000,
+      "when": {
+        "fact": "immunization.current_altered_responsiveness_after_vaccine",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.immunization-consultation.safety.current-seizure-warning",
+      "priority": 1000,
+      "when": {
+        "fact": "immunization.current_seizure_after_vaccine",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.immunization-consultation.safety.current-severe-warning",
+      "priority": 990,
+      "when": {
+        "fact": "immunization.current_severe_or_rapidly_worsening_symptom",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.immunization-consultation.safety.child-wake-warning",
+      "priority": 1000,
+      "when": {
+        "fact": "immunization.child_difficult_to_wake_after_vaccine",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.immunization-consultation.safety.child-feeding-warning",
+      "priority": 1000,
+      "when": {
+        "fact": "immunization.child_unable_to_feed_after_vaccine",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "immunization.primary_group",
+        "display": "Immunization Consultation Type",
+        "value_type": "coded",
+        "allowed_values": [
+          "planned_vaccination",
+          "record_review",
+          "catch_up_review",
+          "travel_occupation_or_exposure",
+          "post_vaccination_concern",
+          "other_unclear"
+        ]
+      },
+      "target": {
+        "id": "target.immunization-consultation.primary-group",
+        "display": "Immunization Consultation Type",
+        "intents": [
+          "intent.immunization_history_review"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.primary-group",
+        "wording": "이번 방문은 예정된 예방접종 상담, 접종기록 확인, 누락 접종 상담, 여행·직업·노출 관련 상담, 접종 후 이상반응 상담 중 무엇에 가깝나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 240,
+          "reason": "primary-group"
+        }
+      ],
+      "supports": [
+        "group.immunization.goal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.current_breathing_difficulty_after_vaccine",
+        "display": "Current Breathing Difficulty after Vaccine",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.immunization-consultation.current-breathing-warning",
+        "display": "Current Breathing Difficulty after Vaccine",
+        "intents": [
+          "intent.immunization_safety_screening"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.current-breathing-warning",
+        "wording": "접종 후 현재 숨쉬기 어려운가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 243,
+          "reason": "current-breathing-warning"
+        }
+      ],
+      "supports": [
+        "group.immunization.safety",
+        "group.immunization.post-vaccine"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.current_throat_or_tongue_swelling_after_vaccine",
+        "display": "Current Throat or Tongue Swelling after Vaccine",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.immunization-consultation.current-airway-swelling-warning",
+        "display": "Current Throat or Tongue Swelling after Vaccine",
+        "intents": [
+          "intent.immunization_safety_screening"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.current-airway-swelling-warning",
+        "wording": "접종 후 현재 목 또는 혀가 붓는 느낌이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 242,
+          "reason": "current-airway-swelling-warning"
+        }
+      ],
+      "supports": [
+        "group.immunization.safety",
+        "group.immunization.post-vaccine"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.current_collapse_or_near_syncope_after_vaccine",
+        "display": "Current Collapse or Near-syncope after Vaccine",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.immunization-consultation.current-collapse-warning",
+        "display": "Current Collapse or Near-syncope after Vaccine",
+        "intents": [
+          "intent.immunization_safety_screening"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.current-collapse-warning",
+        "wording": "접종 후 현재 쓰러졌거나 곧 쓰러질 것 같은 상태인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 241,
+          "reason": "current-collapse-warning"
+        }
+      ],
+      "supports": [
+        "group.immunization.safety",
+        "group.immunization.post-vaccine"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.current_altered_responsiveness_after_vaccine",
+        "display": "Current Altered Responsiveness after Vaccine",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.immunization-consultation.current-responsiveness-warning",
+        "display": "Current Altered Responsiveness after Vaccine",
+        "intents": [
+          "intent.immunization_safety_screening"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.current-responsiveness-warning",
+        "wording": "접종 후 현재 깨우기 어렵거나 평소처럼 반응하지 않나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 240,
+          "reason": "current-responsiveness-warning"
+        }
+      ],
+      "supports": [
+        "group.immunization.safety",
+        "group.immunization.post-vaccine"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.current_seizure_after_vaccine",
+        "display": "Current Seizure after Vaccine",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.immunization-consultation.current-seizure-warning",
+        "display": "Current Seizure after Vaccine",
+        "intents": [
+          "intent.immunization_safety_screening"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.current-seizure-warning",
+        "wording": "접종 후 현재 경련 중인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 239,
+          "reason": "current-seizure-warning"
+        }
+      ],
+      "supports": [
+        "group.immunization.safety",
+        "group.immunization.post-vaccine"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.current_severe_or_rapidly_worsening_symptom",
+        "display": "Current Severe or Rapidly Worsening Symptom",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.immunization-consultation.current-severe-warning",
+        "display": "Current Severe or Rapidly Worsening Symptom",
+        "intents": [
+          "intent.immunization_safety_screening"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.current-severe-warning",
+        "wording": "접종 후 고열·심한 통증·전신 발진 등 새로운 증상이 심하거나 빠르게 악화하고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 237,
+          "reason": "current-severe-warning"
+        }
+      ],
+      "supports": [
+        "group.immunization.safety",
+        "group.immunization.post-vaccine"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.child_difficult_to_wake_after_vaccine",
+        "display": "Child Difficult to Wake after Vaccine",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.immunization-consultation.child-wake-warning",
+        "display": "Child Difficult to Wake after Vaccine",
+        "intents": [
+          "intent.immunization_safety_screening"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.child-wake-warning",
+        "wording": "접종 후 아이를 평소처럼 깨우기 어려운가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 236,
+          "reason": "child-wake-warning"
+        }
+      ],
+      "supports": [
+        "group.immunization.safety",
+        "group.immunization.post-vaccine"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.child_unable_to_feed_after_vaccine",
+        "display": "Child Unable to Feed after Vaccine",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.immunization-consultation.child-feeding-warning",
+        "display": "Child Unable to Feed after Vaccine",
+        "intents": [
+          "intent.immunization_safety_screening"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.child-feeding-warning",
+        "wording": "접종 후 아이가 평소처럼 먹거나 마시지 못하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 235,
+          "reason": "child-feeding-warning"
+        }
+      ],
+      "supports": [
+        "group.immunization.safety",
+        "group.immunization.post-vaccine"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.information_source",
+        "display": "Immunization Information Source",
+        "value_type": "coded",
+        "allowed_values": [
+          "kdca_or_clinical_registry",
+          "written_record",
+          "caregiver_recall",
+          "self_recall",
+          "multiple_sources",
+          "no_source",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.immunization-consultation.information-source",
+        "display": "Immunization Information Source",
+        "intents": [
+          "intent.immunization_history_review"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.information-source",
+        "wording": "접종 정보는 예방접종도우미·의료기관 전산기록, 수첩·증명서, 보호자 기억, 본인 기억 중 어디에서 확인했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 220,
+          "reason": "information-source"
+        }
+      ],
+      "supports": [
+        "group.immunization.record"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.record_completeness",
+        "display": "Immunization Record Completeness",
+        "value_type": "coded",
+        "allowed_values": [
+          "complete",
+          "partial",
+          "none",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.immunization-consultation.record-completeness",
+        "display": "Immunization Record Completeness",
+        "intents": [
+          "intent.immunization_history_review"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.record-completeness",
+        "wording": "현재 확인 가능한 접종기록은 전체 기록, 일부 기록, 기록 없음 중 어느 상태인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 219,
+          "reason": "record-completeness"
+        }
+      ],
+      "supports": [
+        "group.immunization.record"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.record_conflict",
+        "display": "Immunization Record Conflict",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.immunization-consultation.record-conflict",
+        "display": "Immunization Record Conflict",
+        "intents": [
+          "intent.immunization_history_review"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.record-conflict",
+        "wording": "전산기록·수첩·본인 또는 보호자 기억 사이에 서로 맞지 않는 접종 정보가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 218,
+          "reason": "record-conflict"
+        }
+      ],
+      "supports": [
+        "group.immunization.record"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.record_conflict_detail",
+        "display": "Immunization Record Conflict Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.immunization-consultation.record-conflict-detail",
+        "display": "Immunization Record Conflict Detail",
+        "intents": [
+          "intent.immunization_history_review"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.record-conflict-detail",
+        "wording": "서로 맞지 않는 접종 정보가 있다면 어떤 백신의 어떤 내용인지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 217,
+          "reason": "record-conflict-detail"
+        }
+      ],
+      "supports": [
+        "group.immunization.record",
+        "group.immunization.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "patient.age_years",
+        "display": "Age in Years",
+        "value_type": "integer"
+      },
+      "target": {
+        "id": "target.immunization-consultation.age-years",
+        "display": "Age in Years",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.age-years",
+        "wording": "현재 만 나이는 몇 세인가요? 숫자로 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 216,
+          "reason": "age-years"
+        }
+      ],
+      "supports": [
+        "group.immunization.special-population"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "immunization.current_jurisdiction",
+        "display": "Current Immunization Jurisdiction",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.immunization-consultation.jurisdiction",
+        "display": "Current Immunization Jurisdiction",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.jurisdiction",
+        "wording": "접종 일정과 지원 기준을 확인할 국가 또는 지역은 어디인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 215,
+          "reason": "jurisdiction"
+        }
+      ],
+      "supports": [
+        "group.immunization.goal",
+        "group.immunization.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.consultation_goal",
+        "display": "Patient Immunization Goal",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.immunization-consultation.consultation-goal",
+        "display": "Patient Immunization Goal",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.consultation-goal",
+        "wording": "이번 상담에서 의료진에게 가장 확인하거나 도움받고 싶은 점은 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 214,
+          "reason": "consultation-goal"
+        }
+      ],
+      "supports": [
+        "group.immunization.goal",
+        "group.immunization.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.target_vaccine",
+        "display": "Target Vaccine",
+        "value_type": "coded_or_string"
+      },
+      "target": {
+        "id": "target.immunization-consultation.target-vaccine",
+        "display": "Target Vaccine",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.target-vaccine",
+        "wording": "접종하거나 확인하려는 백신 이름을 알고 있다면 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 210,
+          "reason": "target-vaccine"
+        }
+      ],
+      "supports": [
+        "group.immunization.vaccine"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.target_disease",
+        "display": "Target Vaccine-preventable Disease",
+        "value_type": "coded_or_string"
+      },
+      "target": {
+        "id": "target.immunization-consultation.target-disease",
+        "display": "Target Vaccine-preventable Disease",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.target-disease",
+        "wording": "예방하려는 감염병이나 접종 목적을 알고 있다면 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 209,
+          "reason": "target-disease"
+        }
+      ],
+      "supports": [
+        "group.immunization.vaccine"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.previous_dose_count",
+        "display": "Previous Dose Count",
+        "value_type": "integer"
+      },
+      "target": {
+        "id": "target.immunization-consultation.previous-dose-count",
+        "display": "Previous Dose Count",
+        "intents": [
+          "intent.immunization_history_review"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.previous-dose-count",
+        "wording": "해당 백신을 이전에 몇 차례 접종했는지 숫자로 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 208,
+          "reason": "previous-dose-count"
+        }
+      ],
+      "supports": [
+        "group.immunization.record",
+        "group.immunization.vaccine"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.last_dose_date",
+        "display": "Last Dose Date",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.immunization-consultation.last-dose-date",
+        "display": "Last Dose Date",
+        "intents": [
+          "intent.immunization_history_review"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.last-dose-date",
+        "wording": "해당 백신의 가장 최근 접종 시기를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 207,
+          "reason": "last-dose-date"
+        }
+      ],
+      "supports": [
+        "group.immunization.record",
+        "group.immunization.timing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.last_dose_product",
+        "display": "Last Dose Product",
+        "value_type": "coded_or_string"
+      },
+      "target": {
+        "id": "target.immunization-consultation.last-dose-product",
+        "display": "Last Dose Product",
+        "intents": [
+          "intent.immunization_history_review"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.last-dose-product",
+        "wording": "가장 최근에 접종한 백신의 제품명 또는 종류를 알고 있다면 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 206,
+          "reason": "last-dose-product"
+        }
+      ],
+      "supports": [
+        "group.immunization.record",
+        "group.immunization.vaccine"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.previous_target_infection",
+        "display": "Previous Target Infection",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.immunization-consultation.previous-target-infection",
+        "display": "Previous Target Infection",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.previous-target-infection",
+        "wording": "예방하려는 감염병에 과거 확진되거나 의료진에게 감염되었다는 설명을 들은 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 205,
+          "reason": "previous-target-infection"
+        }
+      ],
+      "supports": [
+        "group.immunization.record",
+        "group.immunization.vaccine"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.previous_target_infection_date",
+        "display": "Previous Target Infection Date",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.immunization-consultation.previous-target-infection-date",
+        "display": "Previous Target Infection Date",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.previous-target-infection-date",
+        "wording": "그 감염의 진단 또는 발생 시기를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 204,
+          "reason": "previous-target-infection-date"
+        }
+      ],
+      "supports": [
+        "group.immunization.record",
+        "group.immunization.timing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.prior_severe_allergic_reaction",
+        "display": "Prior Severe Vaccine Allergic Reaction",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.immunization-consultation.prior-severe-allergy",
+        "display": "Prior Severe Vaccine Allergic Reaction",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.prior-severe-allergy",
+        "wording": "이전에 백신 접종 후 아나필락시스와 같은 심한 알레르기 반응이 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 200,
+          "reason": "prior-severe-allergy"
+        }
+      ],
+      "supports": [
+        "group.immunization.contraindication"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.prior_reaction_vaccine",
+        "display": "Vaccine Associated with Prior Reaction",
+        "value_type": "coded_or_string"
+      },
+      "target": {
+        "id": "target.immunization-consultation.prior-reaction-vaccine",
+        "display": "Vaccine Associated with Prior Reaction",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.prior-reaction-vaccine",
+        "wording": "심한 반응과 관련된 백신 이름 또는 제품을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 199,
+          "reason": "prior-reaction-vaccine"
+        }
+      ],
+      "supports": [
+        "group.immunization.contraindication",
+        "group.immunization.vaccine"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.prior_reaction_manifestation",
+        "display": "Prior Vaccine Reaction Manifestation",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.immunization-consultation.prior-reaction-manifestation",
+        "display": "Prior Vaccine Reaction Manifestation",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.prior-reaction-manifestation",
+        "wording": "당시 어떤 증상이나 반응이 나타났는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 198,
+          "reason": "prior-reaction-manifestation"
+        }
+      ],
+      "supports": [
+        "group.immunization.contraindication"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.prior_reaction_onset",
+        "display": "Prior Vaccine Reaction Onset",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.immunization-consultation.prior-reaction-onset",
+        "display": "Prior Vaccine Reaction Onset",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.prior-reaction-onset",
+        "wording": "접종 후 반응이 시작되기까지 얼마나 걸렸나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 197,
+          "reason": "prior-reaction-onset"
+        }
+      ],
+      "supports": [
+        "group.immunization.contraindication",
+        "group.immunization.timing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.known_component_allergy",
+        "display": "Known Vaccine Component Allergy",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.immunization-consultation.component-allergy",
+        "display": "Known Vaccine Component Allergy",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.component-allergy",
+        "wording": "백신 성분에 알레르기가 있다고 의료진에게 진단받은 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 196,
+          "reason": "component-allergy"
+        }
+      ],
+      "supports": [
+        "group.immunization.contraindication"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.known_component_allergy_detail",
+        "display": "Vaccine Component Allergy Detail",
+        "value_type": "coded_or_string"
+      },
+      "target": {
+        "id": "target.immunization-consultation.component-allergy-detail",
+        "display": "Vaccine Component Allergy Detail",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.component-allergy-detail",
+        "wording": "진단받은 백신 성분과 반응을 알고 있다면 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 195,
+          "reason": "component-allergy-detail"
+        }
+      ],
+      "supports": [
+        "group.immunization.contraindication"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.pertussis_vaccine_encephalopathy_history",
+        "display": "Encephalopathy after Pertussis-containing Vaccine",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.immunization-consultation.pertussis-encephalopathy",
+        "display": "Encephalopathy after Pertussis-containing Vaccine",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.pertussis-encephalopathy",
+        "wording": "백일해 성분이 포함된 백신 접종 후 7일 이내 원인을 알 수 없는 뇌증을 진단받은 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 194,
+          "reason": "pertussis-encephalopathy"
+        }
+      ],
+      "supports": [
+        "group.immunization.contraindication",
+        "group.immunization.special-population"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.scid_history",
+        "display": "Severe Combined Immunodeficiency History",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.immunization-consultation.scid-history",
+        "display": "Severe Combined Immunodeficiency History",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.scid-history",
+        "wording": "중증복합면역결핍을 진단받은 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 193,
+          "reason": "scid-history"
+        }
+      ],
+      "supports": [
+        "group.immunization.contraindication",
+        "group.immunization.special-population"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.intussusception_history",
+        "display": "Intussusception History",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.immunization-consultation.intussusception-history",
+        "display": "Intussusception History",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.intussusception-history",
+        "wording": "장중첩증 또는 장겹침증을 진단받은 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 192,
+          "reason": "intussusception-history"
+        }
+      ],
+      "supports": [
+        "group.immunization.contraindication",
+        "group.immunization.special-population"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.pregnancy_status",
+        "display": "Pregnancy Status",
+        "value_type": "coded",
+        "allowed_values": [
+          "pregnant",
+          "not_pregnant",
+          "not_applicable",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.immunization-consultation.pregnancy-status",
+        "display": "Pregnancy Status",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.pregnancy-status",
+        "wording": "현재 임신 중인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 191,
+          "reason": "pregnancy-status"
+        }
+      ],
+      "supports": [
+        "group.immunization.contraindication",
+        "group.immunization.special-population"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.breastfeeding_status",
+        "display": "Breastfeeding Status",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.immunization-consultation.breastfeeding-status",
+        "display": "Breastfeeding Status",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.breastfeeding-status",
+        "wording": "현재 모유수유 중인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 190,
+          "reason": "breastfeeding-status"
+        }
+      ],
+      "supports": [
+        "group.immunization.special-population"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.immunocompromised_status",
+        "display": "Immunocompromised Status",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.immunization-consultation.immunocompromised-status",
+        "display": "Immunocompromised Status",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.immunocompromised-status",
+        "wording": "면역저하 질환이나 장기이식 등으로 면역기능이 저하되었다는 설명을 들은 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 189,
+          "reason": "immunocompromised-status"
+        }
+      ],
+      "supports": [
+        "group.immunization.contraindication",
+        "group.immunization.special-population"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.immunocompromised_condition",
+        "display": "Immunocompromising Condition",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.immunization-consultation.immunocompromised-condition",
+        "display": "Immunocompromising Condition",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.immunocompromised-condition",
+        "wording": "면역기능에 영향을 주는 진단이나 상태를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 188,
+          "reason": "immunocompromised-condition"
+        }
+      ],
+      "supports": [
+        "group.immunization.contraindication",
+        "group.immunization.special-population"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.immunosuppressive_treatment",
+        "display": "Immunosuppressive Treatment",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.immunization-consultation.immunosuppressive-treatment",
+        "display": "Immunosuppressive Treatment",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.immunosuppressive-treatment",
+        "wording": "현재 항암치료, 고용량 스테로이드, 생물학적 제제 또는 다른 면역억제 치료를 받고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 187,
+          "reason": "immunosuppressive-treatment"
+        }
+      ],
+      "supports": [
+        "group.immunization.contraindication",
+        "group.immunization.special-population"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.immunosuppressive_treatment_name",
+        "display": "Immunosuppressive Treatment Name",
+        "value_type": "coded_or_string"
+      },
+      "target": {
+        "id": "target.immunization-consultation.immunosuppressive-treatment-name",
+        "display": "Immunosuppressive Treatment Name",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.immunosuppressive-treatment-name",
+        "wording": "면역에 영향을 주는 치료제나 치료 이름을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 186,
+          "reason": "immunosuppressive-treatment-name"
+        }
+      ],
+      "supports": [
+        "group.immunization.contraindication",
+        "group.immunization.special-population"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.immunosuppressive_treatment_timing",
+        "display": "Immunosuppressive Treatment Timing",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.immunization-consultation.immunosuppressive-treatment-timing",
+        "display": "Immunosuppressive Treatment Timing",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.immunosuppressive-treatment-timing",
+        "wording": "그 치료의 최근 투여일 또는 치료 기간을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 185,
+          "reason": "immunosuppressive-treatment-timing"
+        }
+      ],
+      "supports": [
+        "group.immunization.contraindication",
+        "group.immunization.timing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.current_moderate_or_severe_acute_illness",
+        "display": "Current Moderate or Severe Acute Illness",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.immunization-consultation.acute-illness",
+        "display": "Current Moderate or Severe Acute Illness",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.acute-illness",
+        "wording": "현재 일상생활이 어려울 정도의 중등도 또는 중증 급성 질환이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 184,
+          "reason": "acute-illness"
+        }
+      ],
+      "supports": [
+        "group.immunization.contraindication",
+        "group.immunization.special-population"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.current_temperature",
+        "display": "Current Temperature",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.immunization-consultation.current-temperature",
+        "display": "Current Temperature",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.current-temperature",
+        "wording": "최근 체온을 측정했다면 수치, 단위, 측정 시각과 방법을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 183,
+          "reason": "current-temperature"
+        }
+      ],
+      "supports": [
+        "group.immunization.contraindication",
+        "group.immunization.timing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.recent_antibody_blood_product",
+        "display": "Recent Antibody-containing Blood Product",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.immunization-consultation.recent-blood-product",
+        "display": "Recent Antibody-containing Blood Product",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.recent-blood-product",
+        "wording": "최근 면역글로불린, 수혈 또는 항체가 포함된 혈액제제를 투여받았나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 182,
+          "reason": "recent-blood-product"
+        }
+      ],
+      "supports": [
+        "group.immunization.contraindication",
+        "group.immunization.timing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.recent_antibody_blood_product_type",
+        "display": "Recent Blood Product Type",
+        "value_type": "coded_or_string"
+      },
+      "target": {
+        "id": "target.immunization-consultation.recent-blood-product-type",
+        "display": "Recent Blood Product Type",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.recent-blood-product-type",
+        "wording": "투여받은 면역글로불린 또는 혈액제제의 종류를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 181,
+          "reason": "recent-blood-product-type"
+        }
+      ],
+      "supports": [
+        "group.immunization.contraindication"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.recent_antibody_blood_product_date",
+        "display": "Recent Blood Product Date",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.immunization-consultation.recent-blood-product-date",
+        "display": "Recent Blood Product Date",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.recent-blood-product-date",
+        "wording": "면역글로불린 또는 혈액제제를 투여받은 시기를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 180,
+          "reason": "recent-blood-product-date"
+        }
+      ],
+      "supports": [
+        "group.immunization.contraindication",
+        "group.immunization.timing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.recent_other_vaccine",
+        "display": "Recent Other Vaccine",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.immunization-consultation.recent-other-vaccine",
+        "display": "Recent Other Vaccine",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.recent-other-vaccine",
+        "wording": "최근 다른 예방접종을 받았나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 179,
+          "reason": "recent-other-vaccine"
+        }
+      ],
+      "supports": [
+        "group.immunization.timing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.recent_other_vaccine_name",
+        "display": "Recent Other Vaccine Name",
+        "value_type": "coded_or_string"
+      },
+      "target": {
+        "id": "target.immunization-consultation.recent-other-vaccine-name",
+        "display": "Recent Other Vaccine Name",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.recent-other-vaccine-name",
+        "wording": "최근 접종한 다른 백신의 이름 또는 종류를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 178,
+          "reason": "recent-other-vaccine-name"
+        }
+      ],
+      "supports": [
+        "group.immunization.timing",
+        "group.immunization.vaccine"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.recent_other_vaccine_date",
+        "display": "Recent Other Vaccine Date",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.immunization-consultation.recent-other-vaccine-date",
+        "display": "Recent Other Vaccine Date",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.recent-other-vaccine-date",
+        "wording": "최근 다른 백신을 접종한 시기를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 177,
+          "reason": "recent-other-vaccine-date"
+        }
+      ],
+      "supports": [
+        "group.immunization.timing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.bleeding_risk",
+        "display": "Bleeding Risk",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.immunization-consultation.bleeding-risk",
+        "display": "Bleeding Risk",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.bleeding-risk",
+        "wording": "출혈질환이 있거나 항응고제·항혈소판제를 복용하고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 176,
+          "reason": "bleeding-risk"
+        }
+      ],
+      "supports": [
+        "group.immunization.special-population"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.injection_syncope_history",
+        "display": "Injection-associated Syncope History",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.immunization-consultation.injection-syncope",
+        "display": "Injection-associated Syncope History",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.injection-syncope",
+        "wording": "주사나 채혈 전후에 실신하거나 거의 쓰러진 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 175,
+          "reason": "injection-syncope"
+        }
+      ],
+      "supports": [
+        "group.immunization.special-population"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.travel_destination",
+        "display": "Travel Destination",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.immunization-consultation.travel-destination",
+        "display": "Travel Destination",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.travel-destination",
+        "wording": "여행 관련 상담이라면 방문할 국가 또는 지역을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 170,
+          "reason": "travel-destination"
+        }
+      ],
+      "supports": [
+        "group.immunization.special-population",
+        "group.immunization.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.travel_departure_date",
+        "display": "Travel Departure Date",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.immunization-consultation.travel-departure-date",
+        "display": "Travel Departure Date",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.travel-departure-date",
+        "wording": "여행 출발 예정일을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 169,
+          "reason": "travel-departure-date"
+        }
+      ],
+      "supports": [
+        "group.immunization.special-population",
+        "group.immunization.timing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.occupation_or_exposure",
+        "display": "Occupation or Exposure Requiring Review",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.immunization-consultation.occupation-exposure",
+        "display": "Occupation or Exposure Requiring Review",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.occupation-exposure",
+        "wording": "직업, 학교, 군 복무, 돌봄, 실험실 또는 감염 노출 때문에 접종 상담이 필요하다면 상황을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 168,
+          "reason": "occupation-exposure"
+        }
+      ],
+      "supports": [
+        "group.immunization.special-population",
+        "group.immunization.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.post_vaccine_product",
+        "display": "Vaccine Product before Current Concern",
+        "value_type": "coded_or_string"
+      },
+      "target": {
+        "id": "target.immunization-consultation.post-vaccine-product",
+        "display": "Vaccine Product before Current Concern",
+        "intents": [
+          "intent.immunization_history_review"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.post-vaccine-product",
+        "wording": "현재 이상반응 상담과 관련된 백신 이름 또는 제품을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 160,
+          "reason": "post-vaccine-product"
+        }
+      ],
+      "supports": [
+        "group.immunization.post-vaccine",
+        "group.immunization.vaccine"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.post_vaccine_date",
+        "display": "Vaccination Date before Current Concern",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.immunization-consultation.post-vaccine-date",
+        "display": "Vaccination Date before Current Concern",
+        "intents": [
+          "intent.immunization_history_review"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.post-vaccine-date",
+        "wording": "해당 백신을 접종한 날짜와 가능하면 시각을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 159,
+          "reason": "post-vaccine-date"
+        }
+      ],
+      "supports": [
+        "group.immunization.post-vaccine",
+        "group.immunization.timing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.post_vaccine_symptom",
+        "display": "Post-vaccine Symptom",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.immunization-consultation.post-vaccine-symptom",
+        "display": "Post-vaccine Symptom",
+        "intents": [
+          "intent.immunization_history_review"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.post-vaccine-symptom",
+        "wording": "접종 후 새로 나타난 증상을 환자 또는 보호자의 표현으로 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 158,
+          "reason": "post-vaccine-symptom"
+        }
+      ],
+      "supports": [
+        "group.immunization.post-vaccine"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.post_vaccine_symptom_onset",
+        "display": "Post-vaccine Symptom Onset",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.immunization-consultation.post-vaccine-symptom-onset",
+        "display": "Post-vaccine Symptom Onset",
+        "intents": [
+          "intent.immunization_history_review"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.post-vaccine-symptom-onset",
+        "wording": "접종 후 증상이 시작되기까지 얼마나 걸렸나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 157,
+          "reason": "post-vaccine-symptom-onset"
+        }
+      ],
+      "supports": [
+        "group.immunization.post-vaccine",
+        "group.immunization.timing"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.post_vaccine_symptom_course",
+        "display": "Post-vaccine Symptom Course",
+        "value_type": "coded",
+        "allowed_values": [
+          "improving",
+          "unchanged",
+          "worsening",
+          "recurrent",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.immunization-consultation.post-vaccine-symptom-course",
+        "display": "Post-vaccine Symptom Course",
+        "intents": [
+          "intent.immunization_history_review"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.post-vaccine-symptom-course",
+        "wording": "증상은 호전, 변화 없음, 악화, 반복 중 어느 양상인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 156,
+          "reason": "post-vaccine-symptom-course"
+        }
+      ],
+      "supports": [
+        "group.immunization.post-vaccine"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.post_vaccine_prior_assessment",
+        "display": "Prior Assessment for Post-vaccine Concern",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.immunization-consultation.post-vaccine-prior-assessment",
+        "display": "Prior Assessment for Post-vaccine Concern",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.post-vaccine-prior-assessment",
+        "wording": "이 증상으로 이미 받은 진찰·검사와 의료진의 설명이 있다면 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 155,
+          "reason": "post-vaccine-prior-assessment"
+        }
+      ],
+      "supports": [
+        "group.immunization.post-vaccine",
+        "group.immunization.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.post_vaccine_treatment_response",
+        "display": "Treatment Response for Post-vaccine Concern",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.immunization-consultation.post-vaccine-treatment-response",
+        "display": "Treatment Response for Post-vaccine Concern",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.post-vaccine-treatment-response",
+        "wording": "접종 후 증상에 대해 시행한 처치나 복용한 약과 그 반응을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 154,
+          "reason": "post-vaccine-treatment-response"
+        }
+      ],
+      "supports": [
+        "group.immunization.post-vaccine",
+        "group.immunization.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.accessibility_or_support_need",
+        "display": "Accessibility or Support Need",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.immunization-consultation.accessibility-support",
+        "display": "Accessibility or Support Need",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.accessibility-support",
+        "wording": "접종과 설명을 위해 통역, 보호자 동행, 청각·시각·인지 지원 또는 주사 불안 지원이 필요한가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 90,
+          "reason": "accessibility-support"
+        }
+      ],
+      "supports": [
+        "group.immunization.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "immunization.patient_question_or_concern",
+        "display": "Patient Question or Concern",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.immunization-consultation.patient-question",
+        "display": "Patient Question or Concern",
+        "intents": [
+          "intent.immunization_readiness_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.immunization-consultation.patient-question",
+        "wording": "의료진에게 꼭 전달할 걱정, 질문 또는 추가 의견을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 80,
+          "reason": "patient-question"
+        }
+      ],
+      "supports": [
+        "group.immunization.goal",
+        "group.immunization.handoff"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.kdca.immunization-standard.2026-1",
+      "source.kdca.immunization-guideline.2026",
+      "source.kdca.immunization-precautions.20260105",
+      "source.hl7.fhir-r4.immunization",
+      "source.hl7.fhir-r4.immunization-recommendation",
+      "source.stom.immunization.20260729"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "id": "policy.primary-care-immunization-consultation-completion",
+  "version": "0.1.0",
+  "status": "research_only",
+  "addressed_fact_states": [
+    "known",
+    "unknown",
+    "not_applicable"
+  ],
+  "required_facts": {
+    "always": [
+      "immunization.primary_group"
+    ],
+    "routine": [
+      "immunization.information_source",
+      "immunization.record_completeness",
+      "immunization.record_conflict",
+      "patient.age_years",
+      "immunization.current_jurisdiction",
+      "immunization.consultation_goal",
+      "immunization.prior_severe_allergic_reaction",
+      "immunization.known_component_allergy",
+      "immunization.pregnancy_status",
+      "immunization.immunocompromised_status",
+      "immunization.immunosuppressive_treatment",
+      "immunization.current_moderate_or_severe_acute_illness",
+      "immunization.recent_antibody_blood_product",
+      "immunization.recent_other_vaccine",
+      "immunization.bleeding_risk",
+      "immunization.injection_syncope_history",
+      "immunization.accessibility_or_support_need",
+      "immunization.patient_question_or_concern"
+    ]
+  },
+  "clarification_facts_by_rule": {},
+  "question_budget": {
+    "routine": 55,
+    "clarify": 12
+  },
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.kdca.immunization-standard.2026-1",
+      "source.kdca.immunization-guideline.2026",
+      "source.kdca.immunization-precautions.20260105",
+      "source.hl7.fhir-r4.immunization",
+      "source.hl7.fhir-r4.immunization-recommendation",
+      "source.stom.immunization.20260729"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  },
+  "conditional_required_facts": [
+    {
+      "selector_fact": "immunization.primary_group",
+      "cases": {
+        "planned_vaccination": [
+          "immunization.target_vaccine",
+          "immunization.target_disease",
+          "immunization.previous_dose_count",
+          "immunization.last_dose_date",
+          "immunization.last_dose_product",
+          "immunization.previous_target_infection",
+          "immunization.pertussis_vaccine_encephalopathy_history",
+          "immunization.scid_history",
+          "immunization.intussusception_history",
+          "immunization.breastfeeding_status"
+        ],
+        "record_review": [
+          "immunization.record_conflict_detail",
+          "immunization.target_vaccine",
+          "immunization.previous_dose_count",
+          "immunization.last_dose_date",
+          "immunization.last_dose_product",
+          "immunization.previous_target_infection"
+        ],
+        "catch_up_review": [
+          "immunization.record_conflict_detail",
+          "immunization.target_vaccine",
+          "immunization.previous_dose_count",
+          "immunization.last_dose_date",
+          "immunization.last_dose_product",
+          "immunization.previous_target_infection",
+          "immunization.pertussis_vaccine_encephalopathy_history",
+          "immunization.scid_history",
+          "immunization.intussusception_history"
+        ],
+        "travel_occupation_or_exposure": [
+          "immunization.target_vaccine",
+          "immunization.target_disease",
+          "immunization.previous_dose_count",
+          "immunization.last_dose_date",
+          "immunization.travel_destination",
+          "immunization.travel_departure_date",
+          "immunization.occupation_or_exposure"
+        ],
+        "post_vaccination_concern": [
+          "immunization.current_breathing_difficulty_after_vaccine",
+          "immunization.current_throat_or_tongue_swelling_after_vaccine",
+          "immunization.current_collapse_or_near_syncope_after_vaccine",
+          "immunization.current_altered_responsiveness_after_vaccine",
+          "immunization.current_seizure_after_vaccine",
+          "immunization.current_severe_or_rapidly_worsening_symptom",
+          "immunization.child_difficult_to_wake_after_vaccine",
+          "immunization.child_unable_to_feed_after_vaccine",
+          "immunization.post_vaccine_product",
+          "immunization.post_vaccine_date",
+          "immunization.post_vaccine_symptom",
+          "immunization.post_vaccine_symptom_onset",
+          "immunization.post_vaccine_symptom_course",
+          "immunization.post_vaccine_prior_assessment",
+          "immunization.post_vaccine_treatment_response"
+        ],
+        "other_unclear": [
+          "immunization.patient_question_or_concern"
+        ]
+      }
+    }
+  ],
+  "clinical_boundary": {
+    "vaccine_due_status_inferred": false,
+    "contraindication_or_eligibility_determined": false,
+    "requires_current_schedule_age_risk_jurisdiction_and_clinician_review": true
+  }
+}

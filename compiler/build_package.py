@@ -573,6 +573,20 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/hepatology/liver-function-chronic-follow-up",
         "research_manifests": [ROOT / "sources/manifests/primary-care-liver-function-chronic-follow-up-research.json"],
     },
+    "immunization_consultation": {
+        "graph": ROOT / "knowledge/graph/primary-care-immunization-consultation.json",
+        "rules": ROOT / "rules/primary-care-immunization-consultation.json",
+        "sources": ROOT / "sources/manifests/primary-care-immunization-consultation.json",
+        "completion_policy": ROOT / "policies/primary-care-immunization-consultation-completion.json",
+        "output": ROOT / "packages/generated/primary-care-immunization-consultation-0.1.0.json",
+        "package_id": "package.primary-care-immunization-consultation",
+        "package_version": "0.1.0",
+        "rfe": "rfe.immunization_consultation",
+        "simulation_root": ROOT / "simulation/patients/preventive/immunization-consultation",
+        "research_manifests": [
+            ROOT / "sources/manifests/primary-care-immunization-consultation-research.json"
+        ],
+    },
 }
 
 ALLOWED_NODE_TYPES = {

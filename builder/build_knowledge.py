@@ -390,6 +390,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-liver-function-chronic-follow-up.json",
         "version": "0.1.0",
     },
+    "immunization_consultation": {
+        "base_graph": ROOT / "knowledge/base/primary-care-immunization-consultation.json",
+        "base_rules": ROOT / "rules/base/primary-care-immunization-consultation.json",
+        "fragment_root": ROOT / "knowledge/generated/preventive/immunization-consultation",
+        "output_graph": ROOT / "knowledge/graph/primary-care-immunization-consultation.json",
+        "output_rules": ROOT / "rules/primary-care-immunization-consultation.json",
+        "version": "0.1.0",
+    },
 }
 
 
