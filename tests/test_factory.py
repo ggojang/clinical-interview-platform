@@ -1540,6 +1540,17 @@ class CompilerTests(unittest.TestCase):
         facts = {node["id"] for node in package["knowledge_graph"]["nodes"] if node["type"] == "Fact"}
         self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
         self.assertGreaterEqual(len(facts), 40)
+        self.assertNotIn("liver.alcohol_pattern_and_last_use", facts)
+        self.assertTrue({
+            "patient.alcohol.use_status",
+            "patient.alcohol.beverage_types",
+            "patient.alcohol.frequency",
+            "patient.alcohol.amount_per_occasion",
+            "liver.alcohol_heavy_episode_pattern",
+            "liver.alcohol_last_use_timing",
+            "liver.alcohol_recent_reduction_or_cessation",
+            "liver.alcohol_reduction_or_cessation_details",
+        } <= facts)
         self.assertEqual(package["coverage"]["total_safety_rules"], 12)
         self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 12)
         self.assertEqual(package["coverage"]["uncovered_safety_rules"], [])
@@ -1547,6 +1558,39 @@ class CompilerTests(unittest.TestCase):
         conditional = package["interview_completion_policy"]["conditional_required_facts"][0]
         self.assertEqual(conditional["selector_fact"], "liver.primary_group")
         self.assertEqual(set(conditional["cases"]), {"abnormal_liver_tests", "steatotic_metabolic_liver", "viral_hepatitis", "alcohol_related_liver", "cirrhosis_followup", "medicine_or_supplement_injury", "post_treatment_followup", "other_unclear"})
+        alcohol = package["interview_completion_policy"]["conditional_required_facts"][1]
+        self.assertEqual(alcohol["selector_fact"], "patient.alcohol.use_status")
+        self.assertEqual(alcohol["cases"]["never"], [])
+        self.assertTrue({
+            "patient.alcohol.beverage_types",
+            "patient.alcohol.frequency",
+            "patient.alcohol.amount_per_occasion",
+            "liver.alcohol_heavy_episode_pattern",
+            "liver.alcohol_last_use_timing",
+            "liver.alcohol_recent_reduction_or_cessation",
+        } <= set(alcohol["cases"]["current"]))
+        reduction = package["interview_completion_policy"]["conditional_required_facts"][2]
+        self.assertEqual(
+            reduction,
+            {
+                "when": {
+                    "fact": "liver.alcohol_recent_reduction_or_cessation",
+                    "equals": True,
+                },
+                "required_facts": ["liver.alcohol_reduction_or_cessation_details"],
+            },
+        )
+        self.assertEqual(package["coverage"]["simulation_count"], 14)
+        handoff = next(
+            item for item in package["simulations"]
+            if item["id"] == "LIVER-ALCOHOL-ATOMIC-HANDOFF"
+        )
+        handoff_fixture = json.loads(
+            (Path(__file__).resolve().parents[1] / handoff["path"])
+            .read_text(encoding="utf-8")
+        )
+        self.assertTrue(handoff_fixture["clinician_submission"])
+        self.assertTrue(handoff_fixture["expected"]["expected_clinician_handoff"])
         mapping = json.loads((Path(__file__).resolve().parents[1] / "mappings/terminology/snomed-mrcm-liver-function-chronic-follow-up.json").read_text(encoding="utf-8"))
         self.assertEqual(len(mapping["focus_concepts"]), 8)
         self.assertFalse(mapping["validation"]["clinical_rule_authority"])

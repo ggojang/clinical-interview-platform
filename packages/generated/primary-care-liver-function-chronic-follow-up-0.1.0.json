@@ -407,7 +407,7 @@
     },
     "resource_ref": "knowledge/shared/clinician-submission-context.json",
     "review_status": "unreviewed",
-    "semantic_digest": "sha256:286552f7e4872a0b99348e3fec33b80e55dcc05192c822ff689b9543e12665dc",
+    "semantic_digest": "sha256:b31c6a03ab329467b819fc2ffa808eb8f528aeba753cd0bfa56f06d56f50488d",
     "session_facts": [
       {
         "display": "Unprompted Additional Comment",
@@ -421,7 +421,7 @@
       }
     ],
     "status": "research_only",
-    "version": "0.6.0"
+    "version": "0.7.0"
   },
   "compatibility": {
     "clinical_memory_schema": "0.2.0",
@@ -517,7 +517,7 @@
   },
   "coverage": {
     "data_absent_reason_simulations": 1,
-    "facts_with_questions": 41,
+    "facts_with_questions": 48,
     "interoperability": {
       "applicable_uscdi_plus_domains": [
         "uscdi-plus.quality"
@@ -544,18 +544,18 @@
       "ClinicalGroup": 6,
       "ClinicalIntent": 4,
       "EncounterContext": 1,
-      "Fact": 41,
-      "InterviewTarget": 41,
-      "QuestionTemplate": 41,
+      "Fact": 48,
+      "InterviewTarget": 48,
+      "QuestionTemplate": 48,
       "ReasonForEncounter": 1
     },
-    "required_targets_linked_to_facts": 41,
+    "required_targets_linked_to_facts": 48,
     "reviewed_for_production": false,
     "safety_rules_with_simulations": 12,
-    "simulation_count": 13,
-    "total_facts": 41,
+    "simulation_count": 14,
+    "total_facts": 48,
     "total_safety_rules": 12,
-    "total_targets": 41,
+    "total_targets": 48,
     "uncovered_safety_rules": []
   },
   "indexes": {
@@ -571,7 +571,14 @@
         "target.liver-function-chronic-follow-up.priority"
       ],
       "intent.risk_assessment": [
-        "target.liver-function-chronic-follow-up.alcohol",
+        "target.liver-function-chronic-follow-up.alcohol-amount",
+        "target.liver-function-chronic-follow-up.alcohol-beverage-types",
+        "target.liver-function-chronic-follow-up.alcohol-frequency",
+        "target.liver-function-chronic-follow-up.alcohol-heavy-episode",
+        "target.liver-function-chronic-follow-up.alcohol-last-use",
+        "target.liver-function-chronic-follow-up.alcohol-reduction",
+        "target.liver-function-chronic-follow-up.alcohol-reduction-details",
+        "target.liver-function-chronic-follow-up.alcohol-status",
         "target.liver-function-chronic-follow-up.ascites-management",
         "target.liver-function-chronic-follow-up.bleeding",
         "target.liver-function-chronic-follow-up.decompensation",
@@ -651,7 +658,7 @@
         "template_id": "question.liver-function-chronic-follow-up.toxic-overdose",
         "wording": "아세트아미노펜 등 약을 권장량보다 많이 먹었거나 독성 물질을 복용한 가능성이 있나요?"
       },
-      "liver.alcohol_pattern_and_last_use": {
+      "liver.alcohol_heavy_episode_pattern": {
         "language": "ko",
         "mode": [
           "chat",
@@ -659,8 +666,41 @@
           "telephone",
           "video"
         ],
-        "template_id": "question.liver-function-chronic-follow-up.alcohol",
-        "wording": "술 종류·한 번 양·주당 횟수, 폭음과 마지막 음주 시각, 최근 감량·중단을 알려주세요."
+        "template_id": "question.liver-function-chronic-follow-up.alcohol-heavy-episode",
+        "wording": "평소보다 많은 양을 한 번에 마시는 일이 있다면 양과 빈도를 알려주세요. 없으면 '없음'이라고 답해 주세요."
+      },
+      "liver.alcohol_last_use_timing": {
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ],
+        "template_id": "question.liver-function-chronic-follow-up.alcohol-last-use",
+        "wording": "마지막으로 술을 마신 때는 언제인가요? 정확한 날짜를 모르면 대략적인 시점을 알려주세요."
+      },
+      "liver.alcohol_recent_reduction_or_cessation": {
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ],
+        "template_id": "question.liver-function-chronic-follow-up.alcohol-reduction",
+        "wording": "최근 평소보다 술을 크게 줄이거나 끊었나요?"
+      },
+      "liver.alcohol_reduction_or_cessation_details": {
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ],
+        "template_id": "question.liver-function-chronic-follow-up.alcohol-reduction-details",
+        "wording": "술을 줄이거나 끊기 시작한 시점과 이전·현재 음주량의 변화를 알려주세요."
       },
       "liver.alcohol_withdrawal_severe_pattern": {
         "language": "ko",
@@ -1104,14 +1144,79 @@
         ],
         "template_id": "question.liver-function-chronic-follow-up.varices",
         "wording": "위내시경 정맥류 결과, 밴드결찰과 카르베딜롤·프로프라놀롤 복용·맥박·혈압을 알려주세요."
+      },
+      "patient.alcohol.amount_per_occasion": {
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ],
+        "template_id": "question.liver-function-chronic-follow-up.alcohol-amount",
+        "wording": "한 번 마실 때 보통 술 종류별로 얼마나 마시거나 마셨나요? 예: 소주 1병, 맥주 500mL 2잔"
+      },
+      "patient.alcohol.beverage_types": {
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ],
+        "template_id": "question.liver-function-chronic-follow-up.alcohol-beverage-types",
+        "wording": "주로 마시거나 마셨던 술 종류는 무엇인가요? 보기에 없으면 직접 입력해 주세요."
+      },
+      "patient.alcohol.frequency": {
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ],
+        "template_id": "question.liver-function-chronic-follow-up.alcohol-frequency",
+        "wording": "평균적으로 얼마나 자주 술을 마시거나 마셨나요? 예: 주 2회, 월 1회, 거의 매일"
+      },
+      "patient.alcohol.use_status": {
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ],
+        "template_id": "question.liver-function-chronic-follow-up.alcohol-status",
+        "wording": "현재 술을 마시는지, 과거에는 마셨지만 지금은 끊었는지, 평생 마시지 않았는지 알려주세요."
       }
     },
     "target_facts": {
       "target.liver-function-chronic-follow-up.abdominal": [
         "liver.abdominal_pain_nausea_appetite_and_weight_loss"
       ],
-      "target.liver-function-chronic-follow-up.alcohol": [
-        "liver.alcohol_pattern_and_last_use"
+      "target.liver-function-chronic-follow-up.alcohol-amount": [
+        "patient.alcohol.amount_per_occasion"
+      ],
+      "target.liver-function-chronic-follow-up.alcohol-beverage-types": [
+        "patient.alcohol.beverage_types"
+      ],
+      "target.liver-function-chronic-follow-up.alcohol-frequency": [
+        "patient.alcohol.frequency"
+      ],
+      "target.liver-function-chronic-follow-up.alcohol-heavy-episode": [
+        "liver.alcohol_heavy_episode_pattern"
+      ],
+      "target.liver-function-chronic-follow-up.alcohol-last-use": [
+        "liver.alcohol_last_use_timing"
+      ],
+      "target.liver-function-chronic-follow-up.alcohol-reduction": [
+        "liver.alcohol_recent_reduction_or_cessation"
+      ],
+      "target.liver-function-chronic-follow-up.alcohol-reduction-details": [
+        "liver.alcohol_reduction_or_cessation_details"
+      ],
+      "target.liver-function-chronic-follow-up.alcohol-status": [
+        "patient.alcohol.use_status"
       ],
       "target.liver-function-chronic-follow-up.alcohol-withdrawal": [
         "liver.alcohol_withdrawal_severe_pattern"
@@ -1771,6 +1876,37 @@
           ]
         },
         "selector_fact": "liver.primary_group"
+      },
+      {
+        "cases": {
+          "current": [
+            "patient.alcohol.beverage_types",
+            "patient.alcohol.frequency",
+            "patient.alcohol.amount_per_occasion",
+            "liver.alcohol_heavy_episode_pattern",
+            "liver.alcohol_last_use_timing",
+            "liver.alcohol_recent_reduction_or_cessation"
+          ],
+          "former": [
+            "patient.alcohol.beverage_types",
+            "patient.alcohol.frequency",
+            "patient.alcohol.amount_per_occasion",
+            "liver.alcohol_heavy_episode_pattern",
+            "liver.alcohol_last_use_timing",
+            "liver.alcohol_recent_reduction_or_cessation"
+          ],
+          "never": []
+        },
+        "selector_fact": "patient.alcohol.use_status"
+      },
+      {
+        "required_facts": [
+          "liver.alcohol_reduction_or_cessation_details"
+        ],
+        "when": {
+          "equals": true,
+          "fact": "liver.alcohol_recent_reduction_or_cessation"
+        }
       }
     ],
     "id": "policy.primary-care-liver-function-chronic-follow-up-completion",
@@ -1823,7 +1959,7 @@
         "liver.bleeding_bruising_and_stool_history",
         "liver.current_medicines_doses_and_adherence",
         "liver.otc_herbal_supplement_and_acetaminophen",
-        "liver.alcohol_pattern_and_last_use",
+        "patient.alcohol.use_status",
         "liver.metabolic_risk_weight_waist_diabetes_lipids",
         "liver.other_detail_or_patient_priority"
       ]
@@ -2051,7 +2187,7 @@
       },
       {
         "from": "intent.risk_assessment",
-        "id": "edge.generated.intent_risk_assessment.generates.target_liver_function_chronic_follow_up_alcohol",
+        "id": "edge.generated.intent_risk_assessment.generates.target_liver_function_chronic_follow_up_alcohol_amount",
         "provenance": {
           "created_at": "2026-07-14T00:00:00Z",
           "created_by": {
@@ -2068,7 +2204,196 @@
           "version": "0.1.0"
         },
         "status": "research_only",
-        "to": "target.liver-function-chronic-follow-up.alcohol",
+        "to": "target.liver-function-chronic-follow-up.alcohol-amount",
+        "type": "GENERATES",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "intent.risk_assessment",
+        "id": "edge.generated.intent_risk_assessment.generates.target_liver_function_chronic_follow_up_alcohol_beverage_types",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "target.liver-function-chronic-follow-up.alcohol-beverage-types",
+        "type": "GENERATES",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "intent.risk_assessment",
+        "id": "edge.generated.intent_risk_assessment.generates.target_liver_function_chronic_follow_up_alcohol_frequency",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "target.liver-function-chronic-follow-up.alcohol-frequency",
+        "type": "GENERATES",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "intent.risk_assessment",
+        "id": "edge.generated.intent_risk_assessment.generates.target_liver_function_chronic_follow_up_alcohol_heavy_episode",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "target.liver-function-chronic-follow-up.alcohol-heavy-episode",
+        "type": "GENERATES",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "intent.risk_assessment",
+        "id": "edge.generated.intent_risk_assessment.generates.target_liver_function_chronic_follow_up_alcohol_last_use",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "target.liver-function-chronic-follow-up.alcohol-last-use",
+        "type": "GENERATES",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "intent.risk_assessment",
+        "id": "edge.generated.intent_risk_assessment.generates.target_liver_function_chronic_follow_up_alcohol_reduction",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "target.liver-function-chronic-follow-up.alcohol-reduction",
+        "type": "GENERATES",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "intent.risk_assessment",
+        "id": "edge.generated.intent_risk_assessment.generates.target_liver_function_chronic_follow_up_alcohol_reduction_details",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "target.liver-function-chronic-follow-up.alcohol-reduction-details",
+        "type": "GENERATES",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "intent.risk_assessment",
+        "id": "edge.generated.intent_risk_assessment.generates.target_liver_function_chronic_follow_up_alcohol_status",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "target.liver-function-chronic-follow-up.alcohol-status",
         "type": "GENERATES",
         "usage_modes": [
           "research_test",
@@ -3076,8 +3401,8 @@
         "version": "0.1.0"
       },
       {
-        "from": "liver.alcohol_pattern_and_last_use",
-        "id": "edge.generated.liver_alcohol_pattern_and_last_use.supports.group_liver_cause",
+        "from": "liver.alcohol_heavy_episode_pattern",
+        "id": "edge.generated.liver_alcohol_heavy_episode_pattern.supports.group_liver_cause",
         "provenance": {
           "created_at": "2026-07-14T00:00:00Z",
           "created_by": {
@@ -3103,8 +3428,170 @@
         "version": "0.1.0"
       },
       {
-        "from": "liver.alcohol_pattern_and_last_use",
-        "id": "edge.generated.liver_alcohol_pattern_and_last_use.supports.group_liver_common",
+        "from": "liver.alcohol_heavy_episode_pattern",
+        "id": "edge.generated.liver_alcohol_heavy_episode_pattern.supports.group_liver_common",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "group.liver.common",
+        "type": "SUPPORTS",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "liver.alcohol_last_use_timing",
+        "id": "edge.generated.liver_alcohol_last_use_timing.supports.group_liver_cause",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "group.liver.cause",
+        "type": "SUPPORTS",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "liver.alcohol_last_use_timing",
+        "id": "edge.generated.liver_alcohol_last_use_timing.supports.group_liver_common",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "group.liver.common",
+        "type": "SUPPORTS",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "liver.alcohol_recent_reduction_or_cessation",
+        "id": "edge.generated.liver_alcohol_recent_reduction_or_cessation.supports.group_liver_cause",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "group.liver.cause",
+        "type": "SUPPORTS",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "liver.alcohol_recent_reduction_or_cessation",
+        "id": "edge.generated.liver_alcohol_recent_reduction_or_cessation.supports.group_liver_common",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "group.liver.common",
+        "type": "SUPPORTS",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "liver.alcohol_reduction_or_cessation_details",
+        "id": "edge.generated.liver_alcohol_reduction_or_cessation_details.supports.group_liver_cause",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "group.liver.cause",
+        "type": "SUPPORTS",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "liver.alcohol_reduction_or_cessation_details",
+        "id": "edge.generated.liver_alcohol_reduction_or_cessation_details.supports.group_liver_common",
         "provenance": {
           "created_at": "2026-07-14T00:00:00Z",
           "created_by": {
@@ -4642,6 +5129,222 @@
         "version": "0.1.0"
       },
       {
+        "from": "patient.alcohol.amount_per_occasion",
+        "id": "edge.generated.patient_alcohol_amount_per_occasion.supports.group_liver_cause",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "group.liver.cause",
+        "type": "SUPPORTS",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "patient.alcohol.amount_per_occasion",
+        "id": "edge.generated.patient_alcohol_amount_per_occasion.supports.group_liver_common",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "group.liver.common",
+        "type": "SUPPORTS",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "patient.alcohol.beverage_types",
+        "id": "edge.generated.patient_alcohol_beverage_types.supports.group_liver_cause",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "group.liver.cause",
+        "type": "SUPPORTS",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "patient.alcohol.beverage_types",
+        "id": "edge.generated.patient_alcohol_beverage_types.supports.group_liver_common",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "group.liver.common",
+        "type": "SUPPORTS",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "patient.alcohol.frequency",
+        "id": "edge.generated.patient_alcohol_frequency.supports.group_liver_cause",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "group.liver.cause",
+        "type": "SUPPORTS",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "patient.alcohol.frequency",
+        "id": "edge.generated.patient_alcohol_frequency.supports.group_liver_common",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "group.liver.common",
+        "type": "SUPPORTS",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "patient.alcohol.use_status",
+        "id": "edge.generated.patient_alcohol_use_status.supports.group_liver_cause",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "group.liver.cause",
+        "type": "SUPPORTS",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "patient.alcohol.use_status",
+        "id": "edge.generated.patient_alcohol_use_status.supports.group_liver_common",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "group.liver.common",
+        "type": "SUPPORTS",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
         "from": "question.liver-function-chronic-follow-up.abdominal",
         "id": "edge.generated.question_liver_function_chronic_follow_up_abdominal.collects.liver_abdominal_pain_nausea_appetite_and_weight_loss",
         "provenance": {
@@ -4669,8 +5372,8 @@
         "version": "0.1.0"
       },
       {
-        "from": "question.liver-function-chronic-follow-up.alcohol",
-        "id": "edge.generated.question_liver_function_chronic_follow_up_alcohol.collects.liver_alcohol_pattern_and_last_use",
+        "from": "question.liver-function-chronic-follow-up.alcohol-amount",
+        "id": "edge.generated.question_liver_function_chronic_follow_up_alcohol_amount.collects.patient_alcohol_amount_per_occasion",
         "provenance": {
           "created_at": "2026-07-14T00:00:00Z",
           "created_by": {
@@ -4687,7 +5390,196 @@
           "version": "0.1.0"
         },
         "status": "research_only",
-        "to": "liver.alcohol_pattern_and_last_use",
+        "to": "patient.alcohol.amount_per_occasion",
+        "type": "COLLECTS",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "question.liver-function-chronic-follow-up.alcohol-beverage-types",
+        "id": "edge.generated.question_liver_function_chronic_follow_up_alcohol_beverage_types.collects.patient_alcohol_beverage_types",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "patient.alcohol.beverage_types",
+        "type": "COLLECTS",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "question.liver-function-chronic-follow-up.alcohol-frequency",
+        "id": "edge.generated.question_liver_function_chronic_follow_up_alcohol_frequency.collects.patient_alcohol_frequency",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "patient.alcohol.frequency",
+        "type": "COLLECTS",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "question.liver-function-chronic-follow-up.alcohol-heavy-episode",
+        "id": "edge.generated.question_liver_function_chronic_follow_up_alcohol_heavy_episode.collects.liver_alcohol_heavy_episode_pattern",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "liver.alcohol_heavy_episode_pattern",
+        "type": "COLLECTS",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "question.liver-function-chronic-follow-up.alcohol-last-use",
+        "id": "edge.generated.question_liver_function_chronic_follow_up_alcohol_last_use.collects.liver_alcohol_last_use_timing",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "liver.alcohol_last_use_timing",
+        "type": "COLLECTS",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "question.liver-function-chronic-follow-up.alcohol-reduction",
+        "id": "edge.generated.question_liver_function_chronic_follow_up_alcohol_reduction.collects.liver_alcohol_recent_reduction_or_cessation",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "liver.alcohol_recent_reduction_or_cessation",
+        "type": "COLLECTS",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "question.liver-function-chronic-follow-up.alcohol-reduction-details",
+        "id": "edge.generated.question_liver_function_chronic_follow_up_alcohol_reduction_details.collects.liver_alcohol_reduction_or_cessation_details",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "liver.alcohol_reduction_or_cessation_details",
+        "type": "COLLECTS",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "question.liver-function-chronic-follow-up.alcohol-status",
+        "id": "edge.generated.question_liver_function_chronic_follow_up_alcohol_status.collects.patient_alcohol_use_status",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "patient.alcohol.use_status",
         "type": "COLLECTS",
         "usage_modes": [
           "research_test",
@@ -5776,8 +6668,8 @@
         "version": "0.1.0"
       },
       {
-        "from": "target.liver-function-chronic-follow-up.alcohol",
-        "id": "edge.generated.target_liver_function_chronic_follow_up_alcohol.requires.liver_alcohol_pattern_and_last_use",
+        "from": "target.liver-function-chronic-follow-up.alcohol-amount",
+        "id": "edge.generated.target_liver_function_chronic_follow_up_alcohol_amount.requires.patient_alcohol_amount_per_occasion",
         "provenance": {
           "created_at": "2026-07-14T00:00:00Z",
           "created_by": {
@@ -5794,7 +6686,196 @@
           "version": "0.1.0"
         },
         "status": "research_only",
-        "to": "liver.alcohol_pattern_and_last_use",
+        "to": "patient.alcohol.amount_per_occasion",
+        "type": "REQUIRES",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "target.liver-function-chronic-follow-up.alcohol-beverage-types",
+        "id": "edge.generated.target_liver_function_chronic_follow_up_alcohol_beverage_types.requires.patient_alcohol_beverage_types",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "patient.alcohol.beverage_types",
+        "type": "REQUIRES",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "target.liver-function-chronic-follow-up.alcohol-frequency",
+        "id": "edge.generated.target_liver_function_chronic_follow_up_alcohol_frequency.requires.patient_alcohol_frequency",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "patient.alcohol.frequency",
+        "type": "REQUIRES",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "target.liver-function-chronic-follow-up.alcohol-heavy-episode",
+        "id": "edge.generated.target_liver_function_chronic_follow_up_alcohol_heavy_episode.requires.liver_alcohol_heavy_episode_pattern",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "liver.alcohol_heavy_episode_pattern",
+        "type": "REQUIRES",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "target.liver-function-chronic-follow-up.alcohol-last-use",
+        "id": "edge.generated.target_liver_function_chronic_follow_up_alcohol_last_use.requires.liver_alcohol_last_use_timing",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "liver.alcohol_last_use_timing",
+        "type": "REQUIRES",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "target.liver-function-chronic-follow-up.alcohol-reduction",
+        "id": "edge.generated.target_liver_function_chronic_follow_up_alcohol_reduction.requires.liver_alcohol_recent_reduction_or_cessation",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "liver.alcohol_recent_reduction_or_cessation",
+        "type": "REQUIRES",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "target.liver-function-chronic-follow-up.alcohol-reduction-details",
+        "id": "edge.generated.target_liver_function_chronic_follow_up_alcohol_reduction_details.requires.liver_alcohol_reduction_or_cessation_details",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "liver.alcohol_reduction_or_cessation_details",
+        "type": "REQUIRES",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "target.liver-function-chronic-follow-up.alcohol-status",
+        "id": "edge.generated.target_liver_function_chronic_follow_up_alcohol_status.requires.patient_alcohol_use_status",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "patient.alcohol.use_status",
         "type": "REQUIRES",
         "usage_modes": [
           "research_test",
@@ -7237,10 +8318,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -7285,10 +8366,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -7337,10 +8418,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -7360,9 +8441,9 @@
       },
       {
         "description": "",
-        "display": "Alcohol Pattern",
+        "display": "Heavy Alcohol Episode Pattern",
         "extraction_cues": [],
-        "id": "liver.alcohol_pattern_and_last_use",
+        "id": "liver.alcohol_heavy_episode_pattern",
         "provenance": {
           "created_at": "2026-07-14T00:00:00Z",
           "created_by": {
@@ -7381,10 +8462,150 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          },
+          "policy_id": "policy.knowledge-refresh"
+        },
+        "safety_relevant": false,
+        "source_manifest": "source-manifest.primary-care-liver-function-chronic-follow-up-research",
+        "status": "research_only",
+        "type": "Fact",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "value_type": "string",
+        "version": "0.1.0"
+      },
+      {
+        "description": "",
+        "display": "Last Alcohol Use Timing",
+        "extraction_cues": [],
+        "id": "liver.alcohol_last_use_timing",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "refresh": {
+          "class": "clinical_guideline",
+          "full_review_interval_days": 180,
+          "last_assessed_at": "2026-07-30",
+          "monitor_interval_days": 1,
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          },
+          "policy_id": "policy.knowledge-refresh"
+        },
+        "safety_relevant": false,
+        "source_manifest": "source-manifest.primary-care-liver-function-chronic-follow-up-research",
+        "status": "research_only",
+        "type": "Fact",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "value_type": "date_or_period",
+        "version": "0.1.0"
+      },
+      {
+        "answer_semantic_binding": {
+          "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-sct-yes-no",
+          "fhir_item_type": "choice",
+          "fhir_response_type": "valueCoding",
+          "local_answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-local-yes-no",
+          "policy_id": "policy.question-answer-terminology-binding",
+          "strategy": "SNOMED_CT_coded_yes_no_with_local_fallback"
+        },
+        "description": "",
+        "display": "Recent Alcohol Reduction or Cessation",
+        "extraction_cues": [],
+        "id": "liver.alcohol_recent_reduction_or_cessation",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "refresh": {
+          "class": "clinical_guideline",
+          "full_review_interval_days": 180,
+          "last_assessed_at": "2026-07-30",
+          "monitor_interval_days": 1,
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          },
+          "policy_id": "policy.knowledge-refresh"
+        },
+        "safety_relevant": false,
+        "source_manifest": "source-manifest.primary-care-liver-function-chronic-follow-up-research",
+        "status": "research_only",
+        "type": "Fact",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "value_type": "boolean",
+        "version": "0.1.0"
+      },
+      {
+        "description": "",
+        "display": "Alcohol Reduction or Cessation Details",
+        "extraction_cues": [],
+        "id": "liver.alcohol_reduction_or_cessation_details",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "refresh": {
+          "class": "clinical_guideline",
+          "full_review_interval_days": 180,
+          "last_assessed_at": "2026-07-30",
+          "monitor_interval_days": 1,
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -7433,10 +8654,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -7477,10 +8698,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -7521,10 +8742,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -7573,10 +8794,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -7617,10 +8838,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -7661,10 +8882,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -7705,10 +8926,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -7749,10 +8970,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -7793,10 +9014,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -7841,10 +9062,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -7893,10 +9114,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -7941,10 +9162,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -7985,10 +9206,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -8037,10 +9258,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -8081,10 +9302,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -8125,10 +9346,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -8169,10 +9390,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -8217,10 +9438,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -8265,10 +9486,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -8317,10 +9538,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -8361,10 +9582,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -8405,10 +9626,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -8449,10 +9670,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -8501,10 +9722,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -8545,10 +9766,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -8608,10 +9829,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -8652,10 +9873,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -8708,10 +9929,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -8764,10 +9985,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -8816,10 +10037,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -8868,10 +10089,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -8920,10 +10141,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -8964,10 +10185,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -9008,10 +10229,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -9052,10 +10273,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -9104,10 +10325,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -9148,10 +10369,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -9168,6 +10389,137 @@
         ],
         "value_type": "string",
         "version": "0.1.0"
+      },
+      {
+        "display": "Alcohol Amount per Occasion",
+        "display_ko": "1회 음주량",
+        "id": "patient.alcohol.amount_per_occasion",
+        "provenance": {
+          "created_at": "2026-07-30T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "knowledge/shared/clinician-submission-context.json",
+            "source.nice.ng50.cirrhosis.2023"
+          ],
+          "version": "0.1.0"
+        },
+        "report_field": "social.alcohol_amount_per_occasion",
+        "review_status": "unreviewed",
+        "status": "research_only",
+        "type": "Fact",
+        "value_type": "string"
+      },
+      {
+        "allowed_values": [
+          "soju",
+          "beer",
+          "makgeolli",
+          "wine",
+          "spirits",
+          "other"
+        ],
+        "answer_semantic_binding": {
+          "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-mixed-patient-alcohol-beverage-types-coded-or-strin-b19be623b9",
+          "fhir_item_type": "choice",
+          "fhir_response_type": "valueCoding",
+          "local_answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-local-patient-alcohol-beverage-types-coded-or-strin-039f003b40",
+          "policy_id": "policy.question-answer-terminology-binding",
+          "snomed_mappings": {
+            "other": {
+              "code": "74964007",
+              "display": "Other",
+              "mapping_relation": "equivalent",
+              "system": "http://snomed.info/sct"
+            }
+          },
+          "strategy": "SNOMED_CT_then_local_coded_fallback",
+          "value_set_strategy": "complete_mixed_SNOMED_CT_and_local"
+        },
+        "display": "Alcoholic Beverage Types",
+        "display_ko": "주로 마시는 술 종류",
+        "id": "patient.alcohol.beverage_types",
+        "provenance": {
+          "created_at": "2026-07-30T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "knowledge/shared/clinician-submission-context.json",
+            "source.nice.ng50.cirrhosis.2023"
+          ],
+          "version": "0.1.0"
+        },
+        "report_field": "social.alcohol_beverage_types",
+        "review_status": "unreviewed",
+        "status": "research_only",
+        "type": "Fact",
+        "value_type": "coded_or_string"
+      },
+      {
+        "display": "Alcohol Drinking Frequency",
+        "display_ko": "음주 빈도",
+        "id": "patient.alcohol.frequency",
+        "provenance": {
+          "created_at": "2026-07-30T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "knowledge/shared/clinician-submission-context.json",
+            "source.nice.ng50.cirrhosis.2023"
+          ],
+          "version": "0.1.0"
+        },
+        "report_field": "social.alcohol_frequency",
+        "review_status": "unreviewed",
+        "status": "research_only",
+        "type": "Fact",
+        "value_type": "string"
+      },
+      {
+        "allowed_values": [
+          "current",
+          "former",
+          "never"
+        ],
+        "answer_semantic_binding": {
+          "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-local-patient-alcohol-use-status-coded-current-former-never",
+          "fhir_item_type": "choice",
+          "fhir_response_type": "valueCoding",
+          "local_answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-local-patient-alcohol-use-status-coded-current-former-never",
+          "policy_id": "policy.question-answer-terminology-binding",
+          "strategy": "SNOMED_CT_then_local_coded_fallback",
+          "value_set_strategy": "complete_local"
+        },
+        "display": "Alcohol Use Status",
+        "display_ko": "음주 상태",
+        "id": "patient.alcohol.use_status",
+        "provenance": {
+          "created_at": "2026-07-30T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "knowledge/shared/clinician-submission-context.json",
+            "source.nice.ng50.cirrhosis.2023"
+          ],
+          "version": "0.1.0"
+        },
+        "report_field": "social.alcohol_use_status",
+        "review_status": "unreviewed",
+        "status": "research_only",
+        "type": "Fact",
+        "value_type": "coded"
       },
       {
         "collects": "liver.abdominal_pain_nausea_appetite_and_weight_loss",
@@ -9206,9 +10558,9 @@
         "wording": "복통 위치·양상, 메스꺼움·식욕저하와 의도하지 않은 체중감소가 있나요?"
       },
       {
-        "collects": "liver.alcohol_pattern_and_last_use",
-        "display": "술 종류·한 번 양·주당 횟수, 폭음과 마지막 음주 시각, 최근 감량·중단을 알려주세요.",
-        "id": "question.liver-function-chronic-follow-up.alcohol",
+        "collects": "patient.alcohol.amount_per_occasion",
+        "display": "한 번 마실 때 보통 술 종류별로 얼마나 마시거나 마셨나요? 예: 소주 1병, 맥주 500mL 2잔",
+        "id": "question.liver-function-chronic-follow-up.alcohol-amount",
         "language": "ko",
         "mode": [
           "chat",
@@ -9239,7 +10591,259 @@
           "simulation"
         ],
         "version": "0.1.0",
-        "wording": "술 종류·한 번 양·주당 횟수, 폭음과 마지막 음주 시각, 최근 감량·중단을 알려주세요."
+        "wording": "한 번 마실 때 보통 술 종류별로 얼마나 마시거나 마셨나요? 예: 소주 1병, 맥주 500mL 2잔"
+      },
+      {
+        "collects": "patient.alcohol.beverage_types",
+        "display": "주로 마시거나 마셨던 술 종류는 무엇인가요? 보기에 없으면 직접 입력해 주세요.",
+        "id": "question.liver-function-chronic-follow-up.alcohol-beverage-types",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ],
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "source_manifest": "source-manifest.primary-care-liver-function-chronic-follow-up-research",
+        "status": "research_only",
+        "type": "QuestionTemplate",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0",
+        "wording": "주로 마시거나 마셨던 술 종류는 무엇인가요? 보기에 없으면 직접 입력해 주세요."
+      },
+      {
+        "collects": "patient.alcohol.frequency",
+        "display": "평균적으로 얼마나 자주 술을 마시거나 마셨나요? 예: 주 2회, 월 1회, 거의 매일",
+        "id": "question.liver-function-chronic-follow-up.alcohol-frequency",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ],
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "source_manifest": "source-manifest.primary-care-liver-function-chronic-follow-up-research",
+        "status": "research_only",
+        "type": "QuestionTemplate",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0",
+        "wording": "평균적으로 얼마나 자주 술을 마시거나 마셨나요? 예: 주 2회, 월 1회, 거의 매일"
+      },
+      {
+        "collects": "liver.alcohol_heavy_episode_pattern",
+        "display": "평소보다 많은 양을 한 번에 마시는 일이 있다면 양과 빈도를 알려주세요. 없으면 '없음'이라고 답해 주세요.",
+        "id": "question.liver-function-chronic-follow-up.alcohol-heavy-episode",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ],
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "source_manifest": "source-manifest.primary-care-liver-function-chronic-follow-up-research",
+        "status": "research_only",
+        "type": "QuestionTemplate",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0",
+        "wording": "평소보다 많은 양을 한 번에 마시는 일이 있다면 양과 빈도를 알려주세요. 없으면 '없음'이라고 답해 주세요."
+      },
+      {
+        "collects": "liver.alcohol_last_use_timing",
+        "display": "마지막으로 술을 마신 때는 언제인가요? 정확한 날짜를 모르면 대략적인 시점을 알려주세요.",
+        "id": "question.liver-function-chronic-follow-up.alcohol-last-use",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ],
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "source_manifest": "source-manifest.primary-care-liver-function-chronic-follow-up-research",
+        "status": "research_only",
+        "type": "QuestionTemplate",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0",
+        "wording": "마지막으로 술을 마신 때는 언제인가요? 정확한 날짜를 모르면 대략적인 시점을 알려주세요."
+      },
+      {
+        "collects": "liver.alcohol_recent_reduction_or_cessation",
+        "display": "최근 평소보다 술을 크게 줄이거나 끊었나요?",
+        "id": "question.liver-function-chronic-follow-up.alcohol-reduction",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ],
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "source_manifest": "source-manifest.primary-care-liver-function-chronic-follow-up-research",
+        "status": "research_only",
+        "type": "QuestionTemplate",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0",
+        "wording": "최근 평소보다 술을 크게 줄이거나 끊었나요?"
+      },
+      {
+        "collects": "liver.alcohol_reduction_or_cessation_details",
+        "display": "술을 줄이거나 끊기 시작한 시점과 이전·현재 음주량의 변화를 알려주세요.",
+        "id": "question.liver-function-chronic-follow-up.alcohol-reduction-details",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ],
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "source_manifest": "source-manifest.primary-care-liver-function-chronic-follow-up-research",
+        "status": "research_only",
+        "type": "QuestionTemplate",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0",
+        "wording": "술을 줄이거나 끊기 시작한 시점과 이전·현재 음주량의 변화를 알려주세요."
+      },
+      {
+        "collects": "patient.alcohol.use_status",
+        "display": "현재 술을 마시는지, 과거에는 마셨지만 지금은 끊었는지, 평생 마시지 않았는지 알려주세요.",
+        "id": "question.liver-function-chronic-follow-up.alcohol-status",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ],
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "source_manifest": "source-manifest.primary-care-liver-function-chronic-follow-up-research",
+        "status": "research_only",
+        "type": "QuestionTemplate",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0",
+        "wording": "현재 술을 마시는지, 과거에는 마셨지만 지금은 끊었는지, 평생 마시지 않았는지 알려주세요."
       },
       {
         "collects": "liver.alcohol_withdrawal_severe_pattern",
@@ -10740,8 +12344,8 @@
         "version": "0.1.0"
       },
       {
-        "display": "Alcohol Pattern",
-        "id": "target.liver-function-chronic-follow-up.alcohol",
+        "display": "Alcohol Amount per Occasion",
+        "id": "target.liver-function-chronic-follow-up.alcohol-amount",
         "provenance": {
           "created_at": "2026-07-14T00:00:00Z",
           "created_by": {
@@ -10758,7 +12362,217 @@
           "version": "0.1.0"
         },
         "required_facts": [
-          "liver.alcohol_pattern_and_last_use"
+          "patient.alcohol.amount_per_occasion"
+        ],
+        "source_manifest": "source-manifest.primary-care-liver-function-chronic-follow-up-research",
+        "status": "research_only",
+        "type": "InterviewTarget",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "display": "Alcoholic Beverage Types",
+        "id": "target.liver-function-chronic-follow-up.alcohol-beverage-types",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "required_facts": [
+          "patient.alcohol.beverage_types"
+        ],
+        "source_manifest": "source-manifest.primary-care-liver-function-chronic-follow-up-research",
+        "status": "research_only",
+        "type": "InterviewTarget",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "display": "Alcohol Drinking Frequency",
+        "id": "target.liver-function-chronic-follow-up.alcohol-frequency",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "required_facts": [
+          "patient.alcohol.frequency"
+        ],
+        "source_manifest": "source-manifest.primary-care-liver-function-chronic-follow-up-research",
+        "status": "research_only",
+        "type": "InterviewTarget",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "display": "Heavy Alcohol Episode Pattern",
+        "id": "target.liver-function-chronic-follow-up.alcohol-heavy-episode",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "required_facts": [
+          "liver.alcohol_heavy_episode_pattern"
+        ],
+        "source_manifest": "source-manifest.primary-care-liver-function-chronic-follow-up-research",
+        "status": "research_only",
+        "type": "InterviewTarget",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "display": "Last Alcohol Use Timing",
+        "id": "target.liver-function-chronic-follow-up.alcohol-last-use",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "required_facts": [
+          "liver.alcohol_last_use_timing"
+        ],
+        "source_manifest": "source-manifest.primary-care-liver-function-chronic-follow-up-research",
+        "status": "research_only",
+        "type": "InterviewTarget",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "display": "Recent Alcohol Reduction or Cessation",
+        "id": "target.liver-function-chronic-follow-up.alcohol-reduction",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "required_facts": [
+          "liver.alcohol_recent_reduction_or_cessation"
+        ],
+        "source_manifest": "source-manifest.primary-care-liver-function-chronic-follow-up-research",
+        "status": "research_only",
+        "type": "InterviewTarget",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "display": "Alcohol Reduction or Cessation Details",
+        "id": "target.liver-function-chronic-follow-up.alcohol-reduction-details",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "required_facts": [
+          "liver.alcohol_reduction_or_cessation_details"
+        ],
+        "source_manifest": "source-manifest.primary-care-liver-function-chronic-follow-up-research",
+        "status": "research_only",
+        "type": "InterviewTarget",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "display": "Alcohol Use Status",
+        "id": "target.liver-function-chronic-follow-up.alcohol-status",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "required_facts": [
+          "patient.alcohol.use_status"
         ],
         "source_manifest": "source-manifest.primary-care-liver-function-chronic-follow-up-research",
         "status": "research_only",
@@ -12002,18 +13816,18 @@
       }
     },
     "coverage": {
-      "boolean_primitive_question_count": 12,
-      "coded_answer_local_fallback_count": 8,
-      "coded_answer_snomed_count": 0,
-      "coded_answer_snomed_percent": 0.0,
-      "coded_answer_value_count": 8,
+      "boolean_primitive_question_count": 13,
+      "coded_answer_local_fallback_count": 17,
+      "coded_answer_snomed_count": 1,
+      "coded_answer_snomed_percent": 5.9,
+      "coded_answer_value_count": 17,
       "data_absent_option_count": 0,
       "fhir_r4_element_bound_question_count": 0,
       "fhir_r4_element_candidate_question_count": 0,
-      "other_primitive_question_count": 28,
-      "question_count": 41,
-      "question_local_code_count": 41,
-      "question_local_only_count": 36,
+      "other_primitive_question_count": 32,
+      "question_count": 48,
+      "question_local_code_count": 48,
+      "question_local_only_count": 43,
       "question_loinc_exact_or_equivalent_count": 0,
       "question_loinc_exact_or_equivalent_percent": 0.0,
       "question_loinc_partial_or_related_count": 0,
@@ -12152,11 +13966,12 @@
   "release_state": "draft",
   "research_source_manifests": [
     {
-      "acquired_at": "2026-07-15T00:00:00Z",
+      "acquired_at": "2026-07-30T00:00:00Z",
       "artifacts": [
         {
           "assertions": [
             "Cirrhosis assessment includes cause, decompensation, varices, ascites, encephalopathy, medicines and hepatocellular carcinoma surveillance.",
+            "Alcohol misuse and quantified weekly alcohol exposure remain relevant cirrhosis-risk context.",
             "Gastrointestinal bleeding, acute confusion, infected ascites and respiratory compromise require urgent escalation."
           ],
           "complete": false,
@@ -12164,12 +13979,12 @@
           "id": "source.nice.ng50.cirrhosis.2023",
           "kind": "clinical_guidance_metadata",
           "language": "en",
-          "last_monitored_at": "2026-07-15",
+          "last_monitored_at": "2026-07-30",
           "license_status": "restricted",
           "monitor_interval_days": 7,
           "monitor_profile": "nice_guidance",
-          "monitor_result": "current_official_source_confirmed",
-          "next_monitor_at": "2026-07-22",
+          "monitor_result": "current_official_source_confirmed_no_clinical_change",
+          "next_monitor_at": "2026-08-06",
           "publisher": "NICE",
           "title": "Cirrhosis in over 16s: assessment and management",
           "url": "https://www.nice.org.uk/guidance/ng50/chapter/Recommendations",
@@ -12177,43 +13992,45 @@
         },
         {
           "assertions": [
-            "Steatotic liver disease may be asymptomatic and requires metabolic risk, fibrosis assessment and imaging context rather than liver enzymes alone."
+            "Steatotic liver disease may be asymptomatic and requires metabolic risk, fibrosis assessment and imaging context rather than liver enzymes alone.",
+            "The official overview reports a March 2025 link update and an update in development; no new clinical recommendation was imported in this refresh."
           ],
           "complete": false,
           "digest": "metadata_only_not_cached",
           "id": "source.nice.ng49.nafld.2024",
           "kind": "clinical_guidance_metadata",
           "language": "en",
-          "last_monitored_at": "2026-07-15",
+          "last_monitored_at": "2026-07-30",
           "license_status": "restricted",
           "monitor_interval_days": 7,
           "monitor_profile": "nice_guidance",
-          "monitor_result": "current_official_source_confirmed",
-          "next_monitor_at": "2026-07-22",
+          "monitor_result": "official_metadata_change_reviewed_links_only_no_clinical_import",
+          "next_monitor_at": "2026-08-06",
           "publisher": "NICE",
           "title": "Non-alcoholic fatty liver disease: assessment and management",
           "url": "https://www.nice.org.uk/guidance/ng49",
-          "version": "NG49; surveillance-2024"
+          "version": "NG49; links-updated-2025-03"
         },
         {
           "assertions": [
-            "Viral status, treatment, pregnancy, fibrosis, decompensation and HCC surveillance are relevant follow-up domains."
+            "Viral status, treatment, pregnancy, fibrosis, decompensation and HCC surveillance are relevant follow-up domains.",
+            "Alcohol intake and treatment adherence remain relevant lifestyle context during chronic hepatitis B assessment."
           ],
           "complete": false,
           "digest": "metadata_only_not_cached",
           "id": "source.nice.cg165.hepatitis-b",
           "kind": "clinical_guidance_metadata",
           "language": "en",
-          "last_monitored_at": "2026-07-15",
+          "last_monitored_at": "2026-07-30",
           "license_status": "restricted",
           "monitor_interval_days": 7,
           "monitor_profile": "nice_guidance",
-          "monitor_result": "current_official_source_confirmed",
-          "next_monitor_at": "2026-07-22",
+          "monitor_result": "current_official_source_confirmed_no_clinical_change",
+          "next_monitor_at": "2026-08-06",
           "publisher": "NICE",
           "title": "Chronic hepatitis B: diagnosis and management",
           "url": "https://www.nice.org.uk/Guidance/CG165/chapter/recommendations",
-          "version": "CG165"
+          "version": "CG165; updated-2017-10-20"
         },
         {
           "assertions": [
@@ -12229,7 +14046,7 @@
           "license_status": "restricted",
           "monitor_interval_days": 30,
           "monitor_profile": "terminology_server",
-          "monitor_result": "current_official_source_confirmed",
+          "monitor_result": "not_due_existing_metadata_preserved",
           "next_monitor_at": "2026-08-14",
           "publisher": "Infoclinic",
           "title": "STOM liver terminology and MRCM summary",
@@ -12797,10 +14614,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -12845,10 +14662,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -12893,10 +14710,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -12941,10 +14758,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -12989,10 +14806,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -13037,10 +14854,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -13085,10 +14902,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -13133,10 +14950,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -13181,10 +14998,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -13229,10 +15046,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -13277,10 +15094,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -13325,10 +15142,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -13373,10 +15190,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -13421,10 +15238,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -13469,10 +15286,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -13517,10 +15334,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -13565,10 +15382,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -13613,10 +15430,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -13661,10 +15478,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -13709,10 +15526,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -13757,10 +15574,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -13805,10 +15622,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -13853,10 +15670,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -13901,10 +15718,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -13949,10 +15766,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -13997,10 +15814,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -14025,7 +15842,7 @@
         }
       },
       {
-        "id": "rule.generated.priority.any.alcohol",
+        "id": "rule.generated.priority.any.alcohol-status",
         "priority": 142,
         "provenance": {
           "created_at": "2026-07-14T00:00:00Z",
@@ -14045,10 +15862,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -14057,8 +15874,8 @@
         },
         "status": "research_only",
         "then": {
-          "reason": "alcohol",
-          "target": "target.liver-function-chronic-follow-up.alcohol"
+          "reason": "alcohol-status",
+          "target": "target.liver-function-chronic-follow-up.alcohol-status"
         },
         "type": "priority",
         "usage_modes": [
@@ -14068,7 +15885,55 @@
         "version": "0.1.0",
         "when": {
           "target_state": {
-            "target.liver-function-chronic-follow-up.alcohol": "active"
+            "target.liver-function-chronic-follow-up.alcohol-status": "active"
+          }
+        }
+      },
+      {
+        "id": "rule.generated.priority.any.alcohol-beverage-types",
+        "priority": 141,
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "refresh": {
+          "class": "clinical_guideline",
+          "full_review_interval_days": 180,
+          "last_assessed_at": "2026-07-30",
+          "monitor_interval_days": 1,
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          },
+          "policy_id": "policy.knowledge-refresh"
+        },
+        "status": "research_only",
+        "then": {
+          "reason": "alcohol-beverage-types",
+          "target": "target.liver-function-chronic-follow-up.alcohol-beverage-types"
+        },
+        "type": "priority",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0",
+        "when": {
+          "target_state": {
+            "target.liver-function-chronic-follow-up.alcohol-beverage-types": "active"
           }
         }
       },
@@ -14093,10 +15958,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -14121,6 +15986,54 @@
         }
       },
       {
+        "id": "rule.generated.priority.any.alcohol-frequency",
+        "priority": 140,
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "refresh": {
+          "class": "clinical_guideline",
+          "full_review_interval_days": 180,
+          "last_assessed_at": "2026-07-30",
+          "monitor_interval_days": 1,
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          },
+          "policy_id": "policy.knowledge-refresh"
+        },
+        "status": "research_only",
+        "then": {
+          "reason": "alcohol-frequency",
+          "target": "target.liver-function-chronic-follow-up.alcohol-frequency"
+        },
+        "type": "priority",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0",
+        "when": {
+          "target_state": {
+            "target.liver-function-chronic-follow-up.alcohol-frequency": "active"
+          }
+        }
+      },
+      {
         "id": "rule.generated.priority.any.hepatitis",
         "priority": 140,
         "provenance": {
@@ -14141,10 +16054,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -14169,6 +16082,54 @@
         }
       },
       {
+        "id": "rule.generated.priority.any.alcohol-amount",
+        "priority": 139,
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "refresh": {
+          "class": "clinical_guideline",
+          "full_review_interval_days": 180,
+          "last_assessed_at": "2026-07-30",
+          "monitor_interval_days": 1,
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          },
+          "policy_id": "policy.knowledge-refresh"
+        },
+        "status": "research_only",
+        "then": {
+          "reason": "alcohol-amount",
+          "target": "target.liver-function-chronic-follow-up.alcohol-amount"
+        },
+        "type": "priority",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0",
+        "when": {
+          "target_state": {
+            "target.liver-function-chronic-follow-up.alcohol-amount": "active"
+          }
+        }
+      },
+      {
         "id": "rule.generated.priority.any.other-causes",
         "priority": 139,
         "provenance": {
@@ -14189,10 +16150,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -14217,6 +16178,54 @@
         }
       },
       {
+        "id": "rule.generated.priority.any.alcohol-heavy-episode",
+        "priority": 138,
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "refresh": {
+          "class": "clinical_guideline",
+          "full_review_interval_days": 180,
+          "last_assessed_at": "2026-07-30",
+          "monitor_interval_days": 1,
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          },
+          "policy_id": "policy.knowledge-refresh"
+        },
+        "status": "research_only",
+        "then": {
+          "reason": "alcohol-heavy-episode",
+          "target": "target.liver-function-chronic-follow-up.alcohol-heavy-episode"
+        },
+        "type": "priority",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0",
+        "when": {
+          "target_state": {
+            "target.liver-function-chronic-follow-up.alcohol-heavy-episode": "active"
+          }
+        }
+      },
+      {
         "id": "rule.generated.priority.any.pregnancy",
         "priority": 138,
         "provenance": {
@@ -14237,10 +16246,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -14265,6 +16274,150 @@
         }
       },
       {
+        "id": "rule.generated.priority.any.alcohol-last-use",
+        "priority": 137,
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "refresh": {
+          "class": "clinical_guideline",
+          "full_review_interval_days": 180,
+          "last_assessed_at": "2026-07-30",
+          "monitor_interval_days": 1,
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          },
+          "policy_id": "policy.knowledge-refresh"
+        },
+        "status": "research_only",
+        "then": {
+          "reason": "alcohol-last-use",
+          "target": "target.liver-function-chronic-follow-up.alcohol-last-use"
+        },
+        "type": "priority",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0",
+        "when": {
+          "target_state": {
+            "target.liver-function-chronic-follow-up.alcohol-last-use": "active"
+          }
+        }
+      },
+      {
+        "id": "rule.generated.priority.any.alcohol-reduction",
+        "priority": 136,
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "refresh": {
+          "class": "clinical_guideline",
+          "full_review_interval_days": 180,
+          "last_assessed_at": "2026-07-30",
+          "monitor_interval_days": 1,
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          },
+          "policy_id": "policy.knowledge-refresh"
+        },
+        "status": "research_only",
+        "then": {
+          "reason": "alcohol-reduction",
+          "target": "target.liver-function-chronic-follow-up.alcohol-reduction"
+        },
+        "type": "priority",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0",
+        "when": {
+          "target_state": {
+            "target.liver-function-chronic-follow-up.alcohol-reduction": "active"
+          }
+        }
+      },
+      {
+        "id": "rule.generated.priority.any.alcohol-reduction-details",
+        "priority": 135,
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "refresh": {
+          "class": "clinical_guideline",
+          "full_review_interval_days": 180,
+          "last_assessed_at": "2026-07-30",
+          "monitor_interval_days": 1,
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          },
+          "policy_id": "policy.knowledge-refresh"
+        },
+        "status": "research_only",
+        "then": {
+          "reason": "alcohol-reduction-details",
+          "target": "target.liver-function-chronic-follow-up.alcohol-reduction-details"
+        },
+        "type": "priority",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0",
+        "when": {
+          "target_state": {
+            "target.liver-function-chronic-follow-up.alcohol-reduction-details": "active"
+          }
+        }
+      },
+      {
         "id": "rule.generated.priority.any.imaging",
         "priority": 130,
         "provenance": {
@@ -14285,10 +16438,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -14333,10 +16486,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -14381,10 +16534,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -14429,10 +16582,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -14477,10 +16630,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -14525,10 +16678,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -14573,10 +16726,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -14621,10 +16774,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -14669,10 +16822,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -14747,10 +16900,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -14795,10 +16948,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -14821,7 +16974,7 @@
         }
       },
       {
-        "id": "rule.generated.complete.alcohol",
+        "id": "rule.generated.complete.alcohol-amount",
         "priority": 50,
         "provenance": {
           "created_at": "2026-07-14T00:00:00Z",
@@ -14841,10 +16994,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -14863,7 +17016,329 @@
         "version": "0.1.0",
         "when": {
           "facts_resolved": "all_required",
-          "target": "target.liver-function-chronic-follow-up.alcohol"
+          "target": "target.liver-function-chronic-follow-up.alcohol-amount"
+        }
+      },
+      {
+        "id": "rule.generated.complete.alcohol-beverage-types",
+        "priority": 50,
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "refresh": {
+          "class": "clinical_guideline",
+          "full_review_interval_days": 180,
+          "last_assessed_at": "2026-07-30",
+          "monitor_interval_days": 1,
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          },
+          "policy_id": "policy.knowledge-refresh"
+        },
+        "status": "research_only",
+        "then": {
+          "target_state": "satisfied"
+        },
+        "type": "completion",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0",
+        "when": {
+          "facts_resolved": "all_required",
+          "target": "target.liver-function-chronic-follow-up.alcohol-beverage-types"
+        }
+      },
+      {
+        "id": "rule.generated.complete.alcohol-frequency",
+        "priority": 50,
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "refresh": {
+          "class": "clinical_guideline",
+          "full_review_interval_days": 180,
+          "last_assessed_at": "2026-07-30",
+          "monitor_interval_days": 1,
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          },
+          "policy_id": "policy.knowledge-refresh"
+        },
+        "status": "research_only",
+        "then": {
+          "target_state": "satisfied"
+        },
+        "type": "completion",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0",
+        "when": {
+          "facts_resolved": "all_required",
+          "target": "target.liver-function-chronic-follow-up.alcohol-frequency"
+        }
+      },
+      {
+        "id": "rule.generated.complete.alcohol-heavy-episode",
+        "priority": 50,
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "refresh": {
+          "class": "clinical_guideline",
+          "full_review_interval_days": 180,
+          "last_assessed_at": "2026-07-30",
+          "monitor_interval_days": 1,
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          },
+          "policy_id": "policy.knowledge-refresh"
+        },
+        "status": "research_only",
+        "then": {
+          "target_state": "satisfied"
+        },
+        "type": "completion",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0",
+        "when": {
+          "facts_resolved": "all_required",
+          "target": "target.liver-function-chronic-follow-up.alcohol-heavy-episode"
+        }
+      },
+      {
+        "id": "rule.generated.complete.alcohol-last-use",
+        "priority": 50,
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "refresh": {
+          "class": "clinical_guideline",
+          "full_review_interval_days": 180,
+          "last_assessed_at": "2026-07-30",
+          "monitor_interval_days": 1,
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          },
+          "policy_id": "policy.knowledge-refresh"
+        },
+        "status": "research_only",
+        "then": {
+          "target_state": "satisfied"
+        },
+        "type": "completion",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0",
+        "when": {
+          "facts_resolved": "all_required",
+          "target": "target.liver-function-chronic-follow-up.alcohol-last-use"
+        }
+      },
+      {
+        "id": "rule.generated.complete.alcohol-reduction",
+        "priority": 50,
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "refresh": {
+          "class": "clinical_guideline",
+          "full_review_interval_days": 180,
+          "last_assessed_at": "2026-07-30",
+          "monitor_interval_days": 1,
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          },
+          "policy_id": "policy.knowledge-refresh"
+        },
+        "status": "research_only",
+        "then": {
+          "target_state": "satisfied"
+        },
+        "type": "completion",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0",
+        "when": {
+          "facts_resolved": "all_required",
+          "target": "target.liver-function-chronic-follow-up.alcohol-reduction"
+        }
+      },
+      {
+        "id": "rule.generated.complete.alcohol-reduction-details",
+        "priority": 50,
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "refresh": {
+          "class": "clinical_guideline",
+          "full_review_interval_days": 180,
+          "last_assessed_at": "2026-07-30",
+          "monitor_interval_days": 1,
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          },
+          "policy_id": "policy.knowledge-refresh"
+        },
+        "status": "research_only",
+        "then": {
+          "target_state": "satisfied"
+        },
+        "type": "completion",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0",
+        "when": {
+          "facts_resolved": "all_required",
+          "target": "target.liver-function-chronic-follow-up.alcohol-reduction-details"
+        }
+      },
+      {
+        "id": "rule.generated.complete.alcohol-status",
+        "priority": 50,
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.nice.ng50.cirrhosis.2023",
+            "source.nice.ng49.nafld.2024",
+            "source.nice.cg165.hepatitis-b",
+            "source.stom.liver.20260715"
+          ],
+          "version": "0.1.0"
+        },
+        "refresh": {
+          "class": "clinical_guideline",
+          "full_review_interval_days": 180,
+          "last_assessed_at": "2026-07-30",
+          "monitor_interval_days": 1,
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          },
+          "policy_id": "policy.knowledge-refresh"
+        },
+        "status": "research_only",
+        "then": {
+          "target_state": "satisfied"
+        },
+        "type": "completion",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0",
+        "when": {
+          "facts_resolved": "all_required",
+          "target": "target.liver-function-chronic-follow-up.alcohol-status"
         }
       },
       {
@@ -14887,10 +17362,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -14933,10 +17408,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -14979,10 +17454,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -15025,10 +17500,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -15071,10 +17546,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -15117,10 +17592,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -15163,10 +17638,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -15209,10 +17684,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -15255,10 +17730,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -15301,10 +17776,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -15347,10 +17822,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -15393,10 +17868,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -15439,10 +17914,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -15485,10 +17960,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -15531,10 +18006,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -15577,10 +18052,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -15623,10 +18098,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -15669,10 +18144,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -15715,10 +18190,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -15761,10 +18236,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -15807,10 +18282,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -15853,10 +18328,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -15899,10 +18374,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -15945,10 +18420,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -15991,10 +18466,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -16037,10 +18512,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -16083,10 +18558,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -16129,10 +18604,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -16175,10 +18650,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -16221,10 +18696,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -16267,10 +18742,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -16313,10 +18788,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -16359,10 +18834,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -16405,10 +18880,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -16451,10 +18926,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -16497,10 +18972,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -16543,10 +19018,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -16589,10 +19064,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -16635,10 +19110,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-07-14",
+          "last_assessed_at": "2026-07-30",
           "monitor_interval_days": 1,
-          "next_full_review_at": "2027-01-10",
-          "next_monitor_at": "2026-07-15",
+          "next_full_review_at": "2027-01-26",
+          "next_monitor_at": "2026-08-06",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -16673,8 +19148,56 @@
       "rfe.liver_function_chronic_follow_up"
     ]
   },
-  "semantic_digest": "sha256:e9ec7221e544e2e236d04b3372ea790e46a6885e6380a51009e32b8dce1c9a1d",
+  "semantic_digest": "sha256:a7bfe59f053d3e2dbf1687f653e525966ab2c82d73d1ce591b6ee88b08a934b5",
   "simulations": [
+    {
+      "expected": {
+        "expected_clinician_handoff": true,
+        "expected_known_facts": {
+          "liver.alcohol_recent_reduction_or_cessation": true,
+          "patient.alcohol.amount_per_occasion": "소주 4잔",
+          "patient.alcohol.beverage_types": "soju",
+          "patient.alcohol.frequency": "주 3회",
+          "patient.alcohol.use_status": "current"
+        },
+        "expected_max_turns": 62,
+        "expected_safety_level": "routine",
+        "expected_selected_facts_contains": [
+          "patient.alcohol.use_status",
+          "patient.alcohol.beverage_types",
+          "patient.alcohol.frequency",
+          "patient.alcohol.amount_per_occasion",
+          "liver.alcohol_heavy_episode_pattern",
+          "liver.alcohol_last_use_timing",
+          "liver.alcohol_recent_reduction_or_cessation",
+          "liver.alcohol_reduction_or_cessation_details"
+        ],
+        "expected_selected_facts_excludes": [
+          "liver.alcohol_pattern_and_last_use",
+          "patient.alcohol.pattern"
+        ],
+        "expected_stop_reason": "required_targets_addressed_with_absent_data",
+        "forbidden_assertions": [
+          "diagnosis.alcohol_related_liver_disease",
+          "recommendation.stop_alcohol_abruptly"
+        ]
+      },
+      "id": "LIVER-ALCOHOL-ATOMIC-HANDOFF",
+      "path": "simulation/patients/hepatology/liver-function-chronic-follow-up/LIVER-ALCOHOL-ATOMIC-HANDOFF.json",
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.nice.ng50.cirrhosis.2023",
+          "specifications/clinical-memory.md"
+        ],
+        "version": "0.1.0"
+      }
+    },
     {
       "expected": {
         "expected_max_turns": 40,
@@ -17102,7 +19625,7 @@
     }
   ],
   "source_manifest": {
-    "acquired_at": "2026-07-15T00:00:00Z",
+    "acquired_at": "2026-07-30T00:00:00Z",
     "artifacts": [
       {
         "complete": true,
@@ -17117,7 +19640,7 @@
       },
       {
         "complete": true,
-        "digest": "sha256:4d498fea94306ec435ae6ba4e418960b3261175c3c0ef60da8fcb6baf9ec883e",
+        "digest": "sha256:53960cd5b53c250f96ef5a697f0508980f8186f947885a51caf47c172db8b328",
         "id": "source.generated.liver",
         "kind": "generated_clinical_knowledge",
         "language": "en",
@@ -17139,7 +19662,7 @@
       },
       {
         "complete": false,
-        "digest": "sha256:2d9eca045b7cecf0da393939dcd2eee8a61ff01a3161a33f17b51365c11ba20b",
+        "digest": "sha256:b140c46a4053093f88041952fc7ad58f47d85dc3efb4525d42d25060564ba946",
         "id": "source.external.liver",
         "kind": "external_source_manifest",
         "language": "en",
@@ -17150,7 +19673,7 @@
       },
       {
         "complete": true,
-        "digest": "sha256:501582380be9309d141098c88524c65274197f8e17abe28de29d4fc72fb6051d",
+        "digest": "sha256:205fde409dfe32b0bc2870c063aadd8d59cfd5addf3e98390632feae9744db5e",
         "id": "source.policy.liver",
         "kind": "runtime_policy",
         "language": "en",

@@ -1,6 +1,6 @@
 {
   "contains_patient_responses": false,
-  "count": 41,
+  "count": 48,
   "encounter_contexts": [
     "context.primary_care"
   ],
@@ -51,9 +51,44 @@
     },
     {
       "description": "",
-      "display": "Alcohol Pattern",
+      "display": "Heavy Alcohol Episode Pattern",
       "extraction_cues": [],
-      "id": "liver.alcohol_pattern_and_last_use",
+      "id": "liver.alcohol_heavy_episode_pattern",
+      "safety_relevant": false,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "description": "",
+      "display": "Last Alcohol Use Timing",
+      "extraction_cues": [],
+      "id": "liver.alcohol_last_use_timing",
+      "safety_relevant": false,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "date_or_period"
+    },
+    {
+      "answer_semantic_binding": {
+        "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-sct-yes-no",
+        "policy_id": "policy.question-answer-terminology-binding",
+        "strategy": "SNOMED_CT_coded_yes_no_with_local_fallback"
+      },
+      "description": "",
+      "display": "Recent Alcohol Reduction or Cessation",
+      "extraction_cues": [],
+      "id": "liver.alcohol_recent_reduction_or_cessation",
+      "safety_relevant": false,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "boolean"
+    },
+    {
+      "description": "",
+      "display": "Alcohol Reduction or Cessation Details",
+      "extraction_cues": [],
+      "id": "liver.alcohol_reduction_or_cessation_details",
       "safety_relevant": false,
       "status": "research_only",
       "type": "Fact",
@@ -530,6 +565,77 @@
       "status": "research_only",
       "type": "Fact",
       "value_type": "string"
+    },
+    {
+      "display": "Alcohol Amount per Occasion",
+      "display_ko": "1회 음주량",
+      "id": "patient.alcohol.amount_per_occasion",
+      "report_field": "social.alcohol_amount_per_occasion",
+      "review_status": "unreviewed",
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "allowed_values": [
+        "soju",
+        "beer",
+        "makgeolli",
+        "wine",
+        "spirits",
+        "other"
+      ],
+      "answer_semantic_binding": {
+        "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-mixed-patient-alcohol-beverage-types-coded-or-strin-b19be623b9",
+        "policy_id": "policy.question-answer-terminology-binding",
+        "snomed_mappings": {
+          "other": {
+            "code": "74964007",
+            "display": "Other",
+            "mapping_relation": "equivalent",
+            "system": "http://snomed.info/sct"
+          }
+        },
+        "strategy": "SNOMED_CT_then_local_coded_fallback"
+      },
+      "display": "Alcoholic Beverage Types",
+      "display_ko": "주로 마시는 술 종류",
+      "id": "patient.alcohol.beverage_types",
+      "report_field": "social.alcohol_beverage_types",
+      "review_status": "unreviewed",
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "coded_or_string"
+    },
+    {
+      "display": "Alcohol Drinking Frequency",
+      "display_ko": "음주 빈도",
+      "id": "patient.alcohol.frequency",
+      "report_field": "social.alcohol_frequency",
+      "review_status": "unreviewed",
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "allowed_values": [
+        "current",
+        "former",
+        "never"
+      ],
+      "answer_semantic_binding": {
+        "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-local-patient-alcohol-use-status-coded-current-former-never",
+        "policy_id": "policy.question-answer-terminology-binding",
+        "strategy": "SNOMED_CT_then_local_coded_fallback"
+      },
+      "display": "Alcohol Use Status",
+      "display_ko": "음주 상태",
+      "id": "patient.alcohol.use_status",
+      "report_field": "social.alcohol_use_status",
+      "review_status": "unreviewed",
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "coded"
     }
   ],
   "knowledge_source_status": {
@@ -542,31 +648,31 @@
       "complete": false,
       "id": "source.nice.cg165.hepatitis-b",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-07-15",
+      "last_monitored_at": "2026-07-30",
       "license_status": "restricted",
       "monitor_interval_days": 7,
       "publisher": "NICE",
       "title": "Chronic hepatitis B: diagnosis and management",
       "url": "https://www.nice.org.uk/Guidance/CG165/chapter/recommendations",
-      "version": "CG165"
+      "version": "CG165; updated-2017-10-20"
     },
     {
       "complete": false,
       "id": "source.nice.ng49.nafld.2024",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-07-15",
+      "last_monitored_at": "2026-07-30",
       "license_status": "restricted",
       "monitor_interval_days": 7,
       "publisher": "NICE",
       "title": "Non-alcoholic fatty liver disease: assessment and management",
       "url": "https://www.nice.org.uk/guidance/ng49",
-      "version": "NG49; surveillance-2024"
+      "version": "NG49; links-updated-2025-03"
     },
     {
       "complete": false,
       "id": "source.nice.ng50.cirrhosis.2023",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-07-15",
+      "last_monitored_at": "2026-07-30",
       "license_status": "restricted",
       "monitor_interval_days": 7,
       "publisher": "NICE",

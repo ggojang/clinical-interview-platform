@@ -1,18 +1,19 @@
 {
-  "id": "LIVER-CIRRHOSIS-DATA-ABSENT",
+  "id": "LIVER-ALCOHOL-ATOMIC-HANDOFF",
   "simulation_language": "ko",
+  "clinician_submission": true,
   "persona": {
-    "age": 55
+    "age": 52
   },
   "initial_statement": {
-    "ko": "간경변 정기 진료예요."
+    "ko": "알코올 관련 간질환 추적 진료이고 현재 소주를 주 3회, 한 번에 4잔 정도 마십니다."
   },
   "hidden_state": {
     "liver.jaundice_urine_stool_and_pruritus": {
       "value": "없음"
     },
     "patient.alcohol.use_status": {
-      "value": "never"
+      "value": "current"
     },
     "liver.severe_bleeding_or_coagulopathy": {
       "value": false
@@ -26,8 +27,14 @@
     "liver.test_trend_and_baseline": {
       "value": "없음"
     },
-    "liver.varices_endoscopy_beta_blocker_and_banding": {
+    "liver.alcohol_heavy_episode_pattern": {
+      "value": "월 1회 소주 1병 정도"
+    },
+    "liver.ultrasound_ct_mri_and_elastography": {
       "value": "없음"
+    },
+    "patient.alcohol.beverage_types": {
+      "value": "soju"
     },
     "liver.post_procedure_bleeding_or_infection": {
       "value": false
@@ -50,11 +57,11 @@
     "liver.severe_right_upper_pain_fever_jaundice": {
       "value": false
     },
-    "liver.transplant_evaluation_and_care_plan": {
-      "value": "없음"
-    },
     "liver.fatigue_sleep_cognition_and_function": {
       "value": "없음"
+    },
+    "liver.alcohol_reduction_or_cessation_details": {
+      "value": "2주 전부터 주 5회에서 주 3회로 감량"
     },
     "liver.diagnosis_cause_stage_and_date": {
       "value": "없음"
@@ -71,8 +78,14 @@
     "liver.other_detail_or_patient_priority": {
       "value": "없음"
     },
+    "patient.alcohol.frequency": {
+      "value": "주 3회"
+    },
     "liver.urgent_abnormal_result_callback": {
       "value": false
+    },
+    "liver.alcohol_last_use_timing": {
+      "value": "어제 저녁"
     },
     "liver.new_confusion_or_reduced_consciousness": {
       "value": false
@@ -81,15 +94,9 @@
       "value": false
     },
     "liver.primary_group": {
-      "value": "cirrhosis_followup"
-    },
-    "liver.ascites_diuretics_paracentesis_and_sbp": {
-      "value": "없음"
+      "value": "alcohol_related_liver"
     },
     "liver.prior_decompensation_admissions_and_triggers": {
-      "value": "없음"
-    },
-    "liver.encephalopathy_lactulose_and_bowel_target": {
       "value": "없음"
     },
     "liver.acetaminophen_or_toxic_overdose": {
@@ -101,8 +108,14 @@
     "liver.respiratory_distress_with_tense_ascites": {
       "value": false
     },
+    "liver.alcohol_recent_reduction_or_cessation": {
+      "value": true
+    },
     "liver.rapid_jaundice_with_systemic_illness": {
       "value": false
+    },
+    "patient.alcohol.amount_per_occasion": {
+      "value": "소주 4잔"
     },
     "liver.alcohol_withdrawal_severe_pattern": {
       "value": false
@@ -112,20 +125,39 @@
     }
   },
   "response_behavior": {
-    "liver.hcc_surveillance_ultrasound_afp": {
-      "dataAbsentReason": "asked-unknown"
+    "encounter.context_review_state": {
+      "response_text": "최근 기본정보를 확인했고 바뀐 내용이 없습니다"
     }
   },
   "expected": {
-    "expected_data_absent_reasons": {
-      "liver.hcc_surveillance_ultrasound_afp": "asked-unknown"
-    },
     "expected_safety_level": "routine",
     "expected_stop_reason": "required_targets_addressed_with_absent_data",
     "expected_max_turns": 62,
+    "expected_clinician_handoff": true,
+    "expected_selected_facts_contains": [
+      "patient.alcohol.use_status",
+      "patient.alcohol.beverage_types",
+      "patient.alcohol.frequency",
+      "patient.alcohol.amount_per_occasion",
+      "liver.alcohol_heavy_episode_pattern",
+      "liver.alcohol_last_use_timing",
+      "liver.alcohol_recent_reduction_or_cessation",
+      "liver.alcohol_reduction_or_cessation_details"
+    ],
+    "expected_selected_facts_excludes": [
+      "liver.alcohol_pattern_and_last_use",
+      "patient.alcohol.pattern"
+    ],
+    "expected_known_facts": {
+      "patient.alcohol.use_status": "current",
+      "patient.alcohol.beverage_types": "soju",
+      "patient.alcohol.frequency": "주 3회",
+      "patient.alcohol.amount_per_occasion": "소주 4잔",
+      "liver.alcohol_recent_reduction_or_cessation": true
+    },
     "forbidden_assertions": [
-      "diagnosis.decompensated_cirrhosis",
-      "diagnosis.hcc"
+      "diagnosis.alcohol_related_liver_disease",
+      "recommendation.stop_alcohol_abruptly"
     ]
   },
   "provenance": {

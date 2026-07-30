@@ -9,11 +9,11 @@
   "source_manifest": "source-manifest.primary-care-liver-function-chronic-follow-up-research",
   "default_refresh": {
     "class": "clinical_guideline",
-    "last_assessed_at": "2026-07-14",
+    "last_assessed_at": "2026-07-30",
     "monitor_interval_days": 1,
     "full_review_interval_days": 180,
-    "next_monitor_at": "2026-07-15",
-    "next_full_review_at": "2027-01-10",
+    "next_monitor_at": "2026-08-06",
+    "next_full_review_at": "2027-01-26",
     "policy_id": "policy.knowledge-refresh",
     "overdue_behavior": {
       "production": "exclude_or_require_review",
@@ -1191,20 +1191,25 @@
     },
     {
       "fact": {
-        "id": "liver.alcohol_pattern_and_last_use",
-        "display": "Alcohol Pattern",
-        "value_type": "string"
+        "id": "patient.alcohol.use_status",
+        "display": "Alcohol Use Status",
+        "value_type": "coded",
+        "allowed_values": [
+          "current",
+          "former",
+          "never"
+        ]
       },
       "target": {
-        "id": "target.liver-function-chronic-follow-up.alcohol",
-        "display": "Alcohol Pattern",
+        "id": "target.liver-function-chronic-follow-up.alcohol-status",
+        "display": "Alcohol Use Status",
         "intents": [
           "intent.risk_assessment"
         ]
       },
       "question": {
-        "id": "question.liver-function-chronic-follow-up.alcohol",
-        "wording": "술 종류·한 번 양·주당 횟수, 폭음과 마지막 음주 시각, 최근 감량·중단을 알려주세요.",
+        "id": "question.liver-function-chronic-follow-up.alcohol-status",
+        "wording": "현재 술을 마시는지, 과거에는 마셨지만 지금은 끊었는지, 평생 마시지 않았는지 알려주세요.",
         "language": "ko",
         "mode": [
           "chat",
@@ -1217,7 +1222,271 @@
         {
           "branch": "any",
           "score": 142,
-          "reason": "alcohol"
+          "reason": "alcohol-status"
+        }
+      ],
+      "supports": [
+        "group.liver.common",
+        "group.liver.cause"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "patient.alcohol.beverage_types",
+        "display": "Alcoholic Beverage Types",
+        "value_type": "coded_or_string",
+        "allowed_values": [
+          "soju",
+          "beer",
+          "makgeolli",
+          "wine",
+          "spirits",
+          "other"
+        ]
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.alcohol-beverage-types",
+        "display": "Alcoholic Beverage Types",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.alcohol-beverage-types",
+        "wording": "주로 마시거나 마셨던 술 종류는 무엇인가요? 보기에 없으면 직접 입력해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 141,
+          "reason": "alcohol-beverage-types"
+        }
+      ],
+      "supports": [
+        "group.liver.common",
+        "group.liver.cause"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "patient.alcohol.frequency",
+        "display": "Alcohol Drinking Frequency",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.alcohol-frequency",
+        "display": "Alcohol Drinking Frequency",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.alcohol-frequency",
+        "wording": "평균적으로 얼마나 자주 술을 마시거나 마셨나요? 예: 주 2회, 월 1회, 거의 매일",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 140,
+          "reason": "alcohol-frequency"
+        }
+      ],
+      "supports": [
+        "group.liver.common",
+        "group.liver.cause"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "patient.alcohol.amount_per_occasion",
+        "display": "Alcohol Amount per Occasion",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.alcohol-amount",
+        "display": "Alcohol Amount per Occasion",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.alcohol-amount",
+        "wording": "한 번 마실 때 보통 술 종류별로 얼마나 마시거나 마셨나요? 예: 소주 1병, 맥주 500mL 2잔",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 139,
+          "reason": "alcohol-amount"
+        }
+      ],
+      "supports": [
+        "group.liver.common",
+        "group.liver.cause"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "liver.alcohol_heavy_episode_pattern",
+        "display": "Heavy Alcohol Episode Pattern",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.alcohol-heavy-episode",
+        "display": "Heavy Alcohol Episode Pattern",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.alcohol-heavy-episode",
+        "wording": "평소보다 많은 양을 한 번에 마시는 일이 있다면 양과 빈도를 알려주세요. 없으면 '없음'이라고 답해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 138,
+          "reason": "alcohol-heavy-episode"
+        }
+      ],
+      "supports": [
+        "group.liver.common",
+        "group.liver.cause"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.alcohol_last_use_timing",
+        "display": "Last Alcohol Use Timing",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.alcohol-last-use",
+        "display": "Last Alcohol Use Timing",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.alcohol-last-use",
+        "wording": "마지막으로 술을 마신 때는 언제인가요? 정확한 날짜를 모르면 대략적인 시점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 137,
+          "reason": "alcohol-last-use"
+        }
+      ],
+      "supports": [
+        "group.liver.common",
+        "group.liver.cause"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.alcohol_recent_reduction_or_cessation",
+        "display": "Recent Alcohol Reduction or Cessation",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.alcohol-reduction",
+        "display": "Recent Alcohol Reduction or Cessation",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.alcohol-reduction",
+        "wording": "최근 평소보다 술을 크게 줄이거나 끊었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 136,
+          "reason": "alcohol-reduction"
+        }
+      ],
+      "supports": [
+        "group.liver.common",
+        "group.liver.cause"
+      ]
+    },
+    {
+      "fact": {
+        "id": "liver.alcohol_reduction_or_cessation_details",
+        "display": "Alcohol Reduction or Cessation Details",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.liver-function-chronic-follow-up.alcohol-reduction-details",
+        "display": "Alcohol Reduction or Cessation Details",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.liver-function-chronic-follow-up.alcohol-reduction-details",
+        "wording": "술을 줄이거나 끊기 시작한 시점과 이전·현재 음주량의 변화를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 135,
+          "reason": "alcohol-reduction-details"
         }
       ],
       "supports": [
