@@ -1,6 +1,6 @@
 {
   "id": "simulation.adaptive-interview-turn-contract",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "status": "synthetic",
   "contains_real_patient_data": false,
   "cases": [
@@ -139,6 +139,60 @@
         "unlisted_but_unambiguous_text_is_accepted": true,
         "ambiguous_text_is_clarified_with_the_same_question_reference": true
       }
+    },
+    {
+      "id": "SYNTHETIC-OLDER-ADULT-DIZZINESS-MODEL-ADAPTER-001",
+      "reason_for_encounter": "postural presyncope in an older adult",
+      "mapped_rfe": "rfe.dizziness_syncope",
+      "synthetic_user_context": {
+        "patient.age_years": 72,
+        "response_source": "patient_report",
+        "symptom_description": "brief darkening of vision and unsteadiness after standing without spinning",
+        "explicit_negative_facts": [
+          "symptom.syncope.occurred",
+          "symptom.new_hearing_loss",
+          "history.cardiac_disease"
+        ],
+        "sex_or_gender_reported": false
+      },
+      "candidate_questions": [
+        {
+          "semantic": "child_growth_feeding_fever_activity_and_proxy_observation",
+          "expected_action": "skip",
+          "reason": "patient_group_not_applicable"
+        },
+        {
+          "semantic": "repeat_patient_description_and_baseline_balance_vision_hearing_gait",
+          "expected_action": "skip",
+          "reason": "already_covered_at_sufficient_precision"
+        },
+        {
+          "semantic": "repeat_cardiac_history_after_complete_negative_history",
+          "expected_action": "skip",
+          "reason": "already_answered_without_ambiguity_or_conflict"
+        },
+        {
+          "semantic": "repeat_hearing_change_after_explicit_negative_answer",
+          "expected_action": "skip",
+          "reason": "negative_fact_is_answered_not_missing"
+        }
+      ],
+      "expected_model_adapter_flow": {
+        "evaluate_patient_group_applicability_before_render": true,
+        "adult_age_suppresses_child_only_questions": true,
+        "proxy_only_questions_require_proxy_context": true,
+        "explicit_negative_facts_contribute_to_semantic_coverage": true,
+        "ask_only_missing_dimensions_of_an_overlapping_detail_fact": true,
+        "do_not_infer_unreported_sex_or_gender": true,
+        "review_complete_command": "종료 확인",
+        "review_complete_command_is_terminal": true,
+        "additional_confirmation_after_review_complete_command": false
+      },
+      "expected_handoff": {
+        "unreported_demographics_remain_unknown": true,
+        "no_invented_male_or_female_value": true,
+        "preserve_explicit_absence_separately_from_unknown": true
+      }
     }
   ],
   "provenance": {
@@ -149,6 +203,7 @@
       "policies/encounter-context-review.json"
     ],
     "review_status": "unreviewed",
-    "version": "0.1.0"
+    "updated_at": "2026-07-30T00:00:00Z",
+    "version": "0.2.0"
   }
 }

@@ -120,6 +120,59 @@ class GptExportTests(unittest.TestCase):
             ]
         )
 
+        older_adult = fixture["cases"][5]
+        self.assertEqual(older_adult["mapped_rfe"], "rfe.dizziness_syncope")
+        self.assertTrue(all(
+            item["expected_action"] == "skip"
+            for item in older_adult["candidate_questions"]
+        ))
+        adapter_flow = older_adult["expected_model_adapter_flow"]
+        self.assertTrue(
+            adapter_flow["evaluate_patient_group_applicability_before_render"]
+        )
+        self.assertTrue(adapter_flow["adult_age_suppresses_child_only_questions"])
+        self.assertTrue(
+            adapter_flow["explicit_negative_facts_contribute_to_semantic_coverage"]
+        )
+        self.assertTrue(adapter_flow["do_not_infer_unreported_sex_or_gender"])
+        self.assertTrue(adapter_flow["review_complete_command_is_terminal"])
+        self.assertFalse(
+            adapter_flow["additional_confirmation_after_review_complete_command"]
+        )
+
+    def test_model_adapter_guard_is_exported(self):
+        with tempfile.TemporaryDirectory() as output:
+            build(ROOT, Path(output))
+            manifest = json.loads(
+                (Path(output) / "manifest.json").read_text(encoding="utf-8")
+            )
+            guard = manifest["adaptive_interview_turn_contract"][
+                "model_adapter_execution_guard"
+            ]
+            self.assertTrue(guard["evaluate_applicability_before_render"])
+            self.assertEqual(
+                guard["child_only_question_requires"],
+                "known_age_under_18_or_explicit_child_or_proxy_context",
+            )
+            self.assertTrue(guard["adult_age_suppresses_child_only_questions"])
+            self.assertTrue(guard["never_infer_unreported_demographics"])
+            self.assertTrue(
+                guard["exact_review_complete_command_is_terminal_transition"]
+            )
+            self.assertFalse(
+                guard["ask_another_confirmation_after_terminal_transition"]
+            )
+
+            deduplication = manifest["question_utility_and_deduplication_policy"]
+            self.assertIn(
+                "explicit_negative_fact_at_sufficient_precision",
+                deduplication["semantic_coverage_sources"],
+            )
+            self.assertIn(
+                "ask_only_the_still_missing_dimensions_of_an_overlapping_detail_fact",
+                deduplication["before_every_new_question"],
+            )
+
     def test_export_is_deterministic_and_response_free(self):
         with tempfile.TemporaryDirectory() as first, tempfile.TemporaryDirectory() as second:
             first_path = Path(first)
