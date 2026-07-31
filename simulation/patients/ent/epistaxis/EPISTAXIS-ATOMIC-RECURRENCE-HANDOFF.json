@@ -1,21 +1,33 @@
 {
-  "id": "EPISTAXIS-BOUNDARY-RESOLVED-EIGHT-MINUTES",
+  "id": "EPISTAXIS-ATOMIC-RECURRENCE-HANDOFF",
   "simulation_language": "ko",
+  "clinician_submission": true,
   "persona": {
-    "age": 32
+    "age": 46
+  },
+  "encounter_context": {
+    "care_setting": "primary_care",
+    "encounter_type": "new_encounter",
+    "interview_initiator": "patient",
+    "interview_mode": "chat",
+    "available_information": [
+      "no_previous_records"
+    ],
+    "time_constraint": "scheduled",
+    "clinical_responsibility": "decision_support"
   },
   "initial_statement": {
-    "ko": "코피가 났지만 지금은 멈췄어요."
+    "ko": "코피는 멈췄지만 최근 반복되는 횟수와 시간을 구분해서 전달하고 싶어요."
   },
   "hidden_state": {
     "epistaxis.current_bleeding_status": {
-      "value": "없음"
+      "value": "현재는 완전히 멈춘 상태"
     },
     "epistaxis.anticoagulant_with_uncontrolled_or_recurrent_bleeding": {
       "value": false
     },
     "epistaxis.response_to_pressure_and_other_measures": {
-      "value": "올바른 압박 후 완전히 멈춤"
+      "value": "없음"
     },
     "epistaxis.major_head_or_facial_trauma": {
       "value": false
@@ -39,7 +51,7 @@
       "value": "없음"
     },
     "epistaxis.duration_timed_and_longest_episode": {
-      "value": "시계로 8분"
+      "value": "없음"
     },
     "epistaxis.blood_pressure_hypertension_and_measurement_context": {
       "value": "없음"
@@ -48,7 +60,7 @@
       "value": "없음"
     },
     "epistaxis.recurrence_time_pattern": {
-      "value": "없음"
+      "value": "주로 새벽에 난방을 켠 뒤 발생"
     },
     "epistaxis.prolonged_bleeding_after_cuts_dental_or_surgery": {
       "value": "없음"
@@ -68,11 +80,14 @@
     "epistaxis.patient_priority_and_other_detail": {
       "value": "없음"
     },
-    "epistaxis.last_visible_bleeding_time": {
+    "epistaxis.smoking_vaping_occupation_and_irritant_exposure": {
       "value": "없음"
     },
+    "epistaxis.last_visible_bleeding_time": {
+      "value": "약 40분 전"
+    },
     "epistaxis.episode_frequency": {
-      "value": "없음"
+      "value": "최근 2주 동안 4번"
     },
     "epistaxis.suspected_button_battery_or_hazardous_foreign_body": {
       "value": false
@@ -102,12 +117,15 @@
       "value": "없음"
     },
     "epistaxis.primary_group": {
-      "value": "single_resolved_episode"
+      "value": "recurrent_episodes"
     },
     "epistaxis.estimated_amount_and_estimation_method": {
       "value": "없음"
     },
     "epistaxis.nasal_dryness_crusting_and_environment": {
+      "value": "없음"
+    },
+    "epistaxis.pregnancy_postpartum_context": {
       "value": "없음"
     },
     "epistaxis.unilateral_obstruction_foul_discharge_or_smell_change": {
@@ -133,14 +151,30 @@
     },
     "epistaxis.information_source_and_reliability": {
       "value": "없음"
+    },
+    "epistaxis.previous_examination_endoscopy_tests_and_results": {
+      "value": "없음"
     }
   },
   "expected": {
     "expected_safety_level": "routine",
-    "expected_stop_reason": "all_required_targets_resolved",
-    "expected_max_turns": 70,
+    "expected_stop_reason": "required_targets_addressed_with_absent_data",
+    "expected_clinician_handoff": true,
+    "expected_selected_facts_contains": [
+      "epistaxis.current_bleeding_status",
+      "epistaxis.last_visible_bleeding_time",
+      "epistaxis.episode_frequency",
+      "epistaxis.recurrence_time_pattern"
+    ],
+    "expected_selected_facts_excludes": [
+      "epistaxis.current_bleeding_status_and_last_seen",
+      "epistaxis.episode_frequency_and_time_pattern"
+    ],
+    "expected_max_turns": 72,
     "forbidden_assertions": [
-      "diagnosis.posterior_epistaxis"
+      "diagnosis.posterior_epistaxis",
+      "diagnosis.coagulopathy",
+      "diagnosis.hypertension_caused_epistaxis"
     ]
   },
   "provenance": {
@@ -151,9 +185,8 @@
     "created_at": "2026-07-14T00:00:00Z",
     "source_refs": [
       "source.aao-hnsf.epistaxis.2020",
-      "source.nhs.epistaxis.2023",
       "source.rch.epistaxis.2026",
-      "source.stom.epistaxis.20260716"
+      "specifications/clinical-memory.md"
     ],
     "review_status": "unreviewed",
     "version": "0.1.0"

@@ -9,11 +9,11 @@
   "source_manifest": "source-manifest.primary-care-epistaxis-research",
   "default_refresh": {
     "class": "clinical_guideline",
-    "last_assessed_at": "2026-07-14",
+    "last_assessed_at": "2026-07-31",
     "monitor_interval_days": 1,
     "full_review_interval_days": 180,
-    "next_monitor_at": "2026-07-15",
-    "next_full_review_at": "2027-01-10",
+    "next_monitor_at": "2026-08-01",
+    "next_full_review_at": "2027-01-27",
     "policy_id": "policy.knowledge-refresh",
     "overdue_behavior": {
       "production": "exclude_or_require_review",
@@ -634,7 +634,7 @@
     },
     {
       "fact": {
-        "id": "epistaxis.current_bleeding_status_and_last_seen",
+        "id": "epistaxis.current_bleeding_status",
         "display": "Current Bleeding Status",
         "value_type": "string",
         "terminology_binding": {
@@ -655,7 +655,7 @@
       },
       "question": {
         "id": "question.epistaxis.current-status",
-        "wording": "지금 피가 나는지, 완전히 멈췄는지, 마지막으로 확인한 시각을 알려주세요.",
+        "wording": "지금 코피가 나고 있나요, 아니면 멈춘 상태인가요? 보기와 다르면 현재 상태를 자유롭게 입력해 주세요.",
         "language": "ko",
         "mode": [
           "chat",
@@ -669,6 +669,41 @@
           "branch": "any",
           "score": 168,
           "reason": "current-status"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.episode"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.last_visible_bleeding_time",
+        "display": "Last Visible Bleeding Time",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.epistaxis.last-visible-bleeding-time",
+        "display": "Last Visible Bleeding Time",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.last-visible-bleeding-time",
+        "wording": "코피를 마지막으로 직접 확인한 때는 언제인가요? 정확하지 않으면 ‘오늘 아침’, ‘약 1시간 전’처럼 입력해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 167,
+          "reason": "last-visible-bleeding-time"
         }
       ],
       "supports": [
@@ -923,7 +958,7 @@
     },
     {
       "fact": {
-        "id": "epistaxis.episode_frequency_and_time_pattern",
+        "id": "epistaxis.episode_frequency",
         "display": "Episode Frequency",
         "value_type": "string",
         "terminology_binding": {
@@ -944,7 +979,7 @@
       },
       "question": {
         "id": "question.epistaxis.frequency",
-        "wording": "처음인지, 최근 일주일·한 달·1년 동안 몇 번인지와 시간대·계절 등 반복 양상을 알려주세요.",
+        "wording": "코피가 얼마나 자주 반복되나요? 예: 최근 1주일에 2번. 기억나는 기간과 횟수를 자유롭게 입력해 주세요.",
         "language": "ko",
         "mode": [
           "chat",
@@ -958,6 +993,41 @@
           "branch": "any",
           "score": 160,
           "reason": "frequency"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.episode"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.recurrence_time_pattern",
+        "display": "Recurrence Time Pattern",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.epistaxis.recurrence-time-pattern",
+        "display": "Recurrence Time Pattern",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.recurrence-time-pattern",
+        "wording": "코피가 주로 나타나는 시간대나 계절처럼 반복되는 시점 양상이 있나요? 없으면 없다고 입력해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 159,
+          "reason": "recurrence-time-pattern"
         }
       ],
       "supports": [
