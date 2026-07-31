@@ -1508,16 +1508,26 @@ class CompilerTests(unittest.TestCase):
         package = compile_package(profile="kidney_function_ckd_follow_up")
         facts = {node["id"] for node in package["knowledge_graph"]["nodes"] if node["type"] == "Fact"}
         self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
-        self.assertEqual(len(facts), 56)
+        self.assertEqual(len(facts), 60)
         self.assertNotIn("kidney.dyspnea_fatigue_nausea_pruritus_and_cramps", facts)
         self.assertIn("kidney.fatigue_lethargy_severity", facts)
         self.assertIn("kidney.reduced_appetite_severity", facts)
         self.assertIn("pain.nrs_score", facts)
+        self.assertNotIn("kidney.latest_creatinine_egfr_and_reference", facts)
+        self.assertNotIn("kidney.urine_acr_pcr_and_collection_context", facts)
+        self.assertTrue({
+            "kidney.latest_serum_creatinine_result",
+            "kidney.latest_egfr_result",
+            "kidney.latest_kidney_result_date",
+            "kidney.latest_urine_acr_result",
+            "kidney.latest_urine_pcr_result",
+            "kidney.urine_protein_specimen_context",
+        } <= facts)
         self.assertEqual(package["coverage"]["total_safety_rules"], 12)
         self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 12)
         self.assertEqual(package["coverage"]["uncovered_safety_rules"], [])
         self.assertEqual(package["coverage"]["data_absent_reason_simulations"], 1)
-        self.assertEqual(package["coverage"]["simulation_count"], 14)
+        self.assertEqual(package["coverage"]["simulation_count"], 15)
         handoff = next(
             item for item in package["simulations"]
             if item["id"] == "KIDNEY-CKD-CLINICIAN-HANDOFF"
@@ -1528,6 +1538,32 @@ class CompilerTests(unittest.TestCase):
         )
         self.assertTrue(handoff_fixture["clinician_submission"])
         self.assertTrue(handoff_fixture["expected"]["expected_clinician_handoff"])
+        lab_handoff = next(
+            item for item in package["simulations"]
+            if item["id"] == "KIDNEY-LAB-ATOMIC-HANDOFF"
+        )
+        lab_fixture = json.loads(
+            (Path(__file__).resolve().parents[1] / lab_handoff["path"])
+            .read_text(encoding="utf-8")
+        )
+        self.assertTrue(lab_fixture["clinician_submission"])
+        self.assertIn(
+            "kidney.latest_urine_pcr_result",
+            lab_fixture["expected"]["expected_selected_facts_contains"],
+        )
+        question_codes = {
+            node.get("collects"): {
+                item.get("code")
+                for item in node.get("semantic_binding", {}).get(
+                    "standard_mappings", []
+                )
+            }
+            for node in package["knowledge_graph"]["nodes"]
+            if node.get("type") == "QuestionTemplate" and node.get("collects")
+        }
+        self.assertIn("2160-0", question_codes["kidney.latest_serum_creatinine_result"])
+        self.assertIn("9318-7", question_codes["kidney.latest_urine_acr_result"])
+        self.assertIn("2890-2", question_codes["kidney.latest_urine_pcr_result"])
         conditional = package["interview_completion_policy"]["conditional_required_facts"][0]
         self.assertEqual(conditional["selector_fact"], "kidney.primary_group")
         self.assertEqual(set(conditional["cases"]), {"abnormal_kidney_result", "known_ckd_followup", "acute_kidney_change", "proteinuria_or_hematuria", "dialysis_followup", "kidney_transplant_followup", "structural_or_hereditary", "other_unclear"})

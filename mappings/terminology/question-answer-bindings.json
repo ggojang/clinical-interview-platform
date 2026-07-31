@@ -1,6 +1,6 @@
 {
   "id": "mapping.question-answer-bindings",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "status": "research_only",
   "review_status": "unreviewed",
   "verified_atomic_question_fact_ids": [
@@ -10,6 +10,12 @@
     "dyspepsia.pregnancy_status",
     "immunization.pregnancy_status",
     "history.family.relationship",
+    "kidney.latest_egfr_result",
+    "kidney.latest_kidney_result_date",
+    "kidney.latest_serum_creatinine_result",
+    "kidney.latest_urine_acr_result",
+    "kidney.latest_urine_pcr_result",
+    "kidney.urine_protein_specimen_context",
     "lifestyle.tobacco_current",
     "observation.body_temperature",
     "pain.nrs_score",
@@ -153,6 +159,42 @@
         "system": "http://loinc.org",
         "code": "8462-4",
         "display": "Diastolic blood pressure",
+        "relation": "equivalent",
+        "confidence": 0.99
+      }
+    ],
+    "kidney.latest_serum_creatinine_result": [
+      {
+        "system": "http://loinc.org",
+        "code": "2160-0",
+        "display": "Creatinine [Mass/volume] in Serum or Plasma",
+        "relation": "equivalent",
+        "confidence": 0.99
+      }
+    ],
+    "kidney.latest_egfr_result": [
+      {
+        "system": "http://loinc.org",
+        "code": "98979-8",
+        "display": "Glomerular filtration rate [Volume Rate/Area] in Serum, Plasma or Blood by Creatinine-based formula (CKD-EPI 2021)/1.73 sq M",
+        "relation": "partial",
+        "confidence": 0.7
+      }
+    ],
+    "kidney.latest_urine_acr_result": [
+      {
+        "system": "http://loinc.org",
+        "code": "9318-7",
+        "display": "Albumin/Creatinine [Mass Ratio] in Urine",
+        "relation": "equivalent",
+        "confidence": 0.99
+      }
+    ],
+    "kidney.latest_urine_pcr_result": [
+      {
+        "system": "http://loinc.org",
+        "code": "2890-2",
+        "display": "Protein/Creatinine [Mass Ratio] in Urine",
         "relation": "equivalent",
         "confidence": 0.99
       }
@@ -571,8 +613,8 @@
     "prefer_not_to_answer": "asked-declined"
   },
   "verification": {
-    "verified_at": "2026-07-29",
-    "verification_source": "https://stom.infoclinic.co/fhir/CodeSystem/$lookup",
+    "verified_at": "2026-07-31",
+    "verification_source": "http://localhost:8088/fhir/CodeSystem/$lookup",
     "loinc_version": "2.82",
     "snomed_version": "http://snomed.info/sct/900000000000207008/version/20260701",
     "review_status": "unreviewed"
@@ -585,7 +627,10 @@
     "created_at": "2026-07-23T00:00:00Z",
     "source_refs": [
       "source.stom.fhir-r4-terminology-server",
-      "policies/question-answer-terminology-binding.json"
+      "policies/question-answer-terminology-binding.json",
+      "https://loinc.org/2160-0/",
+      "https://loinc.org/9318-7/",
+      "https://loinc.org/2890-2/"
     ],
     "review_status": "unreviewed",
     "version": "0.1.0"

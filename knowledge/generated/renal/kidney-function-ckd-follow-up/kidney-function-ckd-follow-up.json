@@ -9,11 +9,11 @@
   "source_manifest": "source-manifest.primary-care-kidney-function-ckd-follow-up-research",
   "default_refresh": {
     "class": "clinical_guideline",
-    "last_assessed_at": "2026-07-14",
+    "last_assessed_at": "2026-07-31",
     "monitor_interval_days": 1,
     "full_review_interval_days": 180,
-    "next_monitor_at": "2026-07-15",
-    "next_full_review_at": "2027-01-10",
+    "next_monitor_at": "2026-08-01",
+    "next_full_review_at": "2027-01-27",
     "policy_id": "policy.knowledge-refresh",
     "overdue_behavior": {
       "production": "exclude_or_require_review",
@@ -815,20 +815,20 @@
     },
     {
       "fact": {
-        "id": "kidney.latest_creatinine_egfr_and_reference",
-        "display": "Latest Creatinine and eGFR",
+        "id": "kidney.latest_serum_creatinine_result",
+        "display": "Latest Serum Creatinine Result",
         "value_type": "string"
       },
       "target": {
-        "id": "target.kidney-function-ckd-follow-up.egfr",
-        "display": "Latest Creatinine and eGFR",
+        "id": "target.kidney-function-ckd-follow-up.latest-creatinine",
+        "display": "Latest Serum Creatinine Result",
         "intents": [
           "intent.risk_assessment"
         ]
       },
       "question": {
-        "id": "question.kidney-function-ckd-follow-up.egfr",
-        "wording": "최근 크레아티닌·eGFR 수치, 검사일과 검사실 기준범위를 알려주세요.",
+        "id": "question.kidney-function-ckd-follow-up.latest-creatinine",
+        "wording": "가장 최근 혈청 또는 혈장 크레아티닌 결과값과 단위를 알려주세요. 보기에 없으면 직접 입력해 주세요.",
         "language": "ko",
         "mode": [
           "chat",
@@ -841,7 +841,79 @@
         {
           "branch": "any",
           "score": 152,
-          "reason": "egfr"
+          "reason": "latest-creatinine"
+        }
+      ],
+      "supports": [
+        "group.kidney.common",
+        "group.kidney.results"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.latest_egfr_result",
+        "display": "Latest eGFR Result",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.latest-egfr",
+        "display": "Latest eGFR Result",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.latest-egfr",
+        "wording": "가장 최근 eGFR 결과값과 단위를 알려주세요. 계산식을 모르면 결과값만 입력해도 됩니다.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 151,
+          "reason": "latest-egfr"
+        }
+      ],
+      "supports": [
+        "group.kidney.common",
+        "group.kidney.results"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.latest_kidney_result_date",
+        "display": "Latest Kidney Result Date",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.latest-result-date",
+        "display": "Latest Kidney Result Date",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.latest-result-date",
+        "wording": "가장 최근 신장기능 검사를 시행한 날짜를 알려주세요. 정확한 날짜를 모르면 대략적인 시점을 입력해도 됩니다.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 150,
+          "reason": "latest-result-date"
         }
       ],
       "supports": [
@@ -887,28 +959,20 @@
     },
     {
       "fact": {
-        "id": "kidney.urine_acr_pcr_and_collection_context",
-        "display": "Urine ACR and PCR",
-        "value_type": "string",
-        "terminology_binding": {
-          "system": "http://snomed.info/sct",
-          "code": "29738008"
-        },
-        "mrcm_validation": {
-          "ref": "mapping.snomed-mrcm.kidney-function-ckd-follow-up",
-          "status": "provisional_pass"
-        }
+        "id": "kidney.latest_urine_acr_result",
+        "display": "Latest Urine Albumin Creatinine Ratio",
+        "value_type": "string"
       },
       "target": {
-        "id": "target.kidney-function-ckd-follow-up.acr",
-        "display": "Urine ACR and PCR",
+        "id": "target.kidney-function-ckd-follow-up.latest-urine-acr",
+        "display": "Latest Urine Albumin Creatinine Ratio",
         "intents": [
           "intent.risk_assessment"
         ]
       },
       "question": {
-        "id": "question.kidney-function-ckd-follow-up.acr",
-        "wording": "최근 소변 ACR·PCR 결과, 첫 아침 소변 여부와 재확인 결과를 알려주세요.",
+        "id": "question.kidney-function-ckd-follow-up.latest-urine-acr",
+        "wording": "가장 최근 소변 알부민-크레아티닌비(ACR) 결과값과 단위를 알려주세요. 보기에 없으면 직접 입력해 주세요.",
         "language": "ko",
         "mode": [
           "chat",
@@ -920,8 +984,87 @@
       "priority": [
         {
           "branch": "any",
-          "score": 150,
-          "reason": "acr"
+          "score": 149,
+          "reason": "latest-urine-acr"
+        }
+      ],
+      "supports": [
+        "group.kidney.common",
+        "group.kidney.results"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.latest_urine_pcr_result",
+        "display": "Latest Urine Protein Creatinine Ratio",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.latest-urine-pcr",
+        "display": "Latest Urine Protein Creatinine Ratio",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.latest-urine-pcr",
+        "wording": "소변 단백-크레아티닌비(PCR)를 검사했다면 가장 최근 결과값과 단위를 알려주세요. 보기에 없으면 직접 입력해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 148,
+          "reason": "latest-urine-pcr"
+        }
+      ],
+      "supports": [
+        "group.kidney.common",
+        "group.kidney.results"
+      ]
+    },
+    {
+      "fact": {
+        "id": "kidney.urine_protein_specimen_context",
+        "display": "Urine Protein Specimen Context",
+        "value_type": "coded_or_string",
+        "allowed_values": [
+          "first_morning",
+          "random_spot",
+          "timed",
+          "twenty_four_hour",
+          "other"
+        ]
+      },
+      "target": {
+        "id": "target.kidney-function-ckd-follow-up.urine-protein-specimen",
+        "display": "Urine Protein Specimen Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.kidney-function-ckd-follow-up.urine-protein-specimen",
+        "wording": "소변 단백 검체는 어떤 방식으로 채취했나요? 1 첫 아침 소변, 2 수시뇨, 3 시간 지정 채뇨, 4 24시간 소변, 5 기타. 보기에 없으면 직접 입력해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 147,
+          "reason": "urine-protein-specimen"
         }
       ],
       "supports": [

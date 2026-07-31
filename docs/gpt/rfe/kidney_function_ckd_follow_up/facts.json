@@ -1,6 +1,6 @@
 {
   "contains_patient_responses": false,
-  "count": 56,
+  "count": 60,
   "encounter_contexts": [
     "context.primary_care"
   ],
@@ -450,9 +450,49 @@
     },
     {
       "description": "",
-      "display": "Latest Creatinine and eGFR",
+      "display": "Latest eGFR Result",
       "extraction_cues": [],
-      "id": "kidney.latest_creatinine_egfr_and_reference",
+      "id": "kidney.latest_egfr_result",
+      "safety_relevant": false,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "description": "",
+      "display": "Latest Kidney Result Date",
+      "extraction_cues": [],
+      "id": "kidney.latest_kidney_result_date",
+      "safety_relevant": false,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "date_or_period"
+    },
+    {
+      "description": "",
+      "display": "Latest Serum Creatinine Result",
+      "extraction_cues": [],
+      "id": "kidney.latest_serum_creatinine_result",
+      "safety_relevant": false,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "description": "",
+      "display": "Latest Urine Albumin Creatinine Ratio",
+      "extraction_cues": [],
+      "id": "kidney.latest_urine_acr_result",
+      "safety_relevant": false,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "description": "",
+      "display": "Latest Urine Protein Creatinine Ratio",
+      "extraction_cues": [],
+      "id": "kidney.latest_urine_pcr_result",
       "safety_relevant": false,
       "status": "research_only",
       "type": "Fact",
@@ -940,22 +980,34 @@
       "value_type": "string"
     },
     {
-      "description": "",
-      "display": "Urine ACR and PCR",
-      "extraction_cues": [],
-      "id": "kidney.urine_acr_pcr_and_collection_context",
-      "mrcm_validation": {
-        "ref": "mapping.snomed-mrcm.kidney-function-ckd-follow-up",
-        "status": "provisional_pass"
+      "allowed_values": [
+        "first_morning",
+        "random_spot",
+        "timed",
+        "twenty_four_hour",
+        "other"
+      ],
+      "answer_semantic_binding": {
+        "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-mixed-kidney-urine-protein-specimen-context-coded-o-3883f9eeb0",
+        "policy_id": "policy.question-answer-terminology-binding",
+        "snomed_mappings": {
+          "other": {
+            "code": "74964007",
+            "display": "Other",
+            "mapping_relation": "equivalent",
+            "system": "http://snomed.info/sct"
+          }
+        },
+        "strategy": "SNOMED_CT_then_local_coded_fallback"
       },
+      "description": "",
+      "display": "Urine Protein Specimen Context",
+      "extraction_cues": [],
+      "id": "kidney.urine_protein_specimen_context",
       "safety_relevant": false,
       "status": "research_only",
-      "terminology_binding": {
-        "code": "29738008",
-        "system": "http://snomed.info/sct"
-      },
       "type": "Fact",
-      "value_type": "string"
+      "value_type": "coded_or_string"
     },
     {
       "description": "",
@@ -997,7 +1049,7 @@
       "complete": false,
       "id": "source.kdigo.ckd.2024",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-07-28",
+      "last_monitored_at": "2026-07-31",
       "license_status": "restricted",
       "monitor_interval_days": 1,
       "publisher": "KDIGO",
