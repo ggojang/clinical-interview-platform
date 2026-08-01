@@ -1968,8 +1968,11 @@ class InterviewSession:
             selector = conditional.get("selector_fact")
             value = self.memory.value(selector) if selector else None
             cases = conditional.get("cases", {})
-            if isinstance(value, list):
-                matched = [item for item in value if item in cases]
+            multi_values = value
+            if isinstance(value, str) and "," in value:
+                multi_values = [item.strip() for item in value.split(",") if item.strip()]
+            if isinstance(multi_values, list):
+                matched = [item for item in multi_values if item in cases]
                 for item in matched:
                     required.update(cases[item])
                 if not matched:

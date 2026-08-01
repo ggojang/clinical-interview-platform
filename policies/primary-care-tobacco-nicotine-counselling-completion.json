@@ -1,0 +1,122 @@
+{
+  "id": "policy.primary-care-tobacco-nicotine-counselling-completion",
+  "version": "0.1.0",
+  "status": "research_only",
+  "addressed_fact_states": [
+    "known",
+    "unknown",
+    "not_applicable"
+  ],
+  "required_facts": {
+    "always": [
+      "tobacco.severe_chest_pain",
+      "tobacco.severe_breathing_difficulty",
+      "tobacco.collapse_or_reduced_consciousness",
+      "tobacco.suspected_acute_nicotine_exposure",
+      "tobacco.consultation_goal",
+      "tobacco.information_source",
+      "tobacco.source_reliability",
+      "patient.smoking.status",
+      "patient.smoking.product_types",
+      "tobacco.last_use_time",
+      "tobacco.home_secondhand_exposure",
+      "tobacco.work_secondhand_exposure",
+      "tobacco.pregnancy_or_postpartum_status",
+      "tobacco.relevant_conditions",
+      "tobacco.current_medicines",
+      "tobacco.allergies",
+      "tobacco.patient_concern",
+      "tobacco.expected_help",
+      "tobacco.additional_comment"
+    ],
+    "routine": []
+  },
+  "conditional_required_facts": [
+    {
+      "selector_fact": "patient.smoking.product_types",
+      "cases": {
+        "combustible_cigarette": [
+          "patient.smoking.cigarettes_per_day",
+          "patient.smoking.duration_years"
+        ],
+        "heated_tobacco": [
+          "patient.smoking.duration_years",
+          "tobacco.heated_tobacco_amount"
+        ],
+        "electronic_cigarette": [
+          "tobacco.electronic_cigarette_status",
+          "tobacco.electronic_cigarette_nicotine_content",
+          "tobacco.electronic_cigarette_amount"
+        ],
+        "smokeless_tobacco": [
+          "tobacco.smokeless_tobacco_amount"
+        ],
+        "cigar_or_pipe": [],
+        "other": []
+      },
+      "default": []
+    },
+    {
+      "when": {
+        "fact": "patient.smoking.status",
+        "equals": "current"
+      },
+      "required_facts": [
+        "tobacco.age_at_first_regular_use",
+        "tobacco.time_to_first_use_after_waking",
+        "tobacco.wakes_to_use",
+        "tobacco.craving_or_withdrawal",
+        "tobacco.prior_quit_attempt",
+        "tobacco.readiness",
+        "tobacco.target_date",
+        "tobacco.triggers"
+      ]
+    },
+    {
+      "when": {
+        "fact": "patient.smoking.status",
+        "equals": "former"
+      },
+      "required_facts": [
+        "patient.smoking.quit_timing",
+        "tobacco.prior_quit_attempt",
+        "tobacco.readiness",
+        "tobacco.triggers"
+      ]
+    },
+    {
+      "when": {
+        "fact": "tobacco.prior_quit_attempt",
+        "equals": true
+      },
+      "required_facts": [
+        "tobacco.quit_attempt_count",
+        "tobacco.most_recent_quit_attempt",
+        "tobacco.longest_abstinence",
+        "tobacco.quit_supports_tried",
+        "tobacco.quit_support_response"
+      ]
+    }
+  ],
+  "clarification_facts_by_rule": {},
+  "question_budget": {
+    "routine": 45,
+    "clarify": 10
+  },
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nice.ng209.tobacco-dependence.current-20260801",
+      "source.who.tobacco-cessation-guideline.2024",
+      "source.cdc.tobacco-clinical-interventions.2024",
+      "source.kr.nosmoke-guide.counselling.current-20260801",
+      "source.stom.tobacco-nicotine.20260801"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

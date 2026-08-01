@@ -1,0 +1,1635 @@
+{
+  "id": "knowledge.generated.tobacco-nicotine-counselling",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-tobacco-nicotine-counselling-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-08-01",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-08-02",
+    "next_full_review_at": "2027-01-28",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.tobacco_nicotine.goal",
+      "type": "ClinicalGroup",
+      "display": "goal"
+    },
+    {
+      "id": "group.tobacco_nicotine.identity",
+      "type": "ClinicalGroup",
+      "display": "identity"
+    },
+    {
+      "id": "group.tobacco_nicotine.safety",
+      "type": "ClinicalGroup",
+      "display": "safety"
+    },
+    {
+      "id": "group.tobacco_nicotine.pattern",
+      "type": "ClinicalGroup",
+      "display": "pattern"
+    },
+    {
+      "id": "group.tobacco_nicotine.dependence",
+      "type": "ClinicalGroup",
+      "display": "dependence"
+    },
+    {
+      "id": "group.tobacco_nicotine.quit",
+      "type": "ClinicalGroup",
+      "display": "quit"
+    },
+    {
+      "id": "group.tobacco_nicotine.exposure",
+      "type": "ClinicalGroup",
+      "display": "exposure"
+    },
+    {
+      "id": "group.tobacco_nicotine.history",
+      "type": "ClinicalGroup",
+      "display": "history"
+    },
+    {
+      "id": "group.tobacco_nicotine.handoff",
+      "type": "ClinicalGroup",
+      "display": "handoff"
+    }
+  ],
+  "group_hypothesis_edges": [],
+  "safety_rules": [
+    {
+      "id": "rule.tobacco-nicotine-counselling.safety.severe-chest-pain",
+      "priority": 1200,
+      "when": {
+        "fact": "tobacco.severe_chest_pain",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.tobacco-nicotine-counselling.safety.severe-breathing",
+      "priority": 1199,
+      "when": {
+        "fact": "tobacco.severe_breathing_difficulty",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.tobacco-nicotine-counselling.safety.collapse-consciousness",
+      "priority": 1198,
+      "when": {
+        "fact": "tobacco.collapse_or_reduced_consciousness",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.tobacco-nicotine-counselling.safety.acute-nicotine-exposure",
+      "priority": 1197,
+      "when": {
+        "fact": "tobacco.suspected_acute_nicotine_exposure",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "tobacco.consultation_goal",
+        "display": "Tobacco or Nicotine Consultation Goal",
+        "value_type": "coded",
+        "allowed_values": [
+          "use_review",
+          "reduce",
+          "quit",
+          "prevent_relapse",
+          "exposure_review",
+          "unsure"
+        ]
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.goal",
+        "display": "Tobacco or Nicotine Consultation Goal",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.goal",
+        "wording": "이번 문진에서 사용 현황 확인, 줄이기, 끊기, 재사용 예방 중 가장 원하는 도움은 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 260,
+          "reason": "goal"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.goal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.information_source",
+        "display": "Information Source",
+        "value_type": "coded",
+        "allowed_values": [
+          "patient",
+          "caregiver",
+          "patient_and_caregiver",
+          "record",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.information-source",
+        "display": "Information Source",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.information-source",
+        "wording": "흡연·니코틴 사용 정보를 누가 답하고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 259,
+          "reason": "information-source"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.identity"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.source_reliability",
+        "display": "Source Reliability",
+        "value_type": "coded",
+        "allowed_values": [
+          "reliable",
+          "partly_reliable",
+          "memory_uncertain",
+          "conflicting_sources",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.source-reliability",
+        "display": "Source Reliability",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.source-reliability",
+        "wording": "답변은 본인의 현재 사용을 잘 아는 내용인가요, 기억이 불확실하거나 다른 정보와 상충하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 258,
+          "reason": "source-reliability"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.identity"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.severe_chest_pain",
+        "display": "Current Severe Chest Pain",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.severe-chest-pain",
+        "display": "Current Severe Chest Pain",
+        "intents": [
+          "intent.screen_tobacco_nicotine_safety"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.severe-chest-pain",
+        "wording": "지금 심한 가슴 통증이나 압박감이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1000,
+          "reason": "severe-chest-pain"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.severe_breathing_difficulty",
+        "display": "Current Severe Breathing Difficulty",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.severe-breathing",
+        "display": "Current Severe Breathing Difficulty",
+        "intents": [
+          "intent.screen_tobacco_nicotine_safety"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.severe-breathing",
+        "wording": "지금 숨쉬기가 매우 어렵거나 말을 이어가기 힘든가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 999,
+          "reason": "severe-breathing"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.collapse_or_reduced_consciousness",
+        "display": "Collapse or Reduced Consciousness",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.collapse-consciousness",
+        "display": "Collapse or Reduced Consciousness",
+        "intents": [
+          "intent.screen_tobacco_nicotine_safety"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.collapse-consciousness",
+        "wording": "니코틴 제품 사용이나 노출 뒤 쓰러졌거나 깨우기 어렵고 의식이 뚜렷하게 떨어졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 998,
+          "reason": "collapse-consciousness"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.suspected_acute_nicotine_exposure",
+        "display": "Suspected Acute Nicotine Exposure",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.acute-nicotine-exposure",
+        "display": "Suspected Acute Nicotine Exposure",
+        "intents": [
+          "intent.screen_tobacco_nicotine_safety"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.acute-nicotine-exposure",
+        "wording": "니코틴 액상이나 제품을 삼켰거나 피부·눈에 많이 묻은 급성 노출이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 997,
+          "reason": "acute-nicotine-exposure"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "patient.smoking.status",
+        "display": "Tobacco Smoking Status",
+        "value_type": "coded",
+        "allowed_values": [
+          "current",
+          "former",
+          "never"
+        ]
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.smoking-status",
+        "display": "Tobacco Smoking Status",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.smoking-status",
+        "wording": "일반담배 또는 가열담배를 포함한 현재 흡연 상태는 어떻게 되나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 250,
+          "reason": "smoking-status"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.pattern"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "patient.smoking.product_types",
+        "display": "Tobacco or Nicotine Product Types",
+        "value_type": "coded",
+        "allowed_values": [
+          "combustible_cigarette",
+          "heated_tobacco",
+          "electronic_cigarette",
+          "cigar_or_pipe",
+          "smokeless_tobacco",
+          "other"
+        ]
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.product-types",
+        "display": "Tobacco or Nicotine Product Types",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.product-types",
+        "wording": "현재 또는 과거에 사용한 담배·니코틴 제품을 모두 선택하거나 직접 입력해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 249,
+          "reason": "product-types"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.pattern"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "tobacco.last_use_time",
+        "display": "Last Tobacco or Nicotine Use Time",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.last-use",
+        "display": "Last Tobacco or Nicotine Use Time",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.last-use",
+        "wording": "담배나 니코틴 제품을 마지막으로 사용한 때는 언제인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 248,
+          "reason": "last-use"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "patient.smoking.cigarettes_per_day",
+        "display": "Combustible Cigarettes per Day",
+        "value_type": "quantity",
+        "unit": "{cigarette}/d"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.cigarettes-per-day",
+        "display": "Combustible Cigarettes per Day",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.cigarettes-per-day",
+        "wording": "일반담배는 보통 하루 몇 개비 피우나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 247,
+          "reason": "cigarettes-per-day"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.pattern"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "patient.smoking.duration_years",
+        "display": "Smoking Duration",
+        "value_type": "quantity",
+        "unit": "a"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.smoking-duration",
+        "display": "Smoking Duration",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.smoking-duration",
+        "wording": "일반담배 또는 가열담배를 사용한 총 기간은 몇 년 정도인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 246,
+          "reason": "smoking-duration"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.pattern"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "tobacco.heated_tobacco_amount",
+        "display": "Heated Tobacco Amount",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.heated-amount",
+        "display": "Heated Tobacco Amount",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.heated-amount",
+        "wording": "가열담배는 제품명과 하루 또는 일주일 사용량을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 245,
+          "reason": "heated-amount"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.electronic_cigarette_status",
+        "display": "Electronic Cigarette Status",
+        "value_type": "coded",
+        "allowed_values": [
+          "current_daily",
+          "current_occasional",
+          "trying_to_quit",
+          "former",
+          "never"
+        ],
+        "terminology_binding": {
+          "system": "http://loinc.org",
+          "code": "105045-9",
+          "display": "Electronic cigarette status",
+          "version": "2.82",
+          "relation": "equivalent"
+        }
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.electronic-status",
+        "display": "Electronic Cigarette Status",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.electronic-status",
+        "wording": "전자담배는 현재 매일, 가끔, 금연을 위해 사용 중, 과거 사용, 사용한 적 없음 중 어디에 해당하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 245,
+          "reason": "electronic-status"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.electronic_cigarette_nicotine_content",
+        "display": "Electronic Cigarette Nicotine Content",
+        "value_type": "coded",
+        "allowed_values": [
+          "nicotine",
+          "non_nicotine",
+          "mixed_or_varies",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.electronic-nicotine",
+        "display": "Electronic Cigarette Nicotine Content",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.electronic-nicotine",
+        "wording": "사용하는 전자담배 액상이나 카트리지에 니코틴이 들어 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 244,
+          "reason": "electronic-nicotine"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.electronic_cigarette_amount",
+        "display": "Electronic Cigarette Amount",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.electronic-amount",
+        "display": "Electronic Cigarette Amount",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.electronic-amount",
+        "wording": "전자담배는 제품명과 하루 또는 일주일 사용량을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 243,
+          "reason": "electronic-amount"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.smokeless_tobacco_amount",
+        "display": "Smokeless Tobacco Amount",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.smokeless-amount",
+        "display": "Smokeless Tobacco Amount",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.smokeless-amount",
+        "wording": "씹는 담배·스누스·코담배 같은 무연담배의 종류와 사용량을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 242,
+          "reason": "smokeless-amount"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.age_at_first_regular_use",
+        "display": "Age at First Regular Use",
+        "value_type": "integer",
+        "minimum": 0,
+        "maximum": 120
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.first-regular-age",
+        "display": "Age at First Regular Use",
+        "intents": [
+          "intent.assess_tobacco_dependence_and_quit_history"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.first-regular-age",
+        "wording": "담배나 니코틴 제품을 규칙적으로 사용하기 시작한 나이는 몇 살인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 235,
+          "reason": "first-regular-age"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.dependence"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.time_to_first_use_after_waking",
+        "display": "Time to First Use After Waking",
+        "value_type": "coded",
+        "allowed_values": [
+          "within_5_minutes",
+          "6_to_30_minutes",
+          "31_to_60_minutes",
+          "after_60_minutes",
+          "not_applicable"
+        ]
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.time-to-first-use",
+        "display": "Time to First Use After Waking",
+        "intents": [
+          "intent.assess_tobacco_dependence_and_quit_history"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.time-to-first-use",
+        "wording": "잠에서 깬 뒤 첫 담배나 니코틴 제품을 사용하기까지 보통 얼마나 걸리나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 234,
+          "reason": "time-to-first-use"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.dependence"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.wakes_to_use",
+        "display": "Wakes to Use Tobacco or Nicotine",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.wakes-to-use",
+        "display": "Wakes to Use Tobacco or Nicotine",
+        "intents": [
+          "intent.assess_tobacco_dependence_and_quit_history"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.wakes-to-use",
+        "wording": "담배나 니코틴 제품을 사용하려고 밤에 깨는 일이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 233,
+          "reason": "wakes-to-use"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.dependence"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.craving_or_withdrawal",
+        "display": "Craving or Withdrawal",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.craving-withdrawal",
+        "display": "Craving or Withdrawal",
+        "intents": [
+          "intent.assess_tobacco_dependence_and_quit_history"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.craving-withdrawal",
+        "wording": "사용하지 못할 때 생기는 갈망이나 초조함 같은 불편을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 232,
+          "reason": "craving-withdrawal"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.dependence"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.prior_quit_attempt",
+        "display": "Prior Quit Attempt",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.prior-attempt",
+        "display": "Prior Quit Attempt",
+        "intents": [
+          "intent.assess_tobacco_dependence_and_quit_history"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.prior-attempt",
+        "wording": "담배나 니코틴 제품을 끊으려고 시도한 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 225,
+          "reason": "prior-attempt"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.quit"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.quit_attempt_count",
+        "display": "Quit Attempt Count",
+        "value_type": "integer",
+        "minimum": 0,
+        "maximum": 999
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.attempt-count",
+        "display": "Quit Attempt Count",
+        "intents": [
+          "intent.assess_tobacco_dependence_and_quit_history"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.attempt-count",
+        "wording": "끊으려 한 시도는 지금까지 대략 몇 번인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 224,
+          "reason": "attempt-count"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.quit"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.most_recent_quit_attempt",
+        "display": "Most Recent Quit Attempt",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.recent-attempt",
+        "display": "Most Recent Quit Attempt",
+        "intents": [
+          "intent.assess_tobacco_dependence_and_quit_history"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.recent-attempt",
+        "wording": "가장 최근에 끊으려 한 때는 언제인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 223,
+          "reason": "recent-attempt"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.quit"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.longest_abstinence",
+        "display": "Longest Abstinence",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.longest-abstinence",
+        "display": "Longest Abstinence",
+        "intents": [
+          "intent.assess_tobacco_dependence_and_quit_history"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.longest-abstinence",
+        "wording": "가장 오래 사용하지 않았던 기간은 얼마나 되나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 222,
+          "reason": "longest-abstinence"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.quit"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.quit_supports_tried",
+        "display": "Quit Supports Tried",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.supports-tried",
+        "display": "Quit Supports Tried",
+        "intents": [
+          "intent.assess_tobacco_dependence_and_quit_history"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.supports-tried",
+        "wording": "상담, 금연클리닉, 약이나 니코틴 대체제품 등 시도한 도움을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 221,
+          "reason": "supports-tried"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.quit"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.quit_support_response",
+        "display": "Response to Quit Supports",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.support-response",
+        "display": "Response to Quit Supports",
+        "intents": [
+          "intent.assess_tobacco_dependence_and_quit_history"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.support-response",
+        "wording": "시도한 금연 도움의 효과와 불편 또는 부작용은 어땠나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 220,
+          "reason": "support-response"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.quit"
+      ]
+    },
+    {
+      "fact": {
+        "id": "patient.smoking.quit_timing",
+        "display": "Quit Timing",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.quit-timing",
+        "display": "Quit Timing",
+        "intents": [
+          "intent.assess_tobacco_dependence_and_quit_history"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.quit-timing",
+        "wording": "흡연을 중단했다면 언제부터 사용하지 않았나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 219,
+          "reason": "quit-timing"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.quit"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "tobacco.readiness",
+        "display": "Readiness to Change",
+        "value_type": "coded",
+        "allowed_values": [
+          "continue",
+          "consider_reduce",
+          "ready_to_reduce",
+          "ready_to_quit",
+          "maintain_abstinence",
+          "unsure"
+        ]
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.readiness",
+        "display": "Readiness to Change",
+        "intents": [
+          "intent.assess_tobacco_dependence_and_quit_history"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.readiness",
+        "wording": "현재는 계속 사용, 줄이기, 끊을 준비, 금연 유지 중 어디에 가장 가깝나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 218,
+          "reason": "readiness"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.quit"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.target_date",
+        "display": "Target Quit or Reduction Date",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.target-date",
+        "display": "Target Quit or Reduction Date",
+        "intents": [
+          "intent.assess_tobacco_dependence_and_quit_history"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.target-date",
+        "wording": "줄이거나 끊을 목표 날짜가 있다면 언제인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 217,
+          "reason": "target-date"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.quit"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.triggers",
+        "display": "Tobacco or Nicotine Use Triggers",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.triggers",
+        "display": "Tobacco or Nicotine Use Triggers",
+        "intents": [
+          "intent.assess_tobacco_dependence_and_quit_history"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.triggers",
+        "wording": "주로 사용하게 되는 상황이나 유발 요인은 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 216,
+          "reason": "triggers"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.quit"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.home_secondhand_exposure",
+        "display": "Home Secondhand Exposure",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.home-exposure",
+        "display": "Home Secondhand Exposure",
+        "intents": [
+          "intent.prepare_tobacco_nicotine_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.home-exposure",
+        "wording": "집 안이나 차 안에서 다른 사람의 담배 연기 또는 전자담배 에어로졸에 노출되나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 210,
+          "reason": "home-exposure"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.exposure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.work_secondhand_exposure",
+        "display": "Work Secondhand Exposure",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.work-exposure",
+        "display": "Work Secondhand Exposure",
+        "intents": [
+          "intent.prepare_tobacco_nicotine_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.work-exposure",
+        "wording": "직장이나 자주 머무는 장소에서 담배 연기 또는 전자담배 에어로졸에 노출되나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 209,
+          "reason": "work-exposure"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.exposure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.pregnancy_or_postpartum_status",
+        "display": "Pregnancy or Postpartum Status",
+        "value_type": "coded",
+        "allowed_values": [
+          "pregnant",
+          "postpartum_within_one_year",
+          "not_pregnant_or_postpartum",
+          "not_applicable",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.pregnancy-postpartum",
+        "display": "Pregnancy or Postpartum Status",
+        "intents": [
+          "intent.prepare_tobacco_nicotine_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.pregnancy-postpartum",
+        "wording": "현재 임신 중이거나 출산 후 1년 이내인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 208,
+          "reason": "pregnancy-postpartum"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.relevant_conditions",
+        "display": "Relevant Health Conditions",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.relevant-conditions",
+        "display": "Relevant Health Conditions",
+        "intents": [
+          "intent.prepare_tobacco_nicotine_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.relevant-conditions",
+        "wording": "치료 중인 질환이나 최근 건강 문제를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 205,
+          "reason": "relevant-conditions"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.current_medicines",
+        "display": "Current Medicines",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.current-medicines",
+        "display": "Current Medicines",
+        "intents": [
+          "intent.prepare_tobacco_nicotine_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.current-medicines",
+        "wording": "처방약, 일반약, 건강기능식품을 포함해 현재 복용 중인 것을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 204,
+          "reason": "current-medicines"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.allergies",
+        "display": "Known Allergies",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.allergies",
+        "display": "Known Allergies",
+        "intents": [
+          "intent.prepare_tobacco_nicotine_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.allergies",
+        "wording": "알고 있는 약물 또는 물질 알레르기가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 203,
+          "reason": "allergies"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.patient_concern",
+        "display": "Patient Concern",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.patient-concern",
+        "display": "Patient Concern",
+        "intents": [
+          "intent.prepare_tobacco_nicotine_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.patient-concern",
+        "wording": "담배·니코틴 사용과 관련해 가장 걱정되는 점은 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 100,
+          "reason": "patient-concern"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.expected_help",
+        "display": "Expected Help",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.expected-help",
+        "display": "Expected Help",
+        "intents": [
+          "intent.prepare_tobacco_nicotine_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.expected-help",
+        "wording": "이번 진료에서 의료진에게 가장 받고 싶은 도움은 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 99,
+          "reason": "expected-help"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.additional_comment",
+        "display": "Additional Comment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.additional-comment",
+        "display": "Additional Comment",
+        "intents": [
+          "intent.prepare_tobacco_nicotine_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.additional-comment",
+        "wording": "질문에 없지만 의료진에게 추가로 전달할 내용이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 90,
+          "reason": "additional-comment"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.handoff"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nice.ng209.tobacco-dependence.current-20260801",
+      "source.who.tobacco-cessation-guideline.2024",
+      "source.cdc.tobacco-clinical-interventions.2024",
+      "source.kr.nosmoke-guide.counselling.current-20260801",
+      "source.stom.tobacco-nicotine.20260801"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

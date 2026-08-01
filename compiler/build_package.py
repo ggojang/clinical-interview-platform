@@ -543,6 +543,20 @@ PACKAGE_PROFILES = {
             ROOT / "sources/manifests/primary-care-post-discharge-follow-up-research.json"
         ],
     },
+    "tobacco_nicotine_counselling": {
+        "graph": ROOT / "knowledge/graph/primary-care-tobacco-nicotine-counselling.json",
+        "rules": ROOT / "rules/primary-care-tobacco-nicotine-counselling.json",
+        "sources": ROOT / "sources/manifests/primary-care-tobacco-nicotine-counselling.json",
+        "completion_policy": ROOT / "policies/primary-care-tobacco-nicotine-counselling-completion.json",
+        "output": ROOT / "packages/generated/primary-care-tobacco-nicotine-counselling-0.1.0.json",
+        "package_id": "package.primary-care-tobacco-nicotine-counselling",
+        "package_version": "0.1.0",
+        "rfe": "rfe.tobacco_nicotine_counselling",
+        "simulation_root": ROOT / "simulation/patients/preventive/tobacco-nicotine-counselling",
+        "research_manifests": [
+            ROOT / "sources/manifests/primary-care-tobacco-nicotine-counselling-research.json"
+        ],
+    },
     "menstrual_uterine_bleeding": {
         "graph": ROOT / "knowledge/graph/primary-care-menstrual-uterine-bleeding.json",
         "rules": ROOT / "rules/primary-care-menstrual-uterine-bleeding.json",
