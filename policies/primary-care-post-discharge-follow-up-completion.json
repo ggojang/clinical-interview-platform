@@ -1,0 +1,142 @@
+{
+  "id": "policy.primary-care-post-discharge-follow-up-completion",
+  "version": "0.1.0",
+  "status": "research_only",
+  "addressed_fact_states": [
+    "known",
+    "unknown",
+    "not_applicable"
+  ],
+  "required_facts": {
+    "always": [
+      "post_discharge.instructed_warning_feature_present",
+      "post_discharge.severe_breathing_difficulty",
+      "post_discharge.new_severe_chest_pain",
+      "post_discharge.collapse_or_reduced_consciousness",
+      "post_discharge.new_focal_neurologic_change",
+      "post_discharge.uncontrolled_bleeding",
+      "post_discharge.rapid_deterioration",
+      "post_discharge.essential_medicine_unavailable",
+      "post_discharge.follow_up_goal",
+      "post_discharge.discharge_date",
+      "post_discharge.hospital",
+      "post_discharge.information_source",
+      "post_discharge.source_reliability",
+      "post_discharge.discharge_summary_available",
+      "post_discharge.admission_reason_reported",
+      "post_discharge.emergency_return_instruction_received",
+      "post_discharge.overall_course",
+      "post_discharge.new_or_worsened_symptom_present",
+      "post_discharge.discharge_medicine_list_available",
+      "post_discharge.actual_current_medicines",
+      "post_discharge.medicine_changes_understood",
+      "post_discharge.pending_tests_present",
+      "post_discharge.follow_up_appointment_present",
+      "post_discharge.caregiver_support",
+      "post_discharge.contact_for_problem",
+      "post_discharge.plan_understanding",
+      "post_discharge.patient_concern",
+      "post_discharge.expected_help",
+      "post_discharge.additional_comment"
+    ],
+    "routine": []
+  },
+  "conditional_required_facts": [
+    {
+      "when": {
+        "fact": "post_discharge.discharge_summary_available",
+        "in": [
+          "available_partial",
+          "not_available",
+          "unreadable",
+          "unknown"
+        ]
+      },
+      "required_facts": [
+        "post_discharge.service",
+        "post_discharge.major_treatment_or_procedure"
+      ],
+      "reason": "incomplete_discharge_document_context"
+    },
+    {
+      "when": {
+        "fact": "post_discharge.new_or_worsened_symptom_present",
+        "equals": true
+      },
+      "required_facts": [
+        "post_discharge.new_or_worsened_symptom",
+        "post_discharge.symptom_onset",
+        "post_discharge.current_pain_present",
+        "post_discharge.function_change",
+        "post_discharge.oral_intake",
+        "post_discharge.urine_change"
+      ],
+      "reason": "new_or_worsened_post_discharge_symptom"
+    },
+    {
+      "when": {
+        "fact": "post_discharge.current_pain_present",
+        "equals": true
+      },
+      "required_facts": [
+        "post_discharge.pain_nrs"
+      ],
+      "reason": "current_pain_severity"
+    },
+    {
+      "when": {
+        "fact": "post_discharge.discharge_medicine_list_available",
+        "equals": true
+      },
+      "required_facts": [
+        "post_discharge.medicine_discrepancy",
+        "post_discharge.medicine_access_problem",
+        "post_discharge.suspected_medicine_effect",
+        "post_discharge.medicine_instruction_conflict"
+      ],
+      "reason": "medication_reconciliation"
+    },
+    {
+      "when": {
+        "fact": "post_discharge.pending_tests_present",
+        "equals": true
+      },
+      "required_facts": [
+        "post_discharge.pending_tests",
+        "post_discharge.pending_result_owner"
+      ],
+      "reason": "pending_result_handoff"
+    },
+    {
+      "when": {
+        "fact": "post_discharge.follow_up_appointment_present",
+        "equals": true
+      },
+      "required_facts": [
+        "post_discharge.follow_up_appointments",
+        "post_discharge.appointment_access_barrier"
+      ],
+      "reason": "appointment_feasibility"
+    }
+  ],
+  "clarification_facts_by_rule": {},
+  "question_budget": {
+    "routine": 40,
+    "clarify": 10
+  },
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nice.ng27.transition-discharge.2015-current-20260731",
+      "source.ahrq.red-toolkit.current-20260731",
+      "source.who.medication-safety-transitions.2019",
+      "source.stom.post-discharge.20260731"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

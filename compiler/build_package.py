@@ -529,6 +529,20 @@ PACKAGE_PROFILES = {
             ROOT / "sources/manifests/primary-care-test-result-follow-up-research.json"
         ],
     },
+    "post_discharge_follow_up": {
+        "graph": ROOT / "knowledge/graph/primary-care-post-discharge-follow-up.json",
+        "rules": ROOT / "rules/primary-care-post-discharge-follow-up.json",
+        "sources": ROOT / "sources/manifests/primary-care-post-discharge-follow-up.json",
+        "completion_policy": ROOT / "policies/primary-care-post-discharge-follow-up-completion.json",
+        "output": ROOT / "packages/generated/primary-care-post-discharge-follow-up-0.1.0.json",
+        "package_id": "package.primary-care-post-discharge-follow-up",
+        "package_version": "0.1.0",
+        "rfe": "rfe.post_discharge_follow_up",
+        "simulation_root": ROOT / "simulation/patients/follow-up/post-discharge",
+        "research_manifests": [
+            ROOT / "sources/manifests/primary-care-post-discharge-follow-up-research.json"
+        ],
+    },
     "menstrual_uterine_bleeding": {
         "graph": ROOT / "knowledge/graph/primary-care-menstrual-uterine-bleeding.json",
         "rules": ROOT / "rules/primary-care-menstrual-uterine-bleeding.json",

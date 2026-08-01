@@ -1,0 +1,1979 @@
+{
+  "id": "knowledge.generated.post-discharge-follow-up",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-post-discharge-follow-up-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-07-31",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-08-01",
+    "next_full_review_at": "2027-01-27",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "terminology_reference": {
+    "record_title": {
+      "system": "http://loinc.org",
+      "code": "11544-4",
+      "display": "Hospital discharge follow-up Narrative",
+      "version": "2.82",
+      "relation": "record_title_not_question_exact"
+    },
+    "discharge_event": {
+      "system": "http://snomed.info/sct",
+      "code": "308283009",
+      "display": "Discharge from hospital (procedure)",
+      "version": "http://snomed.info/sct/900000000000207008/version/20260701",
+      "relation": "context_event"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.post_discharge.goal",
+      "type": "ClinicalGroup",
+      "display": "goal"
+    },
+    {
+      "id": "group.post_discharge.identity",
+      "type": "ClinicalGroup",
+      "display": "identity"
+    },
+    {
+      "id": "group.post_discharge.safety",
+      "type": "ClinicalGroup",
+      "display": "safety"
+    },
+    {
+      "id": "group.post_discharge.course",
+      "type": "ClinicalGroup",
+      "display": "course"
+    },
+    {
+      "id": "group.post_discharge.medication",
+      "type": "ClinicalGroup",
+      "display": "medication"
+    },
+    {
+      "id": "group.post_discharge.plan",
+      "type": "ClinicalGroup",
+      "display": "plan"
+    },
+    {
+      "id": "group.post_discharge.support",
+      "type": "ClinicalGroup",
+      "display": "support"
+    },
+    {
+      "id": "group.post_discharge.handoff",
+      "type": "ClinicalGroup",
+      "display": "handoff"
+    }
+  ],
+  "group_hypothesis_edges": [],
+  "safety_rules": [
+    {
+      "id": "rule.post-discharge-follow-up.safety.instructed-warning-present",
+      "priority": 1200,
+      "when": {
+        "fact": "post_discharge.instructed_warning_feature_present",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.post-discharge-follow-up.safety.severe-breathing",
+      "priority": 1199,
+      "when": {
+        "fact": "post_discharge.severe_breathing_difficulty",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.post-discharge-follow-up.safety.severe-chest-pain",
+      "priority": 1198,
+      "when": {
+        "fact": "post_discharge.new_severe_chest_pain",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.post-discharge-follow-up.safety.collapse-consciousness",
+      "priority": 1197,
+      "when": {
+        "fact": "post_discharge.collapse_or_reduced_consciousness",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.post-discharge-follow-up.safety.focal-neurologic-change",
+      "priority": 1196,
+      "when": {
+        "fact": "post_discharge.new_focal_neurologic_change",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.post-discharge-follow-up.safety.uncontrolled-bleeding",
+      "priority": 1195,
+      "when": {
+        "fact": "post_discharge.uncontrolled_bleeding",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.post-discharge-follow-up.safety.rapid-deterioration",
+      "priority": 1194,
+      "when": {
+        "fact": "post_discharge.rapid_deterioration",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.post-discharge-follow-up.safety.essential-medicine-unavailable",
+      "priority": 1193,
+      "when": {
+        "fact": "post_discharge.essential_medicine_unavailable",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "post_discharge.follow_up_goal",
+        "display": "Post-discharge Follow-up Goal",
+        "value_type": "coded",
+        "allowed_values": [
+          "symptom_review",
+          "medication_review",
+          "results_or_appointments",
+          "care_or_function",
+          "combined",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.goal",
+        "display": "Post-discharge Follow-up Goal",
+        "intents": [
+          "intent.characterize_post_discharge_transition"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.goal",
+        "wording": "이번 퇴원 후 확인에서 가장 필요한 것은 증상 변화 확인, 약 확인, 검사·예약 확인, 돌봄·기능 확인 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 250,
+          "reason": "goal"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.goal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.discharge_date",
+        "display": "Hospital Discharge Date",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.discharge-date",
+        "display": "Hospital Discharge Date",
+        "intents": [
+          "intent.characterize_post_discharge_transition"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.discharge-date",
+        "wording": "병원에서 퇴원한 날짜는 언제인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 249,
+          "reason": "discharge-date"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.identity"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.hospital",
+        "display": "Discharging Hospital",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.hospital",
+        "display": "Discharging Hospital",
+        "intents": [
+          "intent.characterize_post_discharge_transition"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.hospital",
+        "wording": "어느 의료기관에서 퇴원했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 248,
+          "reason": "hospital"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.identity"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.service",
+        "display": "Discharging Service",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.service",
+        "display": "Discharging Service",
+        "intents": [
+          "intent.characterize_post_discharge_transition"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.service",
+        "wording": "입원했던 진료과 또는 병동을 알고 있다면 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 247,
+          "reason": "service"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.identity"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.information_source",
+        "display": "Information Source",
+        "value_type": "coded",
+        "allowed_values": [
+          "patient",
+          "caregiver",
+          "patient_and_caregiver",
+          "record",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.information-source",
+        "display": "Information Source",
+        "intents": [
+          "intent.characterize_post_discharge_transition"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.information-source",
+        "wording": "퇴원 후 정보를 누가 답하고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 246,
+          "reason": "information-source"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.identity"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.source_reliability",
+        "display": "Source Reliability",
+        "value_type": "coded",
+        "allowed_values": [
+          "document_confirmed",
+          "partly_document_confirmed",
+          "memory_only",
+          "conflicting_sources",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.source-reliability",
+        "display": "Source Reliability",
+        "intents": [
+          "intent.characterize_post_discharge_transition"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.source-reliability",
+        "wording": "답변 내용은 퇴원서류와 확인한 내용인가요, 주로 기억에 따른 내용인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 245,
+          "reason": "source-reliability"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.identity"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.discharge_summary_available",
+        "display": "Discharge Summary Availability",
+        "value_type": "coded",
+        "allowed_values": [
+          "available_complete",
+          "available_partial",
+          "not_available",
+          "unreadable",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.summary-available",
+        "display": "Discharge Summary Availability",
+        "intents": [
+          "intent.characterize_post_discharge_transition"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.summary-available",
+        "wording": "퇴원요약지나 퇴원안내서는 현재 확인할 수 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 244,
+          "reason": "summary-available"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.identity"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.admission_reason_reported",
+        "display": "Reported Admission Reason",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.admission-reason",
+        "display": "Reported Admission Reason",
+        "intents": [
+          "intent.characterize_post_discharge_transition"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.admission-reason",
+        "wording": "입원하게 된 주된 이유를 안내받은 표현 그대로 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 243,
+          "reason": "admission-reason"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.identity"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.major_treatment_or_procedure",
+        "display": "Major Inpatient Treatment or Procedure",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.major-treatment",
+        "display": "Major Inpatient Treatment or Procedure",
+        "intents": [
+          "intent.characterize_post_discharge_transition"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.major-treatment",
+        "wording": "입원 중 받은 주요 수술·시술·치료가 있다면 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 242,
+          "reason": "major-treatment"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.identity"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.emergency_return_instruction_received",
+        "display": "Emergency Return Instruction Received",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.emergency-instruction-received",
+        "display": "Emergency Return Instruction Received",
+        "intents": [
+          "intent.reconcile_post_discharge_plan"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.emergency-instruction-received",
+        "wording": "퇴원할 때 특정 변화가 생기면 즉시 응급실로 가거나 119를 이용하라는 안내를 받았나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 240,
+          "reason": "emergency-instruction-received"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.plan"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.instructed_warning_feature_present",
+        "display": "Instructed Warning Feature Present",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.instructed-warning-present",
+        "display": "Instructed Warning Feature Present",
+        "intents": [
+          "intent.screen_post_discharge_safety"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.instructed-warning-present",
+        "wording": "퇴원할 때 즉시 진료받으라고 안내받은 변화가 지금 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1000,
+          "reason": "instructed-warning-present"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.severe_breathing_difficulty",
+        "display": "Severe Breathing Difficulty",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.severe-breathing",
+        "display": "Severe Breathing Difficulty",
+        "intents": [
+          "intent.screen_post_discharge_safety"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.severe-breathing",
+        "wording": "지금 숨쉬기가 매우 어렵거나 말을 이어가기 힘든가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 999,
+          "reason": "severe-breathing"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.new_severe_chest_pain",
+        "display": "New Severe Chest Pain",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.severe-chest-pain",
+        "display": "New Severe Chest Pain",
+        "intents": [
+          "intent.screen_post_discharge_safety"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.severe-chest-pain",
+        "wording": "퇴원 후 새로 생긴 심한 가슴 통증이 지금 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 998,
+          "reason": "severe-chest-pain"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.collapse_or_reduced_consciousness",
+        "display": "Collapse or Reduced Consciousness",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.collapse-consciousness",
+        "display": "Collapse or Reduced Consciousness",
+        "intents": [
+          "intent.screen_post_discharge_safety"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.collapse-consciousness",
+        "wording": "퇴원 후 쓰러졌거나 깨우기 어렵고 의식이 평소보다 뚜렷하게 떨어진 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 997,
+          "reason": "collapse-consciousness"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.new_focal_neurologic_change",
+        "display": "New Focal Neurologic Change",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.focal-neurologic-change",
+        "display": "New Focal Neurologic Change",
+        "intents": [
+          "intent.screen_post_discharge_safety"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.focal-neurologic-change",
+        "wording": "퇴원 후 한쪽 힘 빠짐, 얼굴 처짐 또는 갑작스러운 말하기 어려움이 새로 생겼나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 996,
+          "reason": "focal-neurologic-change"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.uncontrolled_bleeding",
+        "display": "Uncontrolled Bleeding",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.uncontrolled-bleeding",
+        "display": "Uncontrolled Bleeding",
+        "intents": [
+          "intent.screen_post_discharge_safety"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.uncontrolled-bleeding",
+        "wording": "현재 눌러도 멈추지 않는 출혈이나 많은 양의 피가 보이나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 995,
+          "reason": "uncontrolled-bleeding"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.rapid_deterioration",
+        "display": "Rapid Clinical Deterioration",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.rapid-deterioration",
+        "display": "Rapid Clinical Deterioration",
+        "intents": [
+          "intent.screen_post_discharge_safety"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.rapid-deterioration",
+        "wording": "퇴원 후 전반적인 상태가 빠르게 나빠지고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 994,
+          "reason": "rapid-deterioration"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.essential_medicine_unavailable",
+        "display": "Essential Medicine Unavailable",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.essential-medicine-unavailable",
+        "display": "Essential Medicine Unavailable",
+        "intents": [
+          "intent.screen_post_discharge_safety"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.essential-medicine-unavailable",
+        "wording": "퇴원 시 반드시 계속 복용하라고 한 약을 구하지 못해 현재 복용할 수 없는 상태인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 993,
+          "reason": "essential-medicine-unavailable"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.overall_course",
+        "display": "Overall Course Since Discharge",
+        "value_type": "coded",
+        "allowed_values": [
+          "improving",
+          "unchanged",
+          "worsening",
+          "fluctuating",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.overall-course",
+        "display": "Overall Course Since Discharge",
+        "intents": [
+          "intent.prepare_post_discharge_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.overall-course",
+        "wording": "퇴원할 때와 비교해 전반적인 상태는 좋아짐, 비슷함, 나빠짐 중 어느 쪽인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 230,
+          "reason": "overall-course"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.course"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.new_or_worsened_symptom_present",
+        "display": "New or Worsened Symptom Present",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.new-symptom-present",
+        "display": "New or Worsened Symptom Present",
+        "intents": [
+          "intent.prepare_post_discharge_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.new-symptom-present",
+        "wording": "퇴원 후 새로 생기거나 더 심해진 증상이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 229,
+          "reason": "new-symptom-present"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.course"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.new_or_worsened_symptom",
+        "display": "New or Worsened Symptom",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.new-symptom",
+        "display": "New or Worsened Symptom",
+        "intents": [
+          "intent.prepare_post_discharge_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.new-symptom",
+        "wording": "새로 생기거나 더 심해진 증상을 하나씩 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 228,
+          "reason": "new-symptom"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.course"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.symptom_onset",
+        "display": "Post-discharge Symptom Onset",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.symptom-onset",
+        "display": "Post-discharge Symptom Onset",
+        "intents": [
+          "intent.prepare_post_discharge_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.symptom-onset",
+        "wording": "그 변화는 퇴원 후 언제 시작되었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 227,
+          "reason": "symptom-onset"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.course"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.current_pain_present",
+        "display": "Current Pain Present",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.current-pain-present",
+        "display": "Current Pain Present",
+        "intents": [
+          "intent.prepare_post_discharge_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.current-pain-present",
+        "wording": "현재 통증이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 226,
+          "reason": "current-pain-present"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.course"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.pain_nrs",
+        "display": "Current Pain NRS",
+        "value_type": "integer",
+        "minimum": 0,
+        "maximum": 10
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.pain-nrs",
+        "display": "Current Pain NRS",
+        "intents": [
+          "intent.prepare_post_discharge_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.pain-nrs",
+        "wording": "현재 통증은 0점부터 10점 중 몇 점인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 225,
+          "reason": "pain-nrs"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.course"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.function_change",
+        "display": "Function Compared with Discharge",
+        "value_type": "coded",
+        "allowed_values": [
+          "improving",
+          "unchanged",
+          "worsening",
+          "dependent",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.function-change",
+        "display": "Function Compared with Discharge",
+        "intents": [
+          "intent.prepare_post_discharge_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.function-change",
+        "wording": "걷기, 씻기, 옷 입기, 식사 같은 일상 기능은 퇴원할 때보다 좋아졌나요, 비슷한가요, 나빠졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 226,
+          "reason": "function-change"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.course"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.oral_intake",
+        "display": "Oral Intake",
+        "value_type": "coded",
+        "allowed_values": [
+          "usual",
+          "reduced",
+          "minimal_or_none",
+          "tube_or_assisted",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.oral-intake",
+        "display": "Oral Intake",
+        "intents": [
+          "intent.prepare_post_discharge_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.oral-intake",
+        "wording": "음식과 물을 먹고 마시는 양은 평소와 비교해 어떤가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 225,
+          "reason": "oral-intake"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.course"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.urine_change",
+        "display": "Urine Output Change",
+        "value_type": "coded",
+        "allowed_values": [
+          "no_change",
+          "reduced",
+          "markedly_reduced",
+          "unable_to_assess",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.urine-change",
+        "display": "Urine Output Change",
+        "intents": [
+          "intent.prepare_post_discharge_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.urine-change",
+        "wording": "소변 양이나 횟수가 퇴원 후 평소보다 줄었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 224,
+          "reason": "urine-change"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.course"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.discharge_medicine_list_available",
+        "display": "Discharge Medicine List Available",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.medicine-list-available",
+        "display": "Discharge Medicine List Available",
+        "intents": [
+          "intent.reconcile_post_discharge_plan"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.medicine-list-available",
+        "wording": "퇴원약 목록이나 처방전을 현재 확인할 수 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 220,
+          "reason": "medicine-list-available"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.medication"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.actual_current_medicines",
+        "display": "Actual Current Medicines",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.actual-current-medicines",
+        "display": "Actual Current Medicines",
+        "intents": [
+          "intent.reconcile_post_discharge_plan"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.actual-current-medicines",
+        "wording": "퇴원 후 실제로 복용 중인 약을 처방약, 일반약, 건강기능식품을 포함해 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 219,
+          "reason": "actual-current-medicines"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.medication"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.medicine_changes_understood",
+        "display": "Medicine Changes Understood",
+        "value_type": "coded",
+        "allowed_values": [
+          "understood",
+          "partly_understood",
+          "not_understood",
+          "no_changes_reported",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.medicine-changes-understood",
+        "display": "Medicine Changes Understood",
+        "intents": [
+          "intent.reconcile_post_discharge_plan"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.medicine-changes-understood",
+        "wording": "입원 전과 비교해 시작·중단·용량 변경된 약을 본인이나 보호자가 알고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 218,
+          "reason": "medicine-changes-understood"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.medication"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.medicine_discrepancy",
+        "display": "Medicine List Discrepancy",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.medicine-discrepancy",
+        "display": "Medicine List Discrepancy",
+        "intents": [
+          "intent.reconcile_post_discharge_plan"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.medicine-discrepancy",
+        "wording": "퇴원서류의 약 목록과 실제 복용이 다르다면 어떤 약이 어떻게 다른가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 217,
+          "reason": "medicine-discrepancy"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.medication"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.medicine_access_problem",
+        "display": "Medicine Access Problem",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.medicine-access",
+        "display": "Medicine Access Problem",
+        "intents": [
+          "intent.reconcile_post_discharge_plan"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.medicine-access",
+        "wording": "비용, 재고, 처방, 이동 문제로 구하지 못한 퇴원약이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 216,
+          "reason": "medicine-access"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.medication"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.suspected_medicine_effect",
+        "display": "Suspected Medicine Effect",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.suspected-medicine-effect",
+        "display": "Suspected Medicine Effect",
+        "intents": [
+          "intent.reconcile_post_discharge_plan"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.suspected-medicine-effect",
+        "wording": "퇴원 후 약을 복용하면서 새로 생겼다고 생각되는 불편감이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 215,
+          "reason": "suspected-medicine-effect"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.medication"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.medicine_instruction_conflict",
+        "display": "Medicine Instruction Conflict",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.medicine-instruction-conflict",
+        "display": "Medicine Instruction Conflict",
+        "intents": [
+          "intent.reconcile_post_discharge_plan"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.medicine-instruction-conflict",
+        "wording": "병원, 기존 처방기관, 약국의 복용 안내가 서로 다르다면 각각 어떻게 안내받았나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 214,
+          "reason": "medicine-instruction-conflict"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.medication"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.pending_tests_present",
+        "display": "Pending Tests or Results Present",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.pending-tests-present",
+        "display": "Pending Tests or Results Present",
+        "intents": [
+          "intent.reconcile_post_discharge_plan"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.pending-tests-present",
+        "wording": "퇴원할 때 아직 결과가 나오지 않았다고 들은 검사나 조직검사가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 211,
+          "reason": "pending-tests-present"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.plan"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.pending_tests",
+        "display": "Pending Tests or Results",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.pending-tests",
+        "display": "Pending Tests or Results",
+        "intents": [
+          "intent.reconcile_post_discharge_plan"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.pending-tests",
+        "wording": "결과가 남아 있는 검사나 조직검사를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 210,
+          "reason": "pending-tests"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.plan"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.pending_result_owner",
+        "display": "Pending Result Follow-up Owner",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.pending-result-owner",
+        "display": "Pending Result Follow-up Owner",
+        "intents": [
+          "intent.reconcile_post_discharge_plan"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.pending-result-owner",
+        "wording": "미결 검사결과를 누가 언제 확인해 주기로 했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 209,
+          "reason": "pending-result-owner"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.plan"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.follow_up_appointment_present",
+        "display": "Follow-up Appointment Present",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.follow-up-appointment-present",
+        "display": "Follow-up Appointment Present",
+        "intents": [
+          "intent.reconcile_post_discharge_plan"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.follow-up-appointment-present",
+        "wording": "예약된 외래, 검사, 방문간호 또는 재활 일정이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 208,
+          "reason": "follow-up-appointment-present"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.plan"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.follow_up_appointments",
+        "display": "Follow-up Appointments",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.follow-up-appointments",
+        "display": "Follow-up Appointments",
+        "intents": [
+          "intent.reconcile_post_discharge_plan"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.follow-up-appointments",
+        "wording": "예약된 일정의 종류와 날짜를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 207,
+          "reason": "follow-up-appointments"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.plan"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.appointment_access_barrier",
+        "display": "Appointment Access Barrier",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.appointment-barrier",
+        "display": "Appointment Access Barrier",
+        "intents": [
+          "intent.reconcile_post_discharge_plan"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.appointment-barrier",
+        "wording": "예약에 참석하기 어려운 교통, 비용, 언어, 돌봄 또는 디지털 접근 문제가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 207,
+          "reason": "appointment-barrier"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.plan"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.wound_or_device_plan",
+        "display": "Wound or Device Plan",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.wound-device-plan",
+        "display": "Wound or Device Plan",
+        "intents": [
+          "intent.reconcile_post_discharge_plan"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.wound-device-plan",
+        "wording": "상처, 배액관, 도뇨관, 산소 또는 다른 기기가 있다면 현재 관리 방법과 문제를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 206,
+          "reason": "wound-device-plan"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.plan"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.home_service_or_equipment",
+        "display": "Home Service or Equipment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.home-service-equipment",
+        "display": "Home Service or Equipment",
+        "intents": [
+          "intent.reconcile_post_discharge_plan"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.home-service-equipment",
+        "wording": "퇴원 후 제공받기로 한 방문간호, 재활, 돌봄서비스 또는 의료장비가 예정대로 준비됐나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 205,
+          "reason": "home-service-equipment"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.support"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.caregiver_support",
+        "display": "Caregiver Support",
+        "value_type": "coded",
+        "allowed_values": [
+          "available_sufficient",
+          "available_insufficient",
+          "not_available",
+          "not_needed",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.caregiver-support",
+        "display": "Caregiver Support",
+        "intents": [
+          "intent.reconcile_post_discharge_plan"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.caregiver-support",
+        "wording": "집에서 필요한 도움을 줄 사람이 실제로 가능한가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 204,
+          "reason": "caregiver-support"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.support"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.contact_for_problem",
+        "display": "Post-discharge Contact",
+        "value_type": "coded",
+        "allowed_values": [
+          "known_and_reachable",
+          "known_not_reachable",
+          "not_known",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.problem-contact",
+        "display": "Post-discharge Contact",
+        "intents": [
+          "intent.reconcile_post_discharge_plan"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.problem-contact",
+        "wording": "퇴원 후 문제가 생겼을 때 연락할 의료기관이나 담당자를 알고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 203,
+          "reason": "problem-contact"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.support"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.plan_understanding",
+        "display": "Discharge Plan Understanding",
+        "value_type": "coded",
+        "allowed_values": [
+          "understood",
+          "partly_understood",
+          "not_understood",
+          "conflicting_information",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.plan-understanding",
+        "display": "Discharge Plan Understanding",
+        "intents": [
+          "intent.reconcile_post_discharge_plan"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.plan-understanding",
+        "wording": "환자나 보호자가 퇴원 후 해야 할 일과 주의할 변화를 어느 정도 이해하고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 202,
+          "reason": "plan-understanding"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.support"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.patient_concern",
+        "display": "Patient or Caregiver Concern",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.patient-concern",
+        "display": "Patient or Caregiver Concern",
+        "intents": [
+          "intent.prepare_post_discharge_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.patient-concern",
+        "wording": "퇴원 후 가장 걱정되는 한 가지는 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 100,
+          "reason": "patient-concern"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.expected_help",
+        "display": "Expected Help",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.expected-help",
+        "display": "Expected Help",
+        "intents": [
+          "intent.prepare_post_discharge_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.expected-help",
+        "wording": "이번 진료에서 의료진에게 가장 받고 싶은 도움은 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 99,
+          "reason": "expected-help"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.additional_comment",
+        "display": "Additional Comment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.additional-comment",
+        "display": "Additional Comment",
+        "intents": [
+          "intent.prepare_post_discharge_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.additional-comment",
+        "wording": "질문에 없지만 의료진에게 추가로 전달할 내용이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 90,
+          "reason": "additional-comment"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.handoff"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nice.ng27.transition-discharge.2015-current-20260731",
+      "source.ahrq.red-toolkit.current-20260731",
+      "source.who.medication-safety-transitions.2019",
+      "source.stom.post-discharge.20260731"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

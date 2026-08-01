@@ -56,6 +56,7 @@ BREAST_SYMPTOMS_PACKAGE = ROOT / "packages/generated/primary-care-breast-symptom
 KIDNEY_FUNCTION_CKD_FOLLOW_UP_PACKAGE = ROOT / "packages/generated/primary-care-kidney-function-ckd-follow-up-0.1.0.json"
 LIVER_FUNCTION_CHRONIC_FOLLOW_UP_PACKAGE = ROOT / "packages/generated/primary-care-liver-function-chronic-follow-up-0.1.0.json"
 TEST_RESULT_FOLLOW_UP_PACKAGE = ROOT / "packages/generated/primary-care-test-result-follow-up-0.1.0.json"
+POST_DISCHARGE_FOLLOW_UP_PACKAGE = ROOT / "packages/generated/primary-care-post-discharge-follow-up-0.1.0.json"
 
 
 class PackageLoadError(RuntimeError):

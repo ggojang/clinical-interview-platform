@@ -358,6 +358,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-test-result-follow-up.json",
         "version": "0.1.0",
     },
+    "post_discharge_follow_up": {
+        "base_graph": ROOT / "knowledge/base/primary-care-post-discharge-follow-up.json",
+        "base_rules": ROOT / "rules/base/primary-care-post-discharge-follow-up.json",
+        "fragment_root": ROOT / "knowledge/generated/follow-up/post-discharge",
+        "output_graph": ROOT / "knowledge/graph/primary-care-post-discharge-follow-up.json",
+        "output_rules": ROOT / "rules/primary-care-post-discharge-follow-up.json",
+        "version": "0.1.0",
+    },
     "menstrual_uterine_bleeding": {
         "base_graph": ROOT / "knowledge/base/primary-care-menstrual-uterine-bleeding.json",
         "base_rules": ROOT / "rules/base/primary-care-menstrual-uterine-bleeding.json",
