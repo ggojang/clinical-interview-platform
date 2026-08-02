@@ -1,0 +1,4834 @@
+{
+  "id": "rules.primary-care-alcohol-use-counselling",
+  "provenance": {
+    "created_at": "2026-07-14T00:00:00Z",
+    "created_by": {
+      "id": "codex-gpt5",
+      "type": "ai"
+    },
+    "review_status": "unreviewed",
+    "source_refs": [
+      "specifications/reasoning-loop.md"
+    ],
+    "version": "0.1.0"
+  },
+  "rules": [
+    {
+      "id": "rule.activate.alcohol-use-counselling",
+      "priority": 100,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "specifications/reasoning-loop.md"
+        ],
+        "version": "0.1.0"
+      },
+      "status": "research_only",
+      "then": {
+        "activate_intents": [
+          "intent.characterize_alcohol_use",
+          "intent.screen_alcohol_related_safety",
+          "intent.assess_alcohol_change_and_withdrawal_history",
+          "intent.prepare_alcohol_use_handoff"
+        ]
+      },
+      "type": "activation",
+      "version": "0.1.0",
+      "when": {
+        "rfe": "rfe.alcohol_use_counselling"
+      }
+    },
+    {
+      "id": "rule.alcohol-use-counselling.safety.confusion-hallucination",
+      "priority": 1198,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "equals": true,
+        "fact": "alcohol.severe_confusion_or_hallucination"
+      }
+    },
+    {
+      "id": "rule.alcohol-use-counselling.safety.current-seizure",
+      "priority": 1199,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "equals": true,
+        "fact": "alcohol.current_seizure"
+      }
+    },
+    {
+      "id": "rule.alcohol-use-counselling.safety.mixed-overdose",
+      "priority": 1197,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "equals": true,
+        "fact": "alcohol.intentional_or_mixed_overdose"
+      }
+    },
+    {
+      "id": "rule.alcohol-use-counselling.safety.reduced-consciousness",
+      "priority": 1200,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "equals": true,
+        "fact": "alcohol.reduced_consciousness"
+      }
+    },
+    {
+      "id": "rule.alcohol-use-counselling.safety.self-other-harm",
+      "priority": 1196,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "equals": true,
+        "fact": "alcohol.immediate_self_or_other_harm"
+      }
+    },
+    {
+      "id": "rule.alcohol-use-counselling.safety.withdrawal-warning",
+      "priority": 1195,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-07-14",
+        "next_full_review_at": "2026-10-12",
+        "next_monitor_at": "2026-07-15",
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "alcohol.recent_reduction_or_stop"
+          },
+          {
+            "fact": "alcohol.current_withdrawal_warning",
+            "in": [
+              "tremor",
+              "sweating",
+              "vomiting",
+              "marked_anxiety_or_agitation",
+              "hallucination",
+              "confusion",
+              "seizure"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.generated.complete.additional-comment",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.additional-comment"
+      }
+    },
+    {
+      "id": "rule.generated.complete.allergies",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.allergies"
+      }
+    },
+    {
+      "id": "rule.generated.complete.amount-per-occasion",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.amount-per-occasion"
+      }
+    },
+    {
+      "id": "rule.generated.complete.assisted-withdrawal",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.assisted-withdrawal"
+      }
+    },
+    {
+      "id": "rule.generated.complete.beverage-types",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.beverage-types"
+      }
+    },
+    {
+      "id": "rule.generated.complete.confusion-hallucination",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.confusion-hallucination"
+      }
+    },
+    {
+      "id": "rule.generated.complete.control-difficulty",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.control-difficulty"
+      }
+    },
+    {
+      "id": "rule.generated.complete.craving",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.craving"
+      }
+    },
+    {
+      "id": "rule.generated.complete.current-medicines",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.current-medicines"
+      }
+    },
+    {
+      "id": "rule.generated.complete.current-seizure",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.current-seizure"
+      }
+    },
+    {
+      "id": "rule.generated.complete.drinking-context",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.drinking-context"
+      }
+    },
+    {
+      "id": "rule.generated.complete.expected-help",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.expected-help"
+      }
+    },
+    {
+      "id": "rule.generated.complete.frequency",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.frequency"
+      }
+    },
+    {
+      "id": "rule.generated.complete.goal",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.goal"
+      }
+    },
+    {
+      "id": "rule.generated.complete.heavy-day-frequency",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.heavy-day-frequency"
+      }
+    },
+    {
+      "id": "rule.generated.complete.information-source",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.information-source"
+      }
+    },
+    {
+      "id": "rule.generated.complete.injury-hazard",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.injury-hazard"
+      }
+    },
+    {
+      "id": "rule.generated.complete.largest-day-amount",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.largest-day-amount"
+      }
+    },
+    {
+      "id": "rule.generated.complete.last-use",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.last-use"
+      }
+    },
+    {
+      "id": "rule.generated.complete.longest-change",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.longest-change"
+      }
+    },
+    {
+      "id": "rule.generated.complete.mental-health-sleep",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.mental-health-sleep"
+      }
+    },
+    {
+      "id": "rule.generated.complete.mixed-overdose",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.mixed-overdose"
+      }
+    },
+    {
+      "id": "rule.generated.complete.morning-use",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.morning-use"
+      }
+    },
+    {
+      "id": "rule.generated.complete.other-substances",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.other-substances"
+      }
+    },
+    {
+      "id": "rule.generated.complete.patient-concern",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.patient-concern"
+      }
+    },
+    {
+      "id": "rule.generated.complete.physical-health",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.physical-health"
+      }
+    },
+    {
+      "id": "rule.generated.complete.pregnancy-postpartum",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.pregnancy-postpartum"
+      }
+    },
+    {
+      "id": "rule.generated.complete.prior-change-attempt",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.prior-change-attempt"
+      }
+    },
+    {
+      "id": "rule.generated.complete.prior-delirium",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.prior-delirium"
+      }
+    },
+    {
+      "id": "rule.generated.complete.prior-withdrawal-seizure",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.prior-withdrawal-seizure"
+      }
+    },
+    {
+      "id": "rule.generated.complete.readiness",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.readiness"
+      }
+    },
+    {
+      "id": "rule.generated.complete.recent-change-attempt",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.recent-change-attempt"
+      }
+    },
+    {
+      "id": "rule.generated.complete.recent-reduction-stop",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.recent-reduction-stop"
+      }
+    },
+    {
+      "id": "rule.generated.complete.reduced-consciousness",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.reduced-consciousness"
+      }
+    },
+    {
+      "id": "rule.generated.complete.relevant-conditions",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.relevant-conditions"
+      }
+    },
+    {
+      "id": "rule.generated.complete.role-impact",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.role-impact"
+      }
+    },
+    {
+      "id": "rule.generated.complete.self-other-harm",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.self-other-harm"
+      }
+    },
+    {
+      "id": "rule.generated.complete.source-reliability",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.source-reliability"
+      }
+    },
+    {
+      "id": "rule.generated.complete.support-person",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.support-person"
+      }
+    },
+    {
+      "id": "rule.generated.complete.support-response",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.support-response"
+      }
+    },
+    {
+      "id": "rule.generated.complete.supports-tried",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.supports-tried"
+      }
+    },
+    {
+      "id": "rule.generated.complete.target-date",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.target-date"
+      }
+    },
+    {
+      "id": "rule.generated.complete.tolerance-change",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.tolerance-change"
+      }
+    },
+    {
+      "id": "rule.generated.complete.triggers",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.triggers"
+      }
+    },
+    {
+      "id": "rule.generated.complete.use-duration",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.use-duration"
+      }
+    },
+    {
+      "id": "rule.generated.complete.use-status",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.use-status"
+      }
+    },
+    {
+      "id": "rule.generated.complete.withdrawal-warning",
+      "priority": 50,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.withdrawal-warning"
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.additional-comment",
+      "priority": 90,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "additional-comment",
+        "target": "target.alcohol-use-counselling.additional-comment"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.additional-comment": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.allergies",
+      "priority": 202,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "allergies",
+        "target": "target.alcohol-use-counselling.allergies"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.allergies": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.amount-per-occasion",
+      "priority": 247,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "amount-per-occasion",
+        "target": "target.alcohol-use-counselling.amount-per-occasion"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.amount-per-occasion": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.assisted-withdrawal",
+      "priority": 229,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "assisted-withdrawal",
+        "target": "target.alcohol-use-counselling.assisted-withdrawal"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.assisted-withdrawal": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.beverage-types",
+      "priority": 249,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "beverage-types",
+        "target": "target.alcohol-use-counselling.beverage-types"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.beverage-types": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.confusion-hallucination",
+      "priority": 998,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "confusion-hallucination",
+        "target": "target.alcohol-use-counselling.confusion-hallucination"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.confusion-hallucination": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.control-difficulty",
+      "priority": 234,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "control-difficulty",
+        "target": "target.alcohol-use-counselling.control-difficulty"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.control-difficulty": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.craving",
+      "priority": 235,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "craving",
+        "target": "target.alcohol-use-counselling.craving"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.craving": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.current-medicines",
+      "priority": 203,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "current-medicines",
+        "target": "target.alcohol-use-counselling.current-medicines"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.current-medicines": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.current-seizure",
+      "priority": 999,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "current-seizure",
+        "target": "target.alcohol-use-counselling.current-seizure"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.current-seizure": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.drinking-context",
+      "priority": 242,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "drinking-context",
+        "target": "target.alcohol-use-counselling.drinking-context"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.drinking-context": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.expected-help",
+      "priority": 99,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "expected-help",
+        "target": "target.alcohol-use-counselling.expected-help"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.expected-help": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.frequency",
+      "priority": 248,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "frequency",
+        "target": "target.alcohol-use-counselling.frequency"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.frequency": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.goal",
+      "priority": 260,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "goal",
+        "target": "target.alcohol-use-counselling.goal"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.goal": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.heavy-day-frequency",
+      "priority": 243,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "heavy-day-frequency",
+        "target": "target.alcohol-use-counselling.heavy-day-frequency"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.heavy-day-frequency": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.information-source",
+      "priority": 259,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "information-source",
+        "target": "target.alcohol-use-counselling.information-source"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.information-source": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.injury-hazard",
+      "priority": 210,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "injury-hazard",
+        "target": "target.alcohol-use-counselling.injury-hazard"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.injury-hazard": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.largest-day-amount",
+      "priority": 244,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "largest-day-amount",
+        "target": "target.alcohol-use-counselling.largest-day-amount"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.largest-day-amount": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.last-use",
+      "priority": 246,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "last-use",
+        "target": "target.alcohol-use-counselling.last-use"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.last-use": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.longest-change",
+      "priority": 223,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "longest-change",
+        "target": "target.alcohol-use-counselling.longest-change"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.longest-change": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.mental-health-sleep",
+      "priority": 207,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "mental-health-sleep",
+        "target": "target.alcohol-use-counselling.mental-health-sleep"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.mental-health-sleep": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.mixed-overdose",
+      "priority": 997,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "mixed-overdose",
+        "target": "target.alcohol-use-counselling.mixed-overdose"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.mixed-overdose": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.morning-use",
+      "priority": 233,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "morning-use",
+        "target": "target.alcohol-use-counselling.morning-use"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.morning-use": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.other-substances",
+      "priority": 206,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "other-substances",
+        "target": "target.alcohol-use-counselling.other-substances"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.other-substances": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.patient-concern",
+      "priority": 100,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "patient-concern",
+        "target": "target.alcohol-use-counselling.patient-concern"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.patient-concern": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.physical-health",
+      "priority": 208,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "physical-health",
+        "target": "target.alcohol-use-counselling.physical-health"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.physical-health": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.pregnancy-postpartum",
+      "priority": 205,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "pregnancy-postpartum",
+        "target": "target.alcohol-use-counselling.pregnancy-postpartum"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.pregnancy-postpartum": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.prior-change-attempt",
+      "priority": 225,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "prior-change-attempt",
+        "target": "target.alcohol-use-counselling.prior-change-attempt"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.prior-change-attempt": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.prior-delirium",
+      "priority": 230,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "prior-delirium",
+        "target": "target.alcohol-use-counselling.prior-delirium"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.prior-delirium": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.prior-withdrawal-seizure",
+      "priority": 231,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "prior-withdrawal-seizure",
+        "target": "target.alcohol-use-counselling.prior-withdrawal-seizure"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.prior-withdrawal-seizure": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.readiness",
+      "priority": 220,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "readiness",
+        "target": "target.alcohol-use-counselling.readiness"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.readiness": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.recent-change-attempt",
+      "priority": 224,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "recent-change-attempt",
+        "target": "target.alcohol-use-counselling.recent-change-attempt"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.recent-change-attempt": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.recent-reduction-stop",
+      "priority": 994,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "recent-reduction-stop",
+        "target": "target.alcohol-use-counselling.recent-reduction-stop"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.recent-reduction-stop": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.reduced-consciousness",
+      "priority": 1000,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "reduced-consciousness",
+        "target": "target.alcohol-use-counselling.reduced-consciousness"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.reduced-consciousness": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.relevant-conditions",
+      "priority": 204,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "relevant-conditions",
+        "target": "target.alcohol-use-counselling.relevant-conditions"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.relevant-conditions": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.role-impact",
+      "priority": 209,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "role-impact",
+        "target": "target.alcohol-use-counselling.role-impact"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.role-impact": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.self-other-harm",
+      "priority": 996,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "self-other-harm",
+        "target": "target.alcohol-use-counselling.self-other-harm"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.self-other-harm": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.source-reliability",
+      "priority": 258,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "source-reliability",
+        "target": "target.alcohol-use-counselling.source-reliability"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.source-reliability": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.support-person",
+      "priority": 201,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "support-person",
+        "target": "target.alcohol-use-counselling.support-person"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.support-person": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.support-response",
+      "priority": 221,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "support-response",
+        "target": "target.alcohol-use-counselling.support-response"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.support-response": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.supports-tried",
+      "priority": 222,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "supports-tried",
+        "target": "target.alcohol-use-counselling.supports-tried"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.supports-tried": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.target-date",
+      "priority": 219,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "target-date",
+        "target": "target.alcohol-use-counselling.target-date"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.target-date": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.tolerance-change",
+      "priority": 232,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "tolerance-change",
+        "target": "target.alcohol-use-counselling.tolerance-change"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.tolerance-change": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.triggers",
+      "priority": 218,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "triggers",
+        "target": "target.alcohol-use-counselling.triggers"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.triggers": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.use-duration",
+      "priority": 245,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "use-duration",
+        "target": "target.alcohol-use-counselling.use-duration"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.use-duration": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.use-status",
+      "priority": 250,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "use-status",
+        "target": "target.alcohol-use-counselling.use-status"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.use-status": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.withdrawal-warning",
+      "priority": 995,
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.kr.kdca.alcohol.current-20260615",
+          "source.nice.cg115.alcohol-assessment.current-20260802",
+          "source.nice.cg100.alcohol-withdrawal.current-20260802",
+          "source.niaaa.core-alcohol.screen-assess.2025",
+          "source.stom.alcohol-use.20260802"
+        ],
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "clinical_guideline",
+        "full_review_interval_days": 180,
+        "last_assessed_at": "2026-08-02",
+        "monitor_interval_days": 1,
+        "next_full_review_at": "2027-01-29",
+        "next_monitor_at": "2026-08-03",
+        "overdue_behavior": {
+          "production": "exclude_or_require_review",
+          "research_test": "allow_with_warning"
+        },
+        "policy_id": "policy.knowledge-refresh"
+      },
+      "status": "research_only",
+      "then": {
+        "reason": "withdrawal-warning",
+        "target": "target.alcohol-use-counselling.withdrawal-warning"
+      },
+      "type": "priority",
+      "usage_modes": [
+        "research_test",
+        "simulation"
+      ],
+      "version": "0.1.0",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.withdrawal-warning": "active"
+        }
+      }
+    }
+  ],
+  "version": "0.1.0"
+}

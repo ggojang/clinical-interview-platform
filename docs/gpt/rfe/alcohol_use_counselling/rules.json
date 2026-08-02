@@ -1,0 +1,1426 @@
+{
+  "contains_patient_responses": false,
+  "count": 101,
+  "encounter_contexts": [
+    "context.primary_care"
+  ],
+  "generated_at": "2026-07-24T00:00:00Z",
+  "items": [
+    {
+      "id": "rule.alcohol-use-counselling.safety.reduced-consciousness",
+      "priority": 1200,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "alcohol.reduced_consciousness"
+      }
+    },
+    {
+      "id": "rule.alcohol-use-counselling.safety.current-seizure",
+      "priority": 1199,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "alcohol.current_seizure"
+      }
+    },
+    {
+      "id": "rule.alcohol-use-counselling.safety.confusion-hallucination",
+      "priority": 1198,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "alcohol.severe_confusion_or_hallucination"
+      }
+    },
+    {
+      "id": "rule.alcohol-use-counselling.safety.mixed-overdose",
+      "priority": 1197,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "alcohol.intentional_or_mixed_overdose"
+      }
+    },
+    {
+      "id": "rule.alcohol-use-counselling.safety.self-other-harm",
+      "priority": 1196,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "alcohol.immediate_self_or_other_harm"
+      }
+    },
+    {
+      "id": "rule.alcohol-use-counselling.safety.withdrawal-warning",
+      "priority": 1195,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "alcohol.recent_reduction_or_stop"
+          },
+          {
+            "fact": "alcohol.current_withdrawal_warning",
+            "in": [
+              "tremor",
+              "sweating",
+              "vomiting",
+              "marked_anxiety_or_agitation",
+              "hallucination",
+              "confusion",
+              "seizure"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.reduced-consciousness",
+      "priority": 1000,
+      "then": {
+        "reason": "reduced-consciousness",
+        "target": "target.alcohol-use-counselling.reduced-consciousness"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.reduced-consciousness": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.current-seizure",
+      "priority": 999,
+      "then": {
+        "reason": "current-seizure",
+        "target": "target.alcohol-use-counselling.current-seizure"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.current-seizure": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.confusion-hallucination",
+      "priority": 998,
+      "then": {
+        "reason": "confusion-hallucination",
+        "target": "target.alcohol-use-counselling.confusion-hallucination"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.confusion-hallucination": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.mixed-overdose",
+      "priority": 997,
+      "then": {
+        "reason": "mixed-overdose",
+        "target": "target.alcohol-use-counselling.mixed-overdose"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.mixed-overdose": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.self-other-harm",
+      "priority": 996,
+      "then": {
+        "reason": "self-other-harm",
+        "target": "target.alcohol-use-counselling.self-other-harm"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.self-other-harm": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.withdrawal-warning",
+      "priority": 995,
+      "then": {
+        "reason": "withdrawal-warning",
+        "target": "target.alcohol-use-counselling.withdrawal-warning"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.withdrawal-warning": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.recent-reduction-stop",
+      "priority": 994,
+      "then": {
+        "reason": "recent-reduction-stop",
+        "target": "target.alcohol-use-counselling.recent-reduction-stop"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.recent-reduction-stop": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.goal",
+      "priority": 260,
+      "then": {
+        "reason": "goal",
+        "target": "target.alcohol-use-counselling.goal"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.goal": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.information-source",
+      "priority": 259,
+      "then": {
+        "reason": "information-source",
+        "target": "target.alcohol-use-counselling.information-source"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.information-source": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.source-reliability",
+      "priority": 258,
+      "then": {
+        "reason": "source-reliability",
+        "target": "target.alcohol-use-counselling.source-reliability"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.source-reliability": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.use-status",
+      "priority": 250,
+      "then": {
+        "reason": "use-status",
+        "target": "target.alcohol-use-counselling.use-status"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.use-status": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.beverage-types",
+      "priority": 249,
+      "then": {
+        "reason": "beverage-types",
+        "target": "target.alcohol-use-counselling.beverage-types"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.beverage-types": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.frequency",
+      "priority": 248,
+      "then": {
+        "reason": "frequency",
+        "target": "target.alcohol-use-counselling.frequency"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.frequency": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.amount-per-occasion",
+      "priority": 247,
+      "then": {
+        "reason": "amount-per-occasion",
+        "target": "target.alcohol-use-counselling.amount-per-occasion"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.amount-per-occasion": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.last-use",
+      "priority": 246,
+      "then": {
+        "reason": "last-use",
+        "target": "target.alcohol-use-counselling.last-use"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.last-use": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.use-duration",
+      "priority": 245,
+      "then": {
+        "reason": "use-duration",
+        "target": "target.alcohol-use-counselling.use-duration"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.use-duration": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.largest-day-amount",
+      "priority": 244,
+      "then": {
+        "reason": "largest-day-amount",
+        "target": "target.alcohol-use-counselling.largest-day-amount"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.largest-day-amount": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.heavy-day-frequency",
+      "priority": 243,
+      "then": {
+        "reason": "heavy-day-frequency",
+        "target": "target.alcohol-use-counselling.heavy-day-frequency"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.heavy-day-frequency": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.drinking-context",
+      "priority": 242,
+      "then": {
+        "reason": "drinking-context",
+        "target": "target.alcohol-use-counselling.drinking-context"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.drinking-context": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.craving",
+      "priority": 235,
+      "then": {
+        "reason": "craving",
+        "target": "target.alcohol-use-counselling.craving"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.craving": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.control-difficulty",
+      "priority": 234,
+      "then": {
+        "reason": "control-difficulty",
+        "target": "target.alcohol-use-counselling.control-difficulty"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.control-difficulty": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.morning-use",
+      "priority": 233,
+      "then": {
+        "reason": "morning-use",
+        "target": "target.alcohol-use-counselling.morning-use"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.morning-use": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.tolerance-change",
+      "priority": 232,
+      "then": {
+        "reason": "tolerance-change",
+        "target": "target.alcohol-use-counselling.tolerance-change"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.tolerance-change": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.prior-withdrawal-seizure",
+      "priority": 231,
+      "then": {
+        "reason": "prior-withdrawal-seizure",
+        "target": "target.alcohol-use-counselling.prior-withdrawal-seizure"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.prior-withdrawal-seizure": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.prior-delirium",
+      "priority": 230,
+      "then": {
+        "reason": "prior-delirium",
+        "target": "target.alcohol-use-counselling.prior-delirium"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.prior-delirium": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.assisted-withdrawal",
+      "priority": 229,
+      "then": {
+        "reason": "assisted-withdrawal",
+        "target": "target.alcohol-use-counselling.assisted-withdrawal"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.assisted-withdrawal": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.prior-change-attempt",
+      "priority": 225,
+      "then": {
+        "reason": "prior-change-attempt",
+        "target": "target.alcohol-use-counselling.prior-change-attempt"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.prior-change-attempt": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.recent-change-attempt",
+      "priority": 224,
+      "then": {
+        "reason": "recent-change-attempt",
+        "target": "target.alcohol-use-counselling.recent-change-attempt"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.recent-change-attempt": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.longest-change",
+      "priority": 223,
+      "then": {
+        "reason": "longest-change",
+        "target": "target.alcohol-use-counselling.longest-change"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.longest-change": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.supports-tried",
+      "priority": 222,
+      "then": {
+        "reason": "supports-tried",
+        "target": "target.alcohol-use-counselling.supports-tried"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.supports-tried": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.support-response",
+      "priority": 221,
+      "then": {
+        "reason": "support-response",
+        "target": "target.alcohol-use-counselling.support-response"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.support-response": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.readiness",
+      "priority": 220,
+      "then": {
+        "reason": "readiness",
+        "target": "target.alcohol-use-counselling.readiness"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.readiness": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.target-date",
+      "priority": 219,
+      "then": {
+        "reason": "target-date",
+        "target": "target.alcohol-use-counselling.target-date"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.target-date": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.triggers",
+      "priority": 218,
+      "then": {
+        "reason": "triggers",
+        "target": "target.alcohol-use-counselling.triggers"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.triggers": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.injury-hazard",
+      "priority": 210,
+      "then": {
+        "reason": "injury-hazard",
+        "target": "target.alcohol-use-counselling.injury-hazard"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.injury-hazard": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.role-impact",
+      "priority": 209,
+      "then": {
+        "reason": "role-impact",
+        "target": "target.alcohol-use-counselling.role-impact"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.role-impact": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.physical-health",
+      "priority": 208,
+      "then": {
+        "reason": "physical-health",
+        "target": "target.alcohol-use-counselling.physical-health"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.physical-health": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.mental-health-sleep",
+      "priority": 207,
+      "then": {
+        "reason": "mental-health-sleep",
+        "target": "target.alcohol-use-counselling.mental-health-sleep"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.mental-health-sleep": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.other-substances",
+      "priority": 206,
+      "then": {
+        "reason": "other-substances",
+        "target": "target.alcohol-use-counselling.other-substances"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.other-substances": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.pregnancy-postpartum",
+      "priority": 205,
+      "then": {
+        "reason": "pregnancy-postpartum",
+        "target": "target.alcohol-use-counselling.pregnancy-postpartum"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.pregnancy-postpartum": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.relevant-conditions",
+      "priority": 204,
+      "then": {
+        "reason": "relevant-conditions",
+        "target": "target.alcohol-use-counselling.relevant-conditions"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.relevant-conditions": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.current-medicines",
+      "priority": 203,
+      "then": {
+        "reason": "current-medicines",
+        "target": "target.alcohol-use-counselling.current-medicines"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.current-medicines": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.allergies",
+      "priority": 202,
+      "then": {
+        "reason": "allergies",
+        "target": "target.alcohol-use-counselling.allergies"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.allergies": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.support-person",
+      "priority": 201,
+      "then": {
+        "reason": "support-person",
+        "target": "target.alcohol-use-counselling.support-person"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.support-person": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.activate.alcohol-use-counselling",
+      "priority": 100,
+      "then": {
+        "activate_intents": [
+          "intent.characterize_alcohol_use",
+          "intent.screen_alcohol_related_safety",
+          "intent.assess_alcohol_change_and_withdrawal_history",
+          "intent.prepare_alcohol_use_handoff"
+        ]
+      },
+      "type": "activation",
+      "when": {
+        "rfe": "rfe.alcohol_use_counselling"
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.patient-concern",
+      "priority": 100,
+      "then": {
+        "reason": "patient-concern",
+        "target": "target.alcohol-use-counselling.patient-concern"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.patient-concern": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.expected-help",
+      "priority": 99,
+      "then": {
+        "reason": "expected-help",
+        "target": "target.alcohol-use-counselling.expected-help"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.expected-help": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.additional-comment",
+      "priority": 90,
+      "then": {
+        "reason": "additional-comment",
+        "target": "target.alcohol-use-counselling.additional-comment"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.alcohol-use-counselling.additional-comment": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.complete.additional-comment",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.additional-comment"
+      }
+    },
+    {
+      "id": "rule.generated.complete.allergies",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.allergies"
+      }
+    },
+    {
+      "id": "rule.generated.complete.amount-per-occasion",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.amount-per-occasion"
+      }
+    },
+    {
+      "id": "rule.generated.complete.assisted-withdrawal",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.assisted-withdrawal"
+      }
+    },
+    {
+      "id": "rule.generated.complete.beverage-types",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.beverage-types"
+      }
+    },
+    {
+      "id": "rule.generated.complete.confusion-hallucination",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.confusion-hallucination"
+      }
+    },
+    {
+      "id": "rule.generated.complete.control-difficulty",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.control-difficulty"
+      }
+    },
+    {
+      "id": "rule.generated.complete.craving",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.craving"
+      }
+    },
+    {
+      "id": "rule.generated.complete.current-medicines",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.current-medicines"
+      }
+    },
+    {
+      "id": "rule.generated.complete.current-seizure",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.current-seizure"
+      }
+    },
+    {
+      "id": "rule.generated.complete.drinking-context",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.drinking-context"
+      }
+    },
+    {
+      "id": "rule.generated.complete.expected-help",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.expected-help"
+      }
+    },
+    {
+      "id": "rule.generated.complete.frequency",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.frequency"
+      }
+    },
+    {
+      "id": "rule.generated.complete.goal",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.goal"
+      }
+    },
+    {
+      "id": "rule.generated.complete.heavy-day-frequency",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.heavy-day-frequency"
+      }
+    },
+    {
+      "id": "rule.generated.complete.information-source",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.information-source"
+      }
+    },
+    {
+      "id": "rule.generated.complete.injury-hazard",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.injury-hazard"
+      }
+    },
+    {
+      "id": "rule.generated.complete.largest-day-amount",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.largest-day-amount"
+      }
+    },
+    {
+      "id": "rule.generated.complete.last-use",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.last-use"
+      }
+    },
+    {
+      "id": "rule.generated.complete.longest-change",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.longest-change"
+      }
+    },
+    {
+      "id": "rule.generated.complete.mental-health-sleep",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.mental-health-sleep"
+      }
+    },
+    {
+      "id": "rule.generated.complete.mixed-overdose",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.mixed-overdose"
+      }
+    },
+    {
+      "id": "rule.generated.complete.morning-use",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.morning-use"
+      }
+    },
+    {
+      "id": "rule.generated.complete.other-substances",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.other-substances"
+      }
+    },
+    {
+      "id": "rule.generated.complete.patient-concern",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.patient-concern"
+      }
+    },
+    {
+      "id": "rule.generated.complete.physical-health",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.physical-health"
+      }
+    },
+    {
+      "id": "rule.generated.complete.pregnancy-postpartum",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.pregnancy-postpartum"
+      }
+    },
+    {
+      "id": "rule.generated.complete.prior-change-attempt",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.prior-change-attempt"
+      }
+    },
+    {
+      "id": "rule.generated.complete.prior-delirium",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.prior-delirium"
+      }
+    },
+    {
+      "id": "rule.generated.complete.prior-withdrawal-seizure",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.prior-withdrawal-seizure"
+      }
+    },
+    {
+      "id": "rule.generated.complete.readiness",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.readiness"
+      }
+    },
+    {
+      "id": "rule.generated.complete.recent-change-attempt",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.recent-change-attempt"
+      }
+    },
+    {
+      "id": "rule.generated.complete.recent-reduction-stop",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.recent-reduction-stop"
+      }
+    },
+    {
+      "id": "rule.generated.complete.reduced-consciousness",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.reduced-consciousness"
+      }
+    },
+    {
+      "id": "rule.generated.complete.relevant-conditions",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.relevant-conditions"
+      }
+    },
+    {
+      "id": "rule.generated.complete.role-impact",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.role-impact"
+      }
+    },
+    {
+      "id": "rule.generated.complete.self-other-harm",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.self-other-harm"
+      }
+    },
+    {
+      "id": "rule.generated.complete.source-reliability",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.source-reliability"
+      }
+    },
+    {
+      "id": "rule.generated.complete.support-person",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.support-person"
+      }
+    },
+    {
+      "id": "rule.generated.complete.support-response",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.support-response"
+      }
+    },
+    {
+      "id": "rule.generated.complete.supports-tried",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.supports-tried"
+      }
+    },
+    {
+      "id": "rule.generated.complete.target-date",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.target-date"
+      }
+    },
+    {
+      "id": "rule.generated.complete.tolerance-change",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.tolerance-change"
+      }
+    },
+    {
+      "id": "rule.generated.complete.triggers",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.triggers"
+      }
+    },
+    {
+      "id": "rule.generated.complete.use-duration",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.use-duration"
+      }
+    },
+    {
+      "id": "rule.generated.complete.use-status",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.use-status"
+      }
+    },
+    {
+      "id": "rule.generated.complete.withdrawal-warning",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.alcohol-use-counselling.withdrawal-warning"
+      }
+    }
+  ],
+  "knowledge_source_status": {
+    "clinical_sources_are_compiled_not_queried_live": true,
+    "review_status": "unreviewed",
+    "status": "research_only"
+  },
+  "knowledge_sources": [
+    {
+      "complete": false,
+      "id": "source.kr.kdca.alcohol.current-20260615",
+      "kind": "official_korean_public_health_guidance_metadata",
+      "last_monitored_at": "2026-08-02",
+      "license_status": "metadata_and_summary_only",
+      "monitor_interval_days": 7,
+      "publisher": "Korea Disease Control and Prevention Agency",
+      "title": "Alcohol consumption",
+      "url": "https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=5297",
+      "version": "updated-2026-06-15"
+    },
+    {
+      "complete": false,
+      "id": "source.niaaa.core-alcohol.screen-assess.2025",
+      "kind": "official_clinical_resource_metadata",
+      "last_monitored_at": "2026-08-02",
+      "license_status": "metadata_and_summary_only",
+      "monitor_interval_days": 7,
+      "publisher": "NIAAA",
+      "title": "Core Resource on Alcohol: Screen and Assess",
+      "url": "https://www.niaaa.nih.gov/health-professionals-communities/core-resource-on-alcohol/screen-and-assess-use-quick-effective-methods",
+      "version": "2025-recertification"
+    },
+    {
+      "complete": false,
+      "id": "source.nice.cg100.alcohol-withdrawal.current-20260802",
+      "kind": "official_clinical_guideline_metadata",
+      "last_monitored_at": "2026-08-02",
+      "license_status": "metadata_and_summary_only",
+      "monitor_interval_days": 7,
+      "publisher": "NICE",
+      "title": "Alcohol-use disorders: diagnosis and management of physical complications",
+      "url": "https://www.nice.org.uk/guidance/cg100/chapter/Recommendations",
+      "version": "CG100-current-2017-04-12"
+    },
+    {
+      "complete": false,
+      "id": "source.nice.cg115.alcohol-assessment.current-20260802",
+      "kind": "official_clinical_guideline_metadata",
+      "last_monitored_at": "2026-08-02",
+      "license_status": "metadata_and_summary_only",
+      "monitor_interval_days": 7,
+      "publisher": "NICE",
+      "title": "Alcohol-use disorders: diagnosis, assessment and management of harmful drinking and alcohol dependence",
+      "url": "https://www.nice.org.uk/guidance/cg115/chapter/Recommendations",
+      "version": "CG115-current-2014-10-21"
+    },
+    {
+      "complete": false,
+      "id": "source.stom.alcohol-use.20260802",
+      "kind": "terminology_service_verification",
+      "last_monitored_at": "2026-08-02",
+      "license_status": "licensed_lookup_metadata_only",
+      "monitor_interval_days": 30,
+      "publisher": "STOM",
+      "title": "Alcohol-use question terminology verification",
+      "url": "http://localhost:8088/fhir",
+      "version": "LOINC-2.82_SNOMEDCT-20260701"
+    }
+  ],
+  "package_id": "package.primary-care-alcohol-use-counselling",
+  "package_version": "0.1.0",
+  "reason_for_encounter": "rfe.alcohol_use_counselling",
+  "resource_type": "ReasonForEncounterRuleCollection",
+  "review_status": "unreviewed",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "version": "1.49.0"
+}

@@ -58,6 +58,7 @@ LIVER_FUNCTION_CHRONIC_FOLLOW_UP_PACKAGE = ROOT / "packages/generated/primary-ca
 TEST_RESULT_FOLLOW_UP_PACKAGE = ROOT / "packages/generated/primary-care-test-result-follow-up-0.1.0.json"
 POST_DISCHARGE_FOLLOW_UP_PACKAGE = ROOT / "packages/generated/primary-care-post-discharge-follow-up-0.1.0.json"
 TOBACCO_NICOTINE_COUNSELLING_PACKAGE = ROOT / "packages/generated/primary-care-tobacco-nicotine-counselling-0.1.0.json"
+ALCOHOL_USE_COUNSELLING_PACKAGE = ROOT / "packages/generated/primary-care-alcohol-use-counselling-0.1.0.json"
 
 
 class PackageLoadError(RuntimeError):

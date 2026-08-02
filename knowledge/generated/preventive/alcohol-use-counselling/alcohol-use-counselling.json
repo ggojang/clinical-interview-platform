@@ -1,0 +1,1939 @@
+{
+  "id": "knowledge.generated.alcohol-use-counselling",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-alcohol-use-counselling-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-08-02",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-08-03",
+    "next_full_review_at": "2027-01-29",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.alcohol_use.goal",
+      "type": "ClinicalGroup",
+      "display": "goal"
+    },
+    {
+      "id": "group.alcohol_use.identity",
+      "type": "ClinicalGroup",
+      "display": "identity"
+    },
+    {
+      "id": "group.alcohol_use.safety",
+      "type": "ClinicalGroup",
+      "display": "safety"
+    },
+    {
+      "id": "group.alcohol_use.pattern",
+      "type": "ClinicalGroup",
+      "display": "pattern"
+    },
+    {
+      "id": "group.alcohol_use.dependence",
+      "type": "ClinicalGroup",
+      "display": "dependence"
+    },
+    {
+      "id": "group.alcohol_use.change",
+      "type": "ClinicalGroup",
+      "display": "change"
+    },
+    {
+      "id": "group.alcohol_use.impact",
+      "type": "ClinicalGroup",
+      "display": "impact"
+    },
+    {
+      "id": "group.alcohol_use.history",
+      "type": "ClinicalGroup",
+      "display": "history"
+    },
+    {
+      "id": "group.alcohol_use.handoff",
+      "type": "ClinicalGroup",
+      "display": "handoff"
+    }
+  ],
+  "group_hypothesis_edges": [],
+  "safety_rules": [
+    {
+      "id": "rule.alcohol-use-counselling.safety.reduced-consciousness",
+      "priority": 1200,
+      "when": {
+        "fact": "alcohol.reduced_consciousness",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.alcohol-use-counselling.safety.current-seizure",
+      "priority": 1199,
+      "when": {
+        "fact": "alcohol.current_seizure",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.alcohol-use-counselling.safety.confusion-hallucination",
+      "priority": 1198,
+      "when": {
+        "fact": "alcohol.severe_confusion_or_hallucination",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.alcohol-use-counselling.safety.mixed-overdose",
+      "priority": 1197,
+      "when": {
+        "fact": "alcohol.intentional_or_mixed_overdose",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.alcohol-use-counselling.safety.self-other-harm",
+      "priority": 1196,
+      "when": {
+        "fact": "alcohol.immediate_self_or_other_harm",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.alcohol-use-counselling.safety.withdrawal-warning",
+      "priority": 1195,
+      "when": {
+        "all": [
+          {
+            "fact": "alcohol.recent_reduction_or_stop",
+            "equals": true
+          },
+          {
+            "fact": "alcohol.current_withdrawal_warning",
+            "in": [
+              "tremor",
+              "sweating",
+              "vomiting",
+              "marked_anxiety_or_agitation",
+              "hallucination",
+              "confusion",
+              "seizure"
+            ]
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "alcohol.consultation_goal",
+        "display": "Alcohol Consultation Goal",
+        "value_type": "coded",
+        "allowed_values": [
+          "use_review",
+          "reduce",
+          "stop",
+          "maintain_abstinence",
+          "health_effect_review",
+          "unsure"
+        ]
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.goal",
+        "display": "Alcohol Consultation Goal",
+        "intents": [
+          "intent.characterize_alcohol_use"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.goal",
+        "wording": "이번 문진에서 음주 현황 확인, 줄이기, 끊기, 금주 유지 중 가장 원하는 도움은 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 260,
+          "reason": "goal"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.goal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.information_source",
+        "display": "Alcohol Information Source",
+        "value_type": "coded",
+        "allowed_values": [
+          "patient",
+          "caregiver",
+          "patient_and_caregiver",
+          "record",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.information-source",
+        "display": "Alcohol Information Source",
+        "intents": [
+          "intent.characterize_alcohol_use"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.information-source",
+        "wording": "음주 정보를 누가 답하고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 259,
+          "reason": "information-source"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.identity"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.source_reliability",
+        "display": "Alcohol Information Reliability",
+        "value_type": "coded",
+        "allowed_values": [
+          "reliable",
+          "partly_reliable",
+          "memory_uncertain",
+          "conflicting_sources",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.source-reliability",
+        "display": "Alcohol Information Reliability",
+        "intents": [
+          "intent.characterize_alcohol_use"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.source-reliability",
+        "wording": "답변은 현재 음주를 잘 아는 내용인가요, 기억이 불확실하거나 다른 정보와 상충하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 258,
+          "reason": "source-reliability"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.identity"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.reduced_consciousness",
+        "display": "Current Reduced Consciousness",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.reduced-consciousness",
+        "display": "Current Reduced Consciousness",
+        "intents": [
+          "intent.screen_alcohol_related_safety"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.reduced-consciousness",
+        "wording": "지금 술 또는 함께 복용한 물질 뒤 깨우기 어렵거나 의식이 뚜렷하게 떨어졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1000,
+          "reason": "reduced-consciousness"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.current_seizure",
+        "display": "Current or Recurrent Seizure",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.current-seizure",
+        "display": "Current or Recurrent Seizure",
+        "intents": [
+          "intent.screen_alcohol_related_safety"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.current-seizure",
+        "wording": "지금 경련이 있거나 짧은 간격으로 다시 경련하고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 999,
+          "reason": "current-seizure"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.severe_confusion_or_hallucination",
+        "display": "Severe Confusion or Hallucination",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.confusion-hallucination",
+        "display": "Severe Confusion or Hallucination",
+        "intents": [
+          "intent.screen_alcohol_related_safety"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.confusion-hallucination",
+        "wording": "술을 줄이거나 끊은 뒤 심한 혼란, 환각 또는 통제하기 어려운 초조가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 998,
+          "reason": "confusion-hallucination"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.intentional_or_mixed_overdose",
+        "display": "Intentional or Mixed Overdose",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.mixed-overdose",
+        "display": "Intentional or Mixed Overdose",
+        "intents": [
+          "intent.screen_alcohol_related_safety"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.mixed-overdose",
+        "wording": "술과 약 또는 다른 물질을 함께 과량 복용했거나 일부러 해칠 목적으로 마신 상황인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 997,
+          "reason": "mixed-overdose"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.immediate_self_or_other_harm",
+        "display": "Immediate Self or Other Harm Risk",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.self-other-harm",
+        "display": "Immediate Self or Other Harm Risk",
+        "intents": [
+          "intent.screen_alcohol_related_safety"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.self-other-harm",
+        "wording": "지금 자신이나 다른 사람을 해칠 구체적인 계획, 행동 또는 즉각적인 위험이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 996,
+          "reason": "self-other-harm"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.current_withdrawal_warning",
+        "display": "Current Alcohol Withdrawal Warning Features",
+        "value_type": "coded",
+        "allowed_values": [
+          "none",
+          "tremor",
+          "sweating",
+          "vomiting",
+          "marked_anxiety_or_agitation",
+          "hallucination",
+          "confusion",
+          "seizure"
+        ],
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.withdrawal-warning",
+        "display": "Current Alcohol Withdrawal Warning Features",
+        "intents": [
+          "intent.screen_alcohol_related_safety"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.withdrawal-warning",
+        "wording": "최근 음주를 줄이거나 끊은 뒤 생긴 증상을 모두 선택하거나 직접 입력해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 995,
+          "reason": "withdrawal-warning"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "patient.alcohol.use_status",
+        "display": "Alcohol Use Status",
+        "value_type": "coded",
+        "allowed_values": [
+          "current",
+          "former",
+          "never"
+        ]
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.use-status",
+        "display": "Alcohol Use Status",
+        "intents": [
+          "intent.characterize_alcohol_use"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.use-status",
+        "wording": "현재 음주, 과거 음주 후 금주, 평생 비음주 중 어디에 해당하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 250,
+          "reason": "use-status"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.pattern"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "patient.alcohol.beverage_types",
+        "display": "Alcoholic Beverage Types",
+        "value_type": "coded_or_string",
+        "allowed_values": [
+          "soju",
+          "beer",
+          "makgeolli",
+          "wine",
+          "spirits",
+          "other"
+        ]
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.beverage-types",
+        "display": "Alcoholic Beverage Types",
+        "intents": [
+          "intent.characterize_alcohol_use"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.beverage-types",
+        "wording": "현재 또는 과거에 마신 술 종류를 모두 선택하거나 직접 입력해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 249,
+          "reason": "beverage-types"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.pattern"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "patient.alcohol.frequency",
+        "display": "Alcohol Drinking Frequency",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://loinc.org",
+          "code": "68518-0",
+          "display": "How often do you have a drink containing alcohol",
+          "version": "2.82",
+          "relation": "equivalent"
+        }
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.frequency",
+        "display": "Alcohol Drinking Frequency",
+        "intents": [
+          "intent.characterize_alcohol_use"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.frequency",
+        "wording": "평균적으로 술을 얼마나 자주 마시나요? 예: 주 2회, 월 1회, 거의 매일",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 248,
+          "reason": "frequency"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.pattern"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "patient.alcohol.amount_per_occasion",
+        "display": "Alcohol Amount per Occasion",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.amount-per-occasion",
+        "display": "Alcohol Amount per Occasion",
+        "intents": [
+          "intent.characterize_alcohol_use"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.amount-per-occasion",
+        "wording": "한 번 마실 때 보통 술 종류별로 얼마나 마시나요? 예: 소주 1병, 맥주 500 mL 2잔",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 247,
+          "reason": "amount-per-occasion"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.pattern"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "alcohol.last_use_time",
+        "display": "Last Alcohol Use Time",
+        "value_type": "date_or_period",
+        "terminology_binding": {
+          "system": "http://loinc.org",
+          "code": "74014-2",
+          "display": "Last drank alcohol [Date and time]",
+          "version": "2.82",
+          "relation": "equivalent"
+        }
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.last-use",
+        "display": "Last Alcohol Use Time",
+        "intents": [
+          "intent.characterize_alcohol_use"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.last-use",
+        "wording": "마지막으로 술을 마신 때는 언제인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 246,
+          "reason": "last-use"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.total_use_duration",
+        "display": "Total Alcohol Use Duration",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.use-duration",
+        "display": "Total Alcohol Use Duration",
+        "intents": [
+          "intent.characterize_alcohol_use"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.use-duration",
+        "wording": "술을 규칙적으로 마신 총 기간은 얼마나 되나요? 중간에 금주한 기간이 있으면 제외해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 245,
+          "reason": "use-duration"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.largest_amount_in_one_day",
+        "display": "Largest Alcohol Amount in One Day",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.largest-day-amount",
+        "display": "Largest Alcohol Amount in One Day",
+        "intents": [
+          "intent.characterize_alcohol_use"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.largest-day-amount",
+        "wording": "지난 1년 중 가장 많이 마신 날에는 술 종류별로 얼마나 마셨나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 244,
+          "reason": "largest-day-amount"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.heavy_day_frequency",
+        "display": "Heavy Drinking Day Frequency",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.heavy-day-frequency",
+        "display": "Heavy Drinking Day Frequency",
+        "intents": [
+          "intent.characterize_alcohol_use"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.heavy-day-frequency",
+        "wording": "평소보다 많이 마시는 날은 얼마나 자주 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 243,
+          "reason": "heavy-day-frequency"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.usual_drinking_context",
+        "display": "Usual Drinking Context",
+        "value_type": "coded",
+        "allowed_values": [
+          "with_meals",
+          "social",
+          "alone",
+          "at_home",
+          "work_gathering",
+          "to_sleep",
+          "to_relieve_symptoms",
+          "other"
+        ]
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.drinking-context",
+        "display": "Usual Drinking Context",
+        "intents": [
+          "intent.characterize_alcohol_use"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.drinking-context",
+        "wording": "주로 술을 마시는 상황을 모두 선택하거나 직접 입력해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 242,
+          "reason": "drinking-context"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.recent_reduction_or_stop",
+        "display": "Recent Alcohol Reduction or Stop",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.recent-reduction-stop",
+        "display": "Recent Alcohol Reduction or Stop",
+        "intents": [
+          "intent.screen_alcohol_related_safety"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.recent-reduction-stop",
+        "wording": "최근 평소 음주량을 크게 줄이거나 완전히 끊었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 994,
+          "reason": "recent-reduction-stop"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.craving",
+        "display": "Alcohol Craving",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.craving",
+        "display": "Alcohol Craving",
+        "intents": [
+          "intent.assess_alcohol_change_and_withdrawal_history"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.craving",
+        "wording": "술을 강하게 마시고 싶은 갈망이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 235,
+          "reason": "craving"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.dependence"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.control_difficulty",
+        "display": "Difficulty Controlling Alcohol Use",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.control-difficulty",
+        "display": "Difficulty Controlling Alcohol Use",
+        "intents": [
+          "intent.assess_alcohol_change_and_withdrawal_history"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.control-difficulty",
+        "wording": "마시기 시작하면 계획한 양이나 시간에서 멈추기 어려운가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 234,
+          "reason": "control-difficulty"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.dependence"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.morning_use",
+        "display": "Morning Alcohol Use",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.morning-use",
+        "display": "Morning Alcohol Use",
+        "intents": [
+          "intent.assess_alcohol_change_and_withdrawal_history"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.morning-use",
+        "wording": "아침에 술을 마시거나 불편한 증상을 줄이려고 술을 마시는 일이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 233,
+          "reason": "morning-use"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.dependence"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.tolerance_change",
+        "display": "Alcohol Tolerance Change",
+        "value_type": "coded",
+        "allowed_values": [
+          "increased",
+          "unchanged",
+          "decreased",
+          "uncertain"
+        ]
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.tolerance-change",
+        "display": "Alcohol Tolerance Change",
+        "intents": [
+          "intent.assess_alcohol_change_and_withdrawal_history"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.tolerance-change",
+        "wording": "예전과 같은 효과를 느끼기 위해 필요한 술의 양이 어떻게 변했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 232,
+          "reason": "tolerance-change"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.dependence"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.prior_withdrawal_seizure",
+        "display": "Prior Alcohol Withdrawal Seizure",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.prior-withdrawal-seizure",
+        "display": "Prior Alcohol Withdrawal Seizure",
+        "intents": [
+          "intent.assess_alcohol_change_and_withdrawal_history"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.prior-withdrawal-seizure",
+        "wording": "과거 음주를 줄이거나 끊은 뒤 경련한 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 231,
+          "reason": "prior-withdrawal-seizure"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.dependence"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.prior_delirium_tremens",
+        "display": "Prior Delirium Tremens",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.prior-delirium",
+        "display": "Prior Delirium Tremens",
+        "intents": [
+          "intent.assess_alcohol_change_and_withdrawal_history"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.prior-delirium",
+        "wording": "과거 금주 과정에서 심한 혼란, 환각 또는 섬망으로 치료받은 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 230,
+          "reason": "prior-delirium"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.dependence"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.prior_assisted_withdrawal",
+        "display": "Prior Medically Assisted Withdrawal",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.assisted-withdrawal",
+        "display": "Prior Medically Assisted Withdrawal",
+        "intents": [
+          "intent.assess_alcohol_change_and_withdrawal_history"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.assisted-withdrawal",
+        "wording": "과거 의료기관이나 전문서비스의 도움을 받아 금주 과정을 진행한 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 229,
+          "reason": "assisted-withdrawal"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.dependence"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.prior_change_attempt",
+        "display": "Prior Alcohol Change Attempt",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.prior-change-attempt",
+        "display": "Prior Alcohol Change Attempt",
+        "intents": [
+          "intent.assess_alcohol_change_and_withdrawal_history"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.prior-change-attempt",
+        "wording": "술을 줄이거나 끊으려고 시도한 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 225,
+          "reason": "prior-change-attempt"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.change"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.most_recent_change_attempt",
+        "display": "Most Recent Alcohol Change Attempt",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.recent-change-attempt",
+        "display": "Most Recent Alcohol Change Attempt",
+        "intents": [
+          "intent.assess_alcohol_change_and_withdrawal_history"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.recent-change-attempt",
+        "wording": "가장 최근에 줄이거나 끊으려 한 때는 언제인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 224,
+          "reason": "recent-change-attempt"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.change"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.longest_reduction_or_abstinence",
+        "display": "Longest Reduction or Abstinence",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.longest-change",
+        "display": "Longest Reduction or Abstinence",
+        "intents": [
+          "intent.assess_alcohol_change_and_withdrawal_history"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.longest-change",
+        "wording": "목표한 양 이하로 유지했거나 술을 마시지 않은 가장 긴 기간은 얼마나 되나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 223,
+          "reason": "longest-change"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.change"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.supports_tried",
+        "display": "Alcohol Change Supports Tried",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.supports-tried",
+        "display": "Alcohol Change Supports Tried",
+        "intents": [
+          "intent.assess_alcohol_change_and_withdrawal_history"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.supports-tried",
+        "wording": "상담, 치료, 자조모임, 가족 지원 등 시도한 도움을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 222,
+          "reason": "supports-tried"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.change"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.support_response",
+        "display": "Response to Alcohol Change Supports",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.support-response",
+        "display": "Response to Alcohol Change Supports",
+        "intents": [
+          "intent.assess_alcohol_change_and_withdrawal_history"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.support-response",
+        "wording": "시도한 도움의 효과는 어땠나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 221,
+          "reason": "support-response"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.change"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.readiness",
+        "display": "Readiness to Change Alcohol Use",
+        "value_type": "coded",
+        "allowed_values": [
+          "review_only",
+          "consider_reduce",
+          "ready_to_reduce",
+          "ready_to_stop",
+          "maintain_abstinence",
+          "unsure"
+        ]
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.readiness",
+        "display": "Readiness to Change Alcohol Use",
+        "intents": [
+          "intent.assess_alcohol_change_and_withdrawal_history"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.readiness",
+        "wording": "현재는 현황 확인, 줄이기 고려, 줄일 준비, 끊을 준비, 금주 유지 중 어디에 가장 가깝나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 220,
+          "reason": "readiness"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.change"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.target_date",
+        "display": "Alcohol Change Target Date",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.target-date",
+        "display": "Alcohol Change Target Date",
+        "intents": [
+          "intent.assess_alcohol_change_and_withdrawal_history"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.target-date",
+        "wording": "줄이거나 끊을 목표 날짜가 있다면 언제인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 219,
+          "reason": "target-date"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.change"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.triggers",
+        "display": "Alcohol Use Triggers",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.triggers",
+        "display": "Alcohol Use Triggers",
+        "intents": [
+          "intent.assess_alcohol_change_and_withdrawal_history"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.triggers",
+        "wording": "주로 마시게 되는 상황이나 유발 요인은 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 218,
+          "reason": "triggers"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.change"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.injury_or_hazardous_use",
+        "display": "Alcohol-related Injury or Hazardous Use",
+        "value_type": "coded",
+        "allowed_values": [
+          "none",
+          "fall_or_injury",
+          "driving",
+          "unsafe_work",
+          "unprotected_sex",
+          "violence_or_conflict",
+          "other"
+        ]
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.injury-hazard",
+        "display": "Alcohol-related Injury or Hazardous Use",
+        "intents": [
+          "intent.prepare_alcohol_use_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.injury-hazard",
+        "wording": "음주와 관련해 있었던 상황을 모두 선택하거나 직접 입력해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 210,
+          "reason": "injury-hazard"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.impact"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.role_or_relationship_impact",
+        "display": "Role or Relationship Impact",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.role-impact",
+        "display": "Role or Relationship Impact",
+        "intents": [
+          "intent.prepare_alcohol_use_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.role-impact",
+        "wording": "음주가 일, 학업, 돌봄 또는 관계에 미친 영향이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 209,
+          "reason": "role-impact"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.impact"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.physical_health_context",
+        "display": "Physical Health Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.physical-health",
+        "display": "Physical Health Context",
+        "intents": [
+          "intent.prepare_alcohol_use_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.physical-health",
+        "wording": "음주와 관련해 걱정되는 신체 증상이나 진단받은 건강 문제가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 208,
+          "reason": "physical-health"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.impact"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.mental_health_sleep_context",
+        "display": "Mental Health and Sleep Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.mental-health-sleep",
+        "display": "Mental Health and Sleep Context",
+        "intents": [
+          "intent.prepare_alcohol_use_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.mental-health-sleep",
+        "wording": "기분, 불안 또는 수면이 음주 전후나 줄일 때 어떻게 달라지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 207,
+          "reason": "mental-health-sleep"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.impact"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.other_substances_and_sedatives",
+        "display": "Other Substances and Sedatives",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.other-substances",
+        "display": "Other Substances and Sedatives",
+        "intents": [
+          "intent.prepare_alcohol_use_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.other-substances",
+        "wording": "수면제·진정제·진통제 또는 다른 물질을 술과 함께 사용하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 206,
+          "reason": "other-substances"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.pregnancy_or_postpartum_status",
+        "display": "Pregnancy or Postpartum Status",
+        "value_type": "coded",
+        "allowed_values": [
+          "pregnant",
+          "postpartum_within_one_year",
+          "not_pregnant_or_postpartum",
+          "not_applicable",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.pregnancy-postpartum",
+        "display": "Pregnancy or Postpartum Status",
+        "intents": [
+          "intent.prepare_alcohol_use_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.pregnancy-postpartum",
+        "wording": "현재 임신 중이거나 출산 후 1년 이내인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 205,
+          "reason": "pregnancy-postpartum"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.relevant_conditions",
+        "display": "Relevant Health Conditions",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.relevant-conditions",
+        "display": "Relevant Health Conditions",
+        "intents": [
+          "intent.prepare_alcohol_use_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.relevant-conditions",
+        "wording": "치료 중인 질환이나 최근 건강 문제를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 204,
+          "reason": "relevant-conditions"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.current_medicines",
+        "display": "Current Medicines",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.current-medicines",
+        "display": "Current Medicines",
+        "intents": [
+          "intent.prepare_alcohol_use_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.current-medicines",
+        "wording": "처방약, 일반약, 건강기능식품을 포함해 현재 복용 중인 것을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 203,
+          "reason": "current-medicines"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.allergies",
+        "display": "Known Allergies",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.allergies",
+        "display": "Known Allergies",
+        "intents": [
+          "intent.prepare_alcohol_use_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.allergies",
+        "wording": "알고 있는 약물 또는 물질 알레르기가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 202,
+          "reason": "allergies"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.support_person",
+        "display": "Alcohol Change Support Person",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.support-person",
+        "display": "Alcohol Change Support Person",
+        "intents": [
+          "intent.prepare_alcohol_use_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.support-person",
+        "wording": "줄이거나 끊는 과정에서 도움을 줄 수 있는 사람이나 서비스가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 201,
+          "reason": "support-person"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.history"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.patient_concern",
+        "display": "Patient Concern",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.patient-concern",
+        "display": "Patient Concern",
+        "intents": [
+          "intent.prepare_alcohol_use_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.patient-concern",
+        "wording": "음주와 관련해 가장 걱정되는 점은 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 100,
+          "reason": "patient-concern"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.expected_help",
+        "display": "Expected Help",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.expected-help",
+        "display": "Expected Help",
+        "intents": [
+          "intent.prepare_alcohol_use_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.expected-help",
+        "wording": "이번 진료에서 의료진에게 가장 받고 싶은 도움은 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 99,
+          "reason": "expected-help"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "alcohol.additional_comment",
+        "display": "Additional Comment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.alcohol-use-counselling.additional-comment",
+        "display": "Additional Comment",
+        "intents": [
+          "intent.prepare_alcohol_use_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.alcohol-use-counselling.additional-comment",
+        "wording": "질문에 없지만 의료진에게 추가로 전달할 내용이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 90,
+          "reason": "additional-comment"
+        }
+      ],
+      "supports": [
+        "group.alcohol_use.handoff"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.kr.kdca.alcohol.current-20260615",
+      "source.nice.cg115.alcohol-assessment.current-20260802",
+      "source.nice.cg100.alcohol-withdrawal.current-20260802",
+      "source.niaaa.core-alcohol.screen-assess.2025",
+      "source.stom.alcohol-use.20260802"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

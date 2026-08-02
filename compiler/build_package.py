@@ -557,6 +557,20 @@ PACKAGE_PROFILES = {
             ROOT / "sources/manifests/primary-care-tobacco-nicotine-counselling-research.json"
         ],
     },
+    "alcohol_use_counselling": {
+        "graph": ROOT / "knowledge/graph/primary-care-alcohol-use-counselling.json",
+        "rules": ROOT / "rules/primary-care-alcohol-use-counselling.json",
+        "sources": ROOT / "sources/manifests/primary-care-alcohol-use-counselling.json",
+        "completion_policy": ROOT / "policies/primary-care-alcohol-use-counselling-completion.json",
+        "output": ROOT / "packages/generated/primary-care-alcohol-use-counselling-0.1.0.json",
+        "package_id": "package.primary-care-alcohol-use-counselling",
+        "package_version": "0.1.0",
+        "rfe": "rfe.alcohol_use_counselling",
+        "simulation_root": ROOT / "simulation/patients/preventive/alcohol-use-counselling",
+        "research_manifests": [
+            ROOT / "sources/manifests/primary-care-alcohol-use-counselling-research.json"
+        ],
+    },
     "menstrual_uterine_bleeding": {
         "graph": ROOT / "knowledge/graph/primary-care-menstrual-uterine-bleeding.json",
         "rules": ROOT / "rules/primary-care-menstrual-uterine-bleeding.json",
