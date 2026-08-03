@@ -427,6 +427,17 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/gastrointestinal/dyspepsia-reflux",
         "research_manifests": [ROOT / "sources/manifests/primary-care-dyspepsia-reflux-research.json"],
     },
+    "swallowing_difficulty": {
+        "graph": ROOT / "knowledge/graph/primary-care-swallowing-difficulty.json",
+        "rules": ROOT / "rules/primary-care-swallowing-difficulty.json",
+        "sources": ROOT / "sources/manifests/primary-care-swallowing-difficulty.json",
+        "completion_policy": ROOT / "policies/primary-care-swallowing-difficulty-completion.json",
+        "output": ROOT / "packages/generated/primary-care-swallowing-difficulty-0.1.0.json",
+        "package_id": "package.primary-care-swallowing-difficulty", "package_version": "0.1.0",
+        "rfe": "rfe.swallowing_difficulty",
+        "simulation_root": ROOT / "simulation/patients/gastrointestinal/swallowing-difficulty",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-swallowing-difficulty-research.json"],
+    },
     "thyroid_concern_follow_up": {
         "graph": ROOT / "knowledge/graph/primary-care-thyroid-concern-follow-up.json",
         "rules": ROOT / "rules/primary-care-thyroid-concern-follow-up.json",

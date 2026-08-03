@@ -1,0 +1,2383 @@
+{
+  "id": "knowledge.generated.swallowing-difficulty",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-swallowing-difficulty-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-08-03",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-08-04",
+    "next_full_review_at": "2027-01-30",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.swallowing.identity",
+      "type": "ClinicalGroup",
+      "display": "identity"
+    },
+    {
+      "id": "group.swallowing.safety",
+      "type": "ClinicalGroup",
+      "display": "safety"
+    },
+    {
+      "id": "group.swallowing.pattern",
+      "type": "ClinicalGroup",
+      "display": "pattern"
+    },
+    {
+      "id": "group.swallowing.oropharyngeal",
+      "type": "ClinicalGroup",
+      "display": "oropharyngeal"
+    },
+    {
+      "id": "group.swallowing.oesophageal",
+      "type": "ClinicalGroup",
+      "display": "oesophageal"
+    },
+    {
+      "id": "group.swallowing.nutrition",
+      "type": "ClinicalGroup",
+      "display": "nutrition"
+    },
+    {
+      "id": "group.swallowing.context",
+      "type": "ClinicalGroup",
+      "display": "context"
+    },
+    {
+      "id": "group.swallowing.handoff",
+      "type": "ClinicalGroup",
+      "display": "handoff"
+    }
+  ],
+  "group_hypothesis_edges": [],
+  "safety_rules": [
+    {
+      "id": "rule.swallowing-difficulty.safety.complete-airway-obstruction",
+      "priority": 1300,
+      "when": {
+        "fact": "swallow.current_cannot_breathe_or_speak",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.swallowing-difficulty.safety.reduced-consciousness",
+      "priority": 1299,
+      "when": {
+        "fact": "swallow.current_reduced_consciousness",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.swallowing-difficulty.safety.blue-colour",
+      "priority": 1298,
+      "when": {
+        "fact": "swallow.current_blue_colour",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.swallowing-difficulty.safety.sudden-neurologic-change",
+      "priority": 1297,
+      "when": {
+        "all": [
+          {
+            "fact": "swallow.sudden_new_difficulty",
+            "equals": true
+          },
+          {
+            "fact": "swallow.sudden_focal_neurologic_change",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.swallowing-difficulty.safety.unable-swallow-saliva",
+      "priority": 1296,
+      "when": {
+        "fact": "swallow.unable_to_swallow_saliva",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.swallowing-difficulty.safety.food-bolus-unable-liquids",
+      "priority": 1295,
+      "when": {
+        "all": [
+          {
+            "fact": "swallow.suspected_food_bolus",
+            "equals": true
+          },
+          {
+            "fact": "swallow.unable_to_swallow_liquids_current",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.swallowing-difficulty.safety.severe-breathlessness-after-swallow",
+      "priority": 1294,
+      "when": {
+        "fact": "swallow.current_severe_breathlessness_after_swallow",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.swallowing-difficulty.safety.fluid-intake-dehydration",
+      "priority": 1293,
+      "when": {
+        "all": [
+          {
+            "fact": "swallow.unable_to_keep_fluids",
+            "equals": true
+          },
+          {
+            "fact": "swallow.markedly_reduced_urine",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "swallow.presentation",
+        "display": "Main Swallowing Presentation",
+        "value_type": "coded_or_string",
+        "allowed_values": [
+          "difficulty_starting",
+          "food_sticking",
+          "painful_swallowing",
+          "coughing_or_choking",
+          "regurgitation",
+          "follow_up",
+          "other"
+        ]
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.presentation",
+        "display": "Main Swallowing Presentation",
+        "intents": [
+          "intent.characterize_swallowing_difficulty"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.presentation",
+        "wording": "가장 주된 불편은 삼키기 시작하기 어려움, 음식 걸림, 삼킬 때 통증, 기침·사레, 음식 역류 중 무엇인가요? 보기에 없으면 직접 입력해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 300,
+          "reason": "presentation"
+        }
+      ],
+      "supports": [
+        "group.swallowing.identity"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.information_source",
+        "display": "Swallowing Information Source",
+        "value_type": "coded",
+        "allowed_values": [
+          "patient",
+          "caregiver",
+          "patient_and_caregiver",
+          "record",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.information-source",
+        "display": "Swallowing Information Source",
+        "intents": [
+          "intent.characterize_swallowing_difficulty"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.information-source",
+        "wording": "삼킴 상태를 누가 답하고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 299,
+          "reason": "information-source"
+        }
+      ],
+      "supports": [
+        "group.swallowing.identity"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.source_reliability",
+        "display": "Swallowing Information Reliability",
+        "value_type": "coded",
+        "allowed_values": [
+          "reliable",
+          "partly_reliable",
+          "memory_uncertain",
+          "conflicting_sources",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.source-reliability",
+        "display": "Swallowing Information Reliability",
+        "intents": [
+          "intent.characterize_swallowing_difficulty"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.source-reliability",
+        "wording": "답변은 최근 식사·음료 상황을 잘 반영하나요, 기억이 불확실하거나 다른 사람·기록과 상충하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 298,
+          "reason": "source-reliability"
+        }
+      ],
+      "supports": [
+        "group.swallowing.identity"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.current_cannot_breathe_or_speak",
+        "display": "Current Complete Airway Obstruction",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.airway-obstruction",
+        "display": "Current Complete Airway Obstruction",
+        "intents": [
+          "intent.screen_swallowing_safety"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.airway-obstruction",
+        "wording": "지금 음식이나 물질이 막혀 숨을 쉬거나 말을 할 수 없나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1200,
+          "reason": "airway-obstruction"
+        }
+      ],
+      "supports": [
+        "group.swallowing.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.current_reduced_consciousness",
+        "display": "Current Reduced Consciousness",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.reduced-consciousness",
+        "display": "Current Reduced Consciousness",
+        "intents": [
+          "intent.screen_swallowing_safety"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.reduced-consciousness",
+        "wording": "지금 깨우기 어렵거나 의식이 뚜렷하게 떨어져 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1199,
+          "reason": "reduced-consciousness"
+        }
+      ],
+      "supports": [
+        "group.swallowing.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.current_blue_colour",
+        "display": "Current Blue Colour",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.blue-colour",
+        "display": "Current Blue Colour",
+        "intents": [
+          "intent.screen_swallowing_safety"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.blue-colour",
+        "wording": "지금 입술이나 얼굴이 파랗게 보이나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1198,
+          "reason": "blue-colour"
+        }
+      ],
+      "supports": [
+        "group.swallowing.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.sudden_new_difficulty",
+        "display": "Sudden New Swallowing Difficulty",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.sudden-new-difficulty",
+        "display": "Sudden New Swallowing Difficulty",
+        "intents": [
+          "intent.screen_swallowing_safety"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.sudden-new-difficulty",
+        "wording": "삼키기 어려움이 갑자기 새로 시작됐나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1197,
+          "reason": "sudden-new-difficulty"
+        }
+      ],
+      "supports": [
+        "group.swallowing.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.sudden_focal_neurologic_change",
+        "display": "Sudden Focal Neurologic Change",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.sudden-neurologic-change",
+        "display": "Sudden Focal Neurologic Change",
+        "intents": [
+          "intent.screen_swallowing_safety"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.sudden-neurologic-change",
+        "wording": "같은 때 갑자기 한쪽 얼굴·팔·다리 힘이 빠지거나 말이 어눌해졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1196,
+          "reason": "sudden-neurologic-change"
+        }
+      ],
+      "supports": [
+        "group.swallowing.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.unable_to_swallow_saliva",
+        "display": "Unable to Swallow Saliva",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.unable-swallow-saliva",
+        "display": "Unable to Swallow Saliva",
+        "intents": [
+          "intent.screen_swallowing_safety"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.unable-swallow-saliva",
+        "wording": "현재 침도 삼키지 못해 흘리거나 계속 뱉고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1195,
+          "reason": "unable-swallow-saliva"
+        }
+      ],
+      "supports": [
+        "group.swallowing.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.suspected_food_bolus",
+        "display": "Suspected Food Bolus",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.suspected-food-bolus",
+        "display": "Suspected Food Bolus",
+        "intents": [
+          "intent.screen_swallowing_safety"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.suspected-food-bolus",
+        "wording": "음식이나 다른 물질이 목 또는 가슴에 걸린 채 내려가지 않는 느낌인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1194,
+          "reason": "suspected-food-bolus"
+        }
+      ],
+      "supports": [
+        "group.swallowing.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.unable_to_swallow_liquids_current",
+        "display": "Unable to Swallow Liquids Currently",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.unable-liquids-current",
+        "display": "Unable to Swallow Liquids Currently",
+        "intents": [
+          "intent.screen_swallowing_safety"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.unable-liquids-current",
+        "wording": "현재 물도 전혀 삼킬 수 없나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1193,
+          "reason": "unable-liquids-current"
+        }
+      ],
+      "supports": [
+        "group.swallowing.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.current_severe_breathlessness_after_swallow",
+        "display": "Severe Breathlessness after Swallowing",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.severe-breathlessness-after-swallow",
+        "display": "Severe Breathlessness after Swallowing",
+        "intents": [
+          "intent.screen_swallowing_safety"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.severe-breathlessness-after-swallow",
+        "wording": "삼킨 뒤 지금 말하기 어려울 정도로 심하게 숨이 차나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1192,
+          "reason": "severe-breathlessness-after-swallow"
+        }
+      ],
+      "supports": [
+        "group.swallowing.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.unable_to_keep_fluids",
+        "display": "Unable to Maintain Fluid Intake",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.unable-maintain-fluids",
+        "display": "Unable to Maintain Fluid Intake",
+        "intents": [
+          "intent.screen_swallowing_safety"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.unable-maintain-fluids",
+        "wording": "삼킴 문제 때문에 하루 동안 필요한 물을 거의 마시지 못했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1191,
+          "reason": "unable-maintain-fluids"
+        }
+      ],
+      "supports": [
+        "group.swallowing.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.markedly_reduced_urine",
+        "display": "Markedly Reduced Urine",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.markedly-reduced-urine",
+        "display": "Markedly Reduced Urine",
+        "intents": [
+          "intent.screen_swallowing_safety"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.markedly-reduced-urine",
+        "wording": "평소보다 소변이 뚜렷하게 줄었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1190,
+          "reason": "markedly-reduced-urine"
+        }
+      ],
+      "supports": [
+        "group.swallowing.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.first_onset",
+        "display": "First Swallowing Difficulty Onset",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.first-onset",
+        "display": "First Swallowing Difficulty Onset",
+        "intents": [
+          "intent.characterize_swallowing_difficulty"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.first-onset",
+        "wording": "삼킴 문제가 처음 시작된 때는 언제인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 280,
+          "reason": "first-onset"
+        }
+      ],
+      "supports": [
+        "group.swallowing.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.latest_episode",
+        "display": "Latest Swallowing Difficulty Episode",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.latest-episode",
+        "display": "Latest Swallowing Difficulty Episode",
+        "intents": [
+          "intent.characterize_swallowing_difficulty"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.latest-episode",
+        "wording": "가장 최근에 문제가 있었던 때는 언제인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 279,
+          "reason": "latest-episode"
+        }
+      ],
+      "supports": [
+        "group.swallowing.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.course",
+        "display": "Swallowing Difficulty Course",
+        "value_type": "coded",
+        "allowed_values": [
+          "improving",
+          "unchanged",
+          "progressive",
+          "fluctuating",
+          "resolved",
+          "uncertain"
+        ]
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.course",
+        "display": "Swallowing Difficulty Course",
+        "intents": [
+          "intent.characterize_swallowing_difficulty"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.course",
+        "wording": "처음보다 좋아짐, 비슷함, 점점 심해짐, 들쭉날쭉함 중 어디에 가깝나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 278,
+          "reason": "course"
+        }
+      ],
+      "supports": [
+        "group.swallowing.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.frequency",
+        "display": "Swallowing Difficulty Frequency",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.frequency",
+        "display": "Swallowing Difficulty Frequency",
+        "intents": [
+          "intent.characterize_swallowing_difficulty"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.frequency",
+        "wording": "삼킬 때 불편한 빈도를 알려주세요. 예: 매 끼니, 하루 한 번, 가끔",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 277,
+          "reason": "frequency"
+        }
+      ],
+      "supports": [
+        "group.swallowing.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.difficulty_initiating",
+        "display": "Difficulty Initiating Swallow",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.difficulty-initiating",
+        "display": "Difficulty Initiating Swallow",
+        "intents": [
+          "intent.characterize_swallowing_difficulty"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.difficulty-initiating",
+        "wording": "음식이나 물을 입에서 목으로 넘기기 시작하기 어렵나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 276,
+          "reason": "difficulty-initiating"
+        }
+      ],
+      "supports": [
+        "group.swallowing.oropharyngeal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.perceived_sticking_location",
+        "display": "Perceived Food Sticking Location",
+        "value_type": "coded_or_string",
+        "allowed_values": [
+          "mouth",
+          "throat",
+          "neck",
+          "upper_chest",
+          "mid_chest",
+          "lower_chest",
+          "uncertain",
+          "other"
+        ]
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.sticking-location",
+        "display": "Perceived Food Sticking Location",
+        "intents": [
+          "intent.characterize_swallowing_difficulty"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.sticking-location",
+        "wording": "걸리는 느낌이 있다면 입안, 목, 가슴 중 어디인가요? 보기에 없으면 직접 입력해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 275,
+          "reason": "sticking-location"
+        }
+      ],
+      "supports": [
+        "group.swallowing.oesophageal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.solid_food_difficulty_last_7_days",
+        "display": "Solid Food Swallowing Difficulty in Last 7 Days",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.solid-last-seven",
+        "display": "Solid Food Swallowing Difficulty in Last 7 Days",
+        "intents": [
+          "intent.characterize_swallowing_difficulty"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.solid-last-seven",
+        "wording": "최근 7일 동안 고형식을 삼키기 어려웠나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 274,
+          "reason": "solid-last-seven"
+        }
+      ],
+      "supports": [
+        "group.swallowing.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.soft_food_difficulty_last_7_days",
+        "display": "Soft Food Swallowing Difficulty in Last 7 Days",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.soft-last-seven",
+        "display": "Soft Food Swallowing Difficulty in Last 7 Days",
+        "intents": [
+          "intent.characterize_swallowing_difficulty"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.soft-last-seven",
+        "wording": "최근 7일 동안 부드럽거나 으깬 음식을 삼키기 어려웠나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 273,
+          "reason": "soft-last-seven"
+        }
+      ],
+      "supports": [
+        "group.swallowing.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.liquid_difficulty_last_7_days",
+        "display": "Liquid Swallowing Difficulty in Last 7 Days",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.liquid-last-seven",
+        "display": "Liquid Swallowing Difficulty in Last 7 Days",
+        "intents": [
+          "intent.characterize_swallowing_difficulty"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.liquid-last-seven",
+        "wording": "최근 7일 동안 물 같은 액체를 삼키기 어려웠나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 272,
+          "reason": "liquid-last-seven"
+        }
+      ],
+      "supports": [
+        "group.swallowing.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.painful_swallowing",
+        "display": "Painful Swallowing",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.painful-swallowing",
+        "display": "Painful Swallowing",
+        "intents": [
+          "intent.characterize_swallowing_difficulty"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.painful-swallowing",
+        "wording": "삼킬 때 통증이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 271,
+          "reason": "painful-swallowing"
+        }
+      ],
+      "supports": [
+        "group.swallowing.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.pain_location",
+        "display": "Swallowing Pain Location",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.pain-location",
+        "display": "Swallowing Pain Location",
+        "intents": [
+          "intent.characterize_swallowing_difficulty"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.pain-location",
+        "wording": "삼킬 때 아픈 위치를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 270,
+          "reason": "pain-location"
+        }
+      ],
+      "supports": [
+        "group.swallowing.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.pain_nrs",
+        "display": "Swallowing Pain Numeric Rating",
+        "value_type": "integer",
+        "terminology_binding": {
+          "system": "http://loinc.org",
+          "code": "72514-3",
+          "display": "Pain severity - 0-10 verbal numeric rating [Score] - Reported",
+          "version": "2.82",
+          "relation": "equivalent"
+        },
+        "unit": "{score}",
+        "minimum": 0,
+        "maximum": 10
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.pain-nrs",
+        "display": "Swallowing Pain Numeric Rating",
+        "intents": [
+          "intent.characterize_swallowing_difficulty"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.pain-nrs",
+        "wording": "삼킬 때 통증이 있다면 0점부터 10점 중 몇 점인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 269,
+          "reason": "pain-nrs"
+        }
+      ],
+      "supports": [
+        "group.swallowing.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.chewing_difficulty",
+        "display": "Chewing Difficulty",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.chewing-difficulty",
+        "display": "Chewing Difficulty",
+        "intents": [
+          "intent.assess_swallowing_impact_and_context"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.chewing-difficulty",
+        "wording": "씹거나 음식 덩어리를 만들기 어렵나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 250,
+          "reason": "chewing-difficulty"
+        }
+      ],
+      "supports": [
+        "group.swallowing.oropharyngeal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.oral_residue_or_leakage",
+        "display": "Oral Residue or Leakage",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.oral-residue-leakage",
+        "display": "Oral Residue or Leakage",
+        "intents": [
+          "intent.assess_swallowing_impact_and_context"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.oral-residue-leakage",
+        "wording": "삼킨 뒤 음식이 입안에 남거나 입 밖으로 새나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 249,
+          "reason": "oral-residue-leakage"
+        }
+      ],
+      "supports": [
+        "group.swallowing.oropharyngeal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.nasal_regurgitation",
+        "display": "Nasal Regurgitation",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.nasal-regurgitation",
+        "display": "Nasal Regurgitation",
+        "intents": [
+          "intent.assess_swallowing_impact_and_context"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.nasal-regurgitation",
+        "wording": "삼킬 때 음식이나 물이 코로 나오나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 248,
+          "reason": "nasal-regurgitation"
+        }
+      ],
+      "supports": [
+        "group.swallowing.oropharyngeal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.cough_during_or_after",
+        "display": "Cough during or after Swallow",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.cough-during-after",
+        "display": "Cough during or after Swallow",
+        "intents": [
+          "intent.assess_swallowing_impact_and_context"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.cough-during-after",
+        "wording": "먹거나 마시는 중 또는 직후에 기침하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 247,
+          "reason": "cough-during-after"
+        }
+      ],
+      "supports": [
+        "group.swallowing.oropharyngeal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.choking_episode",
+        "display": "Choking Episode",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.choking-episode",
+        "display": "Choking Episode",
+        "intents": [
+          "intent.assess_swallowing_impact_and_context"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.choking-episode",
+        "wording": "먹거나 마실 때 사레가 들리거나 숨길이 막힌 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 246,
+          "reason": "choking-episode"
+        }
+      ],
+      "supports": [
+        "group.swallowing.oropharyngeal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.wet_voice_after",
+        "display": "Wet Voice after Swallow",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.wet-voice-after",
+        "display": "Wet Voice after Swallow",
+        "intents": [
+          "intent.assess_swallowing_impact_and_context"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.wet-voice-after",
+        "wording": "먹거나 마신 뒤 목소리가 젖은 듯 가래 끓는 소리로 변하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 245,
+          "reason": "wet-voice-after"
+        }
+      ],
+      "supports": [
+        "group.swallowing.oropharyngeal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.breathing_change_after",
+        "display": "Breathing Change after Swallow",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.breathing-change-after",
+        "display": "Breathing Change after Swallow",
+        "intents": [
+          "intent.assess_swallowing_impact_and_context"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.breathing-change-after",
+        "wording": "먹거나 마신 뒤 숨이 차거나 호흡 소리가 달라지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 244,
+          "reason": "breathing-change-after"
+        }
+      ],
+      "supports": [
+        "group.swallowing.oropharyngeal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.regurgitation",
+        "display": "Regurgitation after Swallow",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.regurgitation",
+        "display": "Regurgitation after Swallow",
+        "intents": [
+          "intent.assess_swallowing_impact_and_context"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.regurgitation",
+        "wording": "삼킨 음식이나 물이 다시 입이나 코로 올라오나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 243,
+          "reason": "regurgitation"
+        }
+      ],
+      "supports": [
+        "group.swallowing.oesophageal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.reflux_or_heartburn",
+        "display": "Reflux or Heartburn",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.reflux-heartburn",
+        "display": "Reflux or Heartburn",
+        "intents": [
+          "intent.assess_swallowing_impact_and_context"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.reflux-heartburn",
+        "wording": "속쓰림이나 신물이 올라오는 증상이 함께 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 242,
+          "reason": "reflux-heartburn"
+        }
+      ],
+      "supports": [
+        "group.swallowing.oesophageal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.meal_related_chest_discomfort",
+        "display": "Meal-related Chest Discomfort",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.meal-chest-discomfort",
+        "display": "Meal-related Chest Discomfort",
+        "intents": [
+          "intent.assess_swallowing_impact_and_context"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.meal-chest-discomfort",
+        "wording": "삼키거나 식사할 때 가슴 불편감이 생기나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 241,
+          "reason": "meal-chest-discomfort"
+        }
+      ],
+      "supports": [
+        "group.swallowing.oesophageal"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.meal_duration",
+        "display": "Meal Duration",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.meal-duration",
+        "display": "Meal Duration",
+        "intents": [
+          "intent.assess_swallowing_impact_and_context"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.meal-duration",
+        "wording": "한 끼를 먹는 데 보통 얼마나 걸리며 예전보다 길어졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 225,
+          "reason": "meal-duration"
+        }
+      ],
+      "supports": [
+        "group.swallowing.nutrition"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.fatigue_during_meal",
+        "display": "Fatigue during Meal",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.meal-fatigue",
+        "display": "Fatigue during Meal",
+        "intents": [
+          "intent.assess_swallowing_impact_and_context"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.meal-fatigue",
+        "wording": "식사 도중 지쳐서 쉬거나 끝내지 못하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 224,
+          "reason": "meal-fatigue"
+        }
+      ],
+      "supports": [
+        "group.swallowing.nutrition"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.food_or_drink_avoidance",
+        "display": "Food or Drink Avoidance",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.food-avoidance",
+        "display": "Food or Drink Avoidance",
+        "intents": [
+          "intent.assess_swallowing_impact_and_context"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.food-avoidance",
+        "wording": "삼키기 어려워 피하는 음식·음료나 바꾼 질감이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 223,
+          "reason": "food-avoidance"
+        }
+      ],
+      "supports": [
+        "group.swallowing.nutrition"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.intake_reduction",
+        "display": "Food Intake Reduction",
+        "value_type": "coded",
+        "allowed_values": [
+          "none",
+          "slightly_reduced",
+          "markedly_reduced",
+          "almost_none",
+          "uncertain"
+        ]
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.intake-reduction",
+        "display": "Food Intake Reduction",
+        "intents": [
+          "intent.assess_swallowing_impact_and_context"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.intake-reduction",
+        "wording": "평소보다 먹는 양은 어떻게 달라졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 222,
+          "reason": "intake-reduction"
+        }
+      ],
+      "supports": [
+        "group.swallowing.nutrition"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.unintentional_weight_change",
+        "display": "Unintentional Weight Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.weight-change",
+        "display": "Unintentional Weight Change",
+        "intents": [
+          "intent.assess_swallowing_impact_and_context"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.weight-change",
+        "wording": "의도하지 않은 체중 변화가 있다면 양과 기간을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 221,
+          "reason": "weight-change"
+        }
+      ],
+      "supports": [
+        "group.swallowing.nutrition"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.recurrent_chest_infection",
+        "display": "Recurrent Chest Infection",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.recurrent-chest-infection",
+        "display": "Recurrent Chest Infection",
+        "intents": [
+          "intent.assess_swallowing_impact_and_context"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.recurrent-chest-infection",
+        "wording": "삼킴 문제가 생긴 뒤 흉부 감염이나 폐렴을 반복해서 진료받았나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 220,
+          "reason": "recurrent-chest-infection"
+        }
+      ],
+      "supports": [
+        "group.swallowing.nutrition"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.daily_function_and_social_impact",
+        "display": "Daily and Social Impact",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.function-social-impact",
+        "display": "Daily and Social Impact",
+        "intents": [
+          "intent.assess_swallowing_impact_and_context"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.function-social-impact",
+        "wording": "삼킴 문제로 약 복용, 외식, 직장·학교, 수면 또는 사람들과 식사하는 데 어떤 영향이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 219,
+          "reason": "function-social-impact"
+        }
+      ],
+      "supports": [
+        "group.swallowing.nutrition"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.neurologic_history",
+        "display": "Neurologic History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.neurologic-history",
+        "display": "Neurologic History",
+        "intents": [
+          "intent.assess_swallowing_impact_and_context"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.neurologic-history",
+        "wording": "뇌졸중, 신경계 질환, 근력 저하 등 삼킴에 영향을 줄 수 있는 병력이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 205,
+          "reason": "neurologic-history"
+        }
+      ],
+      "supports": [
+        "group.swallowing.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.head_neck_surgery_or_radiation",
+        "display": "Head or Neck Surgery or Radiation",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.head-neck-treatment",
+        "display": "Head or Neck Surgery or Radiation",
+        "intents": [
+          "intent.assess_swallowing_impact_and_context"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.head-neck-treatment",
+        "wording": "머리·목 수술, 방사선치료, 기관삽관 또는 기관절개 이력이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 204,
+          "reason": "head-neck-treatment"
+        }
+      ],
+      "supports": [
+        "group.swallowing.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.oesophageal_or_reflux_history",
+        "display": "Oesophageal or Reflux History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.oesophageal-history",
+        "display": "Oesophageal or Reflux History",
+        "intents": [
+          "intent.assess_swallowing_impact_and_context"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.oesophageal-history",
+        "wording": "식도 질환, 역류, 협착 또는 관련 시술 이력이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 203,
+          "reason": "oesophageal-history"
+        }
+      ],
+      "supports": [
+        "group.swallowing.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.oral_dental_context",
+        "display": "Oral and Dental Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.oral-dental-context",
+        "display": "Oral and Dental Context",
+        "intents": [
+          "intent.assess_swallowing_impact_and_context"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.oral-dental-context",
+        "wording": "치아, 틀니, 입안 통증·건조 또는 씹기 문제가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 202,
+          "reason": "oral-dental-context"
+        }
+      ],
+      "supports": [
+        "group.swallowing.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.respiratory_history",
+        "display": "Respiratory History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.respiratory-history",
+        "display": "Respiratory History",
+        "intents": [
+          "intent.assess_swallowing_impact_and_context"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.respiratory-history",
+        "wording": "폐질환이나 반복되는 흉부 감염 이력이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 201,
+          "reason": "respiratory-history"
+        }
+      ],
+      "supports": [
+        "group.swallowing.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.cognition_frailty_posture",
+        "display": "Cognition Frailty and Posture Context",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.cognition-frailty-posture",
+        "display": "Cognition Frailty and Posture Context",
+        "intents": [
+          "intent.assess_swallowing_impact_and_context"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.cognition-frailty-posture",
+        "wording": "주의력·인지, 전반적 쇠약, 식사 자세 때문에 삼키기 어려운 점이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 200,
+          "reason": "cognition-frailty-posture"
+        }
+      ],
+      "supports": [
+        "group.swallowing.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.feeding_tube_or_airway_device",
+        "display": "Feeding Tube or Airway Device",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.feeding-airway-device",
+        "display": "Feeding Tube or Airway Device",
+        "intents": [
+          "intent.assess_swallowing_impact_and_context"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.feeding-airway-device",
+        "wording": "비위관·위루관 같은 영양관이나 기관절개관을 사용하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 199,
+          "reason": "feeding-airway-device"
+        }
+      ],
+      "supports": [
+        "group.swallowing.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.current_medicines",
+        "display": "Current Medicines",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.current-medicines",
+        "display": "Current Medicines",
+        "intents": [
+          "intent.assess_swallowing_impact_and_context"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.current-medicines",
+        "wording": "현재 복용하는 처방약, 일반약, 건강기능식품과 삼키기 어려운 제형이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 198,
+          "reason": "current-medicines"
+        }
+      ],
+      "supports": [
+        "group.swallowing.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.allergies",
+        "display": "Known Allergies",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.allergies",
+        "display": "Known Allergies",
+        "intents": [
+          "intent.assess_swallowing_impact_and_context"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.allergies",
+        "wording": "알고 있는 약물 또는 물질 알레르기가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 197,
+          "reason": "allergies"
+        }
+      ],
+      "supports": [
+        "group.swallowing.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.previous_assessment_or_test",
+        "display": "Previous Swallowing Assessment or Test",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.previous-assessment",
+        "display": "Previous Swallowing Assessment or Test",
+        "intents": [
+          "intent.assess_swallowing_impact_and_context"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.previous-assessment",
+        "wording": "이 문제로 진찰, 내시경, 조영검사, 연하검사 등을 받은 적과 결과를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 196,
+          "reason": "previous-assessment"
+        }
+      ],
+      "supports": [
+        "group.swallowing.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.previous_strategy_or_treatment",
+        "display": "Previous Strategy or Treatment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.previous-strategy",
+        "display": "Previous Strategy or Treatment",
+        "intents": [
+          "intent.assess_swallowing_impact_and_context"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.previous-strategy",
+        "wording": "전에 안내받은 식이 질감, 자세, 연하치료 또는 치료가 있다면 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 195,
+          "reason": "previous-strategy"
+        }
+      ],
+      "supports": [
+        "group.swallowing.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.previous_response",
+        "display": "Response to Previous Strategy",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.previous-response",
+        "display": "Response to Previous Strategy",
+        "intents": [
+          "intent.assess_swallowing_impact_and_context"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.previous-response",
+        "wording": "이전 안내나 치료 후 좋아진 점과 남은 문제를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 194,
+          "reason": "previous-response"
+        }
+      ],
+      "supports": [
+        "group.swallowing.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.feeding_assistance",
+        "display": "Feeding Assistance",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.feeding-assistance",
+        "display": "Feeding Assistance",
+        "intents": [
+          "intent.assess_swallowing_impact_and_context"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.feeding-assistance",
+        "wording": "식사 준비, 자세 잡기, 먹기 또는 약 복용에 다른 사람의 도움이 필요한가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 193,
+          "reason": "feeding-assistance"
+        }
+      ],
+      "supports": [
+        "group.swallowing.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.accessibility_need",
+        "display": "Accessibility Need",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.accessibility-need",
+        "display": "Accessibility Need",
+        "intents": [
+          "intent.assess_swallowing_impact_and_context"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.accessibility-need",
+        "wording": "청각·시각·인지·의사소통·이동 측면에서 문진이나 진료에 필요한 지원이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 192,
+          "reason": "accessibility-need"
+        }
+      ],
+      "supports": [
+        "group.swallowing.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.patient_concern",
+        "display": "Patient Swallowing Concern",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.patient-concern",
+        "display": "Patient Swallowing Concern",
+        "intents": [
+          "intent.prepare_swallowing_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.patient-concern",
+        "wording": "삼킴 문제와 관련해 가장 걱정되는 점은 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 100,
+          "reason": "patient-concern"
+        }
+      ],
+      "supports": [
+        "group.swallowing.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.expected_help",
+        "display": "Expected Help",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.expected-help",
+        "display": "Expected Help",
+        "intents": [
+          "intent.prepare_swallowing_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.expected-help",
+        "wording": "이번 진료에서 의료진에게 가장 받고 싶은 도움은 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 99,
+          "reason": "expected-help"
+        }
+      ],
+      "supports": [
+        "group.swallowing.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "swallow.additional_comment",
+        "display": "Additional Comment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.swallowing-difficulty.additional-comment",
+        "display": "Additional Comment",
+        "intents": [
+          "intent.prepare_swallowing_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.swallowing-difficulty.additional-comment",
+        "wording": "질문에 없지만 의료진에게 추가로 전달할 내용이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 90,
+          "reason": "additional-comment"
+        }
+      ],
+      "supports": [
+        "group.swallowing.handoff"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nhs.dysphagia.20230502",
+      "source.nice.ng12.dysphagia.2025",
+      "source.asha.adult-dysphagia.20260803",
+      "source.rcslt.eating-drinking-swallowing.2024",
+      "source.stom.swallowing-difficulty.20260803"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

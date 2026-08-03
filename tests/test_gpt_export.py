@@ -541,7 +541,7 @@ class GptExportTests(unittest.TestCase):
                 {
                     "abdominal_pain", "back_pain", "bowel_symptoms", "chest_pain", "cough", "diabetes_follow_up", "dizziness_syncope",
                     "dyspnea", "ear_hearing_symptoms", "edema", "eye_symptoms", "fatigue", "fever", "focal_weakness_numbness", "headache", "hypertension_follow_up", "joint_limb_complaint", "medication_review", "mental_health_sleep",
-                    "alcohol_use_counselling", "physical_activity_counselling", "allergy_concern", "anemia_concern_follow_up", "asthma_copd_follow_up", "breast_symptoms", "dyspepsia_reflux", "thyroid_concern_follow_up", "kidney_function_ckd_follow_up", "liver_function_chronic_follow_up", "immunization_consultation", "preoperative_assessment", "post_discharge_follow_up", "tobacco_nicotine_counselling", "epistaxis", "gait_falls_concern", "lump_lymph_node", "memory_cognitive_concern", "menstrual_uterine_bleeding", "neck_pain", "oral_dental_symptoms", "palpitations", "pediatric_growth_development", "pregnancy_postpartum_concern", "reproductive_genital_symptoms", "seizure_event_follow_up", "skin_complaint", "test_result_follow_up", "tremor_movement_concern", "upper_respiratory_symptoms", "urinary_symptoms", "wound_minor_injury",
+                    "alcohol_use_counselling", "physical_activity_counselling", "allergy_concern", "anemia_concern_follow_up", "asthma_copd_follow_up", "breast_symptoms", "dyspepsia_reflux", "swallowing_difficulty", "thyroid_concern_follow_up", "kidney_function_ckd_follow_up", "liver_function_chronic_follow_up", "immunization_consultation", "preoperative_assessment", "post_discharge_follow_up", "tobacco_nicotine_counselling", "epistaxis", "gait_falls_concern", "lump_lymph_node", "memory_cognitive_concern", "menstrual_uterine_bleeding", "neck_pain", "oral_dental_symptoms", "palpitations", "pediatric_growth_development", "pregnancy_postpartum_concern", "reproductive_genital_symptoms", "seizure_event_follow_up", "skin_complaint", "test_result_follow_up", "tremor_movement_concern", "upper_respiratory_symptoms", "urinary_symptoms", "wound_minor_injury",
                     "vomiting_diarrhea", "weight_constitutional_change",
                 },
             )
@@ -624,7 +624,7 @@ class GptExportTests(unittest.TestCase):
 
             dysphagia = next(
                 entry for entry in catalog["entries"]
-                if entry["id"] == "rfe.dyspepsia_reflux"
+                if entry["id"] == "rfe.swallowing_difficulty"
             )
             self.assertIn("연하곤란", dysphagia["aliases"])
             self.assertIn("dysphagia", dysphagia["aliases"])

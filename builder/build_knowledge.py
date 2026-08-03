@@ -286,6 +286,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-dyspepsia-reflux.json",
         "version": "0.1.0",
     },
+    "swallowing_difficulty": {
+        "base_graph": ROOT / "knowledge/base/primary-care-swallowing-difficulty.json",
+        "base_rules": ROOT / "rules/base/primary-care-swallowing-difficulty.json",
+        "fragment_root": ROOT / "knowledge/generated/gastrointestinal/swallowing-difficulty",
+        "output_graph": ROOT / "knowledge/graph/primary-care-swallowing-difficulty.json",
+        "output_rules": ROOT / "rules/primary-care-swallowing-difficulty.json",
+        "version": "0.1.0",
+    },
     "thyroid_concern_follow_up": {
         "base_graph": ROOT / "knowledge/base/primary-care-thyroid-concern-follow-up.json",
         "base_rules": ROOT / "rules/base/primary-care-thyroid-concern-follow-up.json",
