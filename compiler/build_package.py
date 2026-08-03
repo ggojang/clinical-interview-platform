@@ -571,6 +571,20 @@ PACKAGE_PROFILES = {
             ROOT / "sources/manifests/primary-care-alcohol-use-counselling-research.json"
         ],
     },
+    "physical_activity_counselling": {
+        "graph": ROOT / "knowledge/graph/primary-care-physical-activity-counselling.json",
+        "rules": ROOT / "rules/primary-care-physical-activity-counselling.json",
+        "sources": ROOT / "sources/manifests/primary-care-physical-activity-counselling.json",
+        "completion_policy": ROOT / "policies/primary-care-physical-activity-counselling-completion.json",
+        "output": ROOT / "packages/generated/primary-care-physical-activity-counselling-0.1.0.json",
+        "package_id": "package.primary-care-physical-activity-counselling",
+        "package_version": "0.1.0",
+        "rfe": "rfe.physical_activity_counselling",
+        "simulation_root": ROOT / "simulation/patients/preventive/physical-activity-counselling",
+        "research_manifests": [
+            ROOT / "sources/manifests/primary-care-physical-activity-counselling-research.json"
+        ],
+    },
     "menstrual_uterine_bleeding": {
         "graph": ROOT / "knowledge/graph/primary-care-menstrual-uterine-bleeding.json",
         "rules": ROOT / "rules/primary-care-menstrual-uterine-bleeding.json",

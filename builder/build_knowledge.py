@@ -382,6 +382,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-alcohol-use-counselling.json",
         "version": "0.1.0",
     },
+    "physical_activity_counselling": {
+        "base_graph": ROOT / "knowledge/base/primary-care-physical-activity-counselling.json",
+        "base_rules": ROOT / "rules/base/primary-care-physical-activity-counselling.json",
+        "fragment_root": ROOT / "knowledge/generated/preventive/physical-activity-counselling",
+        "output_graph": ROOT / "knowledge/graph/primary-care-physical-activity-counselling.json",
+        "output_rules": ROOT / "rules/primary-care-physical-activity-counselling.json",
+        "version": "0.1.0",
+    },
     "menstrual_uterine_bleeding": {
         "base_graph": ROOT / "knowledge/base/primary-care-menstrual-uterine-bleeding.json",
         "base_rules": ROOT / "rules/base/primary-care-menstrual-uterine-bleeding.json",
