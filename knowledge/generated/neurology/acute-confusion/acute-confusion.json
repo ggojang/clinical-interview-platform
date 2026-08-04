@@ -1,0 +1,2547 @@
+{
+  "id": "knowledge.generated.acute-confusion",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-acute-confusion-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-08-04",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-08-05",
+    "next_full_review_at": "2027-01-31",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.acute-confusion.identity",
+      "type": "ClinicalGroup",
+      "display": "identity"
+    },
+    {
+      "id": "group.acute-confusion.safety",
+      "type": "ClinicalGroup",
+      "display": "safety"
+    },
+    {
+      "id": "group.acute-confusion.pattern",
+      "type": "ClinicalGroup",
+      "display": "pattern"
+    },
+    {
+      "id": "group.acute-confusion.context",
+      "type": "ClinicalGroup",
+      "display": "context"
+    },
+    {
+      "id": "group.acute-confusion.previous",
+      "type": "ClinicalGroup",
+      "display": "previous"
+    },
+    {
+      "id": "group.acute-confusion.handoff",
+      "type": "ClinicalGroup",
+      "display": "handoff"
+    }
+  ],
+  "group_hypothesis_edges": [],
+  "safety_rules": [
+    {
+      "id": "rule.acute_confusion.safety.reduced-consciousness",
+      "priority": 1600,
+      "when": {
+        "fact": "acute_confusion.current_reduced_consciousness",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.acute_confusion.safety.acute-change",
+      "priority": 1599,
+      "when": {
+        "fact": "acute_confusion.acute_change_from_baseline",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.acute_confusion.safety.focal-neurologic-change",
+      "priority": 1598,
+      "when": {
+        "any": [
+          {
+            "fact": "acute_confusion.new_one_sided_weakness",
+            "equals": true
+          },
+          {
+            "fact": "acute_confusion.new_speech_difficulty",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.acute_confusion.safety.seizure",
+      "priority": 1597,
+      "when": {
+        "fact": "acute_confusion.current_or_recent_seizure",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.acute_confusion.safety.head-injury",
+      "priority": 1596,
+      "when": {
+        "fact": "acute_confusion.recent_head_injury",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.acute_confusion.safety.cardiopulmonary",
+      "priority": 1595,
+      "when": {
+        "any": [
+          {
+            "fact": "acute_confusion.severe_breathing_difficulty",
+            "equals": true
+          },
+          {
+            "fact": "acute_confusion.current_chest_pain",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.acute_confusion.safety.toxic-exposure",
+      "priority": 1594,
+      "when": {
+        "fact": "acute_confusion.suspected_toxic_or_carbon_monoxide_exposure",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.acute_confusion.safety.glucose-low-alert",
+      "priority": 1593,
+      "when": {
+        "fact": "acute_confusion.glucose_device_low_alert",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.acute_confusion.safety.immediate-harm",
+      "priority": 1592,
+      "when": {
+        "fact": "acute_confusion.immediate_harm_danger",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.acute_confusion.safety.severe-illness",
+      "priority": 1591,
+      "when": {
+        "any": [
+          {
+            "fact": "acute_confusion.fever",
+            "equals": true
+          },
+          {
+            "fact": "acute_confusion.severe_illness_appearance",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.acute_confusion.safety.no-safe-supervision",
+      "priority": 1590,
+      "when": {
+        "fact": "acute_confusion.safe_supervision_available",
+        "equals": false
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "acute_confusion.presentation",
+        "display": "Main Acute Confusion Presentation",
+        "value_type": "coded_or_string",
+        "allowed_values": [
+          "sudden_confusion",
+          "behavior_change",
+          "inattention",
+          "drowsiness",
+          "fluctuating_change",
+          "other"
+        ]
+      },
+      "target": {
+        "id": "target.acute_confusion.presentation",
+        "display": "Main Acute Confusion Presentation",
+        "intents": [
+          "intent.characterize_acute_confusion"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.presentation",
+        "wording": "이번 문진의 주된 이유는 갑작스러운 혼란, 평소와 다른 행동, 주의력 저하, 지나친 졸림 중 무엇인가요? 보기에 없으면 직접 입력해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 400,
+          "reason": "presentation"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.identity"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.information_source",
+        "display": "Acute Confusion Information Source",
+        "value_type": "coded",
+        "allowed_values": [
+          "patient",
+          "family_caregiver",
+          "patient_and_caregiver",
+          "clinician_or_record",
+          "witness",
+          "other"
+        ]
+      },
+      "target": {
+        "id": "target.acute_confusion.information-source",
+        "display": "Acute Confusion Information Source",
+        "intents": [
+          "intent.characterize_acute_confusion"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.information-source",
+        "wording": "현재 상태를 누가 답하고 있나요? 보기에 없으면 직접 입력해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 399,
+          "reason": "information-source"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.identity"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.source_reliability",
+        "display": "Acute Confusion Source Reliability",
+        "value_type": "coded",
+        "allowed_values": [
+          "direct_reliable",
+          "partly_reliable",
+          "uncertain_memory",
+          "conflicting_sources",
+          "no_collateral_source",
+          "other"
+        ]
+      },
+      "target": {
+        "id": "target.acute_confusion.source-reliability",
+        "display": "Acute Confusion Source Reliability",
+        "intents": [
+          "intent.characterize_acute_confusion"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.source-reliability",
+        "wording": "답변의 신뢰도는 직접 관찰, 일부 불확실, 서로 상충, 확인할 사람 없음 중 어디에 가깝나요? 보기에 없으면 직접 입력해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 398,
+          "reason": "source-reliability"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.identity"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.baseline_informant",
+        "display": "Baseline Mental Status Informant",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.acute_confusion.baseline-informant",
+        "display": "Baseline Mental Status Informant",
+        "intents": [
+          "intent.characterize_acute_confusion"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.baseline-informant",
+        "wording": "평소의 생각·말·행동 상태를 잘 아는 사람이나 기록이 있다면 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 397,
+          "reason": "baseline-informant"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.identity"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.current_reduced_consciousness",
+        "display": "Current Reduced Consciousness",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.acute_confusion.reduced-consciousness",
+        "display": "Current Reduced Consciousness",
+        "intents": [
+          "intent.screen_acute_confusion_safety"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.reduced-consciousness",
+        "wording": "지금 깨우기 매우 어렵거나 의식이 뚜렷하게 떨어져 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1500,
+          "reason": "reduced-consciousness"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.acute_change_from_baseline",
+        "display": "Acute Change From Baseline",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.acute_confusion.acute-change-baseline",
+        "display": "Acute Change From Baseline",
+        "intents": [
+          "intent.screen_acute_confusion_safety"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.acute-change-baseline",
+        "wording": "평소 상태와 비교해 몇 시간 또는 며칠 사이 새로 혼란스러워졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1499,
+          "reason": "acute-change-baseline"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.new_one_sided_weakness",
+        "display": "New One-sided Weakness",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.acute_confusion.one-sided-weakness",
+        "display": "New One-sided Weakness",
+        "intents": [
+          "intent.screen_acute_confusion_safety"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.one-sided-weakness",
+        "wording": "새로 얼굴·팔·다리 한쪽에 힘이 빠졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1498,
+          "reason": "one-sided-weakness"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.new_speech_difficulty",
+        "display": "New Speech Difficulty",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.acute_confusion.speech-difficulty",
+        "display": "New Speech Difficulty",
+        "intents": [
+          "intent.screen_acute_confusion_safety"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.speech-difficulty",
+        "wording": "새로 말이 어눌해졌거나 말을 이해하거나 표현하기 어려워졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1497,
+          "reason": "speech-difficulty"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.current_or_recent_seizure",
+        "display": "Current or Recent Seizure",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.acute_confusion.seizure",
+        "display": "Current or Recent Seizure",
+        "intents": [
+          "intent.screen_acute_confusion_safety"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.seizure",
+        "wording": "지금 경련 중이거나 이번 혼란 직전에 경련으로 보이는 일이 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1496,
+          "reason": "seizure"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.recent_head_injury",
+        "display": "Recent Head Injury",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.acute_confusion.head-injury",
+        "display": "Recent Head Injury",
+        "intents": [
+          "intent.screen_acute_confusion_safety"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.head-injury",
+        "wording": "혼란이 시작되기 전 머리를 부딪히거나 다친 일이 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1495,
+          "reason": "head-injury"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.severe_breathing_difficulty",
+        "display": "Severe Breathing Difficulty",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.acute_confusion.breathing-difficulty",
+        "display": "Severe Breathing Difficulty",
+        "intents": [
+          "intent.screen_acute_confusion_safety"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.breathing-difficulty",
+        "wording": "지금 숨쉬기 매우 어렵거나 문장으로 말하기 힘든가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1494,
+          "reason": "breathing-difficulty"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.current_chest_pain",
+        "display": "Current Chest Pain",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.acute_confusion.chest-pain",
+        "display": "Current Chest Pain",
+        "intents": [
+          "intent.screen_acute_confusion_safety"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.chest-pain",
+        "wording": "지금 가슴 통증이나 압박감이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1493,
+          "reason": "chest-pain"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.suspected_toxic_or_carbon_monoxide_exposure",
+        "display": "Suspected Toxic or Carbon Monoxide Exposure",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.acute_confusion.toxic-exposure",
+        "display": "Suspected Toxic or Carbon Monoxide Exposure",
+        "intents": [
+          "intent.screen_acute_confusion_safety"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.toxic-exposure",
+        "wording": "약물 과량, 독성 물질 또는 일산화탄소 노출 가능성이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1492,
+          "reason": "toxic-exposure"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.glucose_device_low_alert",
+        "display": "Glucose Device Low Alert",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.acute_confusion.glucose-low-alert",
+        "display": "Glucose Device Low Alert",
+        "intents": [
+          "intent.screen_acute_confusion_safety"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.glucose-low-alert",
+        "wording": "혈당계나 연속혈당측정기에서 저혈당 경고가 표시됐나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1491,
+          "reason": "glucose-low-alert"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.immediate_harm_danger",
+        "display": "Immediate Harm Danger",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.acute_confusion.immediate-harm-danger",
+        "display": "Immediate Harm Danger",
+        "intents": [
+          "intent.screen_acute_confusion_safety"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.immediate-harm-danger",
+        "wording": "지금 본인이나 다른 사람을 다치게 할 즉각적인 위험이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1490,
+          "reason": "immediate-harm-danger"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.first_onset",
+        "display": "First Onset of Mental Status Change",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.acute_confusion.first-onset",
+        "display": "First Onset of Mental Status Change",
+        "intents": [
+          "intent.characterize_acute_confusion"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.first-onset",
+        "wording": "평소와 다른 변화가 처음 시작된 때는 언제인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 380,
+          "reason": "first-onset"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.last_known_normal",
+        "display": "Last Known Usual Mental Status",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.acute_confusion.last-known-normal",
+        "display": "Last Known Usual Mental Status",
+        "intents": [
+          "intent.characterize_acute_confusion"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.last-known-normal",
+        "wording": "마지막으로 평소 상태였다고 확실히 확인한 때는 언제인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 379,
+          "reason": "last-known-normal"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.course",
+        "display": "Mental Status Change Course",
+        "value_type": "coded",
+        "allowed_values": [
+          "improving",
+          "unchanged",
+          "worsening",
+          "fluctuating",
+          "resolved",
+          "uncertain",
+          "other"
+        ]
+      },
+      "target": {
+        "id": "target.acute_confusion.course",
+        "display": "Mental Status Change Course",
+        "intents": [
+          "intent.characterize_acute_confusion"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.course",
+        "wording": "변화가 좋아짐, 비슷함, 악화, 들쭉날쭉함 중 어디에 가깝나요? 보기에 없으면 직접 입력해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 378,
+          "reason": "course"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.fluctuation_timing",
+        "display": "Fluctuation Timing",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.acute_confusion.fluctuation-timing",
+        "display": "Fluctuation Timing",
+        "intents": [
+          "intent.characterize_acute_confusion"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.fluctuation-timing",
+        "wording": "상태가 좋아졌다 나빠진다면 어느 시간대에 어떻게 달라지는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 377,
+          "reason": "fluctuation-timing"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.attention_change",
+        "display": "Attention Change",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.acute_confusion.attention-change",
+        "display": "Attention Change",
+        "intents": [
+          "intent.characterize_acute_confusion"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.attention-change",
+        "wording": "평소보다 대화나 한 가지 일에 집중하기 어려워졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 376,
+          "reason": "attention-change"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.orientation_change",
+        "display": "Orientation Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.acute_confusion.orientation-change",
+        "display": "Orientation Change",
+        "intents": [
+          "intent.characterize_acute_confusion"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.orientation-change",
+        "wording": "사람·장소·시간을 평소와 다르게 혼동하는 부분이 있다면 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 375,
+          "reason": "orientation-change"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.disorganized_thinking_or_speech",
+        "display": "Disorganized Thinking or Speech",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.acute_confusion.disorganized-thinking",
+        "display": "Disorganized Thinking or Speech",
+        "intents": [
+          "intent.characterize_acute_confusion"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.disorganized-thinking",
+        "wording": "평소와 달리 말의 흐름이나 생각이 앞뒤가 맞지 않나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 374,
+          "reason": "disorganized-thinking"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.hallucination_or_misperception",
+        "display": "Hallucination or Misperception",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.acute_confusion.hallucination",
+        "display": "Hallucination or Misperception",
+        "intents": [
+          "intent.characterize_acute_confusion"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.hallucination",
+        "wording": "실제로 없는 것을 보거나 듣는 듯한 변화가 새로 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 373,
+          "reason": "hallucination"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.agitation_or_restlessness",
+        "display": "Agitation or Restlessness",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.acute_confusion.agitation",
+        "display": "Agitation or Restlessness",
+        "intents": [
+          "intent.characterize_acute_confusion"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.agitation",
+        "wording": "평소와 달리 몹시 초조하거나 가만히 있기 어려워졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 372,
+          "reason": "agitation"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.drowsy_or_withdrawn",
+        "display": "Drowsy or Withdrawn Change",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.acute_confusion.drowsy-withdrawn",
+        "display": "Drowsy or Withdrawn Change",
+        "intents": [
+          "intent.characterize_acute_confusion"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.drowsy-withdrawn",
+        "wording": "평소보다 지나치게 졸리거나 반응과 활동이 줄었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 371,
+          "reason": "drowsy-withdrawn"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.sleep_wake_change",
+        "display": "Sleep Wake Pattern Change",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.acute_confusion.sleep-wake-change",
+        "display": "Sleep Wake Pattern Change",
+        "intents": [
+          "intent.characterize_acute_confusion"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.sleep-wake-change",
+        "wording": "최근 낮과 밤이 바뀌는 등 수면 시간대가 평소와 달라졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 370,
+          "reason": "sleep-wake-change"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.usual_cognition_and_function",
+        "display": "Usual Cognition and Function",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.acute_confusion.usual-cognition-function",
+        "display": "Usual Cognition and Function",
+        "intents": [
+          "intent.characterize_acute_confusion"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.usual-cognition-function",
+        "wording": "변화 전 평소 기억력, 의사소통, 이동과 일상생활 상태를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 369,
+          "reason": "usual-cognition-function"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.fever",
+        "display": "Current Fever",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.acute_confusion.fever",
+        "display": "Current Fever",
+        "intents": [
+          "intent.assess_acute_confusion_context"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.fever",
+        "wording": "현재 열이 나나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1489,
+          "reason": "fever"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.severe_illness_appearance",
+        "display": "Severe Illness Appearance",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.acute_confusion.severe-illness-appearance",
+        "display": "Severe Illness Appearance",
+        "intents": [
+          "intent.assess_acute_confusion_context"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.severe-illness-appearance",
+        "wording": "현재 전신 상태가 심하게 나빠 보이나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1488,
+          "reason": "severe-illness-appearance"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.measured_temperature",
+        "display": "Measured Temperature",
+        "value_type": "quantity",
+        "unit": "Cel"
+      },
+      "target": {
+        "id": "target.acute_confusion.measured-temperature",
+        "display": "Measured Temperature",
+        "intents": [
+          "intent.assess_acute_confusion_context"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.measured-temperature",
+        "wording": "측정한 체온이 있다면 섭씨 수치를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 349,
+          "reason": "measured-temperature"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.infection_symptoms",
+        "display": "Recent Infection Symptoms",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.acute_confusion.infection-symptoms",
+        "display": "Recent Infection Symptoms",
+        "intents": [
+          "intent.assess_acute_confusion_context"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.infection-symptoms",
+        "wording": "최근 기침, 배뇨 불편, 상처, 설사 등 감염과 함께 나타난 증상이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 348,
+          "reason": "infection-symptoms"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.current_pain",
+        "display": "Current Pain",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.acute_confusion.current-pain",
+        "display": "Current Pain",
+        "intents": [
+          "intent.assess_acute_confusion_context"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.current-pain",
+        "wording": "현재 통증이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 347,
+          "reason": "current-pain"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.pain_nrs",
+        "display": "Pain Numeric Rating",
+        "value_type": "integer",
+        "terminology_binding": {
+          "system": "http://loinc.org",
+          "code": "72514-3",
+          "display": "Pain severity - 0-10 verbal numeric rating [Score] - Reported",
+          "version": "2.82",
+          "relation": "equivalent"
+        },
+        "unit": "{score}",
+        "minimum": 0,
+        "maximum": 10
+      },
+      "target": {
+        "id": "target.acute_confusion.pain-nrs",
+        "display": "Pain Numeric Rating",
+        "intents": [
+          "intent.assess_acute_confusion_context"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.pain-nrs",
+        "wording": "통증이 있다면 0점부터 10점 중 몇 점인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 346,
+          "reason": "pain-nrs"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.fluid_intake",
+        "display": "Recent Fluid Intake",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.acute_confusion.fluid-intake",
+        "display": "Recent Fluid Intake",
+        "intents": [
+          "intent.assess_acute_confusion_context"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.fluid-intake",
+        "wording": "최근 물이나 음료를 평소만큼 마실 수 있었는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 345,
+          "reason": "fluid-intake"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.food_intake",
+        "display": "Recent Food Intake",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.acute_confusion.food-intake",
+        "display": "Recent Food Intake",
+        "intents": [
+          "intent.assess_acute_confusion_context"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.food-intake",
+        "wording": "최근 식사량이 평소와 비교해 어떻게 달라졌는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 344,
+          "reason": "food-intake"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.vomiting",
+        "display": "Recent Vomiting",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.acute_confusion.vomiting",
+        "display": "Recent Vomiting",
+        "intents": [
+          "intent.assess_acute_confusion_context"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.vomiting",
+        "wording": "최근 구토가 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 343,
+          "reason": "vomiting"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.diarrhea",
+        "display": "Recent Diarrhea",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.acute_confusion.diarrhea",
+        "display": "Recent Diarrhea",
+        "intents": [
+          "intent.assess_acute_confusion_context"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.diarrhea",
+        "wording": "최근 설사가 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 342,
+          "reason": "diarrhea"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.urine_output_change",
+        "display": "Recent Urine Output Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.acute_confusion.urine-output-change",
+        "display": "Recent Urine Output Change",
+        "intents": [
+          "intent.assess_acute_confusion_context"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.urine-output-change",
+        "wording": "최근 소변량이 평소와 달라졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 341,
+          "reason": "urine-output-change"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.urinary_retention",
+        "display": "Urinary Retention Difficulty",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.acute_confusion.urinary-retention",
+        "display": "Urinary Retention Difficulty",
+        "intents": [
+          "intent.assess_acute_confusion_context"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.urinary-retention",
+        "wording": "최근 소변이 마려운데도 보기 어려운 문제가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 340,
+          "reason": "urinary-retention"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.constipation",
+        "display": "Recent Constipation",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.acute_confusion.constipation",
+        "display": "Recent Constipation",
+        "intents": [
+          "intent.assess_acute_confusion_context"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.constipation",
+        "wording": "최근 평소보다 심한 변비가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 339,
+          "reason": "constipation"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.recent_fall",
+        "display": "Recent Fall",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.acute_confusion.recent-fall",
+        "display": "Recent Fall",
+        "intents": [
+          "intent.assess_acute_confusion_context"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.recent-fall",
+        "wording": "혼란 전후에 넘어지거나 거의 넘어질 뻔한 일이 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 338,
+          "reason": "recent-fall"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.recent_surgery_or_hospitalization",
+        "display": "Recent Surgery or Hospitalization",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.acute_confusion.recent-surgery-hospitalization",
+        "display": "Recent Surgery or Hospitalization",
+        "intents": [
+          "intent.assess_acute_confusion_context"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.recent-surgery-hospitalization",
+        "wording": "최근 수술, 시술, 응급실 방문 또는 입원이 있었다면 시기를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 337,
+          "reason": "recent-surgery-hospitalization"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.environment_change",
+        "display": "Recent Environment Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.acute_confusion.environment-change",
+        "display": "Recent Environment Change",
+        "intents": [
+          "intent.assess_acute_confusion_context"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.environment-change",
+        "wording": "최근 입원, 시설 이동, 여행처럼 잠자리나 환경이 바뀐 일이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 338,
+          "reason": "environment-change"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.known_cognitive_impairment",
+        "display": "Known Cognitive Impairment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.acute_confusion.known-cognitive-impairment",
+        "display": "Known Cognitive Impairment",
+        "intents": [
+          "intent.assess_acute_confusion_context"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.known-cognitive-impairment",
+        "wording": "기존에 진단받거나 관찰된 기억력·인지기능 문제가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 337,
+          "reason": "known-cognitive-impairment"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.previous_delirium",
+        "display": "Previous Delirium or Acute Confusion",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.acute_confusion.previous-delirium",
+        "display": "Previous Delirium or Acute Confusion",
+        "intents": [
+          "intent.assess_acute_confusion_context"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.previous-delirium",
+        "wording": "이전에도 갑작스러운 혼란이나 섬망을 겪은 적이 있다면 시기와 상황을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 336,
+          "reason": "previous-delirium"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.current_medicines",
+        "display": "Current Medicines",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.acute_confusion.current-medicines",
+        "display": "Current Medicines",
+        "intents": [
+          "intent.assess_acute_confusion_context"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.current-medicines",
+        "wording": "현재 복용하는 처방약과 일반약을 이름·용량·복용법과 함께 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 335,
+          "reason": "current-medicines"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.recent_medicine_change",
+        "display": "Recent Medicine Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.acute_confusion.medicine-change",
+        "display": "Recent Medicine Change",
+        "intents": [
+          "intent.assess_acute_confusion_context"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.medicine-change",
+        "wording": "최근 시작, 중단 또는 용량·복용법이 바뀐 약과 변경 시점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 334,
+          "reason": "medicine-change"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.supplements_or_herbals",
+        "display": "Supplements or Herbals",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.acute_confusion.supplements",
+        "display": "Supplements or Herbals",
+        "intents": [
+          "intent.assess_acute_confusion_context"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.supplements",
+        "wording": "현재 복용하는 건강기능식품, 한약 또는 생약 제품이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 333,
+          "reason": "supplements"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.alcohol_pattern_and_last_use",
+        "display": "Alcohol Pattern and Last Use",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.acute_confusion.alcohol-pattern",
+        "display": "Alcohol Pattern and Last Use",
+        "intents": [
+          "intent.assess_acute_confusion_context"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.alcohol-pattern",
+        "wording": "평소 음주 주종·양·빈도와 마지막 음주 시점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 332,
+          "reason": "alcohol-pattern"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.recent_alcohol_reduction",
+        "display": "Recent Alcohol Reduction",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.acute_confusion.alcohol-reduction",
+        "display": "Recent Alcohol Reduction",
+        "intents": [
+          "intent.assess_acute_confusion_context"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.alcohol-reduction",
+        "wording": "최근 평소보다 음주량을 크게 줄이거나 갑자기 중단했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 331,
+          "reason": "alcohol-reduction"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.other_substance_exposure",
+        "display": "Other Substance Exposure",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.acute_confusion.substance-exposure",
+        "display": "Other Substance Exposure",
+        "intents": [
+          "intent.assess_acute_confusion_context"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.substance-exposure",
+        "wording": "최근 대마, 각성제, 진정제 또는 다른 물질을 사용했거나 노출된 일이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 330,
+          "reason": "substance-exposure"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.relevant_conditions",
+        "display": "Relevant Medical Conditions",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.acute_confusion.relevant-conditions",
+        "display": "Relevant Medical Conditions",
+        "intents": [
+          "intent.assess_acute_confusion_context"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.relevant-conditions",
+        "wording": "당뇨, 뇌질환, 간·신장질환, 심장·폐질환 등 치료 중인 질환을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 329,
+          "reason": "relevant-conditions"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.hearing_vision_aids",
+        "display": "Hearing and Vision Aids",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.acute_confusion.hearing-vision-aids",
+        "display": "Hearing and Vision Aids",
+        "intents": [
+          "intent.assess_acute_confusion_context"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.hearing-vision-aids",
+        "wording": "평소 안경, 보청기 또는 다른 감각 보조기기를 사용하는지와 현재 사용 가능 여부를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 328,
+          "reason": "hearing-vision-aids"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.pregnancy_or_postpartum",
+        "display": "Pregnancy or Postpartum Context",
+        "value_type": "coded",
+        "allowed_values": [
+          "pregnant",
+          "postpartum_6_weeks",
+          "not_pregnant_or_postpartum",
+          "not_applicable",
+          "unknown"
+        ]
+      },
+      "target": {
+        "id": "target.acute_confusion.pregnancy-postpartum",
+        "display": "Pregnancy or Postpartum Context",
+        "intents": [
+          "intent.assess_acute_confusion_context"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.pregnancy-postpartum",
+        "wording": "현재 임신 중이거나 출산 후 6주 이내인가요? 보기에 없으면 직접 입력해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 327,
+          "reason": "pregnancy-postpartum"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.safe_supervision_available",
+        "display": "Safe Supervision Available",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.acute_confusion.safe-supervision",
+        "display": "Safe Supervision Available",
+        "intents": [
+          "intent.assess_acute_confusion_context"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.safe-supervision",
+        "wording": "현재 곁에서 안전을 살피고 의료진에게 상태를 설명할 사람이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1488,
+          "reason": "safe-supervision"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.previous_assessment",
+        "display": "Previous Assessment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.acute_confusion.previous-assessment",
+        "display": "Previous Assessment",
+        "intents": [
+          "intent.assess_acute_confusion_context"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.previous-assessment",
+        "wording": "이번 변화로 이미 받은 진찰이나 상담이 있다면 시기와 내용을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 300,
+          "reason": "previous-assessment"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.previous"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.previous_tests",
+        "display": "Previous Tests",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.acute_confusion.previous-tests",
+        "display": "Previous Tests",
+        "intents": [
+          "intent.assess_acute_confusion_context"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.previous-tests",
+        "wording": "이미 시행한 혈당, 혈액·소변검사, 영상검사 등이 있다면 검사명·시기·결과 출처를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 299,
+          "reason": "previous-tests"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.previous"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.previous_response",
+        "display": "Response to Previous Care",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.acute_confusion.previous-response",
+        "display": "Response to Previous Care",
+        "intents": [
+          "intent.assess_acute_confusion_context"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.previous-response",
+        "wording": "이미 받은 처치나 환경 조정 후 상태가 어떻게 달라졌는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 298,
+          "reason": "previous-response"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.previous"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.current_function_impact",
+        "display": "Current Function Impact",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.acute_confusion.function-impact",
+        "display": "Current Function Impact",
+        "intents": [
+          "intent.assess_acute_confusion_context"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.function-impact",
+        "wording": "현재 식사, 화장실 이용, 이동, 의사소통과 자기 관리가 평소보다 어떻게 달라졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 297,
+          "reason": "function-impact"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.previous"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.current_safety_concern",
+        "display": "Current Safety Concern",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.acute_confusion.safety-concern",
+        "display": "Current Safety Concern",
+        "intents": [
+          "intent.assess_acute_confusion_context"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.safety-concern",
+        "wording": "낙상, 길 잃음, 기기 제거 등 지금 안전을 위해 특히 살펴야 할 행동이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 296,
+          "reason": "safety-concern"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.previous"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.accessibility_need",
+        "display": "Accessibility Need",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.acute_confusion.accessibility-need",
+        "display": "Accessibility Need",
+        "intents": [
+          "intent.prepare_acute_confusion_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.accessibility-need",
+        "wording": "문진과 진료에 필요한 언어, 청각, 시각, 인지, 이동 또는 보호자 지원이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 120,
+          "reason": "accessibility-need"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.patient_or_caregiver_concern",
+        "display": "Patient or Caregiver Concern",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.acute_confusion.concern",
+        "display": "Patient or Caregiver Concern",
+        "intents": [
+          "intent.prepare_acute_confusion_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.concern",
+        "wording": "환자나 보호자가 현재 가장 걱정하는 점은 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 110,
+          "reason": "concern"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.expected_help",
+        "display": "Expected Help",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.acute_confusion.expected-help",
+        "display": "Expected Help",
+        "intents": [
+          "intent.prepare_acute_confusion_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.expected-help",
+        "wording": "이번 진료에서 의료진에게 가장 받고 싶은 도움은 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 109,
+          "reason": "expected-help"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "acute_confusion.additional_comment",
+        "display": "Additional Comment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.acute_confusion.additional-comment",
+        "display": "Additional Comment",
+        "intents": [
+          "intent.prepare_acute_confusion_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.acute_confusion.additional-comment",
+        "wording": "질문에 없지만 의료진에게 추가로 전달할 내용이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 100,
+          "reason": "additional-comment"
+        }
+      ],
+      "supports": [
+        "group.acute-confusion.handoff"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.nhs.sudden-confusion.20240528",
+      "source.nice.cg103.delirium.2023",
+      "source.acsqhc.delirium-standard.2021",
+      "source.stom.acute-confusion.20260804"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}

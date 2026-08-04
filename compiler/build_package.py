@@ -449,6 +449,17 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/hepatology/jaundice",
         "research_manifests": [ROOT / "sources/manifests/primary-care-jaundice-research.json"],
     },
+    "acute_confusion": {
+        "graph": ROOT / "knowledge/graph/primary-care-acute-confusion.json",
+        "rules": ROOT / "rules/primary-care-acute-confusion.json",
+        "sources": ROOT / "sources/manifests/primary-care-acute-confusion.json",
+        "completion_policy": ROOT / "policies/primary-care-acute-confusion-completion.json",
+        "output": ROOT / "packages/generated/primary-care-acute-confusion-0.1.0.json",
+        "package_id": "package.primary-care-acute-confusion", "package_version": "0.1.0",
+        "rfe": "rfe.acute_confusion",
+        "simulation_root": ROOT / "simulation/patients/neurology/acute-confusion",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-acute-confusion-research.json"],
+    },
     "thyroid_concern_follow_up": {
         "graph": ROOT / "knowledge/graph/primary-care-thyroid-concern-follow-up.json",
         "rules": ROOT / "rules/primary-care-thyroid-concern-follow-up.json",

@@ -302,6 +302,14 @@ PROFILES = {
         "output_rules": ROOT / "rules/primary-care-jaundice.json",
         "version": "0.1.0",
     },
+    "acute_confusion": {
+        "base_graph": ROOT / "knowledge/base/primary-care-acute-confusion.json",
+        "base_rules": ROOT / "rules/base/primary-care-acute-confusion.json",
+        "fragment_root": ROOT / "knowledge/generated/neurology/acute-confusion",
+        "output_graph": ROOT / "knowledge/graph/primary-care-acute-confusion.json",
+        "output_rules": ROOT / "rules/primary-care-acute-confusion.json",
+        "version": "0.1.0",
+    },
     "thyroid_concern_follow_up": {
         "base_graph": ROOT / "knowledge/base/primary-care-thyroid-concern-follow-up.json",
         "base_rules": ROOT / "rules/base/primary-care-thyroid-concern-follow-up.json",
