@@ -438,6 +438,17 @@ PACKAGE_PROFILES = {
         "simulation_root": ROOT / "simulation/patients/gastrointestinal/swallowing-difficulty",
         "research_manifests": [ROOT / "sources/manifests/primary-care-swallowing-difficulty-research.json"],
     },
+    "jaundice": {
+        "graph": ROOT / "knowledge/graph/primary-care-jaundice.json",
+        "rules": ROOT / "rules/primary-care-jaundice.json",
+        "sources": ROOT / "sources/manifests/primary-care-jaundice.json",
+        "completion_policy": ROOT / "policies/primary-care-jaundice-completion.json",
+        "output": ROOT / "packages/generated/primary-care-jaundice-0.1.0.json",
+        "package_id": "package.primary-care-jaundice", "package_version": "0.1.0",
+        "rfe": "rfe.jaundice",
+        "simulation_root": ROOT / "simulation/patients/hepatology/jaundice",
+        "research_manifests": [ROOT / "sources/manifests/primary-care-jaundice-research.json"],
+    },
     "thyroid_concern_follow_up": {
         "graph": ROOT / "knowledge/graph/primary-care-thyroid-concern-follow-up.json",
         "rules": ROOT / "rules/primary-care-thyroid-concern-follow-up.json",

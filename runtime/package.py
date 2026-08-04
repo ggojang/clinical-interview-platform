@@ -44,6 +44,7 @@ ASTHMA_COPD_FOLLOW_UP_PACKAGE = ROOT / "packages/generated/primary-care-asthma-c
 LUMP_LYMPH_NODE_PACKAGE = ROOT / "packages/generated/primary-care-lump-lymph-node-0.1.0.json"
 DYSPEPSIA_REFLUX_PACKAGE = ROOT / "packages/generated/primary-care-dyspepsia-reflux-0.1.0.json"
 SWALLOWING_DIFFICULTY_PACKAGE = ROOT / "packages/generated/primary-care-swallowing-difficulty-0.1.0.json"
+JAUNDICE_PACKAGE = ROOT / "packages/generated/primary-care-jaundice-0.1.0.json"
 THYROID_CONCERN_FOLLOW_UP_PACKAGE = ROOT / "packages/generated/primary-care-thyroid-concern-follow-up-0.1.0.json"
 ANEMIA_CONCERN_FOLLOW_UP_PACKAGE = ROOT / "packages/generated/primary-care-anemia-concern-follow-up-0.1.0.json"
 SEIZURE_EVENT_FOLLOW_UP_PACKAGE = ROOT / "packages/generated/primary-care-seizure-event-follow-up-0.1.0.json"

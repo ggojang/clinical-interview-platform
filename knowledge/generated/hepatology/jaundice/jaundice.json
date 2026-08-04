@@ -1,0 +1,3016 @@
+{
+  "id": "knowledge.generated.jaundice",
+  "version": "0.1.0",
+  "status": "research_only",
+  "usage_modes": [
+    "research_test",
+    "simulation"
+  ],
+  "source_manifest": "source-manifest.primary-care-jaundice-research",
+  "default_refresh": {
+    "class": "clinical_guideline",
+    "last_assessed_at": "2026-08-03",
+    "monitor_interval_days": 1,
+    "full_review_interval_days": 180,
+    "next_monitor_at": "2026-08-04",
+    "next_full_review_at": "2027-01-30",
+    "policy_id": "policy.knowledge-refresh",
+    "overdue_behavior": {
+      "production": "exclude_or_require_review",
+      "research_test": "allow_with_warning"
+    }
+  },
+  "extra_nodes": [
+    {
+      "id": "group.jaundice.identity",
+      "type": "ClinicalGroup",
+      "display": "identity"
+    },
+    {
+      "id": "group.jaundice.safety",
+      "type": "ClinicalGroup",
+      "display": "safety"
+    },
+    {
+      "id": "group.jaundice.pattern",
+      "type": "ClinicalGroup",
+      "display": "pattern"
+    },
+    {
+      "id": "group.jaundice.associated",
+      "type": "ClinicalGroup",
+      "display": "associated"
+    },
+    {
+      "id": "group.jaundice.context",
+      "type": "ClinicalGroup",
+      "display": "context"
+    },
+    {
+      "id": "group.jaundice.previous",
+      "type": "ClinicalGroup",
+      "display": "previous"
+    },
+    {
+      "id": "group.jaundice.handoff",
+      "type": "ClinicalGroup",
+      "display": "handoff"
+    }
+  ],
+  "group_hypothesis_edges": [],
+  "safety_rules": [
+    {
+      "id": "rule.jaundice.safety.reduced-consciousness",
+      "priority": 1400,
+      "when": {
+        "fact": "jaundice.current_reduced_consciousness",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.jaundice.safety.new-confusion",
+      "priority": 1399,
+      "when": {
+        "fact": "jaundice.new_confusion",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.jaundice.safety.collapse",
+      "priority": 1398,
+      "when": {
+        "fact": "jaundice.collapse",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.jaundice.safety.ruq-pain-fever-rigors",
+      "priority": 1397,
+      "when": {
+        "all": [
+          {
+            "fact": "jaundice.severe_right_upper_abdominal_pain",
+            "equals": true
+          },
+          {
+            "any": [
+              {
+                "fact": "jaundice.fever",
+                "equals": true
+              },
+              {
+                "fact": "jaundice.rigors",
+                "equals": true
+              }
+            ]
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.jaundice.safety.vomiting-dehydration",
+      "priority": 1396,
+      "when": {
+        "all": [
+          {
+            "fact": "jaundice.repeated_vomiting",
+            "equals": true
+          },
+          {
+            "fact": "jaundice.unable_to_keep_fluids",
+            "equals": true
+          },
+          {
+            "fact": "jaundice.markedly_reduced_urine",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.jaundice.safety.gastrointestinal-bleeding",
+      "priority": 1395,
+      "when": {
+        "any": [
+          {
+            "fact": "jaundice.vomiting_blood",
+            "equals": true
+          },
+          {
+            "fact": "jaundice.black_or_bloody_stool",
+            "equals": true
+          },
+          {
+            "fact": "jaundice.unexplained_bleeding",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.jaundice.safety.toxic-exposure",
+      "priority": 1394,
+      "when": {
+        "fact": "jaundice.suspected_overdose_or_toxic_exposure",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.jaundice.safety.newborn-jaundice",
+      "priority": 1393,
+      "when": {
+        "all": [
+          {
+            "fact": "jaundice.newborn_under_28_days",
+            "equals": true
+          },
+          {
+            "fact": "jaundice.newborn_poor_feeding",
+            "equals": false
+          },
+          {
+            "fact": "jaundice.newborn_difficult_to_wake",
+            "equals": false
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.jaundice.safety.newborn-unwell",
+      "priority": 1392,
+      "when": {
+        "all": [
+          {
+            "fact": "jaundice.newborn_under_28_days",
+            "equals": true
+          },
+          {
+            "any": [
+              {
+                "fact": "jaundice.newborn_poor_feeding",
+                "equals": true
+              },
+              {
+                "fact": "jaundice.newborn_difficult_to_wake",
+                "equals": true
+              }
+            ]
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.jaundice.safety.pregnancy-postpartum",
+      "priority": 1391,
+      "when": {
+        "fact": "jaundice.pregnant_or_postpartum",
+        "in": [
+          "pregnant",
+          "postpartum_6_weeks"
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.jaundice.safety.rapidly-worsening",
+      "priority": 1390,
+      "when": {
+        "fact": "jaundice.rapidly_worsening_yellowing",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    }
+  ],
+  "entries": [
+    {
+      "fact": {
+        "id": "jaundice.presentation",
+        "display": "Main Jaundice Presentation",
+        "value_type": "coded_or_string",
+        "allowed_values": [
+          "yellow_sclera",
+          "yellow_skin",
+          "dark_urine",
+          "pale_stool",
+          "abnormal_test",
+          "follow_up",
+          "other"
+        ]
+      },
+      "target": {
+        "id": "target.jaundice.presentation",
+        "display": "Main Jaundice Presentation",
+        "intents": [
+          "intent.characterize_jaundice"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.presentation",
+        "wording": "이번 문진의 주된 이유는 눈 흰자 또는 피부의 노란 변화, 진한 소변, 옅은 변, 검사결과 확인 중 무엇인가요? 보기에 없으면 직접 입력해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 300,
+          "reason": "presentation"
+        }
+      ],
+      "supports": [
+        "group.jaundice.identity"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.information_source",
+        "display": "Jaundice Information Source",
+        "value_type": "coded",
+        "allowed_values": [
+          "patient",
+          "caregiver",
+          "patient_and_caregiver",
+          "record",
+          "unknown",
+          "other"
+        ]
+      },
+      "target": {
+        "id": "target.jaundice.information-source",
+        "display": "Jaundice Information Source",
+        "intents": [
+          "intent.characterize_jaundice"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.information-source",
+        "wording": "황색 변화와 동반 상태를 누가 답하고 있나요? 보기에 없으면 직접 입력해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 299,
+          "reason": "information-source"
+        }
+      ],
+      "supports": [
+        "group.jaundice.identity"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.source_reliability",
+        "display": "Jaundice Information Reliability",
+        "value_type": "coded",
+        "allowed_values": [
+          "reliable",
+          "partly_reliable",
+          "memory_uncertain",
+          "conflicting_sources",
+          "unknown",
+          "other"
+        ]
+      },
+      "target": {
+        "id": "target.jaundice.source-reliability",
+        "display": "Jaundice Information Reliability",
+        "intents": [
+          "intent.characterize_jaundice"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.source-reliability",
+        "wording": "답변의 신뢰도는 최근 직접 관찰, 기억 불확실, 다른 사람 또는 기록과 상충 중 어디에 가깝나요? 보기에 없으면 직접 입력해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 298,
+          "reason": "source-reliability"
+        }
+      ],
+      "supports": [
+        "group.jaundice.identity"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.noticed_by",
+        "display": "Person Who First Noticed Yellowing",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.jaundice.noticed-by",
+        "display": "Person Who First Noticed Yellowing",
+        "intents": [
+          "intent.characterize_jaundice"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.noticed-by",
+        "wording": "노란 변화를 처음 알아본 사람을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 297,
+          "reason": "noticed-by"
+        }
+      ],
+      "supports": [
+        "group.jaundice.identity"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.current_reduced_consciousness",
+        "display": "Current Reduced Consciousness",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.jaundice.reduced-consciousness",
+        "display": "Current Reduced Consciousness",
+        "intents": [
+          "intent.screen_jaundice_safety"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.reduced-consciousness",
+        "wording": "지금 깨우기 어렵거나 의식이 뚜렷하게 떨어져 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1300,
+          "reason": "reduced-consciousness"
+        }
+      ],
+      "supports": [
+        "group.jaundice.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.new_confusion",
+        "display": "New Confusion",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.jaundice.new-confusion",
+        "display": "New Confusion",
+        "intents": [
+          "intent.screen_jaundice_safety"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.new-confusion",
+        "wording": "평소와 달리 새로 혼란스럽거나 말과 행동이 맞지 않나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1299,
+          "reason": "new-confusion"
+        }
+      ],
+      "supports": [
+        "group.jaundice.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.collapse",
+        "display": "Collapse",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.jaundice.collapse",
+        "display": "Collapse",
+        "intents": [
+          "intent.screen_jaundice_safety"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.collapse",
+        "wording": "지금 쓰러졌거나 서 있기 어려울 정도로 기운이 없나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1298,
+          "reason": "collapse"
+        }
+      ],
+      "supports": [
+        "group.jaundice.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.severe_right_upper_abdominal_pain",
+        "display": "Severe Right Upper Abdominal Pain",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.jaundice.severe-ruq-pain",
+        "display": "Severe Right Upper Abdominal Pain",
+        "intents": [
+          "intent.screen_jaundice_safety"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.severe-ruq-pain",
+        "wording": "지금 오른쪽 윗배에 심한 통증이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1297,
+          "reason": "severe-ruq-pain"
+        }
+      ],
+      "supports": [
+        "group.jaundice.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.fever",
+        "display": "Current Fever",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.jaundice.fever",
+        "display": "Current Fever",
+        "intents": [
+          "intent.screen_jaundice_safety"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.fever",
+        "wording": "현재 열이 나거나 측정한 체온이 높나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1296,
+          "reason": "fever"
+        }
+      ],
+      "supports": [
+        "group.jaundice.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.rigors",
+        "display": "Current Rigors",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.jaundice.rigors",
+        "display": "Current Rigors",
+        "intents": [
+          "intent.screen_jaundice_safety"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.rigors",
+        "wording": "현재 몸이 심하게 떨릴 정도의 오한이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1295,
+          "reason": "rigors"
+        }
+      ],
+      "supports": [
+        "group.jaundice.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.repeated_vomiting",
+        "display": "Repeated Vomiting",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.jaundice.repeated-vomiting",
+        "display": "Repeated Vomiting",
+        "intents": [
+          "intent.screen_jaundice_safety"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.repeated-vomiting",
+        "wording": "오늘 여러 차례 반복해서 토했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1294,
+          "reason": "repeated-vomiting"
+        }
+      ],
+      "supports": [
+        "group.jaundice.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.unable_to_keep_fluids",
+        "display": "Unable to Maintain Fluids",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.jaundice.unable-maintain-fluids",
+        "display": "Unable to Maintain Fluids",
+        "intents": [
+          "intent.screen_jaundice_safety"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.unable-maintain-fluids",
+        "wording": "물을 마셔도 유지하지 못하고 다시 토하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1293,
+          "reason": "unable-maintain-fluids"
+        }
+      ],
+      "supports": [
+        "group.jaundice.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.markedly_reduced_urine",
+        "display": "Markedly Reduced Urine",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.jaundice.markedly-reduced-urine",
+        "display": "Markedly Reduced Urine",
+        "intents": [
+          "intent.screen_jaundice_safety"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.markedly-reduced-urine",
+        "wording": "평소보다 소변 양이 뚜렷하게 줄었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1292,
+          "reason": "markedly-reduced-urine"
+        }
+      ],
+      "supports": [
+        "group.jaundice.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.vomiting_blood",
+        "display": "Vomiting Blood",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.jaundice.vomiting-blood",
+        "display": "Vomiting Blood",
+        "intents": [
+          "intent.screen_jaundice_safety"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.vomiting-blood",
+        "wording": "피를 토했거나 토한 것에 피가 섞였나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1291,
+          "reason": "vomiting-blood"
+        }
+      ],
+      "supports": [
+        "group.jaundice.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.black_or_bloody_stool",
+        "display": "Black or Bloody Stool",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.jaundice.black-bloody-stool",
+        "display": "Black or Bloody Stool",
+        "intents": [
+          "intent.screen_jaundice_safety"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.black-bloody-stool",
+        "wording": "검고 끈적한 변 또는 피가 섞인 변을 보았나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1290,
+          "reason": "black-bloody-stool"
+        }
+      ],
+      "supports": [
+        "group.jaundice.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.unexplained_bleeding",
+        "display": "Unexplained Bleeding",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.jaundice.unexplained-bleeding",
+        "display": "Unexplained Bleeding",
+        "intents": [
+          "intent.screen_jaundice_safety"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.unexplained-bleeding",
+        "wording": "코피나 잇몸 출혈처럼 평소와 다른 출혈이 멈추지 않나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1289,
+          "reason": "unexplained-bleeding"
+        }
+      ],
+      "supports": [
+        "group.jaundice.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.suspected_overdose_or_toxic_exposure",
+        "display": "Suspected Overdose or Toxic Exposure",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.jaundice.toxic-exposure",
+        "display": "Suspected Overdose or Toxic Exposure",
+        "intents": [
+          "intent.screen_jaundice_safety"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.toxic-exposure",
+        "wording": "약을 정해진 양보다 많이 먹었거나 독성 물질에 노출됐을 가능성이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1288,
+          "reason": "toxic-exposure"
+        }
+      ],
+      "supports": [
+        "group.jaundice.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.newborn_under_28_days",
+        "display": "Newborn Under 28 Days",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.jaundice.newborn-under-28-days",
+        "display": "Newborn Under 28 Days",
+        "intents": [
+          "intent.screen_jaundice_safety"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.newborn-under-28-days",
+        "wording": "황색 변화가 있는 대상은 생후 28일 미만의 신생아인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1287,
+          "reason": "newborn-under-28-days"
+        }
+      ],
+      "supports": [
+        "group.jaundice.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.newborn_poor_feeding",
+        "display": "Newborn Poor Feeding",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.jaundice.newborn-poor-feeding",
+        "display": "Newborn Poor Feeding",
+        "intents": [
+          "intent.screen_jaundice_safety"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.newborn-poor-feeding",
+        "wording": "신생아가 평소보다 잘 먹지 못하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1286,
+          "reason": "newborn-poor-feeding"
+        }
+      ],
+      "supports": [
+        "group.jaundice.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.newborn_difficult_to_wake",
+        "display": "Newborn Difficult to Wake",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.jaundice.newborn-difficult-wake",
+        "display": "Newborn Difficult to Wake",
+        "intents": [
+          "intent.screen_jaundice_safety"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.newborn-difficult-wake",
+        "wording": "신생아를 깨우기 어렵거나 지나치게 처져 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1285,
+          "reason": "newborn-difficult-wake"
+        }
+      ],
+      "supports": [
+        "group.jaundice.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.pregnant_or_postpartum",
+        "display": "Pregnancy or Postpartum Status",
+        "value_type": "coded",
+        "allowed_values": [
+          "pregnant",
+          "postpartum_6_weeks",
+          "not_pregnant_or_postpartum",
+          "not_applicable",
+          "unknown"
+        ],
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.jaundice.pregnancy-postpartum",
+        "display": "Pregnancy or Postpartum Status",
+        "intents": [
+          "intent.screen_jaundice_safety"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.pregnancy-postpartum",
+        "wording": "현재 임신 중이거나 출산 후 6주 이내인가요? 보기에 없으면 직접 입력해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1284,
+          "reason": "pregnancy-postpartum"
+        }
+      ],
+      "supports": [
+        "group.jaundice.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.rapidly_worsening_yellowing",
+        "display": "Rapidly Worsening Yellowing",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.jaundice.rapid-worsening",
+        "display": "Rapidly Worsening Yellowing",
+        "intents": [
+          "intent.screen_jaundice_safety"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.rapid-worsening",
+        "wording": "눈이나 피부의 노란 변화가 몇 시간 또는 며칠 사이 빠르게 심해지고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 1283,
+          "reason": "rapid-worsening"
+        }
+      ],
+      "supports": [
+        "group.jaundice.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.first_onset",
+        "display": "First Jaundice Onset",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.jaundice.first-onset",
+        "display": "First Jaundice Onset",
+        "intents": [
+          "intent.characterize_jaundice"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.first-onset",
+        "wording": "노란 변화나 관련 이상을 처음 알아본 때는 언제인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 280,
+          "reason": "first-onset"
+        }
+      ],
+      "supports": [
+        "group.jaundice.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.latest_observed",
+        "display": "Latest Jaundice Observation",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.jaundice.latest-observed",
+        "display": "Latest Jaundice Observation",
+        "intents": [
+          "intent.characterize_jaundice"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.latest-observed",
+        "wording": "가장 최근에 노란 변화를 확인한 때는 언제인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 279,
+          "reason": "latest-observed"
+        }
+      ],
+      "supports": [
+        "group.jaundice.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.course",
+        "display": "Jaundice Course",
+        "value_type": "coded",
+        "allowed_values": [
+          "improving",
+          "unchanged",
+          "worsening",
+          "fluctuating",
+          "resolved",
+          "uncertain",
+          "other"
+        ]
+      },
+      "target": {
+        "id": "target.jaundice.course",
+        "display": "Jaundice Course",
+        "intents": [
+          "intent.characterize_jaundice"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.course",
+        "wording": "처음보다 좋아짐, 비슷함, 심해짐, 들쭉날쭉함 중 어디에 가깝나요? 보기에 없으면 직접 입력해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 278,
+          "reason": "course"
+        }
+      ],
+      "supports": [
+        "group.jaundice.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.prior_episode",
+        "display": "Prior Jaundice Episode",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.jaundice.prior-episode",
+        "display": "Prior Jaundice Episode",
+        "intents": [
+          "intent.characterize_jaundice"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.prior-episode",
+        "wording": "이전에도 눈이나 피부가 노랗게 보인 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 277,
+          "reason": "prior-episode"
+        }
+      ],
+      "supports": [
+        "group.jaundice.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.scleral_yellowing",
+        "display": "Scleral Yellowing",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.jaundice.scleral-yellowing",
+        "display": "Scleral Yellowing",
+        "intents": [
+          "intent.characterize_jaundice"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.scleral-yellowing",
+        "wording": "눈 흰자가 노랗게 보이나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 276,
+          "reason": "scleral-yellowing"
+        }
+      ],
+      "supports": [
+        "group.jaundice.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.skin_yellowing",
+        "display": "Skin Yellowing",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.jaundice.skin-yellowing",
+        "display": "Skin Yellowing",
+        "intents": [
+          "intent.characterize_jaundice"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.skin-yellowing",
+        "wording": "피부가 평소보다 노랗게 보이나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 275,
+          "reason": "skin-yellowing"
+        }
+      ],
+      "supports": [
+        "group.jaundice.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.observation_conditions",
+        "display": "Yellowing Observation Conditions",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.jaundice.observation-conditions",
+        "display": "Yellowing Observation Conditions",
+        "intents": [
+          "intent.characterize_jaundice"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.observation-conditions",
+        "wording": "노란 변화를 어떤 조명이나 사진·대면 상황에서 확인했는지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 274,
+          "reason": "observation-conditions"
+        }
+      ],
+      "supports": [
+        "group.jaundice.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.visibility_uncertainty",
+        "display": "Yellowing Visibility Uncertainty",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.jaundice.visibility-uncertainty",
+        "display": "Yellowing Visibility Uncertainty",
+        "intents": [
+          "intent.characterize_jaundice"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.visibility-uncertainty",
+        "wording": "피부색이나 조명 때문에 노란 변화를 판단하기 어려운 점이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 273,
+          "reason": "visibility-uncertainty"
+        }
+      ],
+      "supports": [
+        "group.jaundice.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.dark_urine",
+        "display": "Dark Urine",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.jaundice.dark-urine",
+        "display": "Dark Urine",
+        "intents": [
+          "intent.characterize_jaundice"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.dark-urine",
+        "wording": "소변 색이 평소보다 진한 갈색이나 차색으로 변했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 272,
+          "reason": "dark-urine"
+        }
+      ],
+      "supports": [
+        "group.jaundice.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.pale_stool",
+        "display": "Pale Stool",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.jaundice.pale-stool",
+        "display": "Pale Stool",
+        "intents": [
+          "intent.characterize_jaundice"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.pale-stool",
+        "wording": "변 색이 평소보다 매우 옅거나 회백색으로 변했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 271,
+          "reason": "pale-stool"
+        }
+      ],
+      "supports": [
+        "group.jaundice.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.itching",
+        "display": "Itching",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.jaundice.itching",
+        "display": "Itching",
+        "intents": [
+          "intent.characterize_jaundice"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.itching",
+        "wording": "피부 가려움이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 270,
+          "reason": "itching"
+        }
+      ],
+      "supports": [
+        "group.jaundice.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.itching_impact",
+        "display": "Itching Impact",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.jaundice.itching-impact",
+        "display": "Itching Impact",
+        "intents": [
+          "intent.characterize_jaundice"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.itching-impact",
+        "wording": "가려움이 수면이나 일상에 미치는 영향을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 269,
+          "reason": "itching-impact"
+        }
+      ],
+      "supports": [
+        "group.jaundice.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.abdominal_pain",
+        "display": "Abdominal Pain",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.jaundice.abdominal-pain",
+        "display": "Abdominal Pain",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.abdominal-pain",
+        "wording": "배에 통증이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 250,
+          "reason": "abdominal-pain"
+        }
+      ],
+      "supports": [
+        "group.jaundice.associated"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.pain_location",
+        "display": "Abdominal Pain Location",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.jaundice.pain-location",
+        "display": "Abdominal Pain Location",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.pain-location",
+        "wording": "배가 아프다면 가장 아픈 위치를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 249,
+          "reason": "pain-location"
+        }
+      ],
+      "supports": [
+        "group.jaundice.associated"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.pain_nrs",
+        "display": "Abdominal Pain Numeric Rating",
+        "value_type": "integer",
+        "terminology_binding": {
+          "system": "http://loinc.org",
+          "code": "72514-3",
+          "display": "Pain severity - 0-10 verbal numeric rating [Score] - Reported",
+          "version": "2.82",
+          "relation": "equivalent"
+        },
+        "unit": "{score}",
+        "minimum": 0,
+        "maximum": 10
+      },
+      "target": {
+        "id": "target.jaundice.pain-nrs",
+        "display": "Abdominal Pain Numeric Rating",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.pain-nrs",
+        "wording": "배 통증이 있다면 0점부터 10점 중 몇 점인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 248,
+          "reason": "pain-nrs"
+        }
+      ],
+      "supports": [
+        "group.jaundice.associated"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.measured_temperature",
+        "display": "Measured Body Temperature",
+        "value_type": "quantity",
+        "unit": "Cel"
+      },
+      "target": {
+        "id": "target.jaundice.measured-temperature",
+        "display": "Measured Body Temperature",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.measured-temperature",
+        "wording": "측정한 체온이 있다면 섭씨 수치를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 247,
+          "reason": "measured-temperature"
+        }
+      ],
+      "supports": [
+        "group.jaundice.associated"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.nausea",
+        "display": "Nausea",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.jaundice.nausea",
+        "display": "Nausea",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.nausea",
+        "wording": "메스꺼움이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 246,
+          "reason": "nausea"
+        }
+      ],
+      "supports": [
+        "group.jaundice.associated"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.vomiting_count",
+        "display": "Vomiting Count",
+        "value_type": "integer",
+        "minimum": 0
+      },
+      "target": {
+        "id": "target.jaundice.vomiting-count",
+        "display": "Vomiting Count",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.vomiting-count",
+        "wording": "지난 24시간 동안 토한 횟수를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 245,
+          "reason": "vomiting-count"
+        }
+      ],
+      "supports": [
+        "group.jaundice.associated"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.appetite_reduction",
+        "display": "Appetite Reduction",
+        "value_type": "coded",
+        "allowed_values": [
+          "unchanged",
+          "slightly_reduced",
+          "markedly_reduced",
+          "almost_none",
+          "unknown",
+          "other"
+        ]
+      },
+      "target": {
+        "id": "target.jaundice.appetite-reduction",
+        "display": "Appetite Reduction",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.appetite-reduction",
+        "wording": "평소와 비교해 식욕이 어떤가요? 보기에 없으면 직접 입력해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 244,
+          "reason": "appetite-reduction"
+        }
+      ],
+      "supports": [
+        "group.jaundice.associated"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.unintentional_weight_change",
+        "display": "Unintentional Weight Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.jaundice.weight-change",
+        "display": "Unintentional Weight Change",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.weight-change",
+        "wording": "의도하지 않은 체중 변화가 있다면 양과 기간을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 243,
+          "reason": "weight-change"
+        }
+      ],
+      "supports": [
+        "group.jaundice.associated"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.fatigue",
+        "display": "Fatigue",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.jaundice.fatigue",
+        "display": "Fatigue",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.fatigue",
+        "wording": "평소보다 피로하거나 기운이 없는 정도를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 242,
+          "reason": "fatigue"
+        }
+      ],
+      "supports": [
+        "group.jaundice.associated"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.abdominal_swelling",
+        "display": "Abdominal Swelling",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.jaundice.abdominal-swelling",
+        "display": "Abdominal Swelling",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.abdominal-swelling",
+        "wording": "배가 평소보다 붓거나 불러왔나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 241,
+          "reason": "abdominal-swelling"
+        }
+      ],
+      "supports": [
+        "group.jaundice.associated"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.leg_swelling",
+        "display": "Leg Swelling",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.jaundice.leg-swelling",
+        "display": "Leg Swelling",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.leg-swelling",
+        "wording": "다리나 발이 평소보다 붓나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 240,
+          "reason": "leg-swelling"
+        }
+      ],
+      "supports": [
+        "group.jaundice.associated"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.easy_bruising",
+        "display": "Easy Bruising",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.jaundice.easy-bruising",
+        "display": "Easy Bruising",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.easy-bruising",
+        "wording": "부딪힌 기억이 없는데 멍이 쉽게 생기나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 239,
+          "reason": "easy-bruising"
+        }
+      ],
+      "supports": [
+        "group.jaundice.associated"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.sleep_wake_change",
+        "display": "Sleep Wake Pattern Change",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.jaundice.sleep-wake-change",
+        "display": "Sleep Wake Pattern Change",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.sleep-wake-change",
+        "wording": "최근 낮밤이 바뀌는 등 수면 시간대가 평소와 달라졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 238,
+          "reason": "sleep-wake-change"
+        }
+      ],
+      "supports": [
+        "group.jaundice.associated"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.daily_function_impact",
+        "display": "Daily Function Impact",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.jaundice.function-impact",
+        "display": "Daily Function Impact",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.function-impact",
+        "wording": "증상 때문에 식사, 수면, 이동, 일 또는 돌봄에 어떤 영향이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 237,
+          "reason": "function-impact"
+        }
+      ],
+      "supports": [
+        "group.jaundice.associated"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.known_liver_history",
+        "display": "Known Liver History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.jaundice.liver-history",
+        "display": "Known Liver History",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.liver-history",
+        "wording": "알고 있는 간질환이나 간수치 이상 이력이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 220,
+          "reason": "liver-history"
+        }
+      ],
+      "supports": [
+        "group.jaundice.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.biliary_pancreatic_history",
+        "display": "Biliary or Pancreatic History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.jaundice.biliary-pancreatic-history",
+        "display": "Biliary or Pancreatic History",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.biliary-pancreatic-history",
+        "wording": "담석, 담도 또는 췌장 질환·시술 이력이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 219,
+          "reason": "biliary-pancreatic-history"
+        }
+      ],
+      "supports": [
+        "group.jaundice.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.blood_disorder_history",
+        "display": "Blood Disorder History",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.jaundice.blood-history",
+        "display": "Blood Disorder History",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.blood-history",
+        "wording": "용혈이나 다른 혈액질환 이력이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 218,
+          "reason": "blood-history"
+        }
+      ],
+      "supports": [
+        "group.jaundice.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.prior_surgery_procedure",
+        "display": "Prior Surgery or Procedure",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.jaundice.prior-procedure",
+        "display": "Prior Surgery or Procedure",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.prior-procedure",
+        "wording": "관련된 수술이나 시술 이력이 있다면 종류와 시기를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 217,
+          "reason": "prior-procedure"
+        }
+      ],
+      "supports": [
+        "group.jaundice.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.current_medicines",
+        "display": "Current Medicines",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.jaundice.current-medicines",
+        "display": "Current Medicines",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.current-medicines",
+        "wording": "현재 복용하는 처방약과 일반약을 이름·용량·복용법과 함께 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 216,
+          "reason": "current-medicines"
+        }
+      ],
+      "supports": [
+        "group.jaundice.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.recent_medicine_change",
+        "display": "Recent Medicine Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.jaundice.medicine-change",
+        "display": "Recent Medicine Change",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.medicine-change",
+        "wording": "최근 시작하거나 용량·복용법이 바뀐 약과 변경 시기를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 215,
+          "reason": "medicine-change"
+        }
+      ],
+      "supports": [
+        "group.jaundice.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.supplements_herbals",
+        "display": "Supplements and Herbals",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.jaundice.supplements",
+        "display": "Supplements and Herbals",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.supplements",
+        "wording": "복용 중인 건강기능식품, 한약 또는 생약 제품을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 214,
+          "reason": "supplements"
+        }
+      ],
+      "supports": [
+        "group.jaundice.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.alcohol_pattern",
+        "display": "Alcohol Pattern",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.jaundice.alcohol-pattern",
+        "display": "Alcohol Pattern",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.alcohol-pattern",
+        "wording": "최근 음주한 주종, 한 번에 마시는 양, 빈도와 마지막 음주 시점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 213,
+          "reason": "alcohol-pattern"
+        }
+      ],
+      "supports": [
+        "group.jaundice.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.acetaminophen_exposure",
+        "display": "Acetaminophen Exposure",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.jaundice.acetaminophen-exposure",
+        "display": "Acetaminophen Exposure",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.acetaminophen-exposure",
+        "wording": "최근 아세트아미노펜 성분 약을 복용했다면 제품, 1회량, 횟수와 기간을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 212,
+          "reason": "acetaminophen-exposure"
+        }
+      ],
+      "supports": [
+        "group.jaundice.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.blood_body_fluid_needle_exposure",
+        "display": "Blood Body Fluid or Needle Exposure",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.jaundice.blood-exposure",
+        "display": "Blood Body Fluid or Needle Exposure",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.blood-exposure",
+        "wording": "최근 혈액·체액 접촉, 주사침, 문신 또는 피어싱 노출이 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 211,
+          "reason": "blood-exposure"
+        }
+      ],
+      "supports": [
+        "group.jaundice.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.travel_food_water_exposure",
+        "display": "Travel Food or Water Exposure",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.jaundice.travel-food-water",
+        "display": "Travel Food or Water Exposure",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.travel-food-water",
+        "wording": "최근 여행이나 평소와 다른 음식·물 섭취가 있었다면 장소와 시기를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 210,
+          "reason": "travel-food-water"
+        }
+      ],
+      "supports": [
+        "group.jaundice.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.close_contact_illness",
+        "display": "Close Contact Illness",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.jaundice.close-contact-illness",
+        "display": "Close Contact Illness",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.close-contact-illness",
+        "wording": "가까이 지낸 사람 중 비슷한 증상이나 간염 진단을 받은 사람이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 209,
+          "reason": "close-contact-illness"
+        }
+      ],
+      "supports": [
+        "group.jaundice.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.recent_infection_illness",
+        "display": "Recent Infection or Illness",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.jaundice.recent-illness",
+        "display": "Recent Infection or Illness",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.recent-illness",
+        "wording": "황색 변화 전 최근 감염이나 다른 급성 질환이 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 208,
+          "reason": "recent-illness"
+        }
+      ],
+      "supports": [
+        "group.jaundice.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.allergies",
+        "display": "Known Allergies",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.jaundice.allergies",
+        "display": "Known Allergies",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.allergies",
+        "wording": "알고 있는 약물 또는 물질 알레르기가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 207,
+          "reason": "allergies"
+        }
+      ],
+      "supports": [
+        "group.jaundice.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.previous_assessment",
+        "display": "Previous Assessment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.jaundice.previous-assessment",
+        "display": "Previous Assessment",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.previous-assessment",
+        "wording": "이 문제로 이전에 진찰이나 상담을 받은 적이 있다면 시기와 내용을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 190,
+          "reason": "previous-assessment"
+        }
+      ],
+      "supports": [
+        "group.jaundice.previous"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.latest_total_bilirubin",
+        "display": "Latest Total Bilirubin",
+        "value_type": "quantity",
+        "terminology_binding": {
+          "system": "http://loinc.org",
+          "code": "1975-2",
+          "display": "Bilirubin.total [Mass/volume] in Serum or Plasma",
+          "version": "2.82",
+          "relation": "equivalent"
+        },
+        "unit": "mg/dL"
+      },
+      "target": {
+        "id": "target.jaundice.total-bilirubin",
+        "display": "Latest Total Bilirubin",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.total-bilirubin",
+        "wording": "가장 최근 총빌리루빈 검사값이 있다면 수치와 단위를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 189,
+          "reason": "total-bilirubin"
+        }
+      ],
+      "supports": [
+        "group.jaundice.previous"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.latest_total_bilirubin_date",
+        "display": "Latest Total Bilirubin Date",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.jaundice.total-bilirubin-date",
+        "display": "Latest Total Bilirubin Date",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.total-bilirubin-date",
+        "wording": "가장 최근 총빌리루빈 검사일을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 188,
+          "reason": "total-bilirubin-date"
+        }
+      ],
+      "supports": [
+        "group.jaundice.previous"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.latest_direct_bilirubin",
+        "display": "Latest Direct Bilirubin",
+        "value_type": "quantity",
+        "terminology_binding": {
+          "system": "http://loinc.org",
+          "code": "1968-7",
+          "display": "Bilirubin.direct [Mass/volume] in Serum or Plasma",
+          "version": "2.82",
+          "relation": "equivalent"
+        },
+        "unit": "mg/dL"
+      },
+      "target": {
+        "id": "target.jaundice.direct-bilirubin",
+        "display": "Latest Direct Bilirubin",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.direct-bilirubin",
+        "wording": "가장 최근 직접빌리루빈 검사값이 있다면 수치와 단위를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 187,
+          "reason": "direct-bilirubin"
+        }
+      ],
+      "supports": [
+        "group.jaundice.previous"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.latest_direct_bilirubin_date",
+        "display": "Latest Direct Bilirubin Date",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.jaundice.direct-bilirubin-date",
+        "display": "Latest Direct Bilirubin Date",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.direct-bilirubin-date",
+        "wording": "가장 최근 직접빌리루빈 검사일을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 186,
+          "reason": "direct-bilirubin-date"
+        }
+      ],
+      "supports": [
+        "group.jaundice.previous"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.other_previous_tests",
+        "display": "Other Previous Tests",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.jaundice.other-tests",
+        "display": "Other Previous Tests",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.other-tests",
+        "wording": "그 밖에 관련 혈액검사 결과가 있다면 검사명, 결과, 단위와 기준범위를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 185,
+          "reason": "other-tests"
+        }
+      ],
+      "supports": [
+        "group.jaundice.previous"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.prior_imaging",
+        "display": "Prior Imaging",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.jaundice.prior-imaging",
+        "display": "Prior Imaging",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.prior-imaging",
+        "wording": "관련 초음파, CT, MRI 또는 다른 영상검사를 받았다면 시기와 결과를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 184,
+          "reason": "prior-imaging"
+        }
+      ],
+      "supports": [
+        "group.jaundice.previous"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.previous_strategy",
+        "display": "Previous Strategy",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.jaundice.previous-strategy",
+        "display": "Previous Strategy",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.previous-strategy",
+        "wording": "이 증상에 대해 전에 받은 안내나 치료가 있다면 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 183,
+          "reason": "previous-strategy"
+        }
+      ],
+      "supports": [
+        "group.jaundice.previous"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.previous_response",
+        "display": "Previous Response",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.jaundice.previous-response",
+        "display": "Previous Response",
+        "intents": [
+          "intent.assess_jaundice_context"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.previous-response",
+        "wording": "이전 안내나 치료 후 좋아진 점과 남은 문제를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 182,
+          "reason": "previous-response"
+        }
+      ],
+      "supports": [
+        "group.jaundice.previous"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.accessibility_need",
+        "display": "Accessibility Need",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.jaundice.accessibility-need",
+        "display": "Accessibility Need",
+        "intents": [
+          "intent.prepare_jaundice_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.accessibility-need",
+        "wording": "문진이나 진료에 필요한 언어, 청각, 시각, 인지, 이동 또는 보호자 지원이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 110,
+          "reason": "accessibility-need"
+        }
+      ],
+      "supports": [
+        "group.jaundice.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.patient_concern",
+        "display": "Patient Concern",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.jaundice.patient-concern",
+        "display": "Patient Concern",
+        "intents": [
+          "intent.prepare_jaundice_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.patient-concern",
+        "wording": "현재 가장 걱정되는 점은 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 100,
+          "reason": "patient-concern"
+        }
+      ],
+      "supports": [
+        "group.jaundice.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.expected_help",
+        "display": "Expected Help",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.jaundice.expected-help",
+        "display": "Expected Help",
+        "intents": [
+          "intent.prepare_jaundice_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.expected-help",
+        "wording": "이번 진료에서 의료진에게 가장 받고 싶은 도움은 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 99,
+          "reason": "expected-help"
+        }
+      ],
+      "supports": [
+        "group.jaundice.handoff"
+      ]
+    },
+    {
+      "fact": {
+        "id": "jaundice.additional_comment",
+        "display": "Additional Comment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.jaundice.additional-comment",
+        "display": "Additional Comment",
+        "intents": [
+          "intent.prepare_jaundice_handoff"
+        ]
+      },
+      "question": {
+        "id": "question.jaundice.additional-comment",
+        "wording": "질문에 없지만 의료진에게 추가로 전달할 내용이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 90,
+          "reason": "additional-comment"
+        }
+      ],
+      "supports": [
+        "group.jaundice.handoff"
+      ]
+    }
+  ],
+  "provenance": {
+    "created_by": {
+      "type": "ai",
+      "id": "codex-gpt5"
+    },
+    "created_at": "2026-07-14T00:00:00Z",
+    "source_refs": [
+      "source.kdca.viral-hepatitis-guideline.2026",
+      "source.nhs.jaundice.20240122",
+      "source.cdc.hepatitis-clinical-overview.20251128",
+      "source.nice.ng12.jaundice.20260415",
+      "source.nice.cg98.newborn-jaundice.20231031",
+      "source.stom.jaundice.20260803"
+    ],
+    "review_status": "unreviewed",
+    "version": "0.1.0"
+  }
+}
