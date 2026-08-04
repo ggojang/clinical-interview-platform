@@ -37,15 +37,34 @@
           "result.report.status",
           "result.report.version_or_amendment",
           "result.performing_organization",
+          "result.test.clinical_reason",
+          "result.test_requester",
+          "result.results_interpreter",
           "result.report.source",
           "result.report.readability",
           "result.value.summary",
           "result.value.units",
           "result.reference_range",
           "result.reported_interpretation",
+          "result.specimen_type",
+          "result.specimen_collected_at",
+          "result.body_site",
+          "result.method",
+          "result.device",
+          "result.reported_limitation",
+          "result.pending_components",
+          "result.prior_result_available",
+          "result.reported_comparison",
           "result.prior_explanation",
           "result.follow_up_plan",
           "result.conflict",
+          "result.notification_received_at",
+          "result.notification_method",
+          "result.follow_up_responsible_party",
+          "result.follow_up_recommended_action",
+          "result.follow_up_due_at",
+          "result.follow_up_action_status",
+          "result.communication_support_need",
           "result.additional_comment"
         ],
         "both": [
@@ -57,15 +76,34 @@
           "result.report.status",
           "result.report.version_or_amendment",
           "result.performing_organization",
+          "result.test.clinical_reason",
+          "result.test_requester",
+          "result.results_interpreter",
           "result.report.source",
           "result.report.readability",
           "result.value.summary",
           "result.value.units",
           "result.reference_range",
           "result.reported_interpretation",
+          "result.specimen_type",
+          "result.specimen_collected_at",
+          "result.body_site",
+          "result.method",
+          "result.device",
+          "result.reported_limitation",
+          "result.pending_components",
+          "result.prior_result_available",
+          "result.reported_comparison",
           "result.prior_explanation",
           "result.follow_up_plan",
           "result.conflict",
+          "result.notification_received_at",
+          "result.notification_method",
+          "result.follow_up_responsible_party",
+          "result.follow_up_recommended_action",
+          "result.follow_up_due_at",
+          "result.follow_up_action_status",
+          "result.communication_support_need",
           "result.additional_comment"
         ],
         "unknown": [
@@ -85,12 +123,54 @@
         "result.related_symptom_severity"
       ],
       "reason": "new_result_related_concern"
+    },
+    {
+      "selector_fact": "result.report.status",
+      "cases": {
+        "registered": [
+          "result.expected_completion_at"
+        ],
+        "partial": [
+          "result.expected_completion_at"
+        ],
+        "preliminary": [
+          "result.expected_completion_at"
+        ]
+      }
+    },
+    {
+      "when": {
+        "fact": "result.prior_result_available",
+        "equals": true
+      },
+      "required_facts": [
+        "result.prior_result_date",
+        "result.prior_result_summary"
+      ],
+      "reason": "comparable_prior_result_available"
+    },
+    {
+      "selector_fact": "result.follow_up_action_status",
+      "cases": {
+        "not_started": [
+          "result.follow_up_barrier"
+        ],
+        "in_progress": [
+          "result.follow_up_barrier"
+        ],
+        "declined": [
+          "result.follow_up_barrier"
+        ],
+        "unknown": [
+          "result.follow_up_barrier"
+        ]
+      }
     }
   ],
   "clarification_facts_by_rule": {},
   "question_budget": {
-    "routine": 30,
-    "clarify": 8
+    "routine": 53,
+    "clarify": 10
   },
   "upload_policy": {
     "institution_result_check": "never_request",
@@ -108,6 +188,10 @@
       "source.hl7.fhir-r4.diagnosticreport",
       "source.hl7.fhir-r4.observation",
       "source.uscdi.v6.2025",
+      "source.ahrq.follow-up-with-patients-tool6.2024",
+      "source.ahrq.diagnostic-safety-current-state.2023",
+      "source.acsqhc.pathology-information-communication-reporting.2026",
+      "source.stom.test-result-follow-up.20260804",
       "policy.encounter-context-review"
     ],
     "review_status": "unreviewed",

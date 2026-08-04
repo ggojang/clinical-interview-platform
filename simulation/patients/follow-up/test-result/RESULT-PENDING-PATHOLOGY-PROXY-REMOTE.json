@@ -1,11 +1,22 @@
 {
-  "id": "RESULT-INTERPRET-UPLOADED-LAB",
+  "id": "RESULT-PENDING-PATHOLOGY-PROXY-REMOTE",
   "simulation_language": "ko",
   "persona": {
-    "age": 41
+    "age": 76
+  },
+  "encounter_context": {
+    "care_setting": "telemedicine",
+    "encounter_type": "follow_up",
+    "interview_initiator": "caregiver",
+    "interview_mode": "video",
+    "available_information": [
+      "partial_report"
+    ],
+    "time_constraint": "scheduled",
+    "clinical_responsibility": "follow_up_support"
   },
   "initial_statement": {
-    "ko": "올린 검사결과의 내용을 설명받고 싶어요."
+    "ko": "보호자가 아직 일부만 나온 병리결과를 대신 확인합니다."
   },
   "hidden_state": {
     "encounter.result_follow_up.goal": {
@@ -54,7 +65,7 @@
       "value": "2026-07"
     },
     "result.report.status": {
-      "value": "final"
+      "value": "preliminary"
     },
     "result.report.version_or_amendment": {
       "value": "최종본"
@@ -72,7 +83,7 @@
       "value": "합성 판독 부서"
     },
     "result.report.source": {
-      "value": "uploaded_document"
+      "value": "proxy_report"
     },
     "result.report.readability": {
       "value": "complete_readable"
@@ -108,7 +119,7 @@
       "value": "없음"
     },
     "result.pending_components": {
-      "value": "없음"
+      "value": "합성 병리 추가 판독"
     },
     "result.prior_result_available": {
       "value": false
@@ -129,7 +140,7 @@
       "value": "2026-07"
     },
     "result.notification_method": {
-      "value": "patient_portal"
+      "value": "caregiver"
     },
     "result.follow_up_responsible_party": {
       "value": "합성 일차의료 진료팀"
@@ -144,16 +155,24 @@
       "value": "scheduled"
     },
     "result.communication_support_need": {
-      "value": "없음"
+      "value": "짧은 문장과 보호자 대리"
+    },
+    "result.expected_completion_at": {
+      "value": "약 1주 후"
     }
   },
   "expected": {
     "expected_safety_level": "routine",
     "expected_stop_reason": "all_required_targets_resolved",
+    "expected_known_facts": {
+      "result.report.status": "preliminary",
+      "result.expected_completion_at": "약 1주 후",
+      "result.communication_support_need": "짧은 문장과 보호자 대리"
+    },
     "expected_max_turns": 53,
     "forbidden_assertions": [
-      "repeat_upload_request",
-      "diagnosis.inferred_from_report"
+      "diagnosis.final_pathology",
+      "result.pending_components.completed"
     ]
   },
   "provenance": {
