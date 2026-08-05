@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import json
+import re
 import tempfile
 import unittest
+from datetime import date
 from pathlib import Path
 
 from compiler.build_package import PACKAGE_PROFILES, compile_package
@@ -44,7 +46,18 @@ class QuestionAnswerTerminologyTest(unittest.TestCase):
             ],
         )
         self.assertEqual(registry["verification"]["loinc_version"], "2.82")
-        self.assertIn("/version/20260701", registry["verification"]["snomed_version"])
+        snomed_version = registry["verification"]["snomed_version"]
+        match = re.fullmatch(
+            r"http://snomed\.info/sct/900000000000207008/version/(\d{8})",
+            snomed_version,
+        )
+        self.assertIsNotNone(match)
+        self.assertLessEqual(
+            date.fromisoformat(
+                f"{match.group(1)[:4]}-{match.group(1)[4:6]}-{match.group(1)[6:]}"
+            ),
+            date.fromisoformat(registry["verification"]["verified_at"]),
+        )
         self.assertEqual(
             policy["fhir_r4_projection"]["resource_element_binding_policy"],
             "policy.fhir-r4-element-terminology-binding",
