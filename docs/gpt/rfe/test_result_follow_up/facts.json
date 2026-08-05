@@ -1,6 +1,6 @@
 {
   "contains_patient_responses": false,
-  "count": 30,
+  "count": 53,
   "encounter_contexts": [
     "context.primary_care"
   ],
@@ -57,6 +57,40 @@
     },
     {
       "description": "",
+      "display": "Reported Body Site",
+      "extraction_cues": [],
+      "fhir_r4_element_bindings": [
+        {
+          "binding_source": "base_fhir_r4",
+          "binding_status": "annotation_only",
+          "binding_strength": "example",
+          "element_path": "Observation.bodySite",
+          "fhir_version": "4.0.1",
+          "mapping_relation": "partial",
+          "projection_role": "annotation",
+          "resource": "Observation",
+          "structure_definition": "http://hl7.org/fhir/StructureDefinition/Observation",
+          "value_set": "http://hl7.org/fhir/ValueSet/body-site"
+        }
+      ],
+      "id": "result.body_site",
+      "safety_relevant": false,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "description": "",
+      "display": "Result Communication Support Need",
+      "extraction_cues": [],
+      "id": "result.communication_support_need",
+      "safety_relevant": false,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "description": "",
       "display": "Conflicting Result Information",
       "extraction_cues": [],
       "id": "result.conflict",
@@ -106,6 +140,26 @@
     },
     {
       "description": "",
+      "display": "Reported Test Device",
+      "extraction_cues": [],
+      "id": "result.device",
+      "safety_relevant": false,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "description": "",
+      "display": "Expected Result Completion Time",
+      "extraction_cues": [],
+      "id": "result.expected_completion_at",
+      "safety_relevant": false,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "date_or_period"
+    },
+    {
+      "description": "",
       "display": "Expected Outcome",
       "extraction_cues": [],
       "id": "result.expected_outcome",
@@ -130,10 +184,116 @@
       "value_type": "boolean"
     },
     {
+      "allowed_values": [
+        "not_started",
+        "scheduled",
+        "in_progress",
+        "completed",
+        "declined",
+        "not_applicable",
+        "unknown",
+        "other"
+      ],
+      "answer_semantic_binding": {
+        "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-mixed-result-follow-up-action-status-coded-not-star-c1f6e1b755",
+        "data_absent_reason_mappings": {
+          "unknown": "asked-unknown"
+        },
+        "policy_id": "policy.question-answer-terminology-binding",
+        "snomed_mappings": {
+          "not_applicable": {
+            "code": "385432009",
+            "display": "Not applicable",
+            "mapping_relation": "equivalent",
+            "system": "http://snomed.info/sct"
+          },
+          "other": {
+            "code": "74964007",
+            "display": "Other",
+            "mapping_relation": "equivalent",
+            "system": "http://snomed.info/sct"
+          }
+        },
+        "strategy": "SNOMED_CT_then_local_coded_fallback"
+      },
+      "description": "",
+      "display": "Follow-up Action Status",
+      "extraction_cues": [],
+      "id": "result.follow_up_action_status",
+      "safety_relevant": false,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "coded"
+    },
+    {
+      "description": "",
+      "display": "Follow-up Barrier",
+      "extraction_cues": [],
+      "id": "result.follow_up_barrier",
+      "safety_relevant": false,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "description": "",
+      "display": "Follow-up Action Due Time",
+      "extraction_cues": [],
+      "id": "result.follow_up_due_at",
+      "safety_relevant": false,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "date_or_period"
+    },
+    {
       "description": "",
       "display": "Known Follow-up Plan",
       "extraction_cues": [],
       "id": "result.follow_up_plan",
+      "safety_relevant": false,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "description": "",
+      "display": "Recommended Follow-up Action",
+      "extraction_cues": [],
+      "id": "result.follow_up_recommended_action",
+      "safety_relevant": false,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "description": "",
+      "display": "Responsible Follow-up Party",
+      "extraction_cues": [],
+      "id": "result.follow_up_responsible_party",
+      "safety_relevant": false,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "string_or_reference"
+    },
+    {
+      "description": "",
+      "display": "Reported Test Method",
+      "extraction_cues": [],
+      "fhir_r4_element_bindings": [
+        {
+          "binding_source": "base_fhir_r4",
+          "binding_status": "annotation_only",
+          "binding_strength": "example",
+          "element_path": "Observation.method",
+          "fhir_version": "4.0.1",
+          "mapping_relation": "partial",
+          "projection_role": "annotation",
+          "resource": "Observation",
+          "structure_definition": "http://hl7.org/fhir/StructureDefinition/Observation",
+          "value_set": "http://hl7.org/fhir/ValueSet/observation-methods"
+        }
+      ],
+      "id": "result.method",
       "safety_relevant": false,
       "status": "research_only",
       "type": "Fact",
@@ -155,10 +315,67 @@
       "value_type": "boolean"
     },
     {
+      "allowed_values": [
+        "in_person",
+        "telephone",
+        "text_message",
+        "email",
+        "patient_portal",
+        "letter",
+        "caregiver",
+        "other",
+        "unknown"
+      ],
+      "answer_semantic_binding": {
+        "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-mixed-result-notification-method-coded-in-person-te-ca5d094f77",
+        "data_absent_reason_mappings": {
+          "unknown": "asked-unknown"
+        },
+        "policy_id": "policy.question-answer-terminology-binding",
+        "snomed_mappings": {
+          "other": {
+            "code": "74964007",
+            "display": "Other",
+            "mapping_relation": "equivalent",
+            "system": "http://snomed.info/sct"
+          }
+        },
+        "strategy": "SNOMED_CT_then_local_coded_fallback"
+      },
+      "description": "",
+      "display": "Result Notification Method",
+      "extraction_cues": [],
+      "id": "result.notification_method",
+      "safety_relevant": false,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "coded"
+    },
+    {
+      "description": "",
+      "display": "Result Notification Received Time",
+      "extraction_cues": [],
+      "id": "result.notification_received_at",
+      "safety_relevant": false,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "datetime"
+    },
+    {
       "description": "",
       "display": "Patient Question",
       "extraction_cues": [],
       "id": "result.patient_question",
+      "safety_relevant": false,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "description": "",
+      "display": "Pending Result Components",
+      "extraction_cues": [],
+      "id": "result.pending_components",
       "safety_relevant": false,
       "status": "research_only",
       "type": "Fact",
@@ -179,6 +396,41 @@
       "display": "Prior Clinician Explanation",
       "extraction_cues": [],
       "id": "result.prior_explanation",
+      "safety_relevant": false,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "answer_semantic_binding": {
+        "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-sct-yes-no",
+        "policy_id": "policy.question-answer-terminology-binding",
+        "strategy": "SNOMED_CT_coded_yes_no_with_local_fallback"
+      },
+      "description": "",
+      "display": "Prior Comparable Result Available",
+      "extraction_cues": [],
+      "id": "result.prior_result_available",
+      "safety_relevant": false,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "boolean"
+    },
+    {
+      "description": "",
+      "display": "Prior Comparable Result Date",
+      "extraction_cues": [],
+      "id": "result.prior_result_date",
+      "safety_relevant": false,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "date_or_period"
+    },
+    {
+      "description": "",
+      "display": "Prior Comparable Result Summary",
+      "extraction_cues": [],
+      "id": "result.prior_result_summary",
       "safety_relevant": false,
       "status": "research_only",
       "type": "Fact",
@@ -486,10 +738,97 @@
       "value_type": "string"
     },
     {
+      "allowed_values": [
+        "improved",
+        "similar",
+        "worsened",
+        "changed_unspecified",
+        "not_compared",
+        "unknown",
+        "other"
+      ],
+      "answer_semantic_binding": {
+        "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-mixed-result-reported-comparison-coded-improved-sim-5eaf37074b",
+        "data_absent_reason_mappings": {
+          "unknown": "asked-unknown"
+        },
+        "policy_id": "policy.question-answer-terminology-binding",
+        "snomed_mappings": {
+          "improved": {
+            "code": "385425000",
+            "display": "Improved",
+            "mapping_relation": "equivalent",
+            "system": "http://snomed.info/sct"
+          },
+          "other": {
+            "code": "74964007",
+            "display": "Other",
+            "mapping_relation": "equivalent",
+            "system": "http://snomed.info/sct"
+          },
+          "worsened": {
+            "code": "231877006",
+            "display": "Worse",
+            "mapping_relation": "equivalent",
+            "system": "http://snomed.info/sct"
+          }
+        },
+        "strategy": "SNOMED_CT_then_local_coded_fallback"
+      },
+      "description": "",
+      "display": "Reported Comparison with Prior Result",
+      "extraction_cues": [],
+      "id": "result.reported_comparison",
+      "safety_relevant": false,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "coded"
+    },
+    {
       "description": "",
       "display": "Reported Interpretation or Conclusion",
       "extraction_cues": [],
       "id": "result.reported_interpretation",
+      "safety_relevant": false,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "description": "",
+      "display": "Reported Result Limitation",
+      "extraction_cues": [],
+      "id": "result.reported_limitation",
+      "safety_relevant": false,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "description": "",
+      "display": "Result Interpreter",
+      "extraction_cues": [],
+      "id": "result.results_interpreter",
+      "safety_relevant": false,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "string_or_reference"
+    },
+    {
+      "description": "",
+      "display": "Reported Specimen Collection Time",
+      "extraction_cues": [],
+      "id": "result.specimen_collected_at",
+      "safety_relevant": false,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "datetime"
+    },
+    {
+      "description": "",
+      "display": "Reported Specimen Type",
+      "extraction_cues": [],
+      "id": "result.specimen_type",
       "safety_relevant": false,
       "status": "research_only",
       "type": "Fact",
@@ -531,6 +870,30 @@
     },
     {
       "description": "",
+      "display": "Clinical Reason for Test",
+      "extraction_cues": [],
+      "fhir_r4_element_bindings": [
+        {
+          "binding_source": "base_fhir_r4",
+          "binding_status": "annotation_only",
+          "binding_strength": "example",
+          "element_path": "ServiceRequest.reasonCode",
+          "fhir_version": "4.0.1",
+          "mapping_relation": "partial",
+          "projection_role": "annotation",
+          "resource": "ServiceRequest",
+          "structure_definition": "http://hl7.org/fhir/StructureDefinition/ServiceRequest",
+          "value_set": "http://hl7.org/fhir/ValueSet/procedure-reason"
+        }
+      ],
+      "id": "result.test.clinical_reason",
+      "safety_relevant": false,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "description": "",
       "display": "Test or Report Name",
       "extraction_cues": [],
       "id": "result.test.name",
@@ -548,6 +911,16 @@
       "status": "research_only",
       "type": "Fact",
       "value_type": "date_or_period"
+    },
+    {
+      "description": "",
+      "display": "Test Requester",
+      "extraction_cues": [],
+      "id": "result.test_requester",
+      "safety_relevant": false,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "string_or_reference"
     },
     {
       "answer_semantic_binding": {
@@ -593,9 +966,45 @@
   "knowledge_sources": [
     {
       "complete": false,
+      "id": "source.acsqhc.pathology-information-communication-reporting.2026",
+      "kind": "official_pathology_standard_metadata",
+      "last_monitored_at": "2026-08-04",
+      "license_status": "metadata_and_summary_only",
+      "monitor_interval_days": 1,
+      "publisher": "Australian Commission on Safety and Quality in Health Care",
+      "title": "Requirements for Information, Communication and Reporting, Sixth Edition",
+      "url": "https://www.safetyandquality.gov.au/sites/default/files/2026-07/Requirements-for-Information-Communication-and-Reporting-sixth-edition-2026.pdf",
+      "version": "sixth-edition-2026"
+    },
+    {
+      "complete": false,
+      "id": "source.ahrq.diagnostic-safety-current-state.2023",
+      "kind": "official_diagnostic_safety_issue_brief_metadata",
+      "last_monitored_at": "2026-08-04",
+      "license_status": "metadata_and_summary_only",
+      "monitor_interval_days": 7,
+      "publisher": "Agency for Healthcare Research and Quality",
+      "title": "The Current State of Diagnostic Safety: Test Results Management and Closing the Loop",
+      "url": "https://www.ahrq.gov/diagnostic-safety/resources/issue-briefs/dxsafety-current-state3.html",
+      "version": "issue-brief-current-2026-08-04"
+    },
+    {
+      "complete": false,
+      "id": "source.ahrq.follow-up-with-patients-tool6.2024",
+      "kind": "official_patient_safety_guidance_metadata",
+      "last_monitored_at": "2026-08-04",
+      "license_status": "metadata_and_summary_only",
+      "monitor_interval_days": 7,
+      "publisher": "Agency for Healthcare Research and Quality",
+      "title": "Health Literacy Universal Precautions Toolkit, Tool 6: Follow Up with Patients",
+      "url": "https://www.ahrq.gov/health-literacy/improve/precautions/tool6.html",
+      "version": "reviewed-2024-02"
+    },
+    {
+      "complete": false,
       "id": "source.hl7.fhir-r4.diagnosticreport",
       "kind": "official_fhir_specification_metadata",
-      "last_monitored_at": "2026-07-24",
+      "last_monitored_at": "2026-08-04",
       "license_status": "allowed",
       "monitor_interval_days": 7,
       "publisher": "HL7 International",
@@ -607,7 +1016,7 @@
       "complete": false,
       "id": "source.hl7.fhir-r4.observation",
       "kind": "official_fhir_specification_metadata",
-      "last_monitored_at": "2026-07-24",
+      "last_monitored_at": "2026-08-04",
       "license_status": "allowed",
       "monitor_interval_days": 7,
       "publisher": "HL7 International",
@@ -617,9 +1026,21 @@
     },
     {
       "complete": false,
+      "id": "source.stom.test-result-follow-up.20260804",
+      "kind": "terminology_service_verification",
+      "last_monitored_at": "2026-08-04",
+      "license_status": "licensed_lookup_metadata_only",
+      "monitor_interval_days": 30,
+      "publisher": "STOM",
+      "title": "FHIR R4 DiagnosticReport and Observation ValueSet verification",
+      "url": "http://localhost:8088/fhir",
+      "version": "FHIR-R4-4.0.1-verified-20260804"
+    },
+    {
+      "complete": false,
       "id": "source.uscdi.v6.2025",
       "kind": "official_interoperability_mapping_reference",
-      "last_monitored_at": "2026-07-24",
+      "last_monitored_at": "2026-08-04",
       "license_status": "allowed",
       "monitor_interval_days": 7,
       "publisher": "ASTP/ONC",

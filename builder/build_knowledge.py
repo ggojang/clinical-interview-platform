@@ -584,6 +584,13 @@ def merge_fragment(
         rule_id = safety["id"]
         if rule_id in rules:
             raise BuildError(f"duplicate generated rule: {rule_id}")
+        safety_refresh = deepcopy(safety.get("refresh")) or {
+            "class": "safety_critical",
+            "last_assessed_at": "2026-07-14",
+            "next_monitor_at": "2026-07-15",
+            "next_full_review_at": "2026-10-12",
+            "policy_id": "policy.knowledge-refresh",
+        }
         rules[rule_id] = {
             "id": rule_id,
             "type": "safety",
@@ -593,13 +600,7 @@ def merge_fragment(
             "version": fragment["version"],
             "status": "research_only",
             "usage_modes": fragment["usage_modes"],
-            "refresh": {
-                "class": "safety_critical",
-                "last_assessed_at": "2026-07-14",
-                "next_monitor_at": "2026-07-15",
-                "next_full_review_at": "2026-10-12",
-                "policy_id": "policy.knowledge-refresh"
-            },
+            "refresh": safety_refresh,
             "provenance": deepcopy(provenance),
         }
 

@@ -1,11 +1,21 @@
 {
   "contains_patient_responses": false,
-  "count": 42,
+  "count": 51,
   "encounter_contexts": [
     "context.primary_care"
   ],
   "generated_at": "2026-07-24T00:00:00Z",
   "items": [
+    {
+      "description": "",
+      "display": "Accessibility or Communication Need",
+      "extraction_cues": [],
+      "id": "neck.accessibility_or_communication_need",
+      "safety_relevant": false,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "string"
+    },
     {
       "description": "",
       "display": "Age and Demographics",
@@ -112,6 +122,47 @@
       "value_type": "string"
     },
     {
+      "derived_category": {
+        "moderate": [
+          4,
+          6
+        ],
+        "none_or_mild": [
+          0,
+          3
+        ],
+        "severe": [
+          7,
+          10
+        ]
+      },
+      "description": "",
+      "display": "Current Pain NRS",
+      "extraction_cues": [],
+      "id": "neck.current_pain_nrs",
+      "maximum": 10,
+      "minimum": 0,
+      "must_preserve_raw_score": true,
+      "required_when_pain_applies": true,
+      "safety_relevant": false,
+      "scale": {
+        "lower_anchor": "no_pain",
+        "maximum": 10,
+        "minimum": 0,
+        "type": "NRS",
+        "upper_anchor": "worst_imaginable_pain"
+      },
+      "status": "research_only",
+      "terminology_binding": {
+        "code": "72514-3",
+        "display": "Pain severity - 0-10 verbal numeric rating [Score] - Reported",
+        "relation": "equivalent",
+        "system": "http://loinc.org"
+      },
+      "type": "Fact",
+      "value_type": "integer"
+    },
+    {
       "description": "",
       "display": "Course and Frequency",
       "extraction_cues": [],
@@ -120,6 +171,21 @@
       "status": "research_only",
       "type": "Fact",
       "value_type": "string"
+    },
+    {
+      "answer_semantic_binding": {
+        "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-sct-yes-no",
+        "policy_id": "policy.question-answer-terminology-binding",
+        "strategy": "SNOMED_CT_coded_yes_no_with_local_fallback"
+      },
+      "description": "",
+      "display": "Electric Shock Sensation",
+      "extraction_cues": [],
+      "id": "neck.electric_shock_sensation",
+      "safety_relevant": true,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "boolean"
     },
     {
       "description": "",
@@ -199,9 +265,24 @@
         "strategy": "SNOMED_CT_coded_yes_no_with_local_fallback"
       },
       "description": "",
-      "display": "Possible Cervical Cord Warning",
+      "display": "New Gait or Balance Change",
       "extraction_cues": [],
-      "id": "neck.gait_disturbance_clumsy_hands_or_progressive_weakness",
+      "id": "neck.gait_or_balance_change",
+      "safety_relevant": true,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "boolean"
+    },
+    {
+      "answer_semantic_binding": {
+        "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-sct-yes-no",
+        "policy_id": "policy.question-answer-terminology-binding",
+        "strategy": "SNOMED_CT_coded_yes_no_with_local_fallback"
+      },
+      "description": "",
+      "display": "New Hand Clumsiness",
+      "extraction_cues": [],
+      "id": "neck.hand_clumsiness",
       "safety_relevant": true,
       "status": "research_only",
       "type": "Fact",
@@ -294,9 +375,39 @@
         "strategy": "SNOMED_CT_coded_yes_no_with_local_fallback"
       },
       "description": "",
-      "display": "Bladder Bowel Neurologic Warning",
+      "display": "New Bladder Function Change",
       "extraction_cues": [],
-      "id": "neck.new_bladder_bowel_or_saddle_change",
+      "id": "neck.new_bladder_function_change",
+      "safety_relevant": true,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "boolean"
+    },
+    {
+      "answer_semantic_binding": {
+        "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-sct-yes-no",
+        "policy_id": "policy.question-answer-terminology-binding",
+        "strategy": "SNOMED_CT_coded_yes_no_with_local_fallback"
+      },
+      "description": "",
+      "display": "New Bowel Function Change",
+      "extraction_cues": [],
+      "id": "neck.new_bowel_function_change",
+      "safety_relevant": true,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "boolean"
+    },
+    {
+      "answer_semantic_binding": {
+        "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-sct-yes-no",
+        "policy_id": "policy.question-answer-terminology-binding",
+        "strategy": "SNOMED_CT_coded_yes_no_with_local_fallback"
+      },
+      "description": "",
+      "display": "New Saddle Sensory Change",
+      "extraction_cues": [],
+      "id": "neck.new_saddle_sensory_change",
       "safety_relevant": true,
       "status": "research_only",
       "type": "Fact",
@@ -324,23 +435,47 @@
     },
     {
       "description": "",
-      "display": "Onset",
+      "display": "Onset Date and Time",
       "extraction_cues": [],
-      "id": "neck.onset_date_time_and_speed",
+      "id": "neck.onset_date_time",
       "safety_relevant": false,
       "status": "research_only",
       "type": "Fact",
       "value_type": "string"
     },
     {
+      "allowed_values": [
+        "sudden",
+        "gradual",
+        "unclear"
+      ],
+      "answer_semantic_binding": {
+        "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-mixed-neck-onset-mode-coded-sudden-gradual-unclear",
+        "policy_id": "policy.question-answer-terminology-binding",
+        "snomed_mappings": {
+          "gradual": {
+            "code": "61751001",
+            "display": "Gradual onset",
+            "mapping_relation": "equivalent",
+            "system": "http://snomed.info/sct"
+          },
+          "sudden": {
+            "code": "385315009",
+            "display": "Sudden onset",
+            "mapping_relation": "equivalent",
+            "system": "http://snomed.info/sct"
+          }
+        },
+        "strategy": "SNOMED_CT_then_local_coded_fallback"
+      },
       "description": "",
-      "display": "Pain NRS",
+      "display": "Onset Mode",
       "extraction_cues": [],
-      "id": "neck.pain_nrs_current_worst_and_rest",
+      "id": "neck.onset_mode",
       "safety_relevant": false,
       "status": "research_only",
       "type": "Fact",
-      "value_type": "string"
+      "value_type": "coded"
     },
     {
       "description": "",
@@ -441,6 +576,21 @@
       "value_type": "string"
     },
     {
+      "answer_semantic_binding": {
+        "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-sct-yes-no",
+        "policy_id": "policy.question-answer-terminology-binding",
+        "strategy": "SNOMED_CT_coded_yes_no_with_local_fallback"
+      },
+      "description": "",
+      "display": "Progressive Limb Weakness",
+      "extraction_cues": [],
+      "id": "neck.progressive_limb_weakness",
+      "safety_relevant": true,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "boolean"
+    },
+    {
       "description": "",
       "display": "Radiation",
       "extraction_cues": [],
@@ -512,6 +662,45 @@
       "status": "research_only",
       "type": "Fact",
       "value_type": "boolean"
+    },
+    {
+      "description": "",
+      "display": "Worst Pain NRS",
+      "extraction_cues": [],
+      "id": "neck.worst_pain_nrs",
+      "maximum": 10,
+      "minimum": 0,
+      "safety_relevant": false,
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "integer"
+    },
+    {
+      "allowed_values": [
+        "none",
+        "less_than_daily",
+        "daily"
+      ],
+      "answer_semantic_binding": {
+        "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-mixed-pain-frequency-coded-none-less-than-daily-daily",
+        "policy_id": "policy.question-answer-terminology-binding",
+        "snomed_mappings": {
+          "none": {
+            "code": "260413007",
+            "display": "None",
+            "mapping_relation": "equivalent",
+            "system": "http://snomed.info/sct"
+          }
+        },
+        "strategy": "SNOMED_CT_then_local_coded_fallback"
+      },
+      "assessment_program": "HIRA_nursing_hospital_adequacy_assessment",
+      "display": "Pain frequency",
+      "display_ko": "통증 빈도",
+      "id": "pain.frequency",
+      "status": "research_only",
+      "type": "Fact",
+      "value_type": "coded"
     }
   ],
   "knowledge_source_status": {
@@ -524,7 +713,7 @@
       "complete": false,
       "id": "source.acr.cervical-pain-radiculopathy.2024",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-07-16",
+      "last_monitored_at": "2026-08-05",
       "license_status": "restricted",
       "monitor_interval_days": 1,
       "publisher": "American College of Radiology",
@@ -536,7 +725,7 @@
       "complete": false,
       "id": "source.cdc.meningococcal-symptoms.2026",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-07-16",
+      "last_monitored_at": "2026-08-05",
       "license_status": "unknown",
       "monitor_interval_days": 7,
       "publisher": "CDC",
@@ -546,9 +735,21 @@
     },
     {
       "complete": false,
+      "id": "source.nhs.ekhuft.neck-aftercare.2026",
+      "kind": "clinical_guidance_metadata",
+      "last_monitored_at": "2026-08-05",
+      "license_status": "unknown",
+      "monitor_interval_days": 7,
+      "publisher": "East Kent Hospitals University NHS Foundation Trust",
+      "title": "Neck pain / injury: aftercare advice",
+      "url": "https://leaflets.ekhuft.nhs.uk/neck-pain-injury-aftercare-advice/html/",
+      "version": "reviewed-2026-07"
+    },
+    {
+      "complete": false,
       "id": "source.nice.ng127.cervical.2023",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-07-16",
+      "last_monitored_at": "2026-08-05",
       "license_status": "unknown",
       "monitor_interval_days": 7,
       "publisher": "NICE",
@@ -567,6 +768,18 @@
       "title": "STOM neck-pain terminology and MRCM lookup",
       "url": "https://stom.infoclinic.co",
       "version": "SNOMEDCT-20260701"
+    },
+    {
+      "complete": false,
+      "id": "source.stom.neck-pain.20260805",
+      "kind": "terminology_mrcm_query_summary",
+      "last_monitored_at": "2026-08-05",
+      "license_status": "restricted",
+      "monitor_interval_days": 30,
+      "publisher": "Infoclinic",
+      "title": "STOM LOINC verification for atomic current pain score",
+      "url": "http://localhost:8088/fhir",
+      "version": "LOINC-2.82"
     }
   ],
   "package_id": "package.primary-care-neck-pain",

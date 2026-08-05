@@ -1390,8 +1390,8 @@ class CompilerTests(unittest.TestCase):
         facts = {node["id"] for node in package["knowledge_graph"]["nodes"] if node["type"] == "Fact"}
         self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
         self.assertGreaterEqual(len(facts), 40)
-        self.assertEqual(package["coverage"]["total_safety_rules"], 10)
-        self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 10)
+        self.assertEqual(package["coverage"]["total_safety_rules"], 11)
+        self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 11)
         self.assertEqual(package["coverage"]["uncovered_safety_rules"], [])
         self.assertEqual(package["coverage"]["data_absent_reason_simulations"], 1)
         conditional = package["interview_completion_policy"]["conditional_required_facts"][0]
