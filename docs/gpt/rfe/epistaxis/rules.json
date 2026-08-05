@@ -1,6 +1,6 @@
 {
   "contains_patient_responses": false,
-  "count": 103,
+  "count": 115,
   "encounter_contexts": [
     "context.primary_care"
   ],
@@ -17,7 +17,21 @@
       "type": "safety",
       "when": {
         "equals": true,
-        "fact": "epistaxis.airway_difficulty_or_cannot_handle_blood"
+        "fact": "epistaxis.blood_obstructing_airway_or_cannot_handle_blood"
+      }
+    },
+    {
+      "id": "rule.epistaxis.safety.clouded-consciousness",
+      "priority": 1000,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "epistaxis.clouded_consciousness"
       }
     },
     {
@@ -63,20 +77,6 @@
       }
     },
     {
-      "id": "rule.epistaxis.safety.shock",
-      "priority": 1000,
-      "then": {
-        "action": "human_handoff",
-        "safety_level": "emergency",
-        "suppress_routine": true
-      },
-      "type": "safety",
-      "when": {
-        "equals": true,
-        "fact": "epistaxis.weak_faint_confused_or_shock_features"
-      }
-    },
-    {
       "id": "rule.epistaxis.safety.swallowed-vomit",
       "priority": 1000,
       "then": {
@@ -91,6 +91,20 @@
       }
     },
     {
+      "id": "rule.epistaxis.safety.syncope",
+      "priority": 1000,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "epistaxis.syncope"
+      }
+    },
+    {
       "id": "rule.epistaxis.safety.anticoagulant",
       "priority": 990,
       "then": {
@@ -102,6 +116,48 @@
       "when": {
         "equals": true,
         "fact": "epistaxis.anticoagulant_with_uncontrolled_or_recurrent_bleeding"
+      }
+    },
+    {
+      "id": "rule.epistaxis.safety.chest-pain",
+      "priority": 990,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "epistaxis.chest_pain"
+      }
+    },
+    {
+      "id": "rule.epistaxis.safety.dizziness",
+      "priority": 990,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "epistaxis.dizziness_or_lightheadedness"
+      }
+    },
+    {
+      "id": "rule.epistaxis.safety.dyspnea",
+      "priority": 990,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "epistaxis.dyspnea"
       }
     },
     {
@@ -189,16 +245,30 @@
       }
     },
     {
-      "id": "rule.generated.priority.any.shock",
+      "id": "rule.generated.priority.any.syncope",
       "priority": 187,
       "then": {
-        "reason": "shock",
-        "target": "target.epistaxis.shock"
+        "reason": "syncope",
+        "target": "target.epistaxis.syncope"
       },
       "type": "priority",
       "when": {
         "target_state": {
-          "target.epistaxis.shock": "active"
+          "target.epistaxis.syncope": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.dizziness",
+      "priority": 186,
+      "then": {
+        "reason": "dizziness",
+        "target": "target.epistaxis.dizziness"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.epistaxis.dizziness": "active"
         }
       }
     },
@@ -213,6 +283,20 @@
       "when": {
         "target_state": {
           "target.epistaxis.major-trauma": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.clouded-consciousness",
+      "priority": 185,
+      "then": {
+        "reason": "clouded-consciousness",
+        "target": "target.epistaxis.clouded-consciousness"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.epistaxis.clouded-consciousness": "active"
         }
       }
     },
@@ -241,6 +325,34 @@
       "when": {
         "target_state": {
           "target.epistaxis.anticoagulant": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.chest-pain",
+      "priority": 184,
+      "then": {
+        "reason": "chest-pain",
+        "target": "target.epistaxis.chest-pain"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.epistaxis.chest-pain": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.dyspnea",
+      "priority": 183,
+      "then": {
+        "reason": "dyspnea",
+        "target": "target.epistaxis.dyspnea"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.epistaxis.dyspnea": "active"
         }
       }
     },
@@ -903,6 +1015,30 @@
       }
     },
     {
+      "id": "rule.generated.complete.chest-pain",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.epistaxis.chest-pain"
+      }
+    },
+    {
+      "id": "rule.generated.complete.clouded-consciousness",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.epistaxis.clouded-consciousness"
+      }
+    },
+    {
       "id": "rule.generated.complete.current-status",
       "priority": 50,
       "then": {
@@ -912,6 +1048,18 @@
       "when": {
         "facts_resolved": "all_required",
         "target": "target.epistaxis.current-status"
+      }
+    },
+    {
+      "id": "rule.generated.complete.dizziness",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.epistaxis.dizziness"
       }
     },
     {
@@ -936,6 +1084,18 @@
       "when": {
         "facts_resolved": "all_required",
         "target": "target.epistaxis.duration"
+      }
+    },
+    {
+      "id": "rule.generated.complete.dyspnea",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.epistaxis.dyspnea"
       }
     },
     {
@@ -1311,18 +1471,6 @@
       }
     },
     {
-      "id": "rule.generated.complete.shock",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.epistaxis.shock"
-      }
-    },
-    {
       "id": "rule.generated.complete.swallowed-vomit",
       "priority": 50,
       "then": {
@@ -1332,6 +1480,18 @@
       "when": {
         "facts_resolved": "all_required",
         "target": "target.epistaxis.swallowed-vomit"
+      }
+    },
+    {
+      "id": "rule.generated.complete.syncope",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.epistaxis.syncope"
       }
     },
     {
@@ -1369,13 +1529,25 @@
       "complete": false,
       "id": "source.aao-hnsf.epistaxis.2020",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-07-31",
+      "last_monitored_at": "2026-08-05",
       "license_status": "restricted",
       "monitor_interval_days": 1,
       "publisher": "AAO-HNSF",
       "title": "Clinical Practice Guideline: Nosebleed (Epistaxis)",
       "url": "https://www.entnet.org/quality-practice/quality-products/clinical-practice-guidelines/nosebleed-epistaxis/",
       "version": "CPG-2020"
+    },
+    {
+      "complete": false,
+      "id": "source.aci-nsw.epistaxis.2022",
+      "kind": "clinical_guidance_metadata",
+      "last_monitored_at": "2026-08-05",
+      "license_status": "unknown",
+      "monitor_interval_days": 7,
+      "publisher": "NSW Agency for Clinical Innovation",
+      "title": "Nosebleed fact sheet",
+      "url": "https://aci.health.nsw.gov.au/networks/eci/clinical/ed-factsheets/nosebleed",
+      "version": "published-2022-07"
     },
     {
       "complete": false,
@@ -1393,13 +1565,25 @@
       "complete": false,
       "id": "source.rch.epistaxis.2026",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-07-31",
+      "last_monitored_at": "2026-08-05",
       "license_status": "unknown",
       "monitor_interval_days": 1,
       "publisher": "Royal Children's Hospital Melbourne",
       "title": "Clinical Practice Guideline: Epistaxis",
       "url": "https://www.rch.org.au/clinicalguide/guideline_index/Epistaxis/",
       "version": "updated-2026-04"
+    },
+    {
+      "complete": false,
+      "id": "source.stom.epistaxis-warning-findings.20260805",
+      "kind": "terminology_mrcm_query_summary",
+      "last_monitored_at": "2026-08-05",
+      "license_status": "restricted",
+      "monitor_interval_days": 30,
+      "publisher": "Infoclinic",
+      "title": "STOM epistaxis warning finding lookup",
+      "url": "http://localhost:8088/fhir",
+      "version": "SNOMEDCT-20260801"
     },
     {
       "complete": false,

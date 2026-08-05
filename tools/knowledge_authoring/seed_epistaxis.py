@@ -4,8 +4,15 @@ from profile_support import *
 
 P, RFE = "epistaxis", "rfe.epistaxis"
 M, SN = "mapping.snomed-mrcm.epistaxis", "http://snomed.info/sct"
-ACQUIRED_AT = "2026-07-16T01:00:00Z"
-SOURCES = ["source.aao-hnsf.epistaxis.2020", "source.nhs.epistaxis.2023", "source.rch.epistaxis.2026", "source.stom.epistaxis.20260716"]
+ACQUIRED_AT = "2026-08-05T09:02:20Z"
+SOURCES = [
+    "source.aao-hnsf.epistaxis.2020",
+    "source.nhs.epistaxis.2023",
+    "source.rch.epistaxis.2026",
+    "source.aci-nsw.epistaxis.2022",
+    "source.stom.epistaxis.20260716",
+    "source.stom.epistaxis-warning-findings.20260805",
+]
 G = {k: f"group.epistaxis.{k}" for k in ("routing", "safety", "episode", "local", "bleeding", "followup")}
 C, S, D, R = ["intent.characterize_symptom"], ["intent.screen_red_flags"], ["intent.differentiate_common_causes"], ["intent.risk_assessment"]
 
@@ -17,9 +24,13 @@ def Q(fid, display, value_type, key, wording, score, groups, intents, **kwargs):
 def fragment():
     e = [
         Q("epistaxis.primary_group", "Primary Epistaxis Presentation", "coded", "primary-group", "이번 방문은 지금 계속되는 코피, 멈춘 한 번의 코피, 반복되는 코피, 외상·시술 후 코피, 항응고제·출혈질환 관련 상담, 이전 치료 후 추적 중 무엇에 가깝나요?", 190, [G["routing"]], C, allowed_values=["active_current_bleeding", "single_resolved_episode", "recurrent_episodes", "post_trauma_or_procedure", "antithrombotic_or_bleeding_risk", "post_treatment_followup", "other_unclear"]),
-        Q("epistaxis.airway_difficulty_or_cannot_handle_blood", "Airway or Blood Handling Compromise", "boolean", "airway", "지금 숨쉬기 어렵거나 목 뒤로 많은 피가 넘어가 뱉어내지 못하나요?", 189, [G["safety"]], S, safety_relevant=True),
+        Q("epistaxis.blood_obstructing_airway_or_cannot_handle_blood", "Blood Obstructing Airway or Blood Handling Compromise", "boolean", "airway", "지금 목 뒤로 많은 피가 넘어가 기도를 막는 느낌이 있거나 피를 뱉어내지 못하나요?", 189, [G["safety"]], S, safety_relevant=True),
         Q("epistaxis.heavy_active_after_correct_continuous_pressure", "Persistent Heavy Bleeding", "boolean", "persistent-heavy", "앞으로 숙여 코의 말랑한 부분을 10~15분 연속 눌렀는데도 많은 피가 계속 나오나요?", 188, [G["safety"], G["episode"]], S, safety_relevant=True),
-        Q("epistaxis.weak_faint_confused_or_shock_features", "Haemodynamic Warning", "boolean", "shock", "코피와 함께 쓰러질 듯함·실신, 심한 어지럼·쇠약, 창백함·식은땀 또는 의식 혼란이 있나요?", 187, [G["safety"]], S, safety_relevant=True),
+        Q("epistaxis.syncope", "Syncope with Epistaxis", "boolean", "syncope", "이번 코피와 함께 실제로 의식을 잃고 쓰러진 적이 있나요?", 187, [G["safety"]], S, safety_relevant=True, terminology_binding={"system": SN, "code": "271594007"}, mrcm_ref=M),
+        Q("epistaxis.dizziness_or_lightheadedness", "Dizziness or Lightheadedness with Epistaxis", "boolean", "dizziness", "이번 코피와 함께 심한 어지럼이나 쓰러질 듯한 느낌이 있나요?", 186, [G["safety"]], S, safety_relevant=True, terminology_binding={"system": SN, "code": "404640003"}, mrcm_ref=M),
+        Q("epistaxis.clouded_consciousness", "Clouded Consciousness with Epistaxis", "boolean", "clouded-consciousness", "이번 코피와 함께 평소보다 의식이 흐리거나 상황을 제대로 파악하기 어려운가요?", 185, [G["safety"]], S, safety_relevant=True, terminology_binding={"system": SN, "code": "40917007"}, mrcm_ref=M),
+        Q("epistaxis.chest_pain", "Chest Pain with Epistaxis", "boolean", "chest-pain", "이번 코피와 함께 가슴 통증이 있나요?", 184, [G["safety"]], S, safety_relevant=True, terminology_binding={"system": SN, "code": "29857009"}, mrcm_ref=M),
+        Q("epistaxis.dyspnea", "Dyspnea with Epistaxis", "boolean", "dyspnea", "이번 코피와 함께 숨이 차거나 숨쉬기 힘든 느낌이 있나요?", 183, [G["safety"]], S, safety_relevant=True, terminology_binding={"system": SN, "code": "267036007"}, mrcm_ref=M),
         Q("epistaxis.major_head_or_facial_trauma", "Major Trauma Warning", "boolean", "major-trauma", "교통사고·높은 곳 낙상·강한 얼굴 충격 뒤 코피가 났거나 코 변형·맑은 물 같은 분비물이 있나요?", 186, [G["safety"], G["local"]], S, safety_relevant=True),
         Q("epistaxis.large_swallowed_blood_repeated_vomiting", "Large Swallowed Blood or Vomiting", "boolean", "swallowed-vomit", "많은 피를 삼켜 반복해서 피를 토하거나 구토가 계속되나요?", 185, [G["safety"]], S, safety_relevant=True),
         Q("epistaxis.anticoagulant_with_uncontrolled_or_recurrent_bleeding", "Anticoagulant Bleeding Warning", "boolean", "anticoagulant", "항응고제·항혈소판제를 복용 중이며 코피가 멈추지 않거나 짧은 시간 안에 반복되나요?", 184, [G["safety"], G["bleeding"]], S, safety_relevant=True),
@@ -67,10 +78,25 @@ def fragment():
         Q("epistaxis.sleep_work_school_and_activity_impact", "Functional Impact", "string", "function", "코피 때문에 수면·학교·업무·운동·외출 또는 불안이 얼마나 달라졌나요?", 121, [G["followup"]], R),
         Q("epistaxis.patient_priority_and_other_detail", "Patient Priority and Other Detail", "string", "other-detail", "질문에 없지만 의료진에게 꼭 전달할 내용, 가장 걱정되는 점과 원하는 도움을 알려주세요.", 80, [G["routing"], G["followup"]], C),
     ]
-    safety = [("airway", "epistaxis.airway_difficulty_or_cannot_handle_blood", "emergency"), ("persistent-heavy", "epistaxis.heavy_active_after_correct_continuous_pressure", "emergency"), ("shock", "epistaxis.weak_faint_confused_or_shock_features", "emergency"), ("major-trauma", "epistaxis.major_head_or_facial_trauma", "emergency"), ("swallowed-vomit", "epistaxis.large_swallowed_blood_repeated_vomiting", "emergency"), ("anticoagulant", "epistaxis.anticoagulant_with_uncontrolled_or_recurrent_bleeding", "urgent"), ("multisite", "epistaxis.multisite_bleeding_or_extensive_petechiae", "urgent"), ("under-two", "epistaxis.child_under_two_unexplained", "urgent"), ("foreign-body", "epistaxis.suspected_button_battery_or_hazardous_foreign_body", "emergency"), ("packing-complication", "epistaxis.packing_complication_fever_pain_or_rebleeding", "urgent")]
+    safety = [
+        ("airway", "epistaxis.blood_obstructing_airway_or_cannot_handle_blood", "emergency"),
+        ("persistent-heavy", "epistaxis.heavy_active_after_correct_continuous_pressure", "emergency"),
+        ("syncope", "epistaxis.syncope", "emergency"),
+        ("clouded-consciousness", "epistaxis.clouded_consciousness", "emergency"),
+        ("dizziness", "epistaxis.dizziness_or_lightheadedness", "urgent"),
+        ("chest-pain", "epistaxis.chest_pain", "urgent"),
+        ("dyspnea", "epistaxis.dyspnea", "urgent"),
+        ("major-trauma", "epistaxis.major_head_or_facial_trauma", "emergency"),
+        ("swallowed-vomit", "epistaxis.large_swallowed_blood_repeated_vomiting", "emergency"),
+        ("anticoagulant", "epistaxis.anticoagulant_with_uncontrolled_or_recurrent_bleeding", "urgent"),
+        ("multisite", "epistaxis.multisite_bleeding_or_extensive_petechiae", "urgent"),
+        ("under-two", "epistaxis.child_under_two_unexplained", "urgent"),
+        ("foreign-body", "epistaxis.suspected_button_battery_or_hazardous_foreign_body", "emergency"),
+        ("packing-complication", "epistaxis.packing_complication_fever_pain_or_rebleeding", "urgent"),
+    ]
     rules = [safety_rule(P, key, {"fact": fid, "equals": True}, level, 1000 if level == "emergency" else 990) for key, fid, level in safety]
     refresh = default_refresh()
-    refresh.update({"last_assessed_at": "2026-07-31", "next_monitor_at": "2026-08-01", "next_full_review_at": "2027-01-27"})
+    refresh.update({"last_assessed_at": "2026-08-05", "next_monitor_at": "2026-08-06", "next_full_review_at": "2027-02-01"})
     return {"id": "knowledge.generated.epistaxis", "version": VERSION, "status": "research_only", "usage_modes": ["research_test", "simulation"], "source_manifest": "source-manifest.primary-care-epistaxis-research", "default_refresh": refresh, "extra_nodes": [{"id": v, "type": "ClinicalGroup", "display": v.split(".")[-1]} for v in G.values()], "group_hypothesis_edges": [], "safety_rules": rules, "entries": e, "provenance": provenance(SOURCES)}
 
 
@@ -87,13 +113,17 @@ def source_docs():
         ("source.aao-hnsf.epistaxis.2020", "AAO-HNSF", "Clinical Practice Guideline: Nosebleed (Epistaxis)", "CPG-2020", "https://www.entnet.org/quality-practice/quality-products/clinical-practice-guidelines/nosebleed-epistaxis/", "clinical_guideline", ["For patients aged 3 years or older, document factors increasing frequency or severity, including personal or family bleeding disorders and anticoagulant or antiplatelet use.", "Recurrent unilateral bleeding or recurrent bleeding despite packing or cautery merits localization assessment; education and follow-up response are part of care."]),
         ("source.nhs.epistaxis.2023", "NHS", "Nosebleed", "reviewed-2023-12-05", "https://www.nhs.uk/conditions/nosebleed/", "public_health_guidance", ["Immediate assessment features include bleeding beyond 10 to 15 minutes, excessive bleeding, large swallowed blood with vomiting, head injury, weakness or dizziness and breathing difficulty.", "First aid is forward posture and continuous pressure above the nostrils for 10 to 15 minutes."]),
         ("source.rch.epistaxis.2026", "Royal Children's Hospital Melbourne", "Clinical Practice Guideline: Epistaxis", "updated-2026-04", "https://www.rch.org.au/clinicalguide/guideline_index/Epistaxis/", "clinical_guideline", ["Paediatric history includes recurrent frequency, easy bruising, gum bleeding, prolonged bleeding after procedural challenges, family bleeding history and medicines.", "Unexplained epistaxis under 2 years, prolonged bleeding despite pressure, bilateral or systemic features and haemodynamic compromise require heightened assessment."]),
+        ("source.aci-nsw.epistaxis.2022", "NSW Agency for Clinical Innovation", "Nosebleed fact sheet", "published-2022-07", "https://aci.health.nsw.gov.au/networks/eci/clinical/ed-factsheets/nosebleed", "public_health_guidance", ["Emergency reassessment features include heavy or persistent bleeding, dizziness or lightheadedness, breathlessness and chest pain.", "The information supports separate symptom collection for clinician handoff and does not establish the cause of a symptom."]),
         ("source.stom.epistaxis.20260716", "Infoclinic", "STOM epistaxis terminology lookup", "SNOMEDCT-20260701", "https://stom.infoclinic.co", "terminology_server", ["FHIR lookup confirmed active epistaxis disorder, bleeding-from-nose finding, coagulation disorder and hereditary haemorrhagic telangiectasia concepts.", "Terminology and MRCM support representation only and do not determine cause or urgency."]),
+        ("source.stom.epistaxis-warning-findings.20260805", "Infoclinic", "STOM epistaxis warning finding lookup", "SNOMEDCT-20260801", "http://localhost:8088/fhir", "terminology_server", ["FHIR lookup confirmed active chest pain, dyspnea, syncope, dizziness and clouded-consciousness finding concepts.", "The verified concepts bind atomic patient-reported findings only; terminology does not determine urgency or diagnosis."]),
     ]
     monitoring = {
-        "source.aao-hnsf.epistaxis.2020": ("2026-07-31", "current_official_source_confirmed_no_clinical_change"),
+        "source.aao-hnsf.epistaxis.2020": ("2026-08-05", "current_official_source_confirmed_no_clinical_change"),
         "source.nhs.epistaxis.2023": ("2026-07-31", "current_official_source_confirmed_no_clinical_change"),
-        "source.rch.epistaxis.2026": ("2026-07-31", "current_official_source_confirmed_no_clinical_change"),
+        "source.rch.epistaxis.2026": ("2026-08-05", "current_official_source_confirmed_no_clinical_change"),
+        "source.aci-nsw.epistaxis.2022": ("2026-08-05", "new_official_source_registered"),
         "source.stom.epistaxis.20260716": ("2026-07-16", "current_official_source_confirmed"),
+        "source.stom.epistaxis-warning-findings.20260805": ("2026-08-05", "targeted_atomic_finding_lookup_confirmed"),
     }
     artifacts = [{"id": i, "kind": "terminology_mrcm_query_summary" if profile == "terminology_server" else "clinical_guidance_metadata", "publisher": pub, "title": title, "version": version, "url": url, "language": "en", "digest": "live_response_summary_not_raw_cache" if profile == "terminology_server" else "metadata_only_not_cached", "license_status": "restricted" if pub in {"AAO-HNSF", "Infoclinic"} else "unknown", "complete": False, "monitor_profile": profile, "last_monitored_at": monitoring[i][0], "monitor_result": monitoring[i][1], "assertions": assertions} for i, pub, title, version, url, profile, assertions in defs]
     research = {"id": "source-manifest.primary-care-epistaxis-research", "version": VERSION, "acquired_at": ACQUIRED_AT, "status": "research_only", "artifacts": artifacts, "provenance": provenance([x[0] for x in defs])}
@@ -149,13 +179,43 @@ def cases(f):
         },
         "provenance": provenance(["source.aao-hnsf.epistaxis.2020", "source.rch.epistaxis.2026", "specifications/clinical-memory.md"]),
     }
+    warning_handoff = routine("single_resolved_episode")
+    warning_handoff.update({
+        "epistaxis.syncope": {"value": False},
+        "epistaxis.dizziness_or_lightheadedness": {"value": True},
+        "epistaxis.clouded_consciousness": {"value": False},
+        "epistaxis.chest_pain": {"value": False},
+        "epistaxis.dyspnea": {"value": False},
+    })
+    out["EPISTAXIS-ATOMIC-DIZZINESS-HANDOFF.json"] = {
+        "id": "EPISTAXIS-ATOMIC-DIZZINESS-HANDOFF",
+        "simulation_language": "ko",
+        "clinician_submission": True,
+        "persona": {"age": 68},
+        "encounter_context": {"care_setting": "telemedicine", "encounter_type": "new_encounter", "interview_initiator": "patient", "interview_mode": "chat", "available_information": ["no_previous_records"], "time_constraint": "urgent", "clinical_responsibility": "decision_support"},
+        "initial_statement": {"ko": "코피는 멈췄지만 어지럽고, 실신이나 흉통·숨참은 없습니다."},
+        "hidden_state": warning_handoff,
+        "expected": {
+            "expected_safety_level": "urgent",
+            "expected_safety_action": "human_handoff",
+            "expected_stop_reason": "urgent_escalation",
+            "expected_triggered_rules_contains": ["rule.epistaxis.safety.dizziness"],
+            "expected_known_facts": {
+                "epistaxis.syncope": False,
+                "epistaxis.dizziness_or_lightheadedness": True
+            },
+            "expected_max_turns": 45,
+            "forbidden_assertions": ["diagnosis.shock", "diagnosis.posterior_epistaxis", "diagnosis.anemia"]
+        },
+        "provenance": provenance(["source.aci-nsw.epistaxis.2022", "source.rch.epistaxis.2026", "specifications/clinical-memory.md"]),
+    }
     return out
 
 
 def main():
     f = fragment(); graph, rules = base_graph_and_rules(prefix=P, rfe=RFE, display="Epistaxis or Recurrent Nosebleed", intents=[("intent.characterize_symptom", "Characterize Active and Recurrent Epistaxis"), ("intent.screen_red_flags", "Screen Airway Haemodynamic Trauma and Bleeding Risk"), ("intent.differentiate_common_causes", "Assess Local Trauma Inflammation and Systemic Bleeding Context"), ("intent.risk_assessment", "Assess Treatment Response Recurrence and Functional Impact")]); primary, research = source_docs()
-    concepts = [("12441001", "Epistaxis (disorder)"), ("249366005", "Bleeding from nose (finding)"), ("64779008", "Blood coagulation disorder (disorder)"), ("21877004", "Osler hemorrhagic telangiectasia syndrome (disorder)")]
-    mapping = {"id": M, "version": VERSION, "status": "research_only", "review_status": "unreviewed", "terminology": {"system": SN, "version": "http://snomed.info/sct/900000000000207008/version/20260701", "source": "STOM"}, "focus_concepts": [{"code": c, "display": d, "concept_active": True, "attribute_count_returned": 0} for c, d in concepts], "verified_attribute_ids": ["246112005", "363714003", "363698007", "272741003"], "validation": {"method": "build_time_live_fhir_lookup_and_mrcm_summary", "checked_at": ACQUIRED_AT, "raw_response_cached": False, "complete_mrcm_snapshot": False, "clinical_rule_authority": False, "result": "provisional_pass"}, "event_semantics": {"diagnosis_inferred": False, "hypertension_causality_inferred": False, "laterality_postcoordination_asserted": False}, "provenance": provenance(["source.stom.epistaxis.20260716"])}
+    concepts = [("12441001", "Epistaxis (disorder)"), ("249366005", "Bleeding from nose (finding)"), ("64779008", "Blood coagulation disorder (disorder)"), ("21877004", "Osler hemorrhagic telangiectasia syndrome (disorder)"), ("271594007", "Syncope (finding)"), ("404640003", "Dizziness (finding)"), ("40917007", "Clouded consciousness (finding)"), ("29857009", "Chest pain (finding)"), ("267036007", "Dyspnea (finding)")]
+    mapping = {"id": M, "version": VERSION, "status": "research_only", "review_status": "unreviewed", "terminology": {"system": SN, "version": "http://snomed.info/sct/900000000000207008/version/20260801", "source": "STOM"}, "focus_concepts": [{"code": c, "display": d, "concept_active": True, "attribute_count_returned": 0} for c, d in concepts], "verified_attribute_ids": ["246112005", "363714003", "363698007", "272741003"], "validation": {"method": "build_time_live_fhir_lookup_and_mrcm_summary", "checked_at": ACQUIRED_AT, "raw_response_cached": False, "complete_mrcm_snapshot": False, "clinical_rule_authority": False, "result": "provisional_pass"}, "event_semantics": {"diagnosis_inferred": False, "hypertension_causality_inferred": False, "laterality_postcoordination_asserted": False}, "provenance": provenance(["source.stom.epistaxis.20260716", "source.stom.epistaxis-warning-findings.20260805"])}
     docs = [("knowledge/base/primary-care-epistaxis.json", graph), ("rules/base/primary-care-epistaxis.json", rules), ("knowledge/generated/ent/epistaxis/epistaxis.json", f), ("mappings/terminology/snomed-mrcm-epistaxis.json", mapping), ("sources/manifests/primary-care-epistaxis.json", primary), ("sources/manifests/primary-care-epistaxis-research.json", research), ("policies/primary-care-epistaxis-completion.json", completion(f))]
     for path, doc in docs: write_json(path, doc)
     for name, case in cases(f).items(): write_json("simulation/patients/ent/epistaxis/" + name, case)

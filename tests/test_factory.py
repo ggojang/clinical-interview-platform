@@ -1309,7 +1309,7 @@ class CompilerTests(unittest.TestCase):
         package = compile_package(profile="epistaxis")
         facts = {node["id"] for node in package["knowledge_graph"]["nodes"] if node["type"] == "Fact"}
         self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
-        self.assertGreaterEqual(len(facts), 46)
+        self.assertGreaterEqual(len(facts), 50)
         self.assertNotIn("epistaxis.current_bleeding_status_and_last_seen", facts)
         self.assertNotIn("epistaxis.episode_frequency_and_time_pattern", facts)
         self.assertTrue({
@@ -1318,11 +1318,19 @@ class CompilerTests(unittest.TestCase):
             "epistaxis.episode_frequency",
             "epistaxis.recurrence_time_pattern",
         } <= facts)
-        self.assertEqual(package["coverage"]["total_safety_rules"], 10)
-        self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 10)
+        self.assertNotIn("epistaxis.weak_faint_confused_or_shock_features", facts)
+        self.assertTrue({
+            "epistaxis.syncope",
+            "epistaxis.dizziness_or_lightheadedness",
+            "epistaxis.clouded_consciousness",
+            "epistaxis.chest_pain",
+            "epistaxis.dyspnea",
+        } <= facts)
+        self.assertEqual(package["coverage"]["total_safety_rules"], 14)
+        self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 14)
         self.assertEqual(package["coverage"]["uncovered_safety_rules"], [])
         self.assertEqual(package["coverage"]["data_absent_reason_simulations"], 1)
-        self.assertEqual(package["coverage"]["simulation_count"], 16)
+        self.assertEqual(package["coverage"]["simulation_count"], 21)
         atomic_handoff = next(
             item for item in package["simulations"]
             if item["id"] == "EPISTAXIS-ATOMIC-RECURRENCE-HANDOFF"
@@ -1345,7 +1353,7 @@ class CompilerTests(unittest.TestCase):
         self.assertEqual(conditional["selector_fact"], "epistaxis.primary_group")
         self.assertEqual(set(conditional["cases"]), {"active_current_bleeding", "single_resolved_episode", "recurrent_episodes", "post_trauma_or_procedure", "antithrombotic_or_bleeding_risk", "post_treatment_followup", "other_unclear"})
         mapping = json.loads((Path(__file__).resolve().parents[1] / "mappings/terminology/snomed-mrcm-epistaxis.json").read_text(encoding="utf-8"))
-        self.assertEqual(len(mapping["focus_concepts"]), 4)
+        self.assertEqual(len(mapping["focus_concepts"]), 9)
         self.assertFalse(mapping["validation"]["clinical_rule_authority"])
         self.assertFalse(mapping["event_semantics"]["hypertension_causality_inferred"])
 

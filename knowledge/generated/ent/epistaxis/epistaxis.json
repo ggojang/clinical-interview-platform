@@ -9,11 +9,11 @@
   "source_manifest": "source-manifest.primary-care-epistaxis-research",
   "default_refresh": {
     "class": "clinical_guideline",
-    "last_assessed_at": "2026-07-31",
+    "last_assessed_at": "2026-08-05",
     "monitor_interval_days": 1,
     "full_review_interval_days": 180,
-    "next_monitor_at": "2026-08-01",
-    "next_full_review_at": "2027-01-27",
+    "next_monitor_at": "2026-08-06",
+    "next_full_review_at": "2027-02-01",
     "policy_id": "policy.knowledge-refresh",
     "overdue_behavior": {
       "production": "exclude_or_require_review",
@@ -58,7 +58,7 @@
       "id": "rule.epistaxis.safety.airway",
       "priority": 1000,
       "when": {
-        "fact": "epistaxis.airway_difficulty_or_cannot_handle_blood",
+        "fact": "epistaxis.blood_obstructing_airway_or_cannot_handle_blood",
         "equals": true
       },
       "then": {
@@ -81,14 +81,66 @@
       }
     },
     {
-      "id": "rule.epistaxis.safety.shock",
+      "id": "rule.epistaxis.safety.syncope",
       "priority": 1000,
       "when": {
-        "fact": "epistaxis.weak_faint_confused_or_shock_features",
+        "fact": "epistaxis.syncope",
         "equals": true
       },
       "then": {
         "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.epistaxis.safety.clouded-consciousness",
+      "priority": 1000,
+      "when": {
+        "fact": "epistaxis.clouded_consciousness",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.epistaxis.safety.dizziness",
+      "priority": 990,
+      "when": {
+        "fact": "epistaxis.dizziness_or_lightheadedness",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.epistaxis.safety.chest-pain",
+      "priority": 990,
+      "when": {
+        "fact": "epistaxis.chest_pain",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.epistaxis.safety.dyspnea",
+      "priority": 990,
+      "when": {
+        "fact": "epistaxis.dyspnea",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
         "action": "human_handoff",
         "suppress_routine": true
       }
@@ -232,21 +284,21 @@
     },
     {
       "fact": {
-        "id": "epistaxis.airway_difficulty_or_cannot_handle_blood",
-        "display": "Airway or Blood Handling Compromise",
+        "id": "epistaxis.blood_obstructing_airway_or_cannot_handle_blood",
+        "display": "Blood Obstructing Airway or Blood Handling Compromise",
         "value_type": "boolean",
         "safety_relevant": true
       },
       "target": {
         "id": "target.epistaxis.airway",
-        "display": "Airway or Blood Handling Compromise",
+        "display": "Blood Obstructing Airway or Blood Handling Compromise",
         "intents": [
           "intent.screen_red_flags"
         ]
       },
       "question": {
         "id": "question.epistaxis.airway",
-        "wording": "지금 숨쉬기 어렵거나 목 뒤로 많은 피가 넘어가 뱉어내지 못하나요?",
+        "wording": "지금 목 뒤로 많은 피가 넘어가 기도를 막는 느낌이 있거나 피를 뱉어내지 못하나요?",
         "language": "ko",
         "mode": [
           "chat",
@@ -305,21 +357,29 @@
     },
     {
       "fact": {
-        "id": "epistaxis.weak_faint_confused_or_shock_features",
-        "display": "Haemodynamic Warning",
+        "id": "epistaxis.syncope",
+        "display": "Syncope with Epistaxis",
         "value_type": "boolean",
-        "safety_relevant": true
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "271594007"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.epistaxis",
+          "status": "provisional_pass"
+        }
       },
       "target": {
-        "id": "target.epistaxis.shock",
-        "display": "Haemodynamic Warning",
+        "id": "target.epistaxis.syncope",
+        "display": "Syncope with Epistaxis",
         "intents": [
           "intent.screen_red_flags"
         ]
       },
       "question": {
-        "id": "question.epistaxis.shock",
-        "wording": "코피와 함께 쓰러질 듯함·실신, 심한 어지럼·쇠약, 창백함·식은땀 또는 의식 혼란이 있나요?",
+        "id": "question.epistaxis.syncope",
+        "wording": "이번 코피와 함께 실제로 의식을 잃고 쓰러진 적이 있나요?",
         "language": "ko",
         "mode": [
           "chat",
@@ -332,7 +392,183 @@
         {
           "branch": "any",
           "score": 187,
-          "reason": "shock"
+          "reason": "syncope"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.dizziness_or_lightheadedness",
+        "display": "Dizziness or Lightheadedness with Epistaxis",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "404640003"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.epistaxis",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.epistaxis.dizziness",
+        "display": "Dizziness or Lightheadedness with Epistaxis",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.dizziness",
+        "wording": "이번 코피와 함께 심한 어지럼이나 쓰러질 듯한 느낌이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 186,
+          "reason": "dizziness"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.clouded_consciousness",
+        "display": "Clouded Consciousness with Epistaxis",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "40917007"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.epistaxis",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.epistaxis.clouded-consciousness",
+        "display": "Clouded Consciousness with Epistaxis",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.clouded-consciousness",
+        "wording": "이번 코피와 함께 평소보다 의식이 흐리거나 상황을 제대로 파악하기 어려운가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 185,
+          "reason": "clouded-consciousness"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.chest_pain",
+        "display": "Chest Pain with Epistaxis",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "29857009"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.epistaxis",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.epistaxis.chest-pain",
+        "display": "Chest Pain with Epistaxis",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.chest-pain",
+        "wording": "이번 코피와 함께 가슴 통증이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 184,
+          "reason": "chest-pain"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.safety"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.dyspnea",
+        "display": "Dyspnea with Epistaxis",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "267036007"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.epistaxis",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.epistaxis.dyspnea",
+        "display": "Dyspnea with Epistaxis",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.dyspnea",
+        "wording": "이번 코피와 함께 숨이 차거나 숨쉬기 힘든 느낌이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 183,
+          "reason": "dyspnea"
         }
       ],
       "supports": [
@@ -1870,7 +2106,9 @@
       "source.aao-hnsf.epistaxis.2020",
       "source.nhs.epistaxis.2023",
       "source.rch.epistaxis.2026",
-      "source.stom.epistaxis.20260716"
+      "source.aci-nsw.epistaxis.2022",
+      "source.stom.epistaxis.20260716",
+      "source.stom.epistaxis-warning-findings.20260805"
     ],
     "review_status": "unreviewed",
     "version": "0.1.0"
