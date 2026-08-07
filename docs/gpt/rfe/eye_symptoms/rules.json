@@ -1,6 +1,6 @@
 {
   "contains_patient_responses": false,
-  "count": 104,
+  "count": 110,
   "encounter_contexts": [
     "context.primary_care"
   ],
@@ -35,7 +35,7 @@
       }
     },
     {
-      "id": "rule.eye-symptoms.safety.halos-nausea",
+      "id": "rule.eye-symptoms.safety.halos-systemic-warning",
       "priority": 1000,
       "then": {
         "action": "human_handoff",
@@ -44,8 +44,28 @@
       },
       "type": "safety",
       "when": {
-        "equals": true,
-        "fact": "eye.halos_headache_nausea_or_vomiting"
+        "all": [
+          {
+            "equals": true,
+            "fact": "eye.halos_around_lights"
+          },
+          {
+            "any": [
+              {
+                "equals": true,
+                "fact": "eye.severe_headache_with_eye_symptoms"
+              },
+              {
+                "equals": true,
+                "fact": "eye.nausea_with_eye_symptoms"
+              },
+              {
+                "equals": true,
+                "fact": "eye.vomiting_with_eye_symptoms"
+              }
+            ]
+          }
+        ]
       }
     },
     {
@@ -340,16 +360,58 @@
       }
     },
     {
-      "id": "rule.generated.priority.any.halos-nausea",
+      "id": "rule.generated.priority.any.halos",
       "priority": 122,
       "then": {
-        "reason": "halos-nausea",
-        "target": "target.eye-symptoms.halos-nausea"
+        "reason": "halos",
+        "target": "target.eye-symptoms.halos"
       },
       "type": "priority",
       "when": {
         "target_state": {
-          "target.eye-symptoms.halos-nausea": "active"
+          "target.eye-symptoms.halos": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.severe-headache",
+      "priority": 121.9,
+      "then": {
+        "reason": "severe-headache",
+        "target": "target.eye-symptoms.severe-headache"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.severe-headache": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.nausea",
+      "priority": 121.8,
+      "then": {
+        "reason": "nausea",
+        "target": "target.eye-symptoms.nausea"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.nausea": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.vomiting",
+      "priority": 121.7,
+      "then": {
+        "reason": "vomiting",
+        "target": "target.eye-symptoms.vomiting"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.eye-symptoms.vomiting": "active"
         }
       }
     },
@@ -1034,7 +1096,7 @@
       }
     },
     {
-      "id": "rule.generated.complete.halos-nausea",
+      "id": "rule.generated.complete.halos",
       "priority": 50,
       "then": {
         "target_state": "satisfied"
@@ -1042,7 +1104,7 @@
       "type": "completion",
       "when": {
         "facts_resolved": "all_required",
-        "target": "target.eye-symptoms.halos-nausea"
+        "target": "target.eye-symptoms.halos"
       }
     },
     {
@@ -1115,6 +1177,18 @@
       "when": {
         "facts_resolved": "all_required",
         "target": "target.eye-symptoms.mono-binocular"
+      }
+    },
+    {
+      "id": "rule.generated.complete.nausea",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.nausea"
       }
     },
     {
@@ -1286,6 +1360,18 @@
       }
     },
     {
+      "id": "rule.generated.complete.severe-headache",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.severe-headache"
+      }
+    },
+    {
       "id": "rule.generated.complete.severe-pain",
       "priority": 50,
       "then": {
@@ -1380,6 +1466,18 @@
         "facts_resolved": "all_required",
         "target": "target.eye-symptoms.visual-type"
       }
+    },
+    {
+      "id": "rule.generated.complete.vomiting",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.eye-symptoms.vomiting"
+      }
     }
   ],
   "knowledge_source_status": {
@@ -1399,6 +1497,18 @@
       "title": "Preseptal and orbital cellulitis",
       "url": "https://www.moorfields.nhs.uk/for-health-professionals/childrens-eye-conditions-management/preseptalorbital-cellulitis",
       "version": "accessed-2026-07-14"
+    },
+    {
+      "complete": false,
+      "id": "source.nhs-highland.acute-angle-closure.2026",
+      "kind": "clinical_guidance_metadata",
+      "last_monitored_at": "2026-08-06",
+      "license_status": "unknown",
+      "monitor_interval_days": 1,
+      "publisher": "NHS Highland",
+      "title": "Acute angle closure glaucoma",
+      "url": "https://www.rightdecisions.scot.nhs.uk/tam-treatments-and-medicines-nhs-highland/adult-therapeutic-guidelines/eyes/ophthalmology-emergencies-guidelines/acute-angle-closure-glaucoma-guidelines/",
+      "version": "reviewed-2026-02-16"
     },
     {
       "complete": false,
@@ -1428,7 +1538,7 @@
       "complete": false,
       "id": "source.nhs.glaucoma.2025",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-07-14",
+      "last_monitored_at": "2026-08-06",
       "license_status": "unknown",
       "monitor_interval_days": 7,
       "publisher": "NHS",
@@ -1459,6 +1569,18 @@
       "title": "Vision loss",
       "url": "https://www.nhs.uk/conditions/vision-loss/",
       "version": "reviewed-2025"
+    },
+    {
+      "complete": false,
+      "id": "source.stom.eye-warning-findings.20260806",
+      "kind": "terminology_mrcm_query_summary",
+      "last_monitored_at": "2026-08-06",
+      "license_status": "restricted",
+      "monitor_interval_days": 30,
+      "publisher": "Infoclinic",
+      "title": "STOM eye warning finding lookup",
+      "url": "http://localhost:8088/fhir",
+      "version": "SNOMEDCT-20260801"
     },
     {
       "complete": false,

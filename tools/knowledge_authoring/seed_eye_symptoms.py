@@ -6,11 +6,14 @@ P = "eye-symptoms"
 RFE = "rfe.eye_symptoms"
 M = "mapping.snomed-mrcm.eye-symptoms"
 SN = "http://snomed.info/sct"
+ACQUIRED_AT = "2026-08-06T00:06:41Z"
 SOURCES = [
     "source.nhs.red-eye.2025", "source.nhs.eye-pain.2025",
     "source.nhs.vision-loss.2025", "source.nhs.floaters-flashes.2023",
     "source.nhs.glaucoma.2025", "source.uhd.chemical-eye-injury.2026",
     "source.moorfields.orbital-cellulitis.2021", "source.stom.eye.20260714",
+    "source.nhs-highland.acute-angle-closure.2026",
+    "source.stom.eye-warning-findings.20260806",
 ]
 G = {k: f"group.eye.{k}" for k in (
     "routing", "shared-safety", "common", "red-eye-surface",
@@ -37,7 +40,10 @@ def fragment():
         Q("eye.severe_or_sudden_pain", "Severe or Sudden Eye Pain", "boolean", "severe-pain", "눈 통증이 갑자기 시작됐거나 매우 심한가요?", 125, [G["shared-safety"]], S, safety_relevant=True, terminology_binding={"system": SN, "code": "41652007"}, mrcm_ref=M),
         Q("eye.photophobia", "Photophobia", "boolean", "photophobia", "빛을 볼 때 눈이 심하게 아프거나 견디기 어렵나요?", 124, [G["shared-safety"], G["red-eye-surface"]], S, safety_relevant=True, terminology_binding={"system": SN, "code": "409668002"}, mrcm_ref=M),
         Q("eye.red_painful_with_vision_change", "Red Painful Eye with Vision Change", "boolean", "red-pain-vision", "눈이 붉고 아프면서 시야가 흐리거나 시력이 변했나요?", 123, [G["shared-safety"], G["red-eye-surface"]], S, safety_relevant=True),
-        Q("eye.halos_headache_nausea_or_vomiting", "Halos Headache Nausea or Vomiting", "boolean", "halos-nausea", "불빛 주변에 무지개빛 테가 보이면서 심한 두통, 메스꺼움 또는 구토가 있나요?", 122, [G["shared-safety"], G["visual-disturbance"]], S, safety_relevant=True),
+        Q("eye.halos_around_lights", "Halos around Lights", "boolean", "halos", "밝은 불빛 주변에 무지개색 고리가 보이나요?", 122, [G["shared-safety"], G["visual-disturbance"]], S, safety_relevant=True),
+        Q("eye.severe_headache_with_eye_symptoms", "Severe Headache with Eye Symptoms", "boolean", "severe-headache", "이번 눈 증상과 함께 심한 두통이 있나요?", 121.9, [G["shared-safety"], G["visual-disturbance"]], S, safety_relevant=True, terminology_binding={"system": SN, "code": "25064002"}, mrcm_ref=M),
+        Q("eye.nausea_with_eye_symptoms", "Nausea with Eye Symptoms", "boolean", "nausea", "이번 눈 증상과 함께 메스꺼움이 있나요?", 121.8, [G["shared-safety"], G["visual-disturbance"]], S, safety_relevant=True, terminology_binding={"system": SN, "code": "422587007"}, mrcm_ref=M),
+        Q("eye.vomiting_with_eye_symptoms", "Vomiting with Eye Symptoms", "boolean", "vomiting", "이번 눈 증상과 함께 구토했나요?", 121.7, [G["shared-safety"], G["visual-disturbance"]], S, safety_relevant=True, terminology_binding={"system": SN, "code": "422400008"}, mrcm_ref=M),
         Q("eye.new_or_increased_flashes_floaters", "New or Increased Flashes or Floaters", "boolean", "flashes-floaters", "처음 생겼거나 갑자기 늘어난 번쩍임·검은 점·실오라기 같은 것이 보이나요?", 121, [G["shared-safety"], G["visual-disturbance"]], S, safety_relevant=True, terminology_binding={"system": SN, "code": "139547009"}),
         Q("eye.curtain_shadow_or_field_loss", "Curtain Shadow or Visual Field Loss", "boolean", "curtain-shadow", "시야 한쪽에서 검은 커튼이나 그림자가 퍼지거나 일부가 가려지나요?", 120, [G["shared-safety"], G["visual-disturbance"]], S, safety_relevant=True),
         Q("eye.contact_lens_with_pain_or_vision_change", "Contact Lens with Pain or Vision Change", "boolean", "contact-lens-warning", "콘택트렌즈를 착용하는 눈이 붉고 아프거나 시력이 달라졌나요?", 119, [G["shared-safety"], G["red-eye-surface"]], S, safety_relevant=True),
@@ -84,7 +90,14 @@ def fragment():
         safety_rule(P, "penetrating-injury", {"fact": "eye.penetrating_or_high_velocity_injury", "equals": True}, "emergency", 1000),
         safety_rule(P, "embedded-object", {"fact": "eye.object_embedded_or_globe_deformed", "equals": True}, "emergency", 1000),
         safety_rule(P, "severe-pain-vision", {"all": [{"fact": "eye.severe_or_sudden_pain", "equals": True}, {"fact": "eye.current_vision_impact", "in": ["major_blur", "near_complete_loss"]}]}, "emergency", 1000),
-        safety_rule(P, "halos-nausea", {"fact": "eye.halos_headache_nausea_or_vomiting", "equals": True}, "emergency", 1000),
+        safety_rule(P, "halos-systemic-warning", {"all": [
+            {"fact": "eye.halos_around_lights", "equals": True},
+            {"any": [
+                {"fact": "eye.severe_headache_with_eye_symptoms", "equals": True},
+                {"fact": "eye.nausea_with_eye_symptoms", "equals": True},
+                {"fact": "eye.vomiting_with_eye_symptoms", "equals": True},
+            ]},
+        ]}, "emergency", 1000),
         safety_rule(P, "neurological-deficit", {"fact": "symptom.new_focal_neurological_deficit", "equals": True}, "emergency", 1000),
         safety_rule(P, "curtain-shadow", {"fact": "eye.curtain_shadow_or_field_loss", "equals": True}, "urgent", 950),
         safety_rule(P, "new-flashes-floaters", {"fact": "eye.new_or_increased_flashes_floaters", "equals": True}, "urgent", 920),
@@ -95,7 +108,9 @@ def fragment():
         safety_rule(P, "orbital-warning", {"fact": "eye.proptosis_or_painful_restricted_movement", "equals": True}, "urgent", 900),
         safety_rule(P, "periorbital-fever", {"fact": "eye.periorbital_swelling_with_fever_or_unwell", "equals": True}, "urgent", 900),
     ]
-    return {"id": "knowledge.generated.eye-symptoms", "version": VERSION, "status": "research_only", "usage_modes": ["research_test", "simulation"], "source_manifest": "source-manifest.primary-care-eye-symptoms-research", "default_refresh": default_refresh(), "extra_nodes": [{"id": v, "type": "ClinicalGroup", "display": v.split(".")[-1]} for v in G.values()], "group_hypothesis_edges": [], "safety_rules": rules, "entries": e, "provenance": provenance(SOURCES)}
+    refresh = default_refresh()
+    refresh.update({"last_assessed_at": "2026-08-06", "next_monitor_at": "2026-08-07", "next_full_review_at": "2027-02-02"})
+    return {"id": "knowledge.generated.eye-symptoms", "version": VERSION, "status": "research_only", "usage_modes": ["research_test", "simulation"], "source_manifest": "source-manifest.primary-care-eye-symptoms-research", "default_refresh": refresh, "extra_nodes": [{"id": v, "type": "ClinicalGroup", "display": v.split(".")[-1]} for v in G.values()], "group_hypothesis_edges": [], "safety_rules": rules, "entries": e, "provenance": provenance(SOURCES)}
 
 
 def source_docs():
@@ -108,11 +123,48 @@ def source_docs():
         ("source.uhd.chemical-eye-injury.2026", "University Hospitals Dorset NHS Foundation Trust", "Chemical injury to the eye", "reviewed-2026", "https://www.uhd.nhs.uk/uploads/about/docs/our_publications/patient_information_leaflets/Eye_Department/Chemical_injury_to_the_eye_040-21.pdf", "public_health_guidance", 7),
         ("source.moorfields.orbital-cellulitis.2021", "Moorfields Eye Hospital NHS Foundation Trust", "Preseptal and orbital cellulitis", "accessed-2026-07-14", "https://www.moorfields.nhs.uk/for-health-professionals/childrens-eye-conditions-management/preseptalorbital-cellulitis", "clinical_guideline", 1),
         ("source.stom.eye.20260714", "Infoclinic", "STOM eye symptom terminology, MRCM and lateralizable anatomy", "SNOMEDCT-20260701", "https://stom.infoclinic.co/allow/attributes/SNOMEDCT/41652007", "terminology_server", 30),
+        ("source.nhs-highland.acute-angle-closure.2026", "NHS Highland", "Acute angle closure glaucoma", "reviewed-2026-02-16", "https://www.rightdecisions.scot.nhs.uk/tam-treatments-and-medicines-nhs-highland/adult-therapeutic-guidelines/eyes/ophthalmology-emergencies-guidelines/acute-angle-closure-glaucoma-guidelines/", "clinical_guideline", 1),
+        ("source.stom.eye-warning-findings.20260806", "Infoclinic", "STOM eye warning finding lookup", "SNOMEDCT-20260801", "http://localhost:8088/fhir", "terminology_server", 30),
     ]
     arts = [{"id": i, "kind": "terminology_mrcm_query_summary" if p == "terminology_server" else "clinical_guidance_metadata", "publisher": pub, "title": t, "version": v, "url": u, "language": "en", "digest": "metadata_only_not_cached", "license_status": "unknown", "complete": False, "monitor_profile": p, "monitor_interval_days": d, "last_monitored_at": "2026-07-14", "next_monitor_at": "2026-08-13" if d == 30 else ("2026-07-21" if d == 7 else "2026-07-15"), "assertions": ["Build-Time only; Runtime does not browse; content remains unreviewed."]} for i, pub, t, v, u, p, d in defs]
-    research = {"id": "source-manifest.primary-care-eye-symptoms-research", "version": VERSION, "acquired_at": CREATED_AT, "status": "research_only", "artifacts": arts, "provenance": provenance([x[0] for x in defs])}
+    by_id = {artifact["id"]: artifact for artifact in arts}
+    by_id["source.nhs.glaucoma.2025"].update({
+        "last_monitored_at": "2026-08-06",
+        "next_monitor_at": "2026-08-13",
+        "monitor_result": "current_official_source_confirmed_and_atomic_symptom_structure_reviewed",
+        "assertions": [
+            "The current NHS page lists sudden intense eye pain, red eye, rainbow-coloured circles, blurred vision, nausea, vomiting and headache as separate symptoms.",
+            "Sudden development of the glaucoma symptom cluster is described as a medical emergency; the source does not diagnose glaucoma from any isolated answer.",
+        ],
+    })
+    by_id["source.moorfields.orbital-cellulitis.2021"].update({
+        "last_monitored_at": "2026-07-16",
+        "next_monitor_at": "2026-07-17",
+        "monitor_result": "current_official_source_confirmed",
+    })
+    by_id["source.nhs-highland.acute-angle-closure.2026"].update({
+        "last_monitored_at": "2026-08-06",
+        "next_monitor_at": "2026-08-07",
+        "monitor_result": "new_current_official_clinical_guideline_registered",
+        "assertions": [
+            "The reviewed NHS Highland ophthalmology guideline records pain, blurred vision, coloured haloes, frontal headache, nausea and vomiting as distinct symptoms.",
+            "Acute angle closure is managed as an ophthalmology emergency; symptom collection supports escalation but does not establish a diagnosis.",
+        ],
+    })
+    by_id["source.stom.eye-warning-findings.20260806"].update({
+        "last_monitored_at": "2026-08-06",
+        "next_monitor_at": "2026-09-05",
+        "monitor_result": "targeted_atomic_finding_lookup_confirmed",
+        "digest": "live_response_summary_not_raw_cache",
+        "license_status": "restricted",
+        "assertions": [
+            "FHIR lookup confirmed active Headache, Nausea and Vomiting concepts in the SNOMED CT 20260801 edition.",
+            "No sufficiently verified single SNOMED CT concept for the Korean halo question was selected, so that question retains its local code.",
+        ],
+    })
+    research = {"id": "source-manifest.primary-care-eye-symptoms-research", "version": VERSION, "acquired_at": ACQUIRED_AT, "status": "research_only", "artifacts": arts, "provenance": provenance([x[0] for x in defs])}
     paths = [("source.repository.foundation", "repository_specification", "FOUNDATION.md", True), ("source.generated.eye", "generated_clinical_knowledge", "knowledge/generated/ophthalmic/eye-symptoms/eye-symptoms.json", True), ("source.mapping.eye", "terminology_mapping", "mappings/terminology/snomed-mrcm-eye-symptoms.json", False), ("source.external.eye", "external_source_manifest", "sources/manifests/primary-care-eye-symptoms-research.json", False), ("source.policy.eye", "runtime_policy", "policies/primary-care-eye-symptoms-completion.json", True)]
-    primary = {"id": "source-manifest.primary-care-eye-symptoms", "version": VERSION, "acquired_at": CREATED_AT, "artifacts": [{"id": i, "kind": k, "publisher": "clinical-interview-platform", "version": VERSION, "language": "en", "path": p, "digest": "computed_at_build", "license_status": "allowed" if c else "unknown", "complete": c} for i, k, p, c in paths], "provenance": provenance(["FOUNDATION.md", "PROJECT_CONTEXT.md"])}
+    primary = {"id": "source-manifest.primary-care-eye-symptoms", "version": VERSION, "acquired_at": ACQUIRED_AT, "artifacts": [{"id": i, "kind": k, "publisher": "clinical-interview-platform", "version": VERSION, "language": "en", "path": p, "digest": "computed_at_build", "license_status": "allowed" if c else "unknown", "complete": c} for i, k, p, c in paths], "provenance": provenance(["FOUNDATION.md", "PROJECT_CONTEXT.md"])}
     return primary, research
 
 
@@ -137,18 +189,33 @@ def cases(f):
         def satisfy(c, h):
             if "all" in c:
                 for x in c["all"]: satisfy(x, h)
+            elif "any" in c:
+                satisfy(c["any"][0], h)
             elif "equals" in c: h[c["fact"]] = {"value": c["equals"]}
             elif "in" in c: h[c["fact"]] = {"value": c["in"][0]}
         hidden = {}; satisfy(rule["when"], hidden)
         key = rule["id"].split("safety.")[1]; level = rule["then"]["safety_level"]
         out[f"EYE-{key.upper()}.json"] = {"id": f"EYE-{key.upper()}", "simulation_language": "ko", "persona": {"age": 28 + i}, "initial_statement": {"ko": "눈이 불편해서 왔어요."}, "hidden_state": hidden, "expected": {"expected_safety_level": level, "expected_safety_action": "human_handoff", "expected_stop_reason": f"{level}_escalation", "expected_triggered_rules_contains": [rule["id"]], "expected_max_turns": 28, "forbidden_assertions": ["diagnosis.glaucoma", "diagnosis.retinal_detachment", "diagnosis.orbital_cellulitis"]}, "provenance": provenance(SOURCES)}
-    policy = completion(f); required = set(policy["required_facts"]["always"] + policy["required_facts"]["routine"] + policy["conditional_required_facts"][0]["cases"]["red_eye_surface"])
-    by_id = {x["fact"]["id"]: x["fact"] for x in f["entries"]}; hidden = {}
-    for fid in required:
-        fact = by_id[fid]
-        if fact["value_type"] == "boolean": hidden[fid] = {"value": False}
-        elif fact["value_type"] == "coded": hidden[fid] = {"value": fact.get("allowed_values", ["unclear"])[-1]}
-        else: hidden[fid] = {"value": "없음"}
+    policy = completion(f)
+    by_id = {x["fact"]["id"]: x["fact"] for x in f["entries"]}
+    def routine(branch):
+        required = set(policy["required_facts"]["always"] + policy["required_facts"]["routine"] + policy["conditional_required_facts"][0]["cases"][branch])
+        values = {}
+        for fid in required:
+            fact = by_id[fid]
+            if fact["value_type"] == "boolean": values[fid] = {"value": False}
+            elif fact["value_type"] == "coded": values[fid] = {"value": fact.get("allowed_values", ["unclear"])[-1]}
+            else: values[fid] = {"value": "없음"}
+        values["eye.primary_symptom_group"] = {"value": branch}
+        return values
+    halos_only = routine("visual_disturbance")
+    halos_only["eye.halos_around_lights"] = {"value": True}
+    out["EYE-HALOS-ONLY-NO-CLUSTER.json"] = {"id": "EYE-HALOS-ONLY-NO-CLUSTER", "simulation_language": "ko", "persona": {"age": 52}, "initial_statement": {"ko": "불빛 주변에 무지개빛 테가 보이지만 다른 증상은 없어요."}, "hidden_state": halos_only, "expected": {"expected_safety_level": "routine", "expected_stop_reason": "all_required_targets_resolved", "expected_max_turns": 48, "forbidden_assertions": ["diagnosis.glaucoma"]}, "provenance": provenance(["source.nhs.glaucoma.2025", "source.nhs-highland.acute-angle-closure.2026"])}
+    halos_vomiting = routine("visual_disturbance")
+    halos_vomiting["eye.halos_around_lights"] = {"value": True}
+    halos_vomiting["eye.vomiting_with_eye_symptoms"] = {"value": True}
+    out["EYE-HALOS-VOMITING-CLUSTER.json"] = {"id": "EYE-HALOS-VOMITING-CLUSTER", "simulation_language": "ko", "persona": {"age": 61}, "initial_statement": {"ko": "불빛 주변에 무지개빛 테가 보이고 구토도 했어요."}, "hidden_state": halos_vomiting, "expected": {"expected_safety_level": "emergency", "expected_safety_action": "human_handoff", "expected_stop_reason": "emergency_escalation", "expected_triggered_rules_contains": ["rule.eye-symptoms.safety.halos-systemic-warning"], "expected_max_turns": 13, "forbidden_assertions": ["diagnosis.glaucoma"]}, "provenance": provenance(["source.nhs.glaucoma.2025", "source.nhs-highland.acute-angle-closure.2026"])}
+    hidden = routine("red_eye_surface")
     hidden["eye.primary_symptom_group"] = {"value": "red_eye_surface"}; hidden["eye.redness_present"] = {"value": True}
     declined = "eye.current_drops_medication_or_contact_lens"; hidden.pop(declined)
     out["EYE-RED-DATA-ABSENT.json"] = {"id": "EYE-RED-DATA-ABSENT", "simulation_language": "ko", "persona": {"age": 36}, "initial_statement": {"ko": "오른쪽 눈이 충혈됐어요."}, "hidden_state": hidden, "response_behavior": {declined: {"dataAbsentReason": "asked-declined"}}, "expected": {"expected_data_absent_reasons": {declined: "asked-declined"}, "expected_safety_level": "routine", "expected_stop_reason": "required_targets_addressed_with_absent_data", "expected_max_turns": 38, "forbidden_assertions": ["diagnosis.conjunctivitis"]}, "provenance": provenance(["source.nhs.red-eye.2025", "specifications/clinical-memory.md"])}
@@ -159,8 +226,8 @@ def main():
     f = fragment()
     graph, rules = base_graph_and_rules(prefix=P, rfe=RFE, display="Eye Symptoms", intents=[("intent.characterize_symptom", "Characterize Symptom"), ("intent.screen_red_flags", "Screen Red Flags"), ("intent.differentiate_common_causes", "Differentiate Common Sources"), ("intent.risk_assessment", "Risk Assessment")])
     primary, research = source_docs()
-    concepts = [("41652007", "Pain in eye (finding)", 20), ("703630003", "Red eye (finding)", 20), ("409668002", "Photophobia (finding)", 20), ("246679005", "Discharge from eye (finding)", 20), ("193967004", "Swelling of eyelid (finding)", 20), ("371398005", "Eye region structure (body structure)", 8)]
-    mapping = {"id": M, "version": VERSION, "status": "research_only", "review_status": "unreviewed", "terminology": {"system": SN, "version": "http://snomed.info/sct/900000000000207008/version/20260701", "source": "STOM"}, "focus_concepts": [{"code": c, "display": d, "attribute_count_returned": n} for c, d, n in concepts], "checks": [{"focus_code": c, "attribute_code": a, "allowed": True} for c, _, _ in concepts[:5] for a in ("363698007", "246112005")], "unsupported_checks": [{"focus_code": "267726008", "display": "Blurred vision (disorder)", "attribute_count_returned": 0, "mrcm_status": "unsupported_by_endpoint"}], "laterality": {"reference_set": "723264001", "finding_site_code": "371398005", "display": "Eye region structure (body structure)", "member": True, "postcoordination_policy": "policy.snomed-postcoordination-laterality"}, "validation": {"method": "build_time_live_mrcm_and_refset_summary", "checked_at": CREATED_AT, "raw_response_cached": False, "complete_mrcm_snapshot": False, "clinical_rule_authority": False, "result": "partial_provisional_pass"}, "provenance": provenance(["source.stom.eye.20260714"])}
+    concepts = [("41652007", "Pain in eye (finding)", 20), ("703630003", "Red eye (finding)", 20), ("409668002", "Photophobia (finding)", 20), ("246679005", "Discharge from eye (finding)", 20), ("193967004", "Swelling of eyelid (finding)", 20), ("371398005", "Eye region structure (body structure)", 8), ("25064002", "Headache (finding)", 0), ("422587007", "Nausea (finding)", 0), ("422400008", "Vomiting (disorder)", 0)]
+    mapping = {"id": M, "version": VERSION, "status": "research_only", "review_status": "unreviewed", "terminology": {"system": SN, "version": "http://snomed.info/sct/900000000000207008/version/20260801", "source": "STOM"}, "focus_concepts": [{"code": c, "display": d, "attribute_count_returned": n} for c, d, n in concepts], "checks": [{"focus_code": c, "attribute_code": a, "allowed": True} for c, _, _ in concepts[:5] for a in ("363698007", "246112005")], "unsupported_checks": [{"focus_code": "267726008", "display": "Blurred vision (disorder)", "attribute_count_returned": 0, "mrcm_status": "unsupported_by_endpoint"}, {"fact_id": "eye.halos_around_lights", "display": "Halos around lights", "mrcm_status": "local_question_code_retained_no_verified_single_concept"}], "laterality": {"reference_set": "723264001", "finding_site_code": "371398005", "display": "Eye region structure (body structure)", "member": True, "postcoordination_policy": "policy.snomed-postcoordination-laterality"}, "validation": {"method": "build_time_live_fhir_lookup_and_prior_mrcm_refset_summary", "checked_at": ACQUIRED_AT, "raw_response_cached": False, "complete_mrcm_snapshot": False, "clinical_rule_authority": False, "result": "partial_provisional_pass"}, "provenance": provenance(["source.stom.eye.20260714", "source.stom.eye-warning-findings.20260806"])}
     docs = [("knowledge/base/primary-care-eye-symptoms.json", graph), ("rules/base/primary-care-eye-symptoms.json", rules), ("knowledge/generated/ophthalmic/eye-symptoms/eye-symptoms.json", f), ("mappings/terminology/snomed-mrcm-eye-symptoms.json", mapping), ("sources/manifests/primary-care-eye-symptoms.json", primary), ("sources/manifests/primary-care-eye-symptoms-research.json", research), ("policies/primary-care-eye-symptoms-completion.json", completion(f))]
     for path, doc in docs: write_json(path, doc)
     for name, case in cases(f).items(): write_json("simulation/patients/ophthalmic/eye-symptoms/" + name, case)

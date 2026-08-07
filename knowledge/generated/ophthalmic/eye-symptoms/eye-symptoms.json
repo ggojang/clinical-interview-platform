@@ -9,11 +9,11 @@
   "source_manifest": "source-manifest.primary-care-eye-symptoms-research",
   "default_refresh": {
     "class": "clinical_guideline",
-    "last_assessed_at": "2026-07-14",
+    "last_assessed_at": "2026-08-06",
     "monitor_interval_days": 1,
     "full_review_interval_days": 180,
-    "next_monitor_at": "2026-07-15",
-    "next_full_review_at": "2027-01-10",
+    "next_monitor_at": "2026-08-07",
+    "next_full_review_at": "2027-02-02",
     "policy_id": "policy.knowledge-refresh",
     "overdue_behavior": {
       "production": "exclude_or_require_review",
@@ -136,11 +136,31 @@
       }
     },
     {
-      "id": "rule.eye-symptoms.safety.halos-nausea",
+      "id": "rule.eye-symptoms.safety.halos-systemic-warning",
       "priority": 1000,
       "when": {
-        "fact": "eye.halos_headache_nausea_or_vomiting",
-        "equals": true
+        "all": [
+          {
+            "fact": "eye.halos_around_lights",
+            "equals": true
+          },
+          {
+            "any": [
+              {
+                "fact": "eye.severe_headache_with_eye_symptoms",
+                "equals": true
+              },
+              {
+                "fact": "eye.nausea_with_eye_symptoms",
+                "equals": true
+              },
+              {
+                "fact": "eye.vomiting_with_eye_symptoms",
+                "equals": true
+              }
+            ]
+          }
+        ]
       },
       "then": {
         "safety_level": "emergency",
@@ -592,21 +612,21 @@
     },
     {
       "fact": {
-        "id": "eye.halos_headache_nausea_or_vomiting",
-        "display": "Halos Headache Nausea or Vomiting",
+        "id": "eye.halos_around_lights",
+        "display": "Halos around Lights",
         "value_type": "boolean",
         "safety_relevant": true
       },
       "target": {
-        "id": "target.eye-symptoms.halos-nausea",
-        "display": "Halos Headache Nausea or Vomiting",
+        "id": "target.eye-symptoms.halos",
+        "display": "Halos around Lights",
         "intents": [
           "intent.screen_red_flags"
         ]
       },
       "question": {
-        "id": "question.eye-symptoms.halos-nausea",
-        "wording": "불빛 주변에 무지개빛 테가 보이면서 심한 두통, 메스꺼움 또는 구토가 있나요?",
+        "id": "question.eye-symptoms.halos",
+        "wording": "밝은 불빛 주변에 무지개색 고리가 보이나요?",
         "language": "ko",
         "mode": [
           "chat",
@@ -619,7 +639,142 @@
         {
           "branch": "any",
           "score": 122,
-          "reason": "halos-nausea"
+          "reason": "halos"
+        }
+      ],
+      "supports": [
+        "group.eye.shared-safety",
+        "group.eye.visual-disturbance"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.severe_headache_with_eye_symptoms",
+        "display": "Severe Headache with Eye Symptoms",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "25064002"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.eye-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.eye-symptoms.severe-headache",
+        "display": "Severe Headache with Eye Symptoms",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.severe-headache",
+        "wording": "이번 눈 증상과 함께 심한 두통이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 121.9,
+          "reason": "severe-headache"
+        }
+      ],
+      "supports": [
+        "group.eye.shared-safety",
+        "group.eye.visual-disturbance"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.nausea_with_eye_symptoms",
+        "display": "Nausea with Eye Symptoms",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "422587007"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.eye-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.eye-symptoms.nausea",
+        "display": "Nausea with Eye Symptoms",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.nausea",
+        "wording": "이번 눈 증상과 함께 메스꺼움이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 121.8,
+          "reason": "nausea"
+        }
+      ],
+      "supports": [
+        "group.eye.shared-safety",
+        "group.eye.visual-disturbance"
+      ]
+    },
+    {
+      "fact": {
+        "id": "eye.vomiting_with_eye_symptoms",
+        "display": "Vomiting with Eye Symptoms",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "422400008"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.eye-symptoms",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.eye-symptoms.vomiting",
+        "display": "Vomiting with Eye Symptoms",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.eye-symptoms.vomiting",
+        "wording": "이번 눈 증상과 함께 구토했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 121.7,
+          "reason": "vomiting"
         }
       ],
       "supports": [
@@ -1950,7 +2105,9 @@
       "source.nhs.glaucoma.2025",
       "source.uhd.chemical-eye-injury.2026",
       "source.moorfields.orbital-cellulitis.2021",
-      "source.stom.eye.20260714"
+      "source.stom.eye.20260714",
+      "source.nhs-highland.acute-angle-closure.2026",
+      "source.stom.eye-warning-findings.20260806"
     ],
     "review_status": "unreviewed",
     "version": "0.1.0"

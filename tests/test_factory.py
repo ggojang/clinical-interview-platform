@@ -833,7 +833,7 @@ class CompilerTests(unittest.TestCase):
     def test_eye_symptoms_package_is_complete_and_lateralizable(self):
         package = compile_package(profile="eye_symptoms")
         facts = {n["id"] for n in package["knowledge_graph"]["nodes"] if n["type"] == "Fact"}
-        self.assertEqual(len(facts), 45)
+        self.assertEqual(len(facts), 48)
         self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
         self.assertEqual(package["coverage"]["total_safety_rules"], 15)
         self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 15)
@@ -2482,7 +2482,7 @@ class PackageRuntimeTests(unittest.TestCase):
     def test_eye_simulation_and_conditional_runtime(self):
         report = run_evaluation(EYE_SYMPTOMS_PACKAGE)
         self.assertTrue(report["passed"])
-        self.assertEqual(report["case_count"], 16)
+        self.assertEqual(report["case_count"], 18)
         red = next(item for item in report["results"] if item["case_id"] == "EYE-RED-DATA-ABSENT")
         self.assertIn("eye.redness_present", red["selected_facts"])
         self.assertNotIn("eye.injury_mechanism_and_time", red["selected_facts"])
