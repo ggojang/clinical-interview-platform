@@ -1620,6 +1620,16 @@ class InterviewSession:
             "symptom.skin_lesion_oozing_bleeding_nonhealing",
         )):
             active.append("skin.concerning_lesion_features")
+        if (
+            self.memory.value("skin.primary_context") == "hair_or_scalp_change"
+            or self.memory.value("symptom.skin_complaint.main_type")
+            == "hair_or_scalp_change"
+            or any(self.memory.value(item) not in (None, False, "", "none") for item in (
+                "hair.loss_pattern", "hair.active_shedding", "hair.scalp_scaling",
+                "hair.scalp_smooth_shiny_change",
+            ))
+        ):
+            active.append("skin.hair_scalp_features")
         self.active_patterns = active
 
     def _update_medication_review_patterns(self) -> None:

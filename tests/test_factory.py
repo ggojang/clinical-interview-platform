@@ -600,10 +600,10 @@ class CompilerTests(unittest.TestCase):
             node["id"] for node in first["knowledge_graph"]["nodes"]
             if node["type"] == "Fact"
         }
-        self.assertEqual(len(facts), 70)
+        self.assertEqual(len(facts), 104)
         self.assertEqual(facts, set(first["indexes"]["questions_by_fact"]))
-        self.assertEqual(first["coverage"]["total_safety_rules"], 14)
-        self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 14)
+        self.assertEqual(first["coverage"]["total_safety_rules"], 15)
+        self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 15)
         self.assertEqual(first["coverage"]["uncovered_safety_rules"], [])
 
     def test_skin_complaint_mrcm_is_build_time_metadata_only(self):
@@ -613,7 +613,7 @@ class CompilerTests(unittest.TestCase):
                 / "mappings/terminology/snomed-mrcm-skin-complaint.json"
             ).read_text(encoding="utf-8")
         )
-        self.assertEqual(len(mapping["focus_concepts"]), 3)
+        self.assertEqual(len(mapping["focus_concepts"]), 5)
         self.assertEqual(mapping["validation"]["result"], "provisional_pass")
         self.assertFalse(mapping["validation"]["clinical_rule_authority"])
 
@@ -2275,7 +2275,7 @@ class PackageRuntimeTests(unittest.TestCase):
     def test_skin_complaint_simulation_evaluation_passes(self):
         report = run_evaluation(SKIN_COMPLAINT_PACKAGE)
         self.assertTrue(report["passed"])
-        self.assertEqual(report["case_count"], 27)
+        self.assertEqual(report["case_count"], 33)
         self.assertLessEqual(max(item["turns"] for item in report["results"]), 50)
 
     def test_skin_complaint_runtime_uses_skin_rfe(self):
@@ -2283,6 +2283,19 @@ class PackageRuntimeTests(unittest.TestCase):
         state = session.process("피부에 발진이 생겼어요.")
         self.assertIn("dermatological.skin_complaint", state["active_patterns"])
         self.assertEqual(state["package"]["id"], "package.primary-care-skin-complaint")
+
+    def test_skin_complaint_runtime_activates_hair_scalp_branch(self):
+        session = InterviewSession("hair-scalp-runtime", package_path=SKIN_COMPLAINT_PACKAGE)
+        session.memory.merge("skin.primary_context", {
+            "value": "hair_or_scalp_change", "raw_text": "탈모·두피 변화",
+            "confidence": .95, "turn": 1,
+        })
+        session.memory.merge("hair.loss_pattern", {
+            "value": "localized_patch", "raw_text": "한 군데 둥글게 빠짐",
+            "confidence": .95, "turn": 1,
+        })
+        session._update_skin_complaint_patterns()
+        self.assertIn("skin.hair_scalp_features", session.active_patterns)
 
     def test_skin_complaint_research_package_is_rejected_in_production(self):
         with self.assertRaises(PackageLoadError):

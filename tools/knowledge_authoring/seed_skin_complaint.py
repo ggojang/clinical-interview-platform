@@ -21,6 +21,7 @@ SOURCE_REFS = [
     "source.nhs.stevens-johnson.2026",
     "source.nhs.cellulitis.2024",
     "source.nice.ng12.skin-cancer.2026",
+    "source.stom.snomed-hair-scalp.20260807",
 ]
 
 
@@ -124,8 +125,8 @@ GROUPS = {
 def build_fragment() -> dict:
     snomed = "http://snomed.info/sct"
     entries = [
-        entry("symptom.skin_complaint.current", "Current Skin Complaint", "boolean", "current", "지금도 피부 발진, 가려움, 반점, 물집, 상처 또는 피부 병변이 있나요?", 130, "confirm_presentation", [GROUPS["character"]], terminology={"system": snomed, "code": "95324001"}),
-        entry("symptom.skin_complaint.main_type", "Main Skin Complaint Type", "coded", "main-type", "가장 주된 문제는 발진·반점, 가려움, 통증·부기, 물집·벗겨짐, 상처·궤양, 점·혹 중 무엇인가요?", 105, "characterize_type", [GROUPS["character"]], allowed=["rash_spots", "itch", "pain_swelling", "blister_peeling", "wound_ulcer", "mole_lump", "other"]),
+        entry("symptom.skin_complaint.current", "Current Skin or Scalp Complaint", "boolean", "current", "지금도 피부 또는 두피·머리카락에 변화가 있나요?", 130, "confirm_presentation", [GROUPS["character"]]),
+        entry("symptom.skin_complaint.main_type", "Main Skin or Scalp Complaint Type", "coded", "main-type", "가장 주된 문제는 발진·반점, 가려움, 통증·부기, 물집·벗겨짐, 상처·궤양, 점·혹, 탈모·두피 변화 중 무엇인가요?", 105, "characterize_type", [GROUPS["character"]], allowed=["rash_spots", "itch", "pain_swelling", "blister_peeling", "wound_ulcer", "mole_lump", "hair_or_scalp_change", "other"]),
         entry("symptom.duration", "Symptom Duration", "quantity", "duration", "피부 문제는 언제부터 시작했나요?", 104, "characterize_duration", [GROUPS["character"]], reuse=True),
         entry("symptom.skin_complaint.onset", "Skin Complaint Onset", "coded", "onset", "갑자기 시작했나요, 서서히 시작했나요?", 103, "characterize_onset", [GROUPS["character"]], allowed=["sudden", "gradual", "unclear"]),
         entry("symptom.skin_complaint.location", "Skin Complaint Location", "string", "location", "처음 생긴 곳과 지금 영향을 받은 신체 부위를 알려주세요.", 102, "characterize_location", [GROUPS["character"]], terminology={"system": snomed, "focus_code": "95324001", "attribute_code": "363698007"}, mrcm=True),
@@ -254,6 +255,8 @@ def build_mrcm() -> dict:
         {"code": "95324001", "display": "Skin lesion (disorder)"},
         {"code": "271807003", "display": "Eruption of skin (disorder)"},
         {"code": "418290006", "display": "Itching (finding)"},
+        {"code": "278040002", "display": "Loss of hair (finding)"},
+        {"code": "400088006", "display": "Scarring alopecia (disorder)"},
     ]
     checks = [
         {"focus_code": concept["code"], "attribute_code": attribute, "allowed": True}
@@ -262,10 +265,10 @@ def build_mrcm() -> dict:
     return {
         "id": "mapping.snomed-mrcm.skin-complaint", "version": VERSION,
         "status": "research_only", "review_status": "unreviewed",
-        "terminology": {"system": "http://snomed.info/sct", "version": "http://snomed.info/sct/900000000000207008/version/20260701", "source": "STOM"},
+        "terminology": {"system": "http://snomed.info/sct", "version": "http://snomed.info/sct/900000000000207008/version/20260801", "source": "STOM"},
         "focus_concepts": concepts, "checks": checks,
         "validation": {"method": "build_time_live_mrcm_summary", "checked_at": CREATED, "raw_response_cached": False, "complete_mrcm_snapshot": False, "clinical_rule_authority": False, "result": "provisional_pass"},
-        "provenance": provenance(["source.stom.mrcm.skin-complaint.20260714"]),
+        "provenance": provenance(["source.stom.mrcm.skin-complaint.20260714", "source.stom.snomed-hair-scalp.20260807"]),
     }
 
 
@@ -273,11 +276,11 @@ def build_sources() -> tuple[dict, dict]:
     research_artifacts = [
         {
             "id": "source.nhs.anaphylaxis.2026", "kind": "public_health_guidance_metadata",
-            "publisher": "NHS", "title": "Anaphylaxis", "version": "accessed-2026-07-14",
+            "publisher": "NHS", "title": "Anaphylaxis", "version": "reviewed-2023-06-21-next-review-2026-06-21-accessed-2026-08-07",
             "url": "https://www.nhs.uk/conditions/anaphylaxis/", "language": "en",
             "digest": "metadata_only_not_cached", "license_status": "unknown", "complete": False,
             "monitor_profile": "public_health_guidance", "monitor_interval_days": 7,
-            "last_monitored_at": "2026-07-14", "next_monitor_at": "2026-07-21",
+            "last_monitored_at": "2026-08-07", "next_monitor_at": "2026-08-14",
             "assertions": [
                 "Sudden swelling of the lips, mouth, throat or tongue, breathing difficulty, severe dizziness, collapse or unresponsiveness requires emergency response.",
                 "A raised itchy rash may accompany anaphylaxis but is neither required nor sufficient for diagnosis.",
@@ -286,10 +289,10 @@ def build_sources() -> tuple[dict, dict]:
         {
             "id": "source.nice.ng240.meningococcal-rash.2026", "kind": "clinical_guideline_metadata",
             "publisher": "NICE", "title": "Meningitis and meningococcal disease: recognition, diagnosis and management",
-            "version": "NG240-updated-2026", "url": "https://www.nice.org.uk/guidance/ng240/chapter/Recommendations",
+            "version": "NG240-published-reviewed-2024-03-19-accessed-2026-08-07", "url": "https://www.nice.org.uk/guidance/ng240/chapter/Recommendations",
             "language": "en", "digest": "metadata_only_not_cached", "license_status": "restricted", "complete": False,
             "monitor_profile": "clinical_guideline", "monitor_interval_days": 1,
-            "last_monitored_at": "2026-07-14", "next_monitor_at": "2026-07-15",
+            "last_monitored_at": "2026-08-07", "next_monitor_at": "2026-08-08",
             "assertions": [
                 "Haemorrhagic non-blanching purpura, a rapidly spreading non-blanching rash, or a non-blanching rash with meningitis features requires emergency hospital transfer.",
                 "Rash may be harder to see on brown, black or tanned skin and absence of rash does not exclude meningococcal disease.",
@@ -297,11 +300,11 @@ def build_sources() -> tuple[dict, dict]:
         },
         {
             "id": "source.nhs.stevens-johnson.2026", "kind": "public_health_guidance_metadata",
-            "publisher": "NHS", "title": "Stevens-Johnson syndrome", "version": "accessed-2026-07-14",
+            "publisher": "NHS", "title": "Stevens-Johnson syndrome", "version": "reviewed-2026-03-04-next-review-2029-03-04",
             "url": "https://www.nhs.uk/conditions/stevens-johnson-syndrome/", "language": "en",
             "digest": "metadata_only_not_cached", "license_status": "unknown", "complete": False,
             "monitor_profile": "public_health_guidance", "monitor_interval_days": 7,
-            "last_monitored_at": "2026-07-14", "next_monitor_at": "2026-07-21",
+            "last_monitored_at": "2026-08-07", "next_monitor_at": "2026-08-14",
             "assertions": [
                 "A spreading painful, blistering or peeling rash after an infection or new medicine, especially with mouth, eye, airway or genital involvement, requires emergency assessment.",
                 "The interview identifies severe-reaction warning features and does not diagnose Stevens-Johnson syndrome.",
@@ -313,7 +316,7 @@ def build_sources() -> tuple[dict, dict]:
             "url": "https://www.nhs.uk/conditions/cellulitis/", "language": "en",
             "digest": "metadata_only_not_cached", "license_status": "unknown", "complete": False,
             "monitor_profile": "public_health_guidance", "monitor_interval_days": 7,
-            "last_monitored_at": "2026-07-14", "next_monitor_at": "2026-07-21",
+            "last_monitored_at": "2026-08-07", "next_monitor_at": "2026-08-14",
             "assertions": [
                 "Painful, hot and swollen skin needs urgent clinical assessment.",
                 "Systemic illness, purple patches, rapid breathing or heartbeat, dizziness, confusion, cold clammy skin or unresponsiveness can indicate life-threatening complications.",
@@ -322,10 +325,10 @@ def build_sources() -> tuple[dict, dict]:
         {
             "id": "source.nice.ng12.skin-cancer.2026", "kind": "clinical_guideline_metadata",
             "publisher": "NICE", "title": "Suspected cancer: recognition and referral — skin cancers",
-            "version": "NG12-updated-2026", "url": "https://www.nice.org.uk/guidance/ng12/chapter/Recommendations-organised-by-site-of-cancer",
+            "version": "NG12-updated-reviewed-2026-04-15", "url": "https://www.nice.org.uk/guidance/ng12/chapter/Recommendations-organised-by-site-of-cancer",
             "language": "en", "digest": "metadata_only_not_cached", "license_status": "restricted", "complete": False,
             "monitor_profile": "clinical_guideline", "monitor_interval_days": 1,
-            "last_monitored_at": "2026-07-14", "next_monitor_at": "2026-07-15",
+            "last_monitored_at": "2026-08-07", "next_monitor_at": "2026-08-08",
             "assertions": [
                 "The weighted seven-point checklist includes change in size, irregular shape, irregular colour, diameter of 7 mm or more, inflammation, oozing and change in sensation.",
                 "Suspicious pigmented or non-pigmented lesions require clinician assessment; questionnaire features do not diagnose skin cancer.",
@@ -342,6 +345,27 @@ def build_sources() -> tuple[dict, dict]:
                 "STOM confirmed active Skin lesion, Eruption of skin and Itching concepts.",
                 "Finding site and Severity were allowed for the selected concepts.",
                 "MRCM validates terminology modeling only and does not control clinical questions, diagnoses, priority or safety.",
+            ],
+        },
+        {
+            "id": "source.stom.snomed-hair-scalp.20260807",
+            "kind": "terminology_lookup_summary",
+            "publisher": "Infoclinic",
+            "title": "STOM SNOMED CT lookup for hair loss and scalp concepts",
+            "version": "SNOMEDCT-20260801",
+            "url": "http://localhost:8088/fhir",
+            "language": "en",
+            "digest": "live_response_summary_not_raw_cache",
+            "license_status": "restricted",
+            "complete": False,
+            "monitor_profile": "terminology_server",
+            "monitor_interval_days": 30,
+            "last_monitored_at": "2026-08-07",
+            "next_monitor_at": "2026-09-06",
+            "assertions": [
+                "STOM confirmed active SNOMED CT concepts 278040002 Loss of hair, 201138007 Diffuse alopecia, 400088006 Scarring alopecia and 41695006 Scalp structure.",
+                "STOM MRCM allowed-attributes responses included Finding site and Severity for 278040002 and 400088006.",
+                "Terminology lookup supports coding and semantic review only; it does not diagnose the cause of hair loss or determine clinical urgency.",
             ],
         },
     ]

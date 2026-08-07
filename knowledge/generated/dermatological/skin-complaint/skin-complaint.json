@@ -130,6 +130,21 @@
       "id": "group.skin.handoff",
       "type": "ClinicalGroup",
       "display": "Handoff"
+    },
+    {
+      "id": "group.skin.hair-scalp-character",
+      "type": "ClinicalGroup",
+      "display": "Hair Scalp Character"
+    },
+    {
+      "id": "group.skin.hair-scalp-trigger",
+      "type": "ClinicalGroup",
+      "display": "Hair Scalp Trigger"
+    },
+    {
+      "id": "group.skin.hair-scalp-exposure",
+      "type": "ClinicalGroup",
+      "display": "Hair Scalp Exposure"
     }
   ],
   "group_hypothesis_edges": [
@@ -420,29 +435,38 @@
         "action": "human_handoff",
         "suppress_routine": true
       }
+    },
+    {
+      "id": "rule.skin.safety.hot-painful-swollen",
+      "priority": 899,
+      "when": {
+        "fact": "symptom.skin_hot_painful_swollen",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
     }
   ],
   "entries": [
     {
       "fact": {
         "id": "symptom.skin_complaint.current",
-        "display": "Current Skin Complaint",
-        "value_type": "boolean",
-        "terminology_binding": {
-          "system": "http://snomed.info/sct",
-          "code": "95324001"
-        }
+        "display": "Current Skin or Scalp Complaint",
+        "value_type": "boolean"
       },
       "target": {
         "id": "target.skin.current",
-        "display": "Current Skin Complaint",
+        "display": "Current Skin or Scalp Complaint",
         "intents": [
           "intent.characterize_symptom"
         ]
       },
       "question": {
         "id": "question.skin.current",
-        "wording": "지금도 피부 발진, 가려움, 반점, 물집, 상처 또는 피부 병변이 있나요?",
+        "wording": "지금도 피부 또는 두피·머리카락에 변화가 있나요?",
         "language": "ko",
         "mode": [
           "chat",
@@ -465,7 +489,7 @@
     {
       "fact": {
         "id": "symptom.skin_complaint.main_type",
-        "display": "Main Skin Complaint Type",
+        "display": "Main Skin or Scalp Complaint Type",
         "value_type": "coded",
         "allowed_values": [
           "rash_spots",
@@ -474,19 +498,20 @@
           "blister_peeling",
           "wound_ulcer",
           "mole_lump",
+          "hair_or_scalp_change",
           "other"
         ]
       },
       "target": {
         "id": "target.skin.main-type",
-        "display": "Main Skin Complaint Type",
+        "display": "Main Skin or Scalp Complaint Type",
         "intents": [
           "intent.characterize_symptom"
         ]
       },
       "question": {
         "id": "question.skin.main-type",
-        "wording": "가장 주된 문제는 발진·반점, 가려움, 통증·부기, 물집·벗겨짐, 상처·궤양, 점·혹 중 무엇인가요?",
+        "wording": "가장 주된 문제는 발진·반점, 가려움, 통증·부기, 물집·벗겨짐, 상처·궤양, 점·혹, 탈모·두피 변화 중 무엇인가요?",
         "language": "ko",
         "mode": [
           "chat",
@@ -1789,7 +1814,7 @@
     {
       "fact": {
         "id": "skin.primary_context",
-        "display": "Primary Skin Complaint Context",
+        "display": "Primary Skin or Scalp Complaint Context",
         "value_type": "coded",
         "allowed_values": [
           "acute_widespread_or_rapid",
@@ -1799,12 +1824,13 @@
           "pigmented_or_persistent_lesion",
           "child_or_proxy",
           "followup_or_result_review",
+          "hair_or_scalp_change",
           "other_or_unclear"
         ]
       },
       "target": {
         "id": "target.skin.primary-context",
-        "display": "Primary Skin Complaint Context",
+        "display": "Primary Skin or Scalp Complaint Context",
         "intents": [
           "intent.characterize_symptom",
           "intent.risk_assessment"
@@ -1812,7 +1838,7 @@
       },
       "question": {
         "id": "question.skin.primary-context",
-        "wording": "가장 가까운 상황은 급성·빠르게 퍼지는 피부 변화, 국소 염증·상처, 약물·알레르기 시간관계, 반복 가려움·발진, 점·지속 병변, 소아·보호자 응답, 추적·결과 확인, 또는 불분명 중 무엇인가요?",
+        "wording": "가장 가까운 상황은 급성·빠르게 퍼지는 피부 변화, 국소 염증·상처, 약물·알레르기 시간관계, 반복 가려움·발진, 점·지속 병변, 탈모·두피 변화, 소아·보호자 응답, 추적·결과 확인, 또는 불분명 중 무엇인가요?",
         "language": "ko",
         "mode": [
           "chat",
@@ -2947,6 +2973,1255 @@
       "supports": [
         "group.skin.handoff"
       ]
+    },
+    {
+      "fact": {
+        "id": "hair.loss_pattern",
+        "display": "Hair Loss Pattern",
+        "value_type": "coded",
+        "allowed_values": [
+          "diffuse_shedding",
+          "gradual_thinning",
+          "localized_patch",
+          "hairline_or_breakage",
+          "crown_centered",
+          "other_or_unclear"
+        ],
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "278040002",
+          "display": "Loss of hair (finding)",
+          "version": "http://snomed.info/sct/900000000000207008/version/20260801",
+          "relation": "broader"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.skin-complaint",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.skin.hair-loss-pattern",
+        "display": "Hair Loss Pattern",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.hair-loss-pattern",
+        "wording": "머리카락 변화는 전체적으로 많이 빠짐, 서서히 숱이 줄어듦, 한두 군데 둥근 탈모, 헤어라인·묶는 부위의 끊김, 정수리 중심 변화, 그 밖의 형태 중 어디에 가깝나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 116,
+          "reason": "hair-loss-pattern"
+        }
+      ],
+      "supports": [
+        "group.skin.hair-scalp-character"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hair.onset",
+        "display": "Hair or Scalp Change Onset",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.skin.hair-onset",
+        "display": "Hair or Scalp Change Onset",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.hair-onset",
+        "wording": "탈모나 두피 변화를 처음 알아차린 날짜 또는 얼마나 전인지 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 115,
+          "reason": "hair-onset"
+        }
+      ],
+      "supports": [
+        "group.skin.hair-scalp-character"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hair.course",
+        "display": "Hair or Scalp Change Course",
+        "value_type": "coded",
+        "allowed_values": [
+          "improving",
+          "unchanged",
+          "gradually_worsening",
+          "rapidly_worsening",
+          "recurrent",
+          "unclear"
+        ]
+      },
+      "target": {
+        "id": "target.skin.hair-course",
+        "display": "Hair or Scalp Change Course",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.hair-course",
+        "wording": "처음 알아차린 뒤 좋아짐, 비슷함, 서서히 악화, 빠르게 악화, 반복 중 어디에 가깝나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 114,
+          "reason": "hair-course"
+        }
+      ],
+      "supports": [
+        "group.skin.hair-scalp-character"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hair.affected_site",
+        "display": "Hair or Scalp Affected Site",
+        "value_type": "string",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "focus_code": "278040002",
+          "attribute_code": "363698007",
+          "site_code": "41695006",
+          "version": "http://snomed.info/sct/900000000000207008/version/20260801"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.skin-complaint",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.skin.hair-site",
+        "display": "Hair or Scalp Affected Site",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.hair-site",
+        "wording": "변화가 있는 두피의 정확한 부위와 범위를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 113,
+          "reason": "hair-site"
+        }
+      ],
+      "supports": [
+        "group.skin.hair-scalp-character"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hair.active_shedding",
+        "display": "Current Active Hair Shedding",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.skin.hair-active-shedding",
+        "display": "Current Active Hair Shedding",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.hair-active-shedding",
+        "wording": "지금도 평소보다 머리카락이 많이 빠지고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 112,
+          "reason": "hair-active-shedding"
+        }
+      ],
+      "supports": [
+        "group.skin.hair-scalp-character"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hair.broken_hairs",
+        "display": "Broken Hairs",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.skin.hair-broken",
+        "display": "Broken Hairs",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.hair-broken",
+        "wording": "빠진 부위에 길이가 짧게 끊어진 머리카락이 보이나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 111,
+          "reason": "hair-broken"
+        }
+      ],
+      "supports": [
+        "group.skin.hair-scalp-character"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hair.non_scalp_hair_loss",
+        "display": "Non-scalp Hair Loss",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.skin.hair-non-scalp",
+        "display": "Non-scalp Hair Loss",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.hair-non-scalp",
+        "wording": "눈썹·속눈썹·수염 또는 몸의 털도 함께 빠졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 110,
+          "reason": "hair-non-scalp"
+        }
+      ],
+      "supports": [
+        "group.skin.hair-scalp-character"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hair.scalp_scaling",
+        "display": "Scalp Scaling",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.skin.hair-scalp-scaling",
+        "display": "Scalp Scaling",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.hair-scalp-scaling",
+        "wording": "두피에 각질이나 비늘처럼 일어나는 부분이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 109,
+          "reason": "hair-scalp-scaling"
+        }
+      ],
+      "supports": [
+        "group.skin.hair-scalp-character"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hair.scalp_redness",
+        "display": "Scalp Redness or Colour Change",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.skin.hair-scalp-redness",
+        "display": "Scalp Redness or Colour Change",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.hair-scalp-redness",
+        "wording": "두피에 평소와 다른 붉은색 또는 색 변화가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 108,
+          "reason": "hair-scalp-redness"
+        }
+      ],
+      "supports": [
+        "group.skin.hair-scalp-character"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hair.scalp_itch",
+        "display": "Scalp Itch",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.skin.hair-scalp-itch",
+        "display": "Scalp Itch",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.hair-scalp-itch",
+        "wording": "두피가 가렵나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 107,
+          "reason": "hair-scalp-itch"
+        }
+      ],
+      "supports": [
+        "group.skin.hair-scalp-character"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hair.scalp_pain_nrs",
+        "display": "Scalp Pain NRS",
+        "value_type": "integer",
+        "minimum": 0,
+        "maximum": 10
+      },
+      "target": {
+        "id": "target.skin.hair-scalp-pain-nrs",
+        "display": "Scalp Pain NRS",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.hair-scalp-pain-nrs",
+        "wording": "현재 두피 통증을 0점부터 10점까지 숫자로 답해 주세요. 0점은 통증 없음, 10점은 가장 심한 통증입니다.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 106,
+          "reason": "hair-scalp-pain-nrs"
+        }
+      ],
+      "supports": [
+        "group.skin.hair-scalp-character"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hair.scalp_burning",
+        "display": "Scalp Burning",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.skin.hair-scalp-burning",
+        "display": "Scalp Burning",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.hair-scalp-burning",
+        "wording": "두피가 화끈거리거나 타는 듯한 느낌이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 105,
+          "reason": "hair-scalp-burning"
+        }
+      ],
+      "supports": [
+        "group.skin.hair-scalp-character"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hair.scalp_tenderness",
+        "display": "Scalp Tenderness",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.skin.hair-scalp-tenderness",
+        "display": "Scalp Tenderness",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.hair-scalp-tenderness",
+        "wording": "두피를 만지거나 눌렀을 때 아픈가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 104,
+          "reason": "hair-scalp-tenderness"
+        }
+      ],
+      "supports": [
+        "group.skin.hair-scalp-character"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hair.scalp_smooth_shiny_change",
+        "display": "Smooth Shiny Scalp Change",
+        "value_type": "boolean",
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "400088006",
+          "display": "Scarring alopecia (disorder)",
+          "version": "http://snomed.info/sct/900000000000207008/version/20260801",
+          "relation": "narrower"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.skin-complaint",
+          "status": "provisional_pass"
+        }
+      },
+      "target": {
+        "id": "target.skin.hair-scalp-shiny",
+        "display": "Smooth Shiny Scalp Change",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.skin.hair-scalp-shiny",
+        "wording": "머리카락이 빠진 곳의 두피가 매끈하고 반짝이며 모공이 잘 보이지 않나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 103,
+          "reason": "hair-scalp-shiny"
+        }
+      ],
+      "supports": [
+        "group.skin.hair-scalp-character"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hair.recent_fever",
+        "display": "Recent Fever before Hair Loss",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.skin.hair-recent-fever",
+        "display": "Recent Fever before Hair Loss",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.skin.hair-recent-fever",
+        "wording": "탈모가 시작되기 약 2~4개월 전에 열이 난 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 102,
+          "reason": "hair-recent-fever"
+        }
+      ],
+      "supports": [
+        "group.skin.hair-scalp-trigger"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hair.recent_major_illness",
+        "display": "Recent Major Illness before Hair Loss",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.skin.hair-recent-illness",
+        "display": "Recent Major Illness before Hair Loss",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.skin.hair-recent-illness",
+        "wording": "탈모가 시작되기 약 2~4개월 전에 크게 아팠던 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 101,
+          "reason": "hair-recent-illness"
+        }
+      ],
+      "supports": [
+        "group.skin.hair-scalp-trigger"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hair.recent_major_surgery",
+        "display": "Recent Major Surgery before Hair Loss",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.skin.hair-recent-surgery",
+        "display": "Recent Major Surgery before Hair Loss",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.skin.hair-recent-surgery",
+        "wording": "탈모가 시작되기 약 2~4개월 전에 큰 수술을 받았나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 100,
+          "reason": "hair-recent-surgery"
+        }
+      ],
+      "supports": [
+        "group.skin.hair-scalp-trigger"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hair.recent_childbirth",
+        "display": "Recent Childbirth before Hair Loss",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.skin.hair-childbirth",
+        "display": "Recent Childbirth before Hair Loss",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.skin.hair-childbirth",
+        "wording": "해당되는 경우 최근 출산일과 탈모를 처음 알아차린 시점을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 99,
+          "reason": "hair-childbirth"
+        }
+      ],
+      "supports": [
+        "group.skin.hair-scalp-trigger"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hair.recent_marked_weight_loss",
+        "display": "Recent Marked Weight Loss",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.skin.hair-weight-loss",
+        "display": "Recent Marked Weight Loss",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.skin.hair-weight-loss",
+        "wording": "탈모 전 몇 달 사이 체중이 눈에 띄게 줄었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 98,
+          "reason": "hair-weight-loss"
+        }
+      ],
+      "supports": [
+        "group.skin.hair-scalp-trigger"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hair.restrictive_diet",
+        "display": "Restrictive Diet",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.skin.hair-restrictive-diet",
+        "display": "Restrictive Diet",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.skin.hair-restrictive-diet",
+        "wording": "탈모 전 몇 달 동안 식사를 심하게 제한하거나 극단적인 식단을 했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 97,
+          "reason": "hair-restrictive-diet"
+        }
+      ],
+      "supports": [
+        "group.skin.hair-scalp-trigger"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hair.recent_major_stress",
+        "display": "Recent Major Stressor",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.skin.hair-major-stress",
+        "display": "Recent Major Stressor",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.skin.hair-major-stress",
+        "wording": "탈모 전 몇 달 사이 큰 정신적 스트레스나 충격적인 일이 있었나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 96,
+          "reason": "hair-major-stress"
+        }
+      ],
+      "supports": [
+        "group.skin.hair-scalp-trigger"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hair.recent_medication_change",
+        "display": "Recent Medication Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.skin.hair-medication-change",
+        "display": "Recent Medication Change",
+        "intents": [
+          "intent.differentiate_common_causes",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.skin.hair-medication-change",
+        "wording": "탈모 전 몇 달 사이 시작·중단·용량 변경한 약이나 호르몬제가 있다면 이름과 변경일을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 95,
+          "reason": "hair-medication-change"
+        }
+      ],
+      "supports": [
+        "group.skin.hair-scalp-trigger"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hair.cancer_treatment",
+        "display": "Cancer Treatment Exposure",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.skin.hair-cancer-treatment",
+        "display": "Cancer Treatment Exposure",
+        "intents": [
+          "intent.differentiate_common_causes",
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.skin.hair-cancer-treatment",
+        "wording": "항암치료나 방사선치료를 받았다면 치료 종류와 가장 최근 치료일을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 94,
+          "reason": "hair-cancer-treatment"
+        }
+      ],
+      "supports": [
+        "group.skin.hair-scalp-trigger"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hair.iron_deficiency_history",
+        "display": "Iron Deficiency History",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.skin.hair-iron-history",
+        "display": "Iron Deficiency History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.skin.hair-iron-history",
+        "wording": "철분 부족이나 철결핍빈혈을 진단받은 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 93,
+          "reason": "hair-iron-history"
+        }
+      ],
+      "supports": [
+        "group.skin.hair-scalp-trigger"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hair.thyroid_condition_history",
+        "display": "Thyroid Condition History",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.skin.hair-thyroid-history",
+        "display": "Thyroid Condition History",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.skin.hair-thyroid-history",
+        "wording": "갑상선 질환을 진단받은 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 92,
+          "reason": "hair-thyroid-history"
+        }
+      ],
+      "supports": [
+        "group.skin.hair-scalp-trigger"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hair.family_history",
+        "display": "Family History of Similar Hair Loss",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.skin.hair-family-history",
+        "display": "Family History of Similar Hair Loss",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.skin.hair-family-history",
+        "wording": "가족 중 비슷한 형태의 탈모가 있다면 가족관계와 시작 나이를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 91,
+          "reason": "hair-family-history"
+        }
+      ],
+      "supports": [
+        "group.skin.hair-scalp-trigger"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hair.tight_hairstyle_exposure",
+        "display": "Tight Hairstyle Exposure",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.skin.hair-tight-style",
+        "display": "Tight Hairstyle Exposure",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.skin.hair-tight-style",
+        "wording": "머리를 강하게 당겨 묶거나 땋는 스타일을 자주 하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 90,
+          "reason": "hair-tight-style"
+        }
+      ],
+      "supports": [
+        "group.skin.hair-scalp-exposure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hair.heat_treatment_exposure",
+        "display": "Hair Heat Treatment Exposure",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.skin.hair-heat-treatment",
+        "display": "Hair Heat Treatment Exposure",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.skin.hair-heat-treatment",
+        "wording": "고온 드라이어·고데기 같은 열처리를 자주 하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 89,
+          "reason": "hair-heat-treatment"
+        }
+      ],
+      "supports": [
+        "group.skin.hair-scalp-exposure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hair.chemical_treatment_exposure",
+        "display": "Hair Chemical Treatment Exposure",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.skin.hair-chemical-treatment",
+        "display": "Hair Chemical Treatment Exposure",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.skin.hair-chemical-treatment",
+        "wording": "최근 염색·탈색·파마·화학적 스트레이트 시술을 했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 88,
+          "reason": "hair-chemical-treatment"
+        }
+      ],
+      "supports": [
+        "group.skin.hair-scalp-exposure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hair.household_similar_scalp_symptoms",
+        "display": "Household Contact with Similar Scalp Symptoms",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.skin.hair-household-contact",
+        "display": "Household Contact with Similar Scalp Symptoms",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.skin.hair-household-contact",
+        "wording": "함께 사는 사람에게 비슷한 두피 각질이나 탈모가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 87,
+          "reason": "hair-household-contact"
+        }
+      ],
+      "supports": [
+        "group.skin.hair-scalp-exposure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hair.pet_skin_or_fur_problem",
+        "display": "Pet Skin or Fur Problem",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.skin.hair-pet-exposure",
+        "display": "Pet Skin or Fur Problem",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.skin.hair-pet-exposure",
+        "wording": "접촉한 반려동물에게 털 빠짐이나 피부병이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 86,
+          "reason": "hair-pet-exposure"
+        }
+      ],
+      "supports": [
+        "group.skin.hair-scalp-exposure"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hair.previous_evaluation",
+        "display": "Previous Hair Loss Evaluation",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.skin.hair-previous-evaluation",
+        "display": "Previous Hair Loss Evaluation",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.skin.hair-previous-evaluation",
+        "wording": "이 문제로 받은 진찰·혈액검사·두피검사나 설명받은 결과가 있다면 날짜와 자료 출처를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 85,
+          "reason": "hair-previous-evaluation"
+        }
+      ],
+      "supports": [
+        "group.skin.treatment-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hair.previous_treatment_response",
+        "display": "Previous Hair Loss Treatment Response",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.skin.hair-treatment-response",
+        "display": "Previous Hair Loss Treatment Response",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.skin.hair-treatment-response",
+        "wording": "사용한 탈모·두피 치료가 있다면 이름, 사용 기간과 호전·악화 여부를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 84,
+          "reason": "hair-treatment-response"
+        }
+      ],
+      "supports": [
+        "group.skin.treatment-detail"
+      ]
+    },
+    {
+      "fact": {
+        "id": "hair.emotional_impact",
+        "display": "Hair Loss Emotional Impact",
+        "value_type": "coded",
+        "allowed_values": [
+          "none",
+          "mild",
+          "moderate",
+          "severe"
+        ]
+      },
+      "target": {
+        "id": "target.skin.hair-emotional-impact",
+        "display": "Hair Loss Emotional Impact",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.skin.hair-emotional-impact",
+        "wording": "탈모나 두피 변화로 인한 걱정·당혹감은 없음, 가벼움, 중간, 심함 중 어느 정도인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 83,
+          "reason": "hair-emotional-impact"
+        }
+      ],
+      "supports": [
+        "group.skin.function-detail"
+      ]
     }
   ],
   "provenance": {
@@ -2964,7 +4239,14 @@
       "source.nice.cg183.drug-allergy.2014",
       "source.nice.ng141.cellulitis.2026",
       "source.nice.ng14.melanoma.2026",
-      "source.aad.rash-warning.2024"
+      "source.aad.rash-warning.2024",
+      "source.nhs.hair-loss.2024",
+      "source.bad.telogen-effluvium.2025",
+      "source.bad.ccca.2024",
+      "source.nhs-scotland.alopecia.2026",
+      "source.nottsapc.tinea-capitis.2024",
+      "source.nhs.staph-infections.2025",
+      "source.stom.snomed-hair-scalp.20260807"
     ],
     "review_status": "unreviewed",
     "version": "0.1.0"

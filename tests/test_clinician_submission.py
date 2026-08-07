@@ -591,6 +591,9 @@ class ClinicianSubmissionContextTest(unittest.TestCase):
         self.assertIn("pain.nrs_score", required)
         self.assertIn("rule.skin.safety.blistering-new-medicine", rules)
         self.assertIn("rule.skin.safety.near-eye-hot-swollen", rules)
+        self.assertIn("hair.loss_pattern", facts)
+        self.assertIn("hair.scalp_smooth_shiny_change", facts)
+        self.assertIn("rule.skin.safety.hot-painful-swollen", rules)
 
     def test_weight_constitutional_profile_has_professional_handoff_and_regressions(self):
         package = compile_package(profile="weight_constitutional_change")

@@ -814,10 +814,14 @@ def build(root: Path, output: Path) -> dict[str, Any]:
         # Full, readable Fact payloads remain split by RFE; minifying this one
         # index prevents growth in implemented packages from breaking the
         # Custom GPT Action response-size guard.
-        payload = encoded(
-            document,
-            minified=name in {"facts.json", "safety-rules.json"},
-        )
+        minified = name in {"facts.json", "safety-rules.json"}
+        payload = encoded(document, minified=minified)
+        # RFE payloads are also served through the Custom GPT Action. Keep the
+        # stable resource path and complete JSON shape, but remove formatting
+        # whitespace when a readable encoding would cross the response guard.
+        # Rule collections have their own semantic partitioning above.
+        if name.startswith("rfe/") and len(payload) >= 50_000:
+            payload = encoded(document, minified=True)
         destination = output / name
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_bytes(payload)
