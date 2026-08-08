@@ -47,7 +47,9 @@ Removing the active version requires `--force-current` and leaves
 `current_version` empty, which blocks package recommendation. To remove this
 temporary feature completely, delete this directory, the generator and its
 requirements file, and the five contiguous test-catalog paths/parameters in
-`docs/gpt/openapi.yaml`. The clinical Knowledge build remains unaffected.
+`docs/gpt/openapi.yaml`, then regenerate `docs/gpt/openapi-runtime.yaml` with
+`python3 tools/gpt_export/build_runtime_openapi.py`. The clinical Knowledge
+build remains unaffected.
 
 ## Interpretation boundary
 

@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+import re
 import unittest
 
 
@@ -104,6 +105,19 @@ class HealthScreeningPackageCatalogTests(unittest.TestCase):
         self.assertIn("never send age, sex or gender", instructions)
         self.assertIn("isolated test data, not Clinical Knowledge", instructions)
         self.assertIn("must be confirmed directly with the institution", instructions)
+
+    def test_custom_gpt_runtime_openapi_stays_within_operation_limit(self):
+        runtime = (ROOT / "docs/gpt/openapi-runtime.yaml").read_text(
+            encoding="utf-8"
+        )
+        operation_ids = re.findall(
+            r"^\s+operationId:\s+(\S+)\s*$", runtime, re.MULTILINE
+        )
+        self.assertLessEqual(len(operation_ids), 30)
+        self.assertEqual(len(operation_ids), len(set(operation_ids)))
+        self.assertIn("operationId: getHealthScreeningPackageCatalogRegistry", runtime)
+        self.assertIn("operationId: getHealthScreeningPackageDetail", runtime)
+        self.assertNotIn("/gpt/interoperability/uscdi-v6-core.json:", runtime)
 
     def test_synthetic_catalog_action_simulation_keeps_matching_local(self):
         simulation = load(
