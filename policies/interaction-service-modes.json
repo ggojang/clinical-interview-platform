@@ -1,0 +1,169 @@
+{
+  "id": "policy.interaction-service-modes",
+  "version": "0.1.0",
+  "lifecycle_status": "draft",
+  "review_status": "unreviewed",
+  "clinical_use_status": "limited",
+  "contains_patient_responses": false,
+  "compatibility": {
+    "default_mode": "clinical_adaptive",
+    "legacy_chatbot_entry": "reason_for_encounter",
+    "legacy_entry_behavior_unchanged": true,
+    "existing_conversation_starters_unchanged": true,
+    "existing_public_read_only_action_unchanged": true,
+    "mode_switch_requires_explicit_user_intent": true
+  },
+  "start_categories": [
+    {
+      "id": "clinical_preparation",
+      "display_ko": "진료 준비",
+      "description_ko": "진료 전에 필요한 내용을 정리합니다.",
+      "mode_ids": ["clinical_adaptive", "clinical_structured"]
+    },
+    {
+      "id": "survey_participation",
+      "display_ko": "설문 참여",
+      "description_ko": "정해진 설문이나 대화형 설문에 참여합니다.",
+      "mode_ids": ["survey_conversational_fixed", "survey_structured"]
+    },
+    {
+      "id": "screening_addon",
+      "display_ko": "추가 검진 추천받기",
+      "description_ko": "국가검진 외에 검진센터에서 제공하는 추가 검진을 비교합니다.",
+      "mode_ids": ["screening_addon_recommendation"]
+    },
+    {
+      "id": "health_information",
+      "display_ko": "건강정보 묻기",
+      "description_ko": "건강 관련 질문에 대한 일반 정보를 확인합니다.",
+      "mode_ids": ["health_information"]
+    }
+  ],
+  "modes": [
+    {
+      "id": "clinical_adaptive",
+      "display_ko": "증상에 맞춰 준비하기",
+      "aliases_ko": ["자유 문진", "증상 문진", "진료 문진", "기존 문진"],
+      "runtime_adapter": "InterviewSession",
+      "entry": "reason_for_encounter",
+      "question_authority": "compiled_clinical_knowledge",
+      "safety": "trigger_based_minimum_sentinel",
+      "output_resources": ["Questionnaire", "QuestionnaireResponse"],
+      "sdc_extraction": "supported_when_mapping_is_verified"
+    },
+    {
+      "id": "clinical_structured",
+      "display_ko": "병원 문진표 작성하기",
+      "aliases_ko": ["정형 문진", "FHIR 문진표", "병원 문진표"],
+      "runtime_adapter": "supplied_questionnaire_runner",
+      "entry": "supplied_fhir_questionnaire",
+      "question_authority": "supplied_questionnaire",
+      "source_items_are_immutable": true,
+      "safety": "off_path_trigger_only",
+      "output_resources": ["QuestionnaireResponse"],
+      "sdc_extraction": "only_when_questionnaire_declares_verified_extraction_mapping"
+    },
+    {
+      "id": "survey_conversational_fixed",
+      "display_ko": "대화로 설문하기",
+      "aliases_ko": ["자유 설문", "대화형 설문", "환자경험 설문"],
+      "runtime_adapter": "fixed_questionnaire_chat_runner",
+      "entry": "fixed_questionnaire_catalog",
+      "question_authority": "verified_source_questionnaire",
+      "source_items_are_immutable": true,
+      "automatic_question_terminology_mapping": false,
+      "output_resources": ["Questionnaire", "QuestionnaireResponse"],
+      "sdc_extraction": "disabled_by_default"
+    },
+    {
+      "id": "survey_structured",
+      "display_ko": "정해진 설문 작성하기",
+      "aliases_ko": ["정형 설문", "FHIR 설문", "설문지 작성"],
+      "runtime_adapter": "supplied_questionnaire_runner",
+      "entry": "supplied_fhir_questionnaire",
+      "question_authority": "supplied_questionnaire",
+      "source_items_are_immutable": true,
+      "automatic_question_terminology_mapping": false,
+      "output_resources": ["QuestionnaireResponse"],
+      "sdc_extraction": "disabled"
+    },
+    {
+      "id": "screening_addon_recommendation",
+      "display_ko": "추가 검진 추천받기",
+      "aliases_ko": ["내게 맞는 검진 찾기", "건강검진 패키지 추천", "추가 검진 추천"],
+      "runtime_adapter": "screening_recommendation_workflow",
+      "entry": "supplemental_adaptive_interview",
+      "opening_prompt_ko": "필요한 내용만 대화로 확인하겠습니다.",
+      "official_questionnaire": "optional_user_choice",
+      "official_questionnaire_timing": "before_or_after_supplemental_interview",
+      "prepopulation": "verified_exact_or_equivalent_mapping_after_user_review",
+      "resource_separation": "official_and_supplemental_questionnaires_remain_separate",
+      "output_resources": ["Questionnaire", "QuestionnaireResponse", "Bundle"],
+      "sdc_extraction": "supplemental_interview_only_when_mapping_is_verified"
+    },
+    {
+      "id": "health_information",
+      "display_ko": "건강정보 묻기",
+      "aliases_ko": ["건강 상담", "건강정보", "의학 정보"],
+      "runtime_adapter": "informational_answer",
+      "entry": "free_text_question",
+      "question_authority": "user_information_need",
+      "independent_diagnosis_or_treatment": false,
+      "must_express_uncertainty": true,
+      "safety": "notify_and_handoff_when_red_flag_is_suspected",
+      "output_resources": []
+    }
+  ],
+  "unknown_context": {
+    "do_not_infer_missing_demographics_or_health_information": true,
+    "ask_only_when_needed_for_the_selected_workflow": true,
+    "states": [
+      "known",
+      "not_provided",
+      "asked_unknown",
+      "declined",
+      "conflicted",
+      "stale",
+      "not_applicable"
+    ],
+    "data_absent_reason_is_not_a_negative_clinical_answer": true
+  },
+  "test_data_lifecycle": {
+    "storage_model": "ephemeral_in_memory_only",
+    "database_write": false,
+    "raw_response_logging": false,
+    "analytics_payload_contains_answers": false,
+    "temporary_upload_persistence": false,
+    "server_copy_after_session_close": false,
+    "allow_in_session_preview_and_download": true,
+    "external_chat_provider_retention_is_outside_repository_control": true
+  },
+  "screening_recommendation": {
+    "national_screening_is_assumed_baseline": true,
+    "recommend_only_incremental_center_offerings": true,
+    "official_nhis_questionnaire_is_optional": true,
+    "supplemental_adaptive_interview_is_default": true,
+    "offer_nhis_prepopulation_after_supplemental_interview": true,
+    "official_and_supplemental_questionnaire_responses_must_not_be_merged": true,
+    "bundle_may_reference_both": true,
+    "deterministic_rules_select_candidates": true,
+    "llm_role": "explain_candidates_and_uncertainty",
+    "economic_capacity_inference": false,
+    "budget_question_is_optional": true,
+    "always_compare_lowest_cost_suitable_option": true,
+    "show_duplicate_items_and_incremental_value": true,
+    "package_catalog_and_policy_version_required": true,
+    "recommendation_blocked_without_current_package_catalog": true
+  },
+  "prepopulation": {
+    "source": "supplemental_atomic_facts",
+    "target": "official_questionnaire_link_id",
+    "automatic_relations": ["exact", "equivalent"],
+    "candidate_only_relations": ["partial", "broader", "narrower", "related"],
+    "compound_target_requires_all_atomic_source_facts": true,
+    "questionnaire_response_status_before_user_confirmation": "in-progress",
+    "automatic_completed_status": false,
+    "mapping_version_and_provenance_required": true,
+    "official_source_verification_required_before_mapping_publication": true
+  }
+}

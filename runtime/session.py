@@ -453,6 +453,7 @@ class InterviewSession:
     question_reference_map: dict[str, str] = field(default_factory=dict)
     unprompted_reference_map: dict[str, str] = field(default_factory=dict)
     amended_after_completion: bool = False
+    closed: bool = False
     clarification_counts: dict[str, int] = field(default_factory=dict)
     package: dict[str, Any] = field(init=False)
     memory: ClinicalMemory = field(init=False)
@@ -591,6 +592,8 @@ class InterviewSession:
         return self.memory.facts
 
     def process(self, patient_text: str) -> dict[str, Any]:
+        if self.closed:
+            raise RuntimeError("interview session is closed and response state was purged")
         turn = self.memory.next_turn()
         self.memory.observe(patient_text)
         edit_action = self._parse_edit_command(patient_text)
@@ -2384,4 +2387,27 @@ class InterviewSession:
             "trace": list(self.trace),
             "package": memory["package"],
             "knowledge_warnings": list(self.package.get("_runtime_warnings", [])),
+        }
+
+    def close(self) -> dict[str, Any]:
+        """Purge response-bearing state while keeping compiled Knowledge loaded."""
+        if self.closed:
+            return {"status": "closed", "already_closed": True}
+        deleted = self.memory.purge()
+        self.encounter_context = normalize_encounter_context(None)
+        self.asked.clear()
+        self.active_patterns.clear()
+        self.trace.clear()
+        self.last_question_fact = None
+        self.pending_edit_fact = None
+        self.edit_reference_map.clear()
+        self.question_reference_map.clear()
+        self.unprompted_reference_map.clear()
+        self.clarification_counts.clear()
+        self.closed = True
+        return {
+            "status": "closed",
+            "already_closed": False,
+            "response_state_purged": True,
+            "deleted": deleted,
         }

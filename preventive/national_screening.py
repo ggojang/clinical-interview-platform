@@ -82,6 +82,7 @@ class NationalScreeningSession:
     answers: dict[str, dict[str, Any]] = field(default_factory=dict)
     events: list[dict[str, Any]] = field(default_factory=list)
     consent_ledger: ConsentLedger = field(init=False)
+    closed: bool = False
 
     def __post_init__(self) -> None:
         self.knowledge = load_knowledge(self.knowledge_path)
@@ -115,6 +116,7 @@ class NationalScreeningSession:
         ]
 
     def offers(self) -> list[dict[str, Any]]:
+        self._require_open()
         offers = []
         for group_id in self.eligible_group_ids():
             group = self.groups[group_id]
@@ -133,6 +135,7 @@ class NationalScreeningSession:
         return offers
 
     def decide(self, group_id: str, answer: str | int) -> dict[str, Any]:
+        self._require_open()
         if group_id not in self.eligible_group_ids():
             raise ValueError(f"question group is not eligible: {group_id}")
         decision, raw = _consent_value(answer)
@@ -163,12 +166,14 @@ class NationalScreeningSession:
         return deepcopy(record)
 
     def active_questions(self) -> list[dict[str, Any]]:
+        self._require_open()
         questions: list[dict[str, Any]] = []
         for group_id in self.active_groups:
             questions.extend(deepcopy(self.groups[group_id]["questions"]))
         return questions
 
     def answer(self, question_id: str, raw_input: Any, value: Any = None) -> dict[str, Any]:
+        self._require_open()
         question = next(
             (item for item in self.active_questions() if item["id"] == question_id),
             None,
@@ -199,6 +204,7 @@ class NationalScreeningSession:
         return deepcopy(record)
 
     def snapshot(self, completed: bool = False) -> dict[str, Any]:
+        self._require_open()
         return {
             "resource_type": "NationalHealthScreeningResponse",
             "schema_version": "0.1.0",
@@ -217,4 +223,30 @@ class NationalScreeningSession:
             "active_question_groups": deepcopy(self.active_groups),
             "answers": deepcopy(self.answers),
             "events": deepcopy(self.events),
+        }
+
+    def _require_open(self) -> None:
+        if self.closed:
+            raise RuntimeError("screening session is closed and response state was purged")
+
+    def close(self) -> dict[str, Any]:
+        """Purge all response-bearing and personal context from memory."""
+        if self.closed:
+            return {"status": "closed", "already_closed": True}
+        deleted = {
+            "answer_count": len(self.answers),
+            "event_count": len(self.events),
+            "consent_count": self.consent_ledger.purge(),
+        }
+        self.patient_context.clear()
+        self.consent_decisions.clear()
+        self.active_groups.clear()
+        self.answers.clear()
+        self.events.clear()
+        self.closed = True
+        return {
+            "status": "closed",
+            "already_closed": False,
+            "response_state_purged": True,
+            "deleted": deleted,
         }

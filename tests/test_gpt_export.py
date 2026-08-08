@@ -545,6 +545,49 @@ class GptExportTests(unittest.TestCase):
             config["editor_application"]["requires_editor_save_or_update"]
         )
 
+    def test_service_modes_are_additive_and_legacy_entry_is_unchanged(self):
+        with tempfile.TemporaryDirectory() as output:
+            output_path = Path(output)
+            manifest = build(ROOT, output_path)
+            catalog = json.loads(
+                (output_path / "service-modes.json").read_text(encoding="utf-8")
+            )
+            self.assertEqual(
+                catalog["compatibility"]["default_mode"], "clinical_adaptive"
+            )
+            self.assertTrue(
+                catalog["compatibility"]["legacy_entry_behavior_unchanged"]
+            )
+            self.assertTrue(
+                catalog["compatibility"]["existing_conversation_starters_unchanged"]
+            )
+            self.assertEqual(
+                manifest["interview_entry"]["type"], "reason_for_encounter"
+            )
+            self.assertEqual(
+                manifest["interview_entry"]["conversation_starters"],
+                [
+                    "평가/설문 목록",
+                    "오늘 불편한 증상이나 상담받고 싶은 내용을 입력하겠습니다",
+                    "건강검진 문진을 시작하고 싶습니다",
+                    "환자경험평가",
+                ],
+            )
+            self.assertEqual(
+                manifest["preferred_loading"]["service_mode_catalog"],
+                "/gpt/service-modes.json",
+            )
+            self.assertFalse(catalog["contains_patient_responses"])
+
+        openapi = (ROOT / "docs/gpt/openapi.yaml").read_text(encoding="utf-8")
+        self.assertIn("/gpt/service-modes.json:", openapi)
+        self.assertIn("operationId: getInteractionServiceModes", openapi)
+        instructions = (ROOT / "docs/gpt/GPT_INSTRUCTIONS.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("never force a new start menu", instructions)
+        self.assertIn("필요한 내용만 대화로 확인하겠습니다.", instructions)
+
     def test_rfe_catalog_and_bundles_are_consistent(self):
         with tempfile.TemporaryDirectory() as output:
             output_path = Path(output)

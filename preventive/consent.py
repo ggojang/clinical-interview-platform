@@ -72,3 +72,10 @@ class ConsentLedger:
 
     def snapshot(self) -> list[dict[str, Any]]:
         return deepcopy(self.records)
+
+    def purge(self) -> int:
+        """Delete consent decisions held only for the current test session."""
+        count = len(self.records)
+        self.records.clear()
+        self.subject_ref = ""
+        return count

@@ -274,3 +274,16 @@ class ClinicalMemory:
                 "version": self.package_version,
             },
         }
+
+    def purge(self) -> dict[str, int]:
+        """Delete all response-bearing state from this in-memory session."""
+        deleted = {
+            "fact_count": len(self.facts),
+            "contradiction_count": len(self.contradictions),
+            "event_count": len(self.events),
+        }
+        self.turn = 0
+        self.facts.clear()
+        self.contradictions.clear()
+        self.events.clear()
+        return deleted

@@ -1,0 +1,41 @@
+{
+  "id": "simulation.service-mode-compatibility",
+  "version": "0.1.0",
+  "synthetic": true,
+  "contains_real_patient_data": false,
+  "cases": [
+    {
+      "id": "legacy-chatbot-no-mode-selection",
+      "input": "머리가 아파요",
+      "expected_mode": "clinical_adaptive",
+      "expected_entry": "reason_for_encounter",
+      "existing_chatbot_flow_must_not_change": true
+    },
+    {
+      "id": "screening-default-supplemental-interview",
+      "input": "추가 검진 추천받기",
+      "expected_mode": "screening_addon_recommendation",
+      "expected_next_workflow": "supplemental_adaptive_interview",
+      "official_nhis_questionnaire_is_optional": true,
+      "expected_prompt_ko": "필요한 내용만 대화로 확인하겠습니다."
+    },
+    {
+      "id": "fixed-survey-source-authority",
+      "input": "대화로 설문하기",
+      "expected_mode": "survey_conversational_fixed",
+      "source_items_are_immutable": true,
+      "automatic_question_terminology_mapping": false
+    },
+    {
+      "id": "nhis-prefill-compound-fact-gap",
+      "synthetic_facts": {
+        "smoking.status": {"status": "known", "value": "current"},
+        "smoking.amount": {"status": "not_provided"},
+        "smoking.duration": {"status": "known", "value": 20}
+      },
+      "expected_auto_prefill": false,
+      "reason": "compound_target_requires_all_atomic_source_facts",
+      "questionnaire_response_status": "in-progress"
+    }
+  ]
+}

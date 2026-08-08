@@ -616,6 +616,9 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
     draft_clinical_use_policy = sanitize(load_json(
         root / "policies" / "draft-clinical-use-boundary.json"
     ))
+    interaction_service_modes = sanitize(load_json(
+        root / "policies" / "interaction-service-modes.json"
+    ))
     for document, resource_type in (
         (uscdi_core, "UscdiCoreInteroperabilityOverlay"),
         (uscdi_plus, "UscdiPlusDomainOverlayCatalog"),
@@ -643,6 +646,7 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
             "ComputableKnowledgeStandardsCoverageReport",
         ),
         (draft_clinical_use_policy, "DraftClinicalUseBoundaryPolicy"),
+        (interaction_service_modes, "InteractionServiceModeCatalog"),
     ):
         document["resource_type"] = resource_type
         document["contains_patient_responses"] = False
@@ -807,6 +811,7 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
         "interoperability/draft-clinical-use-policy.json": (
             draft_clinical_use_policy
         ),
+        "service-modes.json": interaction_service_modes,
         "hira-adequacy-assessments.json": hira_assessment_catalog,
     }
     resources.update(hira_programs)
@@ -878,6 +883,7 @@ def build(root: Path, output: Path) -> dict[str, Any]:
         "status": "research_only",
         "review_status": "unreviewed",
         "contains_patient_responses": False,
+        "service_mode_policy": resources["service-modes.json"],
         "interview_entry": {
             "type": "reason_for_encounter",
             "conversation_starters": [
@@ -1104,6 +1110,8 @@ def build(root: Path, output: Path) -> dict[str, Any]:
             "interoperability/computable-knowledge-policy.json"
         ],
         "preferred_loading": {
+            "service_mode_catalog": "/gpt/service-modes.json",
+            "service_mode_operation": "getInteractionServiceModes",
             "catalog_operation": "getReasonForEncounters",
             "common_operation": "getCommonInterviewFacts",
             "clinician_submission_context": "/gpt/clinician-submission-context.json",
