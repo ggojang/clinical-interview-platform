@@ -1,0 +1,59 @@
+{
+  "id": "simulation.health-screening-package-catalog-action",
+  "version": "1.0.0",
+  "contains_real_patient_data": false,
+  "purpose": "Prevent regression to invented package recommendations or transmission of health answers to the isolated catalog Action.",
+  "cases": [
+    {
+      "id": "SCREENING-CATALOG-ACTION-001",
+      "synthetic_context": {
+        "intent": "건강검진 항목 상담하고 싶어",
+        "catalog_browsing_region_id": "seoul",
+        "conversation_state_contains_synthetic_health_facts": true,
+        "optional_budget_is_known_locally": true
+      },
+      "expected_action_sequence": [
+        "getHealthScreeningPackageCatalogRegistry",
+        "getHealthScreeningPackageCatalogMetadata",
+        "getHealthScreeningPackageRegionMetadata",
+        "getHealthScreeningPackageRegionPage",
+        "getHealthScreeningPackageDetail"
+      ],
+      "expected_action_parameters_only": [
+        "catalogVersion",
+        "regionId",
+        "page",
+        "packageId"
+      ],
+      "forbidden_action_payloads": [
+        "patient_answers",
+        "age",
+        "sex_or_gender",
+        "symptoms",
+        "diagnoses",
+        "medications",
+        "budget",
+        "free_text",
+        "identifiers"
+      ],
+      "expected_local_processing": {
+        "clinical_and_budget_matching_occurs_in_conversation_state": true,
+        "all_declared_region_pages_are_considered_before_claiming_lowest_price": true,
+        "package_details_are_loaded_only_for_returned_package_ids": true,
+        "lowest_priced_plausibly_suitable_listing_is_compared": true,
+        "national_screening_duplicates_and_incremental_items_are_distinguished": true
+      },
+      "expected_output_boundary": {
+        "catalog_version_is_shown": true,
+        "raw_price_and_listing_status_are_preserved": true,
+        "official_source_url_is_shown": true,
+        "institution_confirmation_is_required": true,
+        "medical_necessity_is_not_claimed": true
+      },
+      "failure_behavior": {
+        "missing_current_version_or_action": "block_catalog_backed_recommendation",
+        "invented_fallback_package": false
+      }
+    }
+  ]
+}

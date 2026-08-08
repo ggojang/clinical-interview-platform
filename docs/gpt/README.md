@@ -14,6 +14,8 @@ This directory is a static, read-only knowledge API for a Custom GPT test chatbo
 - `question-groups.json`: compact common QuestionGroup index; complete QuestionTemplates are provided in each RFE question resource
 - `safety-rules.json`: compact cross-RFE safety rules; complete routing and priority rules are provided in each `rfe/{slug}/rules.json`
 - `screening-kr.json`: Korean national screening candidate rules
+- `test-catalogs/health-screening-packages/registry.json`: active-version pointer for the isolated, removable health-screening center package test catalog
+- `test-catalogs/health-screening-packages/versions/{version}/...`: paged public listing summaries and source-preserving package details; never receives patient answers
 - `questionnaires/patient-experience-5th-2025/metadata.json`: activation, section index, answer semantics, and completion policy for the 2025 fifth inpatient patient-experience questionnaire
 - `questionnaires/patient-experience-5th-2025/sections/{1..8}.json`: one compact source-preserving Questionnaire section per Action response
 - `assessments/{programId}.json`: one compact executable definition for the selected HIRA patient/proxy assessment, loaded only after start confirmation
@@ -27,6 +29,11 @@ This directory is a static, read-only knowledge API for a Custom GPT test chatbo
 The optional feedback Action is implemented separately under `services/feedback-worker/`. It is not hosted by GitHub Pages and is not activated merely by publishing this directory. Deploy it, render its OpenAPI schema with the actual HTTPS origin, configure its write API key in the GPT editor, and save/update the GPT. It accepts only explicitly consented structured end-of-test metrics and provides aggregate statistics through a separate administrator key.
 
 Run `python3 tools/gpt_export/build.py` after changing Knowledge or Facts. The generated resources are deterministic and contain no simulation or response data.
+
+The temporary health-screening package catalog is deliberately outside that
+Knowledge build. See its own `README.md` and generator under
+`tools/test_catalogs/`; replacing or removing it must not mutate compiled
+Clinical Knowledge.
 
 ## Custom GPT start screen
 

@@ -575,9 +575,9 @@ class GptExportTests(unittest.TestCase):
                 manifest["interview_entry"]["conversation_starters"],
                 [
                     "평가/설문 목록",
-                    "오늘 불편한 증상이나 상담받고 싶은 내용을 입력하겠습니다",
-                    "건강검진 문진을 시작하고 싶습니다",
-                    "환자경험평가",
+                    "건강검진 항목 상담하고 싶어",
+                    "문진 시작 (예: 기침이 나요)",
+                    "일반적인 건강 상담 (응급 여부 판단 등)",
                 ],
             )
             self.assertEqual(

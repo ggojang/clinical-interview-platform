@@ -28,9 +28,9 @@ def test_no_message_requests_one_conversational_purpose_question():
     )
     assert config["conversation_starters"] == [
         "평가/설문 목록",
-        "오늘 불편한 증상이나 상담받고 싶은 내용을 입력하겠습니다",
-        "건강검진 문진을 시작하고 싶습니다",
-        "환자경험평가",
+        "건강검진 항목 상담하고 싶어",
+        "문진 시작 (예: 기침이 나요)",
+        "일반적인 건강 상담 (응급 여부 판단 등)",
     ]
 
 
@@ -44,7 +44,7 @@ def test_first_message_routes_without_forcing_a_start_menu():
 
     survey = resolve_service_mode("환자경험평가를 하고 싶어요")
     assert survey["mode"]["id"] == "survey_conversational_fixed"
-    screening = resolve_service_mode("건강검진 문진을 시작하고 싶습니다")
+    screening = resolve_service_mode("건강검진 항목 상담하고 싶어")
     assert screening["mode"]["id"] == "screening_addon_recommendation"
     information = resolve_service_mode("고혈압 치료에 대해 알려줘")
     assert information["mode"]["id"] == "health_information"

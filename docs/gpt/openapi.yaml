@@ -1,8 +1,8 @@
 openapi: 3.1.0
 info:
   title: Clinical Interview Research Knowledge
-  version: 1.49.0
-  description: Read-only, research-only Knowledge and Fact resources. No patient data is accepted.
+  version: 1.50.0
+  description: Read-only draft Knowledge, Fact, and isolated test-catalog resources. No patient answers are accepted.
 servers:
   - url: https://ggojang.github.io/clinical-interview-platform
 paths:
@@ -102,6 +102,68 @@ paths:
       responses:
         '200':
           description: Korean screening knowledge
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/JsonDocument'}
+  /gpt/test-catalogs/health-screening-packages/registry.json:
+    get:
+      operationId: getHealthScreeningPackageCatalogRegistry
+      summary: Get the active version pointer for the isolated test health-screening package catalog
+      responses:
+        '200':
+          description: Test-only catalog registry without patient responses
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/JsonDocument'}
+  /gpt/test-catalogs/health-screening-packages/versions/{catalogVersion}/metadata.json:
+    get:
+      operationId: getHealthScreeningPackageCatalogMetadata
+      summary: Get versioned catalog metadata and the public region list
+      parameters:
+        - $ref: '#/components/parameters/CatalogVersion'
+      responses:
+        '200':
+          description: Versioned test-catalog metadata without patient responses
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/JsonDocument'}
+  /gpt/test-catalogs/health-screening-packages/versions/{catalogVersion}/regions/{regionId}/index.json:
+    get:
+      operationId: getHealthScreeningPackageRegionMetadata
+      summary: Get page references for one public catalog region; never send health answers as parameters
+      parameters:
+        - $ref: '#/components/parameters/CatalogVersion'
+        - $ref: '#/components/parameters/RegionId'
+      responses:
+        '200':
+          description: Region page metadata for the test catalog
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/JsonDocument'}
+  /gpt/test-catalogs/health-screening-packages/versions/{catalogVersion}/regions/{regionId}/pages/{page}.json:
+    get:
+      operationId: getHealthScreeningPackageRegionPage
+      summary: Get one price-sorted public package summary page for local candidate comparison
+      parameters:
+        - $ref: '#/components/parameters/CatalogVersion'
+        - $ref: '#/components/parameters/RegionId'
+        - $ref: '#/components/parameters/CatalogPage'
+      responses:
+        '200':
+          description: At most 50 public package summaries; no patient data is accepted
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/JsonDocument'}
+  /gpt/test-catalogs/health-screening-packages/versions/{catalogVersion}/packages/{packageId}.json:
+    get:
+      operationId: getHealthScreeningPackageDetail
+      summary: Get the source-preserving detail for one package identifier returned by a region page
+      parameters:
+        - $ref: '#/components/parameters/CatalogVersion'
+        - $ref: '#/components/parameters/PackageId'
+      responses:
+        '200':
+          description: Test-only package detail with source URL and listing variants
           content:
             application/json:
               schema: {$ref: '#/components/schemas/JsonDocument'}
@@ -343,6 +405,39 @@ paths:
               schema: {$ref: '#/components/schemas/JsonDocument'}
 components:
   parameters:
+    CatalogVersion:
+      name: catalogVersion
+      in: path
+      required: true
+      description: Version returned by getHealthScreeningPackageCatalogRegistry; never derive it from a user answer
+      schema:
+        type: string
+        pattern: '^[0-9A-Za-z][0-9A-Za-z._-]{0,63}$'
+    RegionId:
+      name: regionId
+      in: path
+      required: true
+      description: Public catalog browsing region selected from catalog metadata; do not send clinical facts with it
+      schema:
+        type: string
+        enum: [seoul, gyeonggi, incheon, busan, daegu, gwangju, daejeon, ulsan, sejong, gangwon, chungbuk, chungnam, jeonbuk, jeonnam, gyeongbuk, gyeongnam, jeju]
+    CatalogPage:
+      name: page
+      in: path
+      required: true
+      description: Page number returned by getHealthScreeningPackageRegionMetadata
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 20
+    PackageId:
+      name: packageId
+      in: path
+      required: true
+      description: Opaque package identifier returned by a region page; never invent an identifier
+      schema:
+        type: string
+        pattern: '^pkg-[0-9a-f]{16}$'
     RfeId:
       name: rfeId
       in: path
