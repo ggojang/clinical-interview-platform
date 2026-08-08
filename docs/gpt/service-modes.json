@@ -1,14 +1,34 @@
 {
   "clinical_use_status": "limited",
   "compatibility": {
-    "default_mode": "clinical_adaptive",
+    "ask_purpose_only_when_not_inferable": true,
+    "core_entry": "interaction_purpose",
+    "default_mode": null,
     "existing_conversation_starters_unchanged": true,
     "existing_public_read_only_action_unchanged": true,
-    "legacy_chatbot_entry": "reason_for_encounter",
-    "legacy_entry_behavior_unchanged": true,
-    "mode_switch_requires_explicit_user_intent": true
+    "first_message_intent_routing": true,
+    "legacy_chatbot_entry": "clinical_adaptive.reason_for_encounter",
+    "legacy_entry_available": true,
+    "legacy_entry_behavior_within_mode_unchanged": true,
+    "mode_switch_requires_explicit_user_intent": false,
+    "no_mandatory_visual_start_menu": true
   },
   "contains_patient_responses": false,
+  "core_entry": {
+    "ambiguous_action": "ask_one_purpose_question",
+    "display_ko": "필요한 도움 확인",
+    "id": "interaction_purpose",
+    "never_require_reselection_after_resolution": true,
+    "prompt_ko": "오늘 무엇을 도와드릴까요? 필요한 내용을 자유롭게 말씀해 주세요.",
+    "routing_order": [
+      "explicit_mode_or_category",
+      "supplied_questionnaire_context",
+      "fixed_questionnaire_or_assessment_alias",
+      "screening_addon_intent",
+      "health_information_intent",
+      "clinical_reason_for_encounter"
+    ]
+  },
   "id": "policy.interaction-service-modes",
   "lifecycle_status": "draft",
   "modes": [
@@ -26,9 +46,11 @@
         "Questionnaire",
         "QuestionnaireResponse"
       ],
+      "proactive_red_flag_questionnaire": false,
       "question_authority": "compiled_clinical_knowledge",
       "runtime_adapter": "InterviewSession",
-      "safety": "trigger_based_minimum_sentinel",
+      "safety": "reported_signal_detection_and_immediate_notification",
+      "scheduled_visit_default": true,
       "sdc_extraction": "supported_when_mapping_is_verified"
     },
     {
@@ -223,5 +245,5 @@
       "not_applicable"
     ]
   },
-  "version": "0.1.0"
+  "version": "0.2.0"
 }

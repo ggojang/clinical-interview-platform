@@ -4271,8 +4271,9 @@
     "affirmative_start_does_not_allow_reconfirmation": true,
     "do_not_convert_observation_test_record_or_claim_fields_to_patient_questions": true,
     "entry_catalog_path": "/gpt/hira-adequacy-assessments.json#/entry_catalog",
-    "entry_point": "reason_for_encounter",
+    "entry_point": "survey_conversational_fixed",
     "generic_request_returns_numbered_program_selection": true,
+    "legacy_internal_reason_for_encounter": "rfe.patient_experience_evaluation",
     "official_submission_requires_source_appropriate_confirmation": true,
     "operation": "getHiraAdequacyAssessmentInterviews",
     "patient_or_proxy_questions_only": true,
@@ -5442,6 +5443,12 @@
         "questionnaire_id": "kr-patient-experience-evaluation-5th-2025"
       }
     ],
+    "clinical_adapter": {
+      "entry_point": "reason_for_encounter",
+      "first_question_ko": "오늘 어떤 이유로 오셨나요? 불편한 증상이나 상담받고 싶은 내용을 자유롭게 말씀해 주세요.",
+      "mode_id": "clinical_adaptive",
+      "preserve_compiled_interview_runtime": true
+    },
     "confirm_only_when_ambiguous": true,
     "conversation_starters": [
       "평가/설문 목록",
@@ -5466,14 +5473,16 @@
       ]
     },
     "discovery_hint_ko": "적정성 평가나 정형 설문의 이름을 모르시면 '평가/설문 목록'을 입력해 전체 목록을 보거나, '설문 검색: 검색어'를 입력해 찾아볼 수 있습니다.",
-    "first_question_ko": "오늘 어떤 이유로 오셨나요? 불편한 증상이나 상담받고 싶은 내용을 자유롭게 말씀해 주세요.",
+    "first_question_ko": "오늘 무엇을 도와드릴까요? 필요한 내용을 자유롭게 말씀해 주세요.",
+    "mode_resolution": "infer_first_substantive_message_then_ask_once_if_ambiguous",
+    "purpose_prompt_ko": "오늘 무엇을 도와드릴까요? 필요한 내용을 자유롭게 말씀해 주세요.",
     "required_before": [
       "demographics",
       "medical_history",
       "health_screening",
       "routine_questions"
     ],
-    "type": "reason_for_encounter",
+    "type": "interaction_purpose",
     "use_first_message_when_present": true
   },
   "korean_claim_code_binding_policy": {
@@ -8158,7 +8167,7 @@
       "count": 0,
       "name": "service-modes",
       "path": "/gpt/service-modes.json",
-      "sha256": "a021fa8b94ad092bf9b3ec62eb0a39bc097e86cd53a8bee25f3df63eeff2e797"
+      "sha256": "b46514b2b52b03ec8c5378d66cde1f0835b0a8dd61899903ede37e81adabae0d"
     },
     {
       "count": 0,
@@ -8375,14 +8384,34 @@
   "service_mode_policy": {
     "clinical_use_status": "limited",
     "compatibility": {
-      "default_mode": "clinical_adaptive",
+      "ask_purpose_only_when_not_inferable": true,
+      "core_entry": "interaction_purpose",
+      "default_mode": null,
       "existing_conversation_starters_unchanged": true,
       "existing_public_read_only_action_unchanged": true,
-      "legacy_chatbot_entry": "reason_for_encounter",
-      "legacy_entry_behavior_unchanged": true,
-      "mode_switch_requires_explicit_user_intent": true
+      "first_message_intent_routing": true,
+      "legacy_chatbot_entry": "clinical_adaptive.reason_for_encounter",
+      "legacy_entry_available": true,
+      "legacy_entry_behavior_within_mode_unchanged": true,
+      "mode_switch_requires_explicit_user_intent": false,
+      "no_mandatory_visual_start_menu": true
     },
     "contains_patient_responses": false,
+    "core_entry": {
+      "ambiguous_action": "ask_one_purpose_question",
+      "display_ko": "필요한 도움 확인",
+      "id": "interaction_purpose",
+      "never_require_reselection_after_resolution": true,
+      "prompt_ko": "오늘 무엇을 도와드릴까요? 필요한 내용을 자유롭게 말씀해 주세요.",
+      "routing_order": [
+        "explicit_mode_or_category",
+        "supplied_questionnaire_context",
+        "fixed_questionnaire_or_assessment_alias",
+        "screening_addon_intent",
+        "health_information_intent",
+        "clinical_reason_for_encounter"
+      ]
+    },
     "id": "policy.interaction-service-modes",
     "lifecycle_status": "draft",
     "modes": [
@@ -8400,9 +8429,11 @@
           "Questionnaire",
           "QuestionnaireResponse"
         ],
+        "proactive_red_flag_questionnaire": false,
         "question_authority": "compiled_clinical_knowledge",
         "runtime_adapter": "InterviewSession",
-        "safety": "trigger_based_minimum_sentinel",
+        "safety": "reported_signal_detection_and_immediate_notification",
+        "scheduled_visit_default": true,
         "sdc_extraction": "supported_when_mapping_is_verified"
       },
       {
@@ -8597,7 +8628,7 @@
         "not_applicable"
       ]
     },
-    "version": "0.1.0"
+    "version": "0.2.0"
   },
   "snomed_laterality_postcoordination_policy": {
     "activation": {

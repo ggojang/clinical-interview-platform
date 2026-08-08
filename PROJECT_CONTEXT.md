@@ -791,7 +791,7 @@ A presentation may not exist for vaccination, health checks, medication review o
 - docs/context/032-clinician-submission-context.md — reusable clinician pre-visit minimum dataset and handoff
 - docs/context/033-uscdi-interoperability-overlay.md — USCDI v6 and USCDI+ as non-clinical interoperability Coverage overlays
 - docs/context/034-computable-knowledge-standards-overlay.md — AU Base, Sparked AUCDI/AU Core, openEHR CKM/GDL2 and HL7 CDS/CPG/CQL as non-authoritative Build-Time references
-- docs/context/035-multi-purpose-interaction-modes.md — additive clinical, survey, screening-recommendation and information modes with legacy Chatbot compatibility
+- docs/context/035-multi-purpose-interaction-modes.md — purpose-first core routing across clinical, survey, screening-recommendation and information modes while preserving the existing RFE engine inside adaptive clinical interviews
 
 ---
 

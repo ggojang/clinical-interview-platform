@@ -470,7 +470,11 @@ class GptExportTests(unittest.TestCase):
             policy = manifest["hira_adequacy_assessment_policy"]
             self.assertTrue(policy["requires_explicit_program_and_current_cycle_context"])
             self.assertTrue(policy["patient_or_proxy_questions_only"])
-            self.assertEqual(policy["entry_point"], "reason_for_encounter")
+            self.assertEqual(policy["entry_point"], "survey_conversational_fixed")
+            self.assertEqual(
+                policy["legacy_internal_reason_for_encounter"],
+                "rfe.patient_experience_evaluation",
+            )
             self.assertTrue(policy["generic_request_returns_numbered_program_selection"])
             self.assertTrue(policy["specific_alias_requires_single_start_confirmation"])
             self.assertIn(
@@ -545,24 +549,27 @@ class GptExportTests(unittest.TestCase):
             config["editor_application"]["requires_editor_save_or_update"]
         )
 
-    def test_service_modes_are_additive_and_legacy_entry_is_unchanged(self):
+    def test_service_modes_are_the_core_entry_and_legacy_starters_remain_testable(self):
         with tempfile.TemporaryDirectory() as output:
             output_path = Path(output)
             manifest = build(ROOT, output_path)
             catalog = json.loads(
                 (output_path / "service-modes.json").read_text(encoding="utf-8")
             )
+            self.assertIsNone(catalog["compatibility"]["default_mode"])
             self.assertEqual(
-                catalog["compatibility"]["default_mode"], "clinical_adaptive"
+                catalog["compatibility"]["core_entry"], "interaction_purpose"
             )
-            self.assertTrue(
-                catalog["compatibility"]["legacy_entry_behavior_unchanged"]
-            )
+            self.assertTrue(catalog["compatibility"]["legacy_entry_available"])
             self.assertTrue(
                 catalog["compatibility"]["existing_conversation_starters_unchanged"]
             )
             self.assertEqual(
-                manifest["interview_entry"]["type"], "reason_for_encounter"
+                manifest["interview_entry"]["type"], "interaction_purpose"
+            )
+            self.assertEqual(
+                manifest["interview_entry"]["clinical_adapter"]["entry_point"],
+                "reason_for_encounter",
             )
             self.assertEqual(
                 manifest["interview_entry"]["conversation_starters"],
@@ -585,7 +592,7 @@ class GptExportTests(unittest.TestCase):
         instructions = (ROOT / "docs/gpt/GPT_INSTRUCTIONS.md").read_text(
             encoding="utf-8"
         )
-        self.assertIn("never force a new start menu", instructions)
+        self.assertIn("do not require the user to choose from a visual start menu", instructions)
         self.assertIn("필요한 내용만 대화로 확인하겠습니다.", instructions)
 
     def test_rfe_catalog_and_bundles_are_consistent(self):
@@ -842,7 +849,7 @@ class GptExportTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as output:
             output_path = Path(output)
             manifest = build(ROOT, output_path)
-            self.assertEqual(manifest["interview_entry"]["type"], "reason_for_encounter")
+            self.assertEqual(manifest["interview_entry"]["type"], "interaction_purpose")
             source_catalog = json.loads(
                 (ROOT / "knowledge/catalog/primary-care-rfe.json").read_text(
                     encoding="utf-8"

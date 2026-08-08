@@ -1,13 +1,13 @@
-# Multi-purpose interaction modes and legacy Chatbot compatibility
+# Purpose-first multi-purpose interaction core
 
 Status: Draft, unreviewed
-Version: 0.1.0
+Version: 0.2.0
 
 ## Decision
 
-The Clinical Interview Platform remains the adaptive clinical-knowledge core. A host application may expose additional clinical-form, survey, screening-recommendation, and health-information modes through a separate service-mode router. This overlay does not change the existing public Chatbot's Reason-for-Encounter-first entry or its compiled Knowledge Package execution.
+The platform entry is now an interaction-purpose router. Clinical-form, survey, screening-recommendation, health-information, and adaptive clinical-interview modes are peers at the platform boundary. The existing Reason-for-Encounter engine remains intact inside `clinical_adaptive` and continues to execute compiled Knowledge Packages.
 
-No mode is selected implicitly from demographics, an uploaded file, or an unrelated answer. With no explicit service-mode selection, `clinical_adaptive` is selected and the existing RFE workflow continues unchanged.
+The first substantive message is routed when intent is clear. A symptom or follow-up statement enters `clinical_adaptive` immediately; a fixed-assessment alias opens that catalog or instrument; a supplied Questionnaire context selects the matching structured runner; and screening-add-on or health-information intent selects its own mode. Missing purpose does not default to clinical interview. The system asks one conversational purpose question and does not require a visual menu.
 
 ## User-facing grouping
 
@@ -18,7 +18,9 @@ The preferred application start groups the six execution modes under four famili
 - `추가 검진 추천받기`: supplemental screening interview and deterministic package comparison;
 - `건강정보 묻기`: general informational support without independent diagnosis or treatment.
 
-The current Custom GPT may continue to show its existing conversation starters. The four-choice start is a host-application concern, not a breaking requirement for the legacy Chatbot.
+The current Custom GPT keeps its four existing conversation starters so the same deployed test surface remains usable. They are shortcuts into the purpose router rather than evidence that RFE is still the platform default.
+
+For `clinical_adaptive`, the test context assumes that the user already has a scheduled visit unless the conversation says otherwise. The Runtime therefore does not ask a blanket initial red-flag questionnaire. It still evaluates every reported Fact and additional comment against compiled Safety Rules and interrupts the routine interview when a red flag is reported or suspected.
 
 ## Questionnaire authority and output
 
@@ -40,6 +42,6 @@ The Runtime may hold necessary personal or health information in current-process
 
 ## Implementation boundary
 
-`runtime/service_modes.py` provides explicit routing while preserving the legacy default. `runtime/questionnaire_prepopulation.py` provides a source-immutable, review-required FHIR R4 prepopulation primitive. `preventive/package_recommendation.py` compares a supplied, versioned center catalog and cannot invent a recommendation when that catalog is absent.
+`runtime/service_modes.py` resolves explicit and conservatively inferred purpose. `runtime/core.py` owns the core session and hands clinical input to the existing `InterviewSession`. `runtime/questionnaire_prepopulation.py` provides a source-immutable, review-required FHIR R4 prepopulation primitive. `preventive/package_recommendation.py` compares a supplied, versioned center catalog and cannot invent a recommendation when that catalog is absent.
 
 The official 2026 NHIS Questionnaire resource and its linkId mapping are not asserted by this overlay until the official source is converted and verified. The prepopulation primitive is regression-tested with synthetic resources in the meantime.

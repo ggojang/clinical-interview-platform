@@ -1,17 +1,37 @@
 {
   "id": "policy.interaction-service-modes",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "lifecycle_status": "draft",
   "review_status": "unreviewed",
   "clinical_use_status": "limited",
   "contains_patient_responses": false,
   "compatibility": {
-    "default_mode": "clinical_adaptive",
-    "legacy_chatbot_entry": "reason_for_encounter",
-    "legacy_entry_behavior_unchanged": true,
+    "default_mode": null,
+    "core_entry": "interaction_purpose",
+    "legacy_chatbot_entry": "clinical_adaptive.reason_for_encounter",
+    "legacy_entry_available": true,
+    "legacy_entry_behavior_within_mode_unchanged": true,
     "existing_conversation_starters_unchanged": true,
     "existing_public_read_only_action_unchanged": true,
-    "mode_switch_requires_explicit_user_intent": true
+    "mode_switch_requires_explicit_user_intent": false,
+    "first_message_intent_routing": true,
+    "ask_purpose_only_when_not_inferable": true,
+    "no_mandatory_visual_start_menu": true
+  },
+  "core_entry": {
+    "id": "interaction_purpose",
+    "display_ko": "필요한 도움 확인",
+    "prompt_ko": "오늘 무엇을 도와드릴까요? 필요한 내용을 자유롭게 말씀해 주세요.",
+    "routing_order": [
+      "explicit_mode_or_category",
+      "supplied_questionnaire_context",
+      "fixed_questionnaire_or_assessment_alias",
+      "screening_addon_intent",
+      "health_information_intent",
+      "clinical_reason_for_encounter"
+    ],
+    "ambiguous_action": "ask_one_purpose_question",
+    "never_require_reselection_after_resolution": true
   },
   "start_categories": [
     {
@@ -47,7 +67,9 @@
       "runtime_adapter": "InterviewSession",
       "entry": "reason_for_encounter",
       "question_authority": "compiled_clinical_knowledge",
-      "safety": "trigger_based_minimum_sentinel",
+      "scheduled_visit_default": true,
+      "proactive_red_flag_questionnaire": false,
+      "safety": "reported_signal_detection_and_immediate_notification",
       "output_resources": ["Questionnaire", "QuestionnaireResponse"],
       "sdc_extraction": "supported_when_mapping_is_verified"
     },

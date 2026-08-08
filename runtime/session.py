@@ -444,6 +444,7 @@ class InterviewSession:
     max_turns: int | None = None
     clinician_submission: bool = False
     encounter_context: dict[str, Any] | None = None
+    proactive_safety_questions: bool = True
     asked: list[str] = field(default_factory=list)
     active_patterns: list[str] = field(default_factory=list)
     trace: list[dict[str, Any]] = field(default_factory=list)
@@ -2011,7 +2012,22 @@ class InterviewSession:
                 required.update(rfe_specific)
             else:
                 required.update(minimum.get("always_required_facts", []))
+        if not self.proactive_safety_questions and safety["level"] == "routine":
+            required.difference_update(self._proactive_safety_fact_ids())
         return sorted(required)
+
+    def _proactive_safety_fact_ids(self) -> set[str]:
+        """Facts asked only as an explicit safety gate, not all safety inputs."""
+        fact_ids: set[str] = set()
+        for rule in self.package["rule_graph"]["rules"]:
+            if rule.get("type") != "priority":
+                continue
+            reason = str(rule.get("then", {}).get("reason", "")).casefold()
+            if "safety" not in reason and "red_flag" not in reason:
+                continue
+            target = rule.get("then", {}).get("target")
+            fact_ids.update(self.package["indexes"]["target_facts"].get(target, []))
+        return fact_ids
 
     def _required_facts(
         self, classification: str | None, safety: dict[str, Any]
@@ -2136,6 +2152,7 @@ class InterviewSession:
                 })
 
         candidates: list[dict[str, Any]] = []
+        proactive_safety_fact_ids = self._proactive_safety_fact_ids()
         for rule in self.package["rule_graph"]["rules"]:
             if rule["type"] != "priority":
                 continue
@@ -2144,6 +2161,12 @@ class InterviewSession:
             if not facts:
                 continue
             fact_id = facts[0]
+            if (
+                not self.proactive_safety_questions
+                and safety_level == "routine"
+                and fact_id in proactive_safety_fact_ids
+            ):
+                continue
             if (
                 rule.get("then", {}).get("reason")
                 == "mandatory_standardized_pain_assessment"

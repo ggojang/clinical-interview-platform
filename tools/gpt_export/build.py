@@ -885,7 +885,11 @@ def build(root: Path, output: Path) -> dict[str, Any]:
         "contains_patient_responses": False,
         "service_mode_policy": resources["service-modes.json"],
         "interview_entry": {
-            "type": "reason_for_encounter",
+            "type": "interaction_purpose",
+            "mode_resolution": "infer_first_substantive_message_then_ask_once_if_ambiguous",
+            "purpose_prompt_ko": resources["service-modes.json"]["core_entry"][
+                "prompt_ko"
+            ],
             "conversation_starters": [
                 resources["hira-adequacy-assessments.json"]["entry_policy"][
                     "required_primary_conversation_starter_ko"
@@ -908,9 +912,17 @@ def build(root: Path, output: Path) -> dict[str, Any]:
                     "entry_policy"
                 ]["search_command_prefixes_ko"],
             },
-            "first_question_ko": "오늘 어떤 이유로 오셨나요? 불편한 증상이나 상담받고 싶은 내용을 자유롭게 말씀해 주세요.",
+            "first_question_ko": resources["service-modes.json"]["core_entry"][
+                "prompt_ko"
+            ],
             "use_first_message_when_present": True,
             "confirm_only_when_ambiguous": True,
+            "clinical_adapter": {
+                "mode_id": "clinical_adaptive",
+                "entry_point": "reason_for_encounter",
+                "first_question_ko": "오늘 어떤 이유로 오셨나요? 불편한 증상이나 상담받고 싶은 내용을 자유롭게 말씀해 주세요.",
+                "preserve_compiled_interview_runtime": True,
+            },
             "ambiguity_routing": resources["reason-for-encounters.json"][
                 "routing_policy"
             ],
@@ -994,7 +1006,8 @@ def build(root: Path, output: Path) -> dict[str, Any]:
             "program_resource_template": "/gpt/assessments/{programId}.json",
             "program_operation": "getHiraAdequacyAssessmentInterviewProgram",
             "program_load_timing": "after_explicit_selection_before_start_confirmation",
-            "entry_point": "reason_for_encounter",
+            "entry_point": "survey_conversational_fixed",
+            "legacy_internal_reason_for_encounter": "rfe.patient_experience_evaluation",
             "entry_catalog_path": "/gpt/hira-adequacy-assessments.json#/entry_catalog",
             "generic_request_returns_numbered_program_selection": True,
             "specific_alias_requires_single_start_confirmation": True,

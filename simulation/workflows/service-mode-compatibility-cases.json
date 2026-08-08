@@ -1,15 +1,22 @@
 {
   "id": "simulation.service-mode-compatibility",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "synthetic": true,
   "contains_real_patient_data": false,
   "cases": [
     {
-      "id": "legacy-chatbot-no-mode-selection",
+      "id": "symptom-first-message-routes-to-clinical-adaptive",
       "input": "머리가 아파요",
       "expected_mode": "clinical_adaptive",
       "expected_entry": "reason_for_encounter",
-      "existing_chatbot_flow_must_not_change": true
+      "expected_platform_entry": "interaction_purpose",
+      "no_extra_mode_question": true
+    },
+    {
+      "id": "ambiguous-greeting-asks-purpose-once",
+      "input": "안녕하세요",
+      "expected_status": "purpose_required",
+      "expected_prompt_ko": "오늘 무엇을 도와드릴까요? 필요한 내용을 자유롭게 말씀해 주세요."
     },
     {
       "id": "screening-default-supplemental-interview",

@@ -5,6 +5,7 @@ from pathlib import Path
 
 from preventive.package_recommendation import compare_add_on_packages
 from preventive.national_screening import NationalScreeningSession
+from runtime.core import CoreInteractionSession
 from runtime.questionnaire_prepopulation import prefill_questionnaire_response
 from runtime.service_modes import ServiceModeRegistry, resolve_service_mode
 from runtime.session import InterviewSession
@@ -13,13 +14,14 @@ from runtime.session import InterviewSession
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_no_explicit_mode_preserves_legacy_rfe_first_chatbot():
+def test_no_message_requests_one_conversational_purpose_question():
     result = resolve_service_mode()
-    assert result["compatibility_default"]
-    assert result["mode"]["id"] == "clinical_adaptive"
-    assert result["mode"]["entry"] == "reason_for_encounter"
+    assert result["status"] == "purpose_required"
+    assert result["core_entry"]["id"] == "interaction_purpose"
+    assert result["prompt_ko"] == "오늘 무엇을 도와드릴까요? 필요한 내용을 자유롭게 말씀해 주세요."
     policy = ServiceModeRegistry().document["compatibility"]
-    assert policy["legacy_entry_behavior_unchanged"]
+    assert policy["core_entry"] == "interaction_purpose"
+    assert policy["legacy_entry_behavior_within_mode_unchanged"]
     assert policy["existing_conversation_starters_unchanged"]
     config = json.loads(
         (ROOT / "docs/gpt/custom-gpt-config.json").read_text(encoding="utf-8")
@@ -30,6 +32,23 @@ def test_no_explicit_mode_preserves_legacy_rfe_first_chatbot():
         "건강검진 문진을 시작하고 싶습니다",
         "환자경험평가",
     ]
+
+
+def test_first_message_routes_without_forcing_a_start_menu():
+    clinical = resolve_service_mode("머리가 아파요")
+    assert clinical["status"] == "resolved"
+    assert not clinical["explicit_selection"]
+    assert clinical["core_entry"] == "interaction_purpose"
+    assert clinical["mode"]["id"] == "clinical_adaptive"
+    assert clinical["mode"]["entry"] == "reason_for_encounter"
+
+    survey = resolve_service_mode("환자경험평가를 하고 싶어요")
+    assert survey["mode"]["id"] == "survey_conversational_fixed"
+    screening = resolve_service_mode("건강검진 문진을 시작하고 싶습니다")
+    assert screening["mode"]["id"] == "screening_addon_recommendation"
+    information = resolve_service_mode("고혈압 치료에 대해 알려줘")
+    assert information["mode"]["id"] == "health_information"
+    assert resolve_service_mode("안녕하세요")["status"] == "purpose_required"
 
 
 def test_top_level_categories_require_submode_only_when_needed():
@@ -45,6 +64,43 @@ def test_top_level_categories_require_submode_only_when_needed():
     assert screening["next"]["workflow"] == "supplemental_adaptive_interview"
     assert screening["next"]["prompt_ko"] == "필요한 내용만 대화로 확인하겠습니다."
     assert screening["next"]["official_nhis_questionnaire"] == "offer_as_optional_choice"
+
+
+def test_core_session_delegates_clinical_message_to_existing_interview_runtime():
+    session = CoreInteractionSession("purpose-core-clinical")
+    initial = session.start()
+    assert initial["status"] == "purpose_required"
+    state = session.process("기침이 4일 전부터 있어요")
+    assert state["status"] == "active"
+    assert state["mode_id"] == "clinical_adaptive"
+    assert state["adapter_state"]["package"]["id"] == "package.primary-care-cough"
+    assert state["adapter_state"]["selected_question"]["reason"] != "minimal_safety_gate"
+    assert session.adapter is not None
+    closed = session.close()
+    assert closed["response_state_purged"]
+    assert session.adapter is None
+
+
+def test_core_clinical_route_selects_the_matching_compiled_package_and_escalates_reported_signal():
+    headache = CoreInteractionSession("purpose-core-headache").process("머리가 아파요")
+    assert headache["adapter_state"]["package"]["id"] == "package.primary-care-headache"
+
+    warning = CoreInteractionSession("purpose-core-reported-warning").process(
+        "기침하면서 피가 나와요"
+    )
+    assert warning["adapter_state"]["safety_status"]["level"] == "urgent"
+    assert "rule.safety.hemoptysis" in warning["adapter_state"]["safety_status"]["triggered_rules"]
+
+
+def test_core_session_exposes_nonclinical_adapter_contract_without_collecting_answers():
+    session = CoreInteractionSession("purpose-core-survey")
+    state = session.process("환자경험평가")
+    assert state["status"] == "mode_ready"
+    assert state["mode"]["id"] == "survey_conversational_fixed"
+    assert state["runtime_adapter"] == "fixed_questionnaire_chat_runner"
+    followup = session.process("답변 내용")
+    assert followup["status"] == "adapter_input_required"
+    assert not hasattr(session, "answers")
 
 
 def test_fixed_questionnaire_modes_preserve_source_authority():
@@ -189,7 +245,8 @@ def test_service_mode_simulation_fixture_is_synthetic_and_covers_compatibility()
     assert not fixture["contains_real_patient_data"]
     case_ids = {item["id"] for item in fixture["cases"]}
     assert {
-        "legacy-chatbot-no-mode-selection",
+        "symptom-first-message-routes-to-clinical-adaptive",
+        "ambiguous-greeting-asks-purpose-once",
         "screening-default-supplemental-interview",
         "fixed-survey-source-authority",
         "nhis-prefill-compound-fact-gap",
