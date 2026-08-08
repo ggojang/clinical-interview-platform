@@ -386,6 +386,10 @@ class ClinicianSubmissionContextTest(unittest.TestCase):
         )
         self.assertEqual(entries["patient.height_cm"]["dataAbsentReason"], "not-asked")
         self.assertEqual(handoff["format"], "non_fhir_structured_summary")
+        self.assertEqual(handoff["lifecycle_status"], "draft")
+        self.assertEqual(handoff["review_status"], "unreviewed")
+        self.assertEqual(handoff["clinical_use_status"], "limited")
+        self.assertEqual(handoff["legacy_status_label"], "research_only")
 
     def test_required_fhir_valueset_choices_are_exposed_to_runtime(self):
         session = self._session()

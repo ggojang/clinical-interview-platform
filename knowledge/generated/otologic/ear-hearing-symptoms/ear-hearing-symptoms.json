@@ -2,9 +2,14 @@
   "id": "knowledge.generated.ear-hearing-symptoms",
   "version": "0.1.0",
   "status": "research_only",
+  "lifecycle_status": "draft",
+  "review_status": "unreviewed",
+  "clinical_use_status": "limited",
+  "clinical_use_policy_ref": "policies/draft-clinical-use-boundary.json",
   "usage_modes": [
     "research_test",
-    "simulation"
+    "simulation",
+    "clinician_supervised_pilot"
   ],
   "source_manifest": "source-manifest.primary-care-ear-hearing-symptoms-research",
   "default_refresh": {
@@ -203,16 +208,77 @@
       }
     },
     {
-      "id": "rule.ear-hearing-symptoms.safety.pulsatile-neuro",
-      "priority": 950,
+      "id": "rule.ear-hearing-symptoms.safety.pulse-synchronous-tinnitus",
+      "priority": 960,
       "when": {
-        "fact": "ear.pulsatile_tinnitus_with_neurological_or_visual_symptoms",
+        "fact": "ear.tinnitus_pulse_synchronous",
         "equals": true
       },
       "then": {
         "safety_level": "urgent",
         "action": "human_handoff",
         "suppress_routine": true
+      },
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-08-08T00:00:00Z",
+        "source_refs": [
+          "source.nice.tinnitus-ng155",
+          "source.nhs.tinnitus.2026"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-08-08",
+        "next_monitor_at": "2026-08-09",
+        "next_full_review_at": "2026-11-06",
+        "policy_id": "policy.knowledge-refresh"
+      }
+    },
+    {
+      "id": "rule.ear-hearing-symptoms.safety.tinnitus-associated-vertigo",
+      "priority": 1000,
+      "when": {
+        "all": [
+          {
+            "fact": "ear.primary_symptom_group",
+            "equals": "tinnitus"
+          },
+          {
+            "fact": "ear.associated_vertigo",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      },
+      "provenance": {
+        "created_by": {
+          "type": "ai",
+          "id": "codex-gpt5"
+        },
+        "created_at": "2026-08-08T00:00:00Z",
+        "source_refs": [
+          "source.nice.tinnitus-ng155",
+          "source.nhs.tinnitus.2026"
+        ],
+        "review_status": "unreviewed",
+        "version": "0.1.0"
+      },
+      "refresh": {
+        "class": "safety_critical",
+        "last_assessed_at": "2026-08-08",
+        "next_monitor_at": "2026-08-09",
+        "next_full_review_at": "2026-11-06",
+        "policy_id": "policy.knowledge-refresh"
       }
     }
   ],
@@ -664,43 +730,6 @@
           "branch": "any",
           "score": 119,
           "reason": "tinnitus-self-harm"
-        }
-      ],
-      "supports": [
-        "group.ear.shared-safety",
-        "group.ear.tinnitus"
-      ]
-    },
-    {
-      "fact": {
-        "id": "ear.pulsatile_tinnitus_with_neurological_or_visual_symptoms",
-        "display": "Pulsatile Tinnitus with Neurological or Visual Symptoms",
-        "value_type": "boolean",
-        "safety_relevant": true
-      },
-      "target": {
-        "id": "target.ear-hearing-symptoms.pulsatile-neuro",
-        "display": "Pulsatile Tinnitus with Neurological or Visual Symptoms",
-        "intents": [
-          "intent.screen_red_flags"
-        ]
-      },
-      "question": {
-        "id": "question.ear-hearing-symptoms.pulsatile-neuro",
-        "wording": "맥박에 맞춰 들리는 소리와 함께 새 신경 증상이나 시야 변화가 있나요?",
-        "language": "ko",
-        "mode": [
-          "chat",
-          "face_to_face",
-          "telephone",
-          "video"
-        ]
-      },
-      "priority": [
-        {
-          "branch": "any",
-          "score": 118,
-          "reason": "pulsatile-neuro"
         }
       ],
       "supports": [
@@ -1404,20 +1433,33 @@
     },
     {
       "fact": {
-        "id": "ear.associated_tinnitus_vertigo_or_fullness",
-        "display": "Hearing Loss with Tinnitus Vertigo or Fullness",
-        "value_type": "string"
+        "id": "ear.associated_tinnitus",
+        "display": "Tinnitus Associated with Hearing Change",
+        "value_type": "boolean",
+        "refresh": {
+          "class": "clinical_guideline",
+          "last_assessed_at": "2026-08-08",
+          "monitor_interval_days": 1,
+          "full_review_interval_days": 180,
+          "next_monitor_at": "2026-08-09",
+          "next_full_review_at": "2027-02-04",
+          "policy_id": "policy.knowledge-refresh",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          }
+        }
       },
       "target": {
-        "id": "target.ear-hearing-symptoms.hearing-associated",
-        "display": "Hearing Loss with Tinnitus Vertigo or Fullness",
+        "id": "target.ear-hearing-symptoms.hearing-associated-tinnitus",
+        "display": "Tinnitus Associated with Hearing Change",
         "intents": [
           "intent.differentiate_common_causes"
         ]
       },
       "question": {
-        "id": "question.ear-hearing-symptoms.hearing-associated",
-        "wording": "청력 변화와 함께 이명, 회전성 어지럼 또는 귀 먹먹함이 있나요?",
+        "id": "question.ear-hearing-symptoms.hearing-associated-tinnitus",
+        "wording": "청력 변화와 함께 이명이 있나요?",
         "language": "ko",
         "mode": [
           "chat",
@@ -1430,11 +1472,110 @@
         {
           "branch": "any",
           "score": 105,
-          "reason": "hearing-associated"
+          "reason": "hearing-associated-tinnitus"
         }
       ],
       "supports": [
         "group.ear.hearing-change"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.associated_vertigo",
+        "display": "Vertigo Associated with Ear or Hearing Symptoms",
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "refresh": {
+          "class": "clinical_guideline",
+          "last_assessed_at": "2026-08-08",
+          "monitor_interval_days": 1,
+          "full_review_interval_days": 180,
+          "next_monitor_at": "2026-08-09",
+          "next_full_review_at": "2027-02-04",
+          "policy_id": "policy.knowledge-refresh",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          }
+        }
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.associated-vertigo",
+        "display": "Vertigo Associated with Ear or Hearing Symptoms",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.associated-vertigo",
+        "wording": "귀 또는 청력 증상과 함께 주위가 도는 듯한 회전성 어지럼이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 104,
+          "reason": "associated-vertigo"
+        }
+      ],
+      "supports": [
+        "group.ear.hearing-change",
+        "group.ear.tinnitus"
+      ]
+    },
+    {
+      "fact": {
+        "id": "ear.associated_fullness",
+        "display": "Aural Fullness Associated with Ear or Hearing Symptoms",
+        "value_type": "boolean",
+        "refresh": {
+          "class": "clinical_guideline",
+          "last_assessed_at": "2026-08-08",
+          "monitor_interval_days": 1,
+          "full_review_interval_days": 180,
+          "next_monitor_at": "2026-08-09",
+          "next_full_review_at": "2027-02-04",
+          "policy_id": "policy.knowledge-refresh",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          }
+        }
+      },
+      "target": {
+        "id": "target.ear-hearing-symptoms.associated-fullness",
+        "display": "Aural Fullness Associated with Ear or Hearing Symptoms",
+        "intents": [
+          "intent.differentiate_common_causes"
+        ]
+      },
+      "question": {
+        "id": "question.ear-hearing-symptoms.associated-fullness",
+        "wording": "귀 또는 청력 증상과 함께 귀가 꽉 찬 듯한 먹먹함이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 103,
+          "reason": "associated-fullness"
+        }
+      ],
+      "supports": [
+        "group.ear.hearing-change",
+        "group.ear.tinnitus"
       ]
     },
     {
@@ -1709,6 +1850,19 @@
         "mrcm_validation": {
           "ref": "mapping.snomed-mrcm.ear-hearing-symptoms",
           "status": "provisional_pass"
+        },
+        "refresh": {
+          "class": "clinical_guideline",
+          "last_assessed_at": "2026-08-08",
+          "monitor_interval_days": 1,
+          "full_review_interval_days": 180,
+          "next_monitor_at": "2026-08-09",
+          "next_full_review_at": "2027-02-04",
+          "policy_id": "policy.knowledge-refresh",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          }
         }
       },
       "target": {
@@ -1720,7 +1874,7 @@
       },
       "question": {
         "id": "question.ear-hearing-symptoms.tinnitus-sound",
-        "wording": "삐-, 윙-, 쉭- 또는 박동음처럼 어떤 소리가 들리는지 표현해주세요.",
+        "wording": "이명은 어떤 소리로 들리나요? 가장 가까운 표현 하나를 알려주세요.",
         "language": "ko",
         "mode": [
           "chat",
@@ -1744,18 +1898,40 @@
       "fact": {
         "id": "ear.tinnitus_pulse_synchronous",
         "display": "Pulse-synchronous Tinnitus",
-        "value_type": "boolean"
+        "value_type": "boolean",
+        "safety_relevant": true,
+        "terminology_binding": {
+          "system": "http://snomed.info/sct",
+          "code": "117421000119104"
+        },
+        "mrcm_validation": {
+          "ref": "mapping.snomed-mrcm.ear-hearing-symptoms",
+          "status": "provisional_pass"
+        },
+        "refresh": {
+          "class": "clinical_guideline",
+          "last_assessed_at": "2026-08-08",
+          "monitor_interval_days": 1,
+          "full_review_interval_days": 180,
+          "next_monitor_at": "2026-08-09",
+          "next_full_review_at": "2027-02-04",
+          "policy_id": "policy.knowledge-refresh",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          }
+        }
       },
       "target": {
         "id": "target.ear-hearing-symptoms.pulse-synchronous",
         "display": "Pulse-synchronous Tinnitus",
         "intents": [
-          "intent.risk_assessment"
+          "intent.screen_red_flags"
         ]
       },
       "question": {
         "id": "question.ear-hearing-symptoms.pulse-synchronous",
-        "wording": "소리가 심장 박동과 같은 리듬으로 들리나요?",
+        "wording": "이명 소리가 심장 박동과 같은 리듬으로 들리나요?",
         "language": "ko",
         "mode": [
           "chat",
@@ -1767,11 +1943,12 @@
       "priority": [
         {
           "branch": "any",
-          "score": 106,
+          "score": 118,
           "reason": "pulse-synchronous"
         }
       ],
       "supports": [
+        "group.ear.shared-safety",
         "group.ear.tinnitus"
       ]
     },
@@ -1859,20 +2036,33 @@
     },
     {
       "fact": {
-        "id": "ear.tinnitus_with_hearing_change_or_vertigo",
-        "display": "Tinnitus with Hearing Change or Vertigo",
-        "value_type": "string"
+        "id": "ear.tinnitus_associated_hearing_change",
+        "display": "Hearing Change Associated with Tinnitus",
+        "value_type": "boolean",
+        "refresh": {
+          "class": "clinical_guideline",
+          "last_assessed_at": "2026-08-08",
+          "monitor_interval_days": 1,
+          "full_review_interval_days": 180,
+          "next_monitor_at": "2026-08-09",
+          "next_full_review_at": "2027-02-04",
+          "policy_id": "policy.knowledge-refresh",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          }
+        }
       },
       "target": {
-        "id": "target.ear-hearing-symptoms.tinnitus-associated",
-        "display": "Tinnitus with Hearing Change or Vertigo",
+        "id": "target.ear-hearing-symptoms.tinnitus-associated-hearing-change",
+        "display": "Hearing Change Associated with Tinnitus",
         "intents": [
           "intent.differentiate_common_causes"
         ]
       },
       "question": {
-        "id": "question.ear-hearing-symptoms.tinnitus-associated",
-        "wording": "이명과 함께 청력 저하, 귀 먹먹함 또는 회전성 어지럼이 있나요?",
+        "id": "question.ear-hearing-symptoms.tinnitus-associated-hearing-change",
+        "wording": "이명과 함께 청력이 떨어지거나 달라졌나요?",
         "language": "ko",
         "mode": [
           "chat",
@@ -1885,11 +2075,12 @@
         {
           "branch": "any",
           "score": 103,
-          "reason": "tinnitus-associated"
+          "reason": "tinnitus-associated-hearing-change"
         }
       ],
       "supports": [
-        "group.ear.tinnitus"
+        "group.ear.tinnitus",
+        "group.ear.hearing-change"
       ]
     }
   ],
@@ -1898,15 +2089,16 @@
       "type": "ai",
       "id": "codex-gpt5"
     },
-    "created_at": "2026-07-14T00:00:00Z",
+    "created_at": "2026-08-08T00:00:00Z",
     "source_refs": [
       "source.nice.hearing-loss-ng98",
       "source.nice.tinnitus-ng155",
       "source.nhs.ear-infections.2025",
       "source.nhs.hearing-loss.2025",
       "source.nhs.mastoiditis.2025",
+      "source.nhs.tinnitus.2026",
       "source.uhsussex.sudden-hearing-change.2025",
-      "source.stom.ear-hearing.20260714"
+      "source.stom.ear-hearing.20260808"
     ],
     "review_status": "unreviewed",
     "version": "0.1.0"

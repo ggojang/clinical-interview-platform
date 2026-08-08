@@ -318,6 +318,6 @@ Feedback is routed back to the Knowledge Factory.
 
 Only validated, simulated and compiled knowledge returns to Runtime.
 
-Research Runtime may receive a new `unreviewed/research_only` package after automated gates pass.
+Limited-use Runtime may receive a new `draft/unreviewed` package after automated gates pass. A legacy `research_only` field may remain during versioned schema migration, but it does not grant diagnosis or treatment authority.
 
 Production Runtime may receive only appropriately reviewed knowledge.

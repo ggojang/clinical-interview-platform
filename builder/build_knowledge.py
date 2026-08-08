@@ -1,7 +1,8 @@
-"""Merge research-only knowledge fragments into canonical graph sources.
+"""Merge unreviewed draft knowledge fragments into canonical graph sources.
 
 The Builder is deterministic. It reuses existing Facts only when a fragment
 explicitly declares reuse_existing=true, and it never promotes review status.
+The ``research_only`` field remains a legacy schema compatibility label.
 """
 from __future__ import annotations
 
@@ -551,8 +552,13 @@ def merge_fragment(
     output_version: str = "0.2.0",
 ) -> dict[str, int]:
     if fragment.get("status") != "research_only":
-        raise BuildError(f"{fragment.get('id')}: generated fragment must be research_only")
-    if set(fragment.get("usage_modes", [])) - {"research_test", "simulation"}:
+        raise BuildError(
+            f"{fragment.get('id')}: generated draft fragment must retain the "
+            "legacy research_only compatibility label"
+        )
+    if set(fragment.get("usage_modes", [])) - {
+        "research_test", "simulation", "clinician_supervised_pilot"
+    }:
         raise BuildError(f"{fragment.get('id')}: generated fragment has forbidden usage mode")
     provenance = fragment.get("provenance", {})
     if provenance.get("review_status") != "unreviewed":
@@ -737,6 +743,7 @@ def build(profile: str = "cough") -> dict[str, Any]:
         node["id"]: node for node in load(SHARED_FACTS).get("facts", [])
     } if SHARED_FACTS.exists() else {}
     reports = []
+    usage_modes: set[str] = set()
     fragment_paths = sorted(
         config["fragment_root"].rglob(config.get("fragment_glob", "*.json"))
     )
@@ -744,6 +751,7 @@ def build(profile: str = "cough") -> dict[str, Any]:
         raise BuildError("no generated knowledge fragments")
     for path in fragment_paths:
         fragment = load(path)
+        usage_modes.update(fragment.get("usage_modes", []))
         report = merge_fragment(
             graph, rule_graph, fragment, shared_facts, config["version"]
         )
@@ -768,7 +776,7 @@ def build(profile: str = "cough") -> dict[str, Any]:
             "version": rule_graph["version"],
         },
         "review_status": "unreviewed",
-        "usage_modes": ["research_test", "simulation"],
+        "usage_modes": sorted(usage_modes),
     }
 
 

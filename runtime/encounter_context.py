@@ -99,7 +99,10 @@ def normalize_encounter_context(value: dict[str, Any] | None = None) -> dict[str
     raw.update({
         "context_version": "0.1.0",
         "status": "research_only",
+        "lifecycle_status": "draft",
         "review_status": "unreviewed",
+        "clinical_use_status": "limited",
+        "legacy_status_label": "research_only",
         "diagnosis_independent": True,
         "response_source": "proxy_report" if proxy else "patient_report",
         "source_attribution_required": True,

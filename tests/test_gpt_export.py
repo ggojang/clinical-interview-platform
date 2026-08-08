@@ -358,6 +358,28 @@ class GptExportTests(unittest.TestCase):
         self.assertIn("Present `section-1` item `q01` immediately", instructions)
         self.assertIn("or add an introductory sentence", instructions)
 
+    def test_draft_clinical_use_boundary_is_published_and_enforced_in_instructions(self):
+        policy = json.loads(
+            (ROOT / "docs/gpt/interoperability/draft-clinical-use-policy.json")
+            .read_text(encoding="utf-8")
+        )
+        self.assertEqual("draft", policy["lifecycle_status"])
+        self.assertEqual("unreviewed", policy["review_status"])
+        self.assertEqual("limited", policy["clinical_use_status"])
+        self.assertFalse(
+            policy["clinical_decision_boundary"]["independent_diagnosis_authority"]
+        )
+        self.assertFalse(
+            policy["clinical_decision_boundary"]["independent_treatment_authority"]
+        )
+        self.assertTrue(policy["safety_boundary"]["sensitivity_first"])
+        self.assertTrue(
+            policy["safety_boundary"]["notify_when_red_flag_is_suspected"]
+        )
+        instructions = (ROOT / "docs/gpt/GPT_INSTRUCTIONS.md").read_text(encoding="utf-8")
+        self.assertIn("general information", instructions)
+        self.assertIn("do not wait for interview completion", instructions)
+
     def test_patient_experience_standalone_knowledge_file_is_complete(self):
         from tools.gpt_export.build_patient_experience_knowledge_file import build
 
@@ -724,7 +746,7 @@ class GptExportTests(unittest.TestCase):
             eye = json.loads((output_path / "rfe/eye_symptoms/facts.json").read_text(encoding="utf-8"))
             self.assertEqual(eye["count"], 48)
             ear = json.loads((output_path / "rfe/ear_hearing_symptoms/facts.json").read_text(encoding="utf-8"))
-            self.assertEqual(ear["count"], 46)
+            self.assertEqual(ear["count"], 47)
             diabetes = json.loads((output_path / "rfe/diabetes_follow_up/facts.json").read_text(encoding="utf-8"))
             self.assertEqual(diabetes["count"], 69)
             for slug in implemented:

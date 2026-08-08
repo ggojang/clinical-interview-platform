@@ -9,8 +9,10 @@ python3 builder/build_knowledge.py --profile fever --report builder/latest-fever
 python3 builder/build_knowledge.py --profile dyspnea --report builder/latest-dyspnea-report.json
 ```
 
-Generated fragments must remain `unreviewed/research_only` and may declare only
-`research_test` and `simulation` usage modes.
+Generated fragments remain `draft/unreviewed/limited`. The legacy
+`research_only` field is retained for schema compatibility. Fragments may
+declare `research_test`, `simulation`, and `clinician_supervised_pilot` usage
+modes, but never gain independent diagnosis or treatment authority.
 
 Profiles compile independently. Shared Fact identity is resolved through
 `knowledge/shared/primary-care-facts.json`; a new Reason for Encounter must not

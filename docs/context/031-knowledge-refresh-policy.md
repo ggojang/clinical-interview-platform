@@ -122,13 +122,17 @@ A jurisdiction or policy change triggers immediate review.
 
 ---
 
-# Research-Test Use
+# Draft Limited Use
 
-Knowledge marked `unreviewed` or `research_only` may be compiled into a draft package only when the package declares `research_test` or `simulation` usage.
+Current generated clinical knowledge has lifecycle status `draft`, review status `unreviewed`, and clinical-use status `limited`. The historical `research_only` value remains temporarily in schemas and transport resources as a compatibility label; it must not be interpreted as the lifecycle status.
 
-Runtime must reject that package in production mode.
+Draft packages may declare `research_test`, `simulation`, or `clinician_supervised_pilot` use. Runtime must still reject them in unrestricted production mode.
 
-Expired research knowledge remains traceable and testable but produces an explicit refresh warning.
+Draft content may support pre-visit information collection and general informational responses. It has no independent diagnosis, treatment-selection, prescribing, or medication-change authority. Consequential decisions require clinician handoff.
+
+Safety routing is protective rather than diagnostic. When a compiled red flag is suspected, Runtime surfaces the concern and hands off promptly, accepting false positives in favour of sensitivity. Completing routine questions must never delay that notification.
+
+Expired draft knowledge remains traceable and testable but produces an explicit refresh warning.
 
 ---
 

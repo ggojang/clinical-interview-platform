@@ -36,6 +36,10 @@ class EncounterContextTests(unittest.TestCase):
                     self.assertIn(expected["intent_modifier"], context["intent_modifiers"])
                 self.assertTrue(context["diagnosis_independent"])
                 self.assertEqual(context["status"], "research_only")
+                self.assertEqual(context["lifecycle_status"], "draft")
+                self.assertEqual(context["review_status"], "unreviewed")
+                self.assertEqual(context["clinical_use_status"], "limited")
+                self.assertEqual(context["legacy_status_label"], "research_only")
 
     def test_runtime_exposes_context_and_applies_emergency_budget(self):
         session = InterviewSession(

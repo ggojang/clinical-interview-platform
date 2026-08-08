@@ -97,12 +97,22 @@ def load_package(
     usage = package.get("usage_policy", {})
     if execution_mode == "production" and not usage.get("production_allowed", False):
         raise PackageLoadError("draft research package is not allowed in production mode")
-    if execution_mode not in usage.get("allowed_modes", []):
+    allowed_modes = set(usage.get("allowed_modes", []))
+    legacy_draft_pilot = (
+        execution_mode == "clinician_supervised_pilot"
+        and package.get("release_state") == "draft"
+        and package.get("provenance", {}).get("review_status") == "unreviewed"
+    )
+    if execution_mode not in allowed_modes and not legacy_draft_pilot:
         raise PackageLoadError(
             f"package does not allow execution mode {execution_mode!r}"
         )
     package["_runtime_warnings"] = [
-        "Package contains unreviewed/research_only medical knowledge.",
+        (
+            "Package contains unreviewed draft medical knowledge for limited, "
+            "informational or clinician-supervised use; it has no independent "
+            "diagnosis or treatment authority."
+        ),
         *refresh_warnings(package),
     ]
     return package

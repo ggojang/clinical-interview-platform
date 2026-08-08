@@ -1,6 +1,7 @@
 {
+  "clinical_use_status": "limited",
   "contains_patient_responses": false,
-  "count": 103,
+  "count": 106,
   "encounter_contexts": [
     "context.primary_care"
   ],
@@ -63,6 +64,28 @@
       }
     },
     {
+      "id": "rule.ear-hearing-symptoms.safety.tinnitus-associated-vertigo",
+      "priority": 1000,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "emergency",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "all": [
+          {
+            "equals": "tinnitus",
+            "fact": "ear.primary_symptom_group"
+          },
+          {
+            "equals": true,
+            "fact": "ear.associated_vertigo"
+          }
+        ]
+      }
+    },
+    {
       "id": "rule.ear-hearing-symptoms.safety.tinnitus-self-harm",
       "priority": 1000,
       "then": {
@@ -105,6 +128,20 @@
       }
     },
     {
+      "id": "rule.ear-hearing-symptoms.safety.pulse-synchronous-tinnitus",
+      "priority": 960,
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "equals": true,
+        "fact": "ear.tinnitus_pulse_synchronous"
+      }
+    },
+    {
       "id": "rule.ear-hearing-symptoms.safety.mastoid-warning",
       "priority": 950,
       "then": {
@@ -116,20 +153,6 @@
       "when": {
         "equals": true,
         "fact": "ear.postauricular_redness_swelling_tenderness_or_protrusion"
-      }
-    },
-    {
-      "id": "rule.ear-hearing-symptoms.safety.pulsatile-neuro",
-      "priority": 950,
-      "then": {
-        "action": "human_handoff",
-        "safety_level": "urgent",
-        "suppress_routine": true
-      },
-      "type": "safety",
-      "when": {
-        "equals": true,
-        "fact": "ear.pulsatile_tinnitus_with_neurological_or_visual_symptoms"
       }
     },
     {
@@ -343,16 +366,16 @@
       }
     },
     {
-      "id": "rule.generated.priority.any.pulsatile-neuro",
+      "id": "rule.generated.priority.any.pulse-synchronous",
       "priority": 118,
       "then": {
-        "reason": "pulsatile-neuro",
-        "target": "target.ear-hearing-symptoms.pulsatile-neuro"
+        "reason": "pulse-synchronous",
+        "target": "target.ear-hearing-symptoms.pulse-synchronous"
       },
       "type": "priority",
       "when": {
         "target_state": {
-          "target.ear-hearing-symptoms.pulsatile-neuro": "active"
+          "target.ear-hearing-symptoms.pulse-synchronous": "active"
         }
       }
     },
@@ -511,20 +534,6 @@
       }
     },
     {
-      "id": "rule.generated.priority.any.pulse-synchronous",
-      "priority": 106,
-      "then": {
-        "reason": "pulse-synchronous",
-        "target": "target.ear-hearing-symptoms.pulse-synchronous"
-      },
-      "type": "priority",
-      "when": {
-        "target_state": {
-          "target.ear-hearing-symptoms.pulse-synchronous": "active"
-        }
-      }
-    },
-    {
       "id": "rule.generated.priority.any.tragus-tenderness",
       "priority": 106,
       "then": {
@@ -539,16 +548,16 @@
       }
     },
     {
-      "id": "rule.generated.priority.any.hearing-associated",
+      "id": "rule.generated.priority.any.hearing-associated-tinnitus",
       "priority": 105,
       "then": {
-        "reason": "hearing-associated",
-        "target": "target.ear-hearing-symptoms.hearing-associated"
+        "reason": "hearing-associated-tinnitus",
+        "target": "target.ear-hearing-symptoms.hearing-associated-tinnitus"
       },
       "type": "priority",
       "when": {
         "target_state": {
-          "target.ear-hearing-symptoms.hearing-associated": "active"
+          "target.ear-hearing-symptoms.hearing-associated-tinnitus": "active"
         }
       }
     },
@@ -591,6 +600,20 @@
       "when": {
         "target_state": {
           "target.ear-hearing-symptoms.tinnitus-timing": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.associated-vertigo",
+      "priority": 104,
+      "then": {
+        "reason": "associated-vertigo",
+        "target": "target.ear-hearing-symptoms.associated-vertigo"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.ear-hearing-symptoms.associated-vertigo": "active"
         }
       }
     },
@@ -651,6 +674,20 @@
       }
     },
     {
+      "id": "rule.generated.priority.any.associated-fullness",
+      "priority": 103,
+      "then": {
+        "reason": "associated-fullness",
+        "target": "target.ear-hearing-symptoms.associated-fullness"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.ear-hearing-symptoms.associated-fullness": "active"
+        }
+      }
+    },
+    {
       "id": "rule.generated.priority.any.fever-systemic",
       "priority": 103,
       "then": {
@@ -679,16 +716,16 @@
       }
     },
     {
-      "id": "rule.generated.priority.any.tinnitus-associated",
+      "id": "rule.generated.priority.any.tinnitus-associated-hearing-change",
       "priority": 103,
       "then": {
-        "reason": "tinnitus-associated",
-        "target": "target.ear-hearing-symptoms.tinnitus-associated"
+        "reason": "tinnitus-associated-hearing-change",
+        "target": "target.ear-hearing-symptoms.tinnitus-associated-hearing-change"
       },
       "type": "priority",
       "when": {
         "target_state": {
-          "target.ear-hearing-symptoms.tinnitus-associated": "active"
+          "target.ear-hearing-symptoms.tinnitus-associated-hearing-change": "active"
         }
       }
     },
@@ -827,6 +864,30 @@
       }
     },
     {
+      "id": "rule.generated.complete.associated-fullness",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.ear-hearing-symptoms.associated-fullness"
+      }
+    },
+    {
+      "id": "rule.generated.complete.associated-vertigo",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.ear-hearing-symptoms.associated-vertigo"
+      }
+    },
+    {
       "id": "rule.generated.complete.asymmetric-hearing",
       "priority": 50,
       "then": {
@@ -899,7 +960,7 @@
       }
     },
     {
-      "id": "rule.generated.complete.hearing-associated",
+      "id": "rule.generated.complete.hearing-associated-tinnitus",
       "priority": 50,
       "then": {
         "target_state": "satisfied"
@@ -907,7 +968,7 @@
       "type": "completion",
       "when": {
         "facts_resolved": "all_required",
-        "target": "target.ear-hearing-symptoms.hearing-associated"
+        "target": "target.ear-hearing-symptoms.hearing-associated-tinnitus"
       }
     },
     {
@@ -1151,18 +1212,6 @@
       }
     },
     {
-      "id": "rule.generated.complete.pulsatile-neuro",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.ear-hearing-symptoms.pulsatile-neuro"
-      }
-    },
-    {
       "id": "rule.generated.complete.pulse-synchronous",
       "priority": 50,
       "then": {
@@ -1247,7 +1296,7 @@
       }
     },
     {
-      "id": "rule.generated.complete.tinnitus-associated",
+      "id": "rule.generated.complete.tinnitus-associated-hearing-change",
       "priority": 50,
       "then": {
         "target_state": "satisfied"
@@ -1255,7 +1304,7 @@
       "type": "completion",
       "when": {
         "facts_resolved": "all_required",
-        "target": "target.ear-hearing-symptoms.tinnitus-associated"
+        "target": "target.ear-hearing-symptoms.tinnitus-associated-hearing-change"
       }
     },
     {
@@ -1357,6 +1406,8 @@
   ],
   "knowledge_source_status": {
     "clinical_sources_are_compiled_not_queried_live": true,
+    "clinical_use_status": "limited",
+    "lifecycle_status": "draft",
     "review_status": "unreviewed",
     "status": "research_only"
   },
@@ -1399,6 +1450,18 @@
     },
     {
       "complete": false,
+      "id": "source.nhs.tinnitus.2026",
+      "kind": "clinical_guidance_metadata",
+      "last_monitored_at": "2026-08-08",
+      "license_status": "unknown",
+      "monitor_interval_days": 7,
+      "publisher": "NHS",
+      "title": "Tinnitus",
+      "url": "https://www.nhs.uk/conditions/tinnitus/",
+      "version": "reviewed-2024-01-12; modified-2026-05-06"
+    },
+    {
+      "complete": false,
       "id": "source.nice.hearing-loss-ng98",
       "kind": "clinical_guidance_metadata",
       "last_monitored_at": "2026-07-14",
@@ -1413,7 +1476,7 @@
       "complete": false,
       "id": "source.nice.tinnitus-ng155",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-07-14",
+      "last_monitored_at": "2026-08-08",
       "license_status": "unknown",
       "monitor_interval_days": 7,
       "publisher": "NICE",
@@ -1423,21 +1486,21 @@
     },
     {
       "complete": false,
-      "id": "source.stom.ear-hearing.20260714",
+      "id": "source.stom.ear-hearing.20260808",
       "kind": "terminology_mapping_summary",
-      "last_monitored_at": "2026-07-14",
+      "last_monitored_at": "2026-08-08",
       "license_status": "unknown",
       "monitor_interval_days": 30,
       "publisher": "Infoclinic",
       "title": "STOM ear and hearing terminology mapping summary",
-      "url": "https://stom.infoclinic.co",
-      "version": "SNOMEDCT-20260701"
+      "url": "http://localhost:8088/fhir",
+      "version": "SNOMEDCT-20260801"
     },
     {
       "complete": false,
       "id": "source.uhsussex.sudden-hearing-change.2025",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-07-16",
+      "last_monitored_at": "2026-07-14",
       "license_status": "unknown",
       "monitor_interval_days": 1,
       "publisher": "University Hospitals Sussex NHS Foundation Trust",
@@ -1446,6 +1509,7 @@
       "version": "accessed-2026-07-14"
     }
   ],
+  "lifecycle_status": "draft",
   "package_id": "package.primary-care-ear-hearing-symptoms",
   "package_version": "0.1.0",
   "reason_for_encounter": "rfe.ear_hearing_symptoms",
@@ -1454,7 +1518,8 @@
   "status": "research_only",
   "usage_modes": [
     "research_test",
-    "simulation"
+    "simulation",
+    "clinician_supervised_pilot"
   ],
   "version": "1.49.0"
 }

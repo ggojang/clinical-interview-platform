@@ -2336,7 +2336,10 @@ class InterviewSession:
         return {
             "format": "non_fhir_structured_summary",
             "status": "research_only",
+            "lifecycle_status": "draft",
             "review_status": "unreviewed",
+            "clinical_use_status": "limited",
+            "legacy_status_label": "research_only",
             "reason_for_encounter": self.reason_for_encounter,
             "encounter_context": deepcopy(self.encounter_context),
             "safety_status": safety,

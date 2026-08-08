@@ -1258,10 +1258,24 @@ def compile_package(
         "package_version": config["package_version"],
         "release_state": "draft",
         "usage_policy": {
-            "allowed_modes": ["research_test", "simulation"],
+            "lifecycle_status": "draft",
+            "review_status": "unreviewed",
+            "clinical_use_status": "limited",
+            "allowed_modes": [
+                "research_test", "simulation", "clinician_supervised_pilot"
+            ],
             "production_allowed": False,
             "unreviewed_knowledge_allowed": True,
             "overdue_research_behavior": "allow_with_warning",
+            "clinical_decision_boundary": "informational_support_only",
+            "independent_diagnosis_authority": False,
+            "independent_treatment_authority": False,
+            "safety_routing_authority": "protective_notification_and_handoff_only",
+            "safety_routing_principle": "sensitivity_first",
+            "notify_when_red_flag_is_suspected": True,
+            "interview_completion_must_not_delay_safety_notification": True,
+            "policy_ref": "policies/draft-clinical-use-boundary.json",
+            "legacy_status_label": "research_only",
         },
         "scope": {
             "care_domain": "primary_care",

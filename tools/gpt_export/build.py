@@ -68,8 +68,12 @@ def envelope(resource_type: str, items: list[dict[str, Any]]) -> dict[str, Any]:
         "resource_type": resource_type,
         "version": VERSION,
         "status": "research_only",
+        "lifecycle_status": "draft",
         "review_status": "unreviewed",
-        "usage_modes": ["research_test", "simulation"],
+        "clinical_use_status": "limited",
+        "usage_modes": [
+            "research_test", "simulation", "clinician_supervised_pilot"
+        ],
         "contains_patient_responses": False,
         "generated_at": GENERATED_AT,
         "count": len(items),
@@ -191,12 +195,24 @@ def rfe_resource(
             {key: value for key, value in item.items() if key != "status"}
             for item in compact_items
         ]
+    if resource_type == "ReasonForEncounterFactCollection":
+        # The envelope carries lifecycle and review metadata for every Fact.
+        # Remove the repeated legacy status from each item so large RFE payloads
+        # remain safely below the ChatGPT Action response limit.
+        compact_items = [
+            {key: value for key, value in item.items() if key != "status"}
+            for item in compact_items
+        ]
     return {
         "resource_type": resource_type,
         "version": VERSION,
         "status": "research_only",
+        "lifecycle_status": "draft",
         "review_status": "unreviewed",
-        "usage_modes": ["research_test", "simulation"],
+        "clinical_use_status": "limited",
+        "usage_modes": [
+            "research_test", "simulation", "clinician_supervised_pilot"
+        ],
         "contains_patient_responses": False,
         "generated_at": GENERATED_AT,
         "reason_for_encounter": rfe_id,
@@ -206,7 +222,9 @@ def rfe_resource(
         "knowledge_sources": package_knowledge_sources(package),
         "knowledge_source_status": {
             "status": "research_only",
+            "lifecycle_status": "draft",
             "review_status": "unreviewed",
+            "clinical_use_status": "limited",
             "clinical_sources_are_compiled_not_queried_live": True,
         },
         "count": len(items),
@@ -595,6 +613,9 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
     computable_knowledge_coverage = sanitize(load_json(
         root / "coverage" / "computable-knowledge-standards-latest.json"
     ))
+    draft_clinical_use_policy = sanitize(load_json(
+        root / "policies" / "draft-clinical-use-boundary.json"
+    ))
     for document, resource_type in (
         (uscdi_core, "UscdiCoreInteroperabilityOverlay"),
         (uscdi_plus, "UscdiPlusDomainOverlayCatalog"),
@@ -621,6 +642,7 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
             computable_knowledge_coverage,
             "ComputableKnowledgeStandardsCoverageReport",
         ),
+        (draft_clinical_use_policy, "DraftClinicalUseBoundaryPolicy"),
     ):
         document["resource_type"] = resource_type
         document["contains_patient_responses"] = False
@@ -781,6 +803,9 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
         ),
         "interoperability/computable-knowledge-coverage.json": (
             computable_knowledge_coverage
+        ),
+        "interoperability/draft-clinical-use-policy.json": (
+            draft_clinical_use_policy
         ),
         "hira-adequacy-assessments.json": hira_assessment_catalog,
     }
@@ -1113,6 +1138,9 @@ def build(root: Path, output: Path) -> dict[str, Any]:
                 "/gpt/interoperability/computable-knowledge-registry.json",
                 "/gpt/interoperability/computable-knowledge-coverage.json"
             ],
+            "draft_clinical_use_policy": (
+                "/gpt/interoperability/draft-clinical-use-policy.json"
+            ),
             "rfe_operations": [
                 "getReasonForEncounterRules",
                 "getReasonForEncounterQuestions",

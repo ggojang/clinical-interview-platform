@@ -52,7 +52,15 @@ def audit_entry(
     usage = package.get("usage_policy", {})
     check(usage.get("production_allowed") is False, "production is not explicitly disabled", failures)
     check(usage.get("unreviewed_knowledge_allowed") is True, "research use is not enabled", failures)
-    check(set(usage.get("allowed_modes", [])) == {"research_test", "simulation"}, "allowed modes differ from research_test/simulation", failures)
+    allowed = set(usage.get("allowed_modes", []))
+    check(
+        {"research_test", "simulation"} <= allowed
+        and not allowed - {
+            "research_test", "simulation", "clinician_supervised_pilot"
+        },
+        "allowed modes must be research_test/simulation with optional clinician_supervised_pilot",
+        failures,
+    )
 
     nodes = package.get("knowledge_graph", {}).get("nodes", [])
     facts = [node for node in nodes if node.get("type") == "Fact"]

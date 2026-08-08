@@ -847,12 +847,12 @@ class CompilerTests(unittest.TestCase):
     def test_ear_hearing_symptoms_package_is_complete(self):
         package = compile_package(profile="ear_hearing_symptoms")
         facts = {n["id"] for n in package["knowledge_graph"]["nodes"] if n["type"] == "Fact"}
-        self.assertEqual(len(facts), 46)
+        self.assertEqual(len(facts), 47)
         self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
-        self.assertEqual(package["coverage"]["total_safety_rules"], 12)
-        self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 12)
+        self.assertEqual(package["coverage"]["total_safety_rules"], 13)
+        self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 13)
         self.assertEqual(package["coverage"]["uncovered_safety_rules"], [])
-        self.assertEqual(package["coverage"]["data_absent_reason_simulations"], 1)
+        self.assertEqual(package["coverage"]["data_absent_reason_simulations"], 2)
         conditional = package["interview_completion_policy"]["conditional_required_facts"][0]
         self.assertEqual(conditional["selector_fact"], "ear.primary_symptom_group")
         self.assertEqual(set(conditional["cases"]), {"ear_pain_infection", "hearing_change", "discharge_trauma", "tinnitus", "other_unclear"})
