@@ -1,17 +1,26 @@
 {
-  "id": "ANEMIA-IRON-DEFICIENCY-DATA-ABSENT",
+  "id": "ANEMIA-B12-NEUROLOGIC-HANDOFF",
   "simulation_language": "ko",
+  "clinician_submission": true,
   "persona": {
-    "age": 39
+    "age": 69
+  },
+  "encounter_context": {
+    "care_setting": "primary_care",
+    "encounter_type": "new_encounter",
+    "interview_initiator": "patient",
+    "interview_mode": "chat",
+    "available_information": [
+      "no_previous_records"
+    ],
+    "time_constraint": "scheduled",
+    "clinical_responsibility": "decision_support"
   },
   "initial_statement": {
-    "ko": "검사에서 철결핍빈혈이라고 들었어요."
+    "ko": "검진 혈액검사에서 대혈구성 빈혈 가능성이 있다고 들었고 발 저림과 균형 변화를 의료진에게 정리해 전달하고 싶습니다."
   },
   "hidden_state": {
     "anemia.onset_duration_and_course": {
-      "value": "없음"
-    },
-    "anemia.gi_bleeding_and_bowel_change": {
       "value": "없음"
     },
     "anemia.fatigue_weakness_and_function": {
@@ -20,8 +29,17 @@
     "anemia.b12_rapid_gait_deterioration": {
       "value": false
     },
+    "anemia.b12_short_term_memory_change": {
+      "value": "최근 약속을 한 번 잊었으나 일상 독립 유지"
+    },
+    "anemia.dietary_iron_b12_folate_intake": {
+      "value": "없음"
+    },
     "anemia.anticoagulant_with_new_bleeding": {
       "value": false
+    },
+    "anemia.b12_folate_and_related_tests": {
+      "value": "없음"
     },
     "anemia.nsaid_antiplatelet_anticoagulant_use": {
       "value": "없음"
@@ -32,7 +50,10 @@
     "anemia.unexplained_bleeding_bruising_and_fever": {
       "value": false
     },
-    "anemia.fit_endoscopy_coeliac_and_gynaecologic_workup": {
+    "anemia.b12_falls": {
+      "value": "넘어진 적 없음"
+    },
+    "anemia.b12_visual_change": {
       "value": "없음"
     },
     "anemia.current_medicines_and_supplements": {
@@ -50,9 +71,6 @@
     "anemia.hemolysis_pattern": {
       "value": false
     },
-    "anemia.urinary_nasal_dental_and_other_bleeding": {
-      "value": "없음"
-    },
     "anemia.current_symptom_priority": {
       "value": "없음"
     },
@@ -62,10 +80,22 @@
     "anemia.malabsorption_gi_surgery_and_coeliac_context": {
       "value": "없음"
     },
+    "anemia.b12_glossitis": {
+      "value": "혀가 매끈하고 매운 음식에 쓰라림"
+    },
     "anemia.active_lower_gi_bleeding_with_instability": {
       "value": false
     },
+    "anemia.b12_gait_change": {
+      "value": "한 달 전부터 보폭이 줄었지만 혼자 보행 가능"
+    },
     "anemia.pallor_cold_hands_and_orthostasis": {
+      "value": "없음"
+    },
+    "anemia.b12_risk_medicines": {
+      "value": "메트포르민 8년, 위산억제제 3년"
+    },
+    "anemia.b12_folate_treatment_details": {
       "value": "없음"
     },
     "anemia.white_cells_platelets_and_other_cytopenias": {
@@ -78,22 +108,34 @@
       "value": "없음"
     },
     "anemia.primary_group": {
-      "value": "iron_deficiency"
+      "value": "b12_folate_or_macrocytic"
+    },
+    "anemia.autoimmune_gastritis_workup": {
+      "value": "아직 검사하지 않음"
     },
     "anemia.latest_cbc_and_reference_range": {
       "value": "없음"
     },
-    "anemia.blood_donation_surgery_trauma_and_procedures": {
-      "value": "없음"
+    "anemia.b12_paresthesia_or_numbness": {
+      "value": "양쪽 발끝이 3개월 전부터 저리고 감각이 둔함"
     },
     "anemia.confusion_or_new_neurologic_deficit": {
       "value": false
     },
-    "anemia.menstrual_pattern_and_heavy_bleeding": {
+    "anemia.b12_concentration_change": {
       "value": "없음"
     },
     "anemia.pregnancy_or_postpartum_bleeding": {
       "value": false
+    },
+    "anemia.b12_balance_impairment": {
+      "value": "어두운 곳에서 가끔 휘청거림"
+    },
+    "anemia.nitrous_oxide_use": {
+      "value": "없음"
+    },
+    "anemia.b12_supplement_before_testing": {
+      "value": "검사 1주 전부터 종합비타민 복용"
     },
     "anemia.ferritin_iron_tsat_tibc_and_inflammation": {
       "value": "없음"
@@ -111,21 +153,22 @@
       "value": "없음"
     }
   },
-  "response_behavior": {
-    "anemia.dietary_iron_b12_folate_intake": {
-      "dataAbsentReason": "asked-unknown"
-    }
-  },
   "expected": {
-    "expected_data_absent_reasons": {
-      "anemia.dietary_iron_b12_folate_intake": "asked-unknown"
-    },
     "expected_safety_level": "routine",
     "expected_stop_reason": "required_targets_addressed_with_absent_data",
+    "expected_clinician_handoff": true,
+    "expected_selected_facts_contains": [
+      "anemia.b12_paresthesia_or_numbness",
+      "anemia.b12_gait_change",
+      "anemia.b12_balance_impairment",
+      "anemia.b12_risk_medicines",
+      "anemia.b12_supplement_before_testing"
+    ],
     "expected_max_turns": 65,
     "forbidden_assertions": [
-      "diagnosis.gastrointestinal_cancer",
-      "diagnosis.menorrhagia"
+      "diagnosis.vitamin_b12_deficiency",
+      "diagnosis.subacute_combined_degeneration",
+      "treatment.start_b12"
     ]
   },
   "provenance": {
@@ -135,7 +178,8 @@
     },
     "created_at": "2026-07-14T00:00:00Z",
     "source_refs": [
-      "source.bsg.ida.2021",
+      "source.nice.ng239.b12.2024",
+      "source.stom.anemia-b12-neurologic.20260809",
       "specifications/clinical-memory.md"
     ],
     "review_status": "unreviewed",

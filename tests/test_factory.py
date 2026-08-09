@@ -1260,15 +1260,15 @@ class CompilerTests(unittest.TestCase):
         facts = {node["id"] for node in package["knowledge_graph"]["nodes"] if node["type"] == "Fact"}
         self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
         self.assertGreaterEqual(len(facts), 45)
-        self.assertEqual(package["coverage"]["total_safety_rules"], 12)
-        self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 12)
+        self.assertEqual(package["coverage"]["total_safety_rules"], 13)
+        self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 13)
         self.assertEqual(package["coverage"]["uncovered_safety_rules"], [])
         self.assertEqual(package["coverage"]["data_absent_reason_simulations"], 1)
         conditional = package["interview_completion_policy"]["conditional_required_facts"][0]
         self.assertEqual(conditional["selector_fact"], "anemia.primary_group")
         self.assertEqual(set(conditional["cases"]), {"suspected_symptomatic", "abnormal_blood_result", "iron_deficiency", "b12_folate_or_macrocytic", "chronic_disease_or_renal", "bleeding_related", "treatment_followup", "other_unclear"})
         mapping = json.loads((Path(__file__).resolve().parents[1] / "mappings/terminology/snomed-mrcm-anemia-concern-follow-up.json").read_text(encoding="utf-8"))
-        self.assertEqual(len(mapping["focus_concepts"]), 8)
+        self.assertEqual(len(mapping["focus_concepts"]), 15)
         self.assertFalse(mapping["validation"]["clinical_rule_authority"])
 
     def test_seizure_event_follow_up_package_is_complete(self):

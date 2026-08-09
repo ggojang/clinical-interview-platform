@@ -4,7 +4,16 @@ from profile_support import *
 
 P, RFE, M, SN = "anemia-concern-follow-up", "rfe.anemia_concern_follow_up", "mapping.snomed-mrcm.anemia-concern-follow-up", "http://snomed.info/sct"
 ACQUIRED_AT = "2026-07-15T00:00:00Z"
-SOURCES = ["source.bsg.ida.2021", "source.nice.ng12.anemia.2026", "source.who.ferritin.2020", "source.stom.anemia.20260715"]
+BASE_SOURCES = [
+    "source.bsg.ida.2021",
+    "source.nice.ng12.anemia.2026",
+    "source.who.ferritin.2020",
+    "source.stom.anemia.20260715",
+]
+SOURCES = BASE_SOURCES + [
+    "source.nice.ng239.b12.2024",
+    "source.stom.anemia-b12-neurologic.20260809",
+]
 G = {k: f"group.anemia.{k}" for k in ("routing", "safety", "common", "bleeding", "nutrition", "chronic", "treatment")}
 C, S, D, R = ["intent.characterize_symptom"], ["intent.screen_red_flags"], ["intent.differentiate_common_causes"], ["intent.risk_assessment"]
 
@@ -28,6 +37,7 @@ def fragment():
         Q("anemia.unexplained_bleeding_bruising_and_fever", "Possible Marrow or Haematologic Warning", "boolean", "bleeding-fever", "원인 모를 멍·점상출혈·코피·잇몸출혈과 함께 지속 발열·반복 감염·심한 피로 중 하나가 있나요?", 170, [G["safety"]], S, safety_relevant=True),
         Q("anemia.anticoagulant_with_new_bleeding", "Bleeding while Anticoagulated", "boolean", "anticoagulant-bleed", "항응고제·항혈소판제를 복용 중이며 새로 생긴 지속 출혈이나 큰 멍, 혈뇨·혈변이 있나요?", 169, [G["safety"], G["bleeding"]], S, safety_relevant=True),
         Q("anemia.severe_infection_or_sepsis_pattern", "Severe Infection with Cytopenia Concern", "boolean", "severe-infection", "항암·면역억제 치료 중이거나 백혈구 감소를 들었는데 고열·오한·혼란·심한 처짐이 있나요?", 168, [G["safety"]], S, safety_relevant=True),
+        Q("anemia.b12_rapid_gait_deterioration", "Rapid Gait Deterioration", "boolean", "b12-rapid-gait-deterioration", "최근 걷기가 빠르게 나빠져 혼자 서거나 걷기 어려워졌나요?", 167, [G["safety"], G["nutrition"]], S, safety_relevant=True),
 
         Q("anemia.onset_duration_and_course", "Onset Duration and Course", "string", "onset", "증상 또는 검사 이상을 처음 안 시기, 지속 기간과 악화·호전·반복 경과를 알려주세요.", 155, [G["common"]], C),
         Q("anemia.current_symptom_priority", "Current Symptom Priority", "string", "priority", "현재 가장 불편하거나 의료진에게 우선 확인받고 싶은 증상은 무엇인가요?", 154, [G["common"]], C),
@@ -42,6 +52,18 @@ def fragment():
         Q("anemia.ferritin_iron_tsat_tibc_and_inflammation", "Iron Studies and Inflammation", "string", "iron-studies", "페리틴·혈청철·트랜스페린포화도·TIBC와 CRP 등 염증 수치, 검사일을 알려주세요.", 145, [G["common"], G["nutrition"]], R),
         Q("anemia.reticulocyte_bilirubin_ldh_haptoglobin", "Reticulocyte and Haemolysis Tests", "string", "hemolysis-tests", "망상적혈구·빌리루빈·LDH·합토글로빈 등 용혈 관련 결과가 있나요?", 144, [G["common"]], R),
         Q("anemia.b12_folate_and_related_tests", "B12 Folate and Related Tests", "string", "b12-folate-tests", "비타민 B12·엽산과 관련 추가검사 결과, 검사일을 알려주세요.", 143, [G["common"], G["nutrition"]], R),
+        Q("anemia.b12_paresthesia_or_numbness", "Paresthesia or Numbness Pattern", "string", "b12-paresthesia", "손발의 저림·찌릿함 또는 감각 둔함이 있나요? 있다면 부위, 좌우 대칭 여부, 시작 시기와 변화를 알려주세요.", 142, [G["common"], G["nutrition"]], C),
+        Q("anemia.b12_gait_change", "Gait Change", "string", "b12-gait", "걷는 방식이나 보폭이 달라졌나요? 있다면 시작 시기와 일상 이동에 미치는 영향을 알려주세요.", 141, [G["common"], G["nutrition"]], C),
+        Q("anemia.b12_balance_impairment", "Balance Impairment", "string", "b12-balance", "서 있거나 방향을 바꿀 때 균형을 잡기 어렵거나 휘청거리나요? 있다면 빈도와 시작 시기를 알려주세요.", 140, [G["common"], G["nutrition"]], C),
+        Q("anemia.b12_falls", "Recent Falls", "string", "b12-falls", "최근 넘어진 적이 있나요? 있다면 횟수, 최근 시점과 다친 곳을 알려주세요.", 139, [G["common"], G["nutrition"]], R),
+        Q("anemia.b12_short_term_memory_change", "Short-term Memory Change", "string", "b12-memory", "최근 기억해야 할 일을 잊거나 같은 내용을 반복해서 묻는 변화가 있나요? 있다면 시작 시기와 일상 영향을 알려주세요.", 138, [G["common"], G["nutrition"]], C),
+        Q("anemia.b12_concentration_change", "Concentration Change", "string", "b12-concentration", "최근 집중하기 어려워졌나요? 있다면 시작 시기와 업무·학업·일상에 미치는 영향을 알려주세요.", 137, [G["common"], G["nutrition"]], C),
+        Q("anemia.b12_visual_change", "Visual Change", "string", "b12-vision", "새로 생긴 흐린 시야나 시야 일부가 보이지 않는 변화가 있나요? 있다면 한쪽·양쪽 여부와 시작 시기를 알려주세요.", 136, [G["common"], G["nutrition"]], C),
+        Q("anemia.b12_glossitis", "Glossitis or Tongue Soreness", "string", "b12-glossitis", "혀가 붉거나 매끈해지고 쓰라린 변화가 있나요? 있다면 시작 시기와 식사에 미치는 영향을 알려주세요.", 135, [G["common"], G["nutrition"]], C),
+        Q("anemia.b12_risk_medicines", "Medicines Associated with B12 Deficiency", "string", "b12-risk-medicines", "메트포르민, 위산억제제 또는 의료진이 비타민 B12에 영향을 줄 수 있다고 안내한 약의 이름과 복용 기간을 알려주세요.", 134, [G["nutrition"], G["treatment"]], R),
+        Q("anemia.nitrous_oxide_use", "Nitrous Oxide Exposure", "string", "b12-nitrous-oxide", "최근 아산화질소를 사용한 적이 있나요? 있다면 마지막 사용 시기, 빈도와 대략적인 양을 알려주세요.", 133, [G["nutrition"]], R),
+        Q("anemia.b12_supplement_before_testing", "B12 Supplement Use Before Testing", "string", "b12-supplement-before-test", "비타민 B12 검사 전에 정제·주사·패치나 종합비타민을 사용했나요? 제품, 용량과 마지막 사용 시기를 알려주세요.", 132, [G["nutrition"], G["treatment"]], R),
+        Q("anemia.autoimmune_gastritis_workup", "Autoimmune Gastritis Work-up", "string", "b12-autoimmune-gastritis", "자가면역성 위염과 관련해 내인자항체 또는 추가검사를 받았나요? 결과와 검사일을 알려주세요.", 131, [G["nutrition"], G["treatment"]], R),
         Q("anemia.current_medicines_and_supplements", "Current Medicines and Supplements", "string", "medicines", "현재 복용약 전체와 철분·B12·엽산·건강보조제의 제품명·용량·복용법을 알려주세요.", 142, [G["common"]], R),
         Q("anemia.nsaid_antiplatelet_anticoagulant_use", "Bleeding-risk Medicines", "string", "bleeding-medicines", "진통소염제·아스피린·항혈소판제·항응고제의 이름, 복용 빈도와 시작 시기를 알려주세요.", 141, [G["common"], G["bleeding"]], R),
         Q("anemia.past_anemia_transfusion_and_blood_disorder", "Past Anaemia and Transfusion History", "string", "past-history", "과거 빈혈 유형·치료·수혈, 혈액질환 또는 비슷한 재발 병력을 알려주세요.", 140, [G["common"]], R),
@@ -76,15 +98,18 @@ def fragment():
         ("critical-hb", "anemia.known_critical_or_rapidly_falling_hemoglobin", "urgent", 990), ("transfusion-reaction", "anemia.transfusion_reaction_pattern", "emergency", 1000),
         ("hemolysis", "anemia.hemolysis_pattern", "urgent", 980), ("bleeding-fever", "anemia.unexplained_bleeding_bruising_and_fever", "urgent", 980),
         ("anticoagulant-bleed", "anemia.anticoagulant_with_new_bleeding", "urgent", 980), ("severe-infection", "anemia.severe_infection_or_sepsis_pattern", "emergency", 1000),
+        ("b12-rapid-gait-deterioration", "anemia.b12_rapid_gait_deterioration", "urgent", 985),
     ]
     rules = [safety_rule(P, key, {"fact": fid, "equals": True}, level, priority) for key, fid, level, priority in safety]
-    return {"id": "knowledge.generated.anemia-concern-follow-up", "version": VERSION, "status": "research_only", "usage_modes": ["research_test", "simulation"], "source_manifest": "source-manifest.primary-care-anemia-concern-follow-up-research", "default_refresh": default_refresh(), "extra_nodes": [{"id": v, "type": "ClinicalGroup", "display": v.split(".")[-1]} for v in G.values()], "group_hypothesis_edges": [], "safety_rules": rules, "entries": e, "provenance": provenance(SOURCES)}
+    return {"id": "knowledge.generated.anemia-concern-follow-up", "version": VERSION, "status": "research_only", "lifecycle_status": "draft", "review_status": "unreviewed", "clinical_use_status": "limited", "clinical_use_policy_ref": "policies/draft-clinical-use-boundary.json", "usage_modes": ["research_test", "simulation", "clinician_supervised_pilot"], "source_manifest": "source-manifest.primary-care-anemia-concern-follow-up-research", "default_refresh": default_refresh(), "extra_nodes": [{"id": v, "type": "ClinicalGroup", "display": v.split(".")[-1]} for v in G.values()], "group_hypothesis_edges": [], "safety_rules": rules, "entries": e, "provenance": provenance(SOURCES)}
 
 
 def completion(f):
     p = completion_policy(prefix=P, fragment=f, presentation_fact="anemia.primary_group", question_budget=65, source_refs=SOURCES)
     common = ["anemia.onset_duration_and_course", "anemia.current_symptom_priority", "anemia.fatigue_weakness_and_function", "anemia.exertional_dyspnea_palpitations_and_dizziness", "anemia.pallor_cold_hands_and_orthostasis", "anemia.latest_cbc_and_reference_range", "anemia.cbc_trend_and_prior_baseline", "anemia.white_cells_platelets_and_other_cytopenias", "anemia.ferritin_iron_tsat_tibc_and_inflammation", "anemia.current_medicines_and_supplements", "anemia.nsaid_antiplatelet_anticoagulant_use", "anemia.past_anemia_transfusion_and_blood_disorder", "anemia.pregnancy_postpartum_and_lactation", "anemia.other_detail_or_patient_priority"]
-    cases = {"suspected_symptomatic": ["anemia.headache_cognition_and_sleep", "anemia.pica_restless_legs_and_nail_hair_change", "anemia.dietary_iron_b12_folate_intake"], "abnormal_blood_result": ["anemia.reticulocyte_bilirubin_ldh_haptoglobin", "anemia.b12_folate_and_related_tests", "anemia.family_history_and_ancestry_context"], "iron_deficiency": ["anemia.menstrual_pattern_and_heavy_bleeding", "anemia.gi_bleeding_and_bowel_change", "anemia.urinary_nasal_dental_and_other_bleeding", "anemia.blood_donation_surgery_trauma_and_procedures", "anemia.dietary_iron_b12_folate_intake", "anemia.malabsorption_gi_surgery_and_coeliac_context", "anemia.fit_endoscopy_coeliac_and_gynaecologic_workup"], "b12_folate_or_macrocytic": ["anemia.b12_folate_and_related_tests", "anemia.dietary_iron_b12_folate_intake", "anemia.malabsorption_gi_surgery_and_coeliac_context", "anemia.b12_folate_treatment_details"], "chronic_disease_or_renal": ["anemia.chronic_kidney_inflammation_cancer_and_infection", "anemia.renal_dialysis_and_esa_history", "anemia.endocrine_liver_and_bone_marrow_context"], "bleeding_related": ["anemia.menstrual_pattern_and_heavy_bleeding", "anemia.gi_bleeding_and_bowel_change", "anemia.urinary_nasal_dental_and_other_bleeding", "anemia.blood_donation_surgery_trauma_and_procedures"], "treatment_followup": ["anemia.oral_iron_regimen_adherence_and_tolerance", "anemia.iv_iron_details_and_reaction", "anemia.b12_folate_treatment_details", "anemia.treatment_response_and_followup_labs", "anemia.fit_endoscopy_coeliac_and_gynaecologic_workup", "anemia.specialist_referral_and_safety_net"], "other_unclear": ["anemia.other_detail_or_patient_priority"]}
+    b12_neurologic = ["anemia.b12_paresthesia_or_numbness", "anemia.b12_gait_change", "anemia.b12_balance_impairment", "anemia.b12_falls", "anemia.b12_short_term_memory_change", "anemia.b12_concentration_change", "anemia.b12_visual_change", "anemia.b12_glossitis", "anemia.b12_rapid_gait_deterioration"]
+    b12_context = ["anemia.b12_risk_medicines", "anemia.nitrous_oxide_use", "anemia.b12_supplement_before_testing", "anemia.autoimmune_gastritis_workup"]
+    cases = {"suspected_symptomatic": ["anemia.headache_cognition_and_sleep", "anemia.pica_restless_legs_and_nail_hair_change", "anemia.dietary_iron_b12_folate_intake"], "abnormal_blood_result": ["anemia.reticulocyte_bilirubin_ldh_haptoglobin", "anemia.b12_folate_and_related_tests", "anemia.family_history_and_ancestry_context"], "iron_deficiency": ["anemia.menstrual_pattern_and_heavy_bleeding", "anemia.gi_bleeding_and_bowel_change", "anemia.urinary_nasal_dental_and_other_bleeding", "anemia.blood_donation_surgery_trauma_and_procedures", "anemia.dietary_iron_b12_folate_intake", "anemia.malabsorption_gi_surgery_and_coeliac_context", "anemia.fit_endoscopy_coeliac_and_gynaecologic_workup"], "b12_folate_or_macrocytic": ["anemia.b12_folate_and_related_tests", "anemia.dietary_iron_b12_folate_intake", "anemia.malabsorption_gi_surgery_and_coeliac_context", "anemia.b12_folate_treatment_details"] + b12_neurologic + b12_context, "chronic_disease_or_renal": ["anemia.chronic_kidney_inflammation_cancer_and_infection", "anemia.renal_dialysis_and_esa_history", "anemia.endocrine_liver_and_bone_marrow_context"], "bleeding_related": ["anemia.menstrual_pattern_and_heavy_bleeding", "anemia.gi_bleeding_and_bowel_change", "anemia.urinary_nasal_dental_and_other_bleeding", "anemia.blood_donation_surgery_trauma_and_procedures"], "treatment_followup": ["anemia.oral_iron_regimen_adherence_and_tolerance", "anemia.iv_iron_details_and_reaction", "anemia.b12_folate_treatment_details", "anemia.treatment_response_and_followup_labs", "anemia.fit_endoscopy_coeliac_and_gynaecologic_workup", "anemia.specialist_referral_and_safety_net"] + b12_neurologic + b12_context, "other_unclear": ["anemia.other_detail_or_patient_priority"]}
     p["required_facts"]["routine"], p["conditional_required_facts"] = common, [{"selector_fact": "anemia.primary_group", "cases": cases}]
     return p
 
@@ -94,9 +119,12 @@ def source_docs():
         ("source.bsg.ida.2021", "British Society of Gastroenterology", "Guidelines for management of iron deficiency anaemia in adults", "Gut-2021-325210", "https://pmc.ncbi.nlm.nih.gov/articles/PMC8515119/", "clinical_guideline", ["History should seek overt blood loss including menstruation and epistaxis, blood donation, inadequate diet, NSAID use and previous gastrointestinal resection or bypass.", "Evaluation and treatment response require iron studies, coeliac and gastrointestinal context, medication and follow-up information; this package does not diagnose the cause."]),
         ("source.nice.ng12.anemia.2026", "NICE", "Suspected cancer: anaemia-related recommendations", "NG12; updated-2026-04-15", "https://www.nice.org.uk/guidance/ng12/chapter/Recommendations-organised-by-site-of-cancer", "nice_guidance", ["Iron-deficiency anaemia and selected age or symptom combinations require FIT or referral consideration; pallor, persistent fatigue, fever, infection, bruising, bleeding and petechiae can warrant urgent blood count assessment."]),
         ("source.who.ferritin.2020", "WHO", "Guideline on ferritin concentrations to assess iron status", "ISBN-978-92-4-000012-4", "https://www.who.int/publications/i/item/9789240000124", "public_health_guidance", ["Ferritin is an iron-store marker whose interpretation must consider infection and inflammation; raw result, reference context and inflammatory markers should be preserved."]),
+        ("source.nice.ng239.b12.2024", "NICE", "Vitamin B12 deficiency in over 16s: diagnosis and management", "NG239; updated-2024-12", "https://www.nice.org.uk/guidance/ng239/chapter/recommendations", "nice_guidance", ["Common B12-deficiency presentations include paraesthesia or numbness, impaired gait, balance problems and falls, short-term memory or concentration difficulty, visual problems and glossitis; these are not specific to B12 deficiency.", "Risk context includes selected medicines, gastrointestinal surgery or malabsorption, diet and recreational nitrous oxide use; B12 preparations used before testing can affect interpretation.", "Suspected megaloblastic anaemia with neurological symptoms requires time-sensitive clinician review; the interview records warning features and does not diagnose or prescribe treatment."]),
         ("source.stom.anemia.20260715", "Infoclinic", "STOM anaemia terminology and MRCM summary", "SNOMEDCT-20260701", "https://stom.infoclinic.co", "terminology_server", ["FHIR lookup confirmed active concepts for anaemia, iron-deficiency anaemia, macrocytic anaemia, B12- and folate-deficiency megaloblastic anaemia, blood-loss anaemia, chronic-disease anaemia and low haemoglobin.", "MRCM supports provisional semantic binding only and does not establish cause or urgency."]),
+        ("source.stom.anemia-b12-neurologic.20260809", "Infoclinic", "STOM B12-related neurologic finding terminology verification", "SNOMEDCT-20260801", "http://localhost:8088/fhir", "terminology_server", ["Build-time FHIR lookup confirmed active concepts for paraesthesia, abnormal gait, impairment of balance, poor short-term memory, glossitis and nitrous oxide use in the 20260801 international edition.", "The verified concepts represent atomic findings or exposure only; terminology does not infer B12 deficiency, urgency or treatment."]),
     ]
-    artifacts = [{"id": i, "kind": "terminology_mrcm_query_summary" if profile == "terminology_server" else "clinical_guidance_metadata", "publisher": pub, "title": title, "version": version, "url": url, "language": "en", "digest": "live_response_summary_not_raw_cache" if profile == "terminology_server" else "metadata_only_not_cached", "license_status": "restricted" if pub in {"NICE", "Infoclinic"} else "unknown", "complete": False, "monitor_profile": profile, "last_monitored_at": "2026-07-15", "monitor_result": "current_official_source_confirmed", "assertions": assertions} for i, pub, title, version, url, profile, assertions in defs]
+    newly_verified = {"source.nice.ng239.b12.2024", "source.stom.anemia-b12-neurologic.20260809"}
+    artifacts = [{"id": i, "kind": "terminology_mrcm_query_summary" if profile == "terminology_server" else "clinical_guidance_metadata", "publisher": pub, "title": title, "version": version, "url": url, "language": "en", "digest": "live_response_summary_not_raw_cache" if profile == "terminology_server" else "metadata_only_not_cached", "license_status": "restricted" if pub in {"NICE", "Infoclinic"} else "unknown", "complete": False, "monitor_profile": profile, "last_monitored_at": "2026-08-09" if i in newly_verified else "2026-07-15", "monitor_result": "current_official_source_confirmed", "assertions": assertions} for i, pub, title, version, url, profile, assertions in defs]
     research = {"id": "source-manifest.primary-care-anemia-concern-follow-up-research", "version": VERSION, "acquired_at": ACQUIRED_AT, "status": "research_only", "artifacts": artifacts, "provenance": provenance([x[0] for x in defs])}
     paths = [("source.repository.foundation", "repository_specification", "FOUNDATION.md", True), ("source.generated.anemia", "generated_clinical_knowledge", "knowledge/generated/hematology/anemia-concern-follow-up/anemia-concern-follow-up.json", True), ("source.mapping.anemia", "terminology_mapping", "mappings/terminology/snomed-mrcm-anemia-concern-follow-up.json", False), ("source.external.anemia", "external_source_manifest", "sources/manifests/primary-care-anemia-concern-follow-up-research.json", False), ("source.policy.anemia", "runtime_policy", "policies/primary-care-anemia-concern-follow-up-completion.json", True)]
     primary = {"id": "source-manifest.primary-care-anemia-concern-follow-up", "version": VERSION, "acquired_at": ACQUIRED_AT, "artifacts": [{"id": i, "kind": kind, "publisher": "clinical-interview-platform", "version": VERSION, "language": "en", "path": path, "digest": "computed_at_build", "license_status": "allowed" if complete else "unknown", "complete": complete} for i, kind, path, complete in paths], "provenance": provenance(["FOUNDATION.md", "PROJECT_CONTEXT.md"])}
@@ -107,7 +135,24 @@ def cases(f):
     out = {}
     for i, rule in enumerate(f["safety_rules"]):
         fid, level, key = rule["when"]["fact"], rule["then"]["safety_level"], rule["id"].split("safety.")[1]
-        out[f"ANEMIA-{key.upper()}.json"] = {"id": f"ANEMIA-{key.upper()}", "simulation_language": "ko", "persona": {"age": 24 + i}, "initial_statement": {"ko": "빈혈이 걱정돼서 왔어요."}, "hidden_state": {fid: {"value": True}}, "expected": {"expected_safety_level": level, "expected_safety_action": "human_handoff", "expected_stop_reason": f"{level}_escalation", "expected_triggered_rules_contains": [rule["id"]], "expected_max_turns": 40, "forbidden_assertions": ["diagnosis.iron_deficiency", "diagnosis.cancer", "diagnosis.leukaemia"]}, "provenance": provenance(SOURCES)}
+        out[f"ANEMIA-{key.upper()}.json"] = {"id": f"ANEMIA-{key.upper()}", "simulation_language": "ko", "persona": {"age": 24 + i}, "initial_statement": {"ko": "빈혈이 걱정돼서 왔어요."}, "hidden_state": {fid: {"value": True}}, "expected": {"expected_safety_level": level, "expected_safety_action": "human_handoff", "expected_stop_reason": f"{level}_escalation", "expected_triggered_rules_contains": [rule["id"]], "expected_max_turns": 40, "forbidden_assertions": ["diagnosis.iron_deficiency", "diagnosis.cancer", "diagnosis.leukaemia"]}, "provenance": provenance(BASE_SOURCES)}
+    out["ANEMIA-B12-RAPID-GAIT-DETERIORATION.json"] = {
+        "id": "ANEMIA-B12-RAPID-GAIT-DETERIORATION",
+        "simulation_language": "ko",
+        "persona": {"age": 72, "visit_type": "long_absence_followup"},
+        "encounter_context": {"care_setting": "telemedicine", "encounter_type": "new_encounter", "interview_initiator": "patient", "interview_mode": "chat", "available_information": ["no_previous_records"], "time_constraint": "scheduled", "clinical_responsibility": "decision_support"},
+        "initial_statement": {"ko": "대혈구성 빈혈 가능성이 있다고 들었는데 발이 저리고 요즘 걷기가 빨리 나빠져 혼자 서기 어렵습니다."},
+        "hidden_state": {
+            "anemia.primary_group": {"value": "b12_folate_or_macrocytic"},
+            "anemia.b12_paresthesia_or_numbness": {"value": "양쪽 발끝에서 시작해 종아리까지 올라오는 저림과 감각 둔함"},
+            "anemia.b12_gait_change": {"value": "2주 사이 보폭이 짧아지고 벽을 짚어야 이동 가능"},
+            "anemia.b12_balance_impairment": {"value": "방향을 바꿀 때 심하게 휘청거림"},
+            "anemia.b12_rapid_gait_deterioration": {"value": True},
+            "anemia.b12_risk_medicines": {"value": "메트포르민과 위산억제제를 수년간 복용"},
+        },
+        "expected": {"expected_safety_level": "urgent", "expected_safety_action": "human_handoff", "expected_stop_reason": "urgent_escalation", "expected_triggered_rules_contains": ["rule.anemia-concern-follow-up.safety.b12-rapid-gait-deterioration"], "expected_max_turns": 45, "forbidden_assertions": ["diagnosis.vitamin_b12_deficiency", "diagnosis.subacute_combined_degeneration", "treatment.start_b12"]},
+        "provenance": provenance(["source.nice.ng239.b12.2024", "source.stom.anemia-b12-neurologic.20260809"]),
+    }
     policy = completion(f)
     required = set(policy["required_facts"]["always"] + policy["required_facts"]["routine"] + policy["conditional_required_facts"][0]["cases"]["iron_deficiency"])
     by_id, hidden = {x["fact"]["id"]: x["fact"] for x in f["entries"]}, {}
@@ -118,6 +163,35 @@ def cases(f):
     declined = "anemia.dietary_iron_b12_folate_intake"
     hidden.pop(declined)
     out["ANEMIA-IRON-DEFICIENCY-DATA-ABSENT.json"] = {"id": "ANEMIA-IRON-DEFICIENCY-DATA-ABSENT", "simulation_language": "ko", "persona": {"age": 39}, "initial_statement": {"ko": "검사에서 철결핍빈혈이라고 들었어요."}, "hidden_state": hidden, "response_behavior": {declined: {"dataAbsentReason": "asked-unknown"}}, "expected": {"expected_data_absent_reasons": {declined: "asked-unknown"}, "expected_safety_level": "routine", "expected_stop_reason": "required_targets_addressed_with_absent_data", "expected_max_turns": 65, "forbidden_assertions": ["diagnosis.gastrointestinal_cancer", "diagnosis.menorrhagia"]}, "provenance": provenance(["source.bsg.ida.2021", "specifications/clinical-memory.md"])}
+    b12_required = set(policy["required_facts"]["always"] + policy["required_facts"]["routine"] + policy["conditional_required_facts"][0]["cases"]["b12_folate_or_macrocytic"])
+    b12_hidden = {}
+    for fid in b12_required:
+        fact = by_id[fid]
+        b12_hidden[fid] = {"value": False if fact["value_type"] == "boolean" else fact.get("allowed_values", ["없음"])[-1] if fact["value_type"] == "coded" else 0 if fact["value_type"] == "integer" else "없음"}
+    b12_hidden.update({
+        "anemia.primary_group": {"value": "b12_folate_or_macrocytic"},
+        "anemia.b12_paresthesia_or_numbness": {"value": "양쪽 발끝이 3개월 전부터 저리고 감각이 둔함"},
+        "anemia.b12_gait_change": {"value": "한 달 전부터 보폭이 줄었지만 혼자 보행 가능"},
+        "anemia.b12_balance_impairment": {"value": "어두운 곳에서 가끔 휘청거림"},
+        "anemia.b12_falls": {"value": "넘어진 적 없음"},
+        "anemia.b12_short_term_memory_change": {"value": "최근 약속을 한 번 잊었으나 일상 독립 유지"},
+        "anemia.b12_concentration_change": {"value": "없음"},
+        "anemia.b12_visual_change": {"value": "없음"},
+        "anemia.b12_glossitis": {"value": "혀가 매끈하고 매운 음식에 쓰라림"},
+        "anemia.b12_risk_medicines": {"value": "메트포르민 8년, 위산억제제 3년"},
+        "anemia.nitrous_oxide_use": {"value": "없음"},
+        "anemia.b12_supplement_before_testing": {"value": "검사 1주 전부터 종합비타민 복용"},
+        "anemia.autoimmune_gastritis_workup": {"value": "아직 검사하지 않음"},
+    })
+    out["ANEMIA-B12-NEUROLOGIC-HANDOFF.json"] = {
+        "id": "ANEMIA-B12-NEUROLOGIC-HANDOFF", "simulation_language": "ko", "clinician_submission": True,
+        "persona": {"age": 69},
+        "encounter_context": {"care_setting": "primary_care", "encounter_type": "new_encounter", "interview_initiator": "patient", "interview_mode": "chat", "available_information": ["no_previous_records"], "time_constraint": "scheduled", "clinical_responsibility": "decision_support"},
+        "initial_statement": {"ko": "검진 혈액검사에서 대혈구성 빈혈 가능성이 있다고 들었고 발 저림과 균형 변화를 의료진에게 정리해 전달하고 싶습니다."},
+        "hidden_state": b12_hidden,
+        "expected": {"expected_safety_level": "routine", "expected_stop_reason": "required_targets_addressed_with_absent_data", "expected_clinician_handoff": True, "expected_selected_facts_contains": ["anemia.b12_paresthesia_or_numbness", "anemia.b12_gait_change", "anemia.b12_balance_impairment", "anemia.b12_risk_medicines", "anemia.b12_supplement_before_testing"], "expected_max_turns": 65, "forbidden_assertions": ["diagnosis.vitamin_b12_deficiency", "diagnosis.subacute_combined_degeneration", "treatment.start_b12"]},
+        "provenance": provenance(["source.nice.ng239.b12.2024", "source.stom.anemia-b12-neurologic.20260809", "specifications/clinical-memory.md"]),
+    }
     return out
 
 
@@ -125,8 +199,8 @@ def main():
     f = fragment()
     graph, rules = base_graph_and_rules(prefix=P, rfe=RFE, display="Anaemia Concern or Follow-up", intents=[("intent.characterize_symptom", "Characterize Anaemia Symptoms and Results"), ("intent.screen_red_flags", "Screen Bleeding and Physiologic Instability"), ("intent.differentiate_common_causes", "Assess Blood Loss Nutrition and Chronic Disease Context"), ("intent.risk_assessment", "Assess Investigation and Treatment Response")])
     primary, research = source_docs()
-    concepts = [("271737000", "Anemia (disorder)", 0), ("87522002", "Iron deficiency anemia (disorder)", 0), ("83414005", "Macrocytic anemia (disorder)", 0), ("49472006", "Megaloblastic anemia due to vitamin B12 deficiency (disorder)", 0), ("85649008", "Megaloblastic anemia due to folate deficiency (disorder)", 0), ("413532003", "Anemia due to blood loss (disorder)", 0), ("234347009", "Anemia of chronic disorder (disorder)", 0), ("165397008", "Hemoglobin below reference range (finding)", 0)]
-    mapping = {"id": M, "version": VERSION, "status": "research_only", "review_status": "unreviewed", "terminology": {"system": SN, "version": "http://snomed.info/sct/900000000000207008/version/20260701", "source": "STOM"}, "focus_concepts": [{"code": c, "display": d, "concept_active": True, "attribute_count_returned": n} for c, d, n in concepts], "verified_attribute_ids": ["246112005", "246454002", "363714003"], "validation": {"method": "build_time_live_fhir_lookup_and_mrcm_summary", "checked_at": ACQUIRED_AT, "raw_response_cached": False, "complete_mrcm_snapshot": False, "clinical_rule_authority": False, "result": "provisional_pass"}, "provenance": provenance(["source.stom.anemia.20260715"])}
+    concepts = [("271737000", "Anemia (disorder)", 0), ("87522002", "Iron deficiency anemia (disorder)", 0), ("83414005", "Macrocytic anemia (disorder)", 0), ("49472006", "Megaloblastic anemia due to vitamin B12 deficiency (disorder)", 0), ("85649008", "Megaloblastic anemia due to folate deficiency (disorder)", 0), ("413532003", "Anemia due to blood loss (disorder)", 0), ("234347009", "Anemia of chronic disorder (disorder)", 0), ("165397008", "Hemoglobin below reference range (finding)", 0), ("91019004", "Paresthesia (finding)", 0), ("22325002", "Abnormal gait (finding)", 0), ("387603000", "Impairment of balance (finding)", 0), ("247592009", "Poor short-term memory (finding)", 0), ("45534005", "Glossitis (disorder)", 0), ("1268384001", "Nitrous oxide user (finding)", 0), ("246656009", "Loss of part of visual field (finding)", 0)]
+    mapping = {"id": M, "version": VERSION, "status": "research_only", "review_status": "unreviewed", "lifecycle_status": "draft", "clinical_use_status": "limited", "terminology": {"system": SN, "version": "http://snomed.info/sct/900000000000207008/version/20260801", "repository_baseline_version": "http://snomed.info/sct/900000000000207008/version/20260701", "source": "STOM localhost:8088/fhir"}, "focus_concepts": [{"code": c, "display": d, "concept_active": True, "attribute_count_returned": n} for c, d, n in concepts], "verified_attribute_ids": ["246112005", "246454002", "363714003"], "validation": {"method": "build_time_live_fhir_lookup_and_mrcm_summary", "checked_at": "2026-08-09T00:00:00Z", "raw_response_cached": False, "complete_mrcm_snapshot": False, "clinical_rule_authority": False, "result": "provisional_pass"}, "provenance": provenance(["source.stom.anemia.20260715", "source.stom.anemia-b12-neurologic.20260809"])}
     docs = [("knowledge/base/primary-care-anemia-concern-follow-up.json", graph), ("rules/base/primary-care-anemia-concern-follow-up.json", rules), ("knowledge/generated/hematology/anemia-concern-follow-up/anemia-concern-follow-up.json", f), ("mappings/terminology/snomed-mrcm-anemia-concern-follow-up.json", mapping), ("sources/manifests/primary-care-anemia-concern-follow-up.json", primary), ("sources/manifests/primary-care-anemia-concern-follow-up-research.json", research), ("policies/primary-care-anemia-concern-follow-up-completion.json", completion(f))]
     for path, doc in docs: write_json(path, doc)
     for name, case in cases(f).items(): write_json("simulation/patients/hematology/anemia-concern-follow-up/" + name, case)

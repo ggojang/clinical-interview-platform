@@ -2,9 +2,14 @@
   "id": "knowledge.generated.anemia-concern-follow-up",
   "version": "0.1.0",
   "status": "research_only",
+  "lifecycle_status": "draft",
+  "review_status": "unreviewed",
+  "clinical_use_status": "limited",
+  "clinical_use_policy_ref": "policies/draft-clinical-use-boundary.json",
   "usage_modes": [
     "research_test",
-    "simulation"
+    "simulation",
+    "clinician_supervised_pilot"
   ],
   "source_manifest": "source-manifest.primary-care-anemia-concern-follow-up-research",
   "default_refresh": {
@@ -211,6 +216,19 @@
       },
       "then": {
         "safety_level": "emergency",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.anemia-concern-follow-up.safety.b12-rapid-gait-deterioration",
+      "priority": 985,
+      "when": {
+        "fact": "anemia.b12_rapid_gait_deterioration",
+        "equals": true
+      },
+      "then": {
+        "safety_level": "urgent",
         "action": "human_handoff",
         "suppress_routine": true
       }
@@ -702,6 +720,43 @@
     },
     {
       "fact": {
+        "id": "anemia.b12_rapid_gait_deterioration",
+        "display": "Rapid Gait Deterioration",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.b12-rapid-gait-deterioration",
+        "display": "Rapid Gait Deterioration",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.b12-rapid-gait-deterioration",
+        "wording": "최근 걷기가 빠르게 나빠져 혼자 서거나 걷기 어려워졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 167,
+          "reason": "b12-rapid-gait-deterioration"
+        }
+      ],
+      "supports": [
+        "group.anemia.safety",
+        "group.anemia.nutrition"
+      ]
+    },
+    {
+      "fact": {
         "id": "anemia.onset_duration_and_course",
         "display": "Onset Duration and Course",
         "value_type": "string"
@@ -1164,6 +1219,437 @@
       "supports": [
         "group.anemia.common",
         "group.anemia.nutrition"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.b12_paresthesia_or_numbness",
+        "display": "Paresthesia or Numbness Pattern",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.b12-paresthesia",
+        "display": "Paresthesia or Numbness Pattern",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.b12-paresthesia",
+        "wording": "손발의 저림·찌릿함 또는 감각 둔함이 있나요? 있다면 부위, 좌우 대칭 여부, 시작 시기와 변화를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 142,
+          "reason": "b12-paresthesia"
+        }
+      ],
+      "supports": [
+        "group.anemia.common",
+        "group.anemia.nutrition"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.b12_gait_change",
+        "display": "Gait Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.b12-gait",
+        "display": "Gait Change",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.b12-gait",
+        "wording": "걷는 방식이나 보폭이 달라졌나요? 있다면 시작 시기와 일상 이동에 미치는 영향을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 141,
+          "reason": "b12-gait"
+        }
+      ],
+      "supports": [
+        "group.anemia.common",
+        "group.anemia.nutrition"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.b12_balance_impairment",
+        "display": "Balance Impairment",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.b12-balance",
+        "display": "Balance Impairment",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.b12-balance",
+        "wording": "서 있거나 방향을 바꿀 때 균형을 잡기 어렵거나 휘청거리나요? 있다면 빈도와 시작 시기를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 140,
+          "reason": "b12-balance"
+        }
+      ],
+      "supports": [
+        "group.anemia.common",
+        "group.anemia.nutrition"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.b12_falls",
+        "display": "Recent Falls",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.b12-falls",
+        "display": "Recent Falls",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.b12-falls",
+        "wording": "최근 넘어진 적이 있나요? 있다면 횟수, 최근 시점과 다친 곳을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 139,
+          "reason": "b12-falls"
+        }
+      ],
+      "supports": [
+        "group.anemia.common",
+        "group.anemia.nutrition"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.b12_short_term_memory_change",
+        "display": "Short-term Memory Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.b12-memory",
+        "display": "Short-term Memory Change",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.b12-memory",
+        "wording": "최근 기억해야 할 일을 잊거나 같은 내용을 반복해서 묻는 변화가 있나요? 있다면 시작 시기와 일상 영향을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 138,
+          "reason": "b12-memory"
+        }
+      ],
+      "supports": [
+        "group.anemia.common",
+        "group.anemia.nutrition"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.b12_concentration_change",
+        "display": "Concentration Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.b12-concentration",
+        "display": "Concentration Change",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.b12-concentration",
+        "wording": "최근 집중하기 어려워졌나요? 있다면 시작 시기와 업무·학업·일상에 미치는 영향을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 137,
+          "reason": "b12-concentration"
+        }
+      ],
+      "supports": [
+        "group.anemia.common",
+        "group.anemia.nutrition"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.b12_visual_change",
+        "display": "Visual Change",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.b12-vision",
+        "display": "Visual Change",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.b12-vision",
+        "wording": "새로 생긴 흐린 시야나 시야 일부가 보이지 않는 변화가 있나요? 있다면 한쪽·양쪽 여부와 시작 시기를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 136,
+          "reason": "b12-vision"
+        }
+      ],
+      "supports": [
+        "group.anemia.common",
+        "group.anemia.nutrition"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.b12_glossitis",
+        "display": "Glossitis or Tongue Soreness",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.b12-glossitis",
+        "display": "Glossitis or Tongue Soreness",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.b12-glossitis",
+        "wording": "혀가 붉거나 매끈해지고 쓰라린 변화가 있나요? 있다면 시작 시기와 식사에 미치는 영향을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 135,
+          "reason": "b12-glossitis"
+        }
+      ],
+      "supports": [
+        "group.anemia.common",
+        "group.anemia.nutrition"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.b12_risk_medicines",
+        "display": "Medicines Associated with B12 Deficiency",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.b12-risk-medicines",
+        "display": "Medicines Associated with B12 Deficiency",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.b12-risk-medicines",
+        "wording": "메트포르민, 위산억제제 또는 의료진이 비타민 B12에 영향을 줄 수 있다고 안내한 약의 이름과 복용 기간을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 134,
+          "reason": "b12-risk-medicines"
+        }
+      ],
+      "supports": [
+        "group.anemia.nutrition",
+        "group.anemia.treatment"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.nitrous_oxide_use",
+        "display": "Nitrous Oxide Exposure",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.b12-nitrous-oxide",
+        "display": "Nitrous Oxide Exposure",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.b12-nitrous-oxide",
+        "wording": "최근 아산화질소를 사용한 적이 있나요? 있다면 마지막 사용 시기, 빈도와 대략적인 양을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 133,
+          "reason": "b12-nitrous-oxide"
+        }
+      ],
+      "supports": [
+        "group.anemia.nutrition"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.b12_supplement_before_testing",
+        "display": "B12 Supplement Use Before Testing",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.b12-supplement-before-test",
+        "display": "B12 Supplement Use Before Testing",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.b12-supplement-before-test",
+        "wording": "비타민 B12 검사 전에 정제·주사·패치나 종합비타민을 사용했나요? 제품, 용량과 마지막 사용 시기를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 132,
+          "reason": "b12-supplement-before-test"
+        }
+      ],
+      "supports": [
+        "group.anemia.nutrition",
+        "group.anemia.treatment"
+      ]
+    },
+    {
+      "fact": {
+        "id": "anemia.autoimmune_gastritis_workup",
+        "display": "Autoimmune Gastritis Work-up",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.anemia-concern-follow-up.b12-autoimmune-gastritis",
+        "display": "Autoimmune Gastritis Work-up",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.anemia-concern-follow-up.b12-autoimmune-gastritis",
+        "wording": "자가면역성 위염과 관련해 내인자항체 또는 추가검사를 받았나요? 결과와 검사일을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 131,
+          "reason": "b12-autoimmune-gastritis"
+        }
+      ],
+      "supports": [
+        "group.anemia.nutrition",
+        "group.anemia.treatment"
       ]
     },
     {
@@ -1952,7 +2438,9 @@
       "source.bsg.ida.2021",
       "source.nice.ng12.anemia.2026",
       "source.who.ferritin.2020",
-      "source.stom.anemia.20260715"
+      "source.stom.anemia.20260715",
+      "source.nice.ng239.b12.2024",
+      "source.stom.anemia-b12-neurologic.20260809"
     ],
     "review_status": "unreviewed",
     "version": "0.1.0"
