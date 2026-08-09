@@ -651,15 +651,15 @@ class CompilerTests(unittest.TestCase):
             node["id"] for node in first["knowledge_graph"]["nodes"]
             if node["type"] == "Fact"
         }
-        self.assertEqual(len(facts), 58)
+        self.assertEqual(len(facts), 75)
         self.assertEqual(facts, set(first["indexes"]["questions_by_fact"]))
         self.assertNotIn("symptom.severe_breathing_or_stridor", facts)
         self.assertIn("symptom.severe_breathing_difficulty", facts)
         self.assertIn("symptom.inspiratory_stridor", facts)
-        self.assertEqual(first["coverage"]["total_safety_rules"], 11)
-        self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 11)
+        self.assertEqual(first["coverage"]["total_safety_rules"], 13)
+        self.assertEqual(first["coverage"]["safety_rules_with_simulations"], 13)
         self.assertEqual(first["coverage"]["uncovered_safety_rules"], [])
-        self.assertEqual(first["coverage"]["simulation_count"], 16)
+        self.assertEqual(first["coverage"]["simulation_count"], 19)
         handoff = next(
             item for item in first["simulations"]
             if item["id"] == "UPPER-ADULT-SORE-THROAT-CLINICIAN-HANDOFF-001"
@@ -2324,7 +2324,7 @@ class PackageRuntimeTests(unittest.TestCase):
     def test_upper_respiratory_simulation_evaluation_passes(self):
         report = run_evaluation(UPPER_RESPIRATORY_SYMPTOMS_PACKAGE)
         self.assertTrue(report["passed"])
-        self.assertEqual(report["case_count"], 16)
+        self.assertEqual(report["case_count"], 19)
         self.assertLessEqual(max(item["turns"] for item in report["results"]), 60)
 
     def test_upper_respiratory_runtime_uses_grouped_rfe(self):

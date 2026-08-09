@@ -263,8 +263,62 @@
       "id": "rule.upper-respiratory.safety.deep-neck-warning",
       "priority": 900,
       "when": {
-        "fact": "symptom.neck_swelling_trismus_or_muffled_voice",
-        "equals": true
+        "any": [
+          {
+            "fact": "symptom.unilateral_neck_swelling",
+            "equals": true
+          },
+          {
+            "fact": "symptom.trismus",
+            "equals": true
+          },
+          {
+            "fact": "symptom.muffled_voice",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.upper-respiratory.safety.persistent-hoarseness-45-plus",
+      "priority": 890,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.hoarseness_persistent_four_weeks",
+            "equals": true
+          },
+          {
+            "fact": "patient.age_45_or_older",
+            "equals": true
+          }
+        ]
+      },
+      "then": {
+        "safety_level": "urgent",
+        "action": "human_handoff",
+        "suppress_routine": true
+      }
+    },
+    {
+      "id": "rule.upper-respiratory.safety.hoarseness-neck-lump",
+      "priority": 890,
+      "when": {
+        "all": [
+          {
+            "fact": "symptom.hoarseness",
+            "equals": true
+          },
+          {
+            "fact": "symptom.persistent_neck_lump_three_weeks",
+            "equals": true
+          }
+        ]
       },
       "then": {
         "safety_level": "urgent",
@@ -954,21 +1008,95 @@
     },
     {
       "fact": {
-        "id": "symptom.neck_swelling_trismus_or_muffled_voice",
-        "display": "Neck Swelling Trismus or Muffled Voice",
+        "id": "symptom.unilateral_neck_swelling",
+        "display": "Unilateral Neck Swelling",
         "value_type": "boolean",
         "safety_relevant": true
       },
       "target": {
-        "id": "target.upper-respiratory.deep-neck",
-        "display": "Neck Swelling Trismus or Muffled Voice",
+        "id": "target.upper-respiratory.unilateral-neck-swelling",
+        "display": "Unilateral Neck Swelling",
         "intents": [
           "intent.screen_red_flags"
         ]
       },
       "question": {
-        "id": "question.upper-respiratory.deep-neck",
-        "wording": "목 한쪽이 붓거나 입을 벌리기 어렵거나 목소리가 입에 무언가 문 듯 변했나요?",
+        "id": "question.upper-respiratory.unilateral-neck-swelling",
+        "wording": "목 한쪽이 새로 붓거나 불룩해졌나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 117,
+          "reason": "suppurative_complication_gate"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.immediate-safety",
+        "group.upper-respiratory.throat"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.trismus",
+        "display": "Trismus",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.upper-respiratory.trismus",
+        "display": "Trismus",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.trismus",
+        "wording": "입을 평소처럼 벌리기 어렵나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 117,
+          "reason": "suppurative_complication_gate"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.immediate-safety",
+        "group.upper-respiratory.throat"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.muffled_voice",
+        "display": "Muffled Voice",
+        "value_type": "boolean",
+        "safety_relevant": true
+      },
+      "target": {
+        "id": "target.upper-respiratory.muffled-voice",
+        "display": "Muffled Voice",
+        "intents": [
+          "intent.screen_red_flags"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.muffled-voice",
+        "wording": "목소리가 입에 무언가 문 듯 먹먹하게 변했나요?",
         "language": "ko",
         "mode": [
           "chat",
@@ -1533,7 +1661,10 @@
         "value_type": "boolean",
         "terminology_binding": {
           "system": "http://snomed.info/sct",
-          "code": "50219008"
+          "code": "50219008",
+          "display": "Hoarse (finding)",
+          "version": "http://snomed.info/sct/900000000000207008/version/20260801",
+          "relation": "equivalent"
         }
       },
       "target": {
@@ -1567,20 +1698,20 @@
     },
     {
       "fact": {
-        "id": "symptom.hoarseness_persistent_three_weeks",
-        "display": "Hoarseness Persistent Three Weeks",
+        "id": "symptom.hoarseness_persistent_four_weeks",
+        "display": "Hoarseness Persistent Four Weeks",
         "value_type": "boolean"
       },
       "target": {
         "id": "target.upper-respiratory.persistent-hoarseness",
-        "display": "Hoarseness Persistent Three Weeks",
+        "display": "Hoarseness Persistent Four Weeks",
         "intents": [
           "intent.risk_assessment"
         ]
       },
       "question": {
         "id": "question.upper-respiratory.persistent-hoarseness",
-        "wording": "쉰목소리가 3주 이상 계속되거나 점점 심해지나요?",
+        "wording": "쉰목소리가 좋아지지 않은 채 4주 이상 계속되나요?",
         "language": "ko",
         "mode": [
           "chat",
@@ -1592,7 +1723,7 @@
       "priority": [
         {
           "branch": "any",
-          "score": 83,
+          "score": 89,
           "reason": "persistent_voice_context"
         }
       ],
@@ -1602,20 +1733,20 @@
     },
     {
       "fact": {
-        "id": "symptom.persistent_mouth_ulcer_or_neck_lump",
-        "display": "Persistent Mouth Ulcer or Neck Lump",
+        "id": "symptom.hoarseness_progressive",
+        "display": "Progressive Hoarseness",
         "value_type": "boolean"
       },
       "target": {
-        "id": "target.upper-respiratory.persistent-lump-ulcer",
-        "display": "Persistent Mouth Ulcer or Neck Lump",
+        "id": "target.upper-respiratory.progressive-hoarseness",
+        "display": "Progressive Hoarseness",
         "intents": [
           "intent.risk_assessment"
         ]
       },
       "question": {
-        "id": "question.upper-respiratory.persistent-lump-ulcer",
-        "wording": "입안 궤양이나 입·목의 덩이가 3주 이상 지속되나요?",
+        "id": "question.upper-respiratory.progressive-hoarseness",
+        "wording": "쉰목소리가 시간이 지나면서 점점 심해지나요?",
         "language": "ko",
         "mode": [
           "chat",
@@ -1627,13 +1758,300 @@
       "priority": [
         {
           "branch": "any",
-          "score": 82,
+          "score": 88,
+          "reason": "persistent_voice_context"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.voice-persistence"
+      ]
+    },
+    {
+      "fact": {
+        "id": "patient.age_45_or_older",
+        "display": "Age 45 Years or Older",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.upper-respiratory.age-45-or-older",
+        "display": "Age 45 Years or Older",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.age-45-or-older",
+        "wording": "만 45세 이상인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 87,
+          "reason": "persistent_voice_context"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.voice-persistence",
+        "group.upper-respiratory.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.persistent_mouth_ulcer_three_weeks",
+        "display": "Persistent Mouth Ulcer Three Weeks",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.upper-respiratory.persistent-mouth-ulcer",
+        "display": "Persistent Mouth Ulcer Three Weeks",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.persistent-mouth-ulcer",
+        "wording": "입안 궤양이 3주 이상 낫지 않고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 86,
           "reason": "persistent_warning_context"
         }
       ],
       "supports": [
         "group.upper-respiratory.voice-persistence",
         "group.upper-respiratory.throat"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.persistent_neck_lump_three_weeks",
+        "display": "Persistent Neck Lump Three Weeks",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.upper-respiratory.persistent-neck-lump",
+        "display": "Persistent Neck Lump Three Weeks",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.persistent-neck-lump",
+        "wording": "입이나 목의 덩이·부기가 3주 이상 지속되나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 86,
+          "reason": "persistent_warning_context"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.voice-persistence",
+        "group.upper-respiratory.throat"
+      ]
+    },
+    {
+      "fact": {
+        "id": "symptom.unilateral_referred_ear_pain",
+        "display": "Unilateral Referred Ear Pain",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.upper-respiratory.unilateral-ear-pain",
+        "display": "Unilateral Referred Ear Pain",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.unilateral-ear-pain",
+        "wording": "귀 자체 문제 없이 한쪽 귀에만 통증이 느껴지나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 85,
+          "reason": "persistent_warning_context"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.voice-persistence",
+        "group.upper-respiratory.throat"
+      ]
+    },
+    {
+      "fact": {
+        "id": "history.recent_endotracheal_intubation",
+        "display": "Recent Endotracheal Intubation",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.upper-respiratory.recent-intubation",
+        "display": "Recent Endotracheal Intubation",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.recent-intubation",
+        "wording": "목소리가 변하기 전에 기관삽관을 받은 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 84,
+          "reason": "laryngeal_evaluation_modifier"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.voice-persistence",
+        "group.upper-respiratory.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "history.recent_head_neck_or_chest_surgery",
+        "display": "Recent Head Neck or Chest Surgery",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.upper-respiratory.recent-head-neck-chest-surgery",
+        "display": "Recent Head Neck or Chest Surgery",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.recent-head-neck-chest-surgery",
+        "wording": "목소리가 변하기 전에 머리·목·가슴 수술을 받은 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 84,
+          "reason": "laryngeal_evaluation_modifier"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.voice-persistence",
+        "group.upper-respiratory.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "history.prior_head_neck_cancer",
+        "display": "Prior Head or Neck Cancer",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.upper-respiratory.prior-head-neck-cancer",
+        "display": "Prior Head or Neck Cancer",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.prior-head-neck-cancer",
+        "wording": "머리나 목 부위 암을 진단받거나 치료받은 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 84,
+          "reason": "laryngeal_evaluation_modifier"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.voice-persistence",
+        "group.upper-respiratory.context"
+      ]
+    },
+    {
+      "fact": {
+        "id": "patient.professional_or_high_demand_voice_use",
+        "display": "Professional or High-demand Voice Use",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.upper-respiratory.high-demand-voice",
+        "display": "Professional or High-demand Voice Use",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.high-demand-voice",
+        "wording": "직업이나 일상에서 목소리를 많이 또는 전문적으로 사용하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 80,
+          "reason": "voice_function_context"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.voice-persistence",
+        "group.upper-respiratory.context"
       ]
     },
     {
@@ -1709,20 +2127,221 @@
     },
     {
       "fact": {
-        "id": "patient.smoking_or_inhaled_irritant",
-        "display": "Smoking or Inhaled Irritant Exposure",
-        "value_type": "boolean"
+        "id": "patient.smoking.status",
+        "display": "Smoking Status",
+        "value_type": "coded",
+        "allowed_values": [
+          "current",
+          "former",
+          "never"
+        ]
       },
       "target": {
-        "id": "target.upper-respiratory.smoke-irritant",
-        "display": "Smoking or Inhaled Irritant Exposure",
+        "id": "target.upper-respiratory.smoking-status",
+        "display": "Smoking Status",
         "intents": [
           "intent.risk_assessment"
         ]
       },
       "question": {
-        "id": "question.upper-respiratory.smoke-irritant",
-        "wording": "흡연·전자담배를 하거나 연기·먼지·화학 자극에 노출되나요?",
+        "id": "question.upper-respiratory.smoking-status",
+        "wording": "일반담배·전자담배·가열담배 등 담배나 니코틴 제품 사용 상태는 현재 사용, 과거 사용, 사용한 적 없음 중 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 83,
+          "reason": "irritant_context"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.context",
+        "group.upper-respiratory.voice-persistence"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "patient.smoking.product_types",
+        "display": "Tobacco or Nicotine Product Types",
+        "value_type": "coded_or_string",
+        "allowed_values": [
+          "combustible_cigarette",
+          "heated_tobacco",
+          "electronic_cigarette",
+          "cigar_or_pipe",
+          "smokeless_tobacco",
+          "other"
+        ]
+      },
+      "target": {
+        "id": "target.upper-respiratory.smoking-product-types",
+        "display": "Tobacco or Nicotine Product Types",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.smoking-product-types",
+        "wording": "현재 또는 과거에 사용한 담배·니코틴 제품을 모두 선택하거나 보기에 없으면 직접 입력해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 82,
+          "reason": "irritant_context"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.context",
+        "group.upper-respiratory.voice-persistence"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "patient.smoking.cigarettes_per_day",
+        "display": "Combustible Cigarettes per Day",
+        "value_type": "quantity",
+        "unit": "{cigarette}/d",
+        "minimum": 0
+      },
+      "target": {
+        "id": "target.upper-respiratory.smoking-cigarettes-per-day",
+        "display": "Combustible Cigarettes per Day",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.smoking-cigarettes-per-day",
+        "wording": "일반담배를 피우거나 피웠다면 하루 평균 몇 개비였나요? 사용하지 않았다면 0개비라고 답해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 81,
+          "reason": "irritant_context"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.context",
+        "group.upper-respiratory.voice-persistence"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "patient.smoking.duration_years",
+        "display": "Total Smoking Duration",
+        "value_type": "quantity",
+        "unit": "a",
+        "minimum": 0
+      },
+      "target": {
+        "id": "target.upper-respiratory.smoking-duration-years",
+        "display": "Total Smoking Duration",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.smoking-duration-years",
+        "wording": "담배·전자담배를 실제로 사용한 총 기간은 몇 년인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 81,
+          "reason": "irritant_context"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.context",
+        "group.upper-respiratory.voice-persistence"
+      ],
+      "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "exposure.inhaled_irritant_current",
+        "display": "Current Inhaled Irritant Exposure",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.upper-respiratory.current-inhaled-irritant",
+        "display": "Current Inhaled Irritant Exposure",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.current-inhaled-irritant",
+        "wording": "현재 직장이나 생활환경에서 연기·먼지·분진·화학 자극에 노출되나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 80,
+          "reason": "irritant_context"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.context",
+        "group.upper-respiratory.voice-persistence"
+      ]
+    },
+    {
+      "fact": {
+        "id": "exposure.inhaled_irritant_type",
+        "display": "Inhaled Irritant Type",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.upper-respiratory.inhaled-irritant-type",
+        "display": "Inhaled Irritant Type",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.inhaled-irritant-type",
+        "wording": "노출되는 연기·먼지·분진·화학 자극의 종류를 알려주세요.",
         "language": "ko",
         "mode": [
           "chat",
@@ -1741,6 +2360,80 @@
       "supports": [
         "group.upper-respiratory.context",
         "group.upper-respiratory.voice-persistence"
+      ]
+    },
+    {
+      "fact": {
+        "id": "exposure.inhaled_irritant_duration",
+        "display": "Inhaled Irritant Exposure Duration",
+        "value_type": "quantity",
+        "unit": "a",
+        "minimum": 0
+      },
+      "target": {
+        "id": "target.upper-respiratory.inhaled-irritant-duration",
+        "display": "Inhaled Irritant Exposure Duration",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.inhaled-irritant-duration",
+        "wording": "그 자극에 노출된 기간은 몇 년인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 79,
+          "reason": "irritant_context"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.context",
+        "group.upper-respiratory.voice-persistence"
+      ]
+    },
+    {
+      "fact": {
+        "id": "upper_respiratory.prior_laryngoscopy_and_results",
+        "display": "Prior Laryngoscopy and Results",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.upper-respiratory.prior-laryngoscopy",
+        "display": "Prior Laryngoscopy and Results",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.upper-respiratory.prior-laryngoscopy",
+        "wording": "이번 목소리 변화로 후두내시경을 받았다면 날짜와 결과, 정보 출처를 알려주세요. 받지 않았다면 받지 않음으로 답해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 78,
+          "reason": "laryngeal_evaluation_handoff"
+        }
+      ],
+      "supports": [
+        "group.upper-respiratory.voice-persistence",
+        "group.upper-respiratory.clinician-handoff"
       ]
     },
     {
@@ -2371,7 +3064,11 @@
       "source.nhs.sore-throat.2024",
       "source.nice.ng84.sore-throat.2025",
       "source.nice.ng79.sinusitis.2026",
-      "source.nhs.allergic-rhinitis.2026"
+      "source.nhs.allergic-rhinitis.2026",
+      "source.aao-hns.hoarseness-dysphonia.2018",
+      "source.pubmed.hoarseness-dysphonia.29494321",
+      "source.nice.ng12.laryngeal-cancer.2026",
+      "source.stom.snomed-hoarse.20260801"
     ],
     "review_status": "unreviewed",
     "version": "0.1.0"

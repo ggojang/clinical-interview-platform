@@ -100,6 +100,10 @@ class PatientSimulator:
             if fact_id == "observation.body_temperature":
                 suffix = "°C" if value["unit"] == "Cel" else "°F"
                 return f"{value['amount']}{suffix}"
+            if value["unit"] == "a":
+                return f"{value['amount']} year{'' if value['amount'] == 1 else 's'}."
+            if value["unit"] == "{cigarette}/d":
+                return f"{value['amount']} cigarettes per day."
             return f"{value['amount']} {value['unit']}{'' if value['amount'] == 1 else 's'}."
         if fact_id == "symptom.dyspnea":
             if language == "ko":

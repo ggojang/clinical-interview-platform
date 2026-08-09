@@ -14,15 +14,7 @@
       "symptom.inspiratory_stridor",
       "symptom.unable_to_swallow_saliva_or_drooling",
       "symptom.upper_respiratory.severe_rapid_worsening",
-      "symptom.sudden_lip_tongue_or_throat_swelling",
-      "symptom.periorbital_swelling_or_displaced_eye",
-      "symptom.double_vision_painful_eye_movement_or_reduced_vision",
-      "symptom.sinus_intracranial_warning",
-      "symptom.confusion",
-      "symptom.fever",
-      "patient.immunocompromised",
-      "symptom.dehydration_or_unable_fluids",
-      "symptom.neck_swelling_trismus_or_muffled_voice"
+      "symptom.sudden_lip_tongue_or_throat_swelling"
     ],
     "routine": [
       "symptom.upper_respiratory.main_type",
@@ -44,7 +36,7 @@
   },
   "clarification_facts_by_rule": {},
   "question_budget": {
-    "routine": 40,
+    "routine": 45,
     "clarify": 12
   },
   "provenance": {
@@ -57,7 +49,11 @@
       "source.nhs.sore-throat.2024",
       "source.nice.ng84.sore-throat.2025",
       "source.nice.ng79.sinusitis.2026",
-      "source.nhs.allergic-rhinitis.2026"
+      "source.nhs.allergic-rhinitis.2026",
+      "source.aao-hns.hoarseness-dysphonia.2018",
+      "source.pubmed.hoarseness-dysphonia.29494321",
+      "source.nice.ng12.laryngeal-cancer.2026",
+      "source.stom.snomed-hoarse.20260801"
     ],
     "review_status": "unreviewed",
     "version": "0.1.0"
@@ -67,6 +63,13 @@
       "selector_fact": "symptom.upper_respiratory.main_type",
       "cases": {
         "sore_throat": [
+          "symptom.fever",
+          "symptom.confusion",
+          "patient.immunocompromised",
+          "symptom.dehydration_or_unable_fluids",
+          "symptom.unilateral_neck_swelling",
+          "symptom.trismus",
+          "symptom.muffled_voice",
           "symptom.throat_pain",
           "symptom.painful_swallowing",
           "observation.tonsillar_exudate_or_pus",
@@ -77,6 +80,12 @@
           "upper_respiratory.ent_dental_history_and_recent_procedure"
         ],
         "nasal_obstruction": [
+          "symptom.periorbital_swelling_or_displaced_eye",
+          "symptom.double_vision_painful_eye_movement_or_reduced_vision",
+          "symptom.sinus_intracranial_warning",
+          "symptom.fever",
+          "patient.immunocompromised",
+          "symptom.dehydration_or_unable_fluids",
           "symptom.nasal_obstruction",
           "symptom.nasal_discharge",
           "symptom.unilateral_purulent_nasal_discharge",
@@ -89,6 +98,12 @@
           "upper_respiratory.ent_dental_history_and_recent_procedure"
         ],
         "nasal_discharge": [
+          "symptom.periorbital_swelling_or_displaced_eye",
+          "symptom.double_vision_painful_eye_movement_or_reduced_vision",
+          "symptom.sinus_intracranial_warning",
+          "symptom.fever",
+          "patient.immunocompromised",
+          "symptom.dehydration_or_unable_fluids",
           "symptom.nasal_obstruction",
           "symptom.nasal_discharge",
           "symptom.unilateral_purulent_nasal_discharge",
@@ -101,6 +116,12 @@
           "upper_respiratory.ent_dental_history_and_recent_procedure"
         ],
         "facial_pain": [
+          "symptom.periorbital_swelling_or_displaced_eye",
+          "symptom.double_vision_painful_eye_movement_or_reduced_vision",
+          "symptom.sinus_intracranial_warning",
+          "symptom.fever",
+          "patient.immunocompromised",
+          "symptom.dehydration_or_unable_fluids",
           "symptom.nasal_obstruction",
           "symptom.nasal_discharge",
           "symptom.unilateral_purulent_nasal_discharge",
@@ -121,9 +142,19 @@
         ],
         "hoarseness": [
           "symptom.hoarseness",
-          "symptom.hoarseness_persistent_three_weeks",
-          "symptom.persistent_mouth_ulcer_or_neck_lump",
-          "patient.smoking_or_inhaled_irritant",
+          "symptom.hoarseness_persistent_four_weeks",
+          "symptom.hoarseness_progressive",
+          "patient.age_45_or_older",
+          "symptom.persistent_mouth_ulcer_three_weeks",
+          "symptom.persistent_neck_lump_three_weeks",
+          "symptom.unilateral_referred_ear_pain",
+          "history.recent_endotracheal_intubation",
+          "history.recent_head_neck_or_chest_surgery",
+          "history.prior_head_neck_cancer",
+          "patient.professional_or_high_demand_voice_use",
+          "patient.smoking.status",
+          "exposure.inhaled_irritant_current",
+          "upper_respiratory.prior_laryngoscopy_and_results",
           "upper_respiratory.previous_episodes_and_baseline",
           "upper_respiratory.ent_dental_history_and_recent_procedure"
         ],
@@ -134,6 +165,41 @@
           "upper_respiratory.previous_episodes_and_baseline"
         ]
       }
+    },
+    {
+      "when": {
+        "fact": "patient.smoking.status",
+        "in": [
+          "current",
+          "former"
+        ]
+      },
+      "required_facts": [
+        "patient.smoking.product_types",
+        "patient.smoking.duration_years"
+      ],
+      "reason": "reported_tobacco_or_nicotine_use_requires_product_and_duration"
+    },
+    {
+      "when": {
+        "fact": "patient.smoking.product_types",
+        "equals": "combustible_cigarette"
+      },
+      "required_facts": [
+        "patient.smoking.cigarettes_per_day"
+      ],
+      "reason": "combustible_cigarette_use_requires_daily_amount"
+    },
+    {
+      "when": {
+        "fact": "exposure.inhaled_irritant_current",
+        "equals": true
+      },
+      "required_facts": [
+        "exposure.inhaled_irritant_type",
+        "exposure.inhaled_irritant_duration"
+      ],
+      "reason": "reported_inhaled_irritant_requires_type_and_duration"
     }
   ]
 }
