@@ -14,8 +14,12 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
 from interoperability.fhir_valueset_publish import (  # noqa: E402
+    FhirValueSetPublishError,
     FhirValueSetPublisher,
     load_env_value,
+)
+from interoperability.fhir_codesystem_publish import (  # noqa: E402
+    FhirCodeSystemPublisher,
 )
 from interoperability.fhir_valueset_service import (  # noqa: E402
     DEFAULT_BASE_URL,
@@ -26,6 +30,35 @@ from tools.fhir.build_answer_valuesets import (  # noqa: E402
     build,
     validate,
 )
+from tools.fhir.build_question_answer_codesystems import (  # noqa: E402
+    build as build_local_codesystems,
+    validate as validate_local_codesystem,
+)
+
+
+def verify_local_codesystem_prerequisites(
+    *,
+    base_url: str,
+    api_key: str,
+    publisher: FhirCodeSystemPublisher | None = None,
+    resources: tuple[dict, dict] | None = None,
+) -> list[dict]:
+    """Require exact registered local CodeSystems before ValueSet publication."""
+    publisher = publisher or FhirCodeSystemPublisher(
+        base_url=base_url, api_key=api_key
+    )
+    results = []
+    for resource in resources or build_local_codesystems():
+        validate_local_codesystem(resource)
+        plan = publisher.plan(resource)
+        if plan["action"] != "reuse_exact_codesystem":
+            raise FhirValueSetPublishError(
+                "local CodeSystem is not registered with exact content; run "
+                "tools/fhir/publish_local_codesystems.py before publishing "
+                f"ValueSets: {resource['url']}|{resource['version']}"
+            )
+        results.append(publisher.apply(plan))
+    return results
 
 
 def readable_catalog(publisher: FhirValueSetPublisher) -> tuple[list[dict], list[str]]:
@@ -76,6 +109,10 @@ def main() -> int:
         base_url=args.base_url,
         api_key=api_key,
     )
+    local_codesystem_preflight = verify_local_codesystem_prerequisites(
+        base_url=args.base_url,
+        api_key=api_key,
+    )
     catalog, catalog_missing_ids = readable_catalog(publisher)
     results = []
     for entry in bundle["entry"]:
@@ -99,6 +136,19 @@ def main() -> int:
             "header": "X-API-Key",
             "token_variable": args.token_variable,
             "secret_recorded": False,
+        },
+        "local_codesystem_preflight": {
+            "required": True,
+            "resource_count": len(local_codesystem_preflight),
+            "concept_count": sum(
+                result["concept_count"] for result in local_codesystem_preflight
+            ),
+            "all_exact_and_validatable": all(
+                result["action"] == "reuse_exact_codesystem"
+                and result["post_write_content_verified"]
+                for result in local_codesystem_preflight
+            ),
+            "results": local_codesystem_preflight,
         },
         "server_catalog_consistency": {
             "listed_but_not_readable_count": len(catalog_missing_ids),

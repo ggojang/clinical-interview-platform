@@ -1,8 +1,12 @@
 import unittest
 from types import SimpleNamespace
 
+from interoperability.fhir_valueset_publish import FhirValueSetPublishError
 from interoperability.fhir_valueset_service import FhirValueSetServiceError
-from tools.fhir.publish_answer_valuesets import readable_catalog
+from tools.fhir.publish_answer_valuesets import (
+    readable_catalog,
+    verify_local_codesystem_prerequisites,
+)
 
 
 class _CatalogService:
@@ -33,6 +37,31 @@ class PublishAnswerValueSetsTests(unittest.TestCase):
         ))
         with self.assertRaises(FhirValueSetServiceError):
             readable_catalog(publisher)
+
+    def test_valueset_publication_requires_registered_local_codesystems(self):
+        resource = {
+            "resourceType": "CodeSystem",
+            "id": "local-answer",
+            "url": "https://example.org/CodeSystem/local-answer",
+            "version": "0.1.0",
+            "status": "draft",
+            "experimental": True,
+            "content": "complete",
+            "count": 1,
+            "concept": [{"code": "local", "display": "local"}],
+        }
+
+        class MissingPublisher:
+            def plan(self, candidate):
+                return {"action": "create"}
+
+        with self.assertRaises(FhirValueSetPublishError):
+            verify_local_codesystem_prerequisites(
+                base_url="http://localhost:8088/fhir",
+                api_key="not-recorded",
+                publisher=MissingPublisher(),
+                resources=(resource, resource),
+            )
 
 
 if __name__ == "__main__":

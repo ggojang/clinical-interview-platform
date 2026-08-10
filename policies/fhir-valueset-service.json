@@ -1,6 +1,6 @@
 {
   "id": "policy.fhir-valueset-service",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "status": "research_only",
   "review_status": "unreviewed",
   "purpose": "Use STOM FHIR R4 ValueSet services for Build-Time terminology discovery, expansion and validation without coupling Interview Runtime to a terminology server.",
@@ -92,13 +92,36 @@
     "source_defined_fixed_questionnaire": "excluded_from_automatic_mapping_and_valueset_replacement_unless_explicitly_requested",
     "server_failure": "use_only_a_versioned_previously_verified_artifact_or_local_compiled_ValueSet_and_mark_live_verification_unavailable"
   },
+  "project_local_codesystem_workflow": {
+    "resources": [
+      "fhir/r4/codesystems/clinical-interview-question.json",
+      "fhir/r4/codesystems/clinical-interview-answer.json"
+    ],
+    "publication_order": "publish_and_verify_CodeSystems_before_dependent_ValueSets",
+    "publication": [
+      "require_complete_content_unique_codes_count_canonical_and_version",
+      "search_same_canonical_and_version_before_write",
+      "reuse_only_when_the_complete_content_fingerprint_matches",
+      "refuse_to_overwrite_a_canonical_version_with_different_content",
+      "refuse_a_resource_id_collision",
+      "create_only_by_explicit_authenticated_PUT",
+      "verify_canonical_version_complete_content_and_representative_validate_code_after_write"
+    ],
+    "runtime_dependency": false,
+    "standard_terminology_rule": "never_copy_SNOMED_CT_LOINC_UCUM_or_HL7_codes_into_a_project_local_CodeSystem"
+  },
   "required_capabilities": {
-    "resource": "ValueSet",
-    "interactions": ["read", "search-type"],
-    "operations": ["$expand", "$validate-code"]
+    "ValueSet": {
+      "interactions": ["read", "search-type"],
+      "operations": ["$expand", "$validate-code"]
+    },
+    "CodeSystem": {
+      "interactions": ["read", "search-type"],
+      "operations": ["$validate-code"]
+    }
   },
   "observed_local_server": {
-    "checked_at": "2026-07-23",
+    "checked_at": "2026-08-10",
     "software_name": "STOM Terminology Server",
     "software_version": "1.0.0",
     "fhir_version": "4.0.1",
@@ -109,11 +132,21 @@
     "probe_valueset": "http://terminology.hl7.org/ValueSet/yes-no-unknown-not-applicable",
     "probe_result": "search_expand_validate_code_passed",
     "project_publication": {
-      "resource_count": 284,
-      "created": 284,
-      "post_write_canonical_verified": 284,
-      "post_publication_dry_run_unchanged": 284,
+      "resource_count": 447,
+      "latest_apply_created": 29,
+      "latest_apply_reused": 418,
+      "post_write_canonical_verified": 447,
+      "post_publication_dry_run_unchanged": 447,
       "representative_snomed_local_and_mixed_validation": "passed"
+    },
+    "project_local_codesystem_publication": {
+      "resource_count": 2,
+      "concept_count": 5224,
+      "created": 2,
+      "canonical_version_verified": 2,
+      "complete_content_fingerprint_verified": 2,
+      "representative_validate_code": "passed",
+      "post_publication_dry_run_exact_reuse": 2
     },
     "loinc_answer_lists": {
       "aggregate_canonical": "http://loinc.org/vs/ll",
@@ -136,6 +169,7 @@
     "label_similarity_does_not_establish_equivalence": true,
     "no_automatic_POST_PUT_DELETE": true,
     "explicit_authenticated_PUT_for_publication": true,
+    "local_CodeSystem_must_precede_dependent_ValueSet_publication": true,
     "no_patient_text_or_response_is_sent": true,
     "reference_valueset_is_never_mutated": true,
     "content_equivalence_does_not_erase_reference_provenance": true,
@@ -148,6 +182,8 @@
       "http://localhost:8088/fhir/metadata",
       "http://localhost:8088/fhir/ValueSet",
       "http://localhost:8088/fhir/ValueSet/loinc-answer-lists",
+      "http://localhost:8088/fhir/CodeSystem/clinical-interview-question",
+      "http://localhost:8088/fhir/CodeSystem/clinical-interview-answer",
       "http://loinc.org/vs/ll",
       "https://loinc.org/fhir/",
       "https://loinc.org/answer-file/",

@@ -221,6 +221,16 @@ existing ValueSet. It verifies the returned canonical after creation. A
 terminology-server failure cannot block an interview or change a clinical
 safety decision.
 
+The project-owned complete `clinical-interview-question` and
+`clinical-interview-answer` CodeSystems are registered before dependent
+ValueSets. Registration is also an explicit authenticated Build-Time action.
+It reuses an existing canonical/version only when the complete concept-content
+fingerprint matches, rejects canonical/version or resource-id collisions, and
+verifies the canonical, complete content and representative codes through
+`CodeSystem/$validate-code` after creation. Local registration does not turn a
+local code into SNOMED CT, LOINC, UCUM or an HL7 code; mappings to those systems
+remain separate, versioned and provenance-bearing.
+
 Reference ValueSets are reconciled before creation. The Builder first checks
 canonical URL and version, then compares an order- and display-insensitive
 fingerprint of `compose` or a materialized `expansion`. An identical existing

@@ -76,10 +76,12 @@ python tools/terminology/build_loinc_answer_list_catalog.py --base-url http://lo
 python tools/validator/audit_loinc_answer_lists.py --base-url http://localhost:8088/fhir --output coverage/loinc-answer-list-catalog-latest.json
 python tools/fhir/build_question_answer_codesystems.py
 python tools/fhir/build_answer_valuesets.py
+python tools/fhir/publish_local_codesystems.py --base-url http://localhost:8088/fhir
 python tools/fhir/publish_answer_valuesets.py --base-url http://localhost:8088/fhir
 python tools/fhir/reconcile_reference_valueset.py --reference-file /path/to/reference-valueset.json --base-url http://localhost:8088/fhir
 python tools/fhir/build_extended_valueset.py --reference-file /path/to/reference-valueset.json --additions-file /path/to/verified-additions.json --semantic-name example --title "Extended example answers" --description "Application-specific extension" --date 2026-07-23 --output /tmp/a-extended-example.json
 # Authenticated publication (TERM_ADMIN_TOKEN is read without being logged):
+python tools/fhir/publish_local_codesystems.py --base-url http://localhost:8088/fhir --env-file /path/to/.env.local --apply --output coverage/stom-fhir-codesystem-publication-latest.json
 python tools/fhir/publish_answer_valuesets.py --base-url http://localhost:8088/fhir --env-file /path/to/.env.local --apply --output coverage/stom-fhir-valueset-publication-latest.json
 python builder/build_knowledge.py --profile cough --report builder/latest-report.json
 python builder/build_knowledge.py --profile fever --report builder/latest-fever-report.json
