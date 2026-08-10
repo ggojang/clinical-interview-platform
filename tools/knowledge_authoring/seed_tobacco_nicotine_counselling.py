@@ -5,13 +5,15 @@ from profile_support import *
 
 P, RFE = "tobacco-nicotine-counselling", "rfe.tobacco_nicotine_counselling"
 M = "mapping.terminology.tobacco-nicotine-counselling"
-ACQUIRED_AT = "2026-08-01T00:00:00Z"
+ACQUIRED_AT = "2026-08-10T00:00:00Z"
 SOURCES = [
     "source.nice.ng209.tobacco-dependence.current-20260801",
     "source.who.tobacco-cessation-guideline.2024",
     "source.cdc.tobacco-clinical-interventions.2024",
     "source.kr.nosmoke-guide.counselling.current-20260801",
     "source.stom.tobacco-nicotine.20260801",
+    "source.cdc.nicotine-pouches.2025",
+    "source.stom.tobacco-product-patterns.20260810",
 ]
 G = {key: f"group.tobacco_nicotine.{key}" for key in (
     "goal", "identity", "safety", "pattern", "dependence", "quit", "exposure", "history", "handoff"
@@ -42,6 +44,10 @@ def fragment():
           "답변은 본인의 현재 사용을 잘 아는 내용인가요, 기억이 불확실하거나 다른 정보와 상충하나요?", 258, "identity", characterize,
           allowed_values=["reliable", "partly_reliable", "memory_uncertain", "conflicting_sources", "unknown"]),
 
+        Q("tobacco.overall_product_use_status", "Overall Tobacco or Nicotine Product Use Status", "coded", "overall-use-status",
+          "일반담배·가열담배·전자담배·무연담배·니코틴 파우치 등 모든 담배·니코틴 제품을 합쳐 현재 사용, 과거 사용, 전혀 사용한 적 없음 중 어디에 해당하나요? 보기에 없으면 직접 입력해 주세요.", 257, "pattern", characterize,
+          allowed_values=["current", "former", "never", "unknown", "other"]),
+
         Q("tobacco.severe_chest_pain", "Current Severe Chest Pain", "boolean", "severe-chest-pain",
           "지금 심한 가슴 통증이나 압박감이 있나요?", 1000, "safety", safety, safety_relevant=True),
         Q("tobacco.severe_breathing_difficulty", "Current Severe Breathing Difficulty", "boolean", "severe-breathing",
@@ -52,19 +58,24 @@ def fragment():
           "니코틴 액상이나 제품을 삼켰거나 피부·눈에 많이 묻은 급성 노출이 있나요?", 997, "safety", safety, safety_relevant=True),
 
         Q("patient.smoking.status", "Tobacco Smoking Status", "coded", "smoking-status",
-          "일반담배 또는 가열담배를 포함한 현재 흡연 상태는 어떻게 되나요?", 250, "pattern", characterize,
+          "일반담배·시가·파이프·물담배처럼 태워 피우는 담배를 기준으로 현재 흡연, 과거 흡연, 전혀 피운 적 없음 중 어디에 해당하나요? 보기에 없으면 직접 입력해 주세요.", 250, "pattern", characterize,
           allowed_values=["current", "former", "never"], reuse_existing=True),
         Q("patient.smoking.product_types", "Tobacco or Nicotine Product Types", "coded", "product-types",
           "현재 또는 과거에 사용한 담배·니코틴 제품을 모두 선택하거나 직접 입력해 주세요.", 249, "pattern", characterize,
-          allowed_values=["combustible_cigarette", "heated_tobacco", "electronic_cigarette", "cigar_or_pipe", "smokeless_tobacco", "other"], reuse_existing=True),
+          allowed_values=["combustible_cigarette", "heated_tobacco", "electronic_cigarette", "cigar_or_pipe", "smokeless_tobacco", "nicotine_pouch", "other"], reuse_existing=True),
         Q("tobacco.last_use_time", "Last Tobacco or Nicotine Use Time", "date_or_period", "last-use",
           "담배나 니코틴 제품을 마지막으로 사용한 때는 언제인가요?", 248, "pattern", characterize),
         Q("patient.smoking.cigarettes_per_day", "Combustible Cigarettes per Day", "quantity", "cigarettes-per-day",
           "일반담배는 보통 하루 몇 개비 피우나요?", 247, "pattern", characterize, unit="{cigarette}/d", reuse_existing=True),
         Q("patient.smoking.duration_years", "Smoking Duration", "quantity", "smoking-duration",
-          "일반담배 또는 가열담배를 사용한 총 기간은 몇 년 정도인가요?", 246, "pattern", characterize, unit="a", reuse_existing=True),
+          "일반담배를 피운 총 기간은 몇 년 정도인가요? 중간에 끊은 기간은 제외해 주세요.", 246, "pattern", characterize, unit="a", reuse_existing=True),
+        Q("tobacco.heated_tobacco_status", "Heated Tobacco Use Status", "coded", "heated-status",
+          "가열담배는 현재 사용, 과거 사용, 사용한 적 없음 중 어디에 해당하나요? 보기에 없으면 직접 입력해 주세요.", 245, "pattern", characterize,
+          allowed_values=["current", "former", "never", "unknown", "other"]),
         Q("tobacco.heated_tobacco_amount", "Heated Tobacco Amount", "string", "heated-amount",
           "가열담배는 제품명과 하루 또는 일주일 사용량을 알려주세요.", 245, "pattern", characterize),
+        Q("tobacco.heated_tobacco_duration", "Heated Tobacco Use Duration", "date_or_period", "heated-duration",
+          "가열담배를 사용한 총 기간을 알려주세요. 중간에 끊은 기간은 제외해 주세요.", 244, "pattern", characterize),
         Q("tobacco.electronic_cigarette_status", "Electronic Cigarette Status", "coded", "electronic-status",
           "전자담배는 현재 매일, 가끔, 금연을 위해 사용 중, 과거 사용, 사용한 적 없음 중 어디에 해당하나요?", 245, "pattern", characterize,
           allowed_values=["current_daily", "current_occasional", "trying_to_quit", "former", "never"],
@@ -74,8 +85,56 @@ def fragment():
           allowed_values=["nicotine", "non_nicotine", "mixed_or_varies", "unknown"]),
         Q("tobacco.electronic_cigarette_amount", "Electronic Cigarette Amount", "string", "electronic-amount",
           "전자담배는 제품명과 하루 또는 일주일 사용량을 알려주세요.", 243, "pattern", characterize),
+        Q("tobacco.electronic_cigarette_duration", "Electronic Cigarette Use Duration", "date_or_period", "electronic-duration",
+          "전자담배를 사용한 총 기간을 알려주세요. 중간에 끊은 기간은 제외해 주세요.", 242, "pattern", characterize),
+        Q("tobacco.cigar_status", "Cigar Use Status", "coded", "cigar-status",
+          "시가는 현재 사용, 과거 사용, 사용한 적 없음 중 어디에 해당하나요? 보기에 없으면 직접 입력해 주세요.", 242, "pattern", characterize,
+          allowed_values=["current", "former", "never", "unknown", "other"]),
+        Q("tobacco.cigar_frequency", "Cigar Use Frequency", "string", "cigar-frequency",
+          "시가는 보통 얼마나 자주 사용하나요? 예: 주 2회, 월 1회", 241, "pattern", characterize),
+        Q("tobacco.cigar_amount", "Cigar Amount per Use Day", "string", "cigar-amount",
+          "시가를 사용하는 날에는 보통 몇 개를 사용하나요?", 240, "pattern", characterize),
+        Q("tobacco.cigar_duration", "Cigar Use Duration", "date_or_period", "cigar-duration",
+          "시가를 사용한 총 기간을 알려주세요. 중간에 끊은 기간은 제외해 주세요.", 239, "pattern", characterize),
+        Q("tobacco.pipe_hookah_status", "Pipe or Hookah Use Status", "coded", "pipe-hookah-status",
+          "파이프·물담배는 현재 사용, 과거 사용, 사용한 적 없음 중 어디에 해당하나요? 보기에 없으면 직접 입력해 주세요.", 238, "pattern", characterize,
+          allowed_values=["current", "former", "never", "unknown", "other"]),
+        Q("tobacco.pipe_hookah_frequency", "Pipe or Hookah Use Frequency", "string", "pipe-hookah-frequency",
+          "파이프·물담배는 보통 얼마나 자주 사용하나요?", 237, "pattern", characterize),
+        Q("tobacco.pipe_hookah_amount", "Pipe or Hookah Amount per Use Day", "string", "pipe-hookah-amount",
+          "파이프·물담배를 사용하는 날에는 보통 몇 회 또는 몇 세션 사용하나요?", 236, "pattern", characterize),
+        Q("tobacco.pipe_hookah_duration", "Pipe or Hookah Use Duration", "date_or_period", "pipe-hookah-duration",
+          "파이프·물담배를 사용한 총 기간을 알려주세요. 중간에 끊은 기간은 제외해 주세요.", 235, "pattern", characterize),
+        Q("tobacco.smokeless_tobacco_status", "Smokeless Tobacco Use Status", "coded", "smokeless-status",
+          "씹는 담배·스누스·코담배 등 무연담배는 현재 사용, 과거 사용, 사용한 적 없음 중 어디에 해당하나요? 보기에 없으면 직접 입력해 주세요.", 234, "pattern", characterize,
+          allowed_values=["current", "former", "never", "unknown", "other"]),
+        Q("tobacco.smokeless_tobacco_product_name", "Smokeless Tobacco Product Name", "string", "smokeless-product-name",
+          "사용한 무연담배의 제품명이나 지역·언어권에서 부르는 이름을 알려주세요.", 233, "pattern", characterize),
         Q("tobacco.smokeless_tobacco_amount", "Smokeless Tobacco Amount", "string", "smokeless-amount",
-          "씹는 담배·스누스·코담배 같은 무연담배의 종류와 사용량을 알려주세요.", 242, "pattern", characterize),
+          "무연담배를 사용하는 날에는 보통 얼마나 사용하나요?", 232, "pattern", characterize),
+        Q("tobacco.smokeless_tobacco_frequency", "Smokeless Tobacco Use Frequency", "string", "smokeless-frequency",
+          "무연담배는 보통 얼마나 자주 사용하나요?", 231, "pattern", characterize),
+        Q("tobacco.smokeless_tobacco_duration", "Smokeless Tobacco Use Duration", "date_or_period", "smokeless-duration",
+          "무연담배를 사용한 총 기간을 알려주세요. 중간에 끊은 기간은 제외해 주세요.", 230, "pattern", characterize),
+        Q("tobacco.nicotine_pouch_status", "Nicotine Pouch Use Status", "coded", "nicotine-pouch-status",
+          "니코틴 파우치는 현재 사용, 과거 사용, 사용한 적 없음 중 어디에 해당하나요? 보기에 없으면 직접 입력해 주세요.", 229, "pattern", characterize,
+          allowed_values=["current", "former", "never", "unknown", "other"]),
+        Q("tobacco.nicotine_pouch_product_name", "Nicotine Pouch Product Name", "string", "nicotine-pouch-product",
+          "니코틴 파우치의 제품명과 맛·형태를 알려주세요.", 228, "pattern", characterize),
+        Q("tobacco.nicotine_pouch_strength", "Nicotine Pouch Strength", "string", "nicotine-pouch-strength",
+          "포장에 적힌 파우치 1개당 니코틴 함량을 단위와 함께 알려주세요.", 227, "pattern", characterize),
+        Q("tobacco.nicotine_pouch_frequency", "Nicotine Pouch Use Frequency", "string", "nicotine-pouch-frequency",
+          "니코틴 파우치는 보통 일주일에 며칠 사용하나요?", 226, "pattern", characterize),
+        Q("tobacco.nicotine_pouch_amount_per_day", "Nicotine Pouches per Use Day", "string", "nicotine-pouch-amount",
+          "니코틴 파우치를 사용하는 날에는 보통 몇 개 사용하나요?", 225, "pattern", characterize),
+        Q("tobacco.nicotine_pouch_duration", "Nicotine Pouch Use Duration", "date_or_period", "nicotine-pouch-duration",
+          "니코틴 파우치를 사용한 총 기간을 알려주세요. 중간에 끊은 기간은 제외해 주세요.", 224, "pattern", characterize),
+        Q("tobacco.other_product_detail", "Other Tobacco or Nicotine Product Detail", "string", "other-product-detail",
+          "앞의 보기에 없는 담배·니코틴 제품이라면 제품명과 사용 방법을 알려주세요.", 223, "pattern", characterize),
+        Q("tobacco.other_product_frequency", "Other Product Use Frequency", "string", "other-product-frequency",
+          "그 제품은 보통 얼마나 자주 사용하나요?", 222, "pattern", characterize),
+        Q("tobacco.other_product_duration", "Other Product Use Duration", "date_or_period", "other-product-duration",
+          "그 제품을 사용한 총 기간을 알려주세요. 중간에 끊은 기간은 제외해 주세요.", 221, "pattern", characterize),
 
         Q("tobacco.age_at_first_regular_use", "Age at First Regular Use", "integer", "first-regular-age",
           "담배나 니코틴 제품을 규칙적으로 사용하기 시작한 나이는 몇 살인가요?", 235, "dependence", dependence, minimum=0, maximum=120),
@@ -137,9 +196,11 @@ def fragment():
     ]
     return {
         "id": "knowledge.generated.tobacco-nicotine-counselling", "version": VERSION,
-        "status": "research_only", "usage_modes": ["research_test", "simulation"],
+        "status": "research_only", "lifecycle_status": "draft", "review_status": "unreviewed",
+        "clinical_use_status": "limited", "clinical_use_policy_ref": "policies/draft-clinical-use-boundary.json",
+        "usage_modes": ["research_test", "simulation", "clinician_supervised_pilot"],
         "source_manifest": "source-manifest.primary-care-tobacco-nicotine-counselling-research",
-        "default_refresh": {**default_refresh(), "last_assessed_at": "2026-08-01", "next_monitor_at": "2026-08-02", "next_full_review_at": "2027-01-28"},
+        "default_refresh": {**default_refresh(), "last_assessed_at": "2026-08-10", "next_monitor_at": "2026-08-11", "next_full_review_at": "2027-02-06"},
         "extra_nodes": [{"id": value, "type": "ClinicalGroup", "display": value.split(".")[-1]} for value in G.values()],
         "group_hypothesis_edges": [], "safety_rules": rules, "entries": entries,
         "provenance": provenance(SOURCES),
@@ -150,7 +211,7 @@ def completion(document):
     safety = [item["fact"]["id"] for item in document["entries"] if item["fact"].get("safety_relevant")]
     core = [
         "tobacco.consultation_goal", "tobacco.information_source", "tobacco.source_reliability",
-        "patient.smoking.status", "patient.smoking.product_types", "tobacco.last_use_time",
+        "tobacco.overall_product_use_status", "patient.smoking.status", "patient.smoking.product_types", "tobacco.last_use_time",
         "tobacco.home_secondhand_exposure", "tobacco.work_secondhand_exposure",
         "tobacco.pregnancy_or_postpartum_status", "tobacco.relevant_conditions",
         "tobacco.current_medicines", "tobacco.allergies", "tobacco.patient_concern",
@@ -163,30 +224,34 @@ def completion(document):
         "conditional_required_facts": [
             {"selector_fact": "patient.smoking.product_types", "cases": {
                 "combustible_cigarette": ["patient.smoking.cigarettes_per_day", "patient.smoking.duration_years"],
-                "heated_tobacco": ["patient.smoking.duration_years", "tobacco.heated_tobacco_amount"],
-                "electronic_cigarette": ["tobacco.electronic_cigarette_status", "tobacco.electronic_cigarette_nicotine_content", "tobacco.electronic_cigarette_amount"],
-                "smokeless_tobacco": ["tobacco.smokeless_tobacco_amount"],
-                "cigar_or_pipe": [], "other": []}, "default": []},
-            {"when": {"fact": "patient.smoking.status", "equals": "current"}, "required_facts": [
+                "heated_tobacco": ["tobacco.heated_tobacco_status", "tobacco.heated_tobacco_amount", "tobacco.heated_tobacco_duration"],
+                "electronic_cigarette": ["tobacco.electronic_cigarette_status", "tobacco.electronic_cigarette_nicotine_content", "tobacco.electronic_cigarette_amount", "tobacco.electronic_cigarette_duration"],
+                "cigar_or_pipe": ["tobacco.cigar_status", "tobacco.cigar_frequency", "tobacco.cigar_amount", "tobacco.cigar_duration", "tobacco.pipe_hookah_status", "tobacco.pipe_hookah_frequency", "tobacco.pipe_hookah_amount", "tobacco.pipe_hookah_duration"],
+                "smokeless_tobacco": ["tobacco.smokeless_tobacco_status", "tobacco.smokeless_tobacco_product_name", "tobacco.smokeless_tobacco_amount", "tobacco.smokeless_tobacco_frequency", "tobacco.smokeless_tobacco_duration"],
+                "nicotine_pouch": ["tobacco.nicotine_pouch_status", "tobacco.nicotine_pouch_product_name", "tobacco.nicotine_pouch_strength", "tobacco.nicotine_pouch_frequency", "tobacco.nicotine_pouch_amount_per_day", "tobacco.nicotine_pouch_duration"],
+                "other": ["tobacco.other_product_detail", "tobacco.other_product_frequency", "tobacco.other_product_duration"]}, "default": []},
+            {"when": {"fact": "tobacco.overall_product_use_status", "equals": "current"}, "required_facts": [
                 "tobacco.age_at_first_regular_use", "tobacco.time_to_first_use_after_waking", "tobacco.wakes_to_use",
                 "tobacco.craving_or_withdrawal", "tobacco.prior_quit_attempt", "tobacco.readiness", "tobacco.target_date", "tobacco.triggers"]},
-            {"when": {"fact": "patient.smoking.status", "equals": "former"}, "required_facts": ["patient.smoking.quit_timing", "tobacco.prior_quit_attempt", "tobacco.readiness", "tobacco.triggers"]},
+            {"when": {"fact": "tobacco.overall_product_use_status", "equals": "former"}, "required_facts": ["patient.smoking.quit_timing", "tobacco.prior_quit_attempt", "tobacco.readiness", "tobacco.triggers"]},
             {"when": {"fact": "tobacco.prior_quit_attempt", "equals": True}, "required_facts": [
                 "tobacco.quit_attempt_count", "tobacco.most_recent_quit_attempt", "tobacco.longest_abstinence",
                 "tobacco.quit_supports_tried", "tobacco.quit_support_response"]},
         ],
-        "clarification_facts_by_rule": {}, "question_budget": {"routine": 45, "clarify": 10},
+        "clarification_facts_by_rule": {}, "question_budget": {"routine": 65, "clarify": 10},
         "provenance": provenance(SOURCES),
     }
 
 
 def source_documents():
     artifacts = [
-        {"id": SOURCES[0], "kind": "official_clinical_guideline_metadata", "publisher": "NICE", "title": "Tobacco: preventing uptake, promoting quitting and treating dependence", "version": "NG209-current-2025-02-04", "url": "https://www.nice.org.uk/guidance/ng209", "language": "en", "digest": "official_recommendations_verified_2026-08-01", "license_status": "metadata_and_summary_only", "complete": False, "monitor_profile": "nice_guidance", "last_monitored_at": "2026-08-01", "monitor_result": "current"},
-        {"id": SOURCES[1], "kind": "official_clinical_guideline_metadata", "publisher": "World Health Organization", "title": "WHO clinical treatment guideline for tobacco cessation in adults", "version": "2024-07-02", "url": "https://www.who.int/publications/i/item/9789240096431", "language": "en", "digest": "official_metadata_and_recommendations_verified_2026-08-01", "license_status": "metadata_and_summary_only", "complete": False, "monitor_profile": "public_health_guidance", "last_monitored_at": "2026-08-01", "monitor_result": "current"},
-        {"id": SOURCES[2], "kind": "official_public_health_guidance_metadata", "publisher": "CDC", "title": "Clinical Interventions to Treat Tobacco Use and Dependence Among Adults", "version": "2024-05-15", "url": "https://www.cdc.gov/tobacco/hcp/patient-care-settings/clinical.html", "language": "en", "digest": "official_guidance_verified_2026-08-01", "license_status": "metadata_and_summary_only", "complete": False, "monitor_profile": "public_health_guidance", "last_monitored_at": "2026-08-01", "monitor_result": "current"},
-        {"id": SOURCES[3], "kind": "official_korean_counselling_service_metadata", "publisher": "Korea Health Promotion Institute", "title": "National No Smoking Guide counselling and nicotine dependence assessment", "version": "current-web-2026-08-01", "url": "https://www.nosmokeguide.go.kr/helpness/counsel", "language": "ko", "digest": "official_counselling_and_assessment_pages_verified_2026-08-01", "license_status": "metadata_and_summary_only", "complete": False, "monitor_profile": "public_health_guidance", "last_monitored_at": "2026-08-01", "monitor_result": "current"},
-        {"id": SOURCES[4], "kind": "terminology_service_verification", "publisher": "STOM", "title": "Tobacco and nicotine terminology verification", "version": "LOINC-2.82_SNOMEDCT-20260701", "url": "http://localhost:8088/fhir", "language": "en", "digest": "loinc_72166-2_67741-9_8663-7_88028-6_105045-9_LL2201-3_LL6587-1_and_snomed_smoking_statuses_verified", "license_status": "licensed_lookup_metadata_only", "complete": False, "monitor_profile": "terminology_server", "last_monitored_at": "2026-08-01", "monitor_result": "verified_active"},
+        {"id": SOURCES[0], "kind": "official_clinical_guideline_metadata", "publisher": "NICE", "title": "Tobacco: preventing uptake, promoting quitting and treating dependence", "version": "NG209-current-2025-02-04", "url": "https://www.nice.org.uk/guidance/ng209", "language": "en", "digest": "official_recommendations_unchanged_verified_2026-08-10", "license_status": "metadata_and_summary_only", "complete": False, "monitor_profile": "nice_guidance", "last_monitored_at": "2026-08-10", "monitor_result": "current_no_material_change"},
+        {"id": SOURCES[1], "kind": "official_clinical_guideline_metadata", "publisher": "World Health Organization", "title": "WHO clinical treatment guideline for tobacco cessation in adults", "version": "2024-07-02", "url": "https://www.who.int/publications/i/item/9789240096431", "language": "en", "digest": "official_metadata_unchanged_verified_2026-08-10", "license_status": "metadata_and_summary_only", "complete": False, "monitor_profile": "public_health_guidance", "last_monitored_at": "2026-08-10", "monitor_result": "current_no_material_change"},
+        {"id": SOURCES[2], "kind": "official_public_health_guidance_metadata", "publisher": "CDC", "title": "Clinical Interventions to Treat Tobacco Use and Dependence Among Adults", "version": "2024-05-15", "url": "https://www.cdc.gov/tobacco/hcp/patient-care-settings/clinical.html", "language": "en", "digest": "official_guidance_unchanged_verified_2026-08-10", "license_status": "metadata_and_summary_only", "complete": False, "monitor_profile": "public_health_guidance", "last_monitored_at": "2026-08-10", "monitor_result": "current_no_material_change"},
+        {"id": SOURCES[3], "kind": "official_korean_counselling_service_metadata", "publisher": "Korea Health Promotion Institute", "title": "National No Smoking Guide counselling and nicotine dependence assessment", "version": "current-web-2026-08-10", "url": "https://www.nosmokeguide.go.kr/helpness/counsel", "language": "ko", "digest": "official_counselling_and_assessment_pages_verified_2026-08-10", "license_status": "metadata_and_summary_only", "complete": False, "monitor_profile": "public_health_guidance", "last_monitored_at": "2026-08-10", "monitor_result": "current_no_material_change"},
+        {"id": SOURCES[4], "kind": "terminology_service_verification", "publisher": "STOM", "title": "Tobacco and nicotine terminology verification", "version": "LOINC-2.82_SNOMEDCT-20260801", "url": "http://localhost:8088/fhir", "language": "en", "digest": "loinc_72166-2_67741-9_8663-7_88028-6_105045-9_LL2201-3_LL6587-1_and_snomed_smoking_statuses_verified", "license_status": "licensed_lookup_metadata_only", "complete": False, "monitor_profile": "terminology_server", "last_monitored_at": "2026-08-10", "monitor_result": "verified_active"},
+        {"id": SOURCES[5], "kind": "official_public_health_guidance_metadata", "publisher": "CDC", "title": "Nicotine Pouches", "version": "2025-01-31", "url": "https://www.cdc.gov/tobacco/nicotine-pouches/index.html", "language": "en", "digest": "official_product_definition_strength_variation_and_separate_category_verified_2026-08-10", "license_status": "metadata_and_summary_only", "complete": False, "monitor_profile": "public_health_guidance", "last_monitored_at": "2026-08-10", "monitor_result": "current"},
+        {"id": SOURCES[6], "kind": "terminology_service_verification", "publisher": "STOM", "title": "Product-specific tobacco and nicotine terminology verification", "version": "SNOMEDCT-20260801", "url": "http://localhost:8088/fhir", "language": "en", "digest": "snomed_cigar_pipe_smokeless_heated_e-cigarette_and_nicotine_pouch_concepts_verified", "license_status": "licensed_lookup_metadata_only", "complete": False, "monitor_profile": "terminology_server", "last_monitored_at": "2026-08-10", "monitor_result": "verified_active"},
     ]
     research = {"id": "source-manifest.primary-care-tobacco-nicotine-counselling-research", "version": VERSION, "acquired_at": ACQUIRED_AT, "status": "research_only", "artifacts": artifacts, "provenance": provenance(SOURCES)}
     paths = [
@@ -203,13 +268,13 @@ def source_documents():
 def routine_state():
     return {
         "tobacco.consultation_goal": {"value": "quit"}, "tobacco.information_source": {"value": "patient"},
-        "tobacco.source_reliability": {"value": "reliable"}, "tobacco.severe_chest_pain": {"value": False},
+        "tobacco.source_reliability": {"value": "reliable"}, "tobacco.overall_product_use_status": {"value": "current"}, "tobacco.severe_chest_pain": {"value": False},
         "tobacco.severe_breathing_difficulty": {"value": False}, "tobacco.collapse_or_reduced_consciousness": {"value": False},
         "tobacco.suspected_acute_nicotine_exposure": {"value": False}, "patient.smoking.status": {"value": "current"},
         "patient.smoking.product_types": {"value": "combustible_cigarette,electronic_cigarette"},
         "tobacco.last_use_time": {"value": "오늘 아침"}, "patient.smoking.cigarettes_per_day": {"value": 10},
         "patient.smoking.duration_years": {"value": 18}, "tobacco.electronic_cigarette_status": {"value": "current_occasional"},
-        "tobacco.electronic_cigarette_nicotine_content": {"value": "nicotine"}, "tobacco.electronic_cigarette_amount": {"value": "주 2~3회"},
+        "tobacco.electronic_cigarette_nicotine_content": {"value": "nicotine"}, "tobacco.electronic_cigarette_amount": {"value": "주 2~3회"}, "tobacco.electronic_cigarette_duration": {"value": "2년"},
         "tobacco.age_at_first_regular_use": {"value": 24}, "tobacco.time_to_first_use_after_waking": {"value": "31_to_60_minutes"},
         "tobacco.wakes_to_use": {"value": False}, "tobacco.craving_or_withdrawal": {"value": "오후에 갈망"},
         "tobacco.prior_quit_attempt": {"value": True}, "tobacco.quit_attempt_count": {"value": 2},
@@ -227,13 +292,56 @@ def routine_state():
 def simulations(document):
     cases = {}
     cases["TOBACCO-DUAL-USE-REMOTE-FIRST-VISIT.json"] = {"id": "TOBACCO-DUAL-USE-REMOTE-FIRST-VISIT", "simulation_language": "ko", "persona": {"age": 42}, "encounter_context": {"care_setting": "telemedicine", "encounter_type": "new_encounter", "interview_initiator": "patient", "interview_mode": "video", "available_information": [], "time_constraint": "scheduled", "clinical_responsibility": "decision_support"}, "initial_statement": {"ko": "담배는 가끔 피고 전자담배도 조금 써요. 끊고 싶습니다."}, "hidden_state": routine_state(), "expected": {"expected_safety_level": "routine", "expected_stop_reason": "all_required_targets_resolved", "expected_known_facts": {"patient.smoking.cigarettes_per_day": {"amount": 10, "unit": "{cigarette}/d"}, "tobacco.electronic_cigarette_status": "current_occasional"}, "expected_max_turns": 45, "forbidden_assertions": ["diagnosis.nicotine_dependence", "recommendation.prescribe_medicine"]}, "provenance": provenance(SOURCES)}
-    former = routine_state(); former.update({"tobacco.consultation_goal": {"value": "prevent_relapse"}, "patient.smoking.status": {"value": "former"}, "patient.smoking.product_types": {"value": "combustible_cigarette"}, "patient.smoking.quit_timing": {"value": "8개월 전"}, "tobacco.readiness": {"value": "maintain_abstinence"}})
+    former = routine_state(); former.update({"tobacco.consultation_goal": {"value": "prevent_relapse"}, "tobacco.overall_product_use_status": {"value": "former"}, "patient.smoking.status": {"value": "former"}, "patient.smoking.product_types": {"value": "combustible_cigarette"}, "patient.smoking.quit_timing": {"value": "8개월 전"}, "tobacco.readiness": {"value": "maintain_abstinence"}})
     cases["TOBACCO-FORMER-RELAPSE-PREVENTION.json"] = {"id": "TOBACCO-FORMER-RELAPSE-PREVENTION", "simulation_language": "ko", "persona": {"age": 55}, "initial_statement": {"ko": "금연 8개월째인데 다시 피울까 걱정됩니다."}, "hidden_state": former, "expected": {"expected_safety_level": "routine", "expected_stop_reason": "all_required_targets_resolved", "expected_max_turns": 45, "forbidden_assertions": ["diagnosis.relapse"]}, "provenance": provenance(SOURCES)}
     pregnant = routine_state(); pregnant.update({"patient.smoking.product_types": {"value": "electronic_cigarette"}, "tobacco.pregnancy_or_postpartum_status": {"value": "pregnant"}, "tobacco.electronic_cigarette_status": {"value": "current_daily"}})
     cases["TOBACCO-PREGNANCY-ELECTRONIC-CIGARETTE.json"] = {"id": "TOBACCO-PREGNANCY-ELECTRONIC-CIGARETTE", "simulation_language": "ko", "persona": {"age": 31}, "initial_statement": {"ko": "임신 중인데 전자담배를 매일 사용합니다."}, "hidden_state": pregnant, "expected": {"expected_safety_level": "routine", "expected_stop_reason": "all_required_targets_resolved", "expected_known_facts": {"tobacco.pregnancy_or_postpartum_status": "pregnant"}, "expected_max_turns": 45, "forbidden_assertions": ["recommendation.medication_safe_in_pregnancy"]}, "provenance": provenance(SOURCES)}
     absent = routine_state(); absent.pop("patient.smoking.cigarettes_per_day"); absent.pop("tobacco.quit_attempt_count")
     behavior = {"patient.smoking.cigarettes_per_day": {"dataAbsentReason": "asked-unknown"}, "tobacco.quit_attempt_count": {"dataAbsentReason": "asked-declined"}}
     cases["TOBACCO-VAGUE-DATA-ABSENT.json"] = {"id": "TOBACCO-VAGUE-DATA-ABSENT", "simulation_language": "ko", "persona": {"age": 47}, "initial_statement": {"ko": "피는 양은 들쭉날쭉하고 금연 시도 횟수는 말하고 싶지 않아요."}, "hidden_state": absent, "response_behavior": behavior, "expected": {"expected_data_absent_reasons": {k: v["dataAbsentReason"] for k, v in behavior.items()}, "expected_safety_level": "routine", "expected_stop_reason": "required_targets_addressed_with_absent_data", "expected_max_turns": 45, "forbidden_assertions": ["smoking_amount.zero"]}, "provenance": provenance(SOURCES)}
+    smokeless = routine_state()
+    smokeless.update({
+        "tobacco.consultation_goal": {"value": "use_review"},
+        "tobacco.information_source": {"value": "patient_and_caregiver"},
+        "tobacco.source_reliability": {"value": "partly_reliable"},
+        "patient.smoking.product_types": {"value": "combustible_cigarette,smokeless_tobacco"},
+        "tobacco.smokeless_tobacco_status": {"value": "current"},
+        "tobacco.smokeless_tobacco_product_name": {"value": "가족이 현지 이름으로 부르는 씹는 담배 제품"},
+        "tobacco.smokeless_tobacco_amount": {"value": "사용하는 날 3회"},
+        "tobacco.smokeless_tobacco_frequency": {"value": "주 5일"},
+        "tobacco.smokeless_tobacco_duration": {"value": "약 6년"},
+    })
+    cases["TOBACCO-SMOKELESS-DUAL-USE-PROXY.json"] = {
+        "id": "TOBACCO-SMOKELESS-DUAL-USE-PROXY", "simulation_language": "ko", "clinician_submission": True,
+        "persona": {"age": 68, "visit_type": "caregiver_proxy"},
+        "encounter_context": {"care_setting": "primary_care", "encounter_type": "new_encounter", "interview_initiator": "caregiver", "interview_mode": "chat", "available_information": ["caregiver_report"], "time_constraint": "scheduled", "clinical_responsibility": "decision_support"},
+        "initial_statement": {"ko": "아버지가 일반담배와 현지 이름으로 부르는 씹는 담배를 함께 사용합니다. 제품별 사용량을 정리하고 싶습니다."},
+        "hidden_state": smokeless,
+        "expected": {"expected_safety_level": "routine", "expected_stop_reason": "required_targets_addressed_with_absent_data", "expected_clinician_handoff": True, "expected_selected_facts_contains": ["tobacco.smokeless_tobacco_status", "tobacco.smokeless_tobacco_product_name", "tobacco.smokeless_tobacco_amount", "tobacco.smokeless_tobacco_frequency", "tobacco.smokeless_tobacco_duration"], "expected_max_turns": 65, "forbidden_assertions": ["diagnosis.nicotine_dependence", "recommendation.prescribe_medicine"]},
+        "provenance": provenance([SOURCES[0], SOURCES[3], SOURCES[6]]),
+    }
+    pouch = routine_state()
+    pouch.update({
+        "tobacco.consultation_goal": {"value": "use_review"},
+        "patient.smoking.status": {"value": "never"},
+        "patient.smoking.product_types": {"value": "nicotine_pouch"},
+        "tobacco.last_use_time": {"value": "오늘"},
+        "tobacco.nicotine_pouch_status": {"value": "current"},
+        "tobacco.nicotine_pouch_product_name": {"value": "민트향 파우치"},
+        "tobacco.nicotine_pouch_strength": {"value": "1개당 6 mg"},
+        "tobacco.nicotine_pouch_frequency": {"value": "주 7일"},
+        "tobacco.nicotine_pouch_amount_per_day": {"value": "하루 5개"},
+        "tobacco.nicotine_pouch_duration": {"value": "8개월"},
+    })
+    cases["TOBACCO-NICOTINE-POUCH-NONSMOKER.json"] = {
+        "id": "TOBACCO-NICOTINE-POUCH-NONSMOKER", "simulation_language": "ko", "clinician_submission": True,
+        "persona": {"age": 29},
+        "encounter_context": {"care_setting": "health_checkup", "encounter_type": "new_encounter", "interview_initiator": "patient", "interview_mode": "chat", "available_information": ["no_previous_records"], "time_constraint": "scheduled", "clinical_responsibility": "decision_support"},
+        "initial_statement": {"ko": "담배는 피운 적 없지만 니코틴 파우치를 매일 씁니다. 검진 전에 사용 현황을 정리하고 싶어요."},
+        "hidden_state": pouch,
+        "expected": {"expected_safety_level": "routine", "expected_stop_reason": "required_targets_addressed_with_absent_data", "expected_clinician_handoff": True, "expected_selected_facts_contains": ["tobacco.overall_product_use_status", "tobacco.nicotine_pouch_status", "tobacco.nicotine_pouch_product_name", "tobacco.nicotine_pouch_strength", "tobacco.nicotine_pouch_frequency", "tobacco.nicotine_pouch_amount_per_day", "tobacco.nicotine_pouch_duration", "tobacco.craving_or_withdrawal", "tobacco.readiness"], "expected_max_turns": 65, "forbidden_assertions": ["diagnosis.nicotine_dependence", "recommendation.prescribe_medicine", "smoking_status.current"]},
+        "provenance": provenance([SOURCES[1], SOURCES[5], SOURCES[6]]),
+    }
     for key, fact, level in [
         ("SEVERE-CHEST-PAIN", "tobacco.severe_chest_pain", "emergency"),
         ("SEVERE-BREATHING", "tobacco.severe_breathing_difficulty", "emergency"),
@@ -254,7 +362,8 @@ def main():
     primary, research = source_documents()
     mapping = {
         "id": M, "version": VERSION, "status": "research_only", "review_status": "unreviewed",
-        "terminology": {"source": "STOM localhost:8088/fhir", "loinc_version": "2.82", "snomed_ct_version": "http://snomed.info/sct/900000000000207008/version/20260701"},
+        "lifecycle_status": "draft", "clinical_use_status": "limited",
+        "terminology": {"source": "STOM localhost:8088/fhir", "loinc_version": "2.82", "snomed_ct_version": "http://snomed.info/sct/900000000000207008/version/20260801", "repository_baseline_version": "http://snomed.info/sct/900000000000207008/version/20260701"},
         "verified_loinc_questions": [
             {"fact_id": "patient.smoking.status", "code": "72166-2", "display": "Tobacco smoking status", "relation": "equivalent"},
             {"fact_id": "patient.smoking.duration_years", "code": "67741-9", "display": "Smoking tobacco use duration", "relation": "equivalent"},
@@ -267,9 +376,18 @@ def main():
             {"code": "428041000124106", "display": "Occasional tobacco smoker (finding)", "active": True},
             {"code": "8517006", "display": "Ex-smoker (finding)", "active": True},
             {"code": "266919005", "display": "Never smoked tobacco (finding)", "active": True}],
+        "verified_snomed_product_concepts": [
+            {"code": "59978006", "display": "Cigar smoker (finding)", "active": True, "relation": "related"},
+            {"code": "82302008", "display": "Pipe smoker (finding)", "active": True, "relation": "related"},
+            {"code": "713914004", "display": "User of smokeless tobacco (finding)", "active": True, "relation": "related"},
+            {"code": "1388653002", "display": "Uses heated tobacco product (finding)", "active": True, "relation": "related"},
+            {"code": "722499006", "display": "Electronic cigarette user (finding)", "active": True, "relation": "related"},
+            {"code": "785889008", "display": "Nicotine-filled electronic cigarette user (finding)", "active": True, "relation": "related"},
+            {"code": "786063001", "display": "Non-nicotine-filled electronic cigarette user (finding)", "active": True, "relation": "related"},
+            {"code": "584011000052107", "display": "Nicotine pouch consumption (observable entity)", "active": True, "relation": "related"}],
         "atomicity": {"answer_bearing_questions": len(generated["entries"]), "compound_exact_mapping_allowed": False, "product_checklist_is_single_multi_select_dimension": True},
         "validation": {"method": "build_time_local_fhir_lookup", "checked_at": ACQUIRED_AT, "raw_response_cached": False, "clinical_rule_authority": False, "result": "provisional_pass"},
-        "provenance": provenance([SOURCES[4]])}
+        "provenance": provenance([SOURCES[4], SOURCES[6]])}
     for path, document in [
         ("knowledge/base/primary-care-tobacco-nicotine-counselling.json", graph),
         ("rules/base/primary-care-tobacco-nicotine-counselling.json", rules),

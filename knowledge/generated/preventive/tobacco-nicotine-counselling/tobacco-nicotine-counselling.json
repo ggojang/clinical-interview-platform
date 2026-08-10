@@ -2,18 +2,23 @@
   "id": "knowledge.generated.tobacco-nicotine-counselling",
   "version": "0.1.0",
   "status": "research_only",
+  "lifecycle_status": "draft",
+  "review_status": "unreviewed",
+  "clinical_use_status": "limited",
+  "clinical_use_policy_ref": "policies/draft-clinical-use-boundary.json",
   "usage_modes": [
     "research_test",
-    "simulation"
+    "simulation",
+    "clinician_supervised_pilot"
   ],
   "source_manifest": "source-manifest.primary-care-tobacco-nicotine-counselling-research",
   "default_refresh": {
     "class": "clinical_guideline",
-    "last_assessed_at": "2026-08-01",
+    "last_assessed_at": "2026-08-10",
     "monitor_interval_days": 1,
     "full_review_interval_days": 180,
-    "next_monitor_at": "2026-08-02",
-    "next_full_review_at": "2027-01-28",
+    "next_monitor_at": "2026-08-11",
+    "next_full_review_at": "2027-02-06",
     "policy_id": "policy.knowledge-refresh",
     "overdue_behavior": {
       "production": "exclude_or_require_review",
@@ -252,6 +257,48 @@
     },
     {
       "fact": {
+        "id": "tobacco.overall_product_use_status",
+        "display": "Overall Tobacco or Nicotine Product Use Status",
+        "value_type": "coded",
+        "allowed_values": [
+          "current",
+          "former",
+          "never",
+          "unknown",
+          "other"
+        ]
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.overall-use-status",
+        "display": "Overall Tobacco or Nicotine Product Use Status",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.overall-use-status",
+        "wording": "일반담배·가열담배·전자담배·무연담배·니코틴 파우치 등 모든 담배·니코틴 제품을 합쳐 현재 사용, 과거 사용, 전혀 사용한 적 없음 중 어디에 해당하나요? 보기에 없으면 직접 입력해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 257,
+          "reason": "overall-use-status"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.pattern"
+      ]
+    },
+    {
+      "fact": {
         "id": "tobacco.severe_chest_pain",
         "display": "Current Severe Chest Pain",
         "value_type": "boolean",
@@ -414,7 +461,7 @@
       },
       "question": {
         "id": "question.tobacco-nicotine-counselling.smoking-status",
-        "wording": "일반담배 또는 가열담배를 포함한 현재 흡연 상태는 어떻게 되나요?",
+        "wording": "일반담배·시가·파이프·물담배처럼 태워 피우는 담배를 기준으로 현재 흡연, 과거 흡연, 전혀 피운 적 없음 중 어디에 해당하나요? 보기에 없으면 직접 입력해 주세요.",
         "language": "ko",
         "mode": [
           "chat",
@@ -446,6 +493,7 @@
           "electronic_cigarette",
           "cigar_or_pipe",
           "smokeless_tobacco",
+          "nicotine_pouch",
           "other"
         ]
       },
@@ -567,7 +615,7 @@
       },
       "question": {
         "id": "question.tobacco-nicotine-counselling.smoking-duration",
-        "wording": "일반담배 또는 가열담배를 사용한 총 기간은 몇 년 정도인가요?",
+        "wording": "일반담배를 피운 총 기간은 몇 년 정도인가요? 중간에 끊은 기간은 제외해 주세요.",
         "language": "ko",
         "mode": [
           "chat",
@@ -587,6 +635,48 @@
         "group.tobacco_nicotine.pattern"
       ],
       "reuse_existing": true
+    },
+    {
+      "fact": {
+        "id": "tobacco.heated_tobacco_status",
+        "display": "Heated Tobacco Use Status",
+        "value_type": "coded",
+        "allowed_values": [
+          "current",
+          "former",
+          "never",
+          "unknown",
+          "other"
+        ]
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.heated-status",
+        "display": "Heated Tobacco Use Status",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.heated-status",
+        "wording": "가열담배는 현재 사용, 과거 사용, 사용한 적 없음 중 어디에 해당하나요? 보기에 없으면 직접 입력해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 245,
+          "reason": "heated-status"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.pattern"
+      ]
     },
     {
       "fact": {
@@ -617,6 +707,41 @@
           "branch": "any",
           "score": 245,
           "reason": "heated-amount"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.heated_tobacco_duration",
+        "display": "Heated Tobacco Use Duration",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.heated-duration",
+        "display": "Heated Tobacco Use Duration",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.heated-duration",
+        "wording": "가열담배를 사용한 총 기간을 알려주세요. 중간에 끊은 기간은 제외해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 244,
+          "reason": "heated-duration"
         }
       ],
       "supports": [
@@ -750,6 +875,412 @@
     },
     {
       "fact": {
+        "id": "tobacco.electronic_cigarette_duration",
+        "display": "Electronic Cigarette Use Duration",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.electronic-duration",
+        "display": "Electronic Cigarette Use Duration",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.electronic-duration",
+        "wording": "전자담배를 사용한 총 기간을 알려주세요. 중간에 끊은 기간은 제외해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 242,
+          "reason": "electronic-duration"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.cigar_status",
+        "display": "Cigar Use Status",
+        "value_type": "coded",
+        "allowed_values": [
+          "current",
+          "former",
+          "never",
+          "unknown",
+          "other"
+        ]
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.cigar-status",
+        "display": "Cigar Use Status",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.cigar-status",
+        "wording": "시가는 현재 사용, 과거 사용, 사용한 적 없음 중 어디에 해당하나요? 보기에 없으면 직접 입력해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 242,
+          "reason": "cigar-status"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.cigar_frequency",
+        "display": "Cigar Use Frequency",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.cigar-frequency",
+        "display": "Cigar Use Frequency",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.cigar-frequency",
+        "wording": "시가는 보통 얼마나 자주 사용하나요? 예: 주 2회, 월 1회",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 241,
+          "reason": "cigar-frequency"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.cigar_amount",
+        "display": "Cigar Amount per Use Day",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.cigar-amount",
+        "display": "Cigar Amount per Use Day",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.cigar-amount",
+        "wording": "시가를 사용하는 날에는 보통 몇 개를 사용하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 240,
+          "reason": "cigar-amount"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.cigar_duration",
+        "display": "Cigar Use Duration",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.cigar-duration",
+        "display": "Cigar Use Duration",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.cigar-duration",
+        "wording": "시가를 사용한 총 기간을 알려주세요. 중간에 끊은 기간은 제외해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 239,
+          "reason": "cigar-duration"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.pipe_hookah_status",
+        "display": "Pipe or Hookah Use Status",
+        "value_type": "coded",
+        "allowed_values": [
+          "current",
+          "former",
+          "never",
+          "unknown",
+          "other"
+        ]
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.pipe-hookah-status",
+        "display": "Pipe or Hookah Use Status",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.pipe-hookah-status",
+        "wording": "파이프·물담배는 현재 사용, 과거 사용, 사용한 적 없음 중 어디에 해당하나요? 보기에 없으면 직접 입력해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 238,
+          "reason": "pipe-hookah-status"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.pipe_hookah_frequency",
+        "display": "Pipe or Hookah Use Frequency",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.pipe-hookah-frequency",
+        "display": "Pipe or Hookah Use Frequency",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.pipe-hookah-frequency",
+        "wording": "파이프·물담배는 보통 얼마나 자주 사용하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 237,
+          "reason": "pipe-hookah-frequency"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.pipe_hookah_amount",
+        "display": "Pipe or Hookah Amount per Use Day",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.pipe-hookah-amount",
+        "display": "Pipe or Hookah Amount per Use Day",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.pipe-hookah-amount",
+        "wording": "파이프·물담배를 사용하는 날에는 보통 몇 회 또는 몇 세션 사용하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 236,
+          "reason": "pipe-hookah-amount"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.pipe_hookah_duration",
+        "display": "Pipe or Hookah Use Duration",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.pipe-hookah-duration",
+        "display": "Pipe or Hookah Use Duration",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.pipe-hookah-duration",
+        "wording": "파이프·물담배를 사용한 총 기간을 알려주세요. 중간에 끊은 기간은 제외해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 235,
+          "reason": "pipe-hookah-duration"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.smokeless_tobacco_status",
+        "display": "Smokeless Tobacco Use Status",
+        "value_type": "coded",
+        "allowed_values": [
+          "current",
+          "former",
+          "never",
+          "unknown",
+          "other"
+        ]
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.smokeless-status",
+        "display": "Smokeless Tobacco Use Status",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.smokeless-status",
+        "wording": "씹는 담배·스누스·코담배 등 무연담배는 현재 사용, 과거 사용, 사용한 적 없음 중 어디에 해당하나요? 보기에 없으면 직접 입력해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 234,
+          "reason": "smokeless-status"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.smokeless_tobacco_product_name",
+        "display": "Smokeless Tobacco Product Name",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.smokeless-product-name",
+        "display": "Smokeless Tobacco Product Name",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.smokeless-product-name",
+        "wording": "사용한 무연담배의 제품명이나 지역·언어권에서 부르는 이름을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 233,
+          "reason": "smokeless-product-name"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.pattern"
+      ]
+    },
+    {
+      "fact": {
         "id": "tobacco.smokeless_tobacco_amount",
         "display": "Smokeless Tobacco Amount",
         "value_type": "string"
@@ -763,7 +1294,7 @@
       },
       "question": {
         "id": "question.tobacco-nicotine-counselling.smokeless-amount",
-        "wording": "씹는 담배·스누스·코담배 같은 무연담배의 종류와 사용량을 알려주세요.",
+        "wording": "무연담배를 사용하는 날에는 보통 얼마나 사용하나요?",
         "language": "ko",
         "mode": [
           "chat",
@@ -775,8 +1306,400 @@
       "priority": [
         {
           "branch": "any",
-          "score": 242,
+          "score": 232,
           "reason": "smokeless-amount"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.smokeless_tobacco_frequency",
+        "display": "Smokeless Tobacco Use Frequency",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.smokeless-frequency",
+        "display": "Smokeless Tobacco Use Frequency",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.smokeless-frequency",
+        "wording": "무연담배는 보통 얼마나 자주 사용하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 231,
+          "reason": "smokeless-frequency"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.smokeless_tobacco_duration",
+        "display": "Smokeless Tobacco Use Duration",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.smokeless-duration",
+        "display": "Smokeless Tobacco Use Duration",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.smokeless-duration",
+        "wording": "무연담배를 사용한 총 기간을 알려주세요. 중간에 끊은 기간은 제외해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 230,
+          "reason": "smokeless-duration"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.nicotine_pouch_status",
+        "display": "Nicotine Pouch Use Status",
+        "value_type": "coded",
+        "allowed_values": [
+          "current",
+          "former",
+          "never",
+          "unknown",
+          "other"
+        ]
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.nicotine-pouch-status",
+        "display": "Nicotine Pouch Use Status",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.nicotine-pouch-status",
+        "wording": "니코틴 파우치는 현재 사용, 과거 사용, 사용한 적 없음 중 어디에 해당하나요? 보기에 없으면 직접 입력해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 229,
+          "reason": "nicotine-pouch-status"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.nicotine_pouch_product_name",
+        "display": "Nicotine Pouch Product Name",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.nicotine-pouch-product",
+        "display": "Nicotine Pouch Product Name",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.nicotine-pouch-product",
+        "wording": "니코틴 파우치의 제품명과 맛·형태를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 228,
+          "reason": "nicotine-pouch-product"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.nicotine_pouch_strength",
+        "display": "Nicotine Pouch Strength",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.nicotine-pouch-strength",
+        "display": "Nicotine Pouch Strength",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.nicotine-pouch-strength",
+        "wording": "포장에 적힌 파우치 1개당 니코틴 함량을 단위와 함께 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 227,
+          "reason": "nicotine-pouch-strength"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.nicotine_pouch_frequency",
+        "display": "Nicotine Pouch Use Frequency",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.nicotine-pouch-frequency",
+        "display": "Nicotine Pouch Use Frequency",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.nicotine-pouch-frequency",
+        "wording": "니코틴 파우치는 보통 일주일에 며칠 사용하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 226,
+          "reason": "nicotine-pouch-frequency"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.nicotine_pouch_amount_per_day",
+        "display": "Nicotine Pouches per Use Day",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.nicotine-pouch-amount",
+        "display": "Nicotine Pouches per Use Day",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.nicotine-pouch-amount",
+        "wording": "니코틴 파우치를 사용하는 날에는 보통 몇 개 사용하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 225,
+          "reason": "nicotine-pouch-amount"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.nicotine_pouch_duration",
+        "display": "Nicotine Pouch Use Duration",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.nicotine-pouch-duration",
+        "display": "Nicotine Pouch Use Duration",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.nicotine-pouch-duration",
+        "wording": "니코틴 파우치를 사용한 총 기간을 알려주세요. 중간에 끊은 기간은 제외해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 224,
+          "reason": "nicotine-pouch-duration"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.other_product_detail",
+        "display": "Other Tobacco or Nicotine Product Detail",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.other-product-detail",
+        "display": "Other Tobacco or Nicotine Product Detail",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.other-product-detail",
+        "wording": "앞의 보기에 없는 담배·니코틴 제품이라면 제품명과 사용 방법을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 223,
+          "reason": "other-product-detail"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.other_product_frequency",
+        "display": "Other Product Use Frequency",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.other-product-frequency",
+        "display": "Other Product Use Frequency",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.other-product-frequency",
+        "wording": "그 제품은 보통 얼마나 자주 사용하나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 222,
+          "reason": "other-product-frequency"
+        }
+      ],
+      "supports": [
+        "group.tobacco_nicotine.pattern"
+      ]
+    },
+    {
+      "fact": {
+        "id": "tobacco.other_product_duration",
+        "display": "Other Product Use Duration",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.tobacco-nicotine-counselling.other-product-duration",
+        "display": "Other Product Use Duration",
+        "intents": [
+          "intent.characterize_tobacco_nicotine_use"
+        ]
+      },
+      "question": {
+        "id": "question.tobacco-nicotine-counselling.other-product-duration",
+        "wording": "그 제품을 사용한 총 기간을 알려주세요. 중간에 끊은 기간은 제외해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 221,
+          "reason": "other-product-duration"
         }
       ],
       "supports": [
@@ -1627,7 +2550,9 @@
       "source.who.tobacco-cessation-guideline.2024",
       "source.cdc.tobacco-clinical-interventions.2024",
       "source.kr.nosmoke-guide.counselling.current-20260801",
-      "source.stom.tobacco-nicotine.20260801"
+      "source.stom.tobacco-nicotine.20260801",
+      "source.cdc.nicotine-pouches.2025",
+      "source.stom.tobacco-product-patterns.20260810"
     ],
     "review_status": "unreviewed",
     "version": "0.1.0"

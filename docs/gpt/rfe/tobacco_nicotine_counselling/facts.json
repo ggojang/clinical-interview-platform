@@ -1,7 +1,7 @@
 {
   "clinical_use_status": "limited",
   "contains_patient_responses": false,
-  "count": 40,
+  "count": 65,
   "encounter_contexts": [
     "context.primary_care"
   ],
@@ -36,10 +36,11 @@
         "electronic_cigarette",
         "cigar_or_pipe",
         "smokeless_tobacco",
+        "nicotine_pouch",
         "other"
       ],
       "answer_semantic_binding": {
-        "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-mixed-patient-smoking-product-types-coded-or-string-196b605451",
+        "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-mixed-patient-smoking-product-types-coded-or-string-1d6f18e0ff",
         "policy_id": "policy.question-answer-terminology-binding",
         "snomed_mappings": {
           "other": {
@@ -134,6 +135,65 @@
       "value_type": "string"
     },
     {
+      "description": "",
+      "display": "Cigar Amount per Use Day",
+      "extraction_cues": [],
+      "id": "tobacco.cigar_amount",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "description": "",
+      "display": "Cigar Use Duration",
+      "extraction_cues": [],
+      "id": "tobacco.cigar_duration",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "date_or_period"
+    },
+    {
+      "description": "",
+      "display": "Cigar Use Frequency",
+      "extraction_cues": [],
+      "id": "tobacco.cigar_frequency",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "allowed_values": [
+        "current",
+        "former",
+        "never",
+        "unknown",
+        "other"
+      ],
+      "answer_semantic_binding": {
+        "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-mixed-tobacco-cigar-status-coded-current-former-never-other",
+        "data_absent_reason_mappings": {
+          "unknown": "asked-unknown"
+        },
+        "policy_id": "policy.question-answer-terminology-binding",
+        "snomed_mappings": {
+          "other": {
+            "code": "74964007",
+            "display": "Other",
+            "mapping_relation": "equivalent",
+            "system": "http://snomed.info/sct"
+          }
+        },
+        "strategy": "SNOMED_CT_then_local_coded_fallback"
+      },
+      "description": "",
+      "display": "Cigar Use Status",
+      "extraction_cues": [],
+      "id": "tobacco.cigar_status",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "coded"
+    },
+    {
       "answer_semantic_binding": {
         "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-sct-yes-no",
         "policy_id": "policy.question-answer-terminology-binding",
@@ -195,6 +255,15 @@
       "safety_relevant": false,
       "type": "Fact",
       "value_type": "string"
+    },
+    {
+      "description": "",
+      "display": "Electronic Cigarette Use Duration",
+      "extraction_cues": [],
+      "id": "tobacco.electronic_cigarette_duration",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "date_or_period"
     },
     {
       "allowed_values": [
@@ -265,6 +334,47 @@
       "value_type": "string"
     },
     {
+      "description": "",
+      "display": "Heated Tobacco Use Duration",
+      "extraction_cues": [],
+      "id": "tobacco.heated_tobacco_duration",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "date_or_period"
+    },
+    {
+      "allowed_values": [
+        "current",
+        "former",
+        "never",
+        "unknown",
+        "other"
+      ],
+      "answer_semantic_binding": {
+        "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-mixed-tobacco-heated-tobacco-status-coded-current-f-da136cfcf3",
+        "data_absent_reason_mappings": {
+          "unknown": "asked-unknown"
+        },
+        "policy_id": "policy.question-answer-terminology-binding",
+        "snomed_mappings": {
+          "other": {
+            "code": "74964007",
+            "display": "Other",
+            "mapping_relation": "equivalent",
+            "system": "http://snomed.info/sct"
+          }
+        },
+        "strategy": "SNOMED_CT_then_local_coded_fallback"
+      },
+      "description": "",
+      "display": "Heated Tobacco Use Status",
+      "extraction_cues": [],
+      "id": "tobacco.heated_tobacco_status",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "coded"
+    },
+    {
       "answer_semantic_binding": {
         "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-sct-yes-no",
         "policy_id": "policy.question-answer-terminology-binding",
@@ -331,12 +441,207 @@
     },
     {
       "description": "",
+      "display": "Nicotine Pouches per Use Day",
+      "extraction_cues": [],
+      "id": "tobacco.nicotine_pouch_amount_per_day",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "description": "",
+      "display": "Nicotine Pouch Use Duration",
+      "extraction_cues": [],
+      "id": "tobacco.nicotine_pouch_duration",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "date_or_period"
+    },
+    {
+      "description": "",
+      "display": "Nicotine Pouch Use Frequency",
+      "extraction_cues": [],
+      "id": "tobacco.nicotine_pouch_frequency",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "description": "",
+      "display": "Nicotine Pouch Product Name",
+      "extraction_cues": [],
+      "id": "tobacco.nicotine_pouch_product_name",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "allowed_values": [
+        "current",
+        "former",
+        "never",
+        "unknown",
+        "other"
+      ],
+      "answer_semantic_binding": {
+        "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-mixed-tobacco-nicotine-pouch-status-coded-current-f-1c09c9d99f",
+        "data_absent_reason_mappings": {
+          "unknown": "asked-unknown"
+        },
+        "policy_id": "policy.question-answer-terminology-binding",
+        "snomed_mappings": {
+          "other": {
+            "code": "74964007",
+            "display": "Other",
+            "mapping_relation": "equivalent",
+            "system": "http://snomed.info/sct"
+          }
+        },
+        "strategy": "SNOMED_CT_then_local_coded_fallback"
+      },
+      "description": "",
+      "display": "Nicotine Pouch Use Status",
+      "extraction_cues": [],
+      "id": "tobacco.nicotine_pouch_status",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "coded"
+    },
+    {
+      "description": "",
+      "display": "Nicotine Pouch Strength",
+      "extraction_cues": [],
+      "id": "tobacco.nicotine_pouch_strength",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "description": "",
+      "display": "Other Tobacco or Nicotine Product Detail",
+      "extraction_cues": [],
+      "id": "tobacco.other_product_detail",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "description": "",
+      "display": "Other Product Use Duration",
+      "extraction_cues": [],
+      "id": "tobacco.other_product_duration",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "date_or_period"
+    },
+    {
+      "description": "",
+      "display": "Other Product Use Frequency",
+      "extraction_cues": [],
+      "id": "tobacco.other_product_frequency",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "allowed_values": [
+        "current",
+        "former",
+        "never",
+        "unknown",
+        "other"
+      ],
+      "answer_semantic_binding": {
+        "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-mixed-tobacco-overall-product-use-status-coded-curr-3221906b72",
+        "data_absent_reason_mappings": {
+          "unknown": "asked-unknown"
+        },
+        "policy_id": "policy.question-answer-terminology-binding",
+        "snomed_mappings": {
+          "other": {
+            "code": "74964007",
+            "display": "Other",
+            "mapping_relation": "equivalent",
+            "system": "http://snomed.info/sct"
+          }
+        },
+        "strategy": "SNOMED_CT_then_local_coded_fallback"
+      },
+      "description": "",
+      "display": "Overall Tobacco or Nicotine Product Use Status",
+      "extraction_cues": [],
+      "id": "tobacco.overall_product_use_status",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "coded"
+    },
+    {
+      "description": "",
       "display": "Patient Concern",
       "extraction_cues": [],
       "id": "tobacco.patient_concern",
       "safety_relevant": false,
       "type": "Fact",
       "value_type": "string"
+    },
+    {
+      "description": "",
+      "display": "Pipe or Hookah Amount per Use Day",
+      "extraction_cues": [],
+      "id": "tobacco.pipe_hookah_amount",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "description": "",
+      "display": "Pipe or Hookah Use Duration",
+      "extraction_cues": [],
+      "id": "tobacco.pipe_hookah_duration",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "date_or_period"
+    },
+    {
+      "description": "",
+      "display": "Pipe or Hookah Use Frequency",
+      "extraction_cues": [],
+      "id": "tobacco.pipe_hookah_frequency",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "allowed_values": [
+        "current",
+        "former",
+        "never",
+        "unknown",
+        "other"
+      ],
+      "answer_semantic_binding": {
+        "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-mixed-tobacco-pipe-hookah-status-coded-current-form-a212d0a04a",
+        "data_absent_reason_mappings": {
+          "unknown": "asked-unknown"
+        },
+        "policy_id": "policy.question-answer-terminology-binding",
+        "snomed_mappings": {
+          "other": {
+            "code": "74964007",
+            "display": "Other",
+            "mapping_relation": "equivalent",
+            "system": "http://snomed.info/sct"
+          }
+        },
+        "strategy": "SNOMED_CT_then_local_coded_fallback"
+      },
+      "description": "",
+      "display": "Pipe or Hookah Use Status",
+      "extraction_cues": [],
+      "id": "tobacco.pipe_hookah_status",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "coded"
     },
     {
       "allowed_values": [
@@ -482,6 +787,65 @@
       "value_type": "string"
     },
     {
+      "description": "",
+      "display": "Smokeless Tobacco Use Duration",
+      "extraction_cues": [],
+      "id": "tobacco.smokeless_tobacco_duration",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "date_or_period"
+    },
+    {
+      "description": "",
+      "display": "Smokeless Tobacco Use Frequency",
+      "extraction_cues": [],
+      "id": "tobacco.smokeless_tobacco_frequency",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "description": "",
+      "display": "Smokeless Tobacco Product Name",
+      "extraction_cues": [],
+      "id": "tobacco.smokeless_tobacco_product_name",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "allowed_values": [
+        "current",
+        "former",
+        "never",
+        "unknown",
+        "other"
+      ],
+      "answer_semantic_binding": {
+        "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-mixed-tobacco-smokeless-tobacco-status-coded-curren-44ef6129c6",
+        "data_absent_reason_mappings": {
+          "unknown": "asked-unknown"
+        },
+        "policy_id": "policy.question-answer-terminology-binding",
+        "snomed_mappings": {
+          "other": {
+            "code": "74964007",
+            "display": "Other",
+            "mapping_relation": "equivalent",
+            "system": "http://snomed.info/sct"
+          }
+        },
+        "strategy": "SNOMED_CT_then_local_coded_fallback"
+      },
+      "description": "",
+      "display": "Smokeless Tobacco Use Status",
+      "extraction_cues": [],
+      "id": "tobacco.smokeless_tobacco_status",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "coded"
+    },
+    {
       "allowed_values": [
         "reliable",
         "partly_reliable",
@@ -605,9 +969,21 @@
   "knowledge_sources": [
     {
       "complete": false,
+      "id": "source.cdc.nicotine-pouches.2025",
+      "kind": "official_public_health_guidance_metadata",
+      "last_monitored_at": "2026-08-10",
+      "license_status": "metadata_and_summary_only",
+      "monitor_interval_days": 7,
+      "publisher": "CDC",
+      "title": "Nicotine Pouches",
+      "url": "https://www.cdc.gov/tobacco/nicotine-pouches/index.html",
+      "version": "2025-01-31"
+    },
+    {
+      "complete": false,
       "id": "source.cdc.tobacco-clinical-interventions.2024",
       "kind": "official_public_health_guidance_metadata",
-      "last_monitored_at": "2026-08-01",
+      "last_monitored_at": "2026-08-10",
       "license_status": "metadata_and_summary_only",
       "monitor_interval_days": 7,
       "publisher": "CDC",
@@ -619,19 +995,19 @@
       "complete": false,
       "id": "source.kr.nosmoke-guide.counselling.current-20260801",
       "kind": "official_korean_counselling_service_metadata",
-      "last_monitored_at": "2026-08-01",
+      "last_monitored_at": "2026-08-10",
       "license_status": "metadata_and_summary_only",
       "monitor_interval_days": 7,
       "publisher": "Korea Health Promotion Institute",
       "title": "National No Smoking Guide counselling and nicotine dependence assessment",
       "url": "https://www.nosmokeguide.go.kr/helpness/counsel",
-      "version": "current-web-2026-08-01"
+      "version": "current-web-2026-08-10"
     },
     {
       "complete": false,
       "id": "source.nice.ng209.tobacco-dependence.current-20260801",
       "kind": "official_clinical_guideline_metadata",
-      "last_monitored_at": "2026-08-01",
+      "last_monitored_at": "2026-08-10",
       "license_status": "metadata_and_summary_only",
       "monitor_interval_days": 7,
       "publisher": "NICE",
@@ -643,19 +1019,31 @@
       "complete": false,
       "id": "source.stom.tobacco-nicotine.20260801",
       "kind": "terminology_service_verification",
-      "last_monitored_at": "2026-08-01",
+      "last_monitored_at": "2026-08-10",
       "license_status": "licensed_lookup_metadata_only",
       "monitor_interval_days": 30,
       "publisher": "STOM",
       "title": "Tobacco and nicotine terminology verification",
       "url": "http://localhost:8088/fhir",
-      "version": "LOINC-2.82_SNOMEDCT-20260701"
+      "version": "LOINC-2.82_SNOMEDCT-20260801"
+    },
+    {
+      "complete": false,
+      "id": "source.stom.tobacco-product-patterns.20260810",
+      "kind": "terminology_service_verification",
+      "last_monitored_at": "2026-08-10",
+      "license_status": "licensed_lookup_metadata_only",
+      "monitor_interval_days": 30,
+      "publisher": "STOM",
+      "title": "Product-specific tobacco and nicotine terminology verification",
+      "url": "http://localhost:8088/fhir",
+      "version": "SNOMEDCT-20260801"
     },
     {
       "complete": false,
       "id": "source.who.tobacco-cessation-guideline.2024",
       "kind": "official_clinical_guideline_metadata",
-      "last_monitored_at": "2026-08-01",
+      "last_monitored_at": "2026-08-10",
       "license_status": "metadata_and_summary_only",
       "monitor_interval_days": 7,
       "publisher": "World Health Organization",

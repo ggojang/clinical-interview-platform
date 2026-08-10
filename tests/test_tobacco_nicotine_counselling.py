@@ -13,19 +13,21 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class TobaccoNicotineCounsellingPackageTests(unittest.TestCase):
-    def test_package_is_complete_research_only_and_safety_covered(self):
+    def test_package_is_complete_draft_and_safety_covered(self):
         package = compile_package(profile="tobacco_nicotine_counselling")
         facts = {
             node["id"] for node in package["knowledge_graph"]["nodes"]
             if node["type"] == "Fact"
         }
-        self.assertEqual(40, len(facts))
+        self.assertEqual(65, len(facts))
         self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
         self.assertEqual(4, package["coverage"]["total_safety_rules"])
         self.assertEqual(4, package["coverage"]["safety_rules_with_simulations"])
         self.assertEqual([], package["coverage"]["uncovered_safety_rules"])
         self.assertGreaterEqual(package["coverage"]["data_absent_reason_simulations"], 1)
         self.assertFalse(package["usage_policy"]["production_allowed"])
+        self.assertEqual("draft", package["usage_policy"]["lifecycle_status"])
+        self.assertEqual("limited", package["usage_policy"]["clinical_use_status"])
         with self.assertRaises(CompilationError):
             compile_package(profile="tobacco_nicotine_counselling", production=True)
 
@@ -33,6 +35,7 @@ class TobaccoNicotineCounsellingPackageTests(unittest.TestCase):
         package = compile_package(profile="tobacco_nicotine_counselling")
         policy = package["interview_completion_policy"]
         always = set(policy["required_facts"]["always"])
+        self.assertIn("tobacco.overall_product_use_status", always)
         self.assertNotIn("patient.smoking.cigarettes_per_day", always)
         self.assertNotIn("tobacco.electronic_cigarette_amount", always)
         product = next(
@@ -48,9 +51,24 @@ class TobaccoNicotineCounsellingPackageTests(unittest.TestCase):
                 "tobacco.electronic_cigarette_status",
                 "tobacco.electronic_cigarette_nicotine_content",
                 "tobacco.electronic_cigarette_amount",
+                "tobacco.electronic_cigarette_duration",
             ],
             product["cases"]["electronic_cigarette"],
         )
+        self.assertEqual(
+            [
+                "tobacco.nicotine_pouch_status",
+                "tobacco.nicotine_pouch_product_name",
+                "tobacco.nicotine_pouch_strength",
+                "tobacco.nicotine_pouch_frequency",
+                "tobacco.nicotine_pouch_amount_per_day",
+                "tobacco.nicotine_pouch_duration",
+            ],
+            product["cases"]["nicotine_pouch"],
+        )
+        self.assertTrue(product["cases"]["cigar_or_pipe"])
+        self.assertTrue(product["cases"]["smokeless_tobacco"])
+        self.assertTrue(product["cases"]["other"])
 
     def test_stom_verified_question_and_answer_list_provenance(self):
         mapping = json.loads(
@@ -66,6 +84,12 @@ class TobaccoNicotineCounsellingPackageTests(unittest.TestCase):
         )
         self.assertTrue(all(item["preserve_original"] for item in mapping["verified_official_answer_lists"]))
         self.assertFalse(mapping["atomicity"]["compound_exact_mapping_allowed"])
+        self.assertFalse(mapping["validation"]["clinical_rule_authority"])
+        concepts = {
+            item["code"]: item for item in mapping["verified_snomed_product_concepts"]
+        }
+        self.assertEqual("related", concepts["584011000052107"]["relation"])
+        self.assertTrue(mapping["terminology"]["snomed_ct_version"].endswith("/20260801"))
 
         package = compile_package(profile="tobacco_nicotine_counselling")
         questions = {
@@ -90,7 +114,8 @@ class TobaccoNicotineCounsellingPackageTests(unittest.TestCase):
             ["additional_required_facts_by_rfe"]["rfe.tobacco_nicotine_counselling"]
         )
         self.assertTrue({
-            "patient.smoking.status", "patient.smoking.product_types",
+            "tobacco.overall_product_use_status", "patient.smoking.status",
+            "patient.smoking.product_types",
             "tobacco.home_secondhand_exposure", "tobacco.work_secondhand_exposure",
             "tobacco.pregnancy_or_postpartum_status", "tobacco.patient_concern",
             "tobacco.expected_help",
@@ -99,13 +124,21 @@ class TobaccoNicotineCounsellingPackageTests(unittest.TestCase):
     def test_all_tobacco_simulations_pass(self):
         report = run_evaluation(TOBACCO_NICOTINE_COUNSELLING_PACKAGE)
         self.assertTrue(report["passed"], report["results"])
-        self.assertEqual(8, report["case_count"])
+        self.assertEqual(10, report["case_count"])
         dual = next(
             item for item in report["results"]
             if item["case_id"] == "TOBACCO-DUAL-USE-REMOTE-FIRST-VISIT"
         )
         self.assertIn("patient.smoking.cigarettes_per_day", dual["selected_facts"])
         self.assertIn("tobacco.electronic_cigarette_amount", dual["selected_facts"])
+        pouch = next(
+            item for item in report["results"]
+            if item["case_id"] == "TOBACCO-NICOTINE-POUCH-NONSMOKER"
+        )
+        self.assertIn("tobacco.nicotine_pouch_strength", pouch["selected_facts"])
+        self.assertIn("tobacco.nicotine_pouch_amount_per_day", pouch["selected_facts"])
+        self.assertIn("tobacco.craving_or_withdrawal", pouch["selected_facts"])
+        self.assertIn("tobacco.readiness", pouch["selected_facts"])
 
 
 if __name__ == "__main__":
