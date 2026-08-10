@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Plan or publish the two generated local CodeSystems to FHIR R4."""
+"""Plan or publish the generated local CodeSystems to FHIR R4."""
 from __future__ import annotations
 
 import argparse
@@ -27,12 +27,12 @@ from tools.fhir.build_question_answer_codesystems import (  # noqa: E402
 OUTPUTS = [
     ROOT / "fhir/r4/codesystems/clinical-interview-question.json",
     ROOT / "fhir/r4/codesystems/clinical-interview-answer.json",
+    ROOT / "fhir/r4/codesystems/clinical-interview-answer-domain.json",
 ]
 
 
 def generated_resources() -> list[dict]:
-    question, answer = build()
-    resources = [question, answer]
+    resources = list(build())
     for resource in resources:
         validate(resource)
     for path, resource in zip(OUTPUTS, resources):

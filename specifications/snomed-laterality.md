@@ -4,6 +4,8 @@ Version: 0.1.0 (Research Draft)
 
 An anatomical site may receive laterality only when the versioned site concept is a member of `723264001 |Lateralizable body structure reference set|` and the focus concept satisfies the applicable MRCM and normal-form constraints.
 
+The reference-set member row and the active concept check are separate evidence. In particular, STOM's member-view `referencedComponentActive` field is not used alone: the Builder also performs a versioned FHIR `CodeSystem/$lookup` for the anatomical concept and requires the lookup, refset membership and MRCM result to agree. A missing or conflicting result keeps site and laterality as separate Facts.
+
 Laterality is not modeled as a parallel attribute on the focus clinical finding in the classifiable expression. It is nested on the value of `363698007 |Finding site|`:
 
 ```text

@@ -6,6 +6,7 @@ overlay and never changes interview priority, safety, routing, or completion.
 from __future__ import annotations
 
 from copy import deepcopy
+from functools import lru_cache
 import hashlib
 import json
 from pathlib import Path
@@ -17,6 +18,7 @@ from interoperability.fhir_r4_bindings import apply_element_bindings
 ROOT = Path(__file__).resolve().parents[1]
 POLICY_PATH = ROOT / "policies/question-answer-terminology-binding.json"
 REGISTRY_PATH = ROOT / "mappings/terminology/question-answer-bindings.json"
+ANSWER_DOMAIN_PATH = ROOT / "knowledge/shared/answer-domains.json"
 
 LOINC = "http://loinc.org"
 SNOMED = "http://snomed.info/sct"
@@ -28,6 +30,10 @@ LOCAL_ANSWER = (
     "https://ggojang.github.io/clinical-interview-platform/fhir/"
     "CodeSystem/clinical-interview-answer"
 )
+LOCAL_ANSWER_DOMAIN = (
+    "https://ggojang.github.io/clinical-interview-platform/fhir/"
+    "CodeSystem/clinical-interview-answer-domain"
+)
 VALUESET_BASE = (
     "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet"
 )
@@ -38,6 +44,25 @@ def load_documents() -> tuple[dict[str, Any], dict[str, Any]]:
     registry = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
     validate_documents(policy, registry)
     return policy, registry
+
+
+@lru_cache(maxsize=1)
+def load_answer_domains() -> dict[str, Any]:
+    document = json.loads(ANSWER_DOMAIN_PATH.read_text(encoding="utf-8"))
+    if document.get("status") != "draft":
+        raise ValueError("answer-domain registry must remain draft")
+    if document.get("review_status") != "unreviewed":
+        raise ValueError("answer-domain registry must remain unreviewed")
+    domains = document.get("domains", {})
+    for domain_id, domain in domains.items():
+        concepts = domain.get("concepts", [])
+        codes = [concept.get("code") for concept in concepts]
+        if not codes or any(not code for code in codes) or len(codes) != len(set(codes)):
+            raise ValueError(f"{domain_id}: answer-domain codes are missing or duplicated")
+        item = domain.get("questionnaire", {})
+        if item.get("one_answer_bearing_dimension") is None:
+            raise ValueError(f"{domain_id}: atomic answer dimension is missing")
+    return document
 
 
 def validate_documents(policy: dict[str, Any], registry: dict[str, Any]) -> None:
@@ -255,6 +280,60 @@ def _answer_binding(
     policy: dict[str, Any],
     registry: dict[str, Any],
 ) -> dict[str, Any] | None:
+    domain_registry = load_answer_domains()
+    for domain_id, domain in domain_registry["domains"].items():
+        fact_binding = domain.get("fact_bindings", {}).get(fact["id"])
+        if not fact_binding or fact_binding.get("status") != "active_pilot":
+            continue
+        concept_codes = {concept["code"] for concept in domain["concepts"]}
+        legacy_map = fact_binding.get("legacy_token_map", {})
+        preferred_codes = fact_binding.get("preferred_codes", [])
+        if any(code not in concept_codes for code in preferred_codes):
+            raise ValueError(f"{fact['id']}: preferred answer is outside {domain_id}")
+        internal_mappings = {}
+        for token in fact.get("allowed_values", []):
+            domain_code = legacy_map.get(
+                token, f"{domain_id}-{str(token).replace('_', '-')}"
+            )
+            if domain_code in concept_codes:
+                internal_mappings[token] = {
+                    "system": domain_registry["local_code_system"]["url"],
+                    "code": domain_code,
+                    "display": next(
+                        concept["display"]
+                        for concept in domain["concepts"]
+                        if concept["code"] == domain_code
+                    ),
+                    "display_ko": next(
+                        concept.get("display_ko", concept["display"])
+                        for concept in domain["concepts"]
+                        if concept["code"] == domain_code
+                    ),
+                    "mapping_relation": (
+                        "equivalent"
+                        if token not in legacy_map
+                        else "normalized_from_legacy"
+                    ),
+                }
+        questionnaire = domain["questionnaire"]
+        return {
+            "strategy": "shared_atomic_answer_domain_with_context_preference",
+            "policy_id": policy["id"],
+            "answer_domain": domain_id,
+            "answer_domain_registry_version": domain_registry["version"],
+            "answer_value_set": answer_valueset_url(domain["value_set_id"]),
+            "value_set_strategy": "complete_shared_local_domain",
+            "preferred_answer_codes": preferred_codes,
+            "internal_value_mappings": internal_mappings,
+            "free_text_internal_values": [
+                token for token in fact.get("allowed_values", [])
+                if token not in internal_mappings
+            ],
+            "fhir_item_type": questionnaire["item_type"],
+            "fhir_item_repeats": questionnaire["repeats"],
+            "allow_free_text": questionnaire["allow_free_text"],
+            "fhir_response_type": "valueCoding_or_valueString",
+        }
     value_type = fact.get("value_type")
     if value_type == "boolean":
         standard_id = answer_valueset_id("sct", "yes-no")
@@ -353,6 +432,8 @@ def enrich_graph(graph: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]
         "local_question_code_system": LOCAL_QUESTION,
         "local_question_code_is_template_id": True,
         "local_answer_code_system": LOCAL_ANSWER,
+        "local_answer_domain_code_system": LOCAL_ANSWER_DOMAIN,
+        "answer_domain_registry": str(ANSWER_DOMAIN_PATH.relative_to(ROOT)),
         "local_answer_code_pattern": "{fact_id}--{internal_value}",
         "primitive_answer_projection": policy["answer_binding"]["primitive_answers"],
         "boolean_snomed_semantic_equivalents": {

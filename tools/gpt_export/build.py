@@ -580,6 +580,9 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
     question_answer_registry = sanitize(load_json(
         root / "mappings" / "terminology" / "question-answer-bindings.json"
     ))
+    answer_domain_registry = sanitize(load_json(
+        root / "knowledge" / "shared" / "answer-domains.json"
+    ))
     question_answer_coverage = sanitize(load_json(
         root / "coverage" / "question-answer-terminology-latest.json"
     ))
@@ -626,6 +629,7 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
         (uscdi_coverage, "UscdiInteroperabilityCoverageReport"),
         (question_answer_policy, "QuestionAnswerTerminologyPolicy"),
         (question_answer_registry, "QuestionAnswerTerminologyRegistry"),
+        (answer_domain_registry, "ReusableAnswerDomainRegistry"),
         (question_answer_coverage, "QuestionAnswerTerminologyCoverageReport"),
         (fhir_element_binding_policy, "FhirR4ElementBindingPolicy"),
         (fhir_fact_element_mappings, "FhirR4FactElementMappingRegistry"),
@@ -784,6 +788,7 @@ def collect(root: Path) -> dict[str, dict[str, Any]]:
         "interoperability/uscdi-coverage.json": uscdi_coverage,
         "interoperability/question-answer-policy.json": question_answer_policy,
         "interoperability/question-answer-bindings.json": question_answer_registry,
+        "interoperability/answer-domains.json": answer_domain_registry,
         "interoperability/question-answer-coverage.json": question_answer_coverage,
         "interoperability/fhir-r4-element-binding-policy.json": (
             fhir_element_binding_policy
@@ -1138,6 +1143,7 @@ def build(root: Path, output: Path) -> dict[str, Any]:
             "question_answer_terminology": [
                 "/gpt/interoperability/question-answer-policy.json",
                 "/gpt/interoperability/question-answer-bindings.json",
+                "/gpt/interoperability/answer-domains.json",
                 "/gpt/interoperability/question-answer-coverage.json",
                 "/gpt/interoperability/fhir-r4-element-binding-policy.json",
                 "/gpt/interoperability/fhir-r4-fact-element-mappings.json"

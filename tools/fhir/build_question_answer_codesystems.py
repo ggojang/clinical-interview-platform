@@ -14,8 +14,10 @@ sys.path.insert(0, str(ROOT))
 from compiler.build_package import PACKAGE_PROFILES, compile_package
 from interoperability.question_answer import (
     LOCAL_ANSWER,
+    LOCAL_ANSWER_DOMAIN,
     LOCAL_QUESTION,
     enrich_clinician_context,
+    load_answer_domains,
 )
 
 
@@ -61,7 +63,7 @@ def _base(identifier: str, url: str, title: str, description: str) -> dict[str, 
     }
 
 
-def build() -> tuple[dict[str, Any], dict[str, Any]]:
+def build() -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
     questions: dict[str, dict[str, str]] = {}
     answers: dict[str, dict[str, str]] = {}
 
@@ -159,7 +161,43 @@ def build() -> tuple[dict[str, Any], dict[str, Any]]:
     question_system["count"] = len(question_system["concept"])
     answer_system["concept"] = [answers[key] for key in sorted(answers)]
     answer_system["count"] = len(answer_system["concept"])
-    return question_system, answer_system
+    domain_registry = load_answer_domains()
+    domain_system = _base(
+        "clinical-interview-answer-domain",
+        LOCAL_ANSWER_DOMAIN,
+        "Clinical Interview Reusable Answer Domain Codes",
+        "Reusable atomic local answer concepts shared across compatible dynamic "
+        "interview questions. Context-specific preferred choices are presentation "
+        "metadata and do not create duplicate concepts.",
+    )
+    domain_system["version"] = domain_registry["local_code_system"]["version"]
+    domain_system["meta"]["tag"][0] = {
+        "system": f"{CANONICAL}/CodeSystem/content-status",
+        "code": "draft-limited-use",
+        "display": "Draft; limited use allowed",
+    }
+    domain_concepts: dict[str, dict[str, str]] = {}
+    for domain_id, domain in domain_registry["domains"].items():
+        for concept in domain["concepts"]:
+            if concept.get("system"):
+                continue
+            code = concept["code"]
+            candidate = {
+                "code": code,
+                "display": concept["display"],
+                "definition": (
+                    f"Atomic answer concept in the {domain_id} domain. "
+                    f"Korean display: {concept.get('display_ko', concept['display'])}."
+                ),
+            }
+            previous = domain_concepts.setdefault(code, candidate)
+            if previous != candidate:
+                raise ValueError(f"conflicting reusable answer-domain code: {code}")
+    domain_system["concept"] = [
+        domain_concepts[key] for key in sorted(domain_concepts)
+    ]
+    domain_system["count"] = len(domain_system["concept"])
+    return question_system, answer_system, domain_system
 
 
 def validate(document: dict[str, Any]) -> None:
@@ -174,13 +212,15 @@ def validate(document: dict[str, Any]) -> None:
         raise ValueError("CodeSystem codes must be non-empty and contain no whitespace")
 
 
-def write() -> tuple[Path, Path]:
-    question, answer = build()
+def write() -> tuple[Path, Path, Path]:
+    question, answer, domain = build()
     validate(question)
     validate(answer)
+    validate(domain)
     OUTPUT.mkdir(parents=True, exist_ok=True)
     question_path = OUTPUT / "clinical-interview-question.json"
     answer_path = OUTPUT / "clinical-interview-answer.json"
+    domain_path = OUTPUT / "clinical-interview-answer-domain.json"
     question_path.write_text(
         json.dumps(question, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
@@ -189,7 +229,11 @@ def write() -> tuple[Path, Path]:
         json.dumps(answer, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
-    return question_path, answer_path
+    domain_path.write_text(
+        json.dumps(domain, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    return question_path, answer_path, domain_path
 
 
 if __name__ == "__main__":

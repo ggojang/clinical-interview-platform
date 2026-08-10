@@ -41,7 +41,7 @@ def verify_local_codesystem_prerequisites(
     base_url: str,
     api_key: str,
     publisher: FhirCodeSystemPublisher | None = None,
-    resources: tuple[dict, dict] | None = None,
+    resources: tuple[dict, ...] | None = None,
 ) -> list[dict]:
     """Require exact registered local CodeSystems before ValueSet publication."""
     publisher = publisher or FhirCodeSystemPublisher(

@@ -15,10 +15,12 @@ sys.path.insert(0, str(ROOT))
 from compiler.build_package import PACKAGE_PROFILES, compile_package
 from interoperability.question_answer import (
     LOCAL_ANSWER,
+    LOCAL_ANSWER_DOMAIN,
     SNOMED,
     VALUESET_BASE,
     answer_valueset_id,
     enrich_clinician_context,
+    load_answer_domains,
 )
 
 
@@ -31,6 +33,8 @@ def _valueset(
     title: str,
     description: str,
     concepts_by_system: dict[str, list[dict[str, str]]],
+    *,
+    content_status: str = "research-only",
 ) -> dict[str, Any]:
     includes = []
     for system in sorted(concepts_by_system):
@@ -47,8 +51,12 @@ def _valueset(
             "tag": [
                 {
                     "system": f"{CANONICAL}/CodeSystem/content-status",
-                    "code": "research-only",
-                    "display": "Research only",
+                    "code": content_status,
+                    "display": (
+                        "Draft; limited use allowed"
+                        if content_status == "draft-limited-use"
+                        else "Research only"
+                    ),
                 },
                 {
                     "system": f"{CANONICAL}/CodeSystem/review-status",
@@ -130,6 +138,24 @@ def build() -> dict[str, Any]:
             ]
         },
     ))
+
+    domain_registry = load_answer_domains()
+    for domain_id, domain in domain_registry["domains"].items():
+        concepts_by_system: dict[str, list[dict[str, str]]] = defaultdict(list)
+        for concept in domain["concepts"]:
+            concepts_by_system[concept.get("system", LOCAL_ANSWER_DOMAIN)].append({
+                "code": concept["code"],
+                "display": concept["display"],
+            })
+        add(_valueset(
+            domain["value_set_id"],
+            f"Reusable {domain_id.replace('-', ' ').title()} Answers",
+            "Complete reusable atomic answer domain. Knowledge profiles may "
+            "present a clinically relevant preferred subset, while open-choice "
+            "input can retain an unlisted patient expression.",
+            dict(concepts_by_system),
+            content_status="draft-limited-use",
+        ))
 
     for fact in _all_enriched_facts():
         fact_id = fact["id"]

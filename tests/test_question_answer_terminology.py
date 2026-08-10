@@ -8,13 +8,19 @@ from datetime import date
 from pathlib import Path
 
 from compiler.build_package import PACKAGE_PROFILES, compile_package
+from interoperability.fhir_r4_bindings import (
+    questionnaire_item_projection,
+    questionnaire_response_answer_projection,
+)
 from interoperability.question_answer import (
     LOCAL_ANSWER,
+    LOCAL_ANSWER_DOMAIN,
     LOCAL_QUESTION,
     VALUESET_BASE,
     answer_valueset_id,
     assess_question_atomicity,
     enrich_clinician_context,
+    load_answer_domains,
     load_documents,
 )
 from tools.fhir.build_answer_valuesets import (
@@ -201,15 +207,58 @@ class QuestionAnswerTerminologyTest(unittest.TestCase):
         )
 
     def test_local_fallback_code_systems_are_complete_and_valid(self):
-        question, answer = build()
+        question, answer, domain = build()
         validate(question)
         validate(answer)
+        validate(domain)
         self.assertEqual(question["url"], LOCAL_QUESTION)
         self.assertEqual(answer["url"], LOCAL_ANSWER)
+        self.assertEqual(domain["url"], LOCAL_ANSWER_DOMAIN)
         self.assertGreater(question["count"], 2500)
         self.assertGreater(answer["count"], 500)
         answer_codes = {concept["code"] for concept in answer["concept"]}
         self.assertTrue({"boolean--yes", "boolean--no"} <= answer_codes)
+        domain_codes = {concept["code"] for concept in domain["concept"]}
+        self.assertTrue({
+            "pain-quality-burning",
+            "pain-quality-sharp",
+            "pain-quality-throbbing",
+            "pain-quality-tightening",
+        } <= domain_codes)
+
+    def test_pain_quality_uses_one_domain_with_context_preference(self):
+        registry = load_answer_domains()
+        pain = registry["domains"]["pain-quality"]
+        self.assertTrue(pain["questionnaire"]["repeats"])
+        self.assertTrue(pain["questionnaire"]["allow_free_text"])
+        chest = compile_package(profile="chest_pain")
+        fact = next(
+            node for node in chest["knowledge_graph"]["nodes"]
+            if node.get("id") == "symptom.chest_pain.quality"
+        )
+        binding = fact["answer_semantic_binding"]
+        self.assertEqual(binding["answer_domain"], "pain-quality")
+        self.assertTrue(binding["answer_value_set"].endswith("/a-local-pain-quality"))
+        self.assertEqual(binding["fhir_item_type"], "open-choice")
+        self.assertTrue(binding["fhir_item_repeats"])
+        self.assertEqual(
+            binding["internal_value_mappings"]["tightness"]["code"],
+            "pain-quality-tightening",
+        )
+        self.assertNotIn("other", binding["internal_value_mappings"])
+        item = questionnaire_item_projection(fact)
+        self.assertEqual(item["type"], "open-choice")
+        self.assertTrue(item["repeats"])
+        self.assertEqual(
+            questionnaire_response_answer_projection(fact, "tightness")[
+                "valueCoding"
+            ]["code"],
+            "pain-quality-tightening",
+        )
+        self.assertEqual(
+            questionnaire_response_answer_projection(fact, "other"),
+            {"valueString": "other"},
+        )
 
     def test_answer_valuesets_are_complete_named_and_valid(self):
         bundle = build_answer_valuesets()
@@ -220,6 +269,8 @@ class QuestionAnswerTerminologyTest(unittest.TestCase):
         }
         self.assertIn("a-sct-yes-no", resources)
         self.assertIn("a-local-yes-no", resources)
+        self.assertIn("a-local-pain-quality", resources)
+        self.assertIn("a-sct-laterality", resources)
         self.assertTrue(any(key.startswith("a-mixed-") for key in resources))
         self.assertTrue(any(key.startswith("a-local-") for key in resources))
         yes_no_systems = {
@@ -227,6 +278,17 @@ class QuestionAnswerTerminologyTest(unittest.TestCase):
             for include in resources["a-sct-yes-no"]["compose"]["include"]
         }
         self.assertEqual(yes_no_systems, {"http://snomed.info/sct"})
+        pain_systems = {
+            include["system"]
+            for include in resources["a-local-pain-quality"]["compose"]["include"]
+        }
+        self.assertEqual(pain_systems, {LOCAL_ANSWER_DOMAIN})
+        laterality_codes = {
+            concept["code"]
+            for include in resources["a-sct-laterality"]["compose"]["include"]
+            for concept in include["concept"]
+        }
+        self.assertEqual(laterality_codes, {"7771000", "24028007", "51440002"})
         self.assertLessEqual(
             len(answer_valueset_id("local", "x" * 200)), 64
         )
@@ -319,6 +381,7 @@ class QuestionAnswerTerminologyTest(unittest.TestCase):
             self.assertTrue({
                 "/gpt/interoperability/question-answer-policy.json",
                 "/gpt/interoperability/question-answer-bindings.json",
+                "/gpt/interoperability/answer-domains.json",
                 "/gpt/interoperability/question-answer-coverage.json",
                 "/gpt/interoperability/fhir-r4-element-binding-policy.json",
                 "/gpt/interoperability/fhir-r4-fact-element-mappings.json",

@@ -1232,10 +1232,36 @@ class InterviewSession:
             question["answer_options"] = options
         if binding.get("answer_value_set"):
             question["answer_value_set"] = binding["answer_value_set"]
+        if binding.get("preferred_answer_codes"):
+            by_code = {
+                mapping["code"]: {
+                    "internal_value": internal_value,
+                    "display": mapping.get("display"),
+                    "display_ko": mapping.get("display_ko"),
+                    "coding": {
+                        key: mapping[key]
+                        for key in ("system", "code", "display")
+                        if key in mapping
+                    },
+                }
+                for internal_value, mapping in binding.get(
+                    "internal_value_mappings", {}
+                ).items()
+            }
+            question["preferred_answer_options"] = [
+                by_code[code]
+                for code in binding["preferred_answer_codes"]
+                if code in by_code
+            ]
+            question["answer_domain"] = binding.get("answer_domain")
+        if "fhir_item_repeats" in binding:
+            question["answer_repeats"] = bool(binding["fhir_item_repeats"])
         element_binding = binding.get("fhir_element_binding")
         if element_binding:
             question["answer_binding_strength"] = element_binding["strength"]
             question["allow_free_text"] = element_binding["allow_outside_code"]
+        elif "allow_free_text" in binding:
+            question["allow_free_text"] = bool(binding["allow_free_text"])
         elif "accept_free_text" in template:
             question["allow_free_text"] = bool(template["accept_free_text"])
         else:

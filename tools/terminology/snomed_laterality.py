@@ -20,6 +20,81 @@ LATERALITY_CODES = {
 }
 
 
+def _lookup_parameter(document: dict[str, Any], name: str) -> Any:
+    for parameter in document.get("parameter", []):
+        if parameter.get("name") == name:
+            for key, value in parameter.items():
+                if key.startswith("value"):
+                    return value
+        if parameter.get("name") == "property":
+            parts = parameter.get("part", [])
+            property_code = next((
+                part.get("valueCode") for part in parts
+                if part.get("name") == "code"
+            ), None)
+            if property_code != name:
+                continue
+            for part in parts:
+                if part.get("name") != "value":
+                    continue
+                for key, value in part.items():
+                    if key.startswith("value"):
+                        return value
+    return None
+
+
+def assess_lateralizable_site(
+    *,
+    finding_site_code: str,
+    membership_response: dict[str, Any],
+    lookup_response: dict[str, Any],
+    finding_site_attribute_allowed: bool,
+    expected_terminology_version: str | None = None,
+) -> dict[str, Any]:
+    """Combine refset membership, active-concept lookup, edition and MRCM checks.
+
+    STOM's RefsetMemberViewDTO ``referencedComponentActive`` field is retained
+    as service evidence but is not treated as the authoritative concept-active
+    result. Active status comes from the versioned FHIR CodeSystem lookup.
+    """
+    if not finding_site_code.isdigit():
+        raise ValueError("SNOMED CT finding-site identifier must be numeric")
+    rows = [
+        row for row in membership_response.get("content", [])
+        if str(row.get("refset", {}).get("id")) == LATERALIZABLE_BODY_STRUCTURE_REFSET
+        and str(row.get("referencedComponent", {}).get("id")) == finding_site_code
+    ]
+    lookup_code = str(_lookup_parameter(lookup_response, "code") or finding_site_code)
+    display = _lookup_parameter(lookup_response, "display")
+    version = _lookup_parameter(lookup_response, "version")
+    inactive = _lookup_parameter(lookup_response, "inactive")
+    lookup_matches = lookup_code == finding_site_code
+    lookup_active = bool(display and version and inactive is False and lookup_matches)
+    version_matches = bool(version) and (
+        expected_terminology_version is None or version == expected_terminology_version
+    )
+    eligible = bool(
+        rows and lookup_active and version_matches and finding_site_attribute_allowed
+    )
+    return {
+        "finding_site_code": finding_site_code,
+        "refset_id": LATERALIZABLE_BODY_STRUCTURE_REFSET,
+        "membership_row_present": bool(rows),
+        "membership_row_count": len(rows),
+        "member_view_referenced_component_active_values": sorted({
+            row.get("referencedComponentActive") for row in rows
+        }, key=str),
+        "member_view_active_field_is_authoritative": False,
+        "lookup_display": display,
+        "lookup_active": lookup_active,
+        "terminology_version": version,
+        "terminology_version_matches": version_matches,
+        "mrcm_finding_site_attribute_allowed": finding_site_attribute_allowed,
+        "laterality_question_eligible": eligible,
+        "fallback": None if eligible else "preserve_separate_site_and_laterality_facts",
+    }
+
+
 def _nested_site(site_code: str, laterality_code: str) -> str:
     return (
         f"{{ {FINDING_SITE} = ( {site_code} : "

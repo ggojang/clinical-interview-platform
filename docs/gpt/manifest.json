@@ -6126,6 +6126,7 @@
     "question_answer_terminology": [
       "/gpt/interoperability/question-answer-policy.json",
       "/gpt/interoperability/question-answer-bindings.json",
+      "/gpt/interoperability/answer-domains.json",
       "/gpt/interoperability/question-answer-coverage.json",
       "/gpt/interoperability/fhir-r4-element-binding-policy.json",
       "/gpt/interoperability/fhir-r4-fact-element-mappings.json"
@@ -6202,6 +6203,17 @@
         "quantity": "QuestionnaireResponse.answer.valueQuantity_with_UCUM_when_a_unit_is_known",
         "rule": "do_not_invent_a_SNOMED_or_local_answer_code_for_a_literal_measurement_date_or_narrative",
         "string": "QuestionnaireResponse.answer.valueString"
+      },
+      "reusable_answer_domains": {
+        "composite_legacy_tokens_require_atomic_refactoring": true,
+        "context_specific_knowledge_declares_preferred_display_subset": true,
+        "do_not_merge_quality_severity_location_timing_or_frequency": true,
+        "local_code_system": "https://ggojang.github.io/clinical-interview-platform/fhir/CodeSystem/clinical-interview-answer-domain",
+        "multiple_simultaneous_values_require_questionnaire_repeats": true,
+        "one_atomic_dimension_per_domain": true,
+        "preferred_subset_does_not_narrow_value_set_membership": true,
+        "registry": "knowledge/shared/answer-domains.json",
+        "unlisted_patient_expression_uses_open_choice_valueString": true
       },
       "source_defined_instrument_answers": "retain_the_official_answer_code_system_and_answer_list;_add_SNOMED_only_when_a_verified_equivalent_exists"
     },
@@ -6613,6 +6625,12 @@
     },
     {
       "count": 0,
+      "name": "interoperability-answer-domains",
+      "path": "/gpt/interoperability/answer-domains.json",
+      "sha256": "87b4367c58dd9a2e14e36fdec8c8459b1d2ee5f671b2f4e12c4c636357416f44"
+    },
+    {
+      "count": 0,
       "name": "interoperability-computable-knowledge-coverage",
       "path": "/gpt/interoperability/computable-knowledge-coverage.json",
       "sha256": "3ff626cdd9e897f0ce39ff0adc306620504d80576ceb1e454f55d65950936079"
@@ -6681,13 +6699,13 @@
       "count": 0,
       "name": "interoperability-question-answer-coverage",
       "path": "/gpt/interoperability/question-answer-coverage.json",
-      "sha256": "91f0f951adb31aa6c34da7007b594d7d8d72ac882480b61f61e3b9bfcb0c7550"
+      "sha256": "86e95a5d3c8ea16286797500d8ee6572a6bf76c0b5ef850ee5ebd2651806495d"
     },
     {
       "count": 0,
       "name": "interoperability-question-answer-policy",
       "path": "/gpt/interoperability/question-answer-policy.json",
-      "sha256": "f33cf9d2fcfb64b1045078c9600aa5a2b023fe2ab6b216c99068f4867d9cc56a"
+      "sha256": "491147bd941c53be400e4c90ead59f22e60ebe4a1eddee1a3f2cc3c8b6b0f2a9"
     },
     {
       "count": 0,
@@ -8702,13 +8720,16 @@
   },
   "snomed_laterality_postcoordination_policy": {
     "activation": {
+      "active_concept_read_operation": "GET /fhir/CodeSystem/$lookup?system=http://snomed.info/sct&code={finding_site_code}",
       "anatomical_structure_present": true,
       "finding_site_is_active": true,
       "finding_site_refset_membership_required": true,
+      "member_view_referenced_component_active_is_not_authoritative": true,
       "membership_ecl": "^ 723264001 |Lateralizable body structure reference set|",
       "membership_read_operation": "GET /members/SNOMEDCT/723264001?refcpntid={finding_site_code}",
       "mrcm_finding_site_compatibility_required": true,
-      "never_infer_membership_from_bilateral_wording_or_anatomical_name": true
+      "never_infer_membership_from_bilateral_wording_or_anatomical_name": true,
+      "require_membership_and_versioned_active_lookup_to_agree": true
     },
     "codes": {
       "finding_site_attribute": "363698007",
@@ -8780,6 +8801,7 @@
         "edition_version",
         "refset_id",
         "membership_result",
+        "active_concept_lookup_result",
         "membership_source",
         "mrcm_result",
         "expression_form",

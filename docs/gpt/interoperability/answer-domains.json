@@ -1,0 +1,235 @@
+{
+  "contains_patient_responses": false,
+  "domains": {
+    "laterality": {
+      "activation": {
+        "fallback": "preserve_site_and_laterality_as_separate_facts",
+        "requires_active_site_lookup": true,
+        "requires_membership_row": true,
+        "requires_mrcm_finding_site_compatibility": true,
+        "requires_versioned_snomed_edition": true,
+        "site_refset": "723264001",
+        "site_refset_display": "Lateralizable body structure reference set"
+      },
+      "concepts": [
+        {
+          "code": "7771000",
+          "display": "Left",
+          "display_ko": "왼쪽",
+          "system": "http://snomed.info/sct"
+        },
+        {
+          "code": "24028007",
+          "display": "Right",
+          "display_ko": "오른쪽",
+          "system": "http://snomed.info/sct"
+        },
+        {
+          "code": "51440002",
+          "display": "Right and left",
+          "display_ko": "양쪽",
+          "input_only": true,
+          "system": "http://snomed.info/sct"
+        }
+      ],
+      "data_absent_states_excluded_from_value_set": [
+        "unknown",
+        "declined",
+        "not_applicable"
+      ],
+      "questionnaire": {
+        "allow_free_text": true,
+        "item_type": "choice",
+        "one_answer_bearing_dimension": "laterality",
+        "repeats": false
+      },
+      "semantic_name": "laterality",
+      "value_set_id": "a-sct-laterality"
+    },
+    "pain-quality": {
+      "concepts": [
+        {
+          "code": "pain-quality-aching",
+          "display": "Aching",
+          "display_ko": "쑤시는 느낌"
+        },
+        {
+          "code": "pain-quality-burning",
+          "display": "Burning",
+          "display_ko": "타거나 화끈거리는 느낌"
+        },
+        {
+          "code": "pain-quality-colicky",
+          "display": "Colicky",
+          "display_ko": "파도처럼 반복되는 느낌"
+        },
+        {
+          "code": "pain-quality-cramping",
+          "display": "Cramping",
+          "display_ko": "쥐어짜거나 경련하는 느낌"
+        },
+        {
+          "code": "pain-quality-dull",
+          "display": "Dull",
+          "display_ko": "둔하거나 묵직한 느낌"
+        },
+        {
+          "code": "pain-quality-electric-shock-like",
+          "display": "Electric shock-like",
+          "display_ko": "전기처럼 찌릿한 느낌"
+        },
+        {
+          "code": "pain-quality-heaviness",
+          "display": "Heaviness",
+          "display_ko": "무거운 느낌"
+        },
+        {
+          "code": "pain-quality-pressing",
+          "display": "Pressing",
+          "display_ko": "누르는 느낌"
+        },
+        {
+          "code": "pain-quality-pressure",
+          "display": "Pressure",
+          "display_ko": "압박감"
+        },
+        {
+          "code": "pain-quality-pulsating",
+          "display": "Pulsating",
+          "display_ko": "맥박 뛰듯 욱신거리는 느낌"
+        },
+        {
+          "code": "pain-quality-sharp",
+          "display": "Sharp",
+          "display_ko": "날카로운 느낌"
+        },
+        {
+          "code": "pain-quality-stabbing",
+          "display": "Stabbing",
+          "display_ko": "찌르는 느낌"
+        },
+        {
+          "code": "pain-quality-tearing",
+          "display": "Tearing",
+          "display_ko": "찢어지는 느낌"
+        },
+        {
+          "code": "pain-quality-throbbing",
+          "display": "Throbbing",
+          "display_ko": "욱신거리는 느낌"
+        },
+        {
+          "code": "pain-quality-tightening",
+          "display": "Tightening",
+          "display_ko": "조이는 느낌"
+        }
+      ],
+      "fact_bindings": {
+        "oral.tooth_pain_character": {
+          "blocked_legacy_tokens": [
+            "dull_pressure",
+            "mixed_or_unclear"
+          ],
+          "preferred_codes": [
+            "pain-quality-throbbing",
+            "pain-quality-sharp",
+            "pain-quality-electric-shock-like",
+            "pain-quality-dull",
+            "pain-quality-pressure"
+          ],
+          "reason": "Composite and uncertainty tokens cannot be represented as one clinical answer code.",
+          "status": "refactoring_queued"
+        },
+        "symptom.abdominal_pain.character": {
+          "blocked_legacy_tokens": [
+            "pressure_or_distension"
+          ],
+          "preferred_codes": [
+            "pain-quality-cramping",
+            "pain-quality-stabbing",
+            "pain-quality-burning",
+            "pain-quality-dull",
+            "pain-quality-pressure",
+            "pain-quality-colicky"
+          ],
+          "reason": "Distension is a separate answer-bearing clinical meaning and must not be coded as pain quality.",
+          "status": "refactoring_queued"
+        },
+        "symptom.chest_pain.quality": {
+          "legacy_token_map": {
+            "tightness": "pain-quality-tightening"
+          },
+          "preferred_codes": [
+            "pain-quality-pressure",
+            "pain-quality-tightening",
+            "pain-quality-heaviness",
+            "pain-quality-burning",
+            "pain-quality-sharp",
+            "pain-quality-tearing"
+          ],
+          "status": "active_pilot",
+          "unlisted_or_other": "free_text"
+        },
+        "symptom.headache.quality": {
+          "blocked_legacy_tokens": [
+            "pressing_tightening",
+            "sharp_burning",
+            "dull_heavy"
+          ],
+          "preferred_codes": [
+            "pain-quality-pulsating",
+            "pain-quality-pressing",
+            "pain-quality-tightening",
+            "pain-quality-sharp",
+            "pain-quality-burning",
+            "pain-quality-dull",
+            "pain-quality-heaviness"
+          ],
+          "reason": "Composite legacy options must be split into repeatable atomic answers.",
+          "status": "refactoring_queued"
+        }
+      },
+      "questionnaire": {
+        "allow_free_text": true,
+        "item_type": "open-choice",
+        "one_answer_bearing_dimension": "pain_quality",
+        "repeats": true
+      },
+      "semantic_name": "pain-quality",
+      "terminology": {
+        "do_not_infer_snomed_equivalence_from_word_similarity": true,
+        "mapping_status": "local_codes_retained_pending_verified_equivalence",
+        "stom_search_checked_at": "2026-08-10T00:00:00Z",
+        "stom_search_result": "no_exact_pain_quality_candidates_returned"
+      },
+      "value_set_id": "a-local-pain-quality"
+    }
+  },
+  "id": "registry.clinical-interview-answer-domains",
+  "local_code_system": {
+    "url": "https://ggojang.github.io/clinical-interview-platform/fhir/CodeSystem/clinical-interview-answer-domain",
+    "version": "0.1.0"
+  },
+  "provenance": {
+    "created_at": "2026-08-10T00:00:00Z",
+    "created_by": {
+      "id": "codex-gpt5",
+      "type": "ai"
+    },
+    "source_refs": [
+      "policies/question-answer-terminology-binding.json",
+      "policies/snomed-postcoordination-laterality.json",
+      "specifications/snomed-laterality.md",
+      "source.stom.fhir-r4-terminology-server"
+    ]
+  },
+  "resource_type": "ReusableAnswerDomainRegistry",
+  "review_status": "unreviewed",
+  "status": "draft",
+  "usage": {
+    "clinical_review_required_before_broader_release": true,
+    "independent_diagnosis_or_treatment_basis": false,
+    "limited_use_allowed": true
+  },
+  "version": "0.1.0"
+}

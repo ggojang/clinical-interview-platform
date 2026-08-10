@@ -284,6 +284,8 @@ def questionnaire_item_projection(fact: dict[str, Any]) -> dict[str, Any]:
         result["type"] = binding["fhir_item_type"]
     if binding.get("answer_value_set"):
         result["answerValueSet"] = binding["answer_value_set"]
+    if "fhir_item_repeats" in binding:
+        result["repeats"] = bool(binding["fhir_item_repeats"])
     if binding.get("fhir_element_binding"):
         result["_targetElementBinding"] = deepcopy(
             binding["fhir_element_binding"]
@@ -300,6 +302,17 @@ def questionnaire_response_answer_projection(
     absent = binding.get("data_absent_reason_mappings", {}).get(internal_value)
     if absent:
         return {"dataAbsentReason": absent}
+    domain_coding = binding.get("internal_value_mappings", {}).get(internal_value)
+    if domain_coding:
+        return {
+            "valueCoding": {
+                key: domain_coding[key]
+                for key in ("system", "code", "display")
+                if key in domain_coding
+            }
+        }
+    if internal_value in binding.get("free_text_internal_values", []):
+        return {"valueString": str(internal_value)}
     coding = binding.get("fhir_bound_answer_mappings", {}).get(internal_value)
     if coding:
         return {"valueCoding": deepcopy(coding)}
