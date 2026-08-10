@@ -1069,11 +1069,68 @@ class CompilerTests(unittest.TestCase):
             if node["type"] == "Fact"
         }
         self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
-        self.assertGreaterEqual(len(facts), 45)
+        self.assertEqual(len(facts), 59)
+        self.assertTrue({
+            "allergy.drug_generic_name",
+            "allergy.drug_brand_name",
+            "allergy.drug_strength",
+            "allergy.drug_formulation",
+            "allergy.drug_indication",
+            "allergy.drug_exposure_route",
+            "allergy.drug_exposure_count_before_onset",
+            "allergy.drug_exposure_duration_before_onset",
+            "allergy.drug_last_dose_time",
+            "allergy.drug_reaction_onset",
+            "allergy.drug_reaction_manifestations",
+            "allergy.drug_reaction_severity",
+            "allergy.drug_reaction_healthcare_required",
+            "allergy.drug_stopped_after_reaction",
+            "allergy.drug_outcome_after_stop",
+            "allergy.drug_rechallenge_status",
+            "allergy.drug_rechallenge_outcome",
+        } <= facts)
+        self.assertFalse({
+            "allergy.drug_generic_brand_strength_formulation",
+            "allergy.drug_indication_and_route",
+            "allergy.drug_doses_or_days_before_onset",
+            "allergy.drug_reaction_date_signs_and_severity",
+            "allergy.drug_stop_rechallenge_and_outcome",
+        } & facts)
         self.assertEqual(package["coverage"]["total_safety_rules"], 12)
         self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 12)
         self.assertEqual(package["coverage"]["uncovered_safety_rules"], [])
-        self.assertEqual(package["coverage"]["data_absent_reason_simulations"], 1)
+        self.assertEqual(package["coverage"]["data_absent_reason_simulations"], 2)
+        self.assertEqual(package["coverage"]["simulation_count"], 14)
+        severity = next(
+            node for node in package["knowledge_graph"]["nodes"]
+            if node["id"] == "allergy.drug_reaction_severity"
+        )
+        binding = severity["answer_semantic_binding"]
+        self.assertEqual(
+            binding["answer_value_set"],
+            "http://hl7.org/fhir/ValueSet/reaction-event-severity|4.0.1",
+        )
+        self.assertEqual(binding["fhir_item_type"], "choice")
+        self.assertFalse(
+            binding["fhir_element_binding"]["allow_outside_code"]
+        )
+        self.assertEqual(
+            set(binding["fhir_bound_answer_mappings"]),
+            {"mild", "moderate", "severe"},
+        )
+        handoff = next(
+            item for item in package["simulations"]
+            if item["id"] == "ALLERGY-DRUG-STRUCTURED-HANDOFF-PROXY"
+        )
+        handoff_fixture = json.loads(
+            (Path(__file__).resolve().parents[1] / handoff["path"])
+            .read_text(encoding="utf-8")
+        )
+        self.assertTrue(handoff_fixture["clinician_submission"])
+        self.assertIn(
+            "allergy.drug_reaction_severity",
+            handoff_fixture["expected"]["expected_selected_facts_contains"],
+        )
         conditional = package["interview_completion_policy"]["conditional_required_facts"][0]
         self.assertEqual(conditional["selector_fact"], "allergy.primary_group")
         self.assertEqual(
@@ -1087,6 +1144,10 @@ class CompilerTests(unittest.TestCase):
             ).read_text(encoding="utf-8")
         )
         self.assertEqual(len(mapping["focus_concepts"]), 10)
+        self.assertEqual(
+            mapping["terminology"]["version"],
+            "http://snomed.info/sct/900000000000207008/version/20260801",
+        )
         self.assertFalse(mapping["validation"]["clinical_rule_authority"])
 
     def test_asthma_copd_follow_up_package_is_complete(self):

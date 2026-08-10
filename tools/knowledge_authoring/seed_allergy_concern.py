@@ -6,13 +6,15 @@ P = "allergy-concern"
 RFE = "rfe.allergy_concern"
 M = "mapping.snomed-mrcm.allergy-concern"
 SN = "http://snomed.info/sct"
-ACQUIRED_AT = "2026-07-15T00:00:00Z"
+ACQUIRED_AT = "2026-08-10T10:58:00Z"
 SOURCES = [
     "source.nice.ng258.anaphylaxis.2026",
     "source.nice.cg183.drug-allergy.2014",
+    "source.nice.qs97.drug-allergy.2015",
+    "source.hl7.fhir-r4.allergyintolerance.4.0.1",
     "source.nhs.anaphylaxis.2026",
     "source.nhs.stevens-johnson.2026",
-    "source.stom.allergy-concern.20260715",
+    "source.stom.allergy-concern.20260810",
 ]
 G = {k: f"group.allergy.{k}" for k in (
     "routing", "shared-safety", "common", "skin-angioedema",
@@ -72,11 +74,23 @@ def fragment():
         Q("allergy.food_cofactors", "Food Allergy Cofactors", "string", "food-cofactors", "음식 전후 운동, 음주, NSAID 복용, 감염 또는 생리 같은 동반 요인이 있었나요?", 129, [G["food"]], D),
         Q("allergy.food_reproducibility_and_current_tolerance", "Food Reaction Reproducibility and Tolerance", "string", "food-tolerance", "같은 음식을 다시 먹었을 때 반복됐나요? 현재 소량 또는 가열 형태는 먹을 수 있나요?", 128, [G["food"]], R),
 
-        Q("allergy.drug_generic_brand_strength_formulation", "Suspected Drug Identity", "string", "drug-identity", "의심 약의 성분명·제품명, 함량과 정제·시럽·주사·연고 같은 제형을 알려주세요.", 135, [G["drug"]], C, terminology_binding={"system": SN, "code": "416098002"}, mrcm_ref=M),
-        Q("allergy.drug_indication_and_route", "Drug Indication and Route", "string", "drug-indication-route", "그 약을 어떤 이유로, 먹음·주사·피부도포 등 어떤 경로로 사용했나요?", 134, [G["drug"]], C),
-        Q("allergy.drug_doses_or_days_before_onset", "Drug Exposure Before Reaction", "string", "drug-exposure", "첫 증상 전에 몇 회 복용했거나 며칠 동안 사용했나요? 마지막 투여 시각도 알려주세요.", 133, [G["drug"]], C),
-        Q("allergy.drug_reaction_date_signs_and_severity", "Drug Reaction Date Signs and Severity", "string", "drug-reaction-record", "반응 날짜와 당시 징후·증상, 중증도와 병원 치료 여부를 알려주세요.", 132, [G["drug"]], C),
-        Q("allergy.drug_stop_rechallenge_and_outcome", "Drug Stop Rechallenge and Outcome", "string", "drug-outcome", "약을 중단한 뒤 좋아졌나요? 이후 같은 약이나 같은 계열을 다시 사용했을 때 어떻게 됐나요?", 131, [G["drug"]], D),
+        Q("allergy.drug_generic_name", "Suspected Drug Generic Name", "string", "drug-generic-name", "의심되는 약의 성분명을 알려주세요. 기억나지 않으면 모른다고 답해도 됩니다.", 147, [G["drug"]], C, terminology_binding={"system": SN, "code": "416098002"}, mrcm_ref=M),
+        Q("allergy.drug_brand_name", "Suspected Drug Brand Name", "string", "drug-brand-name", "의심되는 약의 제품명을 알려주세요. 처방전·약봉투·사진에서 확인한 이름도 좋습니다.", 146, [G["drug"]], C),
+        Q("allergy.drug_strength", "Suspected Drug Strength", "string", "drug-strength", "의심되는 약의 함량은 얼마였나요? 예: 500 mg.", 145, [G["drug"]], C),
+        Q("allergy.drug_formulation", "Suspected Drug Formulation", "string", "drug-formulation", "의심되는 약의 제형은 정제, 캡슐, 시럽, 주사, 연고 중 무엇이었나요? 보기에 없으면 직접 입력해 주세요.", 144, [G["drug"]], C),
+        Q("allergy.drug_indication", "Drug Indication", "string", "drug-indication", "그 약을 어떤 증상이나 질환 때문에 사용했나요?", 143, [G["drug"]], C),
+        Q("allergy.drug_exposure_route", "Drug Exposure Route", "coded", "drug-exposure-route", "그 약은 먹음, 정맥주사, 근육주사, 피하주사, 흡입, 피부 도포 중 어떤 경로로 사용했나요? 보기에 없으면 직접 입력해 주세요.", 142, [G["drug"]], C, allowed_values=["oral", "intravenous", "intramuscular", "subcutaneous", "inhaled", "topical", "other"]),
+        Q("allergy.drug_exposure_count_before_onset", "Drug Exposure Count Before Onset", "integer", "drug-exposure-count", "첫 증상이 나타나기 전까지 그 약을 몇 번 사용했나요?", 141, [G["drug"]], C, minimum=1),
+        Q("allergy.drug_exposure_duration_before_onset", "Drug Exposure Duration Before Onset", "date_or_period", "drug-exposure-duration", "첫 증상이 나타나기 전까지 그 약을 사용한 기간은 얼마였나요?", 140, [G["drug"]], C),
+        Q("allergy.drug_last_dose_time", "Last Drug Dose Time", "date_or_period", "drug-last-dose-time", "반응 전 마지막으로 그 약을 사용한 날짜와 시각을 알려주세요.", 139, [G["drug"]], C),
+        Q("allergy.drug_reaction_onset", "Drug Reaction Onset", "date_or_period", "drug-reaction-onset", "약물 반응이 시작된 날짜와 시각을 알려주세요.", 138, [G["drug"]], C),
+        Q("allergy.drug_reaction_manifestations", "Drug Reaction Manifestations", "string", "drug-reaction-manifestations", "당시 나타난 징후와 증상을 구체적으로 알려주세요.", 137, [G["drug"]], C),
+        Q("allergy.drug_reaction_severity", "Drug Reaction Event Severity", "coded", "drug-reaction-severity", "반응 전체의 심한 정도는 경도, 중등도, 중증 중 어디에 가깝나요? 판단하기 어려우면 모른다고 답해도 됩니다.", 136, [G["drug"]], C, allowed_values=["mild", "moderate", "severe"]),
+        Q("allergy.drug_reaction_healthcare_required", "Healthcare Required for Drug Reaction", "coded", "drug-reaction-healthcare", "그 반응으로 받은 치료는 없음, 외래, 응급실, 입원 중 무엇이었나요? 보기에 없으면 직접 입력해 주세요.", 135, [G["drug"]], C, allowed_values=["none", "outpatient", "emergency_department", "hospital_admission", "other"]),
+        Q("allergy.drug_stopped_after_reaction", "Drug Stopped After Reaction", "boolean", "drug-stopped", "반응이 생긴 뒤 의심되는 약을 중단했나요?", 134, [G["drug"]], D),
+        Q("allergy.drug_outcome_after_stop", "Outcome After Drug Stop", "coded", "drug-outcome-after-stop", "의심 약을 중단한 뒤 증상은 회복, 호전, 변화 없음, 악화 중 어떻게 되었나요? 보기에 없으면 직접 입력해 주세요.", 133, [G["drug"]], D, allowed_values=["resolved", "improved", "unchanged", "worsened", "other"]),
+        Q("allergy.drug_rechallenge_status", "Drug Rechallenge Status", "coded", "drug-rechallenge-status", "이후 같은 약이나 같은 계열 약을 다시 사용했나요? 사용하지 않음, 같은 약, 같은 계열 중 선택해 주세요.", 132, [G["drug"]], D, allowed_values=["not_rechallenged", "same_drug", "same_class"]),
+        Q("allergy.drug_rechallenge_outcome", "Drug Rechallenge Outcome", "string", "drug-rechallenge-outcome", "다시 사용했다면 어떤 반응이 나타났나요? 다시 사용하지 않았다면 해당 없음이라고 답해 주세요.", 131, [G["drug"]], D),
         Q("allergy.drug_concurrent_medicines_and_alternative_causes", "Concurrent Drugs and Alternative Causes", "string", "drug-alternatives", "당시 함께 사용한 다른 약과 감염·음식·비약물 노출 등 다른 가능한 원인이 있었나요?", 130, [G["drug"]], D),
         Q("allergy.drug_status_and_avoid_list", "Drug Allergy Status and Avoid List", "string", "drug-status", "의무기록상 약물 알레르기 상태가 알레르기 있음·없음·확인 불가 중 무엇이며, 피하라고 들은 약이나 계열은 무엇인가요?", 129, [G["drug"]], R),
         Q("allergy.drug_specialist_confirmation_and_safe_alternatives", "Drug Allergy Confirmation and Alternatives", "string", "drug-confirmation", "전문의 검사로 알레르기 또는 비알레르기 반응이 확인됐나요? 안전하다고 확인된 대체약이 있나요?", 128, [G["drug"]], R),
@@ -99,17 +113,23 @@ def fragment():
         safety_rule(P, "gi-severe", {"fact": "allergy.repeated_vomiting_or_severe_abdominal_pain", "equals": True}, "urgent", 970),
         safety_rule(P, "injection-procedure", {"fact": "allergy.reaction_after_injection_or_procedure", "equals": True}, "urgent", 970),
     ]
-    return {"id": "knowledge.generated.allergy-concern", "version": VERSION, "status": "research_only", "usage_modes": ["research_test", "simulation"], "source_manifest": "source-manifest.primary-care-allergy-concern-research", "default_refresh": default_refresh(), "extra_nodes": [{"id": value, "type": "ClinicalGroup", "display": value.split(".")[-1]} for value in G.values()], "group_hypothesis_edges": [], "safety_rules": rules, "entries": e, "provenance": provenance(SOURCES)}
+    refresh = default_refresh()
+    refresh.update({
+        "last_assessed_at": "2026-08-10",
+        "next_monitor_at": "2026-08-11",
+        "next_full_review_at": "2027-02-06",
+    })
+    return {"id": "knowledge.generated.allergy-concern", "version": VERSION, "status": "research_only", "lifecycle_status": "draft", "review_status": "unreviewed", "clinical_use_status": "limited", "clinical_use_policy_ref": "policies/draft-clinical-use-boundary.json", "usage_modes": ["research_test", "simulation", "clinician_supervised_pilot"], "source_manifest": "source-manifest.primary-care-allergy-concern-research", "default_refresh": refresh, "extra_nodes": [{"id": value, "type": "ClinicalGroup", "display": value.split(".")[-1]} for value in G.values()], "group_hypothesis_edges": [], "safety_rules": rules, "entries": e, "provenance": provenance(SOURCES)}
 
 
 def completion(f):
-    policy = completion_policy(prefix=P, fragment=f, presentation_fact="allergy.primary_group", question_budget=55, source_refs=SOURCES)
+    policy = completion_policy(prefix=P, fragment=f, presentation_fact="allergy.primary_group", question_budget=67, source_refs=SOURCES)
     branches = {
         "acute_systemic": ["allergy.current_or_historical_episode", "allergy.onset_date_time_and_course", "allergy.circumstances_before_onset", "allergy.suspected_trigger_and_latency", "allergy.symptom_sequence_and_systems", "allergy.treatment_and_response"],
         "skin_angioedema": ["allergy.skin_lesion_type", "allergy.skin_distribution_duration_and_recurrence", "allergy.angioedema_sites", "allergy.skin_photograph_available"],
         "respiratory": ["allergy.nasal_and_ocular_features", "allergy.cough_wheeze_chest_tightness", "allergy.environmental_or_occupational_pattern"],
         "food": ["allergy.food_identity_amount_and_preparation", "allergy.food_cofactors", "allergy.food_reproducibility_and_current_tolerance"],
-        "drug": ["allergy.drug_generic_brand_strength_formulation", "allergy.drug_indication_and_route", "allergy.drug_doses_or_days_before_onset", "allergy.drug_reaction_date_signs_and_severity", "allergy.drug_stop_rechallenge_and_outcome", "allergy.drug_concurrent_medicines_and_alternative_causes", "allergy.drug_status_and_avoid_list", "allergy.drug_specialist_confirmation_and_safe_alternatives"],
+        "drug": ["allergy.drug_generic_name", "allergy.drug_brand_name", "allergy.drug_strength", "allergy.drug_formulation", "allergy.drug_indication", "allergy.drug_exposure_route", "allergy.drug_exposure_count_before_onset", "allergy.drug_exposure_duration_before_onset", "allergy.drug_last_dose_time", "allergy.drug_reaction_onset", "allergy.drug_reaction_manifestations", "allergy.drug_reaction_severity", "allergy.drug_reaction_healthcare_required", "allergy.drug_stopped_after_reaction", "allergy.drug_outcome_after_stop", "allergy.drug_rechallenge_status", "allergy.drug_rechallenge_outcome", "allergy.drug_concurrent_medicines_and_alternative_causes", "allergy.drug_status_and_avoid_list", "allergy.drug_specialist_confirmation_and_safe_alternatives"],
         "sting_contact": ["allergy.sting_contact_identity_and_count", "allergy.local_reaction_size_and_progression", "allergy.latex_adhesive_cosmetic_or_chemical_exposure"],
         "other_unclear": ["allergy.other_detail_or_patient_priority"],
     }
@@ -121,13 +141,15 @@ def completion(f):
 def source_docs():
     defs = [
         ("source.nice.ng258.anaphylaxis.2026", "NICE", "Anaphylaxis: assessment and referral after emergency treatment", "NG258; published-2026-05-27", "https://www.nice.org.uk/guidance/ng258/chapter/Recommendations", "nice_guidance", 7, ["Suspected anaphylaxis is rapidly developing airway, breathing or circulation compromise and may occur without typical skin features.", "Record acute features, onset time, symptom sequence and circumstances immediately before onset; this package performs interview screening, not diagnosis or treatment."]),
-        ("source.nice.cg183.drug-allergy.2014", "NICE", "Drug allergy: diagnosis and management", "CG183; current-2026-07-15", "https://www.nice.org.uk/guidance/cg183/chapter/Recommendations", "nice_guidance", 7, ["Structured suspected-drug-allergy documentation includes generic and proprietary drug names, strength, formulation, indication, reaction, date and time, doses or days before onset, route and future avoid list.", "Drug allergy status is recorded separately as drug allergy, none known or unable to ascertain; severe immediate or severe non-immediate reactions warrant specialist assessment."]),
+        ("source.nice.cg183.drug-allergy.2014", "NICE", "Drug allergy: diagnosis and management", "CG183; current-2026-08-10", "https://www.nice.org.uk/guidance/cg183/chapter/Recommendations", "nice_guidance", 7, ["Structured suspected-drug-allergy documentation includes generic and proprietary drug names, strength, formulation, indication, reaction, date and time, doses or days before onset, route and future avoid list.", "Drug allergy status is recorded separately as drug allergy, none known or unable to ascertain; severe immediate or severe non-immediate reactions warrant specialist assessment."]),
+        ("source.nice.qs97.drug-allergy.2015", "NICE", "Drug allergy quality standard", "QS97; current-2026-08-10", "https://www.nice.org.uk/guidance/qs97/chapter/Quality-statements", "nice_guidance", 7, ["People with suspected drug allergy should have the reaction documented with the structured assessment guide.", "Structured information improves communication and includes drug identity, reaction, indication, timing, exposure count or duration, route and future avoidance information."]),
+        ("source.hl7.fhir-r4.allergyintolerance.4.0.1", "HL7 International", "FHIR R4 AllergyIntolerance resource and reaction severity ValueSet", "FHIR-4.0.1; verified-2026-08-10", "https://hl7.org/fhir/R4/allergyintolerance.html", "fhir_specification", 30, ["AllergyIntolerance.reaction separates manifestation, onset, severity and exposure route.", "AllergyIntolerance.reaction.severity has a required binding to reaction-event-severity with mild, moderate and severe codes."]),
         ("source.nhs.anaphylaxis.2026", "NHS", "Anaphylaxis", "accessed-2026-07-15", "https://www.nhs.uk/conditions/anaphylaxis/", "public_health_guidance", 7, ["Airway swelling, breathing difficulty, circulatory symptoms or collapse after allergen exposure require emergency action.", "Common triggers include foods, medicines, insect stings and latex; the runtime must not delay emergency escalation for routine questions."]),
         ("source.nhs.stevens-johnson.2026", "NHS", "Stevens-Johnson syndrome", "accessed-2026-07-15", "https://www.nhs.uk/conditions/stevens-johnson-syndrome/", "public_health_guidance", 7, ["Painful spreading rash, blisters, skin detachment and mucosal or eye involvement after medicine exposure require emergency assessment."]),
-        ("source.stom.allergy-concern.20260715", "Infoclinic", "STOM allergy terminology and MRCM summary", "SNOMEDCT-20260701", "https://stom.infoclinic.co", "terminology_server", 30, ["FHIR lookup confirmed active SNOMED CT concepts for allergic reaction, anaphylaxis, allergy to drug, angioedema, urticaria, skin eruption, Stevens-Johnson syndrome and anaphylactic shock.", "MRCM allowed-attribute summaries returned for selected focus concepts; MRCM supports expression validation and does not determine clinical urgency."]),
+        ("source.stom.allergy-concern.20260810", "Infoclinic", "STOM allergy terminology, FHIR ValueSet and MRCM summary", "SNOMEDCT-20260801; FHIR-4.0.1", "http://localhost:8088/fhir", "terminology_server", 30, ["FHIR lookup confirmed the active 20260801 SNOMED CT version for allergy-to-drug and the existing allergy focus concepts.", "FHIR ValueSet expansion confirmed the required reaction-event-severity codes mild, moderate and severe; dataAbsentReason remains outside this clinical answer set."]),
     ]
-    artifacts = [{"id": i, "kind": "terminology_mrcm_query_summary" if profile == "terminology_server" else "clinical_guidance_metadata", "publisher": pub, "title": title, "version": version, "url": url, "language": "en", "digest": "live_response_summary_not_raw_cache" if profile == "terminology_server" else "metadata_only_not_cached", "license_status": "restricted" if pub in {"NICE", "Infoclinic"} else "unknown", "complete": False, "monitor_profile": profile, "monitor_interval_days": days, "last_monitored_at": "2026-07-15", "next_monitor_at": "2026-08-14" if days == 30 else "2026-07-22", "monitor_result": "current_official_source_confirmed", "assertions": assertions} for i, pub, title, version, url, profile, days, assertions in defs]
-    research = {"id": "source-manifest.primary-care-allergy-concern-research", "version": VERSION, "acquired_at": ACQUIRED_AT, "status": "research_only", "artifacts": artifacts, "provenance": provenance([item[0] for item in defs])}
+    artifacts = [{"id": i, "kind": "terminology_mrcm_query_summary" if profile == "terminology_server" else "clinical_guidance_metadata", "publisher": pub, "title": title, "version": version, "url": url, "language": "en", "digest": "live_response_summary_not_raw_cache" if profile == "terminology_server" else "metadata_only_not_cached", "license_status": "restricted" if pub in {"NICE", "Infoclinic"} else "unknown", "complete": False, "monitor_profile": profile, "monitor_interval_days": days, "last_monitored_at": "2026-08-10", "monitor_result": "current_official_source_confirmed", "assertions": assertions} for i, pub, title, version, url, profile, days, assertions in defs]
+    research = {"id": "source-manifest.primary-care-allergy-concern-research", "version": VERSION, "acquired_at": ACQUIRED_AT, "status": "research_only", "lifecycle_status": "draft", "clinical_use_status": "limited", "artifacts": artifacts, "provenance": provenance([item[0] for item in defs])}
     paths = [("source.repository.foundation", "repository_specification", "FOUNDATION.md", True), ("source.generated.allergy-concern", "generated_clinical_knowledge", "knowledge/generated/allergy/allergy-concern/allergy-concern.json", True), ("source.mapping.allergy-concern", "terminology_mapping", "mappings/terminology/snomed-mrcm-allergy-concern.json", False), ("source.external.allergy-concern", "external_source_manifest", "sources/manifests/primary-care-allergy-concern-research.json", False), ("source.policy.allergy-concern", "runtime_policy", "policies/primary-care-allergy-concern-completion.json", True)]
     primary = {"id": "source-manifest.primary-care-allergy-concern", "version": VERSION, "acquired_at": ACQUIRED_AT, "artifacts": [{"id": i, "kind": kind, "publisher": "clinical-interview-platform", "version": VERSION, "language": "en", "path": path, "digest": "computed_at_build", "license_status": "allowed" if complete else "unknown", "complete": complete} for i, kind, path, complete in paths], "provenance": provenance(["FOUNDATION.md", "PROJECT_CONTEXT.md"])}
     return primary, research
@@ -151,9 +173,49 @@ def cases(f):
         elif fact["value_type"] == "integer": hidden[fid] = {"value": 1}
         else: hidden[fid] = {"value": "없음"}
     hidden["allergy.primary_group"] = {"value": "drug"}
-    declined = "allergy.drug_generic_brand_strength_formulation"
+    declined = "allergy.drug_generic_name"
     hidden.pop(declined)
     out["ALLERGY-DRUG-DATA-ABSENT.json"] = {"id": "ALLERGY-DRUG-DATA-ABSENT", "simulation_language": "ko", "persona": {"age": 41}, "initial_statement": {"ko": "예전에 약을 먹고 발진이 있었는데 약 이름이 기억나지 않아요."}, "hidden_state": hidden, "response_behavior": {declined: {"dataAbsentReason": "asked-unknown"}}, "expected": {"expected_data_absent_reasons": {declined: "asked-unknown"}, "expected_safety_level": "routine", "expected_stop_reason": "required_targets_addressed_with_absent_data", "expected_max_turns": 55, "forbidden_assertions": ["diagnosis.drug_allergy_confirmed", "recommendation.permanent_avoidance_without_review"]}, "provenance": provenance(["source.nice.cg183.drug-allergy.2014", "specifications/clinical-memory.md"])}
+    structured = dict(hidden)
+    structured.update({
+        "allergy.primary_group": {"value": "drug"},
+        "allergy.current_or_historical_episode": {"value": "historical"},
+        "allergy.drug_generic_name": {"value": "amoxicillin"},
+        "allergy.drug_strength": {"value": "500 mg"},
+        "allergy.drug_formulation": {"value": "capsule"},
+        "allergy.drug_indication": {"value": "dental infection"},
+        "allergy.drug_exposure_route": {"value": "oral"},
+        "allergy.drug_exposure_count_before_onset": {"value": 3},
+        "allergy.drug_exposure_duration_before_onset": {"value": "1 day"},
+        "allergy.drug_last_dose_time": {"value": "2 years ago, evening"},
+        "allergy.drug_reaction_onset": {"value": "2 years ago, 2 hours after the dose"},
+        "allergy.drug_reaction_manifestations": {"value": "generalized urticaria without breathing difficulty"},
+        "allergy.drug_reaction_severity": {"value": "moderate"},
+        "allergy.drug_reaction_healthcare_required": {"value": "outpatient"},
+        "allergy.drug_stopped_after_reaction": {"value": True},
+        "allergy.drug_outcome_after_stop": {"value": "improved"},
+        "allergy.drug_rechallenge_status": {"value": "not_rechallenged"},
+        "allergy.drug_rechallenge_outcome": {"value": "not applicable"},
+    })
+    structured.pop("allergy.drug_brand_name", None)
+    out["ALLERGY-DRUG-STRUCTURED-HANDOFF-PROXY.json"] = {
+        "id": "ALLERGY-DRUG-STRUCTURED-HANDOFF-PROXY",
+        "simulation_language": "ko",
+        "persona": {"age": 72, "proxy": "adult_child"},
+        "initial_statement": {"ko": "어머니가 예전에 아목시실린을 드시고 두드러기가 생겼다고 해서 제가 대신 답할게요."},
+        "clinician_submission": True,
+        "hidden_state": structured,
+        "response_behavior": {"allergy.drug_brand_name": {"dataAbsentReason": "asked-unknown"}},
+        "expected": {
+            "expected_data_absent_reasons": {"allergy.drug_brand_name": "asked-unknown"},
+            "expected_selected_facts_contains": ["allergy.drug_generic_name", "allergy.drug_exposure_route", "allergy.drug_reaction_onset", "allergy.drug_reaction_manifestations", "allergy.drug_reaction_severity", "allergy.drug_rechallenge_status"],
+            "expected_safety_level": "routine",
+            "expected_stop_reason": "required_targets_addressed_with_absent_data",
+            "expected_max_turns": 67,
+            "forbidden_assertions": ["diagnosis.drug_allergy_confirmed", "recommendation.permanent_avoidance_without_review"]
+        },
+        "provenance": provenance(["source.nice.cg183.drug-allergy.2014", "source.nice.qs97.drug-allergy.2015", "source.hl7.fhir-r4.allergyintolerance.4.0.1"])
+    }
     return out
 
 
@@ -162,7 +224,7 @@ def main():
     graph, rules = base_graph_and_rules(prefix=P, rfe=RFE, display="Allergic Reaction or Allergy Concern", intents=[("intent.characterize_symptom", "Characterize Allergic Reaction"), ("intent.screen_red_flags", "Screen Anaphylaxis and Severe Drug Reactions"), ("intent.differentiate_common_causes", "Assess Potential Trigger"), ("intent.risk_assessment", "Allergy Risk and Documentation Assessment")])
     primary, research = source_docs()
     concepts = [("419076005", "Allergic reaction (disorder)", 22), ("39579001", "Anaphylaxis (disorder)", 22), ("418038007", "Propensity to adverse reactions to substance (finding)", 20), ("416098002", "Allergy to drug (finding)", 20), ("91936005", "Allergy to penicillin (finding)", 20), ("41291007", "Angioedema (disorder)", 22), ("126485001", "Urticaria (disorder)", 22), ("271807003", "Eruption of skin (disorder)", 22), ("73442001", "Stevens-Johnson syndrome (disorder)", 22), ("735173007", "Shock due to anaphylaxis (disorder)", 22)]
-    mapping = {"id": M, "version": VERSION, "status": "research_only", "review_status": "unreviewed", "terminology": {"system": SN, "version": "http://snomed.info/sct/900000000000207008/version/20260701", "source": "STOM"}, "focus_concepts": [{"code": c, "display": d, "concept_active": True, "attribute_count_returned": n} for c, d, n in concepts], "verified_attribute_ids": ["246112005", "263502005", "246090004"], "validation": {"method": "build_time_live_fhir_lookup_and_mrcm_summary", "checked_at": ACQUIRED_AT, "raw_response_cached": False, "complete_mrcm_snapshot": False, "clinical_rule_authority": False, "result": "provisional_pass"}, "provenance": provenance(["source.stom.allergy-concern.20260715"])}
+    mapping = {"id": M, "version": VERSION, "status": "research_only", "lifecycle_status": "draft", "review_status": "unreviewed", "clinical_use_status": "limited", "terminology": {"system": SN, "version": "http://snomed.info/sct/900000000000207008/version/20260801", "source": "STOM"}, "focus_concepts": [{"code": c, "display": d, "concept_active": True, "attribute_count_returned": n} for c, d, n in concepts], "verified_attribute_ids": ["246112005", "263502005", "246090004"], "validation": {"method": "build_time_live_fhir_lookup_valueset_expand_and_mrcm_summary", "checked_at": ACQUIRED_AT, "raw_response_cached": False, "complete_mrcm_snapshot": False, "clinical_rule_authority": False, "result": "provisional_pass"}, "provenance": provenance(["source.stom.allergy-concern.20260810", "source.hl7.fhir-r4.allergyintolerance.4.0.1"])}
     documents = [("knowledge/base/primary-care-allergy-concern.json", graph), ("rules/base/primary-care-allergy-concern.json", rules), ("knowledge/generated/allergy/allergy-concern/allergy-concern.json", f), ("mappings/terminology/snomed-mrcm-allergy-concern.json", mapping), ("sources/manifests/primary-care-allergy-concern.json", primary), ("sources/manifests/primary-care-allergy-concern-research.json", research), ("policies/primary-care-allergy-concern-completion.json", completion(f))]
     for path, document in documents: write_json(path, document)
     for name, case in cases(f).items(): write_json("simulation/patients/allergy/allergy-concern/" + name, case)

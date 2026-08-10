@@ -2,18 +2,23 @@
   "id": "knowledge.generated.allergy-concern",
   "version": "0.1.0",
   "status": "research_only",
+  "lifecycle_status": "draft",
+  "review_status": "unreviewed",
+  "clinical_use_status": "limited",
+  "clinical_use_policy_ref": "policies/draft-clinical-use-boundary.json",
   "usage_modes": [
     "research_test",
-    "simulation"
+    "simulation",
+    "clinician_supervised_pilot"
   ],
   "source_manifest": "source-manifest.primary-care-allergy-concern-research",
   "default_refresh": {
     "class": "clinical_guideline",
-    "last_assessed_at": "2026-07-14",
+    "last_assessed_at": "2026-08-10",
     "monitor_interval_days": 1,
     "full_review_interval_days": 180,
-    "next_monitor_at": "2026-07-15",
-    "next_full_review_at": "2027-01-10",
+    "next_monitor_at": "2026-08-11",
+    "next_full_review_at": "2027-02-06",
     "policy_id": "policy.knowledge-refresh",
     "overdue_behavior": {
       "production": "exclude_or_require_review",
@@ -1559,8 +1564,8 @@
     },
     {
       "fact": {
-        "id": "allergy.drug_generic_brand_strength_formulation",
-        "display": "Suspected Drug Identity",
+        "id": "allergy.drug_generic_name",
+        "display": "Suspected Drug Generic Name",
         "value_type": "string",
         "terminology_binding": {
           "system": "http://snomed.info/sct",
@@ -1572,15 +1577,457 @@
         }
       },
       "target": {
-        "id": "target.allergy-concern.drug-identity",
-        "display": "Suspected Drug Identity",
+        "id": "target.allergy-concern.drug-generic-name",
+        "display": "Suspected Drug Generic Name",
         "intents": [
           "intent.characterize_symptom"
         ]
       },
       "question": {
-        "id": "question.allergy-concern.drug-identity",
-        "wording": "의심 약의 성분명·제품명, 함량과 정제·시럽·주사·연고 같은 제형을 알려주세요.",
+        "id": "question.allergy-concern.drug-generic-name",
+        "wording": "의심되는 약의 성분명을 알려주세요. 기억나지 않으면 모른다고 답해도 됩니다.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 147,
+          "reason": "drug-generic-name"
+        }
+      ],
+      "supports": [
+        "group.allergy.drug"
+      ]
+    },
+    {
+      "fact": {
+        "id": "allergy.drug_brand_name",
+        "display": "Suspected Drug Brand Name",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.allergy-concern.drug-brand-name",
+        "display": "Suspected Drug Brand Name",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.allergy-concern.drug-brand-name",
+        "wording": "의심되는 약의 제품명을 알려주세요. 처방전·약봉투·사진에서 확인한 이름도 좋습니다.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 146,
+          "reason": "drug-brand-name"
+        }
+      ],
+      "supports": [
+        "group.allergy.drug"
+      ]
+    },
+    {
+      "fact": {
+        "id": "allergy.drug_strength",
+        "display": "Suspected Drug Strength",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.allergy-concern.drug-strength",
+        "display": "Suspected Drug Strength",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.allergy-concern.drug-strength",
+        "wording": "의심되는 약의 함량은 얼마였나요? 예: 500 mg.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 145,
+          "reason": "drug-strength"
+        }
+      ],
+      "supports": [
+        "group.allergy.drug"
+      ]
+    },
+    {
+      "fact": {
+        "id": "allergy.drug_formulation",
+        "display": "Suspected Drug Formulation",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.allergy-concern.drug-formulation",
+        "display": "Suspected Drug Formulation",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.allergy-concern.drug-formulation",
+        "wording": "의심되는 약의 제형은 정제, 캡슐, 시럽, 주사, 연고 중 무엇이었나요? 보기에 없으면 직접 입력해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 144,
+          "reason": "drug-formulation"
+        }
+      ],
+      "supports": [
+        "group.allergy.drug"
+      ]
+    },
+    {
+      "fact": {
+        "id": "allergy.drug_indication",
+        "display": "Drug Indication",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.allergy-concern.drug-indication",
+        "display": "Drug Indication",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.allergy-concern.drug-indication",
+        "wording": "그 약을 어떤 증상이나 질환 때문에 사용했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 143,
+          "reason": "drug-indication"
+        }
+      ],
+      "supports": [
+        "group.allergy.drug"
+      ]
+    },
+    {
+      "fact": {
+        "id": "allergy.drug_exposure_route",
+        "display": "Drug Exposure Route",
+        "value_type": "coded",
+        "allowed_values": [
+          "oral",
+          "intravenous",
+          "intramuscular",
+          "subcutaneous",
+          "inhaled",
+          "topical",
+          "other"
+        ]
+      },
+      "target": {
+        "id": "target.allergy-concern.drug-exposure-route",
+        "display": "Drug Exposure Route",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.allergy-concern.drug-exposure-route",
+        "wording": "그 약은 먹음, 정맥주사, 근육주사, 피하주사, 흡입, 피부 도포 중 어떤 경로로 사용했나요? 보기에 없으면 직접 입력해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 142,
+          "reason": "drug-exposure-route"
+        }
+      ],
+      "supports": [
+        "group.allergy.drug"
+      ]
+    },
+    {
+      "fact": {
+        "id": "allergy.drug_exposure_count_before_onset",
+        "display": "Drug Exposure Count Before Onset",
+        "value_type": "integer",
+        "minimum": 1
+      },
+      "target": {
+        "id": "target.allergy-concern.drug-exposure-count",
+        "display": "Drug Exposure Count Before Onset",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.allergy-concern.drug-exposure-count",
+        "wording": "첫 증상이 나타나기 전까지 그 약을 몇 번 사용했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 141,
+          "reason": "drug-exposure-count"
+        }
+      ],
+      "supports": [
+        "group.allergy.drug"
+      ]
+    },
+    {
+      "fact": {
+        "id": "allergy.drug_exposure_duration_before_onset",
+        "display": "Drug Exposure Duration Before Onset",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.allergy-concern.drug-exposure-duration",
+        "display": "Drug Exposure Duration Before Onset",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.allergy-concern.drug-exposure-duration",
+        "wording": "첫 증상이 나타나기 전까지 그 약을 사용한 기간은 얼마였나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 140,
+          "reason": "drug-exposure-duration"
+        }
+      ],
+      "supports": [
+        "group.allergy.drug"
+      ]
+    },
+    {
+      "fact": {
+        "id": "allergy.drug_last_dose_time",
+        "display": "Last Drug Dose Time",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.allergy-concern.drug-last-dose-time",
+        "display": "Last Drug Dose Time",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.allergy-concern.drug-last-dose-time",
+        "wording": "반응 전 마지막으로 그 약을 사용한 날짜와 시각을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 139,
+          "reason": "drug-last-dose-time"
+        }
+      ],
+      "supports": [
+        "group.allergy.drug"
+      ]
+    },
+    {
+      "fact": {
+        "id": "allergy.drug_reaction_onset",
+        "display": "Drug Reaction Onset",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.allergy-concern.drug-reaction-onset",
+        "display": "Drug Reaction Onset",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.allergy-concern.drug-reaction-onset",
+        "wording": "약물 반응이 시작된 날짜와 시각을 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 138,
+          "reason": "drug-reaction-onset"
+        }
+      ],
+      "supports": [
+        "group.allergy.drug"
+      ]
+    },
+    {
+      "fact": {
+        "id": "allergy.drug_reaction_manifestations",
+        "display": "Drug Reaction Manifestations",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.allergy-concern.drug-reaction-manifestations",
+        "display": "Drug Reaction Manifestations",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.allergy-concern.drug-reaction-manifestations",
+        "wording": "당시 나타난 징후와 증상을 구체적으로 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 137,
+          "reason": "drug-reaction-manifestations"
+        }
+      ],
+      "supports": [
+        "group.allergy.drug"
+      ]
+    },
+    {
+      "fact": {
+        "id": "allergy.drug_reaction_severity",
+        "display": "Drug Reaction Event Severity",
+        "value_type": "coded",
+        "allowed_values": [
+          "mild",
+          "moderate",
+          "severe"
+        ]
+      },
+      "target": {
+        "id": "target.allergy-concern.drug-reaction-severity",
+        "display": "Drug Reaction Event Severity",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.allergy-concern.drug-reaction-severity",
+        "wording": "반응 전체의 심한 정도는 경도, 중등도, 중증 중 어디에 가깝나요? 판단하기 어려우면 모른다고 답해도 됩니다.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 136,
+          "reason": "drug-reaction-severity"
+        }
+      ],
+      "supports": [
+        "group.allergy.drug"
+      ]
+    },
+    {
+      "fact": {
+        "id": "allergy.drug_reaction_healthcare_required",
+        "display": "Healthcare Required for Drug Reaction",
+        "value_type": "coded",
+        "allowed_values": [
+          "none",
+          "outpatient",
+          "emergency_department",
+          "hospital_admission",
+          "other"
+        ]
+      },
+      "target": {
+        "id": "target.allergy-concern.drug-reaction-healthcare",
+        "display": "Healthcare Required for Drug Reaction",
+        "intents": [
+          "intent.characterize_symptom"
+        ]
+      },
+      "question": {
+        "id": "question.allergy-concern.drug-reaction-healthcare",
+        "wording": "그 반응으로 받은 치료는 없음, 외래, 응급실, 입원 중 무엇이었나요? 보기에 없으면 직접 입력해 주세요.",
         "language": "ko",
         "mode": [
           "chat",
@@ -1593,7 +2040,7 @@
         {
           "branch": "any",
           "score": 135,
-          "reason": "drug-identity"
+          "reason": "drug-reaction-healthcare"
         }
       ],
       "supports": [
@@ -1602,20 +2049,20 @@
     },
     {
       "fact": {
-        "id": "allergy.drug_indication_and_route",
-        "display": "Drug Indication and Route",
-        "value_type": "string"
+        "id": "allergy.drug_stopped_after_reaction",
+        "display": "Drug Stopped After Reaction",
+        "value_type": "boolean"
       },
       "target": {
-        "id": "target.allergy-concern.drug-indication-route",
-        "display": "Drug Indication and Route",
+        "id": "target.allergy-concern.drug-stopped",
+        "display": "Drug Stopped After Reaction",
         "intents": [
-          "intent.characterize_symptom"
+          "intent.differentiate_common_causes"
         ]
       },
       "question": {
-        "id": "question.allergy-concern.drug-indication-route",
-        "wording": "그 약을 어떤 이유로, 먹음·주사·피부도포 등 어떤 경로로 사용했나요?",
+        "id": "question.allergy-concern.drug-stopped",
+        "wording": "반응이 생긴 뒤 의심되는 약을 중단했나요?",
         "language": "ko",
         "mode": [
           "chat",
@@ -1628,7 +2075,7 @@
         {
           "branch": "any",
           "score": 134,
-          "reason": "drug-indication-route"
+          "reason": "drug-stopped"
         }
       ],
       "supports": [
@@ -1637,20 +2084,27 @@
     },
     {
       "fact": {
-        "id": "allergy.drug_doses_or_days_before_onset",
-        "display": "Drug Exposure Before Reaction",
-        "value_type": "string"
+        "id": "allergy.drug_outcome_after_stop",
+        "display": "Outcome After Drug Stop",
+        "value_type": "coded",
+        "allowed_values": [
+          "resolved",
+          "improved",
+          "unchanged",
+          "worsened",
+          "other"
+        ]
       },
       "target": {
-        "id": "target.allergy-concern.drug-exposure",
-        "display": "Drug Exposure Before Reaction",
+        "id": "target.allergy-concern.drug-outcome-after-stop",
+        "display": "Outcome After Drug Stop",
         "intents": [
-          "intent.characterize_symptom"
+          "intent.differentiate_common_causes"
         ]
       },
       "question": {
-        "id": "question.allergy-concern.drug-exposure",
-        "wording": "첫 증상 전에 몇 회 복용했거나 며칠 동안 사용했나요? 마지막 투여 시각도 알려주세요.",
+        "id": "question.allergy-concern.drug-outcome-after-stop",
+        "wording": "의심 약을 중단한 뒤 증상은 회복, 호전, 변화 없음, 악화 중 어떻게 되었나요? 보기에 없으면 직접 입력해 주세요.",
         "language": "ko",
         "mode": [
           "chat",
@@ -1663,7 +2117,7 @@
         {
           "branch": "any",
           "score": 133,
-          "reason": "drug-exposure"
+          "reason": "drug-outcome-after-stop"
         }
       ],
       "supports": [
@@ -1672,20 +2126,25 @@
     },
     {
       "fact": {
-        "id": "allergy.drug_reaction_date_signs_and_severity",
-        "display": "Drug Reaction Date Signs and Severity",
-        "value_type": "string"
+        "id": "allergy.drug_rechallenge_status",
+        "display": "Drug Rechallenge Status",
+        "value_type": "coded",
+        "allowed_values": [
+          "not_rechallenged",
+          "same_drug",
+          "same_class"
+        ]
       },
       "target": {
-        "id": "target.allergy-concern.drug-reaction-record",
-        "display": "Drug Reaction Date Signs and Severity",
+        "id": "target.allergy-concern.drug-rechallenge-status",
+        "display": "Drug Rechallenge Status",
         "intents": [
-          "intent.characterize_symptom"
+          "intent.differentiate_common_causes"
         ]
       },
       "question": {
-        "id": "question.allergy-concern.drug-reaction-record",
-        "wording": "반응 날짜와 당시 징후·증상, 중증도와 병원 치료 여부를 알려주세요.",
+        "id": "question.allergy-concern.drug-rechallenge-status",
+        "wording": "이후 같은 약이나 같은 계열 약을 다시 사용했나요? 사용하지 않음, 같은 약, 같은 계열 중 선택해 주세요.",
         "language": "ko",
         "mode": [
           "chat",
@@ -1698,7 +2157,7 @@
         {
           "branch": "any",
           "score": 132,
-          "reason": "drug-reaction-record"
+          "reason": "drug-rechallenge-status"
         }
       ],
       "supports": [
@@ -1707,20 +2166,20 @@
     },
     {
       "fact": {
-        "id": "allergy.drug_stop_rechallenge_and_outcome",
-        "display": "Drug Stop Rechallenge and Outcome",
+        "id": "allergy.drug_rechallenge_outcome",
+        "display": "Drug Rechallenge Outcome",
         "value_type": "string"
       },
       "target": {
-        "id": "target.allergy-concern.drug-outcome",
-        "display": "Drug Stop Rechallenge and Outcome",
+        "id": "target.allergy-concern.drug-rechallenge-outcome",
+        "display": "Drug Rechallenge Outcome",
         "intents": [
           "intent.differentiate_common_causes"
         ]
       },
       "question": {
-        "id": "question.allergy-concern.drug-outcome",
-        "wording": "약을 중단한 뒤 좋아졌나요? 이후 같은 약이나 같은 계열을 다시 사용했을 때 어떻게 됐나요?",
+        "id": "question.allergy-concern.drug-rechallenge-outcome",
+        "wording": "다시 사용했다면 어떤 반응이 나타났나요? 다시 사용하지 않았다면 해당 없음이라고 답해 주세요.",
         "language": "ko",
         "mode": [
           "chat",
@@ -1733,7 +2192,7 @@
         {
           "branch": "any",
           "score": 131,
-          "reason": "drug-outcome"
+          "reason": "drug-rechallenge-outcome"
         }
       ],
       "supports": [
@@ -1960,9 +2419,11 @@
     "source_refs": [
       "source.nice.ng258.anaphylaxis.2026",
       "source.nice.cg183.drug-allergy.2014",
+      "source.nice.qs97.drug-allergy.2015",
+      "source.hl7.fhir-r4.allergyintolerance.4.0.1",
       "source.nhs.anaphylaxis.2026",
       "source.nhs.stevens-johnson.2026",
-      "source.stom.allergy-concern.20260715"
+      "source.stom.allergy-concern.20260810"
     ],
     "review_status": "unreviewed",
     "version": "0.1.0"

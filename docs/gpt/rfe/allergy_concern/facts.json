@@ -1,7 +1,7 @@
 {
   "clinical_use_status": "limited",
   "contains_patient_responses": false,
-  "count": 47,
+  "count": 59,
   "encounter_contexts": [
     "context.primary_care"
   ],
@@ -152,6 +152,15 @@
     },
     {
       "description": "",
+      "display": "Suspected Drug Brand Name",
+      "extraction_cues": [],
+      "id": "allergy.drug_brand_name",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "description": "",
       "display": "Concurrent Drugs and Alternative Causes",
       "extraction_cues": [],
       "id": "allergy.drug_concurrent_medicines_and_alternative_causes",
@@ -161,18 +170,82 @@
     },
     {
       "description": "",
-      "display": "Drug Exposure Before Reaction",
+      "display": "Drug Exposure Count Before Onset",
       "extraction_cues": [],
-      "id": "allergy.drug_doses_or_days_before_onset",
+      "id": "allergy.drug_exposure_count_before_onset",
+      "minimum": 1,
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "integer"
+    },
+    {
+      "description": "",
+      "display": "Drug Exposure Duration Before Onset",
+      "extraction_cues": [],
+      "id": "allergy.drug_exposure_duration_before_onset",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "date_or_period"
+    },
+    {
+      "allowed_values": [
+        "oral",
+        "intravenous",
+        "intramuscular",
+        "subcutaneous",
+        "inhaled",
+        "topical",
+        "other"
+      ],
+      "answer_semantic_binding": {
+        "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-mixed-allergy-drug-exposure-route-coded-oral-intrav-ddb66a5b2c",
+        "policy_id": "policy.question-answer-terminology-binding",
+        "snomed_mappings": {
+          "other": {
+            "code": "74964007",
+            "display": "Other",
+            "mapping_relation": "equivalent",
+            "system": "http://snomed.info/sct"
+          }
+        },
+        "strategy": "SNOMED_CT_then_local_coded_fallback"
+      },
+      "description": "",
+      "display": "Drug Exposure Route",
+      "extraction_cues": [],
+      "fhir_r4_element_bindings": [
+        {
+          "binding_source": "base_fhir_r4",
+          "binding_status": "annotation_only",
+          "binding_strength": "example",
+          "element_path": "AllergyIntolerance.reaction.exposureRoute",
+          "fhir_version": "4.0.1",
+          "mapping_relation": "candidate",
+          "projection_role": "annotation",
+          "resource": "AllergyIntolerance",
+          "structure_definition": "http://hl7.org/fhir/StructureDefinition/AllergyIntolerance",
+          "value_set": "http://hl7.org/fhir/ValueSet/route-codes"
+        }
+      ],
+      "id": "allergy.drug_exposure_route",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "coded"
+    },
+    {
+      "description": "",
+      "display": "Suspected Drug Formulation",
+      "extraction_cues": [],
+      "id": "allergy.drug_formulation",
       "safety_relevant": false,
       "type": "Fact",
       "value_type": "string"
     },
     {
       "description": "",
-      "display": "Suspected Drug Identity",
+      "display": "Suspected Drug Generic Name",
       "extraction_cues": [],
-      "id": "allergy.drug_generic_brand_strength_formulation",
+      "id": "allergy.drug_generic_name",
       "mrcm_validation": {
         "ref": "mapping.snomed-mrcm.allergy-concern",
         "status": "provisional_pass"
@@ -187,12 +260,68 @@
     },
     {
       "description": "",
-      "display": "Drug Indication and Route",
+      "display": "Drug Indication",
       "extraction_cues": [],
-      "id": "allergy.drug_indication_and_route",
+      "id": "allergy.drug_indication",
       "safety_relevant": false,
       "type": "Fact",
       "value_type": "string"
+    },
+    {
+      "description": "",
+      "display": "Last Drug Dose Time",
+      "extraction_cues": [],
+      "id": "allergy.drug_last_dose_time",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "date_or_period"
+    },
+    {
+      "allowed_values": [
+        "resolved",
+        "improved",
+        "unchanged",
+        "worsened",
+        "other"
+      ],
+      "answer_semantic_binding": {
+        "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-mixed-allergy-drug-outcome-after-stop-coded-resolve-b30b96b70e",
+        "policy_id": "policy.question-answer-terminology-binding",
+        "snomed_mappings": {
+          "improved": {
+            "code": "385425000",
+            "display": "Improved",
+            "mapping_relation": "equivalent",
+            "system": "http://snomed.info/sct"
+          },
+          "other": {
+            "code": "74964007",
+            "display": "Other",
+            "mapping_relation": "equivalent",
+            "system": "http://snomed.info/sct"
+          },
+          "unchanged": {
+            "code": "260388006",
+            "display": "No status change",
+            "mapping_relation": "equivalent",
+            "system": "http://snomed.info/sct"
+          },
+          "worsened": {
+            "code": "231877006",
+            "display": "Worse",
+            "mapping_relation": "equivalent",
+            "system": "http://snomed.info/sct"
+          }
+        },
+        "strategy": "SNOMED_CT_then_local_coded_fallback"
+      },
+      "description": "",
+      "display": "Outcome After Drug Stop",
+      "extraction_cues": [],
+      "id": "allergy.drug_outcome_after_stop",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "coded"
     },
     {
       "answer_semantic_binding": {
@@ -209,13 +338,187 @@
       "value_type": "boolean"
     },
     {
+      "allowed_values": [
+        "none",
+        "outpatient",
+        "emergency_department",
+        "hospital_admission",
+        "other"
+      ],
+      "answer_semantic_binding": {
+        "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-mixed-allergy-drug-reaction-healthcare-required-cod-16ec982da3",
+        "policy_id": "policy.question-answer-terminology-binding",
+        "snomed_mappings": {
+          "none": {
+            "code": "260413007",
+            "display": "None",
+            "mapping_relation": "equivalent",
+            "system": "http://snomed.info/sct"
+          },
+          "other": {
+            "code": "74964007",
+            "display": "Other",
+            "mapping_relation": "equivalent",
+            "system": "http://snomed.info/sct"
+          }
+        },
+        "strategy": "SNOMED_CT_then_local_coded_fallback"
+      },
       "description": "",
-      "display": "Drug Reaction Date Signs and Severity",
+      "display": "Healthcare Required for Drug Reaction",
       "extraction_cues": [],
-      "id": "allergy.drug_reaction_date_signs_and_severity",
+      "id": "allergy.drug_reaction_healthcare_required",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "coded"
+    },
+    {
+      "description": "",
+      "display": "Drug Reaction Manifestations",
+      "extraction_cues": [],
+      "id": "allergy.drug_reaction_manifestations",
       "safety_relevant": false,
       "type": "Fact",
       "value_type": "string"
+    },
+    {
+      "description": "",
+      "display": "Drug Reaction Onset",
+      "extraction_cues": [],
+      "id": "allergy.drug_reaction_onset",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "date_or_period"
+    },
+    {
+      "allowed_values": [
+        "mild",
+        "moderate",
+        "severe"
+      ],
+      "answer_semantic_binding": {
+        "answer_value_set": "http://hl7.org/fhir/ValueSet/reaction-event-severity|4.0.1",
+        "fhir_bound_answer_mappings": {
+          "mild": {
+            "code": "mild",
+            "display": "Mild",
+            "system": "http://hl7.org/fhir/reaction-event-severity"
+          },
+          "moderate": {
+            "code": "moderate",
+            "display": "Moderate",
+            "system": "http://hl7.org/fhir/reaction-event-severity"
+          },
+          "severe": {
+            "code": "severe",
+            "display": "Severe",
+            "system": "http://hl7.org/fhir/reaction-event-severity"
+          }
+        },
+        "fhir_element_binding": {
+          "allow_outside_code": false,
+          "binding_source": "base_fhir_r4",
+          "element_path": "AllergyIntolerance.reaction.severity",
+          "fhir_version": "4.0.1",
+          "mapping_relation": "equivalent",
+          "resource": "AllergyIntolerance",
+          "strength": "required",
+          "structure_definition": "http://hl7.org/fhir/StructureDefinition/AllergyIntolerance",
+          "value_set": "http://hl7.org/fhir/ValueSet/reaction-event-severity|4.0.1"
+        },
+        "fhir_item_type": "choice",
+        "fhir_response_type": "valueCoding",
+        "generic_answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-sct-mild-moderate-severe",
+        "policy_id": "policy.question-answer-terminology-binding",
+        "snomed_mappings": {
+          "mild": {
+            "code": "255604002",
+            "display": "Mild",
+            "mapping_relation": "equivalent",
+            "system": "http://snomed.info/sct"
+          },
+          "moderate": {
+            "code": "6736007",
+            "display": "Moderate",
+            "mapping_relation": "equivalent",
+            "system": "http://snomed.info/sct"
+          },
+          "severe": {
+            "code": "24484000",
+            "display": "Severe",
+            "mapping_relation": "equivalent",
+            "system": "http://snomed.info/sct"
+          }
+        },
+        "strategy": "FHIR_R4_element_binding_then_generic_SNOMED_CT_and_local",
+        "value_set_strategy": "fhir_r4_element_binding"
+      },
+      "description": "",
+      "display": "Drug Reaction Event Severity",
+      "extraction_cues": [],
+      "fhir_r4_element_bindings": [
+        {
+          "answer_code_mappings": {
+            "mild": {
+              "code": "mild",
+              "display": "Mild",
+              "system": "http://hl7.org/fhir/reaction-event-severity"
+            },
+            "moderate": {
+              "code": "moderate",
+              "display": "Moderate",
+              "system": "http://hl7.org/fhir/reaction-event-severity"
+            },
+            "severe": {
+              "code": "severe",
+              "display": "Severe",
+              "system": "http://hl7.org/fhir/reaction-event-severity"
+            }
+          },
+          "binding_source": "base_fhir_r4",
+          "binding_status": "effective_candidate",
+          "binding_strength": "required",
+          "element_path": "AllergyIntolerance.reaction.severity",
+          "fhir_version": "4.0.1",
+          "mapping_relation": "equivalent",
+          "projection_role": "answer",
+          "resource": "AllergyIntolerance",
+          "structure_definition": "http://hl7.org/fhir/StructureDefinition/AllergyIntolerance",
+          "value_set": "http://hl7.org/fhir/ValueSet/reaction-event-severity|4.0.1"
+        }
+      ],
+      "id": "allergy.drug_reaction_severity",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "coded"
+    },
+    {
+      "description": "",
+      "display": "Drug Rechallenge Outcome",
+      "extraction_cues": [],
+      "id": "allergy.drug_rechallenge_outcome",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "string"
+    },
+    {
+      "allowed_values": [
+        "not_rechallenged",
+        "same_drug",
+        "same_class"
+      ],
+      "answer_semantic_binding": {
+        "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-local-allergy-drug-rechallenge-status-coded-not-rec-8b132dd787",
+        "policy_id": "policy.question-answer-terminology-binding",
+        "strategy": "SNOMED_CT_then_local_coded_fallback"
+      },
+      "description": "",
+      "display": "Drug Rechallenge Status",
+      "extraction_cues": [],
+      "id": "allergy.drug_rechallenge_status",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "coded"
     },
     {
       "description": "",
@@ -236,10 +539,24 @@
       "value_type": "string"
     },
     {
+      "answer_semantic_binding": {
+        "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-sct-yes-no",
+        "policy_id": "policy.question-answer-terminology-binding",
+        "strategy": "SNOMED_CT_coded_yes_no_with_local_fallback"
+      },
       "description": "",
-      "display": "Drug Stop Rechallenge and Outcome",
+      "display": "Drug Stopped After Reaction",
       "extraction_cues": [],
-      "id": "allergy.drug_stop_rechallenge_and_outcome",
+      "id": "allergy.drug_stopped_after_reaction",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "boolean"
+    },
+    {
+      "description": "",
+      "display": "Suspected Drug Strength",
+      "extraction_cues": [],
+      "id": "allergy.drug_strength",
       "safety_relevant": false,
       "type": "Fact",
       "value_type": "string"
@@ -583,9 +900,21 @@
   "knowledge_sources": [
     {
       "complete": false,
+      "id": "source.hl7.fhir-r4.allergyintolerance.4.0.1",
+      "kind": "clinical_guidance_metadata",
+      "last_monitored_at": "2026-08-10",
+      "license_status": "unknown",
+      "monitor_interval_days": 30,
+      "publisher": "HL7 International",
+      "title": "FHIR R4 AllergyIntolerance resource and reaction severity ValueSet",
+      "url": "https://hl7.org/fhir/R4/allergyintolerance.html",
+      "version": "FHIR-4.0.1; verified-2026-08-10"
+    },
+    {
+      "complete": false,
       "id": "source.nhs.anaphylaxis.2026",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-07-15",
+      "last_monitored_at": "2026-08-10",
       "license_status": "unknown",
       "monitor_interval_days": 7,
       "publisher": "NHS",
@@ -597,7 +926,7 @@
       "complete": false,
       "id": "source.nhs.stevens-johnson.2026",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-07-15",
+      "last_monitored_at": "2026-08-10",
       "license_status": "unknown",
       "monitor_interval_days": 7,
       "publisher": "NHS",
@@ -609,19 +938,19 @@
       "complete": false,
       "id": "source.nice.cg183.drug-allergy.2014",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-07-15",
+      "last_monitored_at": "2026-08-10",
       "license_status": "restricted",
       "monitor_interval_days": 7,
       "publisher": "NICE",
       "title": "Drug allergy: diagnosis and management",
       "url": "https://www.nice.org.uk/guidance/cg183/chapter/Recommendations",
-      "version": "CG183; current-2026-07-15"
+      "version": "CG183; current-2026-08-10"
     },
     {
       "complete": false,
       "id": "source.nice.ng258.anaphylaxis.2026",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-07-15",
+      "last_monitored_at": "2026-08-10",
       "license_status": "restricted",
       "monitor_interval_days": 7,
       "publisher": "NICE",
@@ -631,15 +960,27 @@
     },
     {
       "complete": false,
-      "id": "source.stom.allergy-concern.20260715",
+      "id": "source.nice.qs97.drug-allergy.2015",
+      "kind": "clinical_guidance_metadata",
+      "last_monitored_at": "2026-08-10",
+      "license_status": "restricted",
+      "monitor_interval_days": 7,
+      "publisher": "NICE",
+      "title": "Drug allergy quality standard",
+      "url": "https://www.nice.org.uk/guidance/qs97/chapter/Quality-statements",
+      "version": "QS97; current-2026-08-10"
+    },
+    {
+      "complete": false,
+      "id": "source.stom.allergy-concern.20260810",
       "kind": "terminology_mrcm_query_summary",
-      "last_monitored_at": "2026-07-15",
+      "last_monitored_at": "2026-08-10",
       "license_status": "restricted",
       "monitor_interval_days": 30,
       "publisher": "Infoclinic",
-      "title": "STOM allergy terminology and MRCM summary",
-      "url": "https://stom.infoclinic.co",
-      "version": "SNOMEDCT-20260701"
+      "title": "STOM allergy terminology, FHIR ValueSet and MRCM summary",
+      "url": "http://localhost:8088/fhir",
+      "version": "SNOMEDCT-20260801; FHIR-4.0.1"
     }
   ],
   "lifecycle_status": "draft",
