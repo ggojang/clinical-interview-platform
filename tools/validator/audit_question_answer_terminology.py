@@ -377,6 +377,7 @@ def run() -> dict[str, Any]:
                 "KR_Core_V2_terminology_referenced_by_STOM_canonical_without_duplication",
                 "runtime_exposes_compiled_ValueSet_choices_without_live_lookup",
                 "shared_answer_domain_replaces_duplicate_fact_ValueSets",
+                "shared_mixed_symptom_onset_domain_and_composite_exclusion",
                 "retired_compatibility_ValueSet_declares_replaced_by",
                 "dataAbsentReason_remains_outside_shared_answer_ValueSet",
             ],

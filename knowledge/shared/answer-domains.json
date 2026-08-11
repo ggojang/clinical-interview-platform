@@ -1,6 +1,6 @@
 {
   "id": "registry.clinical-interview-answer-domains",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "status": "draft",
   "review_status": "unreviewed",
   "usage": {
@@ -10,7 +10,7 @@
   },
   "local_code_system": {
     "url": "https://ggojang.github.io/clinical-interview-platform/fhir/CodeSystem/clinical-interview-answer-domain",
-    "version": "0.3.0"
+    "version": "0.4.0"
   },
   "domains": {
     "pain-quality": {
@@ -322,6 +322,128 @@
         ],
         "removal_condition": "Delete in a later cleanup only after zero current references and external compatibility review are both confirmed."
       }
+    },
+    "symptom-onset-mode": {
+      "semantic_name": "symptom-onset-mode",
+      "value_set_id": "a-mixed-symptom-onset-mode",
+      "questionnaire": {
+        "item_type": "open-choice",
+        "repeats": false,
+        "allow_free_text": true,
+        "one_answer_bearing_dimension": "symptom_onset_mode"
+      },
+      "concepts": [
+        {"code": "385315009", "system": "http://snomed.info/sct", "display": "Sudden onset", "display_ko": "갑작스럽게 시작"},
+        {"code": "61751001", "system": "http://snomed.info/sct", "display": "Gradual onset", "display_ko": "서서히 시작"},
+        {"code": "symptom-onset-mode-unclear", "display": "Onset mode unclear", "display_ko": "시작 양상이 불분명함"}
+      ],
+      "terminology": {
+        "mapping_status": "mixed_snomed_and_local_after_official_resource_review",
+        "loinc_panel_questionnaire_answer_list_result": "No exact official LOINC answer list for the atomic sudden-versus-gradual symptom-onset mode was present in the verified local LOINC 2.82 catalog.",
+        "fhir_r4_value_set_review": {
+          "resource": "http://hl7.org/fhir/R4/valueset.html",
+          "adoption": "mixed_compose_include",
+          "reason": "FHIR R4 permits a ValueSet to include enumerated concepts from more than one CodeSystem."
+        },
+        "snomed_verified_concepts": [
+          {"code": "385315009", "display": "Sudden onset", "mapping_relation": "equivalent"},
+          {"code": "61751001", "display": "Gradual onset", "mapping_relation": "equivalent"}
+        ],
+        "snomed_version": "http://snomed.info/sct/900000000000207008/version/20260801",
+        "stom_lookup_verified_at": "2026-08-05",
+        "stom_recheck_at_migration": "unavailable_connection_refused_2026-08-11",
+        "kr_core_v2_result": "No Questionnaire or QuestionnaireResponse profile is defined and no KR Core V2 answer ValueSet matches this symptom-onset-mode domain.",
+        "local_code_reason": "The clinical answer that onset mode is unclear is retained as one registered local answer-domain concept; standard equivalence is not inferred."
+      },
+      "fact_bindings": {
+        "neck.onset_mode": {
+          "status": "active_pilot",
+          "preferred_codes": ["385315009", "61751001", "symptom-onset-mode-unclear"],
+          "legacy_token_map": {"sudden": "385315009", "gradual": "61751001", "unclear": "symptom-onset-mode-unclear"},
+          "unlisted_or_other": "free_text"
+        },
+        "symptom.back_pain.onset": {
+          "status": "active_pilot",
+          "preferred_codes": ["385315009", "61751001", "symptom-onset-mode-unclear"],
+          "legacy_token_map": {"sudden": "385315009", "gradual": "61751001", "unclear": "symptom-onset-mode-unclear"},
+          "unlisted_or_other": "free_text"
+        },
+        "symptom.bowel.sudden_or_gradual": {
+          "status": "active_pilot",
+          "preferred_codes": ["385315009", "61751001", "symptom-onset-mode-unclear"],
+          "legacy_token_map": {"sudden": "385315009", "gradual": "61751001", "unclear": "symptom-onset-mode-unclear"},
+          "unlisted_or_other": "free_text"
+        },
+        "symptom.joint_limb.onset": {
+          "status": "active_pilot",
+          "preferred_codes": ["385315009", "61751001", "symptom-onset-mode-unclear"],
+          "legacy_token_map": {"sudden": "385315009", "gradual": "61751001", "unclear": "symptom-onset-mode-unclear"},
+          "unlisted_or_other": "free_text"
+        },
+        "symptom.skin_complaint.onset": {
+          "status": "active_pilot",
+          "preferred_codes": ["385315009", "61751001", "symptom-onset-mode-unclear"],
+          "legacy_token_map": {"sudden": "385315009", "gradual": "61751001", "unclear": "symptom-onset-mode-unclear"},
+          "unlisted_or_other": "free_text"
+        },
+        "symptom.upper_respiratory.onset": {
+          "status": "active_pilot",
+          "preferred_codes": ["385315009", "61751001", "symptom-onset-mode-unclear"],
+          "legacy_token_map": {"sudden": "385315009", "gradual": "61751001", "unclear": "symptom-onset-mode-unclear"},
+          "unlisted_or_other": "free_text"
+        },
+        "symptom.chest_pain.onset": {
+          "status": "active_pilot",
+          "preferred_codes": ["385315009", "61751001"],
+          "legacy_token_map": {"sudden": "385315009", "gradual": "61751001"},
+          "unlisted_or_other": "free_text"
+        },
+        "symptom.dyspnea_onset": {
+          "status": "active_pilot",
+          "preferred_codes": ["385315009", "61751001"],
+          "legacy_token_map": {"sudden": "385315009", "gradual": "61751001"},
+          "unlisted_or_other": "free_text"
+        },
+        "ear.onset_and_progression": {
+          "status": "refactoring_queued",
+          "reason": "The legacy answer combines onset mode with progression and must be split before migration."
+        },
+        "eye.onset_and_progression": {
+          "status": "refactoring_queued",
+          "reason": "The legacy answer combines onset mode with progression and must be split before migration."
+        },
+        "oral.onset_and_progression": {
+          "status": "refactoring_queued",
+          "reason": "The legacy answer combines onset mode with progression and must be split before migration."
+        },
+        "symptom.palpitations.onset_offset": {
+          "status": "refactoring_queued",
+          "reason": "The legacy answer combines onset and offset behavior and must be split before migration."
+        }
+      },
+      "migration": {
+        "phase": "references_migrated_compatibility_aliases_retained",
+        "started_at": "2026-08-11",
+        "replacement_value_set_id": "a-mixed-symptom-onset-mode",
+        "legacy_value_sets": [
+          {"fact_id": "neck.onset_mode", "id": "a-local-neck-onset-mode-coded-sudden-gradual-unclear", "status": "retired"},
+          {"fact_id": "neck.onset_mode", "id": "a-mixed-neck-onset-mode-coded-sudden-gradual-unclear", "status": "retired"},
+          {"fact_id": "symptom.back_pain.onset", "id": "a-local-symptom-back-pain-onset-coded-sudden-gradual-unclear", "status": "retired"},
+          {"fact_id": "symptom.back_pain.onset", "id": "a-mixed-symptom-back-pain-onset-coded-sudden-gradual-unclear", "status": "retired"},
+          {"fact_id": "symptom.bowel.sudden_or_gradual", "id": "a-local-symptom-bowel-sudden-or-gradual-coded-sudden-53abc4759d", "status": "retired"},
+          {"fact_id": "symptom.bowel.sudden_or_gradual", "id": "a-mixed-symptom-bowel-sudden-or-gradual-coded-sudden-4bc6b7f90e", "status": "retired"},
+          {"fact_id": "symptom.joint_limb.onset", "id": "a-local-symptom-joint-limb-onset-coded-sudden-gradual-unclear", "status": "retired"},
+          {"fact_id": "symptom.joint_limb.onset", "id": "a-mixed-symptom-joint-limb-onset-coded-sudden-gradual-unclear", "status": "retired"},
+          {"fact_id": "symptom.skin_complaint.onset", "id": "a-local-symptom-skin-complaint-onset-coded-sudden-gra-c1a05c351f", "status": "retired"},
+          {"fact_id": "symptom.skin_complaint.onset", "id": "a-mixed-symptom-skin-complaint-onset-coded-sudden-gra-2ac24acd9f", "status": "retired"},
+          {"fact_id": "symptom.upper_respiratory.onset", "id": "a-local-symptom-upper-respiratory-onset-coded-sudden-cdc604b148", "status": "retired"},
+          {"fact_id": "symptom.upper_respiratory.onset", "id": "a-mixed-symptom-upper-respiratory-onset-coded-sudden-1b6528a08f", "status": "retired"},
+          {"fact_id": "symptom.chest_pain.onset", "id": "a-local-symptom-chest-pain-onset-coded-sudden-gradual", "status": "retired"},
+          {"fact_id": "symptom.chest_pain.onset", "shared_by_fact_ids": ["symptom.chest_pain.onset", "symptom.dyspnea_onset"], "id": "a-sct-gradual-sudden", "status": "retired"},
+          {"fact_id": "symptom.dyspnea_onset", "id": "a-local-symptom-dyspnea-onset-coded-sudden-gradual", "status": "retired"}
+        ],
+        "removal_condition": "Delete in a later cleanup only after zero current references and external compatibility review are both confirmed."
+      }
     }
   },
   "provenance": {
@@ -339,7 +461,10 @@
       "source.hl7-korea.kr-core-v2.answer-domain-review.20260811",
       "source.hl7.fhir-r4.provenance-information-source.20260811",
       "source.stom.answer-domain-information-source-type.20260811",
-      "source.hl7-korea.kr-core-v2.information-source-review.20260811"
+      "source.hl7-korea.kr-core-v2.information-source-review.20260811",
+      "source.hl7.fhir-r4.valueset-multiple-code-systems.20260811",
+      "source.stom.answer-domain-symptom-onset-mode.20260811",
+      "source.hl7-korea.kr-core-v2.symptom-onset-mode-review.20260811"
     ]
   }
 }

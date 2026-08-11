@@ -59,7 +59,7 @@ class QuestionAnswerTerminologyTest(unittest.TestCase):
             load_answer_domains()["local_code_system"]["version"],
         )
         self.assertEqual(
-            domain_system["id"], "clinical-interview-answer-domain-0-3-0"
+            domain_system["id"], "clinical-interview-answer-domain-0-4-0"
         )
 
     def test_policy_and_registry_validate(self):
@@ -487,6 +487,103 @@ class QuestionAnswerTerminologyTest(unittest.TestCase):
             self.assertEqual(replacement, shared_url)
 
         legacy_urls = {f"{VALUESET_BASE}/{identifier}" for identifier in legacy_ids}
+        for profile in PACKAGE_PROFILES:
+            package = compile_package(profile=profile)
+            for node in package["knowledge_graph"]["nodes"]:
+                binding = node.get("answer_semantic_binding", {})
+                self.assertNotIn(binding.get("answer_value_set"), legacy_urls)
+
+    def test_symptom_onset_mode_uses_one_mixed_domain_and_retains_aliases(self):
+        profiles = {
+            "neck_pain": "neck.onset_mode",
+            "back_pain": "symptom.back_pain.onset",
+            "bowel_symptoms": "symptom.bowel.sudden_or_gradual",
+            "joint_limb_complaint": "symptom.joint_limb.onset",
+            "skin_complaint": "symptom.skin_complaint.onset",
+            "upper_respiratory_symptoms": "symptom.upper_respiratory.onset",
+            "chest_pain": "symptom.chest_pain.onset",
+            "dyspnea": "symptom.dyspnea_onset",
+        }
+        legacy_ids = {
+            item["id"]
+            for item in load_answer_domains()["domains"][
+                "symptom-onset-mode"
+            ]["migration"]["legacy_value_sets"]
+        }
+        shared_url = f"{VALUESET_BASE}/a-mixed-symptom-onset-mode"
+        for profile, fact_id in profiles.items():
+            package = compile_package(profile=profile)
+            fact = next(
+                node for node in package["knowledge_graph"]["nodes"]
+                if node.get("id") == fact_id
+            )
+            binding = fact["answer_semantic_binding"]
+            self.assertEqual(binding["answer_domain"], "symptom-onset-mode")
+            self.assertEqual(binding["answer_value_set"], shared_url)
+            self.assertEqual(binding["fhir_item_type"], "open-choice")
+            self.assertFalse(binding["fhir_item_repeats"])
+            self.assertEqual(
+                questionnaire_item_projection(fact)["answerValueSet"],
+                shared_url,
+            )
+            self.assertEqual(
+                questionnaire_response_answer_projection(fact, "sudden")[
+                    "valueCoding"
+                ],
+                {
+                    "system": "http://snomed.info/sct",
+                    "code": "385315009",
+                    "display": "Sudden onset",
+                },
+            )
+            if "unclear" in fact["allowed_values"]:
+                unclear = questionnaire_response_answer_projection(
+                    fact, "unclear"
+                )["valueCoding"]
+                self.assertEqual(unclear["system"], LOCAL_ANSWER_DOMAIN)
+                self.assertEqual(
+                    unclear["code"], "symptom-onset-mode-unclear"
+                )
+
+        domain = load_answer_domains()["domains"]["symptom-onset-mode"]
+        for fact_id in (
+            "ear.onset_and_progression",
+            "eye.onset_and_progression",
+            "oral.onset_and_progression",
+            "symptom.palpitations.onset_offset",
+        ):
+            self.assertEqual(
+                domain["fact_bindings"][fact_id]["status"],
+                "refactoring_queued",
+            )
+
+        resources = {
+            entry["resource"]["id"]: entry["resource"]
+            for entry in build_answer_valuesets()["entry"]
+        }
+        shared_systems = {
+            include["system"]
+            for include in resources[
+                "a-mixed-symptom-onset-mode"
+            ]["compose"]["include"]
+        }
+        self.assertEqual(
+            shared_systems,
+            {"http://snomed.info/sct", LOCAL_ANSWER_DOMAIN},
+        )
+        for legacy_id in legacy_ids:
+            legacy = resources[legacy_id]
+            self.assertEqual(legacy["status"], "retired")
+            replacement = next(
+                extension["valueCanonical"]
+                for extension in legacy["extension"]
+                if extension["url"] == REPLACED_BY_EXTENSION
+            )
+            self.assertEqual(replacement, shared_url)
+
+        legacy_urls = {
+            f"{VALUESET_BASE}/{identifier}" for identifier in legacy_ids
+        }
         for profile in PACKAGE_PROFILES:
             package = compile_package(profile=profile)
             for node in package["knowledge_graph"]["nodes"]:

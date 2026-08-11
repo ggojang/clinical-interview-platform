@@ -169,7 +169,9 @@ def build() -> dict[str, Any]:
     ))
 
     domain_registry = load_answer_domains()
-    migration_aliases: dict[str, tuple[dict[str, Any], dict[str, Any]]] = {}
+    migration_aliases: dict[
+        str, tuple[dict[str, Any], list[dict[str, Any]]]
+    ] = {}
     for domain_id, domain in domain_registry["domains"].items():
         concepts_by_system: dict[str, list[dict[str, str]]] = defaultdict(list)
         for concept in domain["concepts"]:
@@ -186,12 +188,9 @@ def build() -> dict[str, Any]:
             dict(concepts_by_system),
             content_status="draft-limited-use",
         ))
-        aliases = {
-            item["fact_id"]: item
-            for item in domain.get("migration", {}).get(
-                "legacy_value_sets", []
-            )
-        }
+        aliases: dict[str, list[dict[str, Any]]] = defaultdict(list)
+        for item in domain.get("migration", {}).get("legacy_value_sets", []):
+            aliases[item["fact_id"]].append(item)
         for fact_id, binding in domain.get("fact_bindings", {}).items():
             if binding.get("status") != "active_pilot" or fact_id not in aliases:
                 continue
@@ -223,28 +222,85 @@ def build() -> dict[str, Any]:
         ]
         migration = migration_aliases.get(fact_id)
         if migration:
-            domain, alias = migration
-            if alias.get("status") != "retired":
-                raise ValueError(
-                    f"{fact_id}: compatibility alias must be retired"
-                )
-            if alias.get("id") != local_id:
-                raise ValueError(
-                    f"{fact_id}: recorded legacy ValueSet id does not match "
-                    f"the deterministic id {local_id}"
-                )
+            domain, aliases = migration
             replacement = answer_valueset_url(domain["value_set_id"])
-            add(_valueset(
-                local_id,
-                f"Retired Local Answers for {fact_id}",
-                "Retired compatibility ValueSet for the former Fact-specific "
-                f"answer set of {fact_id}. Current content uses {replacement}.",
-                {LOCAL_ANSWER: local_concepts},
-                content_status="retired-compatibility",
-                publication_status="retired",
-                replaced_by=replacement,
-                resource_date="2026-08-11",
-            ))
+            domain_binding = domain["fact_bindings"][fact_id]
+            domain_concepts = {
+                concept["code"]: concept for concept in domain["concepts"]
+            }
+            legacy_standard: dict[str, dict[str, str]] = {}
+            for token, domain_code in domain_binding.get(
+                "legacy_token_map", {}
+            ).items():
+                concept = domain_concepts.get(domain_code, {})
+                if concept.get("system") == SNOMED:
+                    legacy_standard[token] = {
+                        "code": concept["code"],
+                        "display": concept["display"],
+                    }
+            mapped = [
+                token for token in coded_values if token in legacy_standard
+            ]
+            expected_aliases: dict[str, dict[str, list[dict[str, str]]]] = {
+                local_id: {LOCAL_ANSWER: local_concepts},
+            }
+            if mapped and len(mapped) < len(coded_values):
+                mixed_id = answer_valueset_id(
+                    "mixed",
+                    f"{fact_id}-{fact.get('value_type')}-{answer_shape}",
+                )
+                mixed_concepts: dict[
+                    str, list[dict[str, str]]
+                ] = defaultdict(list)
+                for token in coded_values:
+                    if token in legacy_standard:
+                        mixed_concepts[SNOMED].append({
+                            "code": legacy_standard[token]["code"],
+                            "display": legacy_standard[token]["display"],
+                        })
+                    else:
+                        mixed_concepts[LOCAL_ANSWER].append({
+                            "code": f"{fact_id}--{token}",
+                            "display": token,
+                        })
+                expected_aliases[mixed_id] = dict(mixed_concepts)
+            elif mapped and len(mapped) == len(coded_values):
+                standard_id = answer_valueset_id(
+                    "sct", "-".join(sorted(coded_values))
+                )
+                expected_aliases[standard_id] = {
+                    SNOMED: [
+                        {
+                            "code": legacy_standard[token]["code"],
+                            "display": legacy_standard[token]["display"],
+                        }
+                        for token in coded_values
+                    ]
+                }
+            for alias in aliases:
+                alias_id = alias.get("id", "")
+                if alias.get("status") != "retired":
+                    raise ValueError(
+                        f"{fact_id}: compatibility alias must be retired"
+                    )
+                concepts_by_system = expected_aliases.get(alias_id)
+                if concepts_by_system is None:
+                    raise ValueError(
+                        f"{fact_id}: recorded legacy ValueSet id does not match "
+                        "a deterministic former local or mixed ValueSet id: "
+                        f"{alias_id}"
+                    )
+                add(_valueset(
+                    alias_id,
+                    f"Retired Answers for {fact_id}",
+                    "Retired compatibility ValueSet for the former Fact-specific "
+                    f"answer set of {fact_id}. Current content uses {replacement}.",
+                    concepts_by_system,
+                    content_status="retired-compatibility",
+                    publication_status="retired",
+                    replaced_by=replacement,
+                    resource_date="2026-08-11",
+                ))
             continue
         add(_valueset(
             local_id,

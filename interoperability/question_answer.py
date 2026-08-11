@@ -99,7 +99,9 @@ def load_answer_domains() -> dict[str, Any]:
                 if (
                     alias.get("status") != "retired"
                     or not alias.get("fact_id")
-                    or not alias_id.startswith("a-local-")
+                    or not alias_id.startswith(
+                        ("a-local-", "a-mixed-", "a-sct-")
+                    )
                     or len(alias_id) > 64
                     or alias_id in legacy_value_set_ids
                 ):
