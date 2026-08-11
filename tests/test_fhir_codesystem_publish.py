@@ -5,6 +5,7 @@ import unittest
 
 from interoperability.fhir_codesystem_publish import (
     FhirCodeSystemPublishError,
+    FhirCodeSystemService,
     FhirCodeSystemPublisher,
     codesystem_fingerprint,
     validate_complete_codesystem,
@@ -47,6 +48,31 @@ class FakeReadService:
 
 
 class FhirCodeSystemPublisherTests(unittest.TestCase):
+    def test_service_filters_servers_that_ignore_version_search(self):
+        older = local_codesystem()
+        newer = deepcopy(older)
+        newer["id"] = "local-answer-0-2-0"
+        newer["version"] = "0.2.0"
+
+        def transport(url, timeout):
+            return 200, {
+                "resourceType": "Bundle",
+                "entry": [
+                    {"resource": older},
+                    {"resource": newer},
+                ],
+            }
+
+        service = FhirCodeSystemService(
+            "http://localhost:8088/fhir", transport=transport
+        )
+        self.assertEqual(
+            service.search_by_canonical(
+                older["url"], version="0.2.0", count=2
+            ),
+            [newer],
+        )
+
     def test_complete_codesystem_validation_and_fingerprint(self):
         resource = local_codesystem()
         self.assertEqual(

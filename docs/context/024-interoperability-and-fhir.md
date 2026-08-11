@@ -254,6 +254,20 @@ Questionnaire bindings must not reference those compatibility artifacts; they
 may be deleted only in a later cleanup after zero references and external
 compatibility review are confirmed.
 
+Information-source type is a separate answer dimension from source reliability.
+Alcohol, swallowing, tobacco and post-discharge Facts that previously repeated
+the same patient, caregiver, patient-and-caregiver and record choices now bind
+to `a-local-information-source-type`. FHIR R4 Provenance guides later export by
+separating participating agents from source entities, but it does not define an
+equivalent answer ValueSet for these interview categories. STOM-verified Patient
+and Caregiver SNOMED CT concepts are person classes rather than assertions that
+the person supplied the information, so the common domain remains local. The
+activity Fact is not migrated because its `device_or_record` legacy token mixes
+two independently representable source types and remains queued for atomic
+refactoring. As with source reliability, `unknown` stays outside the clinical
+ValueSet and uses `dataAbsentReason`; retired Fact-specific canonicals remain
+compatibility artifacts until zero references and external impact are verified.
+
 Laterality has an additional applicability gate. `a-sct-laterality` contains
 the SNOMED CT side qualifiers, while the anatomical site must independently be
 verified in `723264001 |Lateralizable body structure reference set|`. The

@@ -28,7 +28,12 @@ from tools.fhir.build_answer_valuesets import (
     build as build_answer_valuesets,
     validate as validate_answer_valuesets,
 )
-from tools.fhir.build_question_answer_codesystems import build, validate
+from tools.fhir.build_question_answer_codesystems import (
+    ANSWER_CODE_SYSTEM_VERSION,
+    QUESTION_CODE_SYSTEM_VERSION,
+    build,
+    validate,
+)
 from tools.gpt_export.build import build as build_gpt_export
 from tools.validator.audit_question_answer_terminology import run as run_audit
 
@@ -37,6 +42,26 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class QuestionAnswerTerminologyTest(unittest.TestCase):
+    def test_complete_local_codesystems_have_explicit_release_versions(self):
+        question_system, answer_system, domain_system = build()
+        self.assertEqual(question_system["version"], QUESTION_CODE_SYSTEM_VERSION)
+        self.assertEqual(answer_system["version"], ANSWER_CODE_SYSTEM_VERSION)
+        self.assertEqual(QUESTION_CODE_SYSTEM_VERSION, "0.2.0")
+        self.assertEqual(ANSWER_CODE_SYSTEM_VERSION, "0.2.0")
+        self.assertEqual(
+            question_system["id"], "clinical-interview-question-0-2-0"
+        )
+        self.assertEqual(
+            answer_system["id"], "clinical-interview-answer-0-2-0"
+        )
+        self.assertEqual(
+            domain_system["version"],
+            load_answer_domains()["local_code_system"]["version"],
+        )
+        self.assertEqual(
+            domain_system["id"], "clinical-interview-answer-domain-0-3-0"
+        )
+
     def test_policy_and_registry_validate(self):
         policy, registry = load_documents()
         self.assertEqual(
@@ -227,6 +252,8 @@ class QuestionAnswerTerminologyTest(unittest.TestCase):
             "pain-quality-tightening",
             "source-reliability-reliable",
             "source-reliability-conflicting-sources",
+            "information-source-patient",
+            "information-source-record",
         } <= domain_codes)
 
     def test_pain_quality_uses_one_domain_with_context_preference(self):
@@ -380,6 +407,92 @@ class QuestionAnswerTerminologyTest(unittest.TestCase):
         self.assertGreaterEqual(coverage["coded_answer_snomed_count"], 3)
         self.assertGreater(coverage["coded_answer_snomed_percent"], 0)
 
+    def test_information_source_type_uses_one_domain_and_retains_aliases(self):
+        profiles = {
+            "alcohol_use_counselling": "alcohol.information_source",
+            "post_discharge_follow_up": "post_discharge.information_source",
+            "swallowing_difficulty": "swallow.information_source",
+            "tobacco_nicotine_counselling": "tobacco.information_source",
+        }
+        legacy_ids = {
+            "a-local-alcohol-information-source-coded-patient-care-7d2a446eb4",
+            "a-local-post-discharge-information-source-coded-patie-d435808b98",
+            "a-local-swallow-information-source-coded-patient-care-bccf9b061d",
+            "a-local-tobacco-information-source-coded-patient-care-fba045369b",
+        }
+        shared_url = f"{VALUESET_BASE}/a-local-information-source-type"
+        for profile, fact_id in profiles.items():
+            package = compile_package(profile=profile)
+            fact = next(
+                node for node in package["knowledge_graph"]["nodes"]
+                if node.get("id") == fact_id
+            )
+            binding = fact["answer_semantic_binding"]
+            self.assertEqual(binding["answer_domain"], "information-source-type")
+            self.assertEqual(binding["answer_value_set"], shared_url)
+            self.assertEqual(binding["fhir_item_type"], "open-choice")
+            self.assertFalse(binding["fhir_item_repeats"])
+            self.assertEqual(
+                binding["data_absent_reason_mappings"],
+                {"unknown": "asked-unknown"},
+            )
+            self.assertEqual(
+                questionnaire_item_projection(fact)["answerValueSet"],
+                shared_url,
+            )
+            self.assertEqual(
+                questionnaire_response_answer_projection(fact, "caregiver")[
+                    "valueCoding"
+                ]["code"],
+                "information-source-caregiver",
+            )
+            self.assertEqual(
+                questionnaire_response_answer_projection(fact, "unknown"),
+                {"dataAbsentReason": "asked-unknown"},
+            )
+
+        registry = load_answer_domains()
+        activity = registry["domains"]["information-source-type"][
+            "fact_bindings"
+        ]["activity.information_source"]
+        self.assertEqual(activity["status"], "refactoring_queued")
+        self.assertIn("device_or_record", activity["reason"])
+
+        bundle = build_answer_valuesets()
+        resources = {
+            entry["resource"]["id"]: entry["resource"]
+            for entry in bundle["entry"]
+        }
+        shared_codes = {
+            concept["code"]
+            for include in resources["a-local-information-source-type"][
+                "compose"
+            ]["include"]
+            for concept in include["concept"]
+        }
+        self.assertEqual(shared_codes, {
+            "information-source-patient",
+            "information-source-caregiver",
+            "information-source-patient-and-caregiver",
+            "information-source-record",
+        })
+        for legacy_id in legacy_ids:
+            legacy = resources[legacy_id]
+            self.assertEqual(legacy["status"], "retired")
+            replacement = next(
+                extension["valueCanonical"]
+                for extension in legacy["extension"]
+                if extension["url"] == REPLACED_BY_EXTENSION
+            )
+            self.assertEqual(replacement, shared_url)
+
+        legacy_urls = {f"{VALUESET_BASE}/{identifier}" for identifier in legacy_ids}
+        for profile in PACKAGE_PROFILES:
+            package = compile_package(profile=profile)
+            for node in package["knowledge_graph"]["nodes"]:
+                binding = node.get("answer_semantic_binding", {})
+                self.assertNotIn(binding.get("answer_value_set"), legacy_urls)
+
     def test_exact_standard_mappings_require_verified_atomic_questions(self):
         _, registry = load_documents()
         for profile in PACKAGE_PROFILES:
@@ -458,15 +571,19 @@ class QuestionAnswerTerminologyTest(unittest.TestCase):
         self.assertGreater(
             report["answer_valuesets"]["resource_count"], 100
         )
+        expected_retired = sum(
+            len(domain.get("migration", {}).get("legacy_value_sets", []))
+            for domain in load_answer_domains()["domains"].values()
+        )
         self.assertEqual(
             report["answer_valuesets"][
                 "retired_compatibility_resource_count"
             ],
-            4,
+            expected_retired,
         )
         self.assertEqual(
             report["answer_valuesets"]["counts_by_lifecycle"]["retired"],
-            4,
+            expected_retired,
         )
         self.assertTrue(report["mapping_quality_simulation"]["passed"])
 

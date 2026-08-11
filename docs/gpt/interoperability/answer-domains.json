@@ -1,6 +1,171 @@
 {
   "contains_patient_responses": false,
   "domains": {
+    "information-source-type": {
+      "concepts": [
+        {
+          "code": "information-source-patient",
+          "display": "Patient",
+          "display_ko": "환자 본인"
+        },
+        {
+          "code": "information-source-caregiver",
+          "display": "Caregiver",
+          "display_ko": "보호자 또는 돌봄 제공자"
+        },
+        {
+          "code": "information-source-patient-and-caregiver",
+          "display": "Patient and caregiver",
+          "display_ko": "환자와 보호자 함께"
+        },
+        {
+          "code": "information-source-record",
+          "display": "Record",
+          "display_ko": "기록 또는 문서"
+        }
+      ],
+      "data_absent_states_excluded_from_value_set": [
+        "unknown"
+      ],
+      "fact_bindings": {
+        "activity.information_source": {
+          "reason": "The legacy device_or_record answer combines two independently representable source types and must be split before migration.",
+          "status": "refactoring_queued"
+        },
+        "alcohol.information_source": {
+          "legacy_token_map": {
+            "caregiver": "information-source-caregiver",
+            "patient": "information-source-patient",
+            "patient_and_caregiver": "information-source-patient-and-caregiver",
+            "record": "information-source-record"
+          },
+          "preferred_codes": [
+            "information-source-patient",
+            "information-source-caregiver",
+            "information-source-patient-and-caregiver",
+            "information-source-record"
+          ],
+          "status": "active_pilot",
+          "unlisted_or_other": "free_text"
+        },
+        "post_discharge.information_source": {
+          "legacy_token_map": {
+            "caregiver": "information-source-caregiver",
+            "patient": "information-source-patient",
+            "patient_and_caregiver": "information-source-patient-and-caregiver",
+            "record": "information-source-record"
+          },
+          "preferred_codes": [
+            "information-source-patient",
+            "information-source-caregiver",
+            "information-source-patient-and-caregiver",
+            "information-source-record"
+          ],
+          "status": "active_pilot",
+          "unlisted_or_other": "free_text"
+        },
+        "swallow.information_source": {
+          "legacy_token_map": {
+            "caregiver": "information-source-caregiver",
+            "patient": "information-source-patient",
+            "patient_and_caregiver": "information-source-patient-and-caregiver",
+            "record": "information-source-record"
+          },
+          "preferred_codes": [
+            "information-source-patient",
+            "information-source-caregiver",
+            "information-source-patient-and-caregiver",
+            "information-source-record"
+          ],
+          "status": "active_pilot",
+          "unlisted_or_other": "free_text"
+        },
+        "tobacco.information_source": {
+          "legacy_token_map": {
+            "caregiver": "information-source-caregiver",
+            "patient": "information-source-patient",
+            "patient_and_caregiver": "information-source-patient-and-caregiver",
+            "record": "information-source-record"
+          },
+          "preferred_codes": [
+            "information-source-patient",
+            "information-source-caregiver",
+            "information-source-patient-and-caregiver",
+            "information-source-record"
+          ],
+          "status": "active_pilot",
+          "unlisted_or_other": "free_text"
+        }
+      },
+      "migration": {
+        "legacy_value_sets": [
+          {
+            "fact_id": "alcohol.information_source",
+            "id": "a-local-alcohol-information-source-coded-patient-care-7d2a446eb4",
+            "status": "retired"
+          },
+          {
+            "fact_id": "post_discharge.information_source",
+            "id": "a-local-post-discharge-information-source-coded-patie-d435808b98",
+            "status": "retired"
+          },
+          {
+            "fact_id": "swallow.information_source",
+            "id": "a-local-swallow-information-source-coded-patient-care-bccf9b061d",
+            "status": "retired"
+          },
+          {
+            "fact_id": "tobacco.information_source",
+            "id": "a-local-tobacco-information-source-coded-patient-care-fba045369b",
+            "status": "retired"
+          }
+        ],
+        "phase": "references_migrated_compatibility_aliases_retained",
+        "removal_condition": "Delete in a later cleanup only after zero current references and external compatibility review are both confirmed.",
+        "replacement_value_set_id": "a-local-information-source-type",
+        "started_at": "2026-08-11"
+      },
+      "questionnaire": {
+        "allow_free_text": true,
+        "item_type": "open-choice",
+        "one_answer_bearing_dimension": "information_source_type",
+        "repeats": false
+      },
+      "semantic_name": "information-source-type",
+      "terminology": {
+        "do_not_infer_standard_equivalence_from_actor_or_record_class": true,
+        "fhir_r4_provenance_review": {
+          "adoption": "structural_guidance_only",
+          "reason": "FHIR Provenance separates human or device agents from source entities and does not define one answer ValueSet equivalent to the interview categories patient, caregiver, patient-and-caregiver and record.",
+          "resource": "http://hl7.org/fhir/R4/provenance.html"
+        },
+        "kr_core_v2_result": "No Questionnaire or QuestionnaireResponse profile is defined and no KR Core V2 answer ValueSet matches this information-source domain.",
+        "mapping_status": "local_codes_retained_after_fhir_and_stom_review",
+        "snomed_candidates_considered": [
+          {
+            "adoption": "not_equivalent",
+            "code": "116154003",
+            "display": "Patient (person)",
+            "reason": "A person class does not by itself assert that the patient supplied this interview information."
+          },
+          {
+            "adoption": "not_equivalent",
+            "code": "133932002",
+            "display": "Caregiver (person)",
+            "reason": "A person class does not by itself assert the caregiver's information-source role."
+          },
+          {
+            "adoption": "not_equivalent",
+            "code": "419891008",
+            "display": "Record artifact (record artifact)",
+            "reason": "The record-artifact hierarchy is broader than the interview answer that information was obtained from a record."
+          }
+        ],
+        "stom_search_checked_at": "2026-08-11T00:00:00Z",
+        "stom_version": "http://snomed.info/sct/900000000000207008/version/20260801"
+      },
+      "value_set_id": "a-local-information-source-type"
+    },
     "laterality": {
       "activation": {
         "fallback": "preserve_site_and_laterality_as_separate_facts",
@@ -381,7 +546,7 @@
   "id": "registry.clinical-interview-answer-domains",
   "local_code_system": {
     "url": "https://ggojang.github.io/clinical-interview-platform/fhir/CodeSystem/clinical-interview-answer-domain",
-    "version": "0.2.0"
+    "version": "0.3.0"
   },
   "provenance": {
     "created_at": "2026-08-10T00:00:00Z",
@@ -397,7 +562,10 @@
       "source.loinc.ll5246-5.20260811",
       "source.loinc.ll7229-9.20260811",
       "source.stom.answer-domain-source-reliability.20260811",
-      "source.hl7-korea.kr-core-v2.answer-domain-review.20260811"
+      "source.hl7-korea.kr-core-v2.answer-domain-review.20260811",
+      "source.hl7.fhir-r4.provenance-information-source.20260811",
+      "source.stom.answer-domain-information-source-type.20260811",
+      "source.hl7-korea.kr-core-v2.information-source-review.20260811"
     ],
     "updated_at": "2026-08-11T00:00:00Z"
   },
@@ -409,5 +577,5 @@
     "independent_diagnosis_or_treatment_basis": false,
     "limited_use_allowed": true
   },
-  "version": "0.2.0"
+  "version": "0.3.0"
 }

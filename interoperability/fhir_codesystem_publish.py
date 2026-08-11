@@ -162,11 +162,21 @@ class FhirCodeSystemService:
             raise FhirCodeSystemPublishError(
                 "CodeSystem canonical search did not return a Bundle"
             )
-        return [
+        resources = [
             entry["resource"]
             for entry in bundle.get("entry", [])
             if entry.get("resource", {}).get("resourceType") == "CodeSystem"
         ]
+        # Some FHIR servers accept but do not enforce the `version` search
+        # parameter. Never treat a different release of the same canonical as
+        # an exact canonical|version match.
+        if version is not None:
+            resources = [
+                resource
+                for resource in resources
+                if resource.get("version") == version
+            ]
+        return resources
 
     def read_by_id(self, identifier: str) -> dict[str, Any] | None:
         resource = self._get(f"CodeSystem/{quote(identifier, safe='')}")

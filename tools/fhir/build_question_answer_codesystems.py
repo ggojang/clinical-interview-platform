@@ -23,19 +23,33 @@ from interoperability.question_answer import (
 
 OUTPUT = ROOT / "fhir/r4/codesystems"
 CANONICAL = "https://ggojang.github.io/clinical-interview-platform/fhir"
+QUESTION_CODE_SYSTEM_VERSION = "0.2.0"
+ANSWER_CODE_SYSTEM_VERSION = "0.2.0"
 
 
-def _base(identifier: str, url: str, title: str, description: str) -> dict[str, Any]:
+def _versioned_resource_id(identifier: str, version: str) -> str:
+    """Keep immutable canonical releases as distinct FHIR server resources."""
+    return f"{identifier}-{version.replace('.', '-')}"
+
+
+def _base(
+    identifier: str,
+    url: str,
+    title: str,
+    description: str,
+    *,
+    version: str,
+) -> dict[str, Any]:
     return {
         "resourceType": "CodeSystem",
-        "id": identifier,
+        "id": _versioned_resource_id(identifier, version),
         "meta": {
             "profile": ["http://hl7.org/fhir/StructureDefinition/CodeSystem"],
             "tag": [
                 {
                     "system": f"{CANONICAL}/CodeSystem/content-status",
-                    "code": "research-only",
-                    "display": "Research only",
+                    "code": "draft-limited-use",
+                    "display": "Draft; limited use allowed",
                 },
                 {
                     "system": f"{CANONICAL}/CodeSystem/review-status",
@@ -45,7 +59,7 @@ def _base(identifier: str, url: str, title: str, description: str) -> dict[str, 
             ],
         },
         "url": url,
-        "version": "0.1.0",
+        "version": version,
         "name": "".join(part.title() for part in identifier.split("-")),
         "title": title,
         "status": "draft",
@@ -146,8 +160,9 @@ def build() -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
         "clinical-interview-question",
         LOCAL_QUESTION,
         "Clinical Interview Question Codes",
-        "Complete local fallback codes for dynamic research-only interview questions. "
+        "Complete local fallback codes for draft dynamic interview questions. "
         "A verified LOINC code is preferred when available.",
+        version=QUESTION_CODE_SYSTEM_VERSION,
     )
     answer_system = _base(
         "clinical-interview-answer",
@@ -156,6 +171,7 @@ def build() -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
         "Complete context-qualified local codes for coded dynamic interview "
         "answers. They remain available for round-trip identity even when a "
         "verified SNOMED CT equivalent also exists.",
+        version=ANSWER_CODE_SYSTEM_VERSION,
     )
     question_system["concept"] = [questions[key] for key in sorted(questions)]
     question_system["count"] = len(question_system["concept"])
@@ -169,13 +185,8 @@ def build() -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
         "Reusable atomic local answer concepts shared across compatible dynamic "
         "interview questions. Context-specific preferred choices are presentation "
         "metadata and do not create duplicate concepts.",
+        version=domain_registry["local_code_system"]["version"],
     )
-    domain_system["version"] = domain_registry["local_code_system"]["version"]
-    domain_system["meta"]["tag"][0] = {
-        "system": f"{CANONICAL}/CodeSystem/content-status",
-        "code": "draft-limited-use",
-        "display": "Draft; limited use allowed",
-    }
     domain_concepts: dict[str, dict[str, str]] = {}
     for domain_id, domain in domain_registry["domains"].items():
         for concept in domain["concepts"]:
