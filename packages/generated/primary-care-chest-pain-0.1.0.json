@@ -407,7 +407,7 @@
     },
     "resource_ref": "knowledge/shared/clinician-submission-context.json",
     "review_status": "unreviewed",
-    "semantic_digest": "sha256:e99a9a3eb4c8ca104986c1d283458dadb4ce885c02961e7bbdc1bc12c3f4f8ca",
+    "semantic_digest": "sha256:00415e4280b772ebb42a5c67baeaea8af871ed040c89b700ed3cbb38eb8bdde0",
     "session_facts": [
       {
         "display": "Unprompted Additional Comment",
@@ -18487,21 +18487,71 @@
           "other"
         ],
         "answer_semantic_binding": {
-          "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-mixed-symptom-chest-pain-quality-coded-pressure-tig-e199530b49",
-          "fhir_item_type": "choice",
-          "fhir_response_type": "valueCoding",
-          "local_answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-local-symptom-chest-pain-quality-coded-pressure-tig-3f2fe2ef64",
-          "policy_id": "policy.question-answer-terminology-binding",
-          "snomed_mappings": {
-            "other": {
-              "code": "74964007",
-              "display": "Other",
+          "allow_free_text": true,
+          "answer_domain": "pain-quality",
+          "answer_domain_registry_version": "0.1.0",
+          "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-local-pain-quality",
+          "fhir_item_repeats": true,
+          "fhir_item_type": "open-choice",
+          "fhir_response_type": "valueCoding_or_valueString",
+          "free_text_internal_values": [
+            "other"
+          ],
+          "internal_value_mappings": {
+            "burning": {
+              "code": "pain-quality-burning",
+              "display": "Burning",
+              "display_ko": "타거나 화끈거리는 느낌",
               "mapping_relation": "equivalent",
-              "system": "http://snomed.info/sct"
+              "system": "https://ggojang.github.io/clinical-interview-platform/fhir/CodeSystem/clinical-interview-answer-domain"
+            },
+            "heaviness": {
+              "code": "pain-quality-heaviness",
+              "display": "Heaviness",
+              "display_ko": "무거운 느낌",
+              "mapping_relation": "equivalent",
+              "system": "https://ggojang.github.io/clinical-interview-platform/fhir/CodeSystem/clinical-interview-answer-domain"
+            },
+            "pressure": {
+              "code": "pain-quality-pressure",
+              "display": "Pressure",
+              "display_ko": "압박감",
+              "mapping_relation": "equivalent",
+              "system": "https://ggojang.github.io/clinical-interview-platform/fhir/CodeSystem/clinical-interview-answer-domain"
+            },
+            "sharp": {
+              "code": "pain-quality-sharp",
+              "display": "Sharp",
+              "display_ko": "날카로운 느낌",
+              "mapping_relation": "equivalent",
+              "system": "https://ggojang.github.io/clinical-interview-platform/fhir/CodeSystem/clinical-interview-answer-domain"
+            },
+            "tearing": {
+              "code": "pain-quality-tearing",
+              "display": "Tearing",
+              "display_ko": "찢어지는 느낌",
+              "mapping_relation": "equivalent",
+              "system": "https://ggojang.github.io/clinical-interview-platform/fhir/CodeSystem/clinical-interview-answer-domain"
+            },
+            "tightness": {
+              "code": "pain-quality-tightening",
+              "display": "Tightening",
+              "display_ko": "조이는 느낌",
+              "mapping_relation": "normalized_from_legacy",
+              "system": "https://ggojang.github.io/clinical-interview-platform/fhir/CodeSystem/clinical-interview-answer-domain"
             }
           },
-          "strategy": "SNOMED_CT_then_local_coded_fallback",
-          "value_set_strategy": "complete_mixed_SNOMED_CT_and_local"
+          "policy_id": "policy.question-answer-terminology-binding",
+          "preferred_answer_codes": [
+            "pain-quality-pressure",
+            "pain-quality-tightening",
+            "pain-quality-heaviness",
+            "pain-quality-burning",
+            "pain-quality-sharp",
+            "pain-quality-tearing"
+          ],
+          "strategy": "shared_atomic_answer_domain_with_context_preference",
+          "value_set_strategy": "complete_shared_local_domain"
         },
         "description": "",
         "display": "Chest Pain Quality",
@@ -21877,6 +21927,7 @@
   },
   "question_answer_terminology": {
     "answer_binding_precedence": "target_FHIR_R4_element_then_SNOMED_CT_then_local",
+    "answer_domain_registry": "knowledge/shared/answer-domains.json",
     "answer_value_set_naming_rule": "a-{sct|loinc|local|mixed}-{semantic-name}",
     "boolean_snomed_semantic_equivalents": {
       "false": {
@@ -21895,8 +21946,8 @@
     "coverage": {
       "boolean_primitive_question_count": 30,
       "coded_answer_local_fallback_count": 31,
-      "coded_answer_snomed_count": 14,
-      "coded_answer_snomed_percent": 45.2,
+      "coded_answer_snomed_count": 13,
+      "coded_answer_snomed_percent": 41.9,
       "coded_answer_value_count": 31,
       "data_absent_option_count": 0,
       "fhir_r4_element_bound_question_count": 0,
@@ -21913,6 +21964,7 @@
     "fhir_r4_element_binding_policy": "policy.fhir-r4-element-terminology-binding",
     "local_answer_code_pattern": "{fact_id}--{internal_value}",
     "local_answer_code_system": "https://ggojang.github.io/clinical-interview-platform/fhir/CodeSystem/clinical-interview-answer",
+    "local_answer_domain_code_system": "https://ggojang.github.io/clinical-interview-platform/fhir/CodeSystem/clinical-interview-answer-domain",
     "local_question_code_is_template_id": true,
     "local_question_code_system": "https://ggojang.github.io/clinical-interview-platform/fhir/CodeSystem/clinical-interview-question",
     "policy_id": "policy.question-answer-terminology-binding",
@@ -30198,7 +30250,7 @@
       "rfe.chest_pain"
     ]
   },
-  "semantic_digest": "sha256:30a4ad55bbcc137ceca7861ad38195e6da64e172d16ed5f7db0e0964792d54bb",
+  "semantic_digest": "sha256:c2681024fe5af5f7cff552f8e99b78647608378596b870da8418b8efc41c8702",
   "simulations": [
     {
       "expected": {
@@ -31338,7 +31390,7 @@
       },
       {
         "complete": true,
-        "digest": "sha256:8f31a795e4825d0400eb7b5b05b8a449ba580253888c1652d460bbe93aee6a1e",
+        "digest": "sha256:1fcf0648bcd91ad0b25693ec0ab4f99f3da260481b9607a540baaaabb6e73d9f",
         "id": "source.repository.context",
         "kind": "repository_specification",
         "language": "en",

@@ -293,6 +293,12 @@ class QuestionAnswerTerminologyTest(unittest.TestCase):
             len(answer_valueset_id("local", "x" * 200)), 64
         )
 
+    def test_shared_snomed_answer_domain_counts_as_standard_coverage(self):
+        package = compile_package(profile="epistaxis")
+        coverage = package["question_answer_terminology"]["coverage"]
+        self.assertGreaterEqual(coverage["coded_answer_snomed_count"], 3)
+        self.assertGreater(coverage["coded_answer_snomed_percent"], 0)
+
     def test_exact_standard_mappings_require_verified_atomic_questions(self):
         _, registry = load_documents()
         for profile in PACKAGE_PROFILES:

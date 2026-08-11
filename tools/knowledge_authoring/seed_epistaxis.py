@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 """Materialize unreviewed epistaxis pre-visit knowledge."""
+import json
+from datetime import date, timedelta
+
 from profile_support import *
 
 P, RFE = "epistaxis", "rfe.epistaxis"
 M, SN = "mapping.snomed-mrcm.epistaxis", "http://snomed.info/sct"
-ACQUIRED_AT = "2026-08-05T09:02:20Z"
+REFINEMENT_ACQUIRED_AT = "2026-08-10T15:35:26Z"
+ACQUIRED_AT = REFINEMENT_ACQUIRED_AT
 SOURCES = [
     "source.aao-hnsf.epistaxis.2020",
     "source.nhs.epistaxis.2023",
@@ -47,7 +51,8 @@ def fragment():
         Q("epistaxis.first_aid_method_pressure_site_and_duration", "First Aid Technique", "string", "first-aid", "앉아 앞으로 숙이고 코의 말랑한 부분을 놓지 않고 눌렀나요? 누른 시간과 중간에 확인했는지 알려주세요.", 165, [G["episode"]], C),
         Q("epistaxis.response_to_pressure_and_other_measures", "Response to First Aid", "string", "response", "압박 전후 출혈이 멈춤·감소·변화 없음 중 어떻게 달라졌고 다른 조치를 했나요?", 164, [G["episode"]], C),
         Q("epistaxis.estimated_amount_and_estimation_method", "Estimated Bleeding Amount", "string", "amount", "피의 양을 휴지·거즈 수, 용기, 옷이나 침구 젖음 등 관찰 가능한 방식으로 알려주세요.", 163, [G["episode"]], C),
-        Q("epistaxis.laterality_and_apparent_source", "Laterality and Apparent Source", "string", "laterality", "왼쪽·오른쪽·양쪽 중 어디에서 시작했고 늘 같은 쪽인지 알려주세요.", 162, [G["episode"], G["local"]], C),
+        Q("epistaxis.bleeding_start_side", "Bleeding Start Side", "coded", "bleeding-start-side", "이번 코피는 왼쪽·오른쪽·양쪽 중 어디에서 시작했나요? 보기와 다르거나 확실하지 않으면 자유롭게 입력해 주세요.", 162, [G["episode"], G["local"]], C, allowed_values=["left", "right", "bilateral"]),
+        Q("epistaxis.recurrent_same_side", "Recurrent Bleeding from the Same Side", "boolean", "recurrent-same-side", "코피가 반복될 때마다 같은 한쪽에서 시작했나요? 예·아니오로 고르기 어렵다면 관찰한 양상을 자유롭게 입력해 주세요.", 161, [G["episode"], G["local"]], R),
         Q("epistaxis.posterior_flow_clots_and_swallowed_blood", "Posterior Flow and Clots", "string", "posterior-flow", "목 뒤로 피가 넘어감, 큰 혈전, 삼킨 피와 메스꺼움·구토 여부를 알려주세요.", 161, [G["episode"]], C),
         Q("epistaxis.episode_frequency", "Episode Frequency", "string", "frequency", "코피가 얼마나 자주 반복되나요? 예: 최근 1주일에 2번. 기억나는 기간과 횟수를 자유롭게 입력해 주세요.", 160, [G["episode"]], R, terminology_binding={"system": SN, "code": "12441001"}, mrcm_ref=M),
         Q("epistaxis.recurrence_time_pattern", "Recurrence Time Pattern", "string", "recurrence-time-pattern", "코피가 주로 나타나는 시간대나 계절처럼 반복되는 시점 양상이 있나요? 없으면 없다고 입력해 주세요.", 159, [G["episode"]], R),
@@ -96,14 +101,15 @@ def fragment():
     ]
     rules = [safety_rule(P, key, {"fact": fid, "equals": True}, level, 1000 if level == "emergency" else 990) for key, fid, level in safety]
     refresh = default_refresh()
-    refresh.update({"last_assessed_at": "2026-08-05", "next_monitor_at": "2026-08-06", "next_full_review_at": "2027-02-01"})
+    refresh.update({"last_assessed_at": "2026-08-10", "next_monitor_at": "2026-08-11", "next_full_review_at": "2027-02-01"})
     return {"id": "knowledge.generated.epistaxis", "version": VERSION, "status": "research_only", "usage_modes": ["research_test", "simulation"], "source_manifest": "source-manifest.primary-care-epistaxis-research", "default_refresh": refresh, "extra_nodes": [{"id": v, "type": "ClinicalGroup", "display": v.split(".")[-1]} for v in G.values()], "group_hypothesis_edges": [], "safety_rules": rules, "entries": e, "provenance": provenance(SOURCES)}
 
 
 def completion(f):
     p = completion_policy(prefix=P, fragment=f, presentation_fact="epistaxis.primary_group", question_budget=65, source_refs=SOURCES)
-    common = ["epistaxis.information_source_and_reliability", "epistaxis.current_bleeding_status", "epistaxis.last_visible_bleeding_time", "epistaxis.onset_date_time_and_activity", "epistaxis.duration_timed_and_longest_episode", "epistaxis.first_aid_method_pressure_site_and_duration", "epistaxis.response_to_pressure_and_other_measures", "epistaxis.estimated_amount_and_estimation_method", "epistaxis.laterality_and_apparent_source", "epistaxis.posterior_flow_clots_and_swallowed_blood", "epistaxis.episode_frequency", "epistaxis.recurrence_time_pattern", "epistaxis.nose_picking_rubbing_blowing_and_minor_trauma", "epistaxis.nasal_dryness_crusting_and_environment", "epistaxis.rhinitis_uri_congestion_and_sneezing", "epistaxis.unilateral_obstruction_foul_discharge_or_smell_change", "epistaxis.nasal_foreign_body_or_intranasal_substance", "epistaxis.recent_nasal_dental_facial_procedure_or_surgery", "epistaxis.nasal_pain_tenderness_deformity_and_breathing", "epistaxis.anticoagulant_antiplatelet_name_dose_last_use", "epistaxis.nsaid_nasal_steroid_otc_herbal_and_supplements", "epistaxis.known_bleeding_platelet_liver_kidney_or_blood_disorder", "epistaxis.easy_bruising_gum_bleeding_and_other_sites", "epistaxis.prolonged_bleeding_after_cuts_dental_or_surgery", "epistaxis.family_history_bleeding_or_hht_features", "epistaxis.blood_pressure_hypertension_and_measurement_context", "epistaxis.anemia_symptoms_and_recent_cbc", "epistaxis.previous_treatment_cautery_packing_and_response", "epistaxis.sleep_work_school_and_activity_impact", "epistaxis.patient_priority_and_other_detail"]
-    cases = {"active_current_bleeding": ["epistaxis.prior_severe_episode_ed_admission_or_transfusion", "epistaxis.previous_examination_endoscopy_tests_and_results"], "single_resolved_episode": ["epistaxis.prior_severe_episode_ed_admission_or_transfusion"], "recurrent_episodes": ["epistaxis.prior_severe_episode_ed_admission_or_transfusion", "epistaxis.previous_examination_endoscopy_tests_and_results", "epistaxis.pregnancy_postpartum_context", "epistaxis.smoking_vaping_occupation_and_irritant_exposure"], "post_trauma_or_procedure": ["epistaxis.prior_severe_episode_ed_admission_or_transfusion", "epistaxis.previous_examination_endoscopy_tests_and_results", "epistaxis.current_packing_type_date_and_followup_plan"], "antithrombotic_or_bleeding_risk": ["epistaxis.prior_severe_episode_ed_admission_or_transfusion", "epistaxis.previous_examination_endoscopy_tests_and_results", "epistaxis.pregnancy_postpartum_context"], "post_treatment_followup": ["epistaxis.previous_examination_endoscopy_tests_and_results", "epistaxis.current_packing_type_date_and_followup_plan", "epistaxis.smoking_vaping_occupation_and_irritant_exposure"], "other_unclear": ["epistaxis.patient_priority_and_other_detail"]}
+    common = ["epistaxis.information_source_and_reliability", "epistaxis.current_bleeding_status", "epistaxis.last_visible_bleeding_time", "epistaxis.onset_date_time_and_activity", "epistaxis.duration_timed_and_longest_episode", "epistaxis.first_aid_method_pressure_site_and_duration", "epistaxis.response_to_pressure_and_other_measures", "epistaxis.estimated_amount_and_estimation_method", "epistaxis.bleeding_start_side", "epistaxis.posterior_flow_clots_and_swallowed_blood", "epistaxis.episode_frequency", "epistaxis.recurrence_time_pattern", "epistaxis.nose_picking_rubbing_blowing_and_minor_trauma", "epistaxis.nasal_dryness_crusting_and_environment", "epistaxis.rhinitis_uri_congestion_and_sneezing", "epistaxis.unilateral_obstruction_foul_discharge_or_smell_change", "epistaxis.nasal_foreign_body_or_intranasal_substance", "epistaxis.recent_nasal_dental_facial_procedure_or_surgery", "epistaxis.nasal_pain_tenderness_deformity_and_breathing", "epistaxis.anticoagulant_antiplatelet_name_dose_last_use", "epistaxis.nsaid_nasal_steroid_otc_herbal_and_supplements", "epistaxis.known_bleeding_platelet_liver_kidney_or_blood_disorder", "epistaxis.easy_bruising_gum_bleeding_and_other_sites", "epistaxis.prolonged_bleeding_after_cuts_dental_or_surgery", "epistaxis.family_history_bleeding_or_hht_features", "epistaxis.blood_pressure_hypertension_and_measurement_context", "epistaxis.anemia_symptoms_and_recent_cbc", "epistaxis.previous_treatment_cautery_packing_and_response", "epistaxis.sleep_work_school_and_activity_impact", "epistaxis.patient_priority_and_other_detail"]
+    recurrent_assessment = ["epistaxis.recurrent_same_side"]
+    cases = {"active_current_bleeding": ["epistaxis.prior_severe_episode_ed_admission_or_transfusion", "epistaxis.previous_examination_endoscopy_tests_and_results"], "single_resolved_episode": ["epistaxis.prior_severe_episode_ed_admission_or_transfusion"], "recurrent_episodes": recurrent_assessment + ["epistaxis.prior_severe_episode_ed_admission_or_transfusion", "epistaxis.previous_examination_endoscopy_tests_and_results", "epistaxis.pregnancy_postpartum_context", "epistaxis.smoking_vaping_occupation_and_irritant_exposure"], "post_trauma_or_procedure": ["epistaxis.prior_severe_episode_ed_admission_or_transfusion", "epistaxis.previous_examination_endoscopy_tests_and_results", "epistaxis.current_packing_type_date_and_followup_plan"], "antithrombotic_or_bleeding_risk": ["epistaxis.prior_severe_episode_ed_admission_or_transfusion", "epistaxis.previous_examination_endoscopy_tests_and_results", "epistaxis.pregnancy_postpartum_context"], "post_treatment_followup": recurrent_assessment + ["epistaxis.previous_examination_endoscopy_tests_and_results", "epistaxis.current_packing_type_date_and_followup_plan", "epistaxis.smoking_vaping_occupation_and_irritant_exposure"], "other_unclear": ["epistaxis.patient_priority_and_other_detail"]}
     p["required_facts"]["routine"], p["conditional_required_facts"] = common, [{"selector_fact": "epistaxis.primary_group", "cases": cases}]
     return p
 
@@ -111,25 +117,79 @@ def completion(f):
 def source_docs():
     defs = [
         ("source.aao-hnsf.epistaxis.2020", "AAO-HNSF", "Clinical Practice Guideline: Nosebleed (Epistaxis)", "CPG-2020", "https://www.entnet.org/quality-practice/quality-products/clinical-practice-guidelines/nosebleed-epistaxis/", "clinical_guideline", ["For patients aged 3 years or older, document factors increasing frequency or severity, including personal or family bleeding disorders and anticoagulant or antiplatelet use.", "Recurrent unilateral bleeding or recurrent bleeding despite packing or cautery merits localization assessment; education and follow-up response are part of care."]),
+        ("source.pubmed.aao-hnsf.epistaxis.2020", "U.S. NLM/PubMed", "Clinical Practice Guideline: Nosebleed (Epistaxis)", "PMID-31910111; DOI-10.1177/0194599819890327", "https://pubmed.ncbi.nlm.nih.gov/31910111/", "clinical_guideline", ["Key action statement 7a supports nasal endoscopy or referral for recurrent unilateral nasal bleeding and for recurrence despite packing or cautery.", "The pre-visit interview records the side and post-treatment recurrence as separate observations; it does not diagnose the cause or order endoscopy."]),
         ("source.nhs.epistaxis.2023", "NHS", "Nosebleed", "reviewed-2023-12-05", "https://www.nhs.uk/conditions/nosebleed/", "public_health_guidance", ["Immediate assessment features include bleeding beyond 10 to 15 minutes, excessive bleeding, large swallowed blood with vomiting, head injury, weakness or dizziness and breathing difficulty.", "First aid is forward posture and continuous pressure above the nostrils for 10 to 15 minutes."]),
         ("source.rch.epistaxis.2026", "Royal Children's Hospital Melbourne", "Clinical Practice Guideline: Epistaxis", "updated-2026-04", "https://www.rch.org.au/clinicalguide/guideline_index/Epistaxis/", "clinical_guideline", ["Paediatric history includes recurrent frequency, easy bruising, gum bleeding, prolonged bleeding after procedural challenges, family bleeding history and medicines.", "Unexplained epistaxis under 2 years, prolonged bleeding despite pressure, bilateral or systemic features and haemodynamic compromise require heightened assessment."]),
         ("source.aci-nsw.epistaxis.2022", "NSW Agency for Clinical Innovation", "Nosebleed fact sheet", "published-2022-07", "https://aci.health.nsw.gov.au/networks/eci/clinical/ed-factsheets/nosebleed", "public_health_guidance", ["Emergency reassessment features include heavy or persistent bleeding, dizziness or lightheadedness, breathlessness and chest pain.", "The information supports separate symptom collection for clinician handoff and does not establish the cause of a symptom."]),
         ("source.stom.epistaxis.20260716", "Infoclinic", "STOM epistaxis terminology lookup", "SNOMEDCT-20260701", "https://stom.infoclinic.co", "terminology_server", ["FHIR lookup confirmed active epistaxis disorder, bleeding-from-nose finding, coagulation disorder and hereditary haemorrhagic telangiectasia concepts.", "Terminology and MRCM support representation only and do not determine cause or urgency."]),
         ("source.stom.epistaxis-warning-findings.20260805", "Infoclinic", "STOM epistaxis warning finding lookup", "SNOMEDCT-20260801", "http://localhost:8088/fhir", "terminology_server", ["FHIR lookup confirmed active chest pain, dyspnea, syncope, dizziness and clouded-consciousness finding concepts.", "The verified concepts bind atomic patient-reported findings only; terminology does not determine urgency or diagnosis."]),
+        ("source.stom.epistaxis-laterality.20260810", "Infoclinic", "STOM epistaxis laterality and recurrence terminology lookup", "SNOMEDCT-20260801", "http://localhost:8088/fhir", "terminology_server", ["FHIR lookup confirmed active Left 7771000, Right 24028007 and Right and left 51440002 qualifier values for the separate bleeding-start-side answer domain.", "FHIR ValueSet filter search returned Recurrent nasal haemorrhage 2571000112102 but no exact unilateral-epistaxis concept; no exact standard question mapping or post-coordinated clinical assertion is made."]),
     ]
     monitoring = {
-        "source.aao-hnsf.epistaxis.2020": ("2026-08-05", "current_official_source_confirmed_no_clinical_change"),
-        "source.nhs.epistaxis.2023": ("2026-07-31", "current_official_source_confirmed_no_clinical_change"),
-        "source.rch.epistaxis.2026": ("2026-08-05", "current_official_source_confirmed_no_clinical_change"),
+        "source.aao-hnsf.epistaxis.2020": ("2026-08-10", "current_official_source_confirmed_no_clinical_change"),
+        "source.pubmed.aao-hnsf.epistaxis.2020": ("2026-08-10", "new_primary_guideline_publication_registered"),
+        "source.nhs.epistaxis.2023": ("2026-08-10", "current_official_source_confirmed_no_clinical_change"),
+        "source.rch.epistaxis.2026": ("2026-08-10", "current_official_source_confirmed_no_clinical_change"),
         "source.aci-nsw.epistaxis.2022": ("2026-08-05", "new_official_source_registered"),
         "source.stom.epistaxis.20260716": ("2026-07-16", "current_official_source_confirmed"),
         "source.stom.epistaxis-warning-findings.20260805": ("2026-08-05", "targeted_atomic_finding_lookup_confirmed"),
+        "source.stom.epistaxis-laterality.20260810": ("2026-08-10", "targeted_laterality_lookup_and_recurrence_filter_confirmed"),
     }
-    artifacts = [{"id": i, "kind": "terminology_mrcm_query_summary" if profile == "terminology_server" else "clinical_guidance_metadata", "publisher": pub, "title": title, "version": version, "url": url, "language": "en", "digest": "live_response_summary_not_raw_cache" if profile == "terminology_server" else "metadata_only_not_cached", "license_status": "restricted" if pub in {"AAO-HNSF", "Infoclinic"} else "unknown", "complete": False, "monitor_profile": profile, "last_monitored_at": monitoring[i][0], "monitor_result": monitoring[i][1], "assertions": assertions} for i, pub, title, version, url, profile, assertions in defs]
+    monitor_intervals = {
+        "clinical_guideline": 1,
+        "public_health_guidance": 7,
+        "terminology_server": 30,
+    }
+    artifacts = []
+    for i, pub, title, version, url, profile, assertions in defs:
+        last_monitored_at, monitor_result = monitoring[i]
+        monitor_interval_days = monitor_intervals[profile]
+        artifacts.append({
+            "id": i,
+            "kind": "terminology_mrcm_query_summary" if profile == "terminology_server" else "clinical_guidance_metadata",
+            "publisher": pub,
+            "title": title,
+            "version": version,
+            "url": url,
+            "language": "en",
+            "digest": "live_response_summary_not_raw_cache" if profile == "terminology_server" else "metadata_only_not_cached",
+            "license_status": "restricted" if pub in {"AAO-HNSF", "Infoclinic"} else "unknown",
+            "complete": False,
+            "monitor_profile": profile,
+            "last_monitored_at": last_monitored_at,
+            "monitor_result": monitor_result,
+            "assertions": assertions,
+            "monitor_interval_days": monitor_interval_days,
+            "next_monitor_at": (
+                date.fromisoformat(last_monitored_at)
+                + timedelta(days=monitor_interval_days)
+            ).isoformat(),
+        })
     research = {"id": "source-manifest.primary-care-epistaxis-research", "version": VERSION, "acquired_at": ACQUIRED_AT, "status": "research_only", "artifacts": artifacts, "provenance": provenance([x[0] for x in defs])}
     paths = [("source.repository.foundation", "repository_specification", "FOUNDATION.md", True), ("source.generated.epistaxis", "generated_clinical_knowledge", "knowledge/generated/ent/epistaxis/epistaxis.json", True), ("source.mapping.epistaxis", "terminology_mapping", "mappings/terminology/snomed-mrcm-epistaxis.json", False), ("source.external.epistaxis", "external_source_manifest", "sources/manifests/primary-care-epistaxis-research.json", False), ("source.policy.epistaxis", "runtime_policy", "policies/primary-care-epistaxis-completion.json", True)]
     primary = {"id": "source-manifest.primary-care-epistaxis", "version": VERSION, "acquired_at": ACQUIRED_AT, "artifacts": [{"id": i, "kind": kind, "publisher": "clinical-interview-platform", "version": VERSION, "language": "en", "path": path, "digest": "computed_at_build", "license_status": "allowed" if complete else "unknown", "complete": complete} for i, kind, path, complete in paths], "provenance": provenance(["FOUNDATION.md", "PROJECT_CONTEXT.md"])}
     return primary, research
+
+
+def clinician_context():
+    path = ROOT / "knowledge/shared/clinician-submission-context.json"
+    document = json.loads(path.read_text(encoding="utf-8"))
+    minimum = document["completion"]["clinician_rfe_minimum"][
+        "additional_required_facts_by_rfe"
+    ][RFE]
+    replacement = []
+    for fact_id in minimum:
+        if fact_id == "epistaxis.laterality_and_apparent_source":
+            replacement.extend([
+                "epistaxis.bleeding_start_side",
+                "epistaxis.recurrent_same_side",
+            ])
+        else:
+            replacement.append(fact_id)
+    document["completion"]["clinician_rfe_minimum"][
+        "additional_required_facts_by_rfe"
+    ][RFE] = replacement
+    return document
 
 
 def cases(f):
@@ -209,14 +269,41 @@ def cases(f):
         },
         "provenance": provenance(["source.aci-nsw.epistaxis.2022", "source.rch.epistaxis.2026", "specifications/clinical-memory.md"]),
     }
+    recurrent_unilateral = routine("recurrent_episodes")
+    recurrent_unilateral.update({
+        "epistaxis.bleeding_start_side": {"value": "right"},
+        "epistaxis.recurrent_same_side": {"value": True},
+        "epistaxis.unilateral_obstruction_foul_discharge_or_smell_change": {"value": "오른쪽 코막힘 있음; 악취·냄새 변화·종괴는 확인하지 못함"},
+        "epistaxis.current_bleeding_status": {"value": "현재는 멈춤"},
+        "epistaxis.episode_frequency": {"value": "6주 동안 4회"},
+    })
+    out["EPISTAXIS-RECURRENT-UNILATERAL-HANDOFF.json"] = {
+        "id": "EPISTAXIS-RECURRENT-UNILATERAL-HANDOFF",
+        "simulation_language": "ko",
+        "clinician_submission": True,
+        "persona": {"age": 58},
+        "encounter_context": {"care_setting": "primary_care", "encounter_type": "new_encounter", "interview_initiator": "patient", "interview_mode": "chat", "available_information": ["no_previous_records"], "time_constraint": "scheduled", "clinical_responsibility": "decision_support"},
+        "initial_statement": {"ko": "6주 동안 코피가 네 번 났고 항상 오른쪽에서 시작했습니다. 지금은 멈췄지만 오른쪽 코막힘도 있습니다."},
+        "hidden_state": recurrent_unilateral,
+        "expected": {
+            "expected_safety_level": "routine",
+            "expected_stop_reason": "required_targets_addressed_with_absent_data",
+            "expected_clinician_handoff": True,
+            "expected_selected_facts_contains": ["epistaxis.bleeding_start_side", "epistaxis.recurrent_same_side", "epistaxis.unilateral_obstruction_foul_discharge_or_smell_change"],
+            "expected_selected_facts_excludes": ["epistaxis.laterality_and_apparent_source"],
+            "expected_max_turns": 75,
+            "forbidden_assertions": ["diagnosis.nasal_cancer", "diagnosis.posterior_epistaxis", "recommendation.emergency_department"],
+        },
+        "provenance": provenance(["source.pubmed.aao-hnsf.epistaxis.2020", "source.stom.epistaxis-laterality.20260810", "specifications/clinical-memory.md"]),
+    }
     return out
 
 
 def main():
     f = fragment(); graph, rules = base_graph_and_rules(prefix=P, rfe=RFE, display="Epistaxis or Recurrent Nosebleed", intents=[("intent.characterize_symptom", "Characterize Active and Recurrent Epistaxis"), ("intent.screen_red_flags", "Screen Airway Haemodynamic Trauma and Bleeding Risk"), ("intent.differentiate_common_causes", "Assess Local Trauma Inflammation and Systemic Bleeding Context"), ("intent.risk_assessment", "Assess Treatment Response Recurrence and Functional Impact")]); primary, research = source_docs()
-    concepts = [("12441001", "Epistaxis (disorder)"), ("249366005", "Bleeding from nose (finding)"), ("64779008", "Blood coagulation disorder (disorder)"), ("21877004", "Osler hemorrhagic telangiectasia syndrome (disorder)"), ("271594007", "Syncope (finding)"), ("404640003", "Dizziness (finding)"), ("40917007", "Clouded consciousness (finding)"), ("29857009", "Chest pain (finding)"), ("267036007", "Dyspnea (finding)")]
-    mapping = {"id": M, "version": VERSION, "status": "research_only", "review_status": "unreviewed", "terminology": {"system": SN, "version": "http://snomed.info/sct/900000000000207008/version/20260801", "source": "STOM"}, "focus_concepts": [{"code": c, "display": d, "concept_active": True, "attribute_count_returned": 0} for c, d in concepts], "verified_attribute_ids": ["246112005", "363714003", "363698007", "272741003"], "validation": {"method": "build_time_live_fhir_lookup_and_mrcm_summary", "checked_at": ACQUIRED_AT, "raw_response_cached": False, "complete_mrcm_snapshot": False, "clinical_rule_authority": False, "result": "provisional_pass"}, "event_semantics": {"diagnosis_inferred": False, "hypertension_causality_inferred": False, "laterality_postcoordination_asserted": False}, "provenance": provenance(["source.stom.epistaxis.20260716", "source.stom.epistaxis-warning-findings.20260805"])}
-    docs = [("knowledge/base/primary-care-epistaxis.json", graph), ("rules/base/primary-care-epistaxis.json", rules), ("knowledge/generated/ent/epistaxis/epistaxis.json", f), ("mappings/terminology/snomed-mrcm-epistaxis.json", mapping), ("sources/manifests/primary-care-epistaxis.json", primary), ("sources/manifests/primary-care-epistaxis-research.json", research), ("policies/primary-care-epistaxis-completion.json", completion(f))]
+    concepts = [("12441001", "Epistaxis (disorder)"), ("249366005", "Bleeding from nose (finding)"), ("64779008", "Blood coagulation disorder (disorder)"), ("21877004", "Osler hemorrhagic telangiectasia syndrome (disorder)"), ("271594007", "Syncope (finding)"), ("404640003", "Dizziness (finding)"), ("40917007", "Clouded consciousness (finding)"), ("29857009", "Chest pain (finding)"), ("267036007", "Dyspnea (finding)"), ("7771000", "Left (qualifier value)"), ("24028007", "Right (qualifier value)"), ("51440002", "Right and left (qualifier value)"), ("2571000112102", "Recurrent nasal haemorrhage (disorder)")]
+    mapping = {"id": M, "version": VERSION, "status": "research_only", "review_status": "unreviewed", "terminology": {"system": SN, "version": "http://snomed.info/sct/900000000000207008/version/20260801", "source": "STOM"}, "focus_concepts": [{"code": c, "display": d, "concept_active": True, "attribute_count_returned": 0} for c, d in concepts], "verified_attribute_ids": ["246112005", "363714003", "363698007", "272741003"], "validation": {"method": "build_time_live_fhir_lookup_and_valueset_filter", "checked_at": REFINEMENT_ACQUIRED_AT, "raw_response_cached": False, "complete_mrcm_snapshot": False, "clinical_rule_authority": False, "result": "provisional_pass"}, "event_semantics": {"diagnosis_inferred": False, "hypertension_causality_inferred": False, "laterality_postcoordination_asserted": False, "bleeding_start_side_answer_domain_verified": True, "recurrent_unilateral_exact_question_mapping_asserted": False}, "provenance": provenance(["source.stom.epistaxis.20260716", "source.stom.epistaxis-warning-findings.20260805", "source.stom.epistaxis-laterality.20260810"])}
+    docs = [("knowledge/base/primary-care-epistaxis.json", graph), ("rules/base/primary-care-epistaxis.json", rules), ("knowledge/generated/ent/epistaxis/epistaxis.json", f), ("mappings/terminology/snomed-mrcm-epistaxis.json", mapping), ("sources/manifests/primary-care-epistaxis.json", primary), ("sources/manifests/primary-care-epistaxis-research.json", research), ("policies/primary-care-epistaxis-completion.json", completion(f)), ("knowledge/shared/clinician-submission-context.json", clinician_context())]
     for path, doc in docs: write_json(path, doc)
     for name, case in cases(f).items(): write_json("simulation/patients/ent/epistaxis/" + name, case)
 

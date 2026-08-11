@@ -1,7 +1,7 @@
 {
   "clinical_use_status": "limited",
   "contains_patient_responses": false,
-  "count": 115,
+  "count": 117,
   "encounter_contexts": [
     "context.primary_care"
   ],
@@ -526,16 +526,16 @@
       }
     },
     {
-      "id": "rule.generated.priority.any.laterality",
+      "id": "rule.generated.priority.any.bleeding-start-side",
       "priority": 162,
       "then": {
-        "reason": "laterality",
-        "target": "target.epistaxis.laterality"
+        "reason": "bleeding-start-side",
+        "target": "target.epistaxis.bleeding-start-side"
       },
       "type": "priority",
       "when": {
         "target_state": {
-          "target.epistaxis.laterality": "active"
+          "target.epistaxis.bleeding-start-side": "active"
         }
       }
     },
@@ -550,6 +550,20 @@
       "when": {
         "target_state": {
           "target.epistaxis.posterior-flow": "active"
+        }
+      }
+    },
+    {
+      "id": "rule.generated.priority.any.recurrent-same-side",
+      "priority": 161,
+      "then": {
+        "reason": "recurrent-same-side",
+        "target": "target.epistaxis.recurrent-same-side"
+      },
+      "type": "priority",
+      "when": {
+        "target_state": {
+          "target.epistaxis.recurrent-same-side": "active"
         }
       }
     },
@@ -992,6 +1006,18 @@
       }
     },
     {
+      "id": "rule.generated.complete.bleeding-start-side",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.epistaxis.bleeding-start-side"
+      }
+    },
+    {
       "id": "rule.generated.complete.blood-pressure",
       "priority": 50,
       "then": {
@@ -1205,18 +1231,6 @@
       "when": {
         "facts_resolved": "all_required",
         "target": "target.epistaxis.last-visible-bleeding-time"
-      }
-    },
-    {
-      "id": "rule.generated.complete.laterality",
-      "priority": 50,
-      "then": {
-        "target_state": "satisfied"
-      },
-      "type": "completion",
-      "when": {
-        "facts_resolved": "all_required",
-        "target": "target.epistaxis.laterality"
       }
     },
     {
@@ -1448,6 +1462,18 @@
       }
     },
     {
+      "id": "rule.generated.complete.recurrent-same-side",
+      "priority": 50,
+      "then": {
+        "target_state": "satisfied"
+      },
+      "type": "completion",
+      "when": {
+        "facts_resolved": "all_required",
+        "target": "target.epistaxis.recurrent-same-side"
+      }
+    },
+    {
       "id": "rule.generated.complete.response",
       "priority": 50,
       "then": {
@@ -1532,7 +1558,7 @@
       "complete": false,
       "id": "source.aao-hnsf.epistaxis.2020",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-08-05",
+      "last_monitored_at": "2026-08-10",
       "license_status": "restricted",
       "monitor_interval_days": 1,
       "publisher": "AAO-HNSF",
@@ -1556,7 +1582,7 @@
       "complete": false,
       "id": "source.nhs.epistaxis.2023",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-07-31",
+      "last_monitored_at": "2026-08-10",
       "license_status": "unknown",
       "monitor_interval_days": 7,
       "publisher": "NHS",
@@ -1566,15 +1592,39 @@
     },
     {
       "complete": false,
+      "id": "source.pubmed.aao-hnsf.epistaxis.2020",
+      "kind": "clinical_guidance_metadata",
+      "last_monitored_at": "2026-08-10",
+      "license_status": "unknown",
+      "monitor_interval_days": 1,
+      "publisher": "U.S. NLM/PubMed",
+      "title": "Clinical Practice Guideline: Nosebleed (Epistaxis)",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/31910111/",
+      "version": "PMID-31910111; DOI-10.1177/0194599819890327"
+    },
+    {
+      "complete": false,
       "id": "source.rch.epistaxis.2026",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-08-05",
+      "last_monitored_at": "2026-08-10",
       "license_status": "unknown",
       "monitor_interval_days": 1,
       "publisher": "Royal Children's Hospital Melbourne",
       "title": "Clinical Practice Guideline: Epistaxis",
       "url": "https://www.rch.org.au/clinicalguide/guideline_index/Epistaxis/",
       "version": "updated-2026-04"
+    },
+    {
+      "complete": false,
+      "id": "source.stom.epistaxis-laterality.20260810",
+      "kind": "terminology_mrcm_query_summary",
+      "last_monitored_at": "2026-08-10",
+      "license_status": "restricted",
+      "monitor_interval_days": 30,
+      "publisher": "Infoclinic",
+      "title": "STOM epistaxis laterality and recurrence terminology lookup",
+      "url": "http://localhost:8088/fhir",
+      "version": "SNOMEDCT-20260801"
     },
     {
       "complete": false,

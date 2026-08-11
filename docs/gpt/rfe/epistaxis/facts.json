@@ -1,7 +1,7 @@
 {
   "clinical_use_status": "limited",
   "contains_patient_responses": false,
-  "count": 50,
+  "count": 51,
   "encounter_contexts": [
     "context.primary_care"
   ],
@@ -38,6 +38,58 @@
       "safety_relevant": true,
       "type": "Fact",
       "value_type": "boolean"
+    },
+    {
+      "allowed_values": [
+        "left",
+        "right",
+        "bilateral"
+      ],
+      "answer_semantic_binding": {
+        "allow_free_text": true,
+        "answer_domain": "laterality",
+        "answer_domain_registry_version": "0.1.0",
+        "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-sct-laterality",
+        "fhir_item_repeats": false,
+        "free_text_internal_values": [],
+        "internal_value_mappings": {
+          "bilateral": {
+            "code": "51440002",
+            "display": "Right and left",
+            "display_ko": "양쪽",
+            "mapping_relation": "normalized_from_legacy",
+            "system": "http://snomed.info/sct"
+          },
+          "left": {
+            "code": "7771000",
+            "display": "Left",
+            "display_ko": "왼쪽",
+            "mapping_relation": "normalized_from_legacy",
+            "system": "http://snomed.info/sct"
+          },
+          "right": {
+            "code": "24028007",
+            "display": "Right",
+            "display_ko": "오른쪽",
+            "mapping_relation": "normalized_from_legacy",
+            "system": "http://snomed.info/sct"
+          }
+        },
+        "policy_id": "policy.question-answer-terminology-binding",
+        "preferred_answer_codes": [
+          "7771000",
+          "24028007",
+          "51440002"
+        ],
+        "strategy": "shared_atomic_answer_domain_with_context_preference"
+      },
+      "description": "",
+      "display": "Bleeding Start Side",
+      "extraction_cues": [],
+      "id": "epistaxis.bleeding_start_side",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "coded"
     },
     {
       "answer_semantic_binding": {
@@ -324,15 +376,6 @@
       "value_type": "string"
     },
     {
-      "description": "",
-      "display": "Laterality and Apparent Source",
-      "extraction_cues": [],
-      "id": "epistaxis.laterality_and_apparent_source",
-      "safety_relevant": false,
-      "type": "Fact",
-      "value_type": "string"
-    },
-    {
       "answer_semantic_binding": {
         "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-sct-yes-no",
         "policy_id": "policy.question-answer-terminology-binding",
@@ -533,6 +576,20 @@
       "value_type": "string"
     },
     {
+      "answer_semantic_binding": {
+        "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-sct-yes-no",
+        "policy_id": "policy.question-answer-terminology-binding",
+        "strategy": "SNOMED_CT_coded_yes_no_with_local_fallback"
+      },
+      "description": "",
+      "display": "Recurrent Bleeding from the Same Side",
+      "extraction_cues": [],
+      "id": "epistaxis.recurrent_same_side",
+      "safety_relevant": false,
+      "type": "Fact",
+      "value_type": "boolean"
+    },
+    {
       "description": "",
       "display": "Response to First Aid",
       "extraction_cues": [],
@@ -626,7 +683,7 @@
       "complete": false,
       "id": "source.aao-hnsf.epistaxis.2020",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-08-05",
+      "last_monitored_at": "2026-08-10",
       "license_status": "restricted",
       "monitor_interval_days": 1,
       "publisher": "AAO-HNSF",
@@ -650,7 +707,7 @@
       "complete": false,
       "id": "source.nhs.epistaxis.2023",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-07-31",
+      "last_monitored_at": "2026-08-10",
       "license_status": "unknown",
       "monitor_interval_days": 7,
       "publisher": "NHS",
@@ -660,15 +717,39 @@
     },
     {
       "complete": false,
+      "id": "source.pubmed.aao-hnsf.epistaxis.2020",
+      "kind": "clinical_guidance_metadata",
+      "last_monitored_at": "2026-08-10",
+      "license_status": "unknown",
+      "monitor_interval_days": 1,
+      "publisher": "U.S. NLM/PubMed",
+      "title": "Clinical Practice Guideline: Nosebleed (Epistaxis)",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/31910111/",
+      "version": "PMID-31910111; DOI-10.1177/0194599819890327"
+    },
+    {
+      "complete": false,
       "id": "source.rch.epistaxis.2026",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-08-05",
+      "last_monitored_at": "2026-08-10",
       "license_status": "unknown",
       "monitor_interval_days": 1,
       "publisher": "Royal Children's Hospital Melbourne",
       "title": "Clinical Practice Guideline: Epistaxis",
       "url": "https://www.rch.org.au/clinicalguide/guideline_index/Epistaxis/",
       "version": "updated-2026-04"
+    },
+    {
+      "complete": false,
+      "id": "source.stom.epistaxis-laterality.20260810",
+      "kind": "terminology_mrcm_query_summary",
+      "last_monitored_at": "2026-08-10",
+      "license_status": "restricted",
+      "monitor_interval_days": 30,
+      "publisher": "Infoclinic",
+      "title": "STOM epistaxis laterality and recurrence terminology lookup",
+      "url": "http://localhost:8088/fhir",
+      "version": "SNOMEDCT-20260801"
     },
     {
       "complete": false,

@@ -407,7 +407,7 @@
     },
     "resource_ref": "knowledge/shared/clinician-submission-context.json",
     "review_status": "unreviewed",
-    "semantic_digest": "sha256:e99a9a3eb4c8ca104986c1d283458dadb4ce885c02961e7bbdc1bc12c3f4f8ca",
+    "semantic_digest": "sha256:00415e4280b772ebb42a5c67baeaea8af871ed040c89b700ed3cbb38eb8bdde0",
     "session_facts": [
       {
         "display": "Unprompted Additional Comment",
@@ -517,7 +517,7 @@
   },
   "coverage": {
     "data_absent_reason_simulations": 1,
-    "facts_with_questions": 50,
+    "facts_with_questions": 51,
     "interoperability": {
       "applicable_uscdi_plus_domains": [
         "uscdi-plus.quality"
@@ -544,30 +544,30 @@
       "ClinicalGroup": 6,
       "ClinicalIntent": 4,
       "EncounterContext": 1,
-      "Fact": 50,
-      "InterviewTarget": 50,
-      "QuestionTemplate": 50,
+      "Fact": 51,
+      "InterviewTarget": 51,
+      "QuestionTemplate": 51,
       "ReasonForEncounter": 1
     },
-    "required_targets_linked_to_facts": 50,
+    "required_targets_linked_to_facts": 51,
     "reviewed_for_production": false,
     "safety_rules_with_simulations": 14,
-    "simulation_count": 21,
-    "total_facts": 50,
+    "simulation_count": 22,
+    "total_facts": 51,
     "total_safety_rules": 14,
-    "total_targets": 50,
+    "total_targets": 51,
     "uncovered_safety_rules": []
   },
   "indexes": {
     "intent_targets": {
       "intent.characterize_symptom": [
         "target.epistaxis.amount",
+        "target.epistaxis.bleeding-start-side",
         "target.epistaxis.current-status",
         "target.epistaxis.duration",
         "target.epistaxis.first-aid",
         "target.epistaxis.information-source",
         "target.epistaxis.last-visible-bleeding-time",
-        "target.epistaxis.laterality",
         "target.epistaxis.local-function",
         "target.epistaxis.onset",
         "target.epistaxis.other-detail",
@@ -600,6 +600,7 @@
         "target.epistaxis.prior-severe",
         "target.epistaxis.procedure",
         "target.epistaxis.recurrence-time-pattern",
+        "target.epistaxis.recurrent-same-side",
         "target.epistaxis.unilateral-local"
       ],
       "intent.screen_red_flags": [
@@ -652,6 +653,17 @@
         ],
         "template_id": "question.epistaxis.anticoagulant",
         "wording": "항응고제·항혈소판제를 복용 중이며 코피가 멈추지 않거나 짧은 시간 안에 반복되나요?"
+      },
+      "epistaxis.bleeding_start_side": {
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ],
+        "template_id": "question.epistaxis.bleeding-start-side",
+        "wording": "이번 코피는 왼쪽·오른쪽·양쪽 중 어디에서 시작했나요? 보기와 다르거나 확실하지 않으면 자유롭게 입력해 주세요."
       },
       "epistaxis.blood_obstructing_airway_or_cannot_handle_blood": {
         "language": "ko",
@@ -969,17 +981,6 @@
         "template_id": "question.epistaxis.last-visible-bleeding-time",
         "wording": "코피를 마지막으로 직접 확인한 때는 언제인가요? 정확하지 않으면 ‘오늘 아침’, ‘약 1시간 전’처럼 입력해 주세요."
       },
-      "epistaxis.laterality_and_apparent_source": {
-        "language": "ko",
-        "mode": [
-          "chat",
-          "face_to_face",
-          "telephone",
-          "video"
-        ],
-        "template_id": "question.epistaxis.laterality",
-        "wording": "왼쪽·오른쪽·양쪽 중 어디에서 시작했고 늘 같은 쪽인지 알려주세요."
-      },
       "epistaxis.major_head_or_facial_trauma": {
         "language": "ko",
         "mode": [
@@ -1189,6 +1190,17 @@
         "template_id": "question.epistaxis.recurrence-time-pattern",
         "wording": "코피가 주로 나타나는 시간대나 계절처럼 반복되는 시점 양상이 있나요? 없으면 없다고 입력해 주세요."
       },
+      "epistaxis.recurrent_same_side": {
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ],
+        "template_id": "question.epistaxis.recurrent-same-side",
+        "wording": "코피가 반복될 때마다 같은 한쪽에서 시작했나요? 예·아니오로 고르기 어렵다면 관찰한 양상을 자유롭게 입력해 주세요."
+      },
       "epistaxis.response_to_pressure_and_other_measures": {
         "language": "ko",
         "mode": [
@@ -1301,6 +1313,9 @@
       "target.epistaxis.bleeding-conditions": [
         "epistaxis.known_bleeding_platelet_liver_kidney_or_blood_disorder"
       ],
+      "target.epistaxis.bleeding-start-side": [
+        "epistaxis.bleeding_start_side"
+      ],
       "target.epistaxis.blood-pressure": [
         "epistaxis.blood_pressure_hypertension_and_measurement_context"
       ],
@@ -1354,9 +1369,6 @@
       ],
       "target.epistaxis.last-visible-bleeding-time": [
         "epistaxis.last_visible_bleeding_time"
-      ],
-      "target.epistaxis.laterality": [
-        "epistaxis.laterality_and_apparent_source"
       ],
       "target.epistaxis.local-function": [
         "epistaxis.nasal_pain_tenderness_deformity_and_breathing"
@@ -1414,6 +1426,9 @@
       ],
       "target.epistaxis.recurrence-time-pattern": [
         "epistaxis.recurrence_time_pattern"
+      ],
+      "target.epistaxis.recurrent-same-side": [
+        "epistaxis.recurrent_same_side"
       ],
       "target.epistaxis.response": [
         "epistaxis.response_to_pressure_and_other_measures"
@@ -1947,11 +1962,13 @@
             "epistaxis.current_packing_type_date_and_followup_plan"
           ],
           "post_treatment_followup": [
+            "epistaxis.recurrent_same_side",
             "epistaxis.previous_examination_endoscopy_tests_and_results",
             "epistaxis.current_packing_type_date_and_followup_plan",
             "epistaxis.smoking_vaping_occupation_and_irritant_exposure"
           ],
           "recurrent_episodes": [
+            "epistaxis.recurrent_same_side",
             "epistaxis.prior_severe_episode_ed_admission_or_transfusion",
             "epistaxis.previous_examination_endoscopy_tests_and_results",
             "epistaxis.pregnancy_postpartum_context",
@@ -2013,7 +2030,7 @@
         "epistaxis.first_aid_method_pressure_site_and_duration",
         "epistaxis.response_to_pressure_and_other_measures",
         "epistaxis.estimated_amount_and_estimation_method",
-        "epistaxis.laterality_and_apparent_source",
+        "epistaxis.bleeding_start_side",
         "epistaxis.posterior_flow_clots_and_swallowed_blood",
         "epistaxis.episode_frequency",
         "epistaxis.recurrence_time_pattern",
@@ -2246,6 +2263,64 @@
         },
         "status": "research_only",
         "to": "group.epistaxis.safety",
+        "type": "SUPPORTS",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "epistaxis.bleeding_start_side",
+        "id": "edge.generated.epistaxis_bleeding_start_side.supports.group_epistaxis_episode",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.aao-hnsf.epistaxis.2020",
+            "source.nhs.epistaxis.2023",
+            "source.rch.epistaxis.2026",
+            "source.aci-nsw.epistaxis.2022",
+            "source.stom.epistaxis.20260716",
+            "source.stom.epistaxis-warning-findings.20260805"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "group.epistaxis.episode",
+        "type": "SUPPORTS",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "epistaxis.bleeding_start_side",
+        "id": "edge.generated.epistaxis_bleeding_start_side.supports.group_epistaxis_local",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.aao-hnsf.epistaxis.2020",
+            "source.nhs.epistaxis.2023",
+            "source.rch.epistaxis.2026",
+            "source.aci-nsw.epistaxis.2022",
+            "source.stom.epistaxis.20260716",
+            "source.stom.epistaxis-warning-findings.20260805"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "group.epistaxis.local",
         "type": "SUPPORTS",
         "usage_modes": [
           "research_test",
@@ -2884,64 +2959,6 @@
         },
         "status": "research_only",
         "to": "group.epistaxis.episode",
-        "type": "SUPPORTS",
-        "usage_modes": [
-          "research_test",
-          "simulation"
-        ],
-        "version": "0.1.0"
-      },
-      {
-        "from": "epistaxis.laterality_and_apparent_source",
-        "id": "edge.generated.epistaxis_laterality_and_apparent_source.supports.group_epistaxis_episode",
-        "provenance": {
-          "created_at": "2026-07-14T00:00:00Z",
-          "created_by": {
-            "id": "codex-gpt5",
-            "type": "ai"
-          },
-          "review_status": "unreviewed",
-          "source_refs": [
-            "source.aao-hnsf.epistaxis.2020",
-            "source.nhs.epistaxis.2023",
-            "source.rch.epistaxis.2026",
-            "source.aci-nsw.epistaxis.2022",
-            "source.stom.epistaxis.20260716",
-            "source.stom.epistaxis-warning-findings.20260805"
-          ],
-          "version": "0.1.0"
-        },
-        "status": "research_only",
-        "to": "group.epistaxis.episode",
-        "type": "SUPPORTS",
-        "usage_modes": [
-          "research_test",
-          "simulation"
-        ],
-        "version": "0.1.0"
-      },
-      {
-        "from": "epistaxis.laterality_and_apparent_source",
-        "id": "edge.generated.epistaxis_laterality_and_apparent_source.supports.group_epistaxis_local",
-        "provenance": {
-          "created_at": "2026-07-14T00:00:00Z",
-          "created_by": {
-            "id": "codex-gpt5",
-            "type": "ai"
-          },
-          "review_status": "unreviewed",
-          "source_refs": [
-            "source.aao-hnsf.epistaxis.2020",
-            "source.nhs.epistaxis.2023",
-            "source.rch.epistaxis.2026",
-            "source.aci-nsw.epistaxis.2022",
-            "source.stom.epistaxis.20260716",
-            "source.stom.epistaxis-warning-findings.20260805"
-          ],
-          "version": "0.1.0"
-        },
-        "status": "research_only",
-        "to": "group.epistaxis.local",
         "type": "SUPPORTS",
         "usage_modes": [
           "research_test",
@@ -3704,6 +3721,64 @@
         "version": "0.1.0"
       },
       {
+        "from": "epistaxis.recurrent_same_side",
+        "id": "edge.generated.epistaxis_recurrent_same_side.supports.group_epistaxis_episode",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.aao-hnsf.epistaxis.2020",
+            "source.nhs.epistaxis.2023",
+            "source.rch.epistaxis.2026",
+            "source.aci-nsw.epistaxis.2022",
+            "source.stom.epistaxis.20260716",
+            "source.stom.epistaxis-warning-findings.20260805"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "group.epistaxis.episode",
+        "type": "SUPPORTS",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "epistaxis.recurrent_same_side",
+        "id": "edge.generated.epistaxis_recurrent_same_side.supports.group_epistaxis_local",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.aao-hnsf.epistaxis.2020",
+            "source.nhs.epistaxis.2023",
+            "source.rch.epistaxis.2026",
+            "source.aci-nsw.epistaxis.2022",
+            "source.stom.epistaxis.20260716",
+            "source.stom.epistaxis-warning-findings.20260805"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "group.epistaxis.local",
+        "type": "SUPPORTS",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
         "from": "epistaxis.response_to_pressure_and_other_measures",
         "id": "edge.generated.epistaxis_response_to_pressure_and_other_measures.supports.group_epistaxis_episode",
         "provenance": {
@@ -3966,6 +4041,35 @@
       },
       {
         "from": "intent.characterize_symptom",
+        "id": "edge.generated.intent_characterize_symptom.generates.target_epistaxis_bleeding_start_side",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.aao-hnsf.epistaxis.2020",
+            "source.nhs.epistaxis.2023",
+            "source.rch.epistaxis.2026",
+            "source.aci-nsw.epistaxis.2022",
+            "source.stom.epistaxis.20260716",
+            "source.stom.epistaxis-warning-findings.20260805"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "target.epistaxis.bleeding-start-side",
+        "type": "GENERATES",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "intent.characterize_symptom",
         "id": "edge.generated.intent_characterize_symptom.generates.target_epistaxis_current_status",
         "provenance": {
           "created_at": "2026-07-14T00:00:00Z",
@@ -4102,35 +4206,6 @@
         },
         "status": "research_only",
         "to": "target.epistaxis.last-visible-bleeding-time",
-        "type": "GENERATES",
-        "usage_modes": [
-          "research_test",
-          "simulation"
-        ],
-        "version": "0.1.0"
-      },
-      {
-        "from": "intent.characterize_symptom",
-        "id": "edge.generated.intent_characterize_symptom.generates.target_epistaxis_laterality",
-        "provenance": {
-          "created_at": "2026-07-14T00:00:00Z",
-          "created_by": {
-            "id": "codex-gpt5",
-            "type": "ai"
-          },
-          "review_status": "unreviewed",
-          "source_refs": [
-            "source.aao-hnsf.epistaxis.2020",
-            "source.nhs.epistaxis.2023",
-            "source.rch.epistaxis.2026",
-            "source.aci-nsw.epistaxis.2022",
-            "source.stom.epistaxis.20260716",
-            "source.stom.epistaxis-warning-findings.20260805"
-          ],
-          "version": "0.1.0"
-        },
-        "status": "research_only",
-        "to": "target.epistaxis.laterality",
         "type": "GENERATES",
         "usage_modes": [
           "research_test",
@@ -4952,6 +5027,35 @@
       },
       {
         "from": "intent.risk_assessment",
+        "id": "edge.generated.intent_risk_assessment.generates.target_epistaxis_recurrent_same_side",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.aao-hnsf.epistaxis.2020",
+            "source.nhs.epistaxis.2023",
+            "source.rch.epistaxis.2026",
+            "source.aci-nsw.epistaxis.2022",
+            "source.stom.epistaxis.20260716",
+            "source.stom.epistaxis-warning-findings.20260805"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "target.epistaxis.recurrent-same-side",
+        "type": "GENERATES",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "intent.risk_assessment",
         "id": "edge.generated.intent_risk_assessment.generates.target_epistaxis_unilateral_local",
         "provenance": {
           "created_at": "2026-07-14T00:00:00Z",
@@ -5560,6 +5664,35 @@
         "version": "0.1.0"
       },
       {
+        "from": "question.epistaxis.bleeding-start-side",
+        "id": "edge.generated.question_epistaxis_bleeding_start_side.collects.epistaxis_bleeding_start_side",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.aao-hnsf.epistaxis.2020",
+            "source.nhs.epistaxis.2023",
+            "source.rch.epistaxis.2026",
+            "source.aci-nsw.epistaxis.2022",
+            "source.stom.epistaxis.20260716",
+            "source.stom.epistaxis-warning-findings.20260805"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "epistaxis.bleeding_start_side",
+        "type": "COLLECTS",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
         "from": "question.epistaxis.blood-pressure",
         "id": "edge.generated.question_epistaxis_blood_pressure.collects.epistaxis_blood_pressure_hypertension_and_measurement_context",
         "provenance": {
@@ -6074,35 +6207,6 @@
         },
         "status": "research_only",
         "to": "epistaxis.last_visible_bleeding_time",
-        "type": "COLLECTS",
-        "usage_modes": [
-          "research_test",
-          "simulation"
-        ],
-        "version": "0.1.0"
-      },
-      {
-        "from": "question.epistaxis.laterality",
-        "id": "edge.generated.question_epistaxis_laterality.collects.epistaxis_laterality_and_apparent_source",
-        "provenance": {
-          "created_at": "2026-07-14T00:00:00Z",
-          "created_by": {
-            "id": "codex-gpt5",
-            "type": "ai"
-          },
-          "review_status": "unreviewed",
-          "source_refs": [
-            "source.aao-hnsf.epistaxis.2020",
-            "source.nhs.epistaxis.2023",
-            "source.rch.epistaxis.2026",
-            "source.aci-nsw.epistaxis.2022",
-            "source.stom.epistaxis.20260716",
-            "source.stom.epistaxis-warning-findings.20260805"
-          ],
-          "version": "0.1.0"
-        },
-        "status": "research_only",
-        "to": "epistaxis.laterality_and_apparent_source",
         "type": "COLLECTS",
         "usage_modes": [
           "research_test",
@@ -6662,6 +6766,35 @@
         "version": "0.1.0"
       },
       {
+        "from": "question.epistaxis.recurrent-same-side",
+        "id": "edge.generated.question_epistaxis_recurrent_same_side.collects.epistaxis_recurrent_same_side",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.aao-hnsf.epistaxis.2020",
+            "source.nhs.epistaxis.2023",
+            "source.rch.epistaxis.2026",
+            "source.aci-nsw.epistaxis.2022",
+            "source.stom.epistaxis.20260716",
+            "source.stom.epistaxis-warning-findings.20260805"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "epistaxis.recurrent_same_side",
+        "type": "COLLECTS",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
         "from": "question.epistaxis.response",
         "id": "edge.generated.question_epistaxis_response.collects.epistaxis_response_to_pressure_and_other_measures",
         "provenance": {
@@ -7002,6 +7135,35 @@
         },
         "status": "research_only",
         "to": "epistaxis.known_bleeding_platelet_liver_kidney_or_blood_disorder",
+        "type": "REQUIRES",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "from": "target.epistaxis.bleeding-start-side",
+        "id": "edge.generated.target_epistaxis_bleeding_start_side.requires.epistaxis_bleeding_start_side",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.aao-hnsf.epistaxis.2020",
+            "source.nhs.epistaxis.2023",
+            "source.rch.epistaxis.2026",
+            "source.aci-nsw.epistaxis.2022",
+            "source.stom.epistaxis.20260716",
+            "source.stom.epistaxis-warning-findings.20260805"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "epistaxis.bleeding_start_side",
         "type": "REQUIRES",
         "usage_modes": [
           "research_test",
@@ -7524,35 +7686,6 @@
         },
         "status": "research_only",
         "to": "epistaxis.last_visible_bleeding_time",
-        "type": "REQUIRES",
-        "usage_modes": [
-          "research_test",
-          "simulation"
-        ],
-        "version": "0.1.0"
-      },
-      {
-        "from": "target.epistaxis.laterality",
-        "id": "edge.generated.target_epistaxis_laterality.requires.epistaxis_laterality_and_apparent_source",
-        "provenance": {
-          "created_at": "2026-07-14T00:00:00Z",
-          "created_by": {
-            "id": "codex-gpt5",
-            "type": "ai"
-          },
-          "review_status": "unreviewed",
-          "source_refs": [
-            "source.aao-hnsf.epistaxis.2020",
-            "source.nhs.epistaxis.2023",
-            "source.rch.epistaxis.2026",
-            "source.aci-nsw.epistaxis.2022",
-            "source.stom.epistaxis.20260716",
-            "source.stom.epistaxis-warning-findings.20260805"
-          ],
-          "version": "0.1.0"
-        },
-        "status": "research_only",
-        "to": "epistaxis.laterality_and_apparent_source",
         "type": "REQUIRES",
         "usage_modes": [
           "research_test",
@@ -8112,6 +8245,35 @@
         "version": "0.1.0"
       },
       {
+        "from": "target.epistaxis.recurrent-same-side",
+        "id": "edge.generated.target_epistaxis_recurrent_same_side.requires.epistaxis_recurrent_same_side",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.aao-hnsf.epistaxis.2020",
+            "source.nhs.epistaxis.2023",
+            "source.rch.epistaxis.2026",
+            "source.aci-nsw.epistaxis.2022",
+            "source.stom.epistaxis.20260716",
+            "source.stom.epistaxis-warning-findings.20260805"
+          ],
+          "version": "0.1.0"
+        },
+        "status": "research_only",
+        "to": "epistaxis.recurrent_same_side",
+        "type": "REQUIRES",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
         "from": "target.epistaxis.response",
         "id": "edge.generated.target_epistaxis_response.requires.epistaxis_response_to_pressure_and_other_measures",
         "provenance": {
@@ -8332,10 +8494,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -8378,10 +8540,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -8432,10 +8594,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -8451,6 +8613,98 @@
           "simulation"
         ],
         "value_type": "boolean",
+        "version": "0.1.0"
+      },
+      {
+        "allowed_values": [
+          "left",
+          "right",
+          "bilateral"
+        ],
+        "answer_semantic_binding": {
+          "allow_free_text": true,
+          "answer_domain": "laterality",
+          "answer_domain_registry_version": "0.1.0",
+          "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-sct-laterality",
+          "fhir_item_repeats": false,
+          "fhir_item_type": "choice",
+          "fhir_response_type": "valueCoding_or_valueString",
+          "free_text_internal_values": [],
+          "internal_value_mappings": {
+            "bilateral": {
+              "code": "51440002",
+              "display": "Right and left",
+              "display_ko": "양쪽",
+              "mapping_relation": "normalized_from_legacy",
+              "system": "http://snomed.info/sct"
+            },
+            "left": {
+              "code": "7771000",
+              "display": "Left",
+              "display_ko": "왼쪽",
+              "mapping_relation": "normalized_from_legacy",
+              "system": "http://snomed.info/sct"
+            },
+            "right": {
+              "code": "24028007",
+              "display": "Right",
+              "display_ko": "오른쪽",
+              "mapping_relation": "normalized_from_legacy",
+              "system": "http://snomed.info/sct"
+            }
+          },
+          "policy_id": "policy.question-answer-terminology-binding",
+          "preferred_answer_codes": [
+            "7771000",
+            "24028007",
+            "51440002"
+          ],
+          "strategy": "shared_atomic_answer_domain_with_context_preference",
+          "value_set_strategy": "complete_shared_local_domain"
+        },
+        "description": "",
+        "display": "Bleeding Start Side",
+        "extraction_cues": [],
+        "id": "epistaxis.bleeding_start_side",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.aao-hnsf.epistaxis.2020",
+            "source.nhs.epistaxis.2023",
+            "source.rch.epistaxis.2026",
+            "source.aci-nsw.epistaxis.2022",
+            "source.stom.epistaxis.20260716",
+            "source.stom.epistaxis-warning-findings.20260805"
+          ],
+          "version": "0.1.0"
+        },
+        "refresh": {
+          "class": "clinical_guideline",
+          "full_review_interval_days": 180,
+          "last_assessed_at": "2026-08-10",
+          "monitor_interval_days": 1,
+          "next_full_review_at": "2027-02-01",
+          "next_monitor_at": "2026-08-11",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          },
+          "policy_id": "policy.knowledge-refresh"
+        },
+        "safety_relevant": false,
+        "source_manifest": "source-manifest.primary-care-epistaxis-research",
+        "status": "research_only",
+        "type": "Fact",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "value_type": "coded",
         "version": "0.1.0"
       },
       {
@@ -8486,10 +8740,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -8532,10 +8786,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -8590,10 +8844,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -8648,10 +8902,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -8706,10 +8960,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -8760,10 +9014,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -8810,10 +9064,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -8868,10 +9122,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -8918,10 +9172,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -8976,10 +9230,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -9026,10 +9280,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -9076,10 +9330,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -9126,10 +9380,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -9176,10 +9430,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -9226,10 +9480,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -9280,10 +9534,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -9326,10 +9580,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -9376,10 +9630,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -9434,10 +9688,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -9480,56 +9734,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
-          "overdue_behavior": {
-            "production": "exclude_or_require_review",
-            "research_test": "allow_with_warning"
-          },
-          "policy_id": "policy.knowledge-refresh"
-        },
-        "safety_relevant": false,
-        "source_manifest": "source-manifest.primary-care-epistaxis-research",
-        "status": "research_only",
-        "type": "Fact",
-        "usage_modes": [
-          "research_test",
-          "simulation"
-        ],
-        "value_type": "string",
-        "version": "0.1.0"
-      },
-      {
-        "description": "",
-        "display": "Laterality and Apparent Source",
-        "extraction_cues": [],
-        "id": "epistaxis.laterality_and_apparent_source",
-        "provenance": {
-          "created_at": "2026-07-14T00:00:00Z",
-          "created_by": {
-            "id": "codex-gpt5",
-            "type": "ai"
-          },
-          "review_status": "unreviewed",
-          "source_refs": [
-            "source.aao-hnsf.epistaxis.2020",
-            "source.nhs.epistaxis.2023",
-            "source.rch.epistaxis.2026",
-            "source.aci-nsw.epistaxis.2022",
-            "source.stom.epistaxis.20260716",
-            "source.stom.epistaxis-warning-findings.20260805"
-          ],
-          "version": "0.1.0"
-        },
-        "refresh": {
-          "class": "clinical_guideline",
-          "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
-          "monitor_interval_days": 1,
-          "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -9580,10 +9788,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -9634,10 +9842,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -9680,10 +9888,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -9726,10 +9934,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -9772,10 +9980,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -9818,10 +10026,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -9864,10 +10072,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -9910,10 +10118,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -9964,10 +10172,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -10010,10 +10218,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -10056,10 +10264,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -10102,10 +10310,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -10148,10 +10356,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -10194,10 +10402,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -10258,10 +10466,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -10304,10 +10512,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -10350,10 +10558,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -10396,10 +10604,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -10442,10 +10650,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -10461,6 +10669,60 @@
           "simulation"
         ],
         "value_type": "string",
+        "version": "0.1.0"
+      },
+      {
+        "answer_semantic_binding": {
+          "answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-sct-yes-no",
+          "fhir_item_type": "choice",
+          "fhir_response_type": "valueCoding",
+          "local_answer_value_set": "https://ggojang.github.io/clinical-interview-platform/fhir/ValueSet/a-local-yes-no",
+          "policy_id": "policy.question-answer-terminology-binding",
+          "strategy": "SNOMED_CT_coded_yes_no_with_local_fallback"
+        },
+        "description": "",
+        "display": "Recurrent Bleeding from the Same Side",
+        "extraction_cues": [],
+        "id": "epistaxis.recurrent_same_side",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.aao-hnsf.epistaxis.2020",
+            "source.nhs.epistaxis.2023",
+            "source.rch.epistaxis.2026",
+            "source.aci-nsw.epistaxis.2022",
+            "source.stom.epistaxis.20260716",
+            "source.stom.epistaxis-warning-findings.20260805"
+          ],
+          "version": "0.1.0"
+        },
+        "refresh": {
+          "class": "clinical_guideline",
+          "full_review_interval_days": 180,
+          "last_assessed_at": "2026-08-10",
+          "monitor_interval_days": 1,
+          "next_full_review_at": "2027-02-01",
+          "next_monitor_at": "2026-08-11",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          },
+          "policy_id": "policy.knowledge-refresh"
+        },
+        "safety_relevant": false,
+        "source_manifest": "source-manifest.primary-care-epistaxis-research",
+        "status": "research_only",
+        "type": "Fact",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "value_type": "boolean",
         "version": "0.1.0"
       },
       {
@@ -10488,10 +10750,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -10534,10 +10796,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -10580,10 +10842,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -10626,10 +10888,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -10680,10 +10942,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -10738,10 +11000,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -10788,10 +11050,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -11295,6 +11557,44 @@
         ],
         "version": "0.1.0",
         "wording": "혈우병·폰빌레브란트병·혈소판 감소, 간·신장·혈액질환 등 출혈 관련 진단을 알려주세요."
+      },
+      {
+        "collects": "epistaxis.bleeding_start_side",
+        "display": "이번 코피는 왼쪽·오른쪽·양쪽 중 어디에서 시작했나요? 보기와 다르거나 확실하지 않으면 자유롭게 입력해 주세요.",
+        "id": "question.epistaxis.bleeding-start-side",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ],
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.aao-hnsf.epistaxis.2020",
+            "source.nhs.epistaxis.2023",
+            "source.rch.epistaxis.2026",
+            "source.aci-nsw.epistaxis.2022",
+            "source.stom.epistaxis.20260716",
+            "source.stom.epistaxis-warning-findings.20260805"
+          ],
+          "version": "0.1.0"
+        },
+        "source_manifest": "source-manifest.primary-care-epistaxis-research",
+        "status": "research_only",
+        "type": "QuestionTemplate",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0",
+        "wording": "이번 코피는 왼쪽·오른쪽·양쪽 중 어디에서 시작했나요? 보기와 다르거나 확실하지 않으면 자유롭게 입력해 주세요."
       },
       {
         "collects": "epistaxis.blood_pressure_hypertension_and_measurement_context",
@@ -12068,44 +12368,6 @@
         "wording": "코피를 마지막으로 직접 확인한 때는 언제인가요? 정확하지 않으면 ‘오늘 아침’, ‘약 1시간 전’처럼 입력해 주세요."
       },
       {
-        "collects": "epistaxis.laterality_and_apparent_source",
-        "display": "왼쪽·오른쪽·양쪽 중 어디에서 시작했고 늘 같은 쪽인지 알려주세요.",
-        "id": "question.epistaxis.laterality",
-        "language": "ko",
-        "mode": [
-          "chat",
-          "face_to_face",
-          "telephone",
-          "video"
-        ],
-        "provenance": {
-          "created_at": "2026-07-14T00:00:00Z",
-          "created_by": {
-            "id": "codex-gpt5",
-            "type": "ai"
-          },
-          "review_status": "unreviewed",
-          "source_refs": [
-            "source.aao-hnsf.epistaxis.2020",
-            "source.nhs.epistaxis.2023",
-            "source.rch.epistaxis.2026",
-            "source.aci-nsw.epistaxis.2022",
-            "source.stom.epistaxis.20260716",
-            "source.stom.epistaxis-warning-findings.20260805"
-          ],
-          "version": "0.1.0"
-        },
-        "source_manifest": "source-manifest.primary-care-epistaxis-research",
-        "status": "research_only",
-        "type": "QuestionTemplate",
-        "usage_modes": [
-          "research_test",
-          "simulation"
-        ],
-        "version": "0.1.0",
-        "wording": "왼쪽·오른쪽·양쪽 중 어디에서 시작했고 늘 같은 쪽인지 알려주세요."
-      },
-      {
         "collects": "epistaxis.nasal_pain_tenderness_deformity_and_breathing",
         "display": "코 통증·압통·부기·변형과 코로 숨쉬기 어려움이 있는지 알려주세요.",
         "id": "question.epistaxis.local-function",
@@ -12828,6 +13090,44 @@
         "wording": "코피가 주로 나타나는 시간대나 계절처럼 반복되는 시점 양상이 있나요? 없으면 없다고 입력해 주세요."
       },
       {
+        "collects": "epistaxis.recurrent_same_side",
+        "display": "코피가 반복될 때마다 같은 한쪽에서 시작했나요? 예·아니오로 고르기 어렵다면 관찰한 양상을 자유롭게 입력해 주세요.",
+        "id": "question.epistaxis.recurrent-same-side",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ],
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.aao-hnsf.epistaxis.2020",
+            "source.nhs.epistaxis.2023",
+            "source.rch.epistaxis.2026",
+            "source.aci-nsw.epistaxis.2022",
+            "source.stom.epistaxis.20260716",
+            "source.stom.epistaxis-warning-findings.20260805"
+          ],
+          "version": "0.1.0"
+        },
+        "source_manifest": "source-manifest.primary-care-epistaxis-research",
+        "status": "research_only",
+        "type": "QuestionTemplate",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0",
+        "wording": "코피가 반복될 때마다 같은 한쪽에서 시작했나요? 예·아니오로 고르기 어렵다면 관찰한 양상을 자유롭게 입력해 주세요."
+      },
+      {
         "collects": "epistaxis.response_to_pressure_and_other_measures",
         "display": "압박 전후 출혈이 멈춤·감소·변화 없음 중 어떻게 달라졌고 다른 조치를 했나요?",
         "id": "question.epistaxis.response",
@@ -13271,6 +13571,38 @@
         },
         "required_facts": [
           "epistaxis.known_bleeding_platelet_liver_kidney_or_blood_disorder"
+        ],
+        "source_manifest": "source-manifest.primary-care-epistaxis-research",
+        "status": "research_only",
+        "type": "InterviewTarget",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
+        "display": "Bleeding Start Side",
+        "id": "target.epistaxis.bleeding-start-side",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.aao-hnsf.epistaxis.2020",
+            "source.nhs.epistaxis.2023",
+            "source.rch.epistaxis.2026",
+            "source.aci-nsw.epistaxis.2022",
+            "source.stom.epistaxis.20260716",
+            "source.stom.epistaxis-warning-findings.20260805"
+          ],
+          "version": "0.1.0"
+        },
+        "required_facts": [
+          "epistaxis.bleeding_start_side"
         ],
         "source_manifest": "source-manifest.primary-care-epistaxis-research",
         "status": "research_only",
@@ -13847,38 +14179,6 @@
         },
         "required_facts": [
           "epistaxis.last_visible_bleeding_time"
-        ],
-        "source_manifest": "source-manifest.primary-care-epistaxis-research",
-        "status": "research_only",
-        "type": "InterviewTarget",
-        "usage_modes": [
-          "research_test",
-          "simulation"
-        ],
-        "version": "0.1.0"
-      },
-      {
-        "display": "Laterality and Apparent Source",
-        "id": "target.epistaxis.laterality",
-        "provenance": {
-          "created_at": "2026-07-14T00:00:00Z",
-          "created_by": {
-            "id": "codex-gpt5",
-            "type": "ai"
-          },
-          "review_status": "unreviewed",
-          "source_refs": [
-            "source.aao-hnsf.epistaxis.2020",
-            "source.nhs.epistaxis.2023",
-            "source.rch.epistaxis.2026",
-            "source.aci-nsw.epistaxis.2022",
-            "source.stom.epistaxis.20260716",
-            "source.stom.epistaxis-warning-findings.20260805"
-          ],
-          "version": "0.1.0"
-        },
-        "required_facts": [
-          "epistaxis.laterality_and_apparent_source"
         ],
         "source_manifest": "source-manifest.primary-care-epistaxis-research",
         "status": "research_only",
@@ -14498,6 +14798,38 @@
         "version": "0.1.0"
       },
       {
+        "display": "Recurrent Bleeding from the Same Side",
+        "id": "target.epistaxis.recurrent-same-side",
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.aao-hnsf.epistaxis.2020",
+            "source.nhs.epistaxis.2023",
+            "source.rch.epistaxis.2026",
+            "source.aci-nsw.epistaxis.2022",
+            "source.stom.epistaxis.20260716",
+            "source.stom.epistaxis-warning-findings.20260805"
+          ],
+          "version": "0.1.0"
+        },
+        "required_facts": [
+          "epistaxis.recurrent_same_side"
+        ],
+        "source_manifest": "source-manifest.primary-care-epistaxis-research",
+        "status": "research_only",
+        "type": "InterviewTarget",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0"
+      },
+      {
         "display": "Response to First Aid",
         "id": "target.epistaxis.response",
         "provenance": {
@@ -14736,6 +15068,7 @@
   },
   "question_answer_terminology": {
     "answer_binding_precedence": "target_FHIR_R4_element_then_SNOMED_CT_then_local",
+    "answer_domain_registry": "knowledge/shared/answer-domains.json",
     "answer_value_set_naming_rule": "a-{sct|loinc|local|mixed}-{semantic-name}",
     "boolean_snomed_semantic_equivalents": {
       "false": {
@@ -14752,18 +15085,18 @@
       }
     },
     "coverage": {
-      "boolean_primitive_question_count": 14,
-      "coded_answer_local_fallback_count": 7,
-      "coded_answer_snomed_count": 0,
-      "coded_answer_snomed_percent": 0.0,
-      "coded_answer_value_count": 7,
+      "boolean_primitive_question_count": 15,
+      "coded_answer_local_fallback_count": 10,
+      "coded_answer_snomed_count": 3,
+      "coded_answer_snomed_percent": 30.0,
+      "coded_answer_value_count": 10,
       "data_absent_option_count": 0,
       "fhir_r4_element_bound_question_count": 0,
       "fhir_r4_element_candidate_question_count": 0,
-      "other_primitive_question_count": 35,
-      "question_count": 50,
-      "question_local_code_count": 50,
-      "question_local_only_count": 41,
+      "other_primitive_question_count": 34,
+      "question_count": 51,
+      "question_local_code_count": 51,
+      "question_local_only_count": 42,
       "question_loinc_exact_or_equivalent_count": 0,
       "question_loinc_exact_or_equivalent_percent": 0.0,
       "question_loinc_partial_or_related_count": 0,
@@ -14772,6 +15105,7 @@
     "fhir_r4_element_binding_policy": "policy.fhir-r4-element-terminology-binding",
     "local_answer_code_pattern": "{fact_id}--{internal_value}",
     "local_answer_code_system": "https://ggojang.github.io/clinical-interview-platform/fhir/CodeSystem/clinical-interview-answer",
+    "local_answer_domain_code_system": "https://ggojang.github.io/clinical-interview-platform/fhir/CodeSystem/clinical-interview-answer-domain",
     "local_question_code_is_template_id": true,
     "local_question_code_system": "https://ggojang.github.io/clinical-interview-platform/fhir/CodeSystem/clinical-interview-question",
     "policy_id": "policy.question-answer-terminology-binding",
@@ -14902,7 +15236,7 @@
   "release_state": "draft",
   "research_source_manifests": [
     {
-      "acquired_at": "2026-08-05T09:02:20Z",
+      "acquired_at": "2026-08-10T15:35:26Z",
       "artifacts": [
         {
           "assertions": [
@@ -14914,16 +15248,37 @@
           "id": "source.aao-hnsf.epistaxis.2020",
           "kind": "clinical_guidance_metadata",
           "language": "en",
-          "last_monitored_at": "2026-08-05",
+          "last_monitored_at": "2026-08-10",
           "license_status": "restricted",
           "monitor_interval_days": 1,
           "monitor_profile": "clinical_guideline",
           "monitor_result": "current_official_source_confirmed_no_clinical_change",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "publisher": "AAO-HNSF",
           "title": "Clinical Practice Guideline: Nosebleed (Epistaxis)",
           "url": "https://www.entnet.org/quality-practice/quality-products/clinical-practice-guidelines/nosebleed-epistaxis/",
           "version": "CPG-2020"
+        },
+        {
+          "assertions": [
+            "Key action statement 7a supports nasal endoscopy or referral for recurrent unilateral nasal bleeding and for recurrence despite packing or cautery.",
+            "The pre-visit interview records the side and post-treatment recurrence as separate observations; it does not diagnose the cause or order endoscopy."
+          ],
+          "complete": false,
+          "digest": "metadata_only_not_cached",
+          "id": "source.pubmed.aao-hnsf.epistaxis.2020",
+          "kind": "clinical_guidance_metadata",
+          "language": "en",
+          "last_monitored_at": "2026-08-10",
+          "license_status": "unknown",
+          "monitor_interval_days": 1,
+          "monitor_profile": "clinical_guideline",
+          "monitor_result": "new_primary_guideline_publication_registered",
+          "next_monitor_at": "2026-08-11",
+          "publisher": "U.S. NLM/PubMed",
+          "title": "Clinical Practice Guideline: Nosebleed (Epistaxis)",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/31910111/",
+          "version": "PMID-31910111; DOI-10.1177/0194599819890327"
         },
         {
           "assertions": [
@@ -14935,12 +15290,12 @@
           "id": "source.nhs.epistaxis.2023",
           "kind": "clinical_guidance_metadata",
           "language": "en",
-          "last_monitored_at": "2026-07-31",
+          "last_monitored_at": "2026-08-10",
           "license_status": "unknown",
           "monitor_interval_days": 7,
           "monitor_profile": "public_health_guidance",
           "monitor_result": "current_official_source_confirmed_no_clinical_change",
-          "next_monitor_at": "2026-08-07",
+          "next_monitor_at": "2026-08-17",
           "publisher": "NHS",
           "title": "Nosebleed",
           "url": "https://www.nhs.uk/conditions/nosebleed/",
@@ -14956,12 +15311,12 @@
           "id": "source.rch.epistaxis.2026",
           "kind": "clinical_guidance_metadata",
           "language": "en",
-          "last_monitored_at": "2026-08-05",
+          "last_monitored_at": "2026-08-10",
           "license_status": "unknown",
           "monitor_interval_days": 1,
           "monitor_profile": "clinical_guideline",
           "monitor_result": "current_official_source_confirmed_no_clinical_change",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "publisher": "Royal Children's Hospital Melbourne",
           "title": "Clinical Practice Guideline: Epistaxis",
           "url": "https://www.rch.org.au/clinicalguide/guideline_index/Epistaxis/",
@@ -15029,6 +15384,27 @@
           "title": "STOM epistaxis warning finding lookup",
           "url": "http://localhost:8088/fhir",
           "version": "SNOMEDCT-20260801"
+        },
+        {
+          "assertions": [
+            "FHIR lookup confirmed active Left 7771000, Right 24028007 and Right and left 51440002 qualifier values for the separate bleeding-start-side answer domain.",
+            "FHIR ValueSet filter search returned Recurrent nasal haemorrhage 2571000112102 but no exact unilateral-epistaxis concept; no exact standard question mapping or post-coordinated clinical assertion is made."
+          ],
+          "complete": false,
+          "digest": "live_response_summary_not_raw_cache",
+          "id": "source.stom.epistaxis-laterality.20260810",
+          "kind": "terminology_mrcm_query_summary",
+          "language": "en",
+          "last_monitored_at": "2026-08-10",
+          "license_status": "restricted",
+          "monitor_interval_days": 30,
+          "monitor_profile": "terminology_server",
+          "monitor_result": "targeted_laterality_lookup_and_recurrence_filter_confirmed",
+          "next_monitor_at": "2026-09-09",
+          "publisher": "Infoclinic",
+          "title": "STOM epistaxis laterality and recurrence terminology lookup",
+          "url": "http://localhost:8088/fhir",
+          "version": "SNOMEDCT-20260801"
         }
       ],
       "id": "source-manifest.primary-care-epistaxis-research",
@@ -15041,11 +15417,13 @@
         "review_status": "unreviewed",
         "source_refs": [
           "source.aao-hnsf.epistaxis.2020",
+          "source.pubmed.aao-hnsf.epistaxis.2020",
           "source.nhs.epistaxis.2023",
           "source.rch.epistaxis.2026",
           "source.aci-nsw.epistaxis.2022",
           "source.stom.epistaxis.20260716",
-          "source.stom.epistaxis-warning-findings.20260805"
+          "source.stom.epistaxis-warning-findings.20260805",
+          "source.stom.epistaxis-laterality.20260810"
         ],
         "version": "0.1.0"
       },
@@ -15707,10 +16085,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -15757,10 +16135,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -15807,10 +16185,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -15857,10 +16235,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -15907,10 +16285,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -15957,10 +16335,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -16007,10 +16385,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -16057,10 +16435,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -16107,10 +16485,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -16157,10 +16535,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -16207,10 +16585,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -16257,10 +16635,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -16307,10 +16685,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -16357,10 +16735,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -16407,10 +16785,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -16457,10 +16835,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -16507,10 +16885,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -16557,10 +16935,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -16607,10 +16985,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -16657,10 +17035,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -16707,10 +17085,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -16757,10 +17135,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -16807,10 +17185,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -16835,7 +17213,7 @@
         }
       },
       {
-        "id": "rule.generated.priority.any.laterality",
+        "id": "rule.generated.priority.any.bleeding-start-side",
         "priority": 162,
         "provenance": {
           "created_at": "2026-07-14T00:00:00Z",
@@ -16857,10 +17235,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -16869,8 +17247,8 @@
         },
         "status": "research_only",
         "then": {
-          "reason": "laterality",
-          "target": "target.epistaxis.laterality"
+          "reason": "bleeding-start-side",
+          "target": "target.epistaxis.bleeding-start-side"
         },
         "type": "priority",
         "usage_modes": [
@@ -16880,7 +17258,7 @@
         "version": "0.1.0",
         "when": {
           "target_state": {
-            "target.epistaxis.laterality": "active"
+            "target.epistaxis.bleeding-start-side": "active"
           }
         }
       },
@@ -16907,10 +17285,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -16931,6 +17309,56 @@
         "when": {
           "target_state": {
             "target.epistaxis.posterior-flow": "active"
+          }
+        }
+      },
+      {
+        "id": "rule.generated.priority.any.recurrent-same-side",
+        "priority": 161,
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.aao-hnsf.epistaxis.2020",
+            "source.nhs.epistaxis.2023",
+            "source.rch.epistaxis.2026",
+            "source.aci-nsw.epistaxis.2022",
+            "source.stom.epistaxis.20260716",
+            "source.stom.epistaxis-warning-findings.20260805"
+          ],
+          "version": "0.1.0"
+        },
+        "refresh": {
+          "class": "clinical_guideline",
+          "full_review_interval_days": 180,
+          "last_assessed_at": "2026-08-10",
+          "monitor_interval_days": 1,
+          "next_full_review_at": "2027-02-01",
+          "next_monitor_at": "2026-08-11",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          },
+          "policy_id": "policy.knowledge-refresh"
+        },
+        "status": "research_only",
+        "then": {
+          "reason": "recurrent-same-side",
+          "target": "target.epistaxis.recurrent-same-side"
+        },
+        "type": "priority",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0",
+        "when": {
+          "target_state": {
+            "target.epistaxis.recurrent-same-side": "active"
           }
         }
       },
@@ -16957,10 +17385,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -17007,10 +17435,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -17057,10 +17485,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -17107,10 +17535,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -17157,10 +17585,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -17207,10 +17635,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -17257,10 +17685,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -17307,10 +17735,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -17357,10 +17785,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -17407,10 +17835,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -17457,10 +17885,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -17507,10 +17935,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -17557,10 +17985,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -17607,10 +18035,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -17657,10 +18085,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -17707,10 +18135,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -17757,10 +18185,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -17807,10 +18235,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -17857,10 +18285,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -17907,10 +18335,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -17957,10 +18385,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -18007,10 +18435,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -18057,10 +18485,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -18107,10 +18535,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -18187,10 +18615,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -18237,10 +18665,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -18285,10 +18713,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -18333,10 +18761,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -18381,10 +18809,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -18429,10 +18857,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -18477,10 +18905,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -18500,6 +18928,54 @@
         "when": {
           "facts_resolved": "all_required",
           "target": "target.epistaxis.bleeding-conditions"
+        }
+      },
+      {
+        "id": "rule.generated.complete.bleeding-start-side",
+        "priority": 50,
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.aao-hnsf.epistaxis.2020",
+            "source.nhs.epistaxis.2023",
+            "source.rch.epistaxis.2026",
+            "source.aci-nsw.epistaxis.2022",
+            "source.stom.epistaxis.20260716",
+            "source.stom.epistaxis-warning-findings.20260805"
+          ],
+          "version": "0.1.0"
+        },
+        "refresh": {
+          "class": "clinical_guideline",
+          "full_review_interval_days": 180,
+          "last_assessed_at": "2026-08-10",
+          "monitor_interval_days": 1,
+          "next_full_review_at": "2027-02-01",
+          "next_monitor_at": "2026-08-11",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          },
+          "policy_id": "policy.knowledge-refresh"
+        },
+        "status": "research_only",
+        "then": {
+          "target_state": "satisfied"
+        },
+        "type": "completion",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0",
+        "when": {
+          "facts_resolved": "all_required",
+          "target": "target.epistaxis.bleeding-start-side"
         }
       },
       {
@@ -18525,10 +19001,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -18573,10 +19049,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -18621,10 +19097,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -18669,10 +19145,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -18717,10 +19193,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -18765,10 +19241,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -18813,10 +19289,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -18861,10 +19337,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -18909,10 +19385,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -18957,10 +19433,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -19005,10 +19481,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -19053,10 +19529,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -19101,10 +19577,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -19149,10 +19625,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -19197,10 +19673,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -19245,10 +19721,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -19293,10 +19769,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -19341,10 +19817,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -19364,54 +19840,6 @@
         "when": {
           "facts_resolved": "all_required",
           "target": "target.epistaxis.last-visible-bleeding-time"
-        }
-      },
-      {
-        "id": "rule.generated.complete.laterality",
-        "priority": 50,
-        "provenance": {
-          "created_at": "2026-07-14T00:00:00Z",
-          "created_by": {
-            "id": "codex-gpt5",
-            "type": "ai"
-          },
-          "review_status": "unreviewed",
-          "source_refs": [
-            "source.aao-hnsf.epistaxis.2020",
-            "source.nhs.epistaxis.2023",
-            "source.rch.epistaxis.2026",
-            "source.aci-nsw.epistaxis.2022",
-            "source.stom.epistaxis.20260716",
-            "source.stom.epistaxis-warning-findings.20260805"
-          ],
-          "version": "0.1.0"
-        },
-        "refresh": {
-          "class": "clinical_guideline",
-          "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
-          "monitor_interval_days": 1,
-          "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
-          "overdue_behavior": {
-            "production": "exclude_or_require_review",
-            "research_test": "allow_with_warning"
-          },
-          "policy_id": "policy.knowledge-refresh"
-        },
-        "status": "research_only",
-        "then": {
-          "target_state": "satisfied"
-        },
-        "type": "completion",
-        "usage_modes": [
-          "research_test",
-          "simulation"
-        ],
-        "version": "0.1.0",
-        "when": {
-          "facts_resolved": "all_required",
-          "target": "target.epistaxis.laterality"
         }
       },
       {
@@ -19437,10 +19865,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -19485,10 +19913,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -19533,10 +19961,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -19581,10 +20009,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -19629,10 +20057,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -19677,10 +20105,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -19725,10 +20153,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -19773,10 +20201,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -19821,10 +20249,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -19869,10 +20297,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -19917,10 +20345,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -19965,10 +20393,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -20013,10 +20441,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -20061,10 +20489,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -20109,10 +20537,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -20157,10 +20585,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -20205,10 +20633,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -20253,10 +20681,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -20301,10 +20729,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -20324,6 +20752,54 @@
         "when": {
           "facts_resolved": "all_required",
           "target": "target.epistaxis.recurrence-time-pattern"
+        }
+      },
+      {
+        "id": "rule.generated.complete.recurrent-same-side",
+        "priority": 50,
+        "provenance": {
+          "created_at": "2026-07-14T00:00:00Z",
+          "created_by": {
+            "id": "codex-gpt5",
+            "type": "ai"
+          },
+          "review_status": "unreviewed",
+          "source_refs": [
+            "source.aao-hnsf.epistaxis.2020",
+            "source.nhs.epistaxis.2023",
+            "source.rch.epistaxis.2026",
+            "source.aci-nsw.epistaxis.2022",
+            "source.stom.epistaxis.20260716",
+            "source.stom.epistaxis-warning-findings.20260805"
+          ],
+          "version": "0.1.0"
+        },
+        "refresh": {
+          "class": "clinical_guideline",
+          "full_review_interval_days": 180,
+          "last_assessed_at": "2026-08-10",
+          "monitor_interval_days": 1,
+          "next_full_review_at": "2027-02-01",
+          "next_monitor_at": "2026-08-11",
+          "overdue_behavior": {
+            "production": "exclude_or_require_review",
+            "research_test": "allow_with_warning"
+          },
+          "policy_id": "policy.knowledge-refresh"
+        },
+        "status": "research_only",
+        "then": {
+          "target_state": "satisfied"
+        },
+        "type": "completion",
+        "usage_modes": [
+          "research_test",
+          "simulation"
+        ],
+        "version": "0.1.0",
+        "when": {
+          "facts_resolved": "all_required",
+          "target": "target.epistaxis.recurrent-same-side"
         }
       },
       {
@@ -20349,10 +20825,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -20397,10 +20873,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -20445,10 +20921,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -20493,10 +20969,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -20541,10 +21017,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -20589,10 +21065,10 @@
         "refresh": {
           "class": "clinical_guideline",
           "full_review_interval_days": 180,
-          "last_assessed_at": "2026-08-05",
+          "last_assessed_at": "2026-08-10",
           "monitor_interval_days": 1,
           "next_full_review_at": "2027-02-01",
-          "next_monitor_at": "2026-08-06",
+          "next_monitor_at": "2026-08-11",
           "overdue_behavior": {
             "production": "exclude_or_require_review",
             "research_test": "allow_with_warning"
@@ -20627,7 +21103,7 @@
       "rfe.epistaxis"
     ]
   },
-  "semantic_digest": "sha256:02da33a258da5af8b53ecfa65de25b64f401918c88f594bbfabb8785726f08ce",
+  "semantic_digest": "sha256:c8c0030fd3d057e7f14c3fe6e0ad7dc1a3790ec8e8f6e47e7276bbd640317b72",
   "simulations": [
     {
       "expected": {
@@ -21212,6 +21688,43 @@
     },
     {
       "expected": {
+        "expected_clinician_handoff": true,
+        "expected_max_turns": 75,
+        "expected_safety_level": "routine",
+        "expected_selected_facts_contains": [
+          "epistaxis.bleeding_start_side",
+          "epistaxis.recurrent_same_side",
+          "epistaxis.unilateral_obstruction_foul_discharge_or_smell_change"
+        ],
+        "expected_selected_facts_excludes": [
+          "epistaxis.laterality_and_apparent_source"
+        ],
+        "expected_stop_reason": "required_targets_addressed_with_absent_data",
+        "forbidden_assertions": [
+          "diagnosis.nasal_cancer",
+          "diagnosis.posterior_epistaxis",
+          "recommendation.emergency_department"
+        ]
+      },
+      "id": "EPISTAXIS-RECURRENT-UNILATERAL-HANDOFF",
+      "path": "simulation/patients/ent/epistaxis/EPISTAXIS-RECURRENT-UNILATERAL-HANDOFF.json",
+      "provenance": {
+        "created_at": "2026-07-14T00:00:00Z",
+        "created_by": {
+          "id": "codex-gpt5",
+          "type": "ai"
+        },
+        "review_status": "unreviewed",
+        "source_refs": [
+          "source.pubmed.aao-hnsf.epistaxis.2020",
+          "source.stom.epistaxis-laterality.20260810",
+          "specifications/clinical-memory.md"
+        ],
+        "version": "0.1.0"
+      }
+    },
+    {
+      "expected": {
         "expected_max_turns": 35,
         "expected_safety_action": "human_handoff",
         "expected_safety_level": "emergency",
@@ -21349,7 +21862,7 @@
     }
   ],
   "source_manifest": {
-    "acquired_at": "2026-08-05T09:02:20Z",
+    "acquired_at": "2026-08-10T15:35:26Z",
     "artifacts": [
       {
         "complete": true,
@@ -21364,7 +21877,7 @@
       },
       {
         "complete": true,
-        "digest": "sha256:c951b8af8a1bda96490dc1006b66b66d91fc141572bb1227f8a57396a45b490e",
+        "digest": "sha256:d48e4403ae232edef1aa09858f78da55e60ae9b5940d30ca56b83314c615e603",
         "id": "source.generated.epistaxis",
         "kind": "generated_clinical_knowledge",
         "language": "en",
@@ -21375,7 +21888,7 @@
       },
       {
         "complete": false,
-        "digest": "sha256:2fd26f7de2f2cb8346c954805c2d0707f9e9a724c2e6f725e5908d5315ad813d",
+        "digest": "sha256:9041e21f705c47612d681a70e01630d0c314bbcfcb8c42c9c88ab293b3ff709a",
         "id": "source.mapping.epistaxis",
         "kind": "terminology_mapping",
         "language": "en",
@@ -21386,7 +21899,7 @@
       },
       {
         "complete": false,
-        "digest": "sha256:d0f119f922882be06e3724cc40a5e2ae75156c8cd1605a77a4f3a4766f27f00d",
+        "digest": "sha256:15b7a296a47c1b6529f6962be844ca07a3143e399dab8f2c11913470df365280",
         "id": "source.external.epistaxis",
         "kind": "external_source_manifest",
         "language": "en",
@@ -21397,7 +21910,7 @@
       },
       {
         "complete": true,
-        "digest": "sha256:828c9dea7bd0950d7727498d9431f071118d6774dec5e429e38529b404afb99f",
+        "digest": "sha256:bc03dd2c01d7db2692cb1dab1a3f0290bb81c6b0c911395fdb4cfc63afd248f4",
         "id": "source.policy.epistaxis",
         "kind": "runtime_policy",
         "language": "en",

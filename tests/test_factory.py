@@ -1391,7 +1391,7 @@ class CompilerTests(unittest.TestCase):
         self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 14)
         self.assertEqual(package["coverage"]["uncovered_safety_rules"], [])
         self.assertEqual(package["coverage"]["data_absent_reason_simulations"], 1)
-        self.assertEqual(package["coverage"]["simulation_count"], 21)
+        self.assertEqual(package["coverage"]["simulation_count"], 22)
         atomic_handoff = next(
             item for item in package["simulations"]
             if item["id"] == "EPISTAXIS-ATOMIC-RECURRENCE-HANDOFF"
@@ -1414,7 +1414,7 @@ class CompilerTests(unittest.TestCase):
         self.assertEqual(conditional["selector_fact"], "epistaxis.primary_group")
         self.assertEqual(set(conditional["cases"]), {"active_current_bleeding", "single_resolved_episode", "recurrent_episodes", "post_trauma_or_procedure", "antithrombotic_or_bleeding_risk", "post_treatment_followup", "other_unclear"})
         mapping = json.loads((Path(__file__).resolve().parents[1] / "mappings/terminology/snomed-mrcm-epistaxis.json").read_text(encoding="utf-8"))
-        self.assertEqual(len(mapping["focus_concepts"]), 9)
+        self.assertEqual(len(mapping["focus_concepts"]), 13)
         self.assertFalse(mapping["validation"]["clinical_rule_authority"])
         self.assertFalse(mapping["event_semantics"]["hypertension_causality_inferred"])
 

@@ -9,10 +9,10 @@
   "source_manifest": "source-manifest.primary-care-epistaxis-research",
   "default_refresh": {
     "class": "clinical_guideline",
-    "last_assessed_at": "2026-08-05",
+    "last_assessed_at": "2026-08-10",
     "monitor_interval_days": 1,
     "full_review_interval_days": 180,
-    "next_monitor_at": "2026-08-06",
+    "next_monitor_at": "2026-08-11",
     "next_full_review_at": "2027-02-01",
     "policy_id": "policy.knowledge-refresh",
     "overdue_behavior": {
@@ -1123,20 +1123,25 @@
     },
     {
       "fact": {
-        "id": "epistaxis.laterality_and_apparent_source",
-        "display": "Laterality and Apparent Source",
-        "value_type": "string"
+        "id": "epistaxis.bleeding_start_side",
+        "display": "Bleeding Start Side",
+        "value_type": "coded",
+        "allowed_values": [
+          "left",
+          "right",
+          "bilateral"
+        ]
       },
       "target": {
-        "id": "target.epistaxis.laterality",
-        "display": "Laterality and Apparent Source",
+        "id": "target.epistaxis.bleeding-start-side",
+        "display": "Bleeding Start Side",
         "intents": [
           "intent.characterize_symptom"
         ]
       },
       "question": {
-        "id": "question.epistaxis.laterality",
-        "wording": "왼쪽·오른쪽·양쪽 중 어디에서 시작했고 늘 같은 쪽인지 알려주세요.",
+        "id": "question.epistaxis.bleeding-start-side",
+        "wording": "이번 코피는 왼쪽·오른쪽·양쪽 중 어디에서 시작했나요? 보기와 다르거나 확실하지 않으면 자유롭게 입력해 주세요.",
         "language": "ko",
         "mode": [
           "chat",
@@ -1149,7 +1154,43 @@
         {
           "branch": "any",
           "score": 162,
-          "reason": "laterality"
+          "reason": "bleeding-start-side"
+        }
+      ],
+      "supports": [
+        "group.epistaxis.episode",
+        "group.epistaxis.local"
+      ]
+    },
+    {
+      "fact": {
+        "id": "epistaxis.recurrent_same_side",
+        "display": "Recurrent Bleeding from the Same Side",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.epistaxis.recurrent-same-side",
+        "display": "Recurrent Bleeding from the Same Side",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.epistaxis.recurrent-same-side",
+        "wording": "코피가 반복될 때마다 같은 한쪽에서 시작했나요? 예·아니오로 고르기 어렵다면 관찰한 양상을 자유롭게 입력해 주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 161,
+          "reason": "recurrent-same-side"
         }
       ],
       "supports": [

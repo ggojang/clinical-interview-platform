@@ -296,18 +296,18 @@ def _answer_binding(
                 token, f"{domain_id}-{str(token).replace('_', '-')}"
             )
             if domain_code in concept_codes:
+                concept = next(
+                    item for item in domain["concepts"]
+                    if item["code"] == domain_code
+                )
                 internal_mappings[token] = {
-                    "system": domain_registry["local_code_system"]["url"],
-                    "code": domain_code,
-                    "display": next(
-                        concept["display"]
-                        for concept in domain["concepts"]
-                        if concept["code"] == domain_code
+                    "system": concept.get(
+                        "system", domain_registry["local_code_system"]["url"]
                     ),
-                    "display_ko": next(
-                        concept.get("display_ko", concept["display"])
-                        for concept in domain["concepts"]
-                        if concept["code"] == domain_code
+                    "code": domain_code,
+                    "display": concept["display"],
+                    "display_ko": concept.get(
+                        "display_ko", concept["display"]
                     ),
                     "mapping_relation": (
                         "equivalent"
@@ -586,13 +586,17 @@ def build_coverage(graph: dict[str, Any]) -> dict[str, Any]:
         else:
             absent = answer.get("data_absent_reason_mappings", {})
             snomed = answer.get("snomed_mappings", {})
+            domain_mappings = answer.get("internal_value_mappings", {})
             for token in fact.get("allowed_values", []):
                 if token in absent:
                     data_absent_values += 1
                     continue
                 coded_answer_values += 1
                 local_answer_values += 1
-                snomed_answer_values += token in snomed
+                snomed_answer_values += (
+                    token in snomed
+                    or domain_mappings.get(token, {}).get("system") == SNOMED
+                )
     total = len(questions)
     return {
         "question_count": total,

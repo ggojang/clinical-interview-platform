@@ -13,6 +13,21 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class EpistaxisAtomicWarningTests(unittest.TestCase):
+    def test_recurrent_unilateral_pattern_is_split_into_atomic_handoff_facts(self):
+        package = compile_package(profile="epistaxis")
+        facts = {
+            node["id"]: node
+            for node in package["knowledge_graph"]["nodes"]
+            if node["type"] == "Fact"
+        }
+        self.assertNotIn("epistaxis.laterality_and_apparent_source", facts)
+        self.assertEqual(facts["epistaxis.bleeding_start_side"]["value_type"], "coded")
+        self.assertEqual(facts["epistaxis.recurrent_same_side"]["value_type"], "boolean")
+        side_binding = facts["epistaxis.bleeding_start_side"]["answer_semantic_binding"]
+        self.assertEqual(side_binding["answer_domain"], "laterality")
+        self.assertTrue(side_binding["answer_value_set"].endswith("/a-sct-laterality"))
+        self.assertEqual(side_binding["internal_value_mappings"]["right"]["code"], "24028007")
+
     def test_haemodynamic_warning_is_split_into_atomic_facts(self):
         package = compile_package(profile="epistaxis")
         facts = {
@@ -93,6 +108,14 @@ class EpistaxisAtomicWarningTests(unittest.TestCase):
         case = by_id["EPISTAXIS-ATOMIC-DIZZINESS-HANDOFF"]
         self.assertEqual("urgent", case["safety_level"])
         self.assertIn("rule.epistaxis.safety.dizziness", case["triggered_rules"])
+
+    def test_recurrent_unilateral_handoff_simulation_passes_without_overtriage(self):
+        report = run_evaluation(EPISTAXIS_PACKAGE)
+        self.assertTrue(report["passed"], report["results"])
+        by_id = {result["case_id"]: result for result in report["results"]}
+        case = by_id["EPISTAXIS-RECURRENT-UNILATERAL-HANDOFF"]
+        self.assertEqual("routine", case["safety_level"])
+        self.assertIsNotNone(case["clinician_handoff"])
 
 
 if __name__ == "__main__":
