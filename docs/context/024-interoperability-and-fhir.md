@@ -242,6 +242,18 @@ options such as “sharp and burning” are not promoted as one code and remain 
 the atomic-refactoring queue until they can be split. Severity, location,
 timing, frequency and quality remain separate answer domains.
 
+The same consolidation rule applies outside pain. Four dynamic Facts for the
+reliability of activity, alcohol, swallowing and tobacco information use the
+single `a-local-information-source-reliability` domain. `unknown` remains a
+`dataAbsentReason`, not a clinical answer concept. LOINC `LL5246-5` was reviewed
+but not asserted equivalent because its ordinal reliability scale does not
+preserve memory uncertainty or conflict between sources. The former
+Fact-specific ValueSets are retained temporarily with FHIR `status=retired`, a
+local retired lifecycle tag and an explicit `replaced-by` canonical. Current
+Questionnaire bindings must not reference those compatibility artifacts; they
+may be deleted only in a later cleanup after zero references and external
+compatibility review are confirmed.
+
 Laterality has an additional applicability gate. `a-sct-laterality` contains
 the SNOMED CT side qualifiers, while the anatomical site must independently be
 verified in `723264001 |Lateralizable body structure reference set|`. The

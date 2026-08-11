@@ -236,10 +236,16 @@ def run() -> dict[str, Any]:
 
     value_set_bundle = build_answer_valuesets()
     value_set_counts: dict[str, int] = {}
+    value_set_lifecycle_counts: dict[str, int] = {}
     for entry in value_set_bundle["entry"]:
-        identifier = entry["resource"]["id"]
+        resource = entry["resource"]
+        identifier = resource["id"]
         scope = identifier.split("-", 2)[1]
         value_set_counts[scope] = value_set_counts.get(scope, 0) + 1
+        lifecycle = resource.get("status", "unknown")
+        value_set_lifecycle_counts[lifecycle] = (
+            value_set_lifecycle_counts.get(lifecycle, 0) + 1
+        )
     unique_summary = {
         "question_count": unique_total,
         "question_loinc_exact_or_equivalent_count": unique_loinc_exact,
@@ -338,6 +344,13 @@ def run() -> dict[str, Any]:
             "bundle_id": value_set_bundle["id"],
             "resource_count": len(value_set_bundle["entry"]),
             "counts_by_scope": value_set_counts,
+            "counts_by_lifecycle": value_set_lifecycle_counts,
+            "current_resource_count": value_set_lifecycle_counts.get(
+                "draft", 0
+            ),
+            "retired_compatibility_resource_count": (
+                value_set_lifecycle_counts.get("retired", 0)
+            ),
             "id_rule": "a-{sct|loinc|local|mixed}-{semantic-name}",
         },
         "mapping_quality_simulation": {
@@ -363,6 +376,9 @@ def run() -> dict[str, Any]:
                 "KR_Core_V2_incompatible_profiles_require_split_projection",
                 "KR_Core_V2_terminology_referenced_by_STOM_canonical_without_duplication",
                 "runtime_exposes_compiled_ValueSet_choices_without_live_lookup",
+                "shared_answer_domain_replaces_duplicate_fact_ValueSets",
+                "retired_compatibility_ValueSet_declares_replaced_by",
+                "dataAbsentReason_remains_outside_shared_answer_ValueSet",
             ],
         },
         "results": rows,

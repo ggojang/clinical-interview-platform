@@ -1,6 +1,6 @@
 {
   "id": "registry.clinical-interview-answer-domains",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "status": "draft",
   "review_status": "unreviewed",
   "usage": {
@@ -10,7 +10,7 @@
   },
   "local_code_system": {
     "url": "https://ggojang.github.io/clinical-interview-platform/fhir/CodeSystem/clinical-interview-answer-domain",
-    "version": "0.1.0"
+    "version": "0.2.0"
   },
   "domains": {
     "pain-quality": {
@@ -108,16 +108,124 @@
           "unlisted_or_other": "free_text"
         }
       }
+    },
+    "source-reliability": {
+      "semantic_name": "information-source-reliability",
+      "value_set_id": "a-local-information-source-reliability",
+      "questionnaire": {
+        "item_type": "open-choice",
+        "repeats": false,
+        "allow_free_text": true,
+        "one_answer_bearing_dimension": "information_source_reliability_assessment"
+      },
+      "concepts": [
+        {"code": "source-reliability-reliable", "display": "Reliable", "display_ko": "신뢰할 수 있음"},
+        {"code": "source-reliability-partly-reliable", "display": "Partly reliable", "display_ko": "일부만 신뢰할 수 있음"},
+        {"code": "source-reliability-memory-uncertain", "display": "Memory uncertain", "display_ko": "기억이 불확실함"},
+        {"code": "source-reliability-conflicting-sources", "display": "Conflicting sources", "display_ko": "정보 출처가 서로 다름"}
+      ],
+      "data_absent_states_excluded_from_value_set": ["unknown"],
+      "terminology": {
+        "mapping_status": "local_codes_retained_after_official_answer_list_review",
+        "loinc_answer_lists_considered": [
+          {
+            "canonical": "http://loinc.org/vs/LL5246-5",
+            "display": "Level of reliability",
+            "adoption": "not_equivalent",
+            "reason": "The official list expresses ordinal reliability but does not preserve memory uncertainty or conflict between information sources."
+          },
+          {
+            "canonical": "http://loinc.org/vs/LL7229-9",
+            "display": "Patient Reliability Indicator",
+            "adoption": "not_equivalent",
+            "reason": "The one-member list is a low test-reliability indicator and is not an answer set for interview information-source reliability."
+          }
+        ],
+        "stom_search_checked_at": "2026-08-11T00:00:00Z",
+        "stom_snomed_filters": [
+          "source reliability",
+          "reliable source",
+          "information source",
+          "uncertain memory",
+          "conflicting sources"
+        ],
+        "stom_snomed_search_result": "no_exact_candidates_returned",
+        "kr_core_v2_result": "No Questionnaire or QuestionnaireResponse profile is defined and no KR Core V2 answer ValueSet matches this domain.",
+        "do_not_infer_standard_equivalence_from_label_similarity": true
+      },
+      "fact_bindings": {
+        "activity.source_reliability": {
+          "status": "active_pilot",
+          "preferred_codes": ["source-reliability-reliable", "source-reliability-partly-reliable", "source-reliability-memory-uncertain", "source-reliability-conflicting-sources"],
+          "legacy_token_map": {
+            "reliable": "source-reliability-reliable",
+            "partly_reliable": "source-reliability-partly-reliable",
+            "memory_uncertain": "source-reliability-memory-uncertain",
+            "conflicting_sources": "source-reliability-conflicting-sources"
+          },
+          "unlisted_or_other": "free_text"
+        },
+        "alcohol.source_reliability": {
+          "status": "active_pilot",
+          "preferred_codes": ["source-reliability-reliable", "source-reliability-partly-reliable", "source-reliability-memory-uncertain", "source-reliability-conflicting-sources"],
+          "legacy_token_map": {
+            "reliable": "source-reliability-reliable",
+            "partly_reliable": "source-reliability-partly-reliable",
+            "memory_uncertain": "source-reliability-memory-uncertain",
+            "conflicting_sources": "source-reliability-conflicting-sources"
+          },
+          "unlisted_or_other": "free_text"
+        },
+        "swallow.source_reliability": {
+          "status": "active_pilot",
+          "preferred_codes": ["source-reliability-reliable", "source-reliability-partly-reliable", "source-reliability-memory-uncertain", "source-reliability-conflicting-sources"],
+          "legacy_token_map": {
+            "reliable": "source-reliability-reliable",
+            "partly_reliable": "source-reliability-partly-reliable",
+            "memory_uncertain": "source-reliability-memory-uncertain",
+            "conflicting_sources": "source-reliability-conflicting-sources"
+          },
+          "unlisted_or_other": "free_text"
+        },
+        "tobacco.source_reliability": {
+          "status": "active_pilot",
+          "preferred_codes": ["source-reliability-reliable", "source-reliability-partly-reliable", "source-reliability-memory-uncertain", "source-reliability-conflicting-sources"],
+          "legacy_token_map": {
+            "reliable": "source-reliability-reliable",
+            "partly_reliable": "source-reliability-partly-reliable",
+            "memory_uncertain": "source-reliability-memory-uncertain",
+            "conflicting_sources": "source-reliability-conflicting-sources"
+          },
+          "unlisted_or_other": "free_text"
+        }
+      },
+      "migration": {
+        "phase": "references_migrated_compatibility_aliases_retained",
+        "started_at": "2026-08-11",
+        "replacement_value_set_id": "a-local-information-source-reliability",
+        "legacy_value_sets": [
+          {"fact_id": "activity.source_reliability", "id": "a-local-activity-source-reliability-coded-reliable-pa-ae5948bc87", "status": "retired"},
+          {"fact_id": "alcohol.source_reliability", "id": "a-local-alcohol-source-reliability-coded-reliable-par-364084eaff", "status": "retired"},
+          {"fact_id": "swallow.source_reliability", "id": "a-local-swallow-source-reliability-coded-reliable-par-d71fed0276", "status": "retired"},
+          {"fact_id": "tobacco.source_reliability", "id": "a-local-tobacco-source-reliability-coded-reliable-par-a6689eafd6", "status": "retired"}
+        ],
+        "removal_condition": "Delete in a later cleanup only after zero current references and external compatibility review are both confirmed."
+      }
     }
   },
   "provenance": {
     "created_by": {"type": "ai", "id": "codex-gpt5"},
     "created_at": "2026-08-10T00:00:00Z",
+    "updated_at": "2026-08-11T00:00:00Z",
     "source_refs": [
       "policies/question-answer-terminology-binding.json",
       "policies/snomed-postcoordination-laterality.json",
       "specifications/snomed-laterality.md",
-      "source.stom.fhir-r4-terminology-server"
+      "source.stom.fhir-r4-terminology-server",
+      "source.loinc.ll5246-5.20260811",
+      "source.loinc.ll7229-9.20260811",
+      "source.stom.answer-domain-source-reliability.20260811",
+      "source.hl7-korea.kr-core-v2.answer-domain-review.20260811"
     ]
   }
 }

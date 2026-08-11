@@ -24,6 +24,7 @@ from interoperability.question_answer import (
     load_documents,
 )
 from tools.fhir.build_answer_valuesets import (
+    REPLACED_BY_EXTENSION,
     build as build_answer_valuesets,
     validate as validate_answer_valuesets,
 )
@@ -224,6 +225,8 @@ class QuestionAnswerTerminologyTest(unittest.TestCase):
             "pain-quality-sharp",
             "pain-quality-throbbing",
             "pain-quality-tightening",
+            "source-reliability-reliable",
+            "source-reliability-conflicting-sources",
         } <= domain_codes)
 
     def test_pain_quality_uses_one_domain_with_context_preference(self):
@@ -292,6 +295,84 @@ class QuestionAnswerTerminologyTest(unittest.TestCase):
         self.assertLessEqual(
             len(answer_valueset_id("local", "x" * 200)), 64
         )
+
+    def test_source_reliability_uses_one_domain_and_retains_retired_aliases(self):
+        profiles = {
+            "physical_activity_counselling": "activity.source_reliability",
+            "alcohol_use_counselling": "alcohol.source_reliability",
+            "swallowing_difficulty": "swallow.source_reliability",
+            "tobacco_nicotine_counselling": "tobacco.source_reliability",
+        }
+        legacy_ids = {
+            "a-local-activity-source-reliability-coded-reliable-pa-ae5948bc87",
+            "a-local-alcohol-source-reliability-coded-reliable-par-364084eaff",
+            "a-local-swallow-source-reliability-coded-reliable-par-d71fed0276",
+            "a-local-tobacco-source-reliability-coded-reliable-par-a6689eafd6",
+        }
+        shared_url = f"{VALUESET_BASE}/a-local-information-source-reliability"
+        for profile, fact_id in profiles.items():
+            package = compile_package(profile=profile)
+            fact = next(
+                node for node in package["knowledge_graph"]["nodes"]
+                if node.get("id") == fact_id
+            )
+            binding = fact["answer_semantic_binding"]
+            self.assertEqual(binding["answer_domain"], "source-reliability")
+            self.assertEqual(binding["answer_value_set"], shared_url)
+            self.assertEqual(binding["fhir_item_type"], "open-choice")
+            self.assertFalse(binding["fhir_item_repeats"])
+            self.assertEqual(
+                binding["data_absent_reason_mappings"],
+                {"unknown": "asked-unknown"},
+            )
+            self.assertEqual(
+                questionnaire_item_projection(fact)["answerValueSet"],
+                shared_url,
+            )
+            self.assertEqual(
+                questionnaire_response_answer_projection(fact, "reliable")[
+                    "valueCoding"
+                ]["code"],
+                "source-reliability-reliable",
+            )
+            self.assertEqual(
+                questionnaire_response_answer_projection(fact, "unknown"),
+                {"dataAbsentReason": "asked-unknown"},
+            )
+
+        bundle = build_answer_valuesets()
+        resources = {
+            entry["resource"]["id"]: entry["resource"]
+            for entry in bundle["entry"]
+        }
+        shared = resources["a-local-information-source-reliability"]
+        shared_codes = {
+            concept["code"]
+            for include in shared["compose"]["include"]
+            for concept in include["concept"]
+        }
+        self.assertEqual(shared_codes, {
+            "source-reliability-reliable",
+            "source-reliability-partly-reliable",
+            "source-reliability-memory-uncertain",
+            "source-reliability-conflicting-sources",
+        })
+        for legacy_id in legacy_ids:
+            legacy = resources[legacy_id]
+            self.assertEqual(legacy["status"], "retired")
+            replacement = next(
+                extension["valueCanonical"]
+                for extension in legacy["extension"]
+                if extension["url"] == REPLACED_BY_EXTENSION
+            )
+            self.assertEqual(replacement, shared_url)
+
+        legacy_urls = {f"{VALUESET_BASE}/{identifier}" for identifier in legacy_ids}
+        for profile in PACKAGE_PROFILES:
+            package = compile_package(profile=profile)
+            for node in package["knowledge_graph"]["nodes"]:
+                binding = node.get("answer_semantic_binding", {})
+                self.assertNotIn(binding.get("answer_value_set"), legacy_urls)
 
     def test_shared_snomed_answer_domain_counts_as_standard_coverage(self):
         package = compile_package(profile="epistaxis")
@@ -376,6 +457,16 @@ class QuestionAnswerTerminologyTest(unittest.TestCase):
         )
         self.assertGreater(
             report["answer_valuesets"]["resource_count"], 100
+        )
+        self.assertEqual(
+            report["answer_valuesets"][
+                "retired_compatibility_resource_count"
+            ],
+            4,
+        )
+        self.assertEqual(
+            report["answer_valuesets"]["counts_by_lifecycle"]["retired"],
+            4,
         )
         self.assertTrue(report["mapping_quality_simulation"]["passed"])
 

@@ -19,6 +19,7 @@ from interoperability.question_answer import (
     SNOMED,
     VALUESET_BASE,
     answer_valueset_id,
+    answer_valueset_url,
     enrich_clinician_context,
     load_answer_domains,
 )
@@ -26,6 +27,10 @@ from interoperability.question_answer import (
 
 OUTPUT = ROOT / "fhir/r4/valuesets/clinical-interview-answer-valuesets.json"
 CANONICAL = "https://ggojang.github.io/clinical-interview-platform/fhir"
+ARTIFACT_LIFECYCLE = f"{CANONICAL}/CodeSystem/artifact-lifecycle"
+REPLACED_BY_EXTENSION = (
+    f"{CANONICAL}/StructureDefinition/artifact-replaced-by"
+)
 
 
 def _valueset(
@@ -35,6 +40,9 @@ def _valueset(
     concepts_by_system: dict[str, list[dict[str, str]]],
     *,
     content_status: str = "research-only",
+    publication_status: str = "draft",
+    replaced_by: str | None = None,
+    resource_date: str = "2026-07-23",
 ) -> dict[str, Any]:
     includes = []
     for system in sorted(concepts_by_system):
@@ -43,40 +51,61 @@ def _valueset(
             key=lambda item: (item["code"], item.get("display", "")),
         )
         includes.append({"system": system, "concept": concepts})
-    return {
+    tags = [
+        {
+            "system": f"{CANONICAL}/CodeSystem/content-status",
+            "code": content_status,
+            "display": (
+                "Draft; limited use allowed"
+                if content_status == "draft-limited-use"
+                else (
+                    "Retired compatibility artifact"
+                    if content_status == "retired-compatibility"
+                    else "Research only"
+                )
+            ),
+        },
+        {
+            "system": f"{CANONICAL}/CodeSystem/review-status",
+            "code": "unreviewed",
+            "display": "Unreviewed",
+        },
+    ]
+    extensions = []
+    if publication_status == "retired":
+        if not replaced_by:
+            raise ValueError(f"{identifier}: retired ValueSet requires replaced_by")
+        tags.append({
+            "system": ARTIFACT_LIFECYCLE,
+            "code": "retired",
+            "display": "Retired; compatibility only",
+        })
+        extensions.append({
+            "url": REPLACED_BY_EXTENSION,
+            "valueCanonical": replaced_by,
+        })
+    resource = {
         "resourceType": "ValueSet",
         "id": identifier,
         "meta": {
             "profile": ["http://hl7.org/fhir/StructureDefinition/ValueSet"],
-            "tag": [
-                {
-                    "system": f"{CANONICAL}/CodeSystem/content-status",
-                    "code": content_status,
-                    "display": (
-                        "Draft; limited use allowed"
-                        if content_status == "draft-limited-use"
-                        else "Research only"
-                    ),
-                },
-                {
-                    "system": f"{CANONICAL}/CodeSystem/review-status",
-                    "code": "unreviewed",
-                    "display": "Unreviewed",
-                },
-            ],
+            "tag": tags,
         },
         "url": f"{VALUESET_BASE}/{identifier}",
         "version": "0.1.0",
         "name": "".join(part.title() for part in identifier.split("-")),
         "title": title,
-        "status": "draft",
+        "status": publication_status,
         "experimental": True,
-        "date": "2026-07-23",
+        "date": resource_date,
         "publisher": "Clinical Interview Knowledge Platform",
         "description": description,
-        "immutable": False,
+        "immutable": publication_status == "retired",
         "compose": {"include": includes},
     }
+    if extensions:
+        resource["extension"] = extensions
+    return resource
 
 
 def _all_enriched_facts() -> list[dict[str, Any]]:
@@ -140,6 +169,7 @@ def build() -> dict[str, Any]:
     ))
 
     domain_registry = load_answer_domains()
+    migration_aliases: dict[str, tuple[dict[str, Any], dict[str, Any]]] = {}
     for domain_id, domain in domain_registry["domains"].items():
         concepts_by_system: dict[str, list[dict[str, str]]] = defaultdict(list)
         for concept in domain["concepts"]:
@@ -156,6 +186,16 @@ def build() -> dict[str, Any]:
             dict(concepts_by_system),
             content_status="draft-limited-use",
         ))
+        aliases = {
+            item["fact_id"]: item
+            for item in domain.get("migration", {}).get(
+                "legacy_value_sets", []
+            )
+        }
+        for fact_id, binding in domain.get("fact_bindings", {}).items():
+            if binding.get("status") != "active_pilot" or fact_id not in aliases:
+                continue
+            migration_aliases[fact_id] = (domain, aliases[fact_id])
 
     for fact in _all_enriched_facts():
         fact_id = fact["id"]
@@ -181,6 +221,31 @@ def build() -> dict[str, Any]:
             }
             for token in coded_values
         ]
+        migration = migration_aliases.get(fact_id)
+        if migration:
+            domain, alias = migration
+            if alias.get("status") != "retired":
+                raise ValueError(
+                    f"{fact_id}: compatibility alias must be retired"
+                )
+            if alias.get("id") != local_id:
+                raise ValueError(
+                    f"{fact_id}: recorded legacy ValueSet id does not match "
+                    f"the deterministic id {local_id}"
+                )
+            replacement = answer_valueset_url(domain["value_set_id"])
+            add(_valueset(
+                local_id,
+                f"Retired Local Answers for {fact_id}",
+                "Retired compatibility ValueSet for the former Fact-specific "
+                f"answer set of {fact_id}. Current content uses {replacement}.",
+                {LOCAL_ANSWER: local_concepts},
+                content_status="retired-compatibility",
+                publication_status="retired",
+                replaced_by=replacement,
+                resource_date="2026-08-11",
+            ))
+            continue
         add(_valueset(
             local_id,
             f"Local Answers for {fact_id}",
@@ -264,8 +329,36 @@ def validate(bundle: dict[str, Any]) -> None:
             raise ValueError(f"invalid answer ValueSet id: {identifier}")
         if len(identifier) > 64:
             raise ValueError(f"FHIR id exceeds 64 characters: {identifier}")
-        if resource.get("status") != "draft" or resource.get("experimental") is not True:
-            raise ValueError("answer ValueSets must remain draft and experimental")
+        publication_status = resource.get("status")
+        if publication_status not in {"draft", "retired"}:
+            raise ValueError("answer ValueSets must be draft or retired")
+        if resource.get("experimental") is not True:
+            raise ValueError("answer ValueSets must remain experimental")
+        lifecycle_codes = {
+            tag.get("code")
+            for tag in resource.get("meta", {}).get("tag", [])
+            if tag.get("system") == ARTIFACT_LIFECYCLE
+        }
+        replacement_extensions = [
+            extension
+            for extension in resource.get("extension", [])
+            if extension.get("url") == REPLACED_BY_EXTENSION
+        ]
+        if publication_status == "retired":
+            if lifecycle_codes != {"retired"}:
+                raise ValueError(
+                    f"retired answer ValueSet lacks lifecycle tag: {identifier}"
+                )
+            if len(replacement_extensions) != 1 or not replacement_extensions[
+                0
+            ].get("valueCanonical"):
+                raise ValueError(
+                    f"retired answer ValueSet lacks replacement: {identifier}"
+                )
+        elif lifecycle_codes or replacement_extensions:
+            raise ValueError(
+                f"active answer ValueSet has retirement metadata: {identifier}"
+            )
         if entry.get("fullUrl") != resource.get("url"):
             raise ValueError(f"fullUrl mismatch: {identifier}")
         includes = resource.get("compose", {}).get("include", [])

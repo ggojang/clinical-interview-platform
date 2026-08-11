@@ -54,7 +54,19 @@ def load_answer_domains() -> dict[str, Any]:
     if document.get("review_status") != "unreviewed":
         raise ValueError("answer-domain registry must remain unreviewed")
     domains = document.get("domains", {})
+    value_set_ids: set[str] = set()
+    legacy_value_set_ids: set[str] = set()
     for domain_id, domain in domains.items():
+        value_set_id = domain.get("value_set_id", "")
+        if (
+            not value_set_id.startswith(
+                ("a-sct-", "a-loinc-", "a-local-", "a-mixed-")
+            )
+            or len(value_set_id) > 64
+            or value_set_id in value_set_ids
+        ):
+            raise ValueError(f"{domain_id}: invalid or duplicate ValueSet id")
+        value_set_ids.add(value_set_id)
         concepts = domain.get("concepts", [])
         codes = [concept.get("code") for concept in concepts]
         if not codes or any(not code for code in codes) or len(codes) != len(set(codes)):
@@ -62,6 +74,39 @@ def load_answer_domains() -> dict[str, Any]:
         item = domain.get("questionnaire", {})
         if item.get("one_answer_bearing_dimension") is None:
             raise ValueError(f"{domain_id}: atomic answer dimension is missing")
+        concept_codes = set(codes)
+        for fact_id, binding in domain.get("fact_bindings", {}).items():
+            if binding.get("status") != "active_pilot":
+                continue
+            preferred = binding.get("preferred_codes", [])
+            legacy_map = binding.get("legacy_token_map", {})
+            if not preferred or any(code not in concept_codes for code in preferred):
+                raise ValueError(
+                    f"{fact_id}: preferred code is outside {domain_id}"
+                )
+            if any(code not in concept_codes for code in legacy_map.values()):
+                raise ValueError(
+                    f"{fact_id}: legacy mapping is outside {domain_id}"
+                )
+        migration = domain.get("migration")
+        if migration:
+            if migration.get("replacement_value_set_id") != value_set_id:
+                raise ValueError(
+                    f"{domain_id}: migration replacement does not match domain"
+                )
+            for alias in migration.get("legacy_value_sets", []):
+                alias_id = alias.get("id", "")
+                if (
+                    alias.get("status") != "retired"
+                    or not alias.get("fact_id")
+                    or not alias_id.startswith("a-local-")
+                    or len(alias_id) > 64
+                    or alias_id in legacy_value_set_ids
+                ):
+                    raise ValueError(
+                        f"{domain_id}: invalid retired compatibility alias"
+                    )
+                legacy_value_set_ids.add(alias_id)
     return document
 
 
@@ -288,10 +333,17 @@ def _answer_binding(
         concept_codes = {concept["code"] for concept in domain["concepts"]}
         legacy_map = fact_binding.get("legacy_token_map", {})
         preferred_codes = fact_binding.get("preferred_codes", [])
+        data_absent_mappings = {
+            token: registry["data_absent_tokens"][token]
+            for token in fact.get("allowed_values", [])
+            if token in registry["data_absent_tokens"]
+        }
         if any(code not in concept_codes for code in preferred_codes):
             raise ValueError(f"{fact['id']}: preferred answer is outside {domain_id}")
         internal_mappings = {}
         for token in fact.get("allowed_values", []):
+            if token in data_absent_mappings:
+                continue
             domain_code = legacy_map.get(
                 token, f"{domain_id}-{str(token).replace('_', '-')}"
             )
@@ -325,9 +377,11 @@ def _answer_binding(
             "value_set_strategy": "complete_shared_local_domain",
             "preferred_answer_codes": preferred_codes,
             "internal_value_mappings": internal_mappings,
+            "data_absent_reason_mappings": data_absent_mappings,
             "free_text_internal_values": [
                 token for token in fact.get("allowed_values", [])
                 if token not in internal_mappings
+                and token not in data_absent_mappings
             ],
             "fhir_item_type": questionnaire["item_type"],
             "fhir_item_repeats": questionnaire["repeats"],
