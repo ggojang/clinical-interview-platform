@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import json
 import unittest
+from pathlib import Path
 
 from compiler.build_package import compile_package
 from evaluation.run_evaluation import run as run_evaluation
 from runtime.package import EAR_HEARING_SYMPTOMS_PACKAGE
 from runtime.package import DEFAULT_PACKAGE, load_package
+from runtime.session import InterviewSession
 
 
 class EarHearingSymptomsPackageTests(unittest.TestCase):
@@ -15,7 +18,7 @@ class EarHearingSymptomsPackageTests(unittest.TestCase):
             node["id"] for node in package["knowledge_graph"]["nodes"]
             if node["type"] == "Fact"
         }
-        self.assertEqual(47, len(facts))
+        self.assertEqual(50, len(facts))
         self.assertNotIn(
             "ear.pulsatile_tinnitus_with_neurological_or_visual_symptoms", facts
         )
@@ -31,6 +34,50 @@ class EarHearingSymptomsPackageTests(unittest.TestCase):
         self.assertEqual(13, package["coverage"]["total_safety_rules"])
         self.assertEqual(13, package["coverage"]["safety_rules_with_simulations"])
         self.assertEqual([], package["coverage"]["uncovered_safety_rules"])
+
+    def test_prior_audiological_assessment_is_atomic_and_locally_coded(self):
+        package = compile_package(profile="ear_hearing_symptoms")
+        nodes = {
+            node["id"]: node for node in package["knowledge_graph"]["nodes"]
+        }
+        fact_ids = {
+            "ear.prior_audiological_assessment_performed",
+            "ear.prior_audiological_assessment_date",
+            "ear.prior_audiological_assessment_result",
+        }
+        self.assertTrue(fact_ids <= nodes.keys())
+        for fact_id in fact_ids:
+            question = next(
+                node for node in nodes.values()
+                if node.get("type") == "QuestionTemplate"
+                and node.get("collects") == fact_id
+            )
+            self.assertNotIn("semantic_binding", question, fact_id)
+        mapping = json.loads(
+            (
+                Path(__file__).resolve().parents[1]
+                / "mappings/terminology/snomed-mrcm-ear-hearing-symptoms.json"
+            ).read_text(encoding="utf-8")
+        )
+        concept = next(
+            item for item in mapping["focus_concepts"] if item["code"] == "21727005"
+        )
+        self.assertEqual("Audiometric test (procedure)", concept["display"])
+        self.assertEqual(
+            "related_not_exact",
+            mapping["validation"]["targeted_addition"]["mapping_relation_to_questions"],
+        )
+
+    def test_iso_date_answer_is_recorded_without_repeating_the_question(self):
+        session = InterviewSession(
+            "ear-prior-audiology-date", package_path=EAR_HEARING_SYMPTOMS_PACKAGE
+        )
+        fact_id = "ear.prior_audiological_assessment_date"
+        session.last_question_fact = fact_id
+        session.process("2025-11-03")
+        record = session.memory.facts[fact_id]
+        self.assertEqual("known", record["status"])
+        self.assertEqual("2025-11-03", record["value"])
 
     def test_pulse_synchronous_tinnitus_has_urgent_protective_handoff(self):
         package = compile_package(profile="ear_hearing_symptoms")
@@ -66,7 +113,7 @@ class EarHearingSymptomsPackageTests(unittest.TestCase):
     def test_all_ear_hearing_simulations_pass(self):
         report = run_evaluation(EAR_HEARING_SYMPTOMS_PACKAGE)
         self.assertTrue(report["passed"], report["results"])
-        self.assertEqual(15, report["case_count"])
+        self.assertEqual(16, report["case_count"])
         for case_id in (
             "EAR-PULSE-SYNCHRONOUS-TINNITUS",
             "EAR-TINNITUS-ASSOCIATED-VERTIGO",
@@ -75,6 +122,11 @@ class EarHearingSymptomsPackageTests(unittest.TestCase):
                 item for item in report["results"] if item["case_id"] == case_id
             )
             self.assertTrue(result["passed"], result)
+        handoff = next(
+            item for item in report["results"]
+            if item["case_id"] == "EAR-HEARING-PRIOR-AUDIOGRAM-HANDOFF"
+        )
+        self.assertTrue(handoff["passed"], handoff)
 
 
 if __name__ == "__main__":

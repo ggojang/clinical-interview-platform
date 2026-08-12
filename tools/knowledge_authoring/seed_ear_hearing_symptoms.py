@@ -9,9 +9,11 @@ SN = "http://snomed.info/sct"
 SOURCES = [
     "source.nice.hearing-loss-ng98", "source.nice.tinnitus-ng155",
     "source.nhs.ear-infections.2025", "source.nhs.hearing-loss.2025",
+    "source.nhs.hearing-tests.2026",
     "source.nhs.mastoiditis.2025", "source.nhs.tinnitus.2026",
     "source.uhsussex.sudden-hearing-change.2025",
     "source.stom.ear-hearing.20260808",
+    "source.stom.audiometric-test.20260812",
 ]
 G = {k: f"group.ear.{k}" for k in (
     "routing", "shared-safety", "common", "pain-infection",
@@ -64,6 +66,9 @@ def fragment():
         Q("ear.associated_fullness", "Aural Fullness Associated with Ear or Hearing Symptoms", "boolean", "associated-fullness", "귀 또는 청력 증상과 함께 귀가 꽉 찬 듯한 먹먹함이 있나요?", 103, [G["hearing-change"], G["tinnitus"]], D),
         Q("ear.noise_exposure_or_acoustic_trauma", "Noise Exposure or Acoustic Trauma", "string", "noise-exposure", "최근 폭발음·공연·기계음 또는 장기간 큰 소음에 노출됐나요?", 104, [G["hearing-change"]], R),
         Q("ear.possible_ototoxic_medication", "Possible Ototoxic Medication Context", "string", "ototoxic-medication", "최근 시작·증량한 약이나 항암제·주사 항생제 등 청력에 영향을 줄 수 있는 치료가 있나요?", 94, [G["hearing-change"]], R),
+        Q("ear.prior_audiological_assessment_performed", "Prior Audiological Assessment Performed", "boolean", "prior-audiological-assessment", "이전에 청력검사나 청각평가를 받은 적이 있나요?", 93, [G["hearing-change"], G["tinnitus"]], R),
+        Q("ear.prior_audiological_assessment_date", "Prior Audiological Assessment Date", "date", "prior-audiological-assessment-date", "가장 최근 청력검사나 청각평가는 언제 받았나요?", 92, [G["hearing-change"], G["tinnitus"]], R),
+        Q("ear.prior_audiological_assessment_result", "Prior Audiological Assessment Result", "string", "prior-audiological-assessment-result", "가장 최근 청력검사나 청각평가에서 들은 결과를 한 가지만 알려주세요.", 91, [G["hearing-change"], G["tinnitus"]], R),
 
         Q("ear.discharge_character", "Ear Discharge Character", "coded", "discharge-character", "분비물은 맑은 물, 고름·끈적한 액, 피, 귀지 같은 물질 중 무엇인가요?", 107, [G["discharge-trauma"]], C, allowed_values=["clear_watery", "purulent_sticky", "bloody", "wax_like", "other_unclear"], terminology_binding={"system": SN, "code": "300132001"}, mrcm_ref=M),
         Q("ear.discharge_amount_odor_and_duration", "Ear Discharge Amount Odor and Duration", "string", "discharge-detail", "분비물의 양·냄새와 언제부터 얼마나 자주 나오는지 알려주세요.", 106, [G["discharge-trauma"]], C),
@@ -104,16 +109,24 @@ def fragment():
         "ear.associated_tinnitus",
         "ear.associated_vertigo",
         "ear.associated_fullness",
+        "ear.prior_audiological_assessment_performed",
+        "ear.prior_audiological_assessment_date",
+        "ear.prior_audiological_assessment_result",
     }
     for item in e:
         if item["fact"]["id"] in refreshed_fact_ids:
+            if item["fact"]["id"].startswith("ear.prior_audiological_assessment_"):
+                item["fact"]["provenance"] = provenance(SOURCES)
+                item["fact"]["provenance"]["created_at"] = "2026-08-12T00:00:00Z"
+                item["question"]["provenance"] = provenance(SOURCES)
+                item["question"]["provenance"]["created_at"] = "2026-08-12T00:00:00Z"
             item["fact"]["refresh"] = {
                 "class": "clinical_guideline",
-                "last_assessed_at": "2026-08-08",
+                "last_assessed_at": "2026-08-12" if item["fact"]["id"].startswith("ear.prior_audiological_assessment_") else "2026-08-08",
                 "monitor_interval_days": 1,
                 "full_review_interval_days": 180,
-                "next_monitor_at": "2026-08-09",
-                "next_full_review_at": "2027-02-04",
+                "next_monitor_at": "2026-08-19" if item["fact"]["id"].startswith("ear.prior_audiological_assessment_") else "2026-08-09",
+                "next_full_review_at": "2027-02-08" if item["fact"]["id"].startswith("ear.prior_audiological_assessment_") else "2027-02-04",
                 "policy_id": "policy.knowledge-refresh",
                 "overdue_behavior": {
                     "production": "exclude_or_require_review",
@@ -142,34 +155,94 @@ def completion(f):
     policy = completion_policy(prefix=P, fragment=f, presentation_fact="ear.primary_symptom_group", question_budget=38, source_refs=SOURCES)
     branches = {
         "ear_pain_infection": ["ear.pain_location", "ear.pinna_movement_or_tragus_tenderness", "ear.itching_or_canal_skin_change", "ear.pressure_fullness_or_popping", "ear.uri_sore_throat_dental_or_jaw_pain", "ear.rash_or_vesicles_around_ear"],
-        "hearing_change": ["ear.hearing_change_pattern", "ear.asymmetric_hearing_change", "ear.associated_tinnitus", "ear.associated_vertigo", "ear.associated_fullness", "ear.noise_exposure_or_acoustic_trauma", "ear.possible_ototoxic_medication"],
+        "hearing_change": ["ear.hearing_change_pattern", "ear.asymmetric_hearing_change", "ear.associated_tinnitus", "ear.associated_vertigo", "ear.associated_fullness", "ear.noise_exposure_or_acoustic_trauma", "ear.possible_ototoxic_medication", "ear.prior_audiological_assessment_performed"],
         "discharge_trauma": ["ear.discharge_character", "ear.discharge_amount_odor_and_duration", "ear.instrument_cotton_bud_or_foreign_body", "ear.water_pressure_or_barotrauma_exposure", "ear.suspected_perforation_or_sudden_pain_relief"],
-        "tinnitus": ["ear.tinnitus_sound_character", "ear.tinnitus_pulse_synchronous", "ear.tinnitus_constant_or_intermittent", "ear.tinnitus_distress_sleep_or_function", "ear.tinnitus_associated_hearing_change", "ear.associated_vertigo", "ear.associated_fullness"],
+        "tinnitus": ["ear.tinnitus_sound_character", "ear.tinnitus_pulse_synchronous", "ear.tinnitus_constant_or_intermittent", "ear.tinnitus_distress_sleep_or_function", "ear.tinnitus_associated_hearing_change", "ear.associated_vertigo", "ear.associated_fullness", "ear.prior_audiological_assessment_performed"],
         "other_unclear": ["ear.other_detail_or_patient_priority"],
     }
     conditional = {fid for facts in branches.values() for fid in facts}
+    conditional.update({
+        "ear.prior_audiological_assessment_date",
+        "ear.prior_audiological_assessment_result",
+    })
     policy["required_facts"]["routine"] = [fid for fid in policy["required_facts"]["routine"] if fid not in conditional]
-    policy["conditional_required_facts"] = [{"selector_fact": "ear.primary_symptom_group", "cases": branches}]
+    policy["conditional_required_facts"] = [
+        {"selector_fact": "ear.primary_symptom_group", "cases": branches},
+        {
+            "when": {
+                "fact": "ear.prior_audiological_assessment_performed",
+                "equals": True,
+            },
+            "required_facts": [
+                "ear.prior_audiological_assessment_date",
+                "ear.prior_audiological_assessment_result",
+            ],
+        },
+    ]
     return policy
 
 
 def source_docs():
     defs = [
-        ("source.nice.hearing-loss-ng98", "NICE", "Hearing loss in adults: assessment and management", "NG98", "https://www.nice.org.uk/guidance/ng98", "clinical_guideline", 1),
-        ("source.nice.tinnitus-ng155", "NICE", "Tinnitus: assessment and management", "NG155", "https://www.nice.org.uk/guidance/ng155/chapter/Recommendations", "clinical_guideline", 1),
+        ("source.nice.hearing-loss-ng98", "NICE", "Hearing loss in adults: assessment and management", "NG98; last-updated-2023-10-02", "https://www.nice.org.uk/guidance/ng98/chapter/recommendations", "nice_guidance", 7),
+        ("source.nice.tinnitus-ng155", "NICE", "Tinnitus: assessment and management", "NG155", "https://www.nice.org.uk/guidance/ng155/chapter/Recommendations", "nice_guidance", 7),
         ("source.nhs.ear-infections.2025", "NHS", "Ear infections", "accessed-2026-07-14", "https://www.nhs.uk/conditions/ear-infections/", "public_health_guidance", 7),
         ("source.nhs.hearing-loss.2025", "NHS", "Hearing loss", "accessed-2026-07-14", "https://www.nhs.uk/conditions/hearing-loss/", "public_health_guidance", 7),
+        ("source.nhs.hearing-tests.2026", "NHS", "Hearing tests", "accessed-2026-08-12", "https://www.nhs.uk/tests-and-treatments/hearing-tests/", "public_health_guidance", 7),
         ("source.nhs.mastoiditis.2025", "NHS", "Mastoiditis", "accessed-2026-07-14", "https://www.nhs.uk/conditions/mastoiditis/", "public_health_guidance", 7),
         ("source.nhs.tinnitus.2026", "NHS", "Tinnitus", "reviewed-2024-01-12; modified-2026-05-06", "https://www.nhs.uk/conditions/tinnitus/", "public_health_guidance", 7),
         ("source.uhsussex.sudden-hearing-change.2025", "University Hospitals Sussex NHS Foundation Trust", "What to do if you have a sudden change in hearing", "accessed-2026-07-14", "https://www.uhsussex.nhs.uk/resources/what-to-do-if-you-have-a-sudden-change-in-hearing/", "clinical_guideline", 1),
         ("source.stom.ear-hearing.20260808", "Infoclinic", "STOM ear and hearing terminology mapping summary", "SNOMEDCT-20260801", "http://localhost:8088/fhir", "terminology_server", 30),
+        ("source.stom.audiometric-test.20260812", "Infoclinic", "STOM audiometric test terminology lookup", "SNOMEDCT-20260801", "http://localhost:8088/fhir/CodeSystem/$lookup?system=http%3A%2F%2Fsnomed.info%2Fsct&code=21727005", "terminology_server", 30),
     ]
-    refreshed = {
-        "source.nice.tinnitus-ng155",
-        "source.nhs.tinnitus.2026",
-        "source.stom.ear-hearing.20260808",
+    monitor_dates = {
+        "source.nice.hearing-loss-ng98": ("2026-08-12", "2026-08-19"),
+        "source.nice.tinnitus-ng155": ("2026-08-08", "2026-08-15"),
+        "source.nhs.hearing-tests.2026": ("2026-08-12", "2026-08-19"),
+        "source.nhs.tinnitus.2026": ("2026-08-08", "2026-08-15"),
+        "source.stom.ear-hearing.20260808": ("2026-08-08", "2026-09-07"),
+        "source.stom.audiometric-test.20260812": ("2026-08-12", "2026-09-11"),
     }
-    artifacts = [{"id": i, "kind": "terminology_mapping_summary" if profile == "terminology_server" else "clinical_guidance_metadata", "publisher": pub, "title": title, "version": version, "url": url, "language": "en", "digest": "metadata_only_not_cached", "license_status": "unknown", "complete": False, "monitor_profile": profile, "monitor_interval_days": days, "last_monitored_at": "2026-08-08" if i in refreshed else "2026-07-14", "next_monitor_at": "2026-08-15" if i in refreshed and days == 7 else ("2026-09-07" if i in refreshed and days == 30 else ("2026-08-09" if i in refreshed else "2026-07-21")), "assertions": ["Build-Time only; Runtime does not browse; content remains unreviewed draft."]} for i, pub, title, version, url, profile, days in defs]
+    artifacts = []
+    for i, pub, title, version, url, profile, days in defs:
+        last_monitored_at, next_monitor_at = monitor_dates.get(
+            i, ("2026-07-14", "2026-07-21")
+        )
+        assertions = [
+            "Build-Time only; Runtime does not browse; content remains unreviewed draft."
+        ]
+        if i == "source.nice.hearing-loss-ng98":
+            assertions = [
+                "NICE NG98 1.5.1 supports recording audiological assessment history, hearing and communication needs, otoscopy, pure tone audiometry and tympanometry when indicated.",
+                "The pre-visit interview records whether a prior assessment occurred, its date and the patient-reported result as separate observations; it does not interpret an audiogram.",
+            ]
+        elif i == "source.nhs.hearing-tests.2026":
+            assertions = [
+                "The NHS hearing-tests page identifies pure-tone audiometry, speech audiometry and tympanometry as hearing-test types.",
+                "The source supports asking for prior test context but does not make the patient recollection equivalent to a verified report.",
+            ]
+        elif i == "source.stom.audiometric-test.20260812":
+            assertions = [
+                "STOM FHIR lookup confirmed active 21727005 | Audiometric test (procedure) | in SNOMED CT International 2026-08-01.",
+                "The procedure concept is not asserted as exact or equivalent to the atomic prior-test occurrence, date or result questions; those questions retain local codes.",
+            ]
+        artifacts.append({
+            "id": i,
+            "kind": "terminology_mapping_summary" if profile == "terminology_server" else "clinical_guidance_metadata",
+            "publisher": pub,
+            "title": title,
+            "version": version,
+            "url": url,
+            "language": "en",
+            "digest": "metadata_only_not_cached",
+            "license_status": "restricted" if profile == "terminology_server" else "unknown",
+            "complete": False,
+            "monitor_profile": profile,
+            "monitor_interval_days": days,
+            "last_monitored_at": last_monitored_at,
+            "next_monitor_at": next_monitor_at,
+            "assertions": assertions,
+        })
     research = {"id": "source-manifest.primary-care-ear-hearing-symptoms-research", "version": VERSION, "acquired_at": CREATED_AT, "status": "research_only", "artifacts": artifacts, "provenance": provenance([x[0] for x in defs])}
     paths = [("source.repository.foundation", "repository_specification", "FOUNDATION.md", True), ("source.generated.ear-hearing", "generated_clinical_knowledge", "knowledge/generated/otologic/ear-hearing-symptoms/ear-hearing-symptoms.json", True), ("source.mapping.ear-hearing", "terminology_mapping", "mappings/terminology/snomed-mrcm-ear-hearing-symptoms.json", False), ("source.external.ear-hearing", "external_source_manifest", "sources/manifests/primary-care-ear-hearing-symptoms-research.json", False), ("source.policy.ear-hearing", "runtime_policy", "policies/primary-care-ear-hearing-symptoms-completion.json", True)]
     primary = {"id": "source-manifest.primary-care-ear-hearing-symptoms", "version": VERSION, "acquired_at": CREATED_AT, "artifacts": [{"id": i, "kind": kind, "publisher": "clinical-interview-platform", "version": VERSION, "language": "en", "path": path, "digest": "computed_at_build", "license_status": "allowed" if complete else "unknown", "complete": complete} for i, kind, path, complete in paths], "provenance": provenance(["FOUNDATION.md", "PROJECT_CONTEXT.md"])}
@@ -197,7 +270,7 @@ def cases(f):
         out[f"EAR-{key.upper()}.json"] = case
     policy = completion(f); required = set(policy["required_facts"]["always"] + policy["required_facts"]["routine"] + policy["conditional_required_facts"][0]["cases"]["tinnitus"])
     by_id = {item["fact"]["id"]: item["fact"] for item in f["entries"]}; hidden = {}
-    for fid in required:
+    for fid in sorted(required):
         fact = by_id[fid]
         if fact["value_type"] == "boolean": hidden[fid] = {"value": False}
         elif fact["value_type"] == "coded": hidden[fid] = {"value": fact.get("allowed_values", ["unclear"])[-1]}
@@ -208,6 +281,77 @@ def cases(f):
     out["EAR-TINNITUS-DATA-ABSENT.json"] = {"id": "EAR-TINNITUS-DATA-ABSENT", "simulation_language": "ko", "persona": {"age": 52}, "initial_statement": {"ko": "오른쪽 귀에서 삐 소리가 나요."}, "hidden_state": hidden, "response_behavior": {declined: {"dataAbsentReason": "asked-declined"}}, "expected": {"expected_data_absent_reasons": {declined: "asked-declined"}, "expected_safety_level": "routine", "expected_stop_reason": "required_targets_addressed_with_absent_data", "expected_max_turns": 42, "forbidden_assertions": ["diagnosis.tinnitus_cause"]}, "provenance": provenance(["source.nice.tinnitus-ng155", "specifications/clinical-memory.md"])}
     unclear = "ear.tinnitus_pulse_synchronous"; routine_tinnitus_hidden.pop(unclear)
     out["EAR-TINNITUS-PULSE-UNCLEAR.json"] = {"id": "EAR-TINNITUS-PULSE-UNCLEAR", "simulation_language": "ko", "persona": {"age": 68, "accessibility": "hearing_support"}, "initial_statement": {"ko": "한쪽 귀에서 소리가 나는데 맥박과 같은지는 잘 모르겠어요."}, "hidden_state": routine_tinnitus_hidden, "response_behavior": {unclear: {"dataAbsentReason": "asked-unknown"}}, "expected": {"expected_data_absent_reasons": {unclear: "asked-unknown"}, "expected_safety_level": "routine", "expected_stop_reason": "required_targets_addressed_with_absent_data", "expected_max_turns": 42, "forbidden_assertions": ["diagnosis.tinnitus_cause", "diagnosis.pulsatile_tinnitus"]}, "provenance": provenance(["source.nhs.tinnitus.2026", "specifications/clinical-memory.md"])}
+    hearing_required = set(
+        policy["required_facts"]["always"]
+        + policy["required_facts"]["routine"]
+        + policy["conditional_required_facts"][0]["cases"]["hearing_change"]
+        + policy["conditional_required_facts"][1]["required_facts"]
+    )
+    hearing_hidden = {}
+    for fid in sorted(hearing_required):
+        fact = by_id[fid]
+        if fact["value_type"] == "boolean":
+            hearing_hidden[fid] = {"value": False}
+        elif fact["value_type"] == "coded":
+            hearing_hidden[fid] = {"value": fact.get("allowed_values", ["unclear"])[-1]}
+        elif fact["value_type"] == "date":
+            hearing_hidden[fid] = {"value": "2025-11-03"}
+        else:
+            hearing_hidden[fid] = {"value": "없음"}
+    hearing_hidden.update({
+        "ear.primary_symptom_group": {"value": "hearing_change"},
+        "ear.hearing_change_pattern": {"value": "gradual_decline"},
+        "ear.prior_audiological_assessment_performed": {"value": True},
+        "ear.prior_audiological_assessment_date": {"value": "2025-11-03"},
+        "ear.prior_audiological_assessment_result": {
+            "value": "합성 스캔에 오른쪽이 왼쪽보다 덜 들린다는 설명이 있으나 수치 표는 흐림"
+        },
+    })
+    out["EAR-HEARING-PRIOR-AUDIOGRAM-HANDOFF.json"] = {
+        "id": "EAR-HEARING-PRIOR-AUDIOGRAM-HANDOFF",
+        "simulation_language": "ko",
+        "clinician_submission": True,
+        "persona": {"age": 74, "accessibility": "hearing_support"},
+        "encounter_context": {
+            "care_setting": "telemedicine",
+            "encounter_type": "follow_up",
+            "interview_initiator": "patient",
+            "interview_mode": "chat",
+            "available_information": [
+                "synthetic_scanned_audiology_summary",
+                "terminology_adapter_available",
+            ],
+            "time_constraint": "scheduled",
+            "clinical_responsibility": "decision_support",
+        },
+        "initial_statement": {
+            "ko": "작년 청력검사 뒤 오래 못 갔고, 요즘 오른쪽 말소리가 더 흐립니다. 검사 안내문 스캔도 있습니다."
+        },
+        "hidden_state": hearing_hidden,
+        "expected": {
+            "expected_safety_level": "routine",
+            "expected_stop_reason": "required_targets_addressed_with_absent_data",
+            "expected_clinician_handoff": True,
+            "expected_selected_facts_contains": [
+                "ear.prior_audiological_assessment_performed",
+                "ear.prior_audiological_assessment_date",
+                "ear.prior_audiological_assessment_result",
+            ],
+            "expected_max_turns": 60,
+            "forbidden_assertions": [
+                "diagnosis.sensorineural_hearing_loss",
+                "diagnosis.asymmetric_hearing_loss",
+                "recommendation.hearing_aid",
+                "interpretation.audiogram",
+            ],
+        },
+        "provenance": provenance([
+            "source.nice.hearing-loss-ng98",
+            "source.nhs.hearing-tests.2026",
+            "source.stom.audiometric-test.20260812",
+            "specifications/clinical-memory.md",
+        ]),
+    }
     return out
 
 
@@ -215,8 +359,8 @@ def main():
     f = fragment()
     graph, rules = base_graph_and_rules(prefix=P, rfe=RFE, display="Ear and Hearing Symptoms", intents=[("intent.characterize_symptom", "Characterize Symptom"), ("intent.screen_red_flags", "Screen Red Flags"), ("intent.differentiate_common_causes", "Differentiate Common Sources"), ("intent.risk_assessment", "Risk Assessment")])
     primary, research = source_docs()
-    concepts = [("301354004", "Pain of ear (finding)"), ("15188001", "Hearing loss (disorder)"), ("79471008", "Sudden hearing loss (disorder)"), ("60862001", "Tinnitus (finding)"), ("117421000119104", "Subjective pulsatile tinnitus (finding)"), ("300132001", "Ear discharge (finding)")]
-    mapping = {"id": M, "version": VERSION, "status": "research_only", "review_status": "unreviewed", "terminology": {"system": SN, "version": "http://snomed.info/sct/900000000000207008/version/20260801", "source": "STOM"}, "focus_concepts": [{"code": code, "display": display, "mapping_status": "active_candidate_returned"} for code, display in concepts], "laterality": {"reference_set": "723264001", "postcoordination_policy": "policy.snomed-postcoordination-laterality", "application": "Apply only when the selected finding site is confirmed as a member."}, "validation": {"method": "build_time_mapping_support_query", "checked_at": "2026-08-08T00:00:00Z", "raw_response_cached": False, "complete_mrcm_snapshot": False, "clinical_rule_authority": False, "result": "mapping_candidates_verified_mrcm_pending"}, "provenance": provenance(["source.stom.ear-hearing.20260808"])}
+    concepts = [("301354004", "Pain of ear (finding)"), ("15188001", "Hearing loss (disorder)"), ("79471008", "Sudden hearing loss (disorder)"), ("60862001", "Tinnitus (finding)"), ("117421000119104", "Subjective pulsatile tinnitus (finding)"), ("300132001", "Ear discharge (finding)"), ("21727005", "Audiometric test (procedure)")]
+    mapping = {"id": M, "version": VERSION, "status": "research_only", "review_status": "unreviewed", "terminology": {"system": SN, "version": "http://snomed.info/sct/900000000000207008/version/20260801", "source": "STOM"}, "focus_concepts": [{"code": code, "display": display, "mapping_status": "active_candidate_returned"} for code, display in concepts], "laterality": {"reference_set": "723264001", "postcoordination_policy": "policy.snomed-postcoordination-laterality", "application": "Apply only when the selected finding site is confirmed as a member."}, "validation": {"method": "build_time_mapping_support_query", "checked_at": "2026-08-08T00:00:00Z", "raw_response_cached": False, "complete_mrcm_snapshot": False, "clinical_rule_authority": False, "result": "mapping_candidates_verified_mrcm_pending", "targeted_addition": {"code": "21727005", "verified_at": "2026-08-12", "verification_source": "http://localhost:8088/fhir/CodeSystem/$lookup", "mapping_relation_to_questions": "related_not_exact", "question_codes_remain_local": True}}, "provenance": provenance(["source.stom.ear-hearing.20260808", "source.stom.audiometric-test.20260812"])}
     docs = [("knowledge/base/primary-care-ear-hearing-symptoms.json", graph), ("rules/base/primary-care-ear-hearing-symptoms.json", rules), ("knowledge/generated/otologic/ear-hearing-symptoms/ear-hearing-symptoms.json", f), ("mappings/terminology/snomed-mrcm-ear-hearing-symptoms.json", mapping), ("sources/manifests/primary-care-ear-hearing-symptoms.json", primary), ("sources/manifests/primary-care-ear-hearing-symptoms-research.json", research), ("policies/primary-care-ear-hearing-symptoms-completion.json", completion(f))]
     for path, doc in docs: write_json(path, doc)
     for name, case in cases(f).items(): write_json("simulation/patients/otologic/ear-hearing-symptoms/" + name, case)

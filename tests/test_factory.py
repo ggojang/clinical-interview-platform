@@ -847,7 +847,7 @@ class CompilerTests(unittest.TestCase):
     def test_ear_hearing_symptoms_package_is_complete(self):
         package = compile_package(profile="ear_hearing_symptoms")
         facts = {n["id"] for n in package["knowledge_graph"]["nodes"] if n["type"] == "Fact"}
-        self.assertEqual(len(facts), 47)
+        self.assertEqual(len(facts), 50)
         self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
         self.assertEqual(package["coverage"]["total_safety_rules"], 13)
         self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 13)

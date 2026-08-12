@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from dataclasses import dataclass, field
+from datetime import date
 from pathlib import Path
 from typing import Any
 import re
@@ -753,6 +754,15 @@ class InterviewSession:
                             answer_text,
                             turn,
                             .95,
+                        )
+                elif node.get("value_type") == "date" and normalized:
+                    try:
+                        date.fromisoformat(normalized)
+                    except ValueError:
+                        pass
+                    else:
+                        additions[expected_fact] = fact(
+                            normalized, answer_text, turn, .95
                         )
                 elif (
                     node.get("value_type") in {
