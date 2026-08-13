@@ -92,6 +92,32 @@ def test_core_clinical_route_selects_the_matching_compiled_package_and_escalates
     assert "rule.safety.hemoptysis" in warning["adapter_state"]["safety_status"]["triggered_rules"]
 
 
+def test_colloquial_hearing_and_test_sheet_phrases_route_to_existing_packages():
+    fixture = json.loads(
+        (ROOT / "simulation/workflows/rfe-routing-colloquial-cases.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert fixture["status"] == "synthetic"
+    assert not fixture["contains_real_patient_data"]
+
+    hearing = CoreInteractionSession("purpose-core-hearing-proxy").process(
+        "아이가 소리를 잘 못 듣는 것 같아 대신 답해요"
+    )
+    assert hearing["status"] == "active"
+    assert hearing["adapter_state"]["package"]["id"] == (
+        "package.primary-care-ear-hearing-symptoms"
+    )
+
+    result = CoreInteractionSession("purpose-core-test-sheet").process(
+        "전문과 재진인데 합성 검사지를 보니 값이 서로 달라요"
+    )
+    assert result["status"] == "active"
+    assert result["adapter_state"]["package"]["id"] == (
+        "package.primary-care-test-result-follow-up"
+    )
+
+
 def test_core_session_exposes_nonclinical_adapter_contract_without_collecting_answers():
     session = CoreInteractionSession("purpose-core-survey")
     state = session.process("환자경험평가")
