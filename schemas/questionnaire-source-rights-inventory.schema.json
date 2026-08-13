@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ggojang.github.io/clinical-interview-platform/schemas/questionnaire-source-rights-inventory.schema.json",
+  "title": "Questionnaire and Interview Source Rights Inventory",
+  "type": "object",
+  "required": [
+    "id",
+    "version",
+    "as_of",
+    "status",
+    "review_status",
+    "scope",
+    "interpretation",
+    "summary",
+    "assets",
+    "acquisition_candidates",
+    "validation_errors",
+    "provenance"
+  ],
+  "properties": {
+    "id": {"const": "coverage.questionnaire-source-rights-inventory"},
+    "version": {"type": "string"},
+    "as_of": {"type": "string", "format": "date"},
+    "status": {"const": "draft"},
+    "review_status": {"const": "unreviewed"},
+    "assets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "asset_class",
+          "implementation_status",
+          "repository_paths",
+          "question_count",
+          "source_defined_fixed_items",
+          "content_origin",
+          "rights",
+          "clinical_use"
+        ],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "title": {"type": "string", "minLength": 1},
+          "asset_class": {
+            "enum": [
+              "dynamic_clinical_interview",
+              "assessment_program",
+              "fixed_standardized_instrument",
+              "fixed_questionnaire",
+              "adaptive_preventive_question_group",
+              "fhir_fixed_questionnaire",
+              "shared_assessment_component"
+            ]
+          },
+          "question_count": {"type": "integer", "minimum": 0},
+          "source_defined_fixed_items": {"type": "boolean"},
+          "repository_paths": {
+            "type": "array",
+            "minItems": 1,
+            "items": {"type": "string"}
+          },
+          "rights": {
+            "type": "object",
+            "required": ["external_use_gate", "internal_test"],
+            "properties": {
+              "external_use_gate": {
+                "enum": [
+                  "documented_sources_only",
+                  "rights_review_required",
+                  "blocked"
+                ]
+              },
+              "internal_test": {"type": "string"}
+            },
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "acquisition_candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "family",
+          "implementation_status",
+          "content_in_repository",
+          "rights",
+          "official_sources",
+          "next_action"
+        ],
+        "properties": {
+          "content_in_repository": {"const": false}
+        },
+        "additionalProperties": true
+      }
+    },
+    "validation_errors": {
+      "type": "array",
+      "items": {"type": "string"}
+    }
+  },
+  "additionalProperties": true
+}

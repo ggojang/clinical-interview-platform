@@ -1,5 +1,27 @@
 # Sources
 
+## Questionnaire and interview rights inventory
+
+Questionnaire, assessment and dynamic-interview assets are inventoried separately
+from ordinary clinical evidence sources. The inventory distinguishes project-authored
+dynamic questions, source-defined fixed questionnaires, result-capture-only assessment
+programs and future instrument candidates. It does not treat public metadata access or
+an internal test as permission to reproduce, translate, electronically administer or
+commercially distribute an instrument.
+
+```bash
+python3 tools/inventory/build_questionnaire_source_rights_inventory.py
+python3 tools/inventory/build_questionnaire_source_rights_inventory.py --check
+```
+
+The machine-readable report is written to
+`coverage/questionnaire-source-rights-inventory-latest.json`; the human review is
+written to `docs/QUESTIONNAIRE_INTERVIEW_SOURCE_RIGHTS_INVENTORY.md`. External
+instrument candidates and their fail-closed acquisition gates are maintained in
+`sources/inventory/questionnaire-instrument-candidates.json`. The ordered domestic
+source review (CHS → KHP → KLoSA), concept-level gaps, and item-reuse boundaries are
+documented in `docs/KOREAN_QUESTIONNAIRE_SOURCE_ACQUISITION.md`.
+
 Build-Time Source Manifests live in `manifests/`.
 
 Build-Time terminology reference indexes live in `catalogs/`. The complete
