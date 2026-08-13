@@ -55,6 +55,15 @@
 
 이 queue의 항목은 아직 Runtime 질문이나 임상 Knowledge가 아니다. 정규 Knowledge 구축 회차에서 공식 임상근거, 원자성, terminology binding, 환자에게 묻는 필요성과 clinician handoff 가치를 각각 확인한 뒤 도입한다.
 
+## 내부 test-only 탑재 경로
+
+사용자가 공식 절차로 확보했거나 내부 전자시험 권리가 확인된 FHIR R4 Questionnaire는 `private-data/questionnaires/`에 두고 제한 로더로 시험할 수 있다. 저장소에는 원문 대신 source family, 정확한 버전, SHA-256, 권리상태만 기록한다. 로더는 경로 이탈, 해시 불일치, 비활성 상태, 잘못된 FHIR resourceType과 버전 불일치를 차단한다. 원문과 QuestionnaireResponse는 public GPT export 및 Git 커밋 대상이 아니다.
+
+- 정책: `policies/restricted-questionnaire-test-use.json`
+- 로더: `runtime/restricted_questionnaires.py`
+- registry 예제: `sources/restricted/questionnaire-test-registry.example.json`
+- 설치 안내: `sources/restricted/README.md`
+
 ## 기계 판독 원본과 검증
 
 - 후보·권리·공식 URL: `sources/inventory/questionnaire-instrument-candidates.json`
