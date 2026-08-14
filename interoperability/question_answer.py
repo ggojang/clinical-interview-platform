@@ -80,6 +80,7 @@ def load_answer_domains() -> dict[str, Any]:
                 continue
             preferred = binding.get("preferred_codes", [])
             legacy_map = binding.get("legacy_token_map", {})
+            legacy_standard_map = binding.get("legacy_standard_token_map", {})
             if not preferred or any(code not in concept_codes for code in preferred):
                 raise ValueError(
                     f"{fact_id}: preferred code is outside {domain_id}"
@@ -88,6 +89,16 @@ def load_answer_domains() -> dict[str, Any]:
                 raise ValueError(
                     f"{fact_id}: legacy mapping is outside {domain_id}"
                 )
+            for token, mapping in legacy_standard_map.items():
+                if (
+                    token not in legacy_map
+                    or mapping.get("system") != SNOMED
+                    or not mapping.get("code")
+                    or not mapping.get("display")
+                ):
+                    raise ValueError(
+                        f"{fact_id}: legacy standard compatibility mapping is invalid"
+                    )
         migration = domain.get("migration")
         if migration:
             if migration.get("replacement_value_set_id") != value_set_id:

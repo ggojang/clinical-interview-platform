@@ -1,6 +1,6 @@
 {
   "id": "registry.clinical-interview-answer-domains",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "status": "draft",
   "review_status": "unreviewed",
   "usage": {
@@ -10,7 +10,7 @@
   },
   "local_code_system": {
     "url": "https://ggojang.github.io/clinical-interview-platform/fhir/CodeSystem/clinical-interview-answer-domain",
-    "version": "0.4.0"
+    "version": "0.5.0"
   },
   "domains": {
     "pain-quality": {
@@ -444,12 +444,263 @@
         ],
         "removal_condition": "Delete in a later cleanup only after zero current references and external compatibility review are both confirmed."
       }
+    },
+    "tobacco-product-use-status": {
+      "semantic_name": "tobacco-product-use-status",
+      "value_set_id": "a-local-tobacco-product-use-status",
+      "questionnaire": {
+        "item_type": "open-choice",
+        "repeats": false,
+        "allow_free_text": true,
+        "one_answer_bearing_dimension": "tobacco_or_nicotine_product_use_status"
+      },
+      "concepts": [
+        {
+          "code": "tobacco-product-use-status-current",
+          "display": "Current use",
+          "display_ko": "현재 사용"
+        },
+        {
+          "code": "tobacco-product-use-status-former",
+          "display": "Former use",
+          "display_ko": "과거 사용"
+        },
+        {
+          "code": "tobacco-product-use-status-never",
+          "display": "Never used",
+          "display_ko": "사용한 적 없음"
+        },
+        {
+          "code": "tobacco-product-use-status-other",
+          "display": "Other use status",
+          "display_ko": "기타 사용 상태"
+        }
+      ],
+      "data_absent_states_excluded_from_value_set": [
+        "unknown"
+      ],
+      "terminology": {
+        "mapping_status": "local_codes_retained_after_loinc_fhir_snomed_and_stom_review",
+        "loinc_answer_lists_considered": [
+          {
+            "canonical": "http://loinc.org/vs/LL7497-2",
+            "display": "Tobacco usage",
+            "adoption": "not_equivalent_for_all_bound_facts",
+            "reason": "The official list is bound to LOINC 112319-9 Tobacco use status and does not cover nicotine-only products or the explicit other-status answer. It remains suitable when that LOINC observation is used unchanged."
+          },
+          {
+            "canonical": "http://loinc.org/vs/LL2201-3",
+            "display": "Smoking Status - HL7 Value Set",
+            "adoption": "not_equivalent",
+            "reason": "The official list represents tobacco smoking categories and does not express product-specific use status for heated tobacco, smokeless tobacco, nicotine pouches, cigars, pipes or vaping."
+          }
+        ],
+        "fhir_us_core_review": {
+          "resource": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-smokingstatus",
+          "adoption": "not_equivalent",
+          "reason": "US Core constrains a Smoking Status Observation and does not define a reusable answer domain for each tobacco or nicotine product."
+        },
+        "snomed_review": {
+          "version": "http://snomed.info/sct/900000000000207008/version/20260801",
+          "verified_product_concepts": [
+            "59978006",
+            "1388653002",
+            "713914004",
+            "584011000052107"
+          ],
+          "adoption": "related_product_identity_only",
+          "reason": "Verified product concepts identify use or consumption but do not provide one complete current/former/never/other status answer set across every product."
+        },
+        "retired_generic_other_mapping": {
+          "code": "74964007",
+          "display": "Other (qualifier value)",
+          "reason": "The generic qualifier does not preserve the product-use-status meaning and is retained only inside retired compatibility ValueSets."
+        },
+        "stom_lookup_verified_at": "2026-08-14",
+        "kr_core_v2_result": "No Questionnaire or QuestionnaireResponse profile is defined and no KR Core V2 answer ValueSet matches product-specific tobacco or nicotine use status.",
+        "local_code_reason": "One registered local status axis preserves product context supplied by the question while avoiding false equivalence to cigarette-smoking or tobacco-only answer lists."
+      },
+      "fact_bindings": {
+        "preoperative.vaping_use_status": {
+          "status": "active_pilot",
+          "preferred_codes": [
+            "tobacco-product-use-status-current",
+            "tobacco-product-use-status-former",
+            "tobacco-product-use-status-never"
+          ],
+          "legacy_token_map": {
+            "current": "tobacco-product-use-status-current",
+            "former": "tobacco-product-use-status-former",
+            "never": "tobacco-product-use-status-never"
+          },
+          "unlisted_or_other": "free_text"
+        },
+        "tobacco.cigar_status": {
+          "status": "active_pilot",
+          "preferred_codes": [
+            "tobacco-product-use-status-current",
+            "tobacco-product-use-status-former",
+            "tobacco-product-use-status-never",
+            "tobacco-product-use-status-other"
+          ],
+          "legacy_token_map": {
+            "current": "tobacco-product-use-status-current",
+            "former": "tobacco-product-use-status-former",
+            "never": "tobacco-product-use-status-never",
+            "other": "tobacco-product-use-status-other"
+          },
+          "legacy_standard_token_map": {
+            "other": {
+              "system": "http://snomed.info/sct",
+              "code": "74964007",
+              "display": "Other"
+            }
+          },
+          "unlisted_or_other": "free_text"
+        },
+        "tobacco.heated_tobacco_status": {
+          "status": "active_pilot",
+          "preferred_codes": [
+            "tobacco-product-use-status-current",
+            "tobacco-product-use-status-former",
+            "tobacco-product-use-status-never",
+            "tobacco-product-use-status-other"
+          ],
+          "legacy_token_map": {
+            "current": "tobacco-product-use-status-current",
+            "former": "tobacco-product-use-status-former",
+            "never": "tobacco-product-use-status-never",
+            "other": "tobacco-product-use-status-other"
+          },
+          "legacy_standard_token_map": {
+            "other": {
+              "system": "http://snomed.info/sct",
+              "code": "74964007",
+              "display": "Other"
+            }
+          },
+          "unlisted_or_other": "free_text"
+        },
+        "tobacco.nicotine_pouch_status": {
+          "status": "active_pilot",
+          "preferred_codes": [
+            "tobacco-product-use-status-current",
+            "tobacco-product-use-status-former",
+            "tobacco-product-use-status-never",
+            "tobacco-product-use-status-other"
+          ],
+          "legacy_token_map": {
+            "current": "tobacco-product-use-status-current",
+            "former": "tobacco-product-use-status-former",
+            "never": "tobacco-product-use-status-never",
+            "other": "tobacco-product-use-status-other"
+          },
+          "legacy_standard_token_map": {
+            "other": {
+              "system": "http://snomed.info/sct",
+              "code": "74964007",
+              "display": "Other"
+            }
+          },
+          "unlisted_or_other": "free_text"
+        },
+        "tobacco.overall_product_use_status": {
+          "status": "active_pilot",
+          "preferred_codes": [
+            "tobacco-product-use-status-current",
+            "tobacco-product-use-status-former",
+            "tobacco-product-use-status-never",
+            "tobacco-product-use-status-other"
+          ],
+          "legacy_token_map": {
+            "current": "tobacco-product-use-status-current",
+            "former": "tobacco-product-use-status-former",
+            "never": "tobacco-product-use-status-never",
+            "other": "tobacco-product-use-status-other"
+          },
+          "legacy_standard_token_map": {
+            "other": {
+              "system": "http://snomed.info/sct",
+              "code": "74964007",
+              "display": "Other"
+            }
+          },
+          "unlisted_or_other": "free_text"
+        },
+        "tobacco.pipe_hookah_status": {
+          "status": "active_pilot",
+          "preferred_codes": [
+            "tobacco-product-use-status-current",
+            "tobacco-product-use-status-former",
+            "tobacco-product-use-status-never",
+            "tobacco-product-use-status-other"
+          ],
+          "legacy_token_map": {
+            "current": "tobacco-product-use-status-current",
+            "former": "tobacco-product-use-status-former",
+            "never": "tobacco-product-use-status-never",
+            "other": "tobacco-product-use-status-other"
+          },
+          "legacy_standard_token_map": {
+            "other": {
+              "system": "http://snomed.info/sct",
+              "code": "74964007",
+              "display": "Other"
+            }
+          },
+          "unlisted_or_other": "free_text"
+        },
+        "tobacco.smokeless_tobacco_status": {
+          "status": "active_pilot",
+          "preferred_codes": [
+            "tobacco-product-use-status-current",
+            "tobacco-product-use-status-former",
+            "tobacco-product-use-status-never",
+            "tobacco-product-use-status-other"
+          ],
+          "legacy_token_map": {
+            "current": "tobacco-product-use-status-current",
+            "former": "tobacco-product-use-status-former",
+            "never": "tobacco-product-use-status-never",
+            "other": "tobacco-product-use-status-other"
+          },
+          "legacy_standard_token_map": {
+            "other": {
+              "system": "http://snomed.info/sct",
+              "code": "74964007",
+              "display": "Other"
+            }
+          },
+          "unlisted_or_other": "free_text"
+        }
+      },
+      "migration": {
+        "phase": "references_migrated_compatibility_aliases_retained",
+        "started_at": "2026-08-14",
+        "replacement_value_set_id": "a-local-tobacco-product-use-status",
+        "legacy_value_sets": [
+          {"fact_id": "preoperative.vaping_use_status", "id": "a-local-preoperative-vaping-use-status-coded-current-dcb77c18fe", "status": "retired"},
+          {"fact_id": "tobacco.cigar_status", "id": "a-local-tobacco-cigar-status-coded-current-former-never-other", "status": "retired"},
+          {"fact_id": "tobacco.cigar_status", "id": "a-mixed-tobacco-cigar-status-coded-current-former-never-other", "status": "retired"},
+          {"fact_id": "tobacco.heated_tobacco_status", "id": "a-local-tobacco-heated-tobacco-status-coded-current-f-93e966970a", "status": "retired"},
+          {"fact_id": "tobacco.heated_tobacco_status", "id": "a-mixed-tobacco-heated-tobacco-status-coded-current-f-da136cfcf3", "status": "retired"},
+          {"fact_id": "tobacco.nicotine_pouch_status", "id": "a-local-tobacco-nicotine-pouch-status-coded-current-f-1eda71b71f", "status": "retired"},
+          {"fact_id": "tobacco.nicotine_pouch_status", "id": "a-mixed-tobacco-nicotine-pouch-status-coded-current-f-1c09c9d99f", "status": "retired"},
+          {"fact_id": "tobacco.overall_product_use_status", "id": "a-local-tobacco-overall-product-use-status-coded-curr-4da7274ba4", "status": "retired"},
+          {"fact_id": "tobacco.overall_product_use_status", "id": "a-mixed-tobacco-overall-product-use-status-coded-curr-3221906b72", "status": "retired"},
+          {"fact_id": "tobacco.pipe_hookah_status", "id": "a-local-tobacco-pipe-hookah-status-coded-current-form-e30598afac", "status": "retired"},
+          {"fact_id": "tobacco.pipe_hookah_status", "id": "a-mixed-tobacco-pipe-hookah-status-coded-current-form-a212d0a04a", "status": "retired"},
+          {"fact_id": "tobacco.smokeless_tobacco_status", "id": "a-local-tobacco-smokeless-tobacco-status-coded-curren-71e6fb20f1", "status": "retired"},
+          {"fact_id": "tobacco.smokeless_tobacco_status", "id": "a-mixed-tobacco-smokeless-tobacco-status-coded-curren-44ef6129c6", "status": "retired"}
+        ],
+        "removal_condition": "Delete in a later cleanup only after zero current references and external compatibility review are both confirmed."
+      }
     }
   },
   "provenance": {
     "created_by": {"type": "ai", "id": "codex-gpt5"},
     "created_at": "2026-08-10T00:00:00Z",
-    "updated_at": "2026-08-11T00:00:00Z",
+    "updated_at": "2026-08-14T00:00:00Z",
     "source_refs": [
       "policies/question-answer-terminology-binding.json",
       "policies/snomed-postcoordination-laterality.json",
@@ -464,7 +715,13 @@
       "source.hl7-korea.kr-core-v2.information-source-review.20260811",
       "source.hl7.fhir-r4.valueset-multiple-code-systems.20260811",
       "source.stom.answer-domain-symptom-onset-mode.20260811",
-      "source.hl7-korea.kr-core-v2.symptom-onset-mode-review.20260811"
+      "source.hl7-korea.kr-core-v2.symptom-onset-mode-review.20260811",
+      "source.loinc.ll7497-2.20260814",
+      "source.loinc.ll2201-3.20260814",
+      "source.hl7.fhir-us-core.smoking-status.20260814",
+      "source.snomed.tobacco-nicotine-product-status-review.20260814",
+      "source.stom.tobacco-nicotine-product-status.20260814",
+      "source.hl7-korea.kr-core-v2.tobacco-product-status-review.20260814"
     ]
   }
 }

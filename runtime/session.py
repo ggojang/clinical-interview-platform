@@ -693,6 +693,26 @@ class InterviewSession:
                     additions[expected_fact] = fact(
                         normalized, answer_text, turn, .92
                     )
+                elif node.get("value_type") == "coded" and normalized:
+                    binding = node.get("answer_semantic_binding", {})
+                    element_binding = binding.get("fhir_element_binding")
+                    if element_binding:
+                        allow_free_text = bool(
+                            element_binding.get("allow_outside_code")
+                        )
+                    elif "allow_free_text" in binding:
+                        allow_free_text = bool(binding["allow_free_text"])
+                    elif "accept_free_text" in template:
+                        allow_free_text = bool(template["accept_free_text"])
+                    else:
+                        # Adaptive choices are shortcuts, not a closed fixed
+                        # questionnaire answer set. This mirrors the visible
+                        # response guidance emitted by _decorate_question().
+                        allow_free_text = True
+                    if allow_free_text:
+                        additions[expected_fact] = fact(
+                            answer_text.strip(), answer_text, turn, .85
+                        )
                 elif node.get("value_type") == "integer" and re.fullmatch(r"\d+", normalized):
                     numeric_value = int(normalized)
                     minimum = node.get("minimum")

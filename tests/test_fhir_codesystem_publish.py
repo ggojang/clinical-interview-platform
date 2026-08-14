@@ -125,6 +125,40 @@ class FhirCodeSystemPublisherTests(unittest.TestCase):
         with self.assertRaises(FhirCodeSystemPublishError):
             publisher.plan(resource)
 
+    def test_exact_identifier_fallback_handles_broken_version_search(self):
+        resource = local_codesystem()
+        service = FakeReadService(matches=[], collision=resource)
+        publisher = FhirCodeSystemPublisher(
+            base_url="http://localhost:8088/fhir",
+            api_key="not-recorded",
+            read_service=service,
+        )
+
+        result = publisher.apply(publisher.plan(resource))
+
+        self.assertEqual(result["action"], "reuse_exact_codesystem")
+        self.assertTrue(result["post_write_content_verified"])
+
+    def test_direct_id_verifies_create_when_version_search_returns_none(self):
+        resource = local_codesystem()
+        service = FakeReadService()
+
+        def write_transport(method, url, body, headers, timeout):
+            service.collision = deepcopy(body)
+            return 201, deepcopy(body), {}
+
+        publisher = FhirCodeSystemPublisher(
+            base_url="http://localhost:8088/fhir",
+            api_key="not-recorded",
+            read_service=service,
+            write_transport=write_transport,
+        )
+
+        result = publisher.apply(publisher.plan(resource))
+
+        self.assertEqual(result["action"], "create")
+        self.assertTrue(result["post_write_content_verified"])
+
     def test_create_uses_authenticated_put_and_post_write_verification(self):
         resource = local_codesystem()
         service = FakeReadService()

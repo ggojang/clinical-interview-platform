@@ -419,6 +419,20 @@ class ClinicianSubmissionContextTest(unittest.TestCase):
             },
         )
 
+    def test_required_fhir_valueset_still_rejects_unlisted_free_text(self):
+        session = self._session()
+        session.last_question_fact = "medication.statement.status"
+        session.asked = ["medication.statement.status"]
+
+        state = session.process("병원에서만 쓰는 별도 상태")
+
+        self.assertIsNone(session.memory.value("medication.statement.status"))
+        self.assertTrue(state["answer_clarification"]["required"])
+        self.assertEqual(
+            state["answer_clarification"]["fact_id"],
+            "medication.statement.status",
+        )
+
     def test_handoff_exposes_conflicts_across_package_and_shared_facts(self):
         session = self._session()
         session.memory.merge(

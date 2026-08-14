@@ -7,6 +7,7 @@ from pathlib import Path
 from compiler.build_package import CompilationError, compile_package
 from evaluation.run_evaluation import run as run_evaluation
 from runtime.package import TOBACCO_NICOTINE_COUNSELLING_PACKAGE
+from runtime.session import InterviewSession
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -120,6 +121,26 @@ class TobaccoNicotineCounsellingPackageTests(unittest.TestCase):
             "tobacco.pregnancy_or_postpartum_status", "tobacco.patient_concern",
             "tobacco.expected_help",
         } <= minimum)
+
+    def test_open_choice_product_status_preserves_unlisted_free_text(self):
+        session = InterviewSession(
+            "tobacco-product-status-free-text",
+            package_path=TOBACCO_NICOTINE_COUNSELLING_PACKAGE,
+        )
+        session.last_question_fact = "tobacco.nicotine_pouch_status"
+        session.asked = ["tobacco.nicotine_pouch_status"]
+
+        state = session.process("필요할 때만 간헐적으로 사용")
+
+        self.assertEqual(
+            session.memory.value("tobacco.nicotine_pouch_status"),
+            "필요할 때만 간헐적으로 사용",
+        )
+        self.assertIsNone(state["answer_clarification"])
+        self.assertNotEqual(
+            (state.get("selected_question") or {}).get("fact_id"),
+            "tobacco.nicotine_pouch_status",
+        )
 
     def test_all_tobacco_simulations_pass(self):
         report = run_evaluation(TOBACCO_NICOTINE_COUNSELLING_PACKAGE)

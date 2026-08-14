@@ -59,7 +59,7 @@ class QuestionAnswerTerminologyTest(unittest.TestCase):
             load_answer_domains()["local_code_system"]["version"],
         )
         self.assertEqual(
-            domain_system["id"], "clinical-interview-answer-domain-0-4-0"
+            domain_system["id"], "clinical-interview-answer-domain-0-5-0"
         )
 
     def test_policy_and_registry_validate(self):
@@ -570,6 +570,120 @@ class QuestionAnswerTerminologyTest(unittest.TestCase):
         self.assertEqual(
             shared_systems,
             {"http://snomed.info/sct", LOCAL_ANSWER_DOMAIN},
+        )
+        for legacy_id in legacy_ids:
+            legacy = resources[legacy_id]
+            self.assertEqual(legacy["status"], "retired")
+            replacement = next(
+                extension["valueCanonical"]
+                for extension in legacy["extension"]
+                if extension["url"] == REPLACED_BY_EXTENSION
+            )
+            self.assertEqual(replacement, shared_url)
+
+        legacy_urls = {
+            f"{VALUESET_BASE}/{identifier}" for identifier in legacy_ids
+        }
+        for profile in PACKAGE_PROFILES:
+            package = compile_package(profile=profile)
+            for node in package["knowledge_graph"]["nodes"]:
+                binding = node.get("answer_semantic_binding", {})
+                self.assertNotIn(binding.get("answer_value_set"), legacy_urls)
+
+    def test_tobacco_product_use_status_uses_one_local_domain_and_retains_aliases(self):
+        fact_profiles = {
+            "preoperative.vaping_use_status": "preoperative_assessment",
+            "tobacco.cigar_status": "tobacco_nicotine_counselling",
+            "tobacco.heated_tobacco_status": "tobacco_nicotine_counselling",
+            "tobacco.nicotine_pouch_status": "tobacco_nicotine_counselling",
+            "tobacco.overall_product_use_status": "tobacco_nicotine_counselling",
+            "tobacco.pipe_hookah_status": "tobacco_nicotine_counselling",
+            "tobacco.smokeless_tobacco_status": "tobacco_nicotine_counselling",
+        }
+        shared_url = f"{VALUESET_BASE}/a-local-tobacco-product-use-status"
+        packages = {
+            profile: compile_package(profile=profile)
+            for profile in set(fact_profiles.values())
+        }
+        for fact_id, profile in fact_profiles.items():
+            fact = next(
+                node for node in packages[profile]["knowledge_graph"]["nodes"]
+                if node.get("id") == fact_id
+            )
+            binding = fact["answer_semantic_binding"]
+            self.assertEqual(binding["answer_domain"], "tobacco-product-use-status")
+            self.assertEqual(binding["answer_value_set"], shared_url)
+            self.assertEqual(binding["fhir_item_type"], "open-choice")
+            self.assertFalse(binding["fhir_item_repeats"])
+            self.assertTrue(binding["allow_free_text"])
+            self.assertEqual(
+                questionnaire_item_projection(fact)["answerValueSet"], shared_url
+            )
+            self.assertEqual(
+                questionnaire_response_answer_projection(fact, "current")[
+                    "valueCoding"
+                ],
+                {
+                    "system": LOCAL_ANSWER_DOMAIN,
+                    "code": "tobacco-product-use-status-current",
+                    "display": "Current use",
+                },
+            )
+            if "unknown" in fact["allowed_values"]:
+                self.assertEqual(
+                    questionnaire_response_answer_projection(fact, "unknown"),
+                    {"dataAbsentReason": "asked-unknown"},
+                )
+            if "other" in fact["allowed_values"]:
+                other = questionnaire_response_answer_projection(fact, "other")
+                self.assertEqual(
+                    other["valueCoding"]["code"],
+                    "tobacco-product-use-status-other",
+                )
+                self.assertEqual(other["valueCoding"]["system"], LOCAL_ANSWER_DOMAIN)
+
+        tobacco_nodes = {
+            node["id"]: node
+            for node in packages["tobacco_nicotine_counselling"][
+                "knowledge_graph"
+            ]["nodes"]
+        }
+        self.assertNotEqual(
+            tobacco_nodes["tobacco.electronic_cigarette_status"][
+                "answer_semantic_binding"
+            ]["answer_value_set"],
+            shared_url,
+        )
+        self.assertNotEqual(
+            tobacco_nodes["patient.smoking.status"]["answer_semantic_binding"][
+                "answer_value_set"
+            ],
+            shared_url,
+        )
+
+        domain = load_answer_domains()["domains"]["tobacco-product-use-status"]
+        legacy_ids = {
+            item["id"] for item in domain["migration"]["legacy_value_sets"]
+        }
+        resources = {
+            entry["resource"]["id"]: entry["resource"]
+            for entry in build_answer_valuesets()["entry"]
+        }
+        shared_codes = {
+            concept["code"]
+            for include in resources["a-local-tobacco-product-use-status"][
+                "compose"
+            ]["include"]
+            for concept in include["concept"]
+        }
+        self.assertEqual(
+            shared_codes,
+            {
+                "tobacco-product-use-status-current",
+                "tobacco-product-use-status-former",
+                "tobacco-product-use-status-never",
+                "tobacco-product-use-status-other",
+            },
         )
         for legacy_id in legacy_ids:
             legacy = resources[legacy_id]

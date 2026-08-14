@@ -238,6 +238,13 @@ def build() -> dict[str, Any]:
                         "code": concept["code"],
                         "display": concept["display"],
                     }
+            for token, concept in domain_binding.get(
+                "legacy_standard_token_map", {}
+            ).items():
+                legacy_standard[token] = {
+                    "code": concept["code"],
+                    "display": concept["display"],
+                }
             mapped = [
                 token for token in coded_values if token in legacy_standard
             ]
@@ -299,7 +306,9 @@ def build() -> dict[str, Any]:
                     content_status="retired-compatibility",
                     publication_status="retired",
                     replaced_by=replacement,
-                    resource_date="2026-08-11",
+                    resource_date=domain.get("migration", {}).get(
+                        "started_at", "2026-08-11"
+                    ),
                 ))
             continue
         add(_valueset(

@@ -96,7 +96,10 @@ def main() -> int:
             output = ROOT / output
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(rendered, encoding="utf-8")
-        print(output.relative_to(ROOT))
+        try:
+            print(output.relative_to(ROOT))
+        except ValueError:
+            print(output)
     else:
         print(rendered, end="")
     return 0 if report["status"] == "pass" else 1

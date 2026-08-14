@@ -269,6 +269,28 @@ class FhirCodeSystemPublisher:
             }
         collision = self.read_service.read_by_id(identifier)
         if collision is not None:
+            if (
+                collision.get("url") == canonical
+                and collision.get("version") == version
+            ):
+                if codesystem_fingerprint(collision) != fingerprint:
+                    raise FhirCodeSystemPublishError(
+                        "refusing to overwrite identifier with different "
+                        f"CodeSystem content: {canonical}|{version}"
+                    )
+                return {
+                    "action": "reuse_exact_codesystem",
+                    "canonical": canonical,
+                    "version": version,
+                    "local_id": identifier,
+                    "server_id": collision.get("id"),
+                    "server_version_id": collision.get("meta", {}).get(
+                        "versionId"
+                    ),
+                    "concept_count": len(codes),
+                    "content_fingerprint": fingerprint,
+                    "resource": deepcopy(resource),
+                }
             raise FhirCodeSystemPublishError(
                 f"CodeSystem/{identifier} already uses canonical/version "
                 f"{collision.get('url')}|{collision.get('version')}, not "
@@ -298,12 +320,27 @@ class FhirCodeSystemPublisher:
             version=plan["version"],
             count=2,
         )
-        if len(matches) != 1:
+        if len(matches) == 1:
+            verified = matches[0]
+        elif len(matches) == 0:
+            # STOM can return only another release when it accepts but does
+            # not correctly apply the canonical `version` search parameter.
+            # A direct id read remains unambiguous and is verified below.
+            verified = self.read_service.read_by_id(plan["server_id"])
+            if not verified or (
+                verified.get("url") != plan["canonical"]
+                or verified.get("version") != plan["version"]
+            ):
+                raise FhirCodeSystemPublishError(
+                    "canonical verification returned 0 matches and direct "
+                    f"CodeSystem/{plan['server_id']} verification failed for "
+                    f"{plan['canonical']}|{plan['version']}"
+                )
+        else:
             raise FhirCodeSystemPublishError(
                 f"canonical verification returned {len(matches)} matches for "
                 f"{plan['canonical']}|{plan['version']}"
             )
-        verified = matches[0]
         if codesystem_fingerprint(verified) != plan["content_fingerprint"]:
             raise FhirCodeSystemPublishError(
                 f"content mismatch after publishing {plan['canonical']}"
