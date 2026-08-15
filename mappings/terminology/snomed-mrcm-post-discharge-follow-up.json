@@ -1,6 +1,6 @@
 {
   "id": "mapping.terminology.post-discharge-follow-up",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "status": "research_only",
   "review_status": "unreviewed",
   "terminology": {
@@ -26,28 +26,39 @@
   ],
   "question_mapping": {
     "exact_standard_question_count": 0,
-    "local_atomic_question_count": 48,
+    "local_atomic_question_count": 58,
     "compound_question_exact_mapping_allowed": false,
-    "rationale": "The verified LOINC code is a record title, not an exact match for any individual answer-bearing question."
+    "rationale": "The legacy composite was split before mapping. The configured STOM endpoint was unavailable, so contextual questions remain local without inferred equivalence."
   },
   "validation": {
-    "method": "build_time_local_fhir_lookup",
-    "checked_at": "2026-07-31T00:00:00Z",
+    "method": "build_time_local_fhir_lookup_attempt",
+    "checked_at": "2026-08-16T00:00:00Z",
     "raw_response_cached": false,
     "clinical_rule_authority": false,
     "question_equivalence_inferred": false,
-    "result": "provisional_pass"
+    "result": "stom_connection_refused_local_questions_retained"
   },
   "provenance": {
     "created_by": {
       "type": "ai",
       "id": "codex-gpt5"
     },
-    "created_at": "2026-07-14T00:00:00Z",
+    "created_at": "2026-08-16T00:00:00Z",
     "source_refs": [
-      "source.stom.post-discharge.20260731"
+      "source.stom.post-discharge-monitor.20260816"
     ],
     "review_status": "unreviewed",
-    "version": "0.1.0"
+    "version": "0.2.0"
+  },
+  "lifecycle_status": "draft",
+  "clinical_use_status": "limited",
+  "clinical_use_policy_ref": "policies/draft-clinical-use-boundary.json",
+  "atomic_refactoring": {
+    "retired_composite_facts": [
+      "post_discharge.wound_or_device_plan"
+    ],
+    "replacement_strategy": "atomic_local_questions_for_wound_care_and_home_equipment",
+    "exact_mapping_for_new_contextual_questions": false,
+    "question_code_remains_local": true
   }
 }

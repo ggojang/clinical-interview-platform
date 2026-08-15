@@ -20,7 +20,7 @@ class PostDischargeFollowUpPackageTests(unittest.TestCase):
             for node in package["knowledge_graph"]["nodes"]
             if node["type"] == "Fact"
         }
-        self.assertEqual(48, len(facts))
+        self.assertEqual(58, len(facts))
         self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
         self.assertEqual(8, package["coverage"]["total_safety_rules"])
         self.assertEqual(8, package["coverage"]["safety_rules_with_simulations"])
@@ -112,7 +112,7 @@ class PostDischargeFollowUpPackageTests(unittest.TestCase):
     def test_all_post_discharge_simulations_pass_without_date_repetition(self):
         report = run_evaluation(POST_DISCHARGE_FOLLOW_UP_PACKAGE)
         self.assertTrue(report["passed"], report["results"])
-        self.assertEqual(12, report["case_count"])
+        self.assertEqual(14, report["case_count"])
         routine = next(
             item
             for item in report["results"]
@@ -121,7 +121,7 @@ class PostDischargeFollowUpPackageTests(unittest.TestCase):
         self.assertEqual(
             1, routine["selected_facts"].count("post_discharge.discharge_date")
         )
-        self.assertLessEqual(routine["turns"], 36)
+        self.assertLessEqual(routine["turns"], 38)
 
 
 if __name__ == "__main__":

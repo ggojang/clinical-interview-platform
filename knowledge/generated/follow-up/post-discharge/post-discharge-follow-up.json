@@ -1,19 +1,20 @@
 {
   "id": "knowledge.generated.post-discharge-follow-up",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "status": "research_only",
   "usage_modes": [
     "research_test",
-    "simulation"
+    "simulation",
+    "clinician_supervised_pilot"
   ],
   "source_manifest": "source-manifest.primary-care-post-discharge-follow-up-research",
   "default_refresh": {
     "class": "clinical_guideline",
-    "last_assessed_at": "2026-07-31",
+    "last_assessed_at": "2026-08-16",
     "monitor_interval_days": 1,
     "full_review_interval_days": 180,
-    "next_monitor_at": "2026-08-01",
-    "next_full_review_at": "2027-01-27",
+    "next_monitor_at": "2026-08-17",
+    "next_full_review_at": "2027-02-12",
     "policy_id": "policy.knowledge-refresh",
     "overdue_behavior": {
       "production": "exclude_or_require_review",
@@ -1662,41 +1663,6 @@
     },
     {
       "fact": {
-        "id": "post_discharge.wound_or_device_plan",
-        "display": "Wound or Device Plan",
-        "value_type": "string"
-      },
-      "target": {
-        "id": "target.post-discharge-follow-up.wound-device-plan",
-        "display": "Wound or Device Plan",
-        "intents": [
-          "intent.reconcile_post_discharge_plan"
-        ]
-      },
-      "question": {
-        "id": "question.post-discharge-follow-up.wound-device-plan",
-        "wording": "상처, 배액관, 도뇨관, 산소 또는 다른 기기가 있다면 현재 관리 방법과 문제를 알려주세요.",
-        "language": "ko",
-        "mode": [
-          "chat",
-          "face_to_face",
-          "telephone",
-          "video"
-        ]
-      },
-      "priority": [
-        {
-          "branch": "any",
-          "score": 206,
-          "reason": "wound-device-plan"
-        }
-      ],
-      "supports": [
-        "group.post_discharge.plan"
-      ]
-    },
-    {
-      "fact": {
         "id": "post_discharge.home_service_or_equipment",
         "display": "Home Service or Equipment",
         "value_type": "string"
@@ -1959,6 +1925,391 @@
       "supports": [
         "group.post_discharge.handoff"
       ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.wound_care_task_required",
+        "display": "Wound-care Task Required After Discharge",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.wound-care-required",
+        "display": "Wound-care Task Required After Discharge",
+        "intents": [
+          "intent.reconcile_post_discharge_plan"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.wound-care-required",
+        "wording": "퇴원 후 집에서 직접 해야 하는 상처 관리 작업이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 206,
+          "reason": "wound-care-required"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.plan"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.wound_care_task_description",
+        "display": "Wound-care Task Description",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.wound-care-task",
+        "display": "Wound-care Task Description",
+        "intents": [
+          "intent.reconcile_post_discharge_plan"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.wound-care-task",
+        "wording": "집에서 해야 하는 상처 관리 작업을 안내받은 표현대로 알려주세요. 예: 드레싱 교환",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 205,
+          "reason": "wound-care-task"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.plan"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.wound_care_instructions_available",
+        "display": "Wound-care Instructions Available",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.wound-care-instructions",
+        "display": "Wound-care Instructions Available",
+        "intents": [
+          "intent.reconcile_post_discharge_plan"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.wound-care-instructions",
+        "wording": "상처 관리 방법을 적은 안내문이나 확인할 수 있는 설명이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 204,
+          "reason": "wound-care-instructions"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.plan"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.wound_care_skill_difficulty",
+        "display": "Difficulty Performing Wound-care Task",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.wound-care-difficulty",
+        "display": "Difficulty Performing Wound-care Task",
+        "intents": [
+          "intent.reconcile_post_discharge_plan"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.wound-care-difficulty",
+        "wording": "환자나 보호자가 안내받은 상처 관리 작업을 실제로 하는 데 어려움이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 203,
+          "reason": "wound-care-difficulty"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.plan"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.wound_care_help_contact_known",
+        "display": "Wound-care Help Contact Known",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.wound-care-contact",
+        "display": "Wound-care Help Contact Known",
+        "intents": [
+          "intent.reconcile_post_discharge_plan"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.wound-care-contact",
+        "wording": "상처 관리가 어렵거나 문제가 생겼을 때 연락할 곳을 알고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 202,
+          "reason": "wound-care-contact"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.plan"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.home_medical_device_or_equipment_required",
+        "display": "Home Medical Device or Equipment Required",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.home-equipment-required",
+        "display": "Home Medical Device or Equipment Required",
+        "intents": [
+          "intent.reconcile_post_discharge_plan"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.home-equipment-required",
+        "wording": "퇴원 후 집에서 사용해야 하는 의료기기나 장비가 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 201,
+          "reason": "home-equipment-required"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.plan"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.home_medical_device_or_equipment_type",
+        "display": "Home Medical Device or Equipment Type",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.home-equipment-type",
+        "display": "Home Medical Device or Equipment Type",
+        "intents": [
+          "intent.reconcile_post_discharge_plan"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.home-equipment-type",
+        "wording": "집에서 사용해야 하는 의료기기나 장비의 이름 또는 종류를 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 200,
+          "reason": "home-equipment-type"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.plan"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.home_medical_device_or_equipment_received",
+        "display": "Home Medical Device or Equipment Received",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.home-equipment-received",
+        "display": "Home Medical Device or Equipment Received",
+        "intents": [
+          "intent.reconcile_post_discharge_plan"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.home-equipment-received",
+        "wording": "필요한 의료기기나 장비를 실제로 받았나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 199,
+          "reason": "home-equipment-received"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.plan"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.home_medical_device_or_equipment_use_training_received",
+        "display": "Home Medical Device or Equipment Use Training Received",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.home-equipment-training",
+        "display": "Home Medical Device or Equipment Use Training Received",
+        "intents": [
+          "intent.reconcile_post_discharge_plan"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.home-equipment-training",
+        "wording": "그 의료기기나 장비의 사용법을 직접 설명받거나 시범으로 확인했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 198,
+          "reason": "home-equipment-training"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.plan"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.home_medical_device_or_equipment_use_difficulty",
+        "display": "Difficulty Using Home Medical Device or Equipment",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.home-equipment-difficulty",
+        "display": "Difficulty Using Home Medical Device or Equipment",
+        "intents": [
+          "intent.reconcile_post_discharge_plan"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.home-equipment-difficulty",
+        "wording": "환자나 보호자가 그 의료기기나 장비를 실제로 사용하는 데 어려움이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 197,
+          "reason": "home-equipment-difficulty"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.plan"
+      ]
+    },
+    {
+      "fact": {
+        "id": "post_discharge.home_medical_device_or_equipment_help_contact_known",
+        "display": "Home Medical Device or Equipment Help Contact Known",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.post-discharge-follow-up.home-equipment-contact",
+        "display": "Home Medical Device or Equipment Help Contact Known",
+        "intents": [
+          "intent.reconcile_post_discharge_plan"
+        ]
+      },
+      "question": {
+        "id": "question.post-discharge-follow-up.home-equipment-contact",
+        "wording": "장비가 도착하지 않거나 사용 중 문제가 생겼을 때 연락할 곳을 알고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 196,
+          "reason": "home-equipment-contact"
+        }
+      ],
+      "supports": [
+        "group.post_discharge.plan"
+      ]
     }
   ],
   "provenance": {
@@ -1966,14 +2317,19 @@
       "type": "ai",
       "id": "codex-gpt5"
     },
-    "created_at": "2026-07-14T00:00:00Z",
+    "created_at": "2026-08-16T00:00:00Z",
     "source_refs": [
-      "source.nice.ng27.transition-discharge.2015-current-20260731",
       "source.ahrq.red-toolkit.current-20260731",
-      "source.who.medication-safety-transitions.2019",
-      "source.stom.post-discharge.20260731"
+      "source.cms.discharge-planning-checklist.20260816",
+      "source.nice.ng27.transition-discharge.2015-current-20260731",
+      "source.stom.post-discharge-monitor.20260816"
     ],
     "review_status": "unreviewed",
-    "version": "0.1.0"
-  }
+    "version": "0.2.0"
+  },
+  "lifecycle_status": "draft",
+  "review_status": "unreviewed",
+  "clinical_use_status": "limited",
+  "clinical_use_policy_ref": "policies/draft-clinical-use-boundary.json",
+  "updated_at": "2026-08-16T00:00:00Z"
 }

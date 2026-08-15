@@ -9,8 +9,8 @@
 
 - 현재 자원: **78개**
 - 외부 획득 후보군: **7개**
-- source manifest artifact entry: **726개**
-- 고유 source ID: **628개**
+- source manifest artifact entry: **728개**
+- 고유 source ID: **630개**
 - 검증 오류: **0개**
 
 ### 자원 유형별 수
@@ -106,7 +106,7 @@ HIRA 프로그램에 이름이 등장하더라도 해당 척도의 문항을 시
 | `rfe.gait_falls_concern` | `dynamic_clinical_interview` | 55 | 아니오 | `allowed_under_draft_limited_use_policy` | `rights_review_required` |
 | `rfe.breast_symptoms` | `dynamic_clinical_interview` | 53 | 아니오 | `allowed_under_draft_limited_use_policy` | `rights_review_required` |
 | `rfe.test_result_follow_up` | `dynamic_clinical_interview` | 53 | 아니오 | `allowed_under_draft_limited_use_policy` | `rights_review_required` |
-| `rfe.post_discharge_follow_up` | `dynamic_clinical_interview` | 48 | 아니오 | `allowed_under_draft_limited_use_policy` | `rights_review_required` |
+| `rfe.post_discharge_follow_up` | `dynamic_clinical_interview` | 58 | 아니오 | `allowed_under_draft_limited_use_policy` | `rights_review_required` |
 | `rfe.tobacco_nicotine_counselling` | `dynamic_clinical_interview` | 65 | 아니오 | `allowed_under_draft_limited_use_policy` | `rights_review_required` |
 | `rfe.alcohol_use_counselling` | `dynamic_clinical_interview` | 47 | 아니오 | `allowed_under_draft_limited_use_policy` | `rights_review_required` |
 | `rfe.physical_activity_counselling` | `dynamic_clinical_interview` | 50 | 아니오 | `allowed_under_draft_limited_use_policy` | `rights_review_required` |

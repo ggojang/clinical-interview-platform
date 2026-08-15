@@ -752,6 +752,13 @@ class QuestionAnswerTerminologyTest(unittest.TestCase):
                     self.assertIn(
                         case["expected_signal"], result["signals"]
                     )
+        self.assertTrue(
+            {
+                "MAPPING-COMPOSITE-POST-DISCHARGE-WOUND-DEVICE-PLAN",
+                "MAPPING-ATOMIC-HOME-MEDICAL-EQUIPMENT-RECEIVED",
+            }
+            <= {case["id"] for case in fixture["cases"]}
+        )
 
     def test_repository_wide_audit_passes(self):
         report = run_audit()
