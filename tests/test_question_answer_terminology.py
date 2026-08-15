@@ -46,13 +46,13 @@ class QuestionAnswerTerminologyTest(unittest.TestCase):
         question_system, answer_system, domain_system = build()
         self.assertEqual(question_system["version"], QUESTION_CODE_SYSTEM_VERSION)
         self.assertEqual(answer_system["version"], ANSWER_CODE_SYSTEM_VERSION)
-        self.assertEqual(QUESTION_CODE_SYSTEM_VERSION, "0.2.0")
-        self.assertEqual(ANSWER_CODE_SYSTEM_VERSION, "0.2.0")
+        self.assertEqual(QUESTION_CODE_SYSTEM_VERSION, "0.3.0")
+        self.assertEqual(ANSWER_CODE_SYSTEM_VERSION, "0.3.0")
         self.assertEqual(
-            question_system["id"], "clinical-interview-question-0-2-0"
+            question_system["id"], "clinical-interview-question-0-3-0"
         )
         self.assertEqual(
-            answer_system["id"], "clinical-interview-answer-0-2-0"
+            answer_system["id"], "clinical-interview-answer-0-3-0"
         )
         self.assertEqual(
             domain_system["version"],

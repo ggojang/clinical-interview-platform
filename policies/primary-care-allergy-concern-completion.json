@@ -1,6 +1,6 @@
 {
   "id": "policy.primary-care-allergy-concern-completion",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "status": "research_only",
   "addressed_fact_states": [
     "known",
@@ -25,23 +25,18 @@
     ],
     "routine": [
       "allergy.current_or_historical_episode",
-      "allergy.onset_date_time_and_course",
-      "allergy.circumstances_before_onset",
       "allergy.suspected_trigger_and_latency",
       "allergy.symptom_sequence_and_systems",
       "allergy.treatment_and_response",
       "allergy.prior_similar_reaction",
       "allergy.known_allergies_and_avoidance",
-      "allergy.specialist_testing_and_emergency_plan",
-      "allergy.asthma_cardiovascular_mast_cell_context",
       "allergy.current_medicines_and_risk_modifiers",
-      "allergy.pregnancy_age_and_care_context",
       "allergy.other_detail_or_patient_priority"
     ]
   },
   "clarification_facts_by_rule": {},
   "question_budget": {
-    "routine": 67,
+    "routine": 72,
     "clarify": 12
   },
   "provenance": {
@@ -49,7 +44,7 @@
       "type": "ai",
       "id": "codex-gpt5"
     },
-    "created_at": "2026-07-14T00:00:00Z",
+    "created_at": "2026-08-15T00:00:00Z",
     "source_refs": [
       "source.nice.ng258.anaphylaxis.2026",
       "source.nice.cg183.drug-allergy.2014",
@@ -57,10 +52,14 @@
       "source.hl7.fhir-r4.allergyintolerance.4.0.1",
       "source.nhs.anaphylaxis.2026",
       "source.nhs.stevens-johnson.2026",
-      "source.stom.allergy-concern.20260810"
+      "source.stom.allergy-concern.20260810",
+      "source.nice.ng258.anaphylaxis.2026",
+      "source.mhra.adrenaline-autoinjector-safe-use.2023",
+      "source.hl7.fhir-r4.allergyintolerance.4.0.1",
+      "source.stom.allergy-follow-up.20260815"
     ],
     "review_status": "unreviewed",
-    "version": "0.1.0"
+    "version": "0.2.0"
   },
   "conditional_required_facts": [
     {
@@ -72,7 +71,8 @@
           "allergy.circumstances_before_onset",
           "allergy.suspected_trigger_and_latency",
           "allergy.symptom_sequence_and_systems",
-          "allergy.treatment_and_response"
+          "allergy.treatment_and_response",
+          "allergy.anaphylaxis_follow_up_context"
         ],
         "skin_angioedema": [
           "allergy.skin_lesion_type",
@@ -121,6 +121,40 @@
           "allergy.other_detail_or_patient_priority"
         ]
       }
+    },
+    {
+      "when": {
+        "fact": "allergy.anaphylaxis_follow_up_context",
+        "equals": true
+      },
+      "required_facts": [
+        "allergy.adrenaline_autoinjector_prescribed",
+        "allergy.written_emergency_action_plan_available",
+        "allergy.specialist_allergy_referral_status",
+        "allergy.specialist_allergy_testing_result",
+        "allergy.asthma_cardiovascular_mast_cell_context",
+        "allergy.pregnancy_age_and_care_context"
+      ]
+    },
+    {
+      "when": {
+        "fact": "allergy.adrenaline_autoinjector_prescribed",
+        "equals": true
+      },
+      "required_facts": [
+        "allergy.adrenaline_autoinjector_currently_available",
+        "allergy.adrenaline_autoinjector_count_available",
+        "allergy.adrenaline_autoinjector_in_date_confirmed",
+        "allergy.adrenaline_autoinjector_earliest_expiry_date",
+        "allergy.adrenaline_autoinjector_device_name_or_brand",
+        "allergy.adrenaline_autoinjector_training_received",
+        "allergy.adrenaline_autoinjector_technique_confidence_or_gap"
+      ]
     }
-  ]
+  ],
+  "lifecycle_status": "draft",
+  "review_status": "unreviewed",
+  "clinical_use_status": "limited",
+  "clinical_use_policy_ref": "policies/draft-clinical-use-boundary.json",
+  "updated_at": "2026-08-15T00:00:00Z"
 }

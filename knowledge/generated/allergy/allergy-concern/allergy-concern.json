@@ -1,6 +1,6 @@
 {
   "id": "knowledge.generated.allergy-concern",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "status": "research_only",
   "lifecycle_status": "draft",
   "review_status": "unreviewed",
@@ -14,11 +14,11 @@
   "source_manifest": "source-manifest.primary-care-allergy-concern-research",
   "default_refresh": {
     "class": "clinical_guideline",
-    "last_assessed_at": "2026-08-10",
+    "last_assessed_at": "2026-08-15",
     "monitor_interval_days": 1,
     "full_review_interval_days": 180,
-    "next_monitor_at": "2026-08-11",
-    "next_full_review_at": "2027-02-06",
+    "next_monitor_at": "2026-08-16",
+    "next_full_review_at": "2027-02-11",
     "policy_id": "policy.knowledge-refresh",
     "overdue_behavior": {
       "production": "exclude_or_require_review",
@@ -65,6 +65,11 @@
       "id": "group.allergy.sting-contact",
       "type": "ClinicalGroup",
       "display": "sting-contact"
+    },
+    {
+      "id": "group.allergy.anaphylaxis-follow-up",
+      "type": "ClinicalGroup",
+      "display": "Anaphylaxis Follow-up"
     }
   ],
   "group_hypothesis_edges": [],
@@ -1006,41 +1011,6 @@
           "branch": "any",
           "score": 143,
           "reason": "known-allergies"
-        }
-      ],
-      "supports": [
-        "group.allergy.common"
-      ]
-    },
-    {
-      "fact": {
-        "id": "allergy.specialist_testing_and_emergency_plan",
-        "display": "Allergy Testing and Emergency Plan",
-        "value_type": "string"
-      },
-      "target": {
-        "id": "target.allergy-concern.testing-plan",
-        "display": "Allergy Testing and Emergency Plan",
-        "intents": [
-          "intent.risk_assessment"
-        ]
-      },
-      "question": {
-        "id": "question.allergy-concern.testing-plan",
-        "wording": "알레르기 전문검사 결과, 아드레날린 자가주사기 처방 또는 응급 행동계획이 있나요?",
-        "language": "ko",
-        "mode": [
-          "chat",
-          "face_to_face",
-          "telephone",
-          "video"
-        ]
-      },
-      "priority": [
-        {
-          "branch": "any",
-          "score": 142,
-          "reason": "testing-plan"
         }
       ],
       "supports": [
@@ -2408,6 +2378,427 @@
       "supports": [
         "group.allergy.sting-contact"
       ]
+    },
+    {
+      "fact": {
+        "id": "allergy.anaphylaxis_follow_up_context",
+        "display": "Anaphylaxis Follow-up Context",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.allergy-concern.anaphylaxis-follow-up-context",
+        "display": "Anaphylaxis Follow-up Context",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.allergy-concern.anaphylaxis-follow-up-context",
+        "wording": "이미 회복한 심한 전신 알레르기 반응 뒤 자가주사기·행동계획·전문진료 준비 상태를 확인하려는 방문인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 147,
+          "reason": "anaphylaxis-follow-up-context"
+        }
+      ],
+      "supports": [
+        "group.allergy.anaphylaxis-follow-up"
+      ]
+    },
+    {
+      "fact": {
+        "id": "allergy.adrenaline_autoinjector_prescribed",
+        "display": "Adrenaline Autoinjector Prescribed",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.allergy-concern.aai-prescribed",
+        "display": "Adrenaline Autoinjector Prescribed",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.allergy-concern.aai-prescribed",
+        "wording": "의료진에게 아드레날린 자가주사기를 처방받은 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 146,
+          "reason": "aai-prescribed"
+        }
+      ],
+      "supports": [
+        "group.allergy.anaphylaxis-follow-up"
+      ]
+    },
+    {
+      "fact": {
+        "id": "allergy.adrenaline_autoinjector_currently_available",
+        "display": "Adrenaline Autoinjector Currently Available",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.allergy-concern.aai-available",
+        "display": "Adrenaline Autoinjector Currently Available",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.allergy-concern.aai-available",
+        "wording": "현재 바로 사용할 수 있는 아드레날린 자가주사기를 가지고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 145,
+          "reason": "aai-available"
+        }
+      ],
+      "supports": [
+        "group.allergy.anaphylaxis-follow-up"
+      ]
+    },
+    {
+      "fact": {
+        "id": "allergy.adrenaline_autoinjector_count_available",
+        "display": "Adrenaline Autoinjector Count Available",
+        "value_type": "integer",
+        "minimum": 0
+      },
+      "target": {
+        "id": "target.allergy-concern.aai-count",
+        "display": "Adrenaline Autoinjector Count Available",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.allergy-concern.aai-count",
+        "wording": "현재 가지고 다니거나 바로 꺼낼 수 있는 아드레날린 자가주사기는 몇 개인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 144,
+          "reason": "aai-count"
+        }
+      ],
+      "supports": [
+        "group.allergy.anaphylaxis-follow-up"
+      ]
+    },
+    {
+      "fact": {
+        "id": "allergy.adrenaline_autoinjector_in_date_confirmed",
+        "display": "Adrenaline Autoinjector In-date Status Confirmed",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.allergy-concern.aai-in-date",
+        "display": "Adrenaline Autoinjector In-date Status Confirmed",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.allergy-concern.aai-in-date",
+        "wording": "현재 가진 자가주사기의 유효기간이 지나지 않았는지 확인했나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 143,
+          "reason": "aai-in-date"
+        }
+      ],
+      "supports": [
+        "group.allergy.anaphylaxis-follow-up"
+      ]
+    },
+    {
+      "fact": {
+        "id": "allergy.adrenaline_autoinjector_earliest_expiry_date",
+        "display": "Earliest Adrenaline Autoinjector Expiry Date",
+        "value_type": "date_or_period"
+      },
+      "target": {
+        "id": "target.allergy-concern.aai-expiry",
+        "display": "Earliest Adrenaline Autoinjector Expiry Date",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.allergy-concern.aai-expiry",
+        "wording": "가장 먼저 유효기간이 끝나는 자가주사기의 날짜를 알려주세요. 정확히 모르면 대략적인 시기나 모른다고 답해도 됩니다.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 142,
+          "reason": "aai-expiry"
+        }
+      ],
+      "supports": [
+        "group.allergy.anaphylaxis-follow-up"
+      ]
+    },
+    {
+      "fact": {
+        "id": "allergy.adrenaline_autoinjector_device_name_or_brand",
+        "display": "Adrenaline Autoinjector Device Name or Brand",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.allergy-concern.aai-device",
+        "display": "Adrenaline Autoinjector Device Name or Brand",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.allergy-concern.aai-device",
+        "wording": "현재 처방받은 자가주사기의 제품명이나 기기 이름을 알려주세요. 보기에 없어도 자유롭게 입력할 수 있습니다.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 141,
+          "reason": "aai-device"
+        }
+      ],
+      "supports": [
+        "group.allergy.anaphylaxis-follow-up"
+      ]
+    },
+    {
+      "fact": {
+        "id": "allergy.adrenaline_autoinjector_training_received",
+        "display": "Adrenaline Autoinjector Training Received",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.allergy-concern.aai-training",
+        "display": "Adrenaline Autoinjector Training Received",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.allergy-concern.aai-training",
+        "wording": "현재 처방된 기기의 사용법을 의료진에게 배우거나 연습용 기기로 연습한 적이 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 140,
+          "reason": "aai-training"
+        }
+      ],
+      "supports": [
+        "group.allergy.anaphylaxis-follow-up"
+      ]
+    },
+    {
+      "fact": {
+        "id": "allergy.adrenaline_autoinjector_technique_confidence_or_gap",
+        "display": "Adrenaline Autoinjector Technique Confidence or Gap",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.allergy-concern.aai-technique-gap",
+        "display": "Adrenaline Autoinjector Technique Confidence or Gap",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.allergy-concern.aai-technique-gap",
+        "wording": "자가주사기를 언제 어떻게 사용할지 본인이나 보호자가 어느 정도 알고 있으며, 다시 확인하고 싶은 부분은 무엇인가요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 139,
+          "reason": "aai-technique-gap"
+        }
+      ],
+      "supports": [
+        "group.allergy.anaphylaxis-follow-up"
+      ]
+    },
+    {
+      "fact": {
+        "id": "allergy.written_emergency_action_plan_available",
+        "display": "Written Allergy Emergency Action Plan Available",
+        "value_type": "boolean"
+      },
+      "target": {
+        "id": "target.allergy-concern.written-action-plan",
+        "display": "Written Allergy Emergency Action Plan Available",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.allergy-concern.written-action-plan",
+        "wording": "알레르기 반응이 생겼을 때 따를 서면 응급 행동계획을 가지고 있나요?",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 138,
+          "reason": "written-action-plan"
+        }
+      ],
+      "supports": [
+        "group.allergy.anaphylaxis-follow-up"
+      ]
+    },
+    {
+      "fact": {
+        "id": "allergy.specialist_allergy_referral_status",
+        "display": "Specialist Allergy Referral Status",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.allergy-concern.specialist-referral",
+        "display": "Specialist Allergy Referral Status",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.allergy-concern.specialist-referral",
+        "wording": "알레르기 전문진료 의뢰 여부와 예약·진료 진행 상태를 알려주세요. 보기에 없어도 자유롭게 입력할 수 있습니다.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 137,
+          "reason": "specialist-referral"
+        }
+      ],
+      "supports": [
+        "group.allergy.anaphylaxis-follow-up"
+      ]
+    },
+    {
+      "fact": {
+        "id": "allergy.specialist_allergy_testing_result",
+        "display": "Specialist Allergy Testing Result",
+        "value_type": "string"
+      },
+      "target": {
+        "id": "target.allergy-concern.specialist-testing-result",
+        "display": "Specialist Allergy Testing Result",
+        "intents": [
+          "intent.risk_assessment"
+        ]
+      },
+      "question": {
+        "id": "question.allergy-concern.specialist-testing-result",
+        "wording": "전문진료에서 받은 검사와 설명받은 결과, 아직 기다리는 결과가 있다면 각각 알려주세요.",
+        "language": "ko",
+        "mode": [
+          "chat",
+          "face_to_face",
+          "telephone",
+          "video"
+        ]
+      },
+      "priority": [
+        {
+          "branch": "any",
+          "score": 136,
+          "reason": "specialist-testing-result"
+        }
+      ],
+      "supports": [
+        "group.allergy.anaphylaxis-follow-up"
+      ]
     }
   ],
   "provenance": {
@@ -2415,7 +2806,7 @@
       "type": "ai",
       "id": "codex-gpt5"
     },
-    "created_at": "2026-07-14T00:00:00Z",
+    "created_at": "2026-08-15T00:00:00Z",
     "source_refs": [
       "source.nice.ng258.anaphylaxis.2026",
       "source.nice.cg183.drug-allergy.2014",
@@ -2423,9 +2814,12 @@
       "source.hl7.fhir-r4.allergyintolerance.4.0.1",
       "source.nhs.anaphylaxis.2026",
       "source.nhs.stevens-johnson.2026",
-      "source.stom.allergy-concern.20260810"
+      "source.stom.allergy-concern.20260810",
+      "source.mhra.adrenaline-autoinjector-safe-use.2023",
+      "source.stom.allergy-follow-up.20260815"
     ],
     "review_status": "unreviewed",
-    "version": "0.1.0"
-  }
+    "version": "0.2.0"
+  },
+  "updated_at": "2026-08-15T00:00:00Z"
 }

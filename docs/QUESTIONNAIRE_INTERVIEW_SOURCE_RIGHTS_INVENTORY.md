@@ -9,8 +9,8 @@
 
 - 현재 자원: **78개**
 - 외부 획득 후보군: **7개**
-- source manifest artifact entry: **724개**
-- 고유 source ID: **626개**
+- source manifest artifact entry: **726개**
+- 고유 source ID: **628개**
 - 검증 오류: **0개**
 
 ### 자원 유형별 수
@@ -89,7 +89,7 @@ HIRA 프로그램에 이름이 등장하더라도 해당 척도의 문항을 시
 | `rfe.memory_cognitive_concern` | `dynamic_clinical_interview` | 64 | 아니오 | `allowed_under_draft_limited_use_policy` | `rights_review_required` |
 | `rfe.acute_confusion` | `dynamic_clinical_interview` | 64 | 아니오 | `allowed_under_draft_limited_use_policy` | `rights_review_required` |
 | `rfe.pregnancy_postpartum_concern` | `dynamic_clinical_interview` | 86 | 아니오 | `allowed_under_draft_limited_use_policy` | `rights_review_required` |
-| `rfe.allergy_concern` | `dynamic_clinical_interview` | 59 | 아니오 | `allowed_under_draft_limited_use_policy` | `rights_review_required` |
+| `rfe.allergy_concern` | `dynamic_clinical_interview` | 70 | 아니오 | `allowed_under_draft_limited_use_policy` | `rights_review_required` |
 | `rfe.asthma_copd_follow_up` | `dynamic_clinical_interview` | 70 | 아니오 | `allowed_under_draft_limited_use_policy` | `rights_review_required` |
 | `rfe.lump_lymph_node` | `dynamic_clinical_interview` | 60 | 아니오 | `allowed_under_draft_limited_use_policy` | `rights_review_required` |
 | `rfe.dyspepsia_reflux` | `dynamic_clinical_interview` | 52 | 아니오 | `allowed_under_draft_limited_use_policy` | `rights_review_required` |

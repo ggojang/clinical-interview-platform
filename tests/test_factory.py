@@ -1124,7 +1124,7 @@ class CompilerTests(unittest.TestCase):
             if node["type"] == "Fact"
         }
         self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
-        self.assertEqual(len(facts), 59)
+        self.assertEqual(len(facts), 70)
         self.assertTrue({
             "allergy.drug_generic_name",
             "allergy.drug_brand_name",
@@ -1151,11 +1151,23 @@ class CompilerTests(unittest.TestCase):
             "allergy.drug_reaction_date_signs_and_severity",
             "allergy.drug_stop_rechallenge_and_outcome",
         } & facts)
+        self.assertNotIn("allergy.specialist_testing_and_emergency_plan", facts)
+        self.assertTrue({
+            "allergy.adrenaline_autoinjector_prescribed",
+            "allergy.anaphylaxis_follow_up_context",
+            "allergy.adrenaline_autoinjector_currently_available",
+            "allergy.adrenaline_autoinjector_count_available",
+            "allergy.adrenaline_autoinjector_in_date_confirmed",
+            "allergy.adrenaline_autoinjector_earliest_expiry_date",
+            "allergy.adrenaline_autoinjector_training_received",
+            "allergy.written_emergency_action_plan_available",
+            "allergy.specialist_allergy_referral_status",
+        } <= facts)
         self.assertEqual(package["coverage"]["total_safety_rules"], 12)
         self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 12)
         self.assertEqual(package["coverage"]["uncovered_safety_rules"], [])
-        self.assertEqual(package["coverage"]["data_absent_reason_simulations"], 2)
-        self.assertEqual(package["coverage"]["simulation_count"], 14)
+        self.assertEqual(package["coverage"]["data_absent_reason_simulations"], 3)
+        self.assertEqual(package["coverage"]["simulation_count"], 16)
         severity = next(
             node for node in package["knowledge_graph"]["nodes"]
             if node["id"] == "allergy.drug_reaction_severity"
@@ -1198,7 +1210,7 @@ class CompilerTests(unittest.TestCase):
                 / "mappings/terminology/snomed-mrcm-allergy-concern.json"
             ).read_text(encoding="utf-8")
         )
-        self.assertEqual(len(mapping["focus_concepts"]), 10)
+        self.assertEqual(len(mapping["focus_concepts"]), 12)
         self.assertEqual(
             mapping["terminology"]["version"],
             "http://snomed.info/sct/900000000000207008/version/20260801",

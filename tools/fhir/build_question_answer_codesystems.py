@@ -23,8 +23,8 @@ from interoperability.question_answer import (
 
 OUTPUT = ROOT / "fhir/r4/codesystems"
 CANONICAL = "https://ggojang.github.io/clinical-interview-platform/fhir"
-QUESTION_CODE_SYSTEM_VERSION = "0.2.0"
-ANSWER_CODE_SYSTEM_VERSION = "0.2.0"
+QUESTION_CODE_SYSTEM_VERSION = "0.3.0"
+ANSWER_CODE_SYSTEM_VERSION = "0.3.0"
 
 
 def _versioned_resource_id(identifier: str, version: str) -> str:

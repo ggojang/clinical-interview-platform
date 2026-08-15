@@ -1,6 +1,6 @@
 {
   "id": "mapping.snomed-mrcm.allergy-concern",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "status": "research_only",
   "lifecycle_status": "draft",
   "review_status": "unreviewed",
@@ -8,7 +8,7 @@
   "terminology": {
     "system": "http://snomed.info/sct",
     "version": "http://snomed.info/sct/900000000000207008/version/20260801",
-    "source": "STOM"
+    "source": "STOM localhost:8088/fhir"
   },
   "focus_concepts": [
     {
@@ -70,6 +70,18 @@
       "display": "Shock due to anaphylaxis (disorder)",
       "concept_active": true,
       "attribute_count_returned": 22
+    },
+    {
+      "code": "468846009",
+      "display": "Epinephrine autoinjector (physical object)",
+      "concept_active": true,
+      "mapping_status": "active_related_candidate_returned"
+    },
+    {
+      "code": "306111000",
+      "display": "Referral to clinical allergy service (procedure)",
+      "concept_active": true,
+      "mapping_status": "active_related_candidate_returned"
     }
   ],
   "verified_attribute_ids": [
@@ -78,24 +90,44 @@
     "246090004"
   ],
   "validation": {
-    "method": "build_time_live_fhir_lookup_valueset_expand_and_mrcm_summary",
-    "checked_at": "2026-08-10T10:58:00Z",
+    "method": "build_time_live_stom_filter_search",
+    "checked_at": "2026-08-15T00:00:00Z",
     "raw_response_cached": false,
     "complete_mrcm_snapshot": false,
     "clinical_rule_authority": false,
-    "result": "provisional_pass"
+    "result": "related_concepts_verified_contextual_questions_remain_local"
   },
   "provenance": {
     "created_by": {
       "type": "ai",
       "id": "codex-gpt5"
     },
-    "created_at": "2026-07-14T00:00:00Z",
+    "created_at": "2026-08-15T00:00:00Z",
     "source_refs": [
-      "source.stom.allergy-concern.20260810",
-      "source.hl7.fhir-r4.allergyintolerance.4.0.1"
+      "source.stom.allergy-follow-up.20260815"
     ],
     "review_status": "unreviewed",
-    "version": "0.1.0"
+    "version": "0.2.0"
+  },
+  "clinical_use_policy_ref": "policies/draft-clinical-use-boundary.json",
+  "related_concept_candidates": [
+    {
+      "code": "468846009",
+      "display": "Epinephrine autoinjector (physical object)",
+      "relation": "related_not_exact"
+    },
+    {
+      "code": "306111000",
+      "display": "Referral to clinical allergy service (procedure)",
+      "relation": "related_not_exact"
+    }
+  ],
+  "atomic_refactoring": {
+    "retired_composite_facts": [
+      "allergy.specialist_testing_and_emergency_plan"
+    ],
+    "replacement_strategy": "atomic_local_questions_with_related_standard_concepts_only",
+    "exact_mapping_for_new_contextual_questions": false,
+    "question_code_remains_local": true
   }
 }
