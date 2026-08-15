@@ -1,12 +1,12 @@
 {
   "clinical_use_status": "limited",
   "contains_patient_responses": false,
-  "count": 144,
+  "count": 188,
   "encounter_contexts": [
     "context.primary_care"
   ],
   "generated_at": "2026-07-24T00:00:00Z",
-  "inline_count": 12,
+  "inline_count": 14,
   "items": [
     {
       "id": "rule.mental-health-sleep.safety.command-hallucination",
@@ -153,6 +153,33 @@
       }
     },
     {
+      "id": "rule.mental-health-sleep.safety.drowsy-driving-risk",
+      "priority": 900,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "any": [
+          {
+            "equals": true,
+            "fact": "sleep.drowsy_driving_current"
+          },
+          {
+            "equals": true,
+            "fact": "sleep.sleep_related_driving_accident"
+          },
+          {
+            "equals": true,
+            "fact": "sleep.sleep_related_driving_near_miss"
+          }
+        ]
+      }
+    },
+    {
       "id": "rule.mental-health-sleep.safety.first-psychosis",
       "priority": 900,
       "status": "research_only",
@@ -206,6 +233,29 @@
       }
     },
     {
+      "id": "rule.mental-health-sleep.safety.vigilance-critical-sleepiness",
+      "priority": 900,
+      "status": "research_only",
+      "then": {
+        "action": "human_handoff",
+        "safety_level": "urgent",
+        "suppress_routine": true
+      },
+      "type": "safety",
+      "when": {
+        "all": [
+          {
+            "equals": true,
+            "fact": "sleep.excessive_daytime_sleepiness"
+          },
+          {
+            "equals": true,
+            "fact": "sleep.vigilance_critical_work"
+          }
+        ]
+      }
+    },
+    {
       "id": "rule.activate.mental-health-sleep",
       "priority": 100,
       "status": "research_only",
@@ -233,39 +283,75 @@
   "knowledge_sources": [
     {
       "complete": false,
+      "id": "source.aasm.osa-diagnostic-testing.2017",
+      "kind": "primary_clinical_practice_guideline",
+      "last_monitored_at": "2026-08-15",
+      "license_status": "reference_only",
+      "monitor_interval_days": 1,
+      "publisher": "American Academy of Sleep Medicine",
+      "title": "Clinical Practice Guideline for Diagnostic Testing for Adult Obstructive Sleep Apnea",
+      "url": "https://aasm.org/resources/clinicalguidelines/diagnostic-testing-osa.pdf",
+      "version": "JCSM-2017-accessed-2026-08-15"
+    },
+    {
+      "complete": false,
+      "id": "source.nhs.sleep-apnoea.2026",
+      "kind": "public_health_guidance",
+      "last_monitored_at": "2026-08-15",
+      "license_status": "reference_only",
+      "monitor_interval_days": 7,
+      "publisher": "NHS",
+      "title": "Sleep apnoea",
+      "url": "https://www.nhs.uk/conditions/sleep-apnoea/",
+      "version": "reviewed-2026-05-11-accessed-2026-08-15"
+    },
+    {
+      "complete": false,
       "id": "source.nhs.urgent-mental-support.2026",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-07-21",
+      "last_monitored_at": "2026-08-15",
       "license_status": "unknown",
       "monitor_interval_days": 7,
       "publisher": "NHS",
       "title": "Urgent mental health support",
       "url": "https://www.nhs.uk/every-mind-matters/urgent-support/",
-      "version": "accessed-2026-07-21"
+      "version": "accessed-2026-08-15"
     },
     {
       "complete": false,
       "id": "source.nice.cg113.anxiety.2020",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-07-21",
+      "last_monitored_at": "2026-08-15",
       "license_status": "unknown",
       "monitor_interval_days": 7,
       "publisher": "NICE",
       "title": "Generalised anxiety and panic disorder",
       "url": "https://www.nice.org.uk/guidance/cg113/chapter/Recommendations",
-      "version": "CG113-updated-2020-accessed-2026-07-21"
+      "version": "CG113-updated-2020-accessed-2026-08-15"
+    },
+    {
+      "complete": false,
+      "id": "source.nice.ng202.sleep-apnoea.2021",
+      "kind": "clinical_guidance_metadata",
+      "last_monitored_at": "2026-08-15",
+      "license_status": "reference_only",
+      "monitor_interval_days": 7,
+      "publisher": "NICE",
+      "title": "Obstructive sleep apnoea/hypopnoea syndrome and obesity hypoventilation syndrome in over 16s",
+      "url": "https://www.nice.org.uk/guidance/ng202/chapter/1-obstructive-sleep-apnoeahypopnoea-syndrome",
+      "version": "NG202-2021-accessed-2026-08-15"
     },
     {
       "complete": false,
       "id": "source.nice.ng222.depression.2022",
       "kind": "clinical_guidance_metadata",
-      "last_monitored_at": "2026-07-21",
+      "last_monitored_at": "2026-08-15",
       "license_status": "unknown",
       "monitor_interval_days": 7,
       "publisher": "NICE",
       "title": "Depression in adults",
       "url": "https://www.nice.org.uk/guidance/ng222/chapter/recommendations",
-      "version": "NG222-2022-surveillance-2026-01-accessed-2026-07-21"
+      "version": "NG222-2022-reviewed-2026-01-accessed-2026-08-15"
     },
     {
       "complete": false,
@@ -278,6 +364,18 @@
       "title": "STOM mental health MRCM",
       "url": "https://stom.infoclinic.co/allow/attributes/SNOMEDCT/366979004",
       "version": "SNOMEDCT-20260701"
+    },
+    {
+      "complete": false,
+      "id": "source.stom.sleep-breathing.20260815",
+      "kind": "terminology_service_verification",
+      "last_monitored_at": "2026-08-15",
+      "license_status": "licensed_lookup_metadata_only",
+      "monitor_interval_days": 30,
+      "publisher": "Infoclinic",
+      "title": "STOM sleep breathing and drowsy-driving terminology verification",
+      "url": "http://localhost:8088/fhir",
+      "version": "SNOMEDCT-20260801"
     }
   ],
   "lifecycle_status": "draft",
@@ -286,12 +384,12 @@
   "package_version": "0.1.0",
   "partitions": [
     {
-      "count": 66,
+      "count": 87,
       "path": "/gpt/rfe/mental_health_sleep/rules/completion.json",
       "rule_type": "completion"
     },
     {
-      "count": 66,
+      "count": 87,
       "path": "/gpt/rfe/mental_health_sleep/rules/priority.json",
       "rule_type": "priority"
     }

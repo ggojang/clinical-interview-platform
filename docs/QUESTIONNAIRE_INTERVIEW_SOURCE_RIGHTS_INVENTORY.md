@@ -9,8 +9,8 @@
 
 - 현재 자원: **78개**
 - 외부 획득 후보군: **7개**
-- source manifest artifact entry: **720개**
-- 고유 source ID: **622개**
+- source manifest artifact entry: **724개**
+- 고유 source ID: **626개**
 - 검증 오류: **0개**
 
 ### 자원 유형별 수
@@ -75,7 +75,7 @@ HIRA 프로그램에 이름이 등장하더라도 해당 척도의 문항을 시
 | `rfe.focal_weakness_numbness` | `dynamic_clinical_interview` | 67 | 아니오 | `allowed_under_draft_limited_use_policy` | `rights_review_required` |
 | `rfe.joint_limb_complaint` | `dynamic_clinical_interview` | 83 | 아니오 | `allowed_under_draft_limited_use_policy` | `rights_review_required` |
 | `rfe.neck_pain` | `dynamic_clinical_interview` | 51 | 아니오 | `allowed_under_draft_limited_use_policy` | `rights_review_required` |
-| `rfe.mental_health_sleep` | `dynamic_clinical_interview` | 66 | 아니오 | `allowed_under_draft_limited_use_policy` | `rights_review_required` |
+| `rfe.mental_health_sleep` | `dynamic_clinical_interview` | 87 | 아니오 | `allowed_under_draft_limited_use_policy` | `rights_review_required` |
 | `rfe.edema` | `dynamic_clinical_interview` | 69 | 아니오 | `allowed_under_draft_limited_use_policy` | `rights_review_required` |
 | `rfe.hypertension_follow_up` | `dynamic_clinical_interview` | 71 | 아니오 | `allowed_under_draft_limited_use_policy` | `rights_review_required` |
 | `rfe.weight_constitutional_change` | `dynamic_clinical_interview` | 78 | 아니오 | `allowed_under_draft_limited_use_policy` | `rights_review_required` |

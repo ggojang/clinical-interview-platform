@@ -757,10 +757,65 @@ class CompilerTests(unittest.TestCase):
     def test_mental_health_sleep_package_is_complete(self):
         package = compile_package(profile="mental_health_sleep")
         facts = {n["id"] for n in package["knowledge_graph"]["nodes"] if n["type"] == "Fact"}
-        self.assertEqual(len(facts), 66); self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
-        self.assertEqual(package["coverage"]["total_safety_rules"], 11)
-        self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 11)
+        self.assertEqual(len(facts), 87); self.assertEqual(facts, set(package["indexes"]["questions_by_fact"]))
+        self.assertIn("sleep.snoring_present", facts)
+        self.assertIn("sleep.witnessed_breathing_pauses", facts)
+        self.assertIn("sleep.excessive_daytime_sleepiness", facts)
+        self.assertIn("sleep.drowsy_driving_current", facts)
+        self.assertIn("sleep.prior_sleep_breathing_test_result", facts)
+        self.assertIn("sleep.breathing_treatment_response", facts)
+        self.assertNotIn("sleep.snoring_apnea_or_choking", facts)
+        self.assertNotIn("sleep.daytime_sleepiness_naps_function_driving_and_accident_risk", facts)
+        self.assertEqual(package["coverage"]["total_safety_rules"], 13)
+        self.assertEqual(package["coverage"]["safety_rules_with_simulations"], 13)
         self.assertEqual(package["coverage"]["uncovered_safety_rules"], [])
+
+    def test_mental_health_sleep_breathing_questions_and_bindings_are_atomic(self):
+        root = Path(__file__).resolve().parents[1]
+        mapping = json.loads(
+            (root / "mappings/terminology/snomed-mrcm-mental-health-sleep.json")
+            .read_text(encoding="utf-8")
+        )
+        bindings = {
+            item["fact_id"]: item
+            for item in mapping["verified_atomic_fact_bindings"]
+        }
+        self.assertEqual(bindings["sleep.snoring_present"]["code"], "72863001")
+        self.assertEqual(
+            bindings["sleep.excessive_daytime_sleepiness"]["code"],
+            "1367959007",
+        )
+        self.assertEqual(
+            bindings["sleep.drowsy_driving_current"]["code"],
+            "307611000267100",
+        )
+        self.assertTrue(
+            all(item["question_code_remains_local"] for item in bindings.values())
+        )
+        self.assertFalse(
+            mapping["atomic_refactoring"][
+                "exact_mapping_for_unverified_contextual_questions"
+            ]
+        )
+
+    def test_mental_health_clinician_minimum_does_not_force_other_branches(self):
+        root = Path(__file__).resolve().parents[1]
+        context = json.loads(
+            (root / "knowledge/shared/clinician-submission-context.json")
+            .read_text(encoding="utf-8")
+        )
+        minimum = set(
+            context["completion"]["clinician_rfe_minimum"]
+            ["additional_required_facts_by_rfe"]["rfe.mental_health_sleep"]
+        )
+        self.assertIn("mental_health.primary_context", minimum)
+        self.assertIn(
+            "mental_health.patient_goal_treatment_preference_expected_help_and_additional_rfe",
+            minimum,
+        )
+        self.assertNotIn("symptom.low_mood", minimum)
+        self.assertNotIn("symptom.panic_attack_features", minimum)
+        self.assertNotIn("sleep.snoring_present", minimum)
 
     def test_edema_package_is_complete(self):
         package = compile_package(profile="edema")
@@ -2479,7 +2534,13 @@ class PackageRuntimeTests(unittest.TestCase):
 
     def test_mental_health_sleep_simulation_and_runtime(self):
         report = run_evaluation(MENTAL_HEALTH_SLEEP_PACKAGE)
-        self.assertTrue(report["passed"]); self.assertEqual(report["case_count"], 24)
+        self.assertTrue(report["passed"]); self.assertEqual(report["case_count"], 27)
+        follow_up = next(
+            item for item in report["results"]
+            if item["case_id"] == "MHS-SLEEP-BREATHING-FOLLOWUP"
+        )
+        self.assertTrue(follow_up["clinician_handoff"])
+        self.assertLessEqual(follow_up["turns"], 82)
         session = InterviewSession("mental-runtime", package_path=MENTAL_HEALTH_SLEEP_PACKAGE)
         state = session.process("걱정이 많고 잠을 못 자요.")
         self.assertIn("mental_health.sleep_concern", state["active_patterns"])

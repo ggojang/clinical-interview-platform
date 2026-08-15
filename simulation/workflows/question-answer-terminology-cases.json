@@ -1,6 +1,6 @@
 {
   "id": "simulation.question-answer-terminology-cases",
-    "version": "0.2.0",
+  "version": "0.3.0",
   "status": "synthetic",
   "contains_real_patient_data": false,
   "cases": [
@@ -140,6 +140,43 @@
             "expected_atomicity": "composite_candidate",
             "expected_signal": "fact_id_contains_and",
             "rationale": "사용상태, 사용량, 사용 기간은 각각 수정·표준화·제출될 수 있는 별도 임상 의미이므로 하나의 answer ValueSet으로 합치지 않는다."
+        },
+        {
+            "id": "MAPPING-COMPOSITE-SNORING-APNEA-CHOKING",
+            "question": {
+                "wording": "심한 코골이, 숨 멎음 목격 또는 자다가 숨 막혀 깨는 일이 있나요?"
+            },
+            "fact": {
+                "id": "synthetic.snoring_and_witnessed_apnea_and_nocturnal_choking",
+                "value_type": "boolean"
+            },
+            "expected_atomicity": "composite_candidate",
+            "expected_signal": "fact_id_contains_and",
+            "rationale": "코골이, 다른 사람이 목격한 호흡 정지, 본인이 느낀 야간 질식은 출처와 임상 의미가 달라 각각 별도 Fact로 수집해야 한다."
+        },
+        {
+            "id": "MAPPING-ATOMIC-EXCESSIVE-DAYTIME-SLEEPINESS",
+            "question": {
+                "wording": "낮에 깨어 있기 어려울 정도로 졸리나요?"
+            },
+            "fact": {
+                "id": "synthetic.excessive_daytime_sleepiness",
+                "value_type": "boolean"
+            },
+            "expected_atomicity": "atomic_candidate",
+            "rationale": "한 개의 임상 의미인 과도한 주간졸림 유무만 수집하며, 발생 상황·운전위험·사고력은 별도 Fact로 분리한다."
+        },
+        {
+            "id": "MAPPING-ATOMIC-DROWSY-DRIVING",
+            "question": {
+                "wording": "최근 운전 중 졸음을 견디기 어려웠던 적이 있나요?"
+            },
+            "fact": {
+                "id": "synthetic.drowsy_driving_current",
+                "value_type": "boolean"
+            },
+            "expected_atomicity": "atomic_candidate",
+            "rationale": "졸음운전 경험 유무만 수집하고 운전 사고와 near miss는 별도 안전 Fact로 유지한다."
         }
   ],
   "provenance": {
@@ -147,12 +184,12 @@
       "type": "ai",
       "id": "codex-gpt5"
     },
-    "created_at": "2026-07-25T00:21:03Z",
+    "created_at": "2026-08-15T00:00:00Z",
     "source_refs": [
       "policies/question-answer-terminology-binding.json",
       "docs/context/021-simulation-model.md"
     ],
     "review_status": "unreviewed",
-    "version": "0.1.0"
+    "version": "0.3.0"
   }
 }

@@ -379,6 +379,7 @@ def run() -> dict[str, Any]:
                 "shared_answer_domain_replaces_duplicate_fact_ValueSets",
                 "shared_mixed_symptom_onset_domain_and_composite_exclusion",
                 "tobacco_product_status_deduplication_and_atomic_context",
+                "sleep_breathing_atomic_refactoring_and_fact_mapping",
                 "retired_compatibility_ValueSet_declares_replaced_by",
                 "dataAbsentReason_remains_outside_shared_answer_ValueSet",
             ],

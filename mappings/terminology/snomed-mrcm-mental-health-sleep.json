@@ -1,12 +1,13 @@
 {
   "id": "mapping.snomed-mrcm.mental-health-sleep",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "status": "research_only",
   "review_status": "unreviewed",
   "terminology": {
     "system": "http://snomed.info/sct",
-    "version": "http://snomed.info/sct/900000000000207008/version/20260701",
-    "source": "STOM"
+    "version": "http://snomed.info/sct/900000000000207008/version/20260801",
+    "repository_baseline_version": "http://snomed.info/sct/900000000000207008/version/20260701",
+    "source": "STOM localhost:8088/fhir"
   },
   "focus_concepts": [
     {
@@ -33,6 +34,42 @@
       "code": "7011001",
       "display": "Hallucinations (finding)",
       "attribute_count_returned": 20
+    },
+    {
+      "code": "72863001",
+      "display": "Snoring (finding)",
+      "concept_active": true,
+      "mapping_status": "active_candidate_returned"
+    },
+    {
+      "code": "1367959007",
+      "display": "Excessive daytime sleepiness (finding)",
+      "concept_active": true,
+      "mapping_status": "active_candidate_returned"
+    },
+    {
+      "code": "307611000267100",
+      "display": "Drowsy driving (finding)",
+      "concept_active": true,
+      "mapping_status": "active_candidate_returned"
+    },
+    {
+      "code": "252566002",
+      "display": "Sleep-related breathing test (procedure)",
+      "concept_active": true,
+      "mapping_status": "active_candidate_returned"
+    },
+    {
+      "code": "60554003",
+      "display": "Polysomnography (procedure)",
+      "concept_active": true,
+      "mapping_status": "active_candidate_returned"
+    },
+    {
+      "code": "47545007",
+      "display": "Continuous positive airway pressure ventilation treatment (regime/therapy)",
+      "concept_active": true,
+      "mapping_status": "active_candidate_returned"
     }
   ],
   "checks": [
@@ -88,23 +125,77 @@
     }
   ],
   "validation": {
-    "method": "build_time_live_mrcm_summary",
-    "checked_at": "2026-07-14T00:00:00Z",
+    "method": "build_time_live_fhir_lookup_and_filter_search",
+    "checked_at": "2026-08-15T00:00:00Z",
     "raw_response_cached": false,
     "complete_mrcm_snapshot": false,
     "clinical_rule_authority": false,
-    "result": "provisional_pass"
+    "result": "atomic_fact_candidates_verified_contextual_question_gaps_remain_local"
   },
   "provenance": {
     "created_by": {
       "type": "ai",
       "id": "codex-gpt5"
     },
-    "created_at": "2026-07-14T00:00:00Z",
+    "created_at": "2026-07-21T00:00:00Z",
     "source_refs": [
-      "source.stom.mental-health.20260714"
+      "source.stom.sleep-breathing.20260815"
     ],
     "review_status": "unreviewed",
-    "version": "0.1.0"
+    "version": "0.3.0"
+  },
+  "lifecycle_status": "draft",
+  "clinical_use_status": "limited",
+  "clinical_use_policy_ref": "policies/draft-clinical-use-boundary.json",
+  "verified_atomic_fact_bindings": [
+    {
+      "fact_id": "sleep.snoring_present",
+      "system": "http://snomed.info/sct",
+      "code": "72863001",
+      "display": "Snoring (finding)",
+      "relation": "equivalent",
+      "question_code_remains_local": true
+    },
+    {
+      "fact_id": "sleep.excessive_daytime_sleepiness",
+      "system": "http://snomed.info/sct",
+      "code": "1367959007",
+      "display": "Excessive daytime sleepiness (finding)",
+      "relation": "equivalent",
+      "question_code_remains_local": true
+    },
+    {
+      "fact_id": "sleep.drowsy_driving_current",
+      "system": "http://snomed.info/sct",
+      "code": "307611000267100",
+      "display": "Drowsy driving (finding)",
+      "relation": "equivalent",
+      "question_code_remains_local": true
+    }
+  ],
+  "related_procedure_candidates": [
+    {
+      "code": "252566002",
+      "display": "Sleep-related breathing test (procedure)",
+      "relation": "related_not_exact"
+    },
+    {
+      "code": "60554003",
+      "display": "Polysomnography (procedure)",
+      "relation": "related_not_exact"
+    },
+    {
+      "code": "47545007",
+      "display": "Continuous positive airway pressure ventilation treatment (regime/therapy)",
+      "relation": "related_not_exact"
+    }
+  ],
+  "atomic_refactoring": {
+    "retired_composite_facts": [
+      "sleep.snoring_apnea_or_choking",
+      "sleep.daytime_sleepiness_naps_function_driving_and_accident_risk"
+    ],
+    "replacement_strategy": "atomic_local_questions_with_verified_fact_bindings_only",
+    "exact_mapping_for_unverified_contextual_questions": false
   }
 }
