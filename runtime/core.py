@@ -18,6 +18,10 @@ from runtime.session import InterviewSession
 class CoreInteractionSession:
     session_id: str
     registry: ServiceModeRegistry = field(default_factory=ServiceModeRegistry)
+    execution_mode: str = "research_test"
+    clinician_submission: bool = False
+    encounter_context: dict[str, Any] | None = None
+    proactive_safety_questions: bool = False
     mode_id: str | None = None
     adapter: InterviewSession | None = None
     closed: bool = False
@@ -100,8 +104,10 @@ class CoreInteractionSession:
         self.adapter = InterviewSession(
             self.session_id,
             package_path=self.registry.package_path_for(rfe),
+            execution_mode=self.execution_mode,
             reason_for_encounter=rfe["id"],
-            encounter_context={
+            clinician_submission=self.clinician_submission,
+            encounter_context=self.encounter_context or {
                 "care_setting": "primary_care",
                 "encounter_type": "new_encounter",
                 "interview_initiator": "patient",
@@ -110,7 +116,7 @@ class CoreInteractionSession:
                 "time_constraint": "scheduled",
                 "clinical_responsibility": "decision_support",
             },
-            proactive_safety_questions=False,
+            proactive_safety_questions=self.proactive_safety_questions,
         )
         return self._wrap(self.adapter.process(message), resolution=resolution)
 
