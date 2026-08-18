@@ -425,6 +425,105 @@ console.log(vm.runInContext(`(() => {{
         self.assertIn("응답 안내: 보기 번호 또는 상태를 입력해 주세요.", result["prompt"])
         self.assertIn("출처: [공동 작업 지식]", result["prompt"])
 
+    def test_adaptive_free_text_question_gets_quick_answer_suggestions(self):
+        question = {
+            "knowledgeFact": "symptom.duration",
+            "originalText": "How long have you had the cough?",
+            "text": "기침은 언제 시작되었나요?",
+        }
+        script = fr"""
+const fs = require('fs');
+const vm = require('vm');
+const source = fs.readFileSync({json.dumps(str(APP_JS))}, 'utf8').replace(/initialize\(\);\s*$/, '');
+const context = {{ console }};
+vm.createContext(context);
+vm.runInContext(source, context);
+console.log(vm.runInContext(
+  `JSON.stringify(inferredAdaptiveSuggestions(${{JSON.stringify({json.dumps(question)})}}))`,
+  context
+));
+"""
+        completed = subprocess.run(
+            ["node", "-e", script],
+            check=True,
+            capture_output=True,
+            text=True,
+            cwd=REPOSITORY_ROOT,
+        )
+        self.assertEqual(
+            json.loads(completed.stdout),
+            ["오늘부터", "2~3일", "1주일 정도", "한 달 이상"],
+        )
+
+    def test_fixed_skip_is_explicit_data_absence_not_negative_answer(self):
+        response_item = {
+            "linkId": "unknown-screening-answer",
+            "extension": [
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason",
+                    "valueCode": "asked-unknown",
+                }
+            ],
+        }
+        script = fr"""
+const fs = require('fs');
+const vm = require('vm');
+const source = fs.readFileSync({json.dumps(str(APP_JS))}, 'utf8').replace(/initialize\(\);\s*$/, '');
+const context = {{ console }};
+vm.createContext(context);
+vm.runInContext(source, context);
+console.log(vm.runInContext(
+  `fixedAnswerSummary(${{JSON.stringify({json.dumps(response_item)})}})`,
+  context
+));
+"""
+        completed = subprocess.run(
+            ["node", "-e", script],
+            check=True,
+            capture_output=True,
+            text=True,
+            cwd=REPOSITORY_ROOT,
+        )
+        self.assertEqual(completed.stdout.strip(), "답변할 수 없음(건너뜀)")
+
+    def test_f677_autocomplete_control_is_not_generic_select(self):
+        item = {
+            "linkId": "f677-family-history-search",
+            "type": "choice",
+            "answerValueSet": "http://www.hl7korea.or.kr/fhir/krcore/ValueSet/krcore-kcd8-codes",
+            "extension": [
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+                    "valueCodeableConcept": {
+                        "coding": [{"code": "autocomplete"}]
+                    },
+                }
+            ],
+        }
+        script = fr"""
+const fs = require('fs');
+const vm = require('vm');
+const source = fs.readFileSync({json.dumps(str(APP_JS))}, 'utf8').replace(/initialize\(\);\s*$/, '');
+const context = {{ console }};
+vm.createContext(context);
+vm.runInContext(source, context);
+console.log(vm.runInContext(
+  `JSON.stringify({{control:questionnaireItemControlCode(${{JSON.stringify({json.dumps(item)})}}), searchable: structuredControl.toString().includes('structuredAutocompleteControl')}})`,
+  context
+));
+"""
+        completed = subprocess.run(
+            ["node", "-e", script],
+            check=True,
+            capture_output=True,
+            text=True,
+            cwd=REPOSITORY_ROOT,
+        )
+        self.assertEqual(
+            json.loads(completed.stdout),
+            {"control": "autocomplete", "searchable": True},
+        )
+
     def test_enable_when_reveals_only_selected_repeated_body_area_questions(self):
         questionnaire = {
             "resourceType": "Questionnaire",

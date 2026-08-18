@@ -11,6 +11,7 @@ import re
 from typing import Any
 
 from runtime.service_modes import ServiceModeRegistry
+from runtime.health_information import HealthInformationSession
 from runtime.session import InterviewSession
 
 
@@ -23,7 +24,7 @@ class CoreInteractionSession:
     encounter_context: dict[str, Any] | None = None
     proactive_safety_questions: bool = False
     mode_id: str | None = None
-    adapter: InterviewSession | None = None
+    adapter: InterviewSession | HealthInformationSession | None = None
     closed: bool = False
 
     def start(self) -> dict[str, Any]:
@@ -36,6 +37,10 @@ class CoreInteractionSession:
             if self.adapter is None:
                 return self._activate_clinical(message)
             return self._wrap(self.adapter.process(message))
+        if self.mode_id == "health_information":
+            if self.adapter is None:
+                self.adapter = HealthInformationSession(self.session_id)
+            return self._wrap_health_information(self.adapter.process(message))
         if self.mode_id is not None:
             return {
                 "status": "adapter_input_required",
@@ -51,6 +56,9 @@ class CoreInteractionSession:
         if self.mode_id == "clinical_adaptive":
             return self._activate_clinical(message, resolution=resolution)
 
+        if self.mode_id == "health_information":
+            self.adapter = HealthInformationSession(self.session_id)
+
         return {
             **resolution,
             "status": "mode_ready",
@@ -58,6 +66,16 @@ class CoreInteractionSession:
             "next": resolution.get("next", {
                 "entry": resolution["mode"]["entry"],
             }),
+        }
+
+    def _wrap_health_information(
+        self, adapter_state: dict[str, Any]
+    ) -> dict[str, Any]:
+        return {
+            "status": "active",
+            "mode_id": "health_information",
+            "core_entry": "interaction_purpose",
+            "adapter_state": adapter_state,
         }
 
     def close(self) -> dict[str, Any]:

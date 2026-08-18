@@ -502,13 +502,12 @@ components:
         - independent_diagnosis_or_treatment
         - llm
         - available_formats
-        - fhir
       properties:
         session_id:
           type: string
           format: uuid
         mode_id:
-          const: clinical_adaptive
+          enum: [clinical_adaptive, health_information]
         lifecycle_status:
           const: draft
         review_status:
@@ -526,6 +525,14 @@ components:
         clinical_handoff:
           type: [object, "null"]
           additionalProperties: true
+        informational_answer:
+          type: object
+          additionalProperties: true
+        consultation:
+          type: object
+          additionalProperties: true
+        response_storage:
+          const: memory_only
         fhir:
           type: object
           additionalProperties: true
@@ -602,12 +609,12 @@ components:
         - status
         - purpose
         - provider_id
-        - patient_response_transmitted
+        - clinical_authority
       properties:
         status:
           enum: [generated, deterministic_fallback, not_applicable]
         purpose:
-          const: question_presentation_only
+          enum: [question_presentation_only, health_information]
         provider_id:
           type: string
         model:
@@ -620,6 +627,16 @@ components:
           type: boolean
         patient_response_transmitted:
           const: false
+        patient_input_transmitted:
+          type: boolean
+          description: True only for the dedicated health-information advisor after provider policy and consent checks.
+        processing_location:
+          enum: [banttas_ai_local, external_vendor]
+        independent_diagnosis_or_treatment:
+          const: false
+        safety_status:
+          type: object
+          additionalProperties: true
         clinical_authority:
           const: false
     LlmProviderCatalog:

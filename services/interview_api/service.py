@@ -20,6 +20,7 @@ from uuid import UUID, uuid4
 from runtime.core import CoreInteractionSession
 from runtime.service_modes import ServiceModeRegistry
 from services.interview_api.llm import (
+    LlmHealthInformationAdvisor,
     LlmProviderRegistry,
     LlmQuestionPresenter,
     LlmSelection,
@@ -145,6 +146,7 @@ class InterviewApi:
         session_factory: Callable[[str], CoreInteractionSession] | None = None,
         llm_registry: LlmProviderRegistry | None = None,
         llm_presenter: LlmQuestionPresenter | None = None,
+        health_information_advisor: LlmHealthInformationAdvisor | None = None,
         terminology_client: TerminologyClient | None = None,
     ) -> None:
         if not MIN_SESSION_TTL_SECONDS <= session_ttl_seconds <= MAX_SESSION_TTL_SECONDS:
@@ -175,6 +177,9 @@ class InterviewApi:
         self.registry = ServiceModeRegistry()
         self.llm_registry = llm_registry or LlmProviderRegistry.from_env()
         self.llm_presenter = llm_presenter or LlmQuestionPresenter.from_env()
+        self.health_information_advisor = (
+            health_information_advisor or LlmHealthInformationAdvisor.from_env()
+        )
         self.terminology_client = terminology_client or TerminologyClient.from_env()
         self._session_factory = session_factory or (
             lambda session_id: CoreInteractionSession(
@@ -202,6 +207,7 @@ class InterviewApi:
                 "default_provider_id": self.llm_registry.default_provider_id,
                 "presentation_enabled": self.llm_presenter.enabled,
                 "runtime_role": "question_presentation_only",
+                "health_information_enabled": self.health_information_advisor.enabled,
             },
             "terminology": self.terminology_client.configuration(),
         }
@@ -209,11 +215,11 @@ class InterviewApi:
     def catalog(self) -> dict[str, Any]:
         catalog = self.registry.catalog()
         catalog["api_capabilities"] = {
-            "implemented_mode_ids": ["clinical_adaptive"],
+            "implemented_mode_ids": ["clinical_adaptive", "health_information"],
             "pending_mode_ids": sorted(
                 mode_id
                 for mode_id in self.registry.modes
-                if mode_id != "clinical_adaptive"
+                if mode_id not in {"clinical_adaptive", "health_information"}
             ),
             "result_formats": {
                 "clinical_handoff_json": "implemented",
@@ -439,7 +445,7 @@ class InterviewApi:
                     state = core.process(mode_selection)
                 if initial_message is not None:
                     state = core.process(initial_message)
-                presentation = self.llm_presenter.present(state, llm_selection)
+                presentation = self._render_llm_output(core, state, llm_selection)
             except Exception:
                 core.close()
                 raise
@@ -495,8 +501,8 @@ class InterviewApi:
             except RuntimeError as exc:
                 raise ServiceError(409, "session_closed", "session is closed") from exc
             record.last_state = deepcopy(state)
-            record.llm_presentation = self.llm_presenter.present(
-                state, record.llm_selection
+            record.llm_presentation = self._render_llm_output(
+                record.core, state, record.llm_selection
             )
             self._touch(record)
             return self._session_document(session_id, record)
@@ -627,7 +633,34 @@ class InterviewApi:
             "state": deepcopy(record.last_state),
         }
 
+    def _render_llm_output(
+        self,
+        core: CoreInteractionSession,
+        state: dict[str, Any],
+        selection: LlmSelection,
+    ) -> dict[str, Any]:
+        if core.mode_id == "health_information":
+            return self.health_information_advisor.answer(state, selection)
+        return self.llm_presenter.present(state, selection)
+
     def _result_document(self, session_id: str, record: SessionRecord) -> dict[str, Any]:
+        if record.core.mode_id == "health_information" and record.core.adapter is not None:
+            adapter_result = record.core.adapter.result()
+            return {
+                "session_id": session_id,
+                "mode_id": "health_information",
+                "lifecycle_status": "draft",
+                "review_status": "unreviewed",
+                "clinical_use_status": "limited",
+                "independent_diagnosis_or_treatment": False,
+                "llm": record.llm_selection.public_document(
+                    presentation_enabled=self.health_information_advisor.enabled
+                ),
+                "available_formats": ["health_information_json"],
+                "informational_answer": deepcopy(record.llm_presentation),
+                "consultation": deepcopy(adapter_result),
+                "response_storage": "memory_only",
+            }
         if record.core.mode_id != "clinical_adaptive" or record.core.adapter is None:
             raise ServiceError(
                 409,

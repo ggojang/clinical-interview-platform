@@ -10,6 +10,7 @@ const FHIR_QUESTIONNAIRE_ITEM_CONTROL_URL = "http://hl7.org/fhir/StructureDefini
 const FHIR_QUESTIONNAIRE_SLIDER_STEP_URL = "http://hl7.org/fhir/StructureDefinition/questionnaire-sliderStepValue";
 const FHIR_MIN_VALUE_URL = "http://hl7.org/fhir/StructureDefinition/minValue";
 const FHIR_MAX_VALUE_URL = "http://hl7.org/fhir/StructureDefinition/maxValue";
+const FHIR_DATA_ABSENT_REASON_URL = "http://hl7.org/fhir/StructureDefinition/data-absent-reason";
 const SDC_STATUS = {
   status: "not_implemented",
   specification: "HL7 FHIR Structured Data Capture",
@@ -34,14 +35,18 @@ const state = {
   adaptiveBusy: false,
   adaptiveRequestSerial: 0,
   adaptiveHistory: [],
+  healthInformationHistory: [],
   currentAdaptiveQuestion: null,
   fixedQuestions: [],
   fixedAnswers: [],
   fixedIndex: 0,
+  fixedComplete: false,
+  fixedEditingLinkId: null,
   fixedTitle: "",
   structuredAnswers: new Map(),
   valueSetOptions: new Map(),
   valueSetErrors: new Map(),
+  autocompleteOptions: new Map(),
   terminologyAvailable: false
 };
 
@@ -487,6 +492,68 @@ function appendValueSetState(block, item) {
   }
 }
 
+function autocompleteAnswerLabel(answer) {
+  return displayAnswer(answer);
+}
+
+function structuredAutocompleteControl(block, item, existingAnswers) {
+  const wrapper = append(block, "div", undefined, "autocomplete-control");
+  const input = document.createElement("input");
+  const list = document.createElement("datalist");
+  const listId = `autocomplete-${String(item.linkId).replace(/[^A-Za-z0-9_-]/g, "-")}`;
+  list.id = listId;
+  input.setAttribute("list", listId);
+  input.setAttribute("autocomplete", "off");
+  input.setAttribute("aria-label", item.text || item.linkId);
+  input.placeholder = "두 글자 이상 입력해 검색하세요";
+  input.value = existingAnswers[0] ? autocompleteAnswerLabel(existingAnswers[0]) : "";
+  wrapper.append(input, list);
+
+  let options = [];
+  let timer = null;
+  const populate = (nextOptions) => {
+    options = nextOptions;
+    state.autocompleteOptions.set(item.linkId, clone(nextOptions));
+    list.replaceChildren();
+    nextOptions.forEach((option) => {
+      const node = document.createElement("option");
+      node.value = autocompleteAnswerLabel(option);
+      const coding = option.valueCoding;
+      node.label = coding?.code ? `${coding.code} · ${node.value}` : node.value;
+      list.append(node);
+    });
+  };
+  populate(optionsForItem(item));
+
+  const saveExactSelection = () => {
+    const raw = input.value.trim();
+    const selected = options.find((option) => autocompleteAnswerLabel(option) === raw);
+    const answers = selected
+      ? [clone(selected)]
+      : (item.type === "open-choice" && raw ? [{ valueString: raw }] : []);
+    recordStructuredAnswers(item, answers, itemControlsOthers(item.linkId));
+  };
+
+  input.addEventListener("input", () => {
+    window.clearTimeout(timer);
+    const filter = input.value.trim();
+    if (filter.length < 2 || !item.answerValueSet) return;
+    timer = window.setTimeout(async () => {
+      try {
+        const expansion = await api("/v1/terminology/expand", {
+          method: "POST",
+          body: JSON.stringify({ url: item.answerValueSet, filter, count: 30 })
+        });
+        populate((expansion.contains || []).map((concept) => ({ valueCoding: concept })));
+      } catch (error) {
+        state.valueSetErrors.set(item.answerValueSet, `검색할 수 없습니다: ${error.message}`);
+      }
+    }, 250);
+  });
+  input.addEventListener("change", saveExactSelection);
+  append(block, "small", "용어서버에서 문자열을 검색한 뒤 항목을 선택합니다. 선택 결과는 QuestionnaireResponse.valueCoding으로 저장됩니다.", "valueset-state");
+}
+
 function conditionalContext(item) {
   const labels = (item.enableWhen || []).map((condition) => {
     const expected = fhirValue(condition, "answer");
@@ -502,6 +569,10 @@ function structuredControl(block, item) {
   const options = item.type === "boolean"
     ? [{ valueBoolean: true }, { valueBoolean: false }]
     : optionsForItem(item);
+  if (["choice", "open-choice"].includes(item.type) && questionnaireItemControlCode(item) === "autocomplete") {
+    structuredAutocompleteControl(block, item, existingAnswers);
+    return;
+  }
   if (options.length && item.repeats) {
     const choices = append(block, "div", undefined, "repeat-options");
     options.forEach((option, index) => {
@@ -807,6 +878,7 @@ function parseStructured() {
     state.structuredAnswers = new Map();
     state.valueSetOptions = new Map();
     state.valueSetErrors = new Map();
+    state.autocompleteOptions = new Map();
     setArtifacts(questionnaire, response, raw, {
       status: "structured_response_ready",
       note: "정형 서식 입력을 구조 검증했습니다. 가운데 답변 입력 영역에는 enableWhen 조건을 만족한 문항만 표시합니다. 서버 저장·SDC Extraction은 수행하지 않았습니다."
@@ -867,10 +939,22 @@ async function readTextFile(file) {
 
 function refreshFixedQuestions() {
   state.fixedQuestions = activeAnswerBearingItems(state.questionnaire).map((item) => clone(item));
-  state.fixedIndex = state.fixedAnswers.length;
+  const activeIds = new Set(state.fixedQuestions.map((item) => item.linkId));
+  state.structuredAnswers = new Map(
+    [...state.structuredAnswers].filter(([linkId]) => activeIds.has(linkId))
+  );
+  state.fixedAnswers = state.fixedQuestions
+    .map((item) => state.structuredAnswers.get(item.linkId))
+    .filter(Boolean)
+    .map(clone);
+  const nextIndex = state.fixedQuestions.findIndex((item) => !state.structuredAnswers.has(item.linkId));
+  state.fixedIndex = nextIndex === -1 ? state.fixedQuestions.length : nextIndex;
 }
 
 function fixedAnswerSummary(responseItem) {
+  if ((responseItem?.extension || []).some((extension) => (
+    extension.url === FHIR_DATA_ABSENT_REASON_URL && extension.valueCode === "asked-unknown"
+  ))) return "답변할 수 없음(건너뜀)";
   return (responseItem?.answer || []).map((answer) => displayAnswer(answer)).filter(Boolean).join(", ") || "응답 없음";
 }
 
@@ -878,7 +962,7 @@ function renderFixedRevisionList() {
   const panel = $("#fixedRevision");
   const list = $("#fixedRevisionList");
   list.replaceChildren();
-  panel.hidden = state.fixedAnswers.length === 0;
+  panel.hidden = !state.fixedComplete;
   state.fixedAnswers.forEach((responseItem, index) => {
     const button = document.createElement("button");
     button.type = "button";
@@ -891,7 +975,7 @@ function renderFixedRevisionList() {
 function rebuildFixedConversationLog() {
   const log = $("#fixedChatLog");
   log.replaceChildren();
-  bubble(log, "notice", `설문: ${state.fixedTitle}\n수정한 문항 이후의 응답은 조건 분기를 다시 계산하기 위해 다시 질문합니다.`);
+  bubble(log, "notice", `설문: ${state.fixedTitle}\n완료한 응답 중 원하는 항목만 선택해 수정할 수 있습니다.`);
   const flatItems = answerBearingItems(state.questionnaire);
   state.fixedAnswers.forEach((responseItem, index) => {
     const question = flatItems.find((item) => item.linkId === responseItem.linkId) || responseItem;
@@ -902,15 +986,17 @@ function rebuildFixedConversationLog() {
 
 function editFixedAnswer(index) {
   if (!Number.isInteger(index) || index < 0 || index >= state.fixedAnswers.length) return;
-  state.fixedAnswers = state.fixedAnswers.slice(0, index);
-  state.structuredAnswers = new Map(state.fixedAnswers.map((item) => [item.linkId, item]));
-  state.questionnaireResponse.item = responseItemsFor(state.questionnaire.item, state.structuredAnswers);
+  const responseItem = state.fixedAnswers[index];
+  state.fixedEditingLinkId = responseItem.linkId;
+  state.fixedComplete = false;
   state.questionnaireResponse.status = "in-progress";
-  refreshFixedQuestions();
   rebuildFixedConversationLog();
   renderFixedRevisionList();
   updateOutputs();
   askFixedQuestion();
+  $("#fixedAnswer").value = fixedAnswerSummary(responseItem) === "답변할 수 없음(건너뜀)"
+    ? ""
+    : fixedAnswerSummary(responseItem);
   $("#fixedAnswer").focus();
 }
 
@@ -918,6 +1004,8 @@ function startFixed(questionnaire, title, source) {
   state.fixedTitle = title;
   state.fixedAnswers = [];
   state.fixedIndex = 0;
+  state.fixedComplete = false;
+  state.fixedEditingLinkId = null;
   state.structuredAnswers = new Map();
   $("#fixedConversationTitle").textContent = title;
   $("#fixedChatLog").replaceChildren();
@@ -954,8 +1042,21 @@ function fixedPrompt(question, index, count) {
 
 function askFixedQuestion() {
   const count = state.fixedQuestions.length;
+  const editingIndex = state.fixedEditingLinkId
+    ? state.fixedQuestions.findIndex((item) => item.linkId === state.fixedEditingLinkId)
+    : -1;
+  if (editingIndex >= 0) {
+    const question = state.fixedQuestions[editingIndex];
+    $("#fixedProgress").textContent = `${editingIndex + 1} / ${count} · 수정`;
+    $("#fixedAnswer").disabled = false;
+    $("#fixedAnswerButton").disabled = false;
+    $("#fixedSkipButton").hidden = !isNationalScreeningQuestionnaire();
+    bubble($("#fixedChatLog"), "assistant", `수정할 문항입니다. 새 답변을 입력하세요.\n${fixedPrompt(question, editingIndex, count)}`);
+    return;
+  }
   $("#fixedProgress").textContent = `${Math.min(state.fixedIndex + 1, count)} / ${count}`;
   if (state.fixedIndex >= count) {
+    state.fixedComplete = true;
     if (state.questionnaireResponse) state.questionnaireResponse.status = "completed";
     state.handoff = {
       status: "fixed_conversation_completed",
@@ -966,17 +1067,23 @@ function askFixedQuestion() {
     bubble($("#fixedChatLog"), "assistant", "모든 문항이 끝났습니다. 오른쪽에서 QuestionnaireResponse를 확인하세요.");
     $("#fixedAnswer").disabled = true;
     $("#fixedAnswerButton").disabled = true;
+    $("#fixedSkipButton").hidden = true;
     renderFixedRevisionList();
     selectOutput("response");
     return;
   }
   $("#fixedAnswer").disabled = false;
   $("#fixedAnswerButton").disabled = false;
+  $("#fixedSkipButton").hidden = !isNationalScreeningQuestionnaire();
   renderFixedRevisionList();
   const question = state.fixedQuestions[state.fixedIndex];
   const guidance = syntheticGuidanceFor(question.text);
   if (guidance) bubble($("#fixedChatLog"), "notice", guidance);
   bubble($("#fixedChatLog"), "assistant", fixedPrompt(question, state.fixedIndex, count));
+}
+
+function isNationalScreeningQuestionnaire() {
+  return String(state.questionnaire?.id || "").startsWith("kr-national-health-screening");
 }
 
 function answerValue(question, raw) {
@@ -1027,16 +1134,43 @@ function responseItemsFor(questionnaireItems, answersByLinkId) {
 function submitFixedAnswer() {
   const input = $("#fixedAnswer");
   const value = input.value.trim();
-  if (!value || state.fixedIndex >= state.fixedQuestions.length) return;
-  const question = state.fixedQuestions[state.fixedIndex];
+  const questionIndex = state.fixedEditingLinkId
+    ? state.fixedQuestions.findIndex((item) => item.linkId === state.fixedEditingLinkId)
+    : state.fixedIndex;
+  if (!value || questionIndex < 0 || questionIndex >= state.fixedQuestions.length) return;
+  const question = state.fixedQuestions[questionIndex];
   bubble($("#fixedChatLog"), "user", value);
   const answer = answerValue(question, value);
   const responseItem = { linkId: question.linkId, text: question.text, answer: [answer] };
-  state.fixedAnswers.push(responseItem);
   state.structuredAnswers.set(question.linkId, responseItem);
+  state.fixedEditingLinkId = null;
   state.questionnaireResponse.item = responseItemsFor(state.questionnaire.item, state.structuredAnswers);
   refreshFixedQuestions();
+  state.questionnaireResponse.item = responseItemsFor(state.questionnaire.item, state.structuredAnswers);
   input.value = "";
+  updateOutputs();
+  askFixedQuestion();
+}
+
+function submitFixedSkip() {
+  if (!isNationalScreeningQuestionnaire()) return;
+  const questionIndex = state.fixedEditingLinkId
+    ? state.fixedQuestions.findIndex((item) => item.linkId === state.fixedEditingLinkId)
+    : state.fixedIndex;
+  if (questionIndex < 0 || questionIndex >= state.fixedQuestions.length) return;
+  const question = state.fixedQuestions[questionIndex];
+  const responseItem = {
+    linkId: question.linkId,
+    text: question.text,
+    extension: [{ url: FHIR_DATA_ABSENT_REASON_URL, valueCode: "asked-unknown" }]
+  };
+  bubble($("#fixedChatLog"), "user", "답변할 수 없음(건너뜀)");
+  state.structuredAnswers.set(question.linkId, responseItem);
+  state.fixedEditingLinkId = null;
+  state.questionnaireResponse.item = responseItemsFor(state.questionnaire.item, state.structuredAnswers);
+  refreshFixedQuestions();
+  state.questionnaireResponse.item = responseItemsFor(state.questionnaire.item, state.structuredAnswers);
+  $("#fixedAnswer").value = "";
   updateOutputs();
   askFixedQuestion();
 }
@@ -1139,6 +1273,7 @@ function adaptiveQuestion(document) {
     type: options.length ? "choice" : "string",
     options,
     answerOption,
+    answerValueSet: selected?.answer_value_set,
     responseInstruction: selected?.response_instruction_ko || (options.length
       ? "번호로 답하거나, 보기에 없으면 내용을 직접 입력해 주세요."
       : "내용을 자유롭게 입력해 주세요."),
@@ -1160,11 +1295,70 @@ function adaptivePrompt(question) {
 }
 
 function showAdaptiveQuestion(question) {
+  bubble($("#adaptiveChatLog"), "assistant", adaptivePrompt(question));
   const guidance = syntheticGuidanceFor(question.text);
   if (guidance) bubble($("#adaptiveChatLog"), "notice", guidance);
-  bubble($("#adaptiveChatLog"), "assistant", adaptivePrompt(question));
   $("#adaptiveProgress").textContent = `${question.questionRef} · Knowledge Runtime`;
   $("#adaptiveAnswer").placeholder = question.options?.length ? "번호 또는 직접 답변" : "답변을 입력하세요";
+  renderAdaptiveSuggestions(question);
+}
+
+function inferredAdaptiveSuggestions(question) {
+  const target = `${question.knowledgeFact || ""} ${question.originalText || question.text || ""}`.toLowerCase();
+  if (/duration|onset|언제|얼마나.*지속|기간/.test(target)) return ["오늘부터", "2~3일", "1주일 정도", "한 달 이상"];
+  if (/nrs|0.*10|통증.*숫자/.test(target)) return ["0", "2", "5", "8", "10"];
+  if (/frequency|횟수|몇 번|얼마나 자주/.test(target)) return ["하루 1~2회", "하루 여러 차례", "간헐적", "잘 모르겠음"];
+  if (/(있나요|하나요|인가요|했나요|됩니까|습니까)\??$/.test((question.originalText || question.text || "").trim())) {
+    return ["예", "아니오", "잘 모르겠음", "답변하지 않음"];
+  }
+  return [];
+}
+
+function paintAdaptiveSuggestions(question, choices) {
+  const root = $("#adaptiveSuggestions");
+  root.replaceChildren();
+  const normalized = choices.slice(0, 12);
+  normalized.forEach((choice) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = choice.label;
+    button.addEventListener("click", () => {
+      $("#adaptiveAnswer").value = choice.value;
+      sendAdaptiveAnswer();
+    });
+    root.append(button);
+  });
+  root.hidden = normalized.length === 0;
+}
+
+async function renderAdaptiveSuggestions(question) {
+  const explicit = (question.options || []).map((option) => ({
+    label: `${option.input}. ${option.label}`,
+    value: option.input
+  }));
+  if (explicit.length) return paintAdaptiveSuggestions(question, explicit);
+  if (question.answerValueSet) {
+    try {
+      const expansion = await api("/v1/terminology/expand", {
+        method: "POST",
+        body: JSON.stringify({ url: question.answerValueSet, count: 12 })
+      });
+      if (state.currentAdaptiveQuestion !== question) return;
+      const expanded = (expansion.contains || []).map((concept, index) => ({
+        label: displayCoding(concept, activeLocale()),
+        value: displayCoding(concept, activeLocale()),
+        input: String(index + 1),
+        coding: concept
+      }));
+      question.options = expanded;
+      question.answerOption = expanded.map((option) => ({ valueCoding: clone(option.coding) }));
+      if (expanded.length) return paintAdaptiveSuggestions(question, expanded.map((option) => ({
+        label: `${option.input}. ${option.label}`,
+        value: option.input
+      })));
+    } catch (_) { /* Free text remains available when terminology is unavailable. */ }
+  }
+  paintAdaptiveSuggestions(question, inferredAdaptiveSuggestions(question).map((value) => ({ label: value, value })));
 }
 
 function rebuildAdaptiveArtifacts(sourceDocument) {
@@ -1186,6 +1380,72 @@ function rebuildAdaptiveArtifacts(sourceDocument) {
   response.item = state.adaptiveHistory.map((entry, index) => ({ linkId: safeLinkId(entry.question.linkId, index), text: entry.question.text, answer: [{ valueString: entry.answer }] }));
   const source = { purpose: state.adaptivePurpose, conversation: state.adaptiveHistory, current_question: state.currentAdaptiveQuestion, backend_state: sourceDocument?.state || null };
   setArtifacts(questionnaire, response, pretty(source), state.handoff);
+}
+
+function healthInformationState(document) {
+  return document?.state?.adapter_state || document?.state || {};
+}
+
+function showHealthInformationReply(document) {
+  const adapterState = healthInformationState(document);
+  const safety = adapterState.safety_status || document?.presentation?.safety_status || {};
+  const safetyNoticeShown = ["emergency_suspected", "urgent_assessment_suggested"].includes(safety.level) && safety.action_ko;
+  if (safetyNoticeShown) {
+    bubble($("#adaptiveChatLog"), "notice", safety.action_ko);
+  }
+  const answer = document?.presentation?.text || "상담 답변을 생성하지 못했습니다. 증상이 걱정되면 의료진에게 확인하세요.";
+  const answerAfterSafety = safetyNoticeShown && answer.startsWith(safety.action_ko)
+    ? answer.slice(safety.action_ko.length).trim()
+    : answer;
+  if (answerAfterSafety) bubble($("#adaptiveChatLog"), "assistant", answerAfterSafety);
+  state.healthInformationHistory.push({
+    turn: adapterState.turn || state.healthInformationHistory.length + 1,
+    query: adapterState.query || "",
+    answer,
+    safety_status: safety,
+    provider: document?.presentation?.provider_id || document?.llm?.provider_id
+  });
+  state.handoff = {
+    status: "health_information_in_progress",
+    latest_safety_status: safety,
+    independent_diagnosis_or_treatment: false,
+    response_storage: "browser_memory_only"
+  };
+  $("#adaptiveProgress").textContent = `${state.healthInformationHistory.length}개 상담`;
+  rebuildHealthInformationArtifacts(document);
+}
+
+function rebuildHealthInformationArtifacts(sourceDocument) {
+  const questionnaire = {
+    resourceType: "Questionnaire",
+    id: "health-information-conversation-draft",
+    status: "draft",
+    experimental: true,
+    title: "일반 건강상담 질문 이력",
+    description: "사용자가 입력한 건강상담 질문을 기록한 브라우저 초안입니다. 상담 답변은 진단·치료 결정이 아닙니다.",
+    item: state.healthInformationHistory.map((entry, index) => ({
+      linkId: `health-question-${index + 1}`,
+      prefix: `Q${index + 1}`,
+      text: "건강상담에서 궁금한 내용",
+      type: "text"
+    }))
+  };
+  const response = blankResponse(questionnaire);
+  response.item = state.healthInformationHistory.map((entry, index) => ({
+    linkId: `health-question-${index + 1}`,
+    text: "건강상담에서 궁금한 내용",
+    answer: [{ valueString: entry.query }]
+  }));
+  setArtifacts(
+    questionnaire,
+    response,
+    pretty({
+      purpose: "health_information",
+      conversation: state.healthInformationHistory,
+      backend_state: sourceDocument?.state || null
+    }),
+    state.handoff
+  );
 }
 
 function safeLinkId(value, index) {
@@ -1245,11 +1505,18 @@ async function resetAdaptiveConversation(nextPurpose = state.adaptivePurpose) {
   state.adaptivePurpose = nextPurpose;
   state.adaptiveStarted = false;
   state.adaptiveHistory = [];
+  state.healthInformationHistory = [];
   state.currentAdaptiveQuestion = null;
   state.handoff = {};
+  state.questionnaire = null;
+  state.questionnaireResponse = null;
+  state.questionnaireSource = "";
+  $("#adaptiveSuggestions").hidden = true;
+  $("#adaptiveSuggestions").replaceChildren();
   setAdaptiveBusy(false);
   $("#adaptiveChatLog").replaceChildren();
   prepareAdaptiveConversation(true);
+  updateOutputs();
   if (previousSessionId) {
     try { await api(`/v1/sessions/${previousSessionId}`, { method: "DELETE" }); } catch (_) { /* TTL remains the fallback. */ }
   }
@@ -1267,6 +1534,7 @@ async function switchAdaptivePurpose(nextPurpose) {
     : "건강 질문과 현재 상황을 자유롭게 입력합니다. 위험 신호가 의심되면 안전 안내를 제공하지만 진단·치료 결정을 대신하지 않습니다.";
   showToast("이전 비정형 대화를 폐기하고 새 목적의 대화를 시작합니다.");
   await resetAdaptiveConversation(nextPurpose);
+  updateProviderConsent();
 }
 
 async function startAdaptive(opening) {
@@ -1287,19 +1555,17 @@ async function startAdaptive(opening) {
     state.sessionId = document.session_id;
     state.adaptiveStarted = true;
     state.adaptiveHistory = [];
+    state.healthInformationHistory = [];
     state.currentAdaptiveQuestion = adaptiveQuestion(document);
     $("#adaptiveConversation").hidden = false;
     $("#adaptiveConversationTitle").textContent = state.adaptivePurpose === "clinical_adaptive" ? "진료 전 문진" : "일반 건강상담";
     bubble($("#adaptiveChatLog"), "user", opening);
     if (state.adaptivePurpose === "health_information") {
-      bubble($("#adaptiveChatLog"), "assistant", "일반 건강상담 mode는 목적 구분까지 연결되어 있으나, 전용 상담 adapter는 아직 구현되지 않았습니다. 진단·치료 결정을 대신하지 않으며 현재 대화를 계속 수집하지 않습니다.");
-      state.handoff = { status: "adapter_pending", mode_id: "health_information", independent_diagnosis_or_treatment: false };
-      await api(`/v1/sessions/${state.sessionId}`, { method: "DELETE" });
-      state.sessionId = null;
       state.currentAdaptiveQuestion = null;
-      $("#adaptiveAnswer").disabled = true;
-      $("#adaptiveAnswerButton").disabled = true;
-      $("#completeAdaptive").disabled = true;
+      showHealthInformationReply(document);
+      $("#adaptiveAnswer").disabled = false;
+      $("#adaptiveAnswerButton").disabled = false;
+      $("#completeAdaptive").disabled = false;
     } else if (state.currentAdaptiveQuestion) {
       showAdaptiveQuestion(state.currentAdaptiveQuestion);
       $("#adaptiveAnswer").disabled = false;
@@ -1308,7 +1574,7 @@ async function startAdaptive(opening) {
     } else {
       bubble($("#adaptiveChatLog"), "assistant", "현재 입력에 맞는 전용 Knowledge 패키지를 찾지 못했습니다. 다른 증상으로 임의 대체하지 않습니다.");
     }
-    rebuildAdaptiveArtifacts(document);
+    if (state.adaptivePurpose !== "health_information") rebuildAdaptiveArtifacts(document);
   } catch (error) { showToast(error.message); }
   finally { if (requestSerial === state.adaptiveRequestSerial) setAdaptiveBusy(false); }
 }
@@ -1322,7 +1588,24 @@ async function sendAdaptiveAnswer() {
     await startAdaptive(answer);
     return;
   }
-  if (!answer || !state.sessionId || !state.currentAdaptiveQuestion) return;
+  if (!answer || !state.sessionId) return;
+  if (state.adaptivePurpose === "health_information") {
+    bubble($("#adaptiveChatLog"), "user", answer);
+    input.value = "";
+    const requestSerial = ++state.adaptiveRequestSerial;
+    setAdaptiveBusy(true, "안전 신호를 확인하고 건강정보 답변을 준비하고 있습니다…");
+    try {
+      const document = await api(`/v1/sessions/${state.sessionId}/messages`, {
+        method: "POST",
+        body: JSON.stringify({ message: answer })
+      });
+      if (requestSerial !== state.adaptiveRequestSerial) return;
+      showHealthInformationReply(document);
+    } catch (error) { showToast(error.message); }
+    finally { if (requestSerial === state.adaptiveRequestSerial) setAdaptiveBusy(false); }
+    return;
+  }
+  if (!state.currentAdaptiveQuestion) return;
   const answered = clone(state.currentAdaptiveQuestion);
   bubble($("#adaptiveChatLog"), "user", answer);
   input.value = "";
@@ -1355,7 +1638,9 @@ async function completeAdaptive() {
     state.handoff = completed.result?.clinical_handoff || completed.result || {};
     if (state.questionnaireResponse) state.questionnaireResponse.status = "completed";
     updateOutputs();
-    bubble($("#adaptiveChatLog"), "assistant", "문진이 완료되었습니다. 질문 중에는 답변에 대한 의견이나 조언을 제시하지 않았습니다. 이제 오른쪽의 draft 의료인 요약을 확인하고, 진단·치료 판단은 담당 의료진과 상의해 주세요. 위험 신호 안내가 표시되면 해당 안전 안내를 우선하세요.");
+    bubble($("#adaptiveChatLog"), "assistant", state.adaptivePurpose === "health_information"
+      ? "건강상담을 종료했습니다. 제공된 내용은 일반 정보이며 진단·치료 결정을 대신하지 않습니다. 표시된 안전 안내가 있다면 우선해서 따르세요."
+      : "문진이 완료되었습니다. 질문 중에는 답변에 대한 의견이나 조언을 제시하지 않았습니다. 이제 오른쪽의 draft 의료인 요약을 확인하고, 진단·치료 판단은 담당 의료진과 상의해 주세요. 위험 신호 안내가 표시되면 해당 안전 안내를 우선하세요.");
     $("#adaptiveAnswer").disabled = true;
     $("#adaptiveAnswerButton").disabled = true;
     $("#completeAdaptive").disabled = true;
@@ -1456,9 +1741,15 @@ function updateProviderConsent() {
   const provider = state.providers.find((item) => item.provider_id === $("#llmProvider").value);
   $("#externalConsentRow").hidden = !provider?.external_processing;
   if (!provider?.external_processing) $("#externalConsent").checked = false;
+  const healthInformation = state.adaptivePurpose === "health_information";
   $("#providerPrivacy").textContent = provider?.external_processing
-    ? "선택한 상용 LLM에는 질문 표현에 필요한 승인된 question stem만 전송합니다. 환자 답변·임상 Memory는 전송하지 않으며 아래 동의가 필요합니다."
+    ? (healthInformation
+      ? "선택한 상용 LLM에 사용자가 입력한 건강상담 질문이 전송됩니다. 외부 처리에 대한 아래 동의가 필요합니다."
+      : "선택한 상용 LLM에는 질문 표현에 필요한 승인된 question stem만 전송합니다. 환자 답변·임상 Memory는 전송하지 않으며 아래 동의가 필요합니다.")
     : "Local LLM은 분리된 내부 환경에서 처리되며 외부 상용 LLM으로 전송하지 않습니다.";
+  $("#externalConsentRow span").textContent = healthInformation
+    ? "입력한 건강상담 질문이 선택한 외부 상용 LLM에서 처리되는 것에 동의합니다."
+    : "승인된 질문 문장이 외부 상용 LLM에서 표현 처리되는 것에 동의합니다. 환자 답변은 질문 표현 요청에 포함하지 않습니다.";
   $("#providerAuthHelp").hidden = Boolean(provider?.external_processing);
 }
 
@@ -1517,6 +1808,7 @@ function initialize() {
     $("#fixedAnswer").blur();
     window.setTimeout(() => { if (!fixedAnswerComposing) submitFixedAnswer(); }, 0);
   });
+  $("#fixedSkipButton").addEventListener("click", submitFixedSkip);
   $("#fixedAnswer").addEventListener("keydown", (event) => {
     if (!fixedAnswerComposing && shouldSubmitOnEnter(event)) {
       event.preventDefault();

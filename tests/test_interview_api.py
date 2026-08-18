@@ -8,10 +8,12 @@ from http.client import HTTPMessage
 from unittest.mock import patch
 
 from services.interview_api.llm import (
+    LlmHealthInformationAdvisor,
     LlmProvider,
     LlmProviderRegistry,
     LlmQuestionPresenter,
     LlmSelectionError,
+    _is_single_question_presentation,
 )
 from services.interview_api.server import AnonymousDemoGate, ServerConfig, build_handler
 from services.interview_api.service import InterviewApi, ServiceError
@@ -92,7 +94,10 @@ class InterviewApiServiceTests(unittest.TestCase):
 
     def test_catalog_does_not_overstate_unimplemented_adapters(self):
         capabilities = self.api.catalog()["api_capabilities"]
-        self.assertEqual(capabilities["implemented_mode_ids"], ["clinical_adaptive"])
+        self.assertEqual(
+            capabilities["implemented_mode_ids"],
+            ["clinical_adaptive", "health_information"],
+        )
         self.assertEqual(
             capabilities["result_formats"]["fhir_questionnaire_response"],
             "not_implemented",
@@ -459,6 +464,51 @@ class InterviewApiRuntimeIntegrationTests(unittest.TestCase):
         self.assertEqual(result["fhir"]["status"], "not_implemented")
         api.delete_session(created["session_id"])
 
+    def test_health_information_adapter_generates_information_and_completes(self):
+        captured = []
+
+        def transport(provider, messages, timeout):
+            captured.append(messages)
+            return "일반적인 원인과 확인할 점을 설명합니다. 텍스트만으로 진단할 수는 없습니다."
+
+        advisor = LlmHealthInformationAdvisor(enabled=True, transport=transport)
+        api = InterviewApi(max_sessions=1, health_information_advisor=advisor)
+        created = api.create_session(
+            {
+                "mode_selection": "일반 건강상담",
+                "initial_message": "가상 사용자의 두통이 궁금합니다",
+            }
+        )
+        self.assertEqual(created["mode_id"], "health_information")
+        self.assertEqual(created["presentation"]["purpose"], "health_information")
+        self.assertTrue(created["presentation"]["patient_input_transmitted"])
+        self.assertFalse(created["presentation"]["clinical_authority"])
+        self.assertIn("가상 사용자의 두통", json.dumps(captured[0], ensure_ascii=False))
+
+        result = api.result(created["session_id"])
+        self.assertEqual(result["available_formats"], ["health_information_json"])
+        self.assertFalse(result["independent_diagnosis_or_treatment"])
+        completed = api.complete(created["session_id"])
+        self.assertTrue(completed["response_state_purged"])
+
+    def test_health_information_red_flag_precedes_llm_and_is_not_diagnosis(self):
+        advisor = LlmHealthInformationAdvisor(
+            enabled=True,
+            transport=lambda provider, messages, timeout: "즉시 안전 안내를 따라야 합니다.",
+        )
+        api = InterviewApi(max_sessions=1, health_information_advisor=advisor)
+        created = api.create_session(
+            {
+                "mode_selection": "일반 건강상담",
+                "initial_message": "갑자기 한쪽 마비가 있고 말이 어눌합니다",
+            }
+        )
+        safety = created["state"]["adapter_state"]["safety_status"]
+        self.assertEqual(safety["level"], "emergency_suspected")
+        self.assertIsNone(safety["diagnosis"])
+        self.assertIn("119", safety["action_ko"])
+        api.delete_session(created["session_id"])
+
 
 class InterviewApiLlmPolicyTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -570,6 +620,17 @@ class InterviewApiLlmPolicyTests(unittest.TestCase):
             selected,
         )
         self.assertEqual(captured[0][1]["content"], "현재 흡연 상태는 무엇인가요?")
+
+    def test_question_presenter_rejects_answer_commentary_before_question(self):
+        self.assertTrue(_is_single_question_presentation("기침은 언제 시작되었나요?"))
+        self.assertFalse(
+            _is_single_question_presentation(
+                "말씀하신 답변은 중요합니다. 기침은 언제 시작되었나요?"
+            )
+        )
+        self.assertFalse(
+            _is_single_question_presentation("기침은 언제 시작되었나요? 열도 있나요?")
+        )
 
 
 if __name__ == "__main__":
