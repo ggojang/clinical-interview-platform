@@ -259,7 +259,12 @@ class ClinicianSubmissionContextTest(unittest.TestCase):
 
         self.assertEqual(
             [(option["input"], option["display_ko"]) for option in question["answer_options"]],
-            [("1", "예"), ("2", "아니오"), ("3", "잘 모르겠음"), ("4", "답변하지 않음")],
+            [("1", "예"), ("2", "아니오")],
+        )
+        self.assertEqual(
+            [(item["input"], item["dataAbsentReason"])
+             for item in question["data_absent_actions"]],
+            [("3", "asked-unknown"), ("4", "asked-declined")],
         )
 
     def test_duration_question_exposes_non_coded_runtime_shortcuts(self):

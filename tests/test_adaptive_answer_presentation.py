@@ -34,9 +34,17 @@ class AdaptiveAnswerPresentationTests(unittest.TestCase):
                         "local_answer_code_system"
                     ),
                 )
+                absent_values = set(
+                    nodes[fact_id].get("answer_semantic_binding", {})
+                    .get("data_absent_reason_mappings", {})
+                )
+                expected_values = [
+                    value for value in nodes[fact_id].get("allowed_values", [])
+                    if str(value) not in absent_values
+                ]
                 with self.subTest(package=package["package_id"], fact_id=fact_id):
                     self.assertEqual(
-                        len(options), len(nodes[fact_id].get("allowed_values", []))
+                        len(options), len(expected_values)
                     )
                     self.assertTrue(options)
                     self.assertEqual(
@@ -117,6 +125,142 @@ class AdaptiveAnswerPresentationTests(unittest.TestCase):
             ["dataAbsentReason"]["code"],
             "asked-unknown",
         )
+
+    def test_non_selector_severity_axis_is_localized_and_coded(self):
+        session = InterviewSession(
+            "abdominal-severity-presentation",
+            package_path=ABDOMINAL_PAIN_PACKAGE,
+            proactive_safety_questions=False,
+        )
+
+        question = session._question_for_fact(
+            "symptom.abdominal_pain.severity", "presentation-regression"
+        )
+
+        self.assertEqual(
+            [option["display_ko"] for option in question["answer_options"]],
+            ["가벼움", "중간", "심함"],
+        )
+        self.assertEqual(
+            question["answer_options"][1]["coding"],
+            {
+                "system": "http://snomed.info/sct",
+                "code": "6736007",
+                "display": "중간",
+            },
+        )
+        self.assertEqual(
+            [(item["input"], item["dataAbsentReason"])
+             for item in question["data_absent_actions"]],
+            [("4", "asked-unknown"), ("5", "asked-declined")],
+        )
+
+    def test_shared_answer_domain_uses_localized_standard_coding(self):
+        eye_package = PACKAGE_PROFILES["eye_symptoms"]["output"]
+        session = InterviewSession(
+            "eye-composite-onset-presentation",
+            package_path=eye_package,
+            proactive_safety_questions=False,
+        )
+
+        question = session._question_for_fact(
+            "eye.onset_and_progression", "presentation-regression"
+        )
+
+        # Onset and progression are two answer-bearing meanings. Their legacy
+        # combined tokens stay free text until the Fact is atomically split.
+        self.assertNotIn("answer_options", question)
+
+    def test_non_selector_number_records_internal_value(self):
+        session = InterviewSession(
+            "abdominal-severity-input",
+            package_path=ABDOMINAL_PAIN_PACKAGE,
+            proactive_safety_questions=False,
+        )
+        session.last_question_fact = "symptom.abdominal_pain.severity"
+        session.asked = ["symptom.abdominal_pain.severity"]
+
+        session.process("2")
+
+        self.assertEqual(
+            session.memory.value("symptom.abdominal_pain.severity"), "moderate"
+        )
+
+    def test_data_absent_value_is_not_emitted_as_clinical_coding(self):
+        session = InterviewSession(
+            "tobacco-status-presentation",
+            package_path=PACKAGE_PROFILES["tobacco_nicotine_counselling"]["output"],
+            proactive_safety_questions=False,
+        )
+        question = session._question_for_fact(
+            "tobacco.cigar_status", "presentation-regression"
+        )
+
+        self.assertNotIn(
+            "unknown",
+            [option["internal_value"] for option in question["answer_options"]],
+        )
+        self.assertIn(
+            "asked-unknown",
+            [action["dataAbsentReason"] for action in question["data_absent_actions"]],
+        )
+
+    def test_boolean_absence_actions_are_not_clinical_answer_options(self):
+        session = InterviewSession(
+            "abdominal-boolean-presentation",
+            package_path=ABDOMINAL_PAIN_PACKAGE,
+            proactive_safety_questions=False,
+        )
+        question = session._question_for_fact(
+            "symptom.abdominal_pain.onset", "presentation-regression"
+        )
+
+        self.assertEqual(
+            [option["internal_value"] for option in question["answer_options"]],
+            [True, False],
+        )
+        self.assertEqual(
+            [(item["input"], item["dataAbsentReason"])
+             for item in question["data_absent_actions"]],
+            [("3", "asked-unknown"), ("4", "asked-declined")],
+        )
+
+    def test_non_selector_expansion_has_audited_minimum_coverage(self):
+        unique_facts: set[str] = set()
+        localized_facts: set[str] = set()
+        for config in PACKAGE_PROFILES.values():
+            package = json.loads(Path(config["output"]).read_text(encoding="utf-8"))
+            nodes = {
+                node["id"]: node for node in package["knowledge_graph"]["nodes"]
+                if node.get("type") == "Fact"
+            }
+            questions = package["indexes"]["questions_by_fact"]
+            policy = package["interview_completion_policy"]
+            selectors = selector_fact_ids(policy)
+            for fact_id, node in nodes.items():
+                if (
+                    node.get("value_type") != "coded"
+                    or fact_id in selectors
+                    or not node.get("allowed_values")
+                    or fact_id not in questions
+                ):
+                    continue
+                unique_facts.add(fact_id)
+                options = patient_answer_options(
+                    fact_id, node, questions[fact_id], policy,
+                    package["question_answer_terminology"].get(
+                        "local_answer_code_system"
+                    ),
+                )
+                if options:
+                    localized_facts.add(fact_id)
+                    for option in options:
+                        self.assertNotIn("_", option["display_ko"])
+                        self.assertEqual(
+                            option["coding"]["display"], option["display_ko"]
+                        )
+        self.assertGreaterEqual(len(unique_facts), 240)
+        self.assertGreaterEqual(len(localized_facts), 75)
 
 
 if __name__ == "__main__":

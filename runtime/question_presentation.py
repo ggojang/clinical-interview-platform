@@ -12,7 +12,7 @@ from copy import deepcopy
 from typing import Any
 
 
-PRESENTATION_CONTRACT_VERSION = "0.2.0"
+PRESENTATION_CONTRACT_VERSION = "0.3.0"
 
 
 _FACT_SUGGESTIONS: dict[str, list[dict[str, str]]] = {

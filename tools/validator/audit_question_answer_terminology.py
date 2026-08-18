@@ -24,6 +24,10 @@ from interoperability.question_answer import (
     enrich_clinician_context,
     load_documents,
 )
+from runtime.adaptive_answer_presentation import (
+    patient_answer_options,
+    selector_fact_ids,
+)
 from tools.fhir.build_answer_valuesets import build as build_answer_valuesets
 
 
@@ -42,6 +46,10 @@ def run() -> dict[str, Any]:
     effective_fhir_element_facts: set[str] = set()
     candidate_fhir_element_facts: set[str] = set()
     fhir_binding_conflicts: list[str] = []
+    patient_presented_selector_facts: set[str] = set()
+    patient_presented_nonselector_facts: set[str] = set()
+    patient_unresolved_nonselector_facts: set[str] = set()
+    invalid_patient_presentations: list[dict[str, Any]] = []
     passed = True
     for profile in PACKAGE_PROFILES:
         package = compile_package(profile=profile)
@@ -56,6 +64,55 @@ def run() -> dict[str, Any]:
             for edge in graph["edges"]
             if edge.get("type") == "COLLECTS"
         }
+        questions_by_fact = package["indexes"]["questions_by_fact"]
+        selector_facts = selector_fact_ids(package["interview_completion_policy"])
+        for fact_id, fact in facts.items():
+            if (
+                fact.get("value_type") != "coded"
+                or not fact.get("allowed_values")
+                or fact_id not in questions_by_fact
+            ):
+                continue
+            options = patient_answer_options(
+                fact_id,
+                fact,
+                questions_by_fact[fact_id],
+                package["interview_completion_policy"],
+                package["question_answer_terminology"].get(
+                    "local_answer_code_system"
+                ),
+            )
+            if options:
+                target = (
+                    patient_presented_selector_facts
+                    if fact_id in selector_facts
+                    else patient_presented_nonselector_facts
+                )
+                target.add(fact_id)
+                absent_values = set(
+                    fact.get("answer_semantic_binding", {})
+                    .get("data_absent_reason_mappings", {})
+                )
+                expected_count = sum(
+                    str(value) not in absent_values
+                    for value in fact["allowed_values"]
+                )
+                if (
+                    len(options) != expected_count
+                    or any(
+                        not option.get("display_ko")
+                        or "_" in option["display_ko"]
+                        or option.get("coding", {}).get("display")
+                        != option["display_ko"]
+                        for option in options
+                    )
+                ):
+                    invalid_patient_presentations.append({
+                        "package": package["package_id"],
+                        "fact_id": fact_id,
+                    })
+            elif fact_id not in selector_facts:
+                patient_unresolved_nonselector_facts.add(fact_id)
         for node in graph["nodes"]:
             if node.get("type") != "QuestionTemplate":
                 continue
@@ -233,6 +290,14 @@ def run() -> dict[str, Any]:
         passed = False
     if fhir_binding_conflicts:
         passed = False
+    composite_fact_ids = {
+        item["fact_id"] for item in composite_candidates
+    }
+    presented_composite_facts = sorted(
+        patient_presented_nonselector_facts & composite_fact_ids
+    )
+    if invalid_patient_presentations or presented_composite_facts:
+        passed = False
 
     value_set_bundle = build_answer_valuesets()
     value_set_counts: dict[str, int] = {}
@@ -266,7 +331,7 @@ def run() -> dict[str, Any]:
     }
     return {
         "id": "audit.question-answer-terminology",
-        "version": "0.1.0",
+        "version": "0.2.0",
         "status": "research_only",
         "review_status": "unreviewed",
         "passed": passed,
@@ -300,6 +365,24 @@ def run() -> dict[str, Any]:
             ),
             "composite_refactoring_queue_count": len(composite_candidates),
             "composite_refactoring_queue_sample": composite_candidates[:100],
+        },
+        "patient_answer_presentation": {
+            "contract_version": "0.3.0",
+            "selector_fact_count": len(patient_presented_selector_facts),
+            "nonselector_coded_fact_count": len(
+                patient_presented_nonselector_facts
+            ),
+            "unresolved_nonselector_coded_fact_count": len(
+                patient_unresolved_nonselector_facts
+            ),
+            "invalid_presentation_count": len(invalid_patient_presentations),
+            "invalid_presentations": invalid_patient_presentations,
+            "composite_fact_exposure_count": len(presented_composite_facts),
+            "composite_fact_exposures": presented_composite_facts,
+            "internal_token_humanization_fallback": False,
+            "data_absent_reason_outside_clinical_options": True,
+            "passed": not invalid_patient_presentations
+            and not presented_composite_facts,
         },
         "fhir_r4_element_bindings": {
             "policy_id": fhir_policy["id"],
@@ -357,6 +440,8 @@ def run() -> dict[str, Any]:
             "passed": (
                 not invalid_standard_atomicity
                 and not fhir_binding_conflicts
+                and not invalid_patient_presentations
+                and not presented_composite_facts
             ),
             "scenarios": [
                 "atomic_question_standard_mapping_gate",
@@ -384,6 +469,8 @@ def run() -> dict[str, Any]:
                 "post_discharge_wound_device_atomic_refactoring",
                 "retired_compatibility_ValueSet_declares_replaced_by",
                 "dataAbsentReason_remains_outside_shared_answer_ValueSet",
+                "audited_draft_nonselector_patient_labels_and_valueCoding",
+                "composite_answer_axis_patient_option_exclusion",
             ],
         },
         "results": rows,

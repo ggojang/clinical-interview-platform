@@ -86,6 +86,23 @@ class GptExportTests(unittest.TestCase):
             temporal["expected_flow"]["next_new_question_reference"], "Q2"
         )
 
+        coded_severity = next(
+            item for item in fixture["cases"]
+            if item["id"]
+            == "SYNTHETIC-ABDOMINAL-NONSELECTOR-SEVERITY-CODED-001"
+        )
+        self.assertEqual(
+            coded_severity["current_question"]["clinical_answer_options"],
+            ["가벼움", "중간", "심함"],
+        )
+        self.assertEqual(
+            coded_severity["expected_fhir_response"]["code"], "6736007"
+        )
+        self.assertFalse(
+            coded_severity["expected_atomicity_gate"]
+            ["composite_onset_and_progression_exposes_options"]
+        )
+
         ambiguous = next(
             item for item in fixture["cases"]
             if item["id"] == "SYNTHETIC-TEMPORAL-FREE-TEXT-AMBIGUOUS-001"

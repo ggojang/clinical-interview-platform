@@ -786,6 +786,17 @@ class QuestionAnswerTerminologyTest(unittest.TestCase):
             ],
             0,
         )
+        presentation = report["patient_answer_presentation"]
+        self.assertTrue(presentation["passed"])
+        self.assertGreaterEqual(
+            presentation["nonselector_coded_fact_count"], 75
+        )
+        self.assertEqual(presentation["invalid_presentation_count"], 0)
+        self.assertEqual(presentation["composite_fact_exposure_count"], 0)
+        self.assertFalse(presentation["internal_token_humanization_fallback"])
+        self.assertTrue(
+            presentation["data_absent_reason_outside_clinical_options"]
+        )
         self.assertGreater(
             report["answer_valuesets"]["resource_count"], 100
         )

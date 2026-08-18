@@ -2,9 +2,10 @@
 
 The Knowledge graph stores stable internal answer tokens.  Those tokens are
 implementation identifiers, not patient labels.  This module derives labels
-only from the authored Korean question and only for completion-policy selector
-Facts, where the allowed-value order and the displayed choice order are the
-same authored contract.  Ambiguous layouts have explicit reviewed overrides.
+only from an audited draft patient-presentation contract: shared atomic answer-domain
+bindings, exact reusable value axes, or the authored selector wording.  The
+same internal token is never translated in isolation because its patient label
+can differ by clinical context.  Ambiguous layouts have explicit overrides.
 
 No fallback turns ``snake_case`` into a patient option.  If a label cannot be
 resolved with this contract, the Runtime leaves the question open-text and the
@@ -29,6 +30,65 @@ _TERMINAL_LABELS = {
     "unknown": "잘 모르겠음",
     "unclear": "잘 모르겠음",
     "not_applicable": "해당 없음",
+}
+
+
+# Draft patient-facing labels for reusable *exact* answer axes. A tuple must match
+# the complete authored allowed-value sequence; individual snake_case tokens
+# are never translated independently.  This is presentation metadata only:
+# stable semantic identity remains the compiled system + code, and absent
+# states are projected through dataAbsentReason rather than coded here.
+_EXACT_AXIS_LABELS: dict[tuple[str, ...], dict[str, str]] = {
+    ("none", "mild", "moderate", "severe"): {
+        "none": "없음", "mild": "가벼움", "moderate": "중간", "severe": "심함",
+    },
+    ("mild", "moderate", "severe"): {
+        "mild": "가벼움", "moderate": "중간", "severe": "심함",
+    },
+    ("none", "some_days", "often", "nearly_every_day"): {
+        "none": "없음", "some_days": "가끔", "often": "자주",
+        "nearly_every_day": "거의 매일",
+    },
+    ("not_tried", "improved", "unchanged", "worsened"): {
+        "not_tried": "해보지 않음", "improved": "좋아짐",
+        "unchanged": "변화 없음", "worsened": "악화됨",
+    },
+    ("improving", "unchanged", "worsening", "fluctuating", "resolved", "uncertain", "other"): {
+        "improving": "좋아지는 중", "unchanged": "변화 없음",
+        "worsening": "악화되는 중", "fluctuating": "좋아졌다 나빠졌다 함",
+        "resolved": "회복됨", "uncertain": "판단하기 어려움", "other": "기타",
+    },
+    ("left", "right", "bilateral", "unclear"): {
+        "left": "왼쪽", "right": "오른쪽", "bilateral": "양쪽",
+        "unclear": "잘 모르겠음",
+    },
+    ("none", "less_than_daily", "daily"): {
+        "none": "없음", "less_than_daily": "매일은 아님", "daily": "매일",
+    },
+    ("current", "former", "never"): {
+        "current": "현재", "former": "과거", "never": "한 번도 없음",
+    },
+    ("current", "former", "never", "unknown", "other"): {
+        "current": "현재 사용", "former": "과거 사용", "never": "사용한 적 없음",
+        "unknown": "잘 모르겠음", "other": "기타 사용 상태",
+    },
+    ("sudden", "gradual", "unclear"): {
+        "sudden": "갑자기 시작", "gradual": "서서히 시작",
+        "unclear": "잘 모르겠음",
+    },
+    ("sudden", "gradual"): {
+        "sudden": "갑자기 시작", "gradual": "서서히 시작",
+    },
+    ("pregnant", "postpartum_within_one_year", "not_pregnant_or_postpartum", "not_applicable", "unknown"): {
+        "pregnant": "임신 중", "postpartum_within_one_year": "출산 후 1년 이내",
+        "not_pregnant_or_postpartum": "임신·산후에 해당하지 않음",
+        "not_applicable": "해당 없음", "unknown": "잘 모르겠음",
+    },
+    ("pregnant", "postpartum_6_weeks", "not_pregnant_or_postpartum", "not_applicable", "unknown"): {
+        "pregnant": "임신 중", "postpartum_6_weeks": "출산 후 6주 이내",
+        "not_pregnant_or_postpartum": "임신·산후에 해당하지 않음",
+        "not_applicable": "해당 없음", "unknown": "잘 모르겠음",
+    },
 }
 
 
@@ -145,24 +205,53 @@ def patient_answer_options(
     completion_policy: dict[str, Any],
     local_answer_system: str | None = None,
 ) -> list[dict[str, Any]]:
-    """Return localized options only when the authored mapping is complete."""
+    """Return localized options only when the audited draft mapping is complete."""
     allowed_values = list(fact_node.get("allowed_values") or [])
-    if not allowed_values or fact_id not in selector_fact_ids(completion_policy):
-        return []
-    labels = _LABEL_OVERRIDES.get(fact_id) or _labels_from_authored_wording(
-        str(question_template.get("wording") or ""), allowed_values
-    )
-    if len(labels) != len(allowed_values) or any(not label for label in labels):
+    if not allowed_values:
         return []
 
     binding = fact_node.get("answer_semantic_binding", {})
-    mapped = binding.get("internal_value_mappings", {})
-    system = local_answer_system or LOCAL_ANSWER_SYSTEM
-    complete_local = binding.get("value_set_strategy") == "complete_local"
-    options = []
-    for index, (internal_value, display_ko) in enumerate(
-        zip(allowed_values, labels), start=1
+    absent_values = set(binding.get("data_absent_reason_mappings", {}))
+    clinical_values = [
+        value for value in allowed_values if str(value) not in absent_values
+    ]
+    if not clinical_values:
+        return []
+
+    shared_mappings = binding.get("internal_value_mappings", {})
+    labels_by_value: dict[str, str] = {}
+    if fact_id in selector_fact_ids(completion_policy):
+        labels = _LABEL_OVERRIDES.get(fact_id) or _labels_from_authored_wording(
+            str(question_template.get("wording") or ""), allowed_values
+        )
+        if len(labels) == len(allowed_values) and all(labels):
+            labels_by_value = {
+                str(value): label for value, label in zip(allowed_values, labels)
+            }
+    elif all(
+        shared_mappings.get(str(value), {}).get("display_ko")
+        for value in clinical_values
     ):
+        labels_by_value = {
+            str(value): shared_mappings[str(value)]["display_ko"]
+            for value in clinical_values
+        }
+    else:
+        labels_by_value = _EXACT_AXIS_LABELS.get(
+            tuple(str(value) for value in allowed_values), {}
+        )
+    if any(not labels_by_value.get(str(value)) for value in clinical_values):
+        return []
+
+    mapped = {
+        **binding.get("snomed_mappings", {}),
+        **binding.get("fhir_bound_answer_mappings", {}),
+        **shared_mappings,
+    }
+    system = local_answer_system or LOCAL_ANSWER_SYSTEM
+    options = []
+    for index, internal_value in enumerate(clinical_values, start=1):
+        display_ko = labels_by_value[str(internal_value)]
         option: dict[str, Any] = {
             "input": str(index),
             "internal_value": internal_value,
@@ -172,10 +261,14 @@ def patient_answer_options(
         if mapping:
             option["coding"] = {
                 key: mapping[key]
-                for key in ("system", "code", "display")
+                for key in ("system", "code")
                 if key in mapping
             }
-        elif complete_local:
+            # display is the current patient-language rendition. The stable
+            # identity remains system + code; source terminology display stays
+            # available in the compiled binding for audit.
+            option["coding"]["display"] = display_ko
+        else:
             option["coding"] = {
                 "system": system,
                 "code": f"{fact_id}--{internal_value}",

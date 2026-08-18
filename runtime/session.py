@@ -1357,8 +1357,6 @@ class InterviewSession:
             options = [
                 {"input": "1", "internal_value": True, "display_ko": "예"},
                 {"input": "2", "internal_value": False, "display_ko": "아니오"},
-                {"input": "3", "internal_value": "asked-unknown", "display_ko": "잘 모르겠음"},
-                {"input": "4", "internal_value": "asked-declined", "display_ko": "답변하지 않음"},
             ]
         if not options:
             options = self._patient_answer_options(fact_id)
@@ -1373,7 +1371,7 @@ class InterviewSession:
             question["display_suggestions"] = suggestions
             question["suggestion_semantics"] = "input_shortcut_only"
             question["data_absent_actions"] = deepcopy(DATA_ABSENT_ACTIONS)
-        elif options and node.get("value_type") != "boolean":
+        elif options:
             question["data_absent_actions"] = data_absent_actions(len(options) + 1)
         question["presentation_contract"] = {
             "version": PRESENTATION_CONTRACT_VERSION,
