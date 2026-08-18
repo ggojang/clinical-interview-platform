@@ -381,6 +381,38 @@ class ChatbotConversationRuntimeTest(unittest.TestCase):
             retrieval["question_ids"], ["question.cough.dyspnea-detail"]
         )
 
+    def test_positive_cough_gate_prioritizes_conditional_detail(self):
+        runtime = LlmChatbotInterviewRuntime(enabled=False, repository_root=ROOT)
+        package = runtime._load_package("rfe.cough")
+        conversation = [
+            {"role": "user", "content": "기침"},
+            {
+                "role": "assistant",
+                "content": "Q1. 언제 시작했나요?\n출처: question.symptom_onset",
+            },
+            {"role": "user", "content": "어제"},
+            {
+                "role": "assistant",
+                "content": (
+                    "Q2. 갑자기 시작했나요?\n1 예\n2 아니오\n"
+                    "출처: question.symptom_cough_sudden_onset"
+                ),
+            },
+            {"role": "user", "content": "2"},
+            {
+                "role": "assistant",
+                "content": (
+                    "Q3. 가슴 통증이 있나요?\n1 예\n2 아니오\n"
+                    "출처: question.symptom_chest_pain"
+                ),
+            },
+            {"role": "user", "content": "1"},
+        ]
+        retrieval = runtime._compiled_candidate_retrieval(
+            "rfe.cough", conversation, package
+        )
+        self.assertTrue(retrieval["question_ids"][0].startswith("question.cough.chest-pain"))
+
     def test_invalid_generated_question_id_is_retried_and_canonicalized(self):
         responses = iter([
             (

@@ -463,7 +463,7 @@ class LlmChatbotInterviewRuntime:
             if reason_for_encounter == "rfe.cough":
                 if "pain" in question_id and "chest-pain" not in question_id:
                     return False
-                negative_detail_gates = {
+                conditional_detail_gates = {
                     "question.symptom_chest_pain": "chest-pain",
                     "question.symptom_dyspnea": "dyspnea",
                     "question.symptom_fever": "fever",
@@ -471,10 +471,11 @@ class LlmChatbotInterviewRuntime:
                     "question.symptom_sputum": "sputum",
                     "question.symptom_wheeze": "wheeze",
                 }
-                for gate_id, detail_token in negative_detail_gates.items():
+                for gate_id, detail_token in conditional_detail_gates.items():
                     if (
-                        answer_states.get(_question_id_key(gate_id)) == "negative"
-                        and detail_token in question_id
+                        detail_token in question_id
+                        and answer_states.get(_question_id_key(gate_id))
+                        != "positive"
                     ):
                         return False
             return True
