@@ -13,6 +13,116 @@ APP_JS = REPOSITORY_ROOT / "services/interview_api/static/app.js"
 
 @unittest.skipUnless(shutil.which("node"), "Node.js is required for browser logic regression")
 class InterviewDemoUiLogicTests(unittest.TestCase):
+    def test_slider_extensions_preserve_range_step_and_control(self):
+        item = {
+            "linkId": "pain-today",
+            "type": "integer",
+            "extension": [
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-sliderStepValue",
+                    "valueInteger": 1,
+                },
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/minValue",
+                    "valueInteger": 0,
+                },
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/maxValue",
+                    "valueInteger": 10,
+                },
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+                    "valueCodeableConcept": {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/questionnaire-item-control",
+                                "code": "slider",
+                            }
+                        ]
+                    },
+                },
+            ],
+        }
+        script = fr"""
+const fs = require('fs');
+const vm = require('vm');
+const source = fs.readFileSync({json.dumps(str(APP_JS))}, 'utf8').replace(/initialize\(\);\s*$/, '');
+const context = {{ console }};
+vm.createContext(context);
+vm.runInContext(source, context);
+console.log(vm.runInContext(`JSON.stringify(numericControlConfig(${{JSON.stringify({json.dumps(item)})}}))`, context));
+"""
+        completed = subprocess.run(
+            ["node", "-e", script],
+            check=True,
+            capture_output=True,
+            text=True,
+            cwd=REPOSITORY_ROOT,
+        )
+        self.assertEqual(
+            json.loads(completed.stdout),
+            {"minimum": 0, "maximum": 10, "step": 1, "slider": True},
+        )
+
+    def test_empty_group_with_only_hidden_children_is_not_renderable(self):
+        group = {
+            "linkId": "nolf-assessment",
+            "type": "group",
+            "text": "[NOLF] Assessment",
+            "item": [
+                {
+                    "linkId": "internal",
+                    "type": "text",
+                    "extension": [
+                        {
+                            "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-hidden",
+                            "valueBoolean": True,
+                        }
+                    ],
+                }
+            ],
+        }
+        script = fr"""
+const fs = require('fs');
+const vm = require('vm');
+const source = fs.readFileSync({json.dumps(str(APP_JS))}, 'utf8').replace(/initialize\(\);\s*$/, '');
+const context = {{ console }};
+vm.createContext(context);
+vm.runInContext(source, context);
+console.log(vm.runInContext(`JSON.stringify(hasRenderableQuestionnaireContent(${{JSON.stringify({json.dumps(group)})}}))`, context));
+"""
+        completed = subprocess.run(
+            ["node", "-e", script],
+            check=True,
+            capture_output=True,
+            text=True,
+            cwd=REPOSITORY_ROOT,
+        )
+        self.assertFalse(json.loads(completed.stdout))
+
+    def test_korean_ime_enter_does_not_submit_mid_composition(self):
+        script = fr"""
+const fs = require('fs');
+const vm = require('vm');
+const source = fs.readFileSync({json.dumps(str(APP_JS))}, 'utf8').replace(/initialize\(\);\s*$/, '');
+const context = {{ console }};
+vm.createContext(context);
+vm.runInContext(source, context);
+console.log(vm.runInContext(`JSON.stringify([
+  shouldSubmitOnEnter({{key:'Enter',isComposing:true,keyCode:229,repeat:false}}),
+  shouldSubmitOnEnter({{key:'Enter',isComposing:false,keyCode:13,repeat:false}}),
+  shouldSubmitOnEnter({{key:'Enter',isComposing:false,keyCode:13,repeat:true}})
+])`, context));
+"""
+        completed = subprocess.run(
+            ["node", "-e", script],
+            check=True,
+            capture_output=True,
+            text=True,
+            cwd=REPOSITORY_ROOT,
+        )
+        self.assertEqual(json.loads(completed.stdout), [False, True, False])
+
     def test_quantity_answer_keeps_amount_and_questionnaire_unit_together(self):
         questionnaire_items = [
             {
@@ -313,6 +423,7 @@ console.log(vm.runInContext(`(() => {{
         self.assertIn("[Q7] 흡연 상태를 선택해 주세요.", result["prompt"])
         self.assertIn("1. 현재 흡연", result["prompt"])
         self.assertIn("응답 안내: 보기 번호 또는 상태를 입력해 주세요.", result["prompt"])
+        self.assertIn("출처: [공동 작업 지식]", result["prompt"])
 
     def test_enable_when_reveals_only_selected_repeated_body_area_questions(self):
         questionnaire = {

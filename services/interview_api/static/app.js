@@ -6,6 +6,10 @@ const FHIR_RENDERING_XHTML_URL = "http://hl7.org/fhir/StructureDefinition/render
 const FHIR_QUESTIONNAIRE_HIDDEN_URL = "http://hl7.org/fhir/StructureDefinition/questionnaire-hidden";
 const FHIR_QUESTIONNAIRE_UNIT_URL = "http://hl7.org/fhir/StructureDefinition/questionnaire-unit";
 const FHIR_QUESTIONNAIRE_UNIT_OPTION_URL = "http://hl7.org/fhir/StructureDefinition/questionnaire-unitOption";
+const FHIR_QUESTIONNAIRE_ITEM_CONTROL_URL = "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl";
+const FHIR_QUESTIONNAIRE_SLIDER_STEP_URL = "http://hl7.org/fhir/StructureDefinition/questionnaire-sliderStepValue";
+const FHIR_MIN_VALUE_URL = "http://hl7.org/fhir/StructureDefinition/minValue";
+const FHIR_MAX_VALUE_URL = "http://hl7.org/fhir/StructureDefinition/maxValue";
 const SDC_STATUS = {
   status: "not_implemented",
   specification: "HL7 FHIR Structured Data Capture",
@@ -116,6 +120,40 @@ function isQuestionnaireItemHidden(item) {
   return (item?.extension || []).some((extension) => (
     extension.url === FHIR_QUESTIONNAIRE_HIDDEN_URL && extension.valueBoolean === true
   ));
+}
+
+function questionnaireItemControlCode(item) {
+  const control = (item?.extension || []).find((extension) => extension.url === FHIR_QUESTIONNAIRE_ITEM_CONTROL_URL);
+  return control?.valueCodeableConcept?.coding?.[0]?.code || "";
+}
+
+function extensionNumber(item, url) {
+  const extension = (item?.extension || []).find((candidate) => candidate.url === url);
+  const value = extension ? fhirValue(extension) : undefined;
+  return Number.isFinite(Number(value)) ? Number(value) : undefined;
+}
+
+function numericControlConfig(item) {
+  const minimum = extensionNumber(item, FHIR_MIN_VALUE_URL);
+  const maximum = extensionNumber(item, FHIR_MAX_VALUE_URL);
+  const explicitStep = extensionNumber(item, FHIR_QUESTIONNAIRE_SLIDER_STEP_URL);
+  const step = explicitStep ?? (item?.type === "integer" ? 1 : "any");
+  return {
+    minimum,
+    maximum,
+    step,
+    slider: questionnaireItemControlCode(item) === "slider"
+  };
+}
+
+function hasRenderableQuestionnaireContent(item) {
+  if (!item || isQuestionnaireItemHidden(item) || !isItemEnabled(item)) return false;
+  if (item.type === "group") return (item.item || []).some(hasRenderableQuestionnaireContent);
+  return true;
+}
+
+function isSliderBoundaryDisplay(item) {
+  return item?.type === "display" && ["lower", "upper"].includes(questionnaireItemControlCode(item));
 }
 
 function answerBearingItems(questionnaire) {
@@ -559,10 +597,46 @@ function structuredControl(block, item) {
     if (itemControlsOthers(item.linkId)) input.addEventListener("change", () => save(true));
     return;
   }
+  if (["integer", "decimal"].includes(item.type) && numericControlConfig(item).slider) {
+    const config = numericControlConfig(item);
+    const minimum = config.minimum ?? 0;
+    const maximum = config.maximum ?? 100;
+    const current = existingAnswers[0] ? Number(answerScalar(existingAnswers[0])) : minimum;
+    const control = append(block, "div", undefined, "slider-control");
+    const input = document.createElement("input");
+    input.type = "range";
+    input.min = String(minimum);
+    input.max = String(maximum);
+    input.step = String(config.step);
+    input.value = String(Number.isFinite(current) ? current : minimum);
+    input.setAttribute("aria-label", item.text || item.linkId);
+    const output = document.createElement("output");
+    output.value = input.value;
+    output.textContent = input.value;
+    control.append(input, output);
+    const bounds = append(block, "div", undefined, "slider-bounds");
+    const lowerText = (item.item || []).find((child) => questionnaireItemControlCode(child) === "lower")?.text || "최소";
+    const upperText = (item.item || []).find((child) => questionnaireItemControlCode(child) === "upper")?.text || "최대";
+    append(bounds, "span", `${lowerText} ${minimum}`);
+    append(bounds, "span", `${upperText} ${maximum}`);
+    const save = (rerender) => {
+      output.value = input.value;
+      output.textContent = input.value;
+      recordStructuredAnswers(item, [typedStructuredAnswer(item, input.value)], rerender);
+    };
+    input.addEventListener("input", () => save(false));
+    input.addEventListener("change", () => save(itemControlsOthers(item.linkId)));
+    return;
+  }
   const input = document.createElement(item.type === "text" ? "textarea" : "input");
   const inputTypes = { integer: "number", decimal: "number", date: "date", dateTime: "datetime-local", time: "time", url: "url" };
   if (input.tagName === "INPUT") input.type = inputTypes[item.type] || "text";
-  if (item.type === "decimal") input.step = "any";
+  if (["integer", "decimal"].includes(item.type)) {
+    const config = numericControlConfig(item);
+    input.step = String(config.step);
+    if (config.minimum !== undefined) input.min = String(config.minimum);
+    if (config.maximum !== undefined) input.max = String(config.maximum);
+  }
   input.placeholder = `${item.type || "string"} 응답`;
   input.value = String(answerScalar(existingAnswers[0]));
   const save = (rerender) => {
@@ -578,7 +652,9 @@ function renderQuestionnaireItems(root, items, { interactive = false, depth = 0 
   (items || []).forEach((item) => {
     if (isQuestionnaireItemHidden(item)) return;
     if (!isItemEnabled(item)) return;
+    if (isSliderBoundaryDisplay(item)) return;
     if (item.type === "group") {
+      if (!hasRenderableQuestionnaireContent(item)) return;
       const group = append(root, "div", item.text || item.linkId, "preview-group");
       group.style.marginLeft = `${Math.min(depth, 3) * 8}px`;
       renderQuestionnaireItems(root, item.item, { interactive, depth: depth + 1 });
@@ -794,6 +870,50 @@ function refreshFixedQuestions() {
   state.fixedIndex = state.fixedAnswers.length;
 }
 
+function fixedAnswerSummary(responseItem) {
+  return (responseItem?.answer || []).map((answer) => displayAnswer(answer)).filter(Boolean).join(", ") || "응답 없음";
+}
+
+function renderFixedRevisionList() {
+  const panel = $("#fixedRevision");
+  const list = $("#fixedRevisionList");
+  list.replaceChildren();
+  panel.hidden = state.fixedAnswers.length === 0;
+  state.fixedAnswers.forEach((responseItem, index) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = `${index + 1}. ${responseItem.text || responseItem.linkId} → ${fixedAnswerSummary(responseItem)}`;
+    button.addEventListener("click", () => editFixedAnswer(index));
+    list.append(button);
+  });
+}
+
+function rebuildFixedConversationLog() {
+  const log = $("#fixedChatLog");
+  log.replaceChildren();
+  bubble(log, "notice", `설문: ${state.fixedTitle}\n수정한 문항 이후의 응답은 조건 분기를 다시 계산하기 위해 다시 질문합니다.`);
+  const flatItems = answerBearingItems(state.questionnaire);
+  state.fixedAnswers.forEach((responseItem, index) => {
+    const question = flatItems.find((item) => item.linkId === responseItem.linkId) || responseItem;
+    bubble(log, "assistant", fixedPrompt(question, index, state.fixedQuestions.length));
+    bubble(log, "user", fixedAnswerSummary(responseItem));
+  });
+}
+
+function editFixedAnswer(index) {
+  if (!Number.isInteger(index) || index < 0 || index >= state.fixedAnswers.length) return;
+  state.fixedAnswers = state.fixedAnswers.slice(0, index);
+  state.structuredAnswers = new Map(state.fixedAnswers.map((item) => [item.linkId, item]));
+  state.questionnaireResponse.item = responseItemsFor(state.questionnaire.item, state.structuredAnswers);
+  state.questionnaireResponse.status = "in-progress";
+  refreshFixedQuestions();
+  rebuildFixedConversationLog();
+  renderFixedRevisionList();
+  updateOutputs();
+  askFixedQuestion();
+  $("#fixedAnswer").focus();
+}
+
 function startFixed(questionnaire, title, source) {
   state.fixedTitle = title;
   state.fixedAnswers = [];
@@ -801,6 +921,7 @@ function startFixed(questionnaire, title, source) {
   state.structuredAnswers = new Map();
   $("#fixedConversationTitle").textContent = title;
   $("#fixedChatLog").replaceChildren();
+  $("#fixedRevision").open = false;
   $("#fixedConversation").hidden = false;
   setArtifacts(questionnaire, blankResponse(questionnaire), source, {
     status: "fixed_conversation_in_progress",
@@ -809,6 +930,8 @@ function startFixed(questionnaire, title, source) {
     response_storage: "browser_memory_only"
   });
   refreshFixedQuestions();
+  renderFixedRevisionList();
+  syncRunnerVisibility();
   bubble($("#fixedChatLog"), "notice", `설문: ${title}\n현재 답변에 적용되는 문항은 ${state.fixedQuestions.length}개이며, 조건부 문항은 관련 답변에 따라 펼쳐집니다.${questionnaire.description ? `\n${questionnaire.description}` : ""}`);
   askFixedQuestion();
 }
@@ -843,11 +966,13 @@ function askFixedQuestion() {
     bubble($("#fixedChatLog"), "assistant", "모든 문항이 끝났습니다. 오른쪽에서 QuestionnaireResponse를 확인하세요.");
     $("#fixedAnswer").disabled = true;
     $("#fixedAnswerButton").disabled = true;
+    renderFixedRevisionList();
     selectOutput("response");
     return;
   }
   $("#fixedAnswer").disabled = false;
   $("#fixedAnswerButton").disabled = false;
+  renderFixedRevisionList();
   const question = state.fixedQuestions[state.fixedIndex];
   const guidance = syntheticGuidanceFor(question.text);
   if (guidance) bubble($("#fixedChatLog"), "notice", guidance);
@@ -926,14 +1051,14 @@ async function loadPatientExperience() {
   } catch (error) { showToast(error.message); }
 }
 
-function screeningQuestionnaire(forms, age, sex, period) {
+function screeningQuestionnaire(forms, age, sex) {
   return {
     resourceType: "Questionnaire",
     id: "kr-national-health-screening-selected-forms-2025",
     status: "draft",
     experimental: true,
     title: `국민건강검진 공식 문진 서식(시험용) · ${forms.map((form) => form.title).join(" · ")}`,
-    description: `만 ${age}세 · 성별정보 ${sex} · 검진 예정일 ${period || "미입력"}. 국가법령정보센터 건강검진 실시기준 별지 서식의 문항·보기·순서를 보존한 시험용 실행본입니다. 실제 수검 자격과 검사항목은 국민건강보험공단 확인이 필요합니다.`,
+    description: `만 ${age}세 · 성별정보 ${sex}. 국가법령정보센터 건강검진 실시기준 별지 서식의 문항·보기·순서를 보존한 시험용 실행본입니다. 검진 예정일은 문항 선정에 사용하지 않습니다. 실제 수검 자격과 검사항목은 국민건강보험공단 확인이 필요합니다.`,
     derivedFrom: forms.map(canonical).filter(Boolean),
     item: forms.map((form, index) => ({
       linkId: `official-form-${index + 1}`,
@@ -952,10 +1077,10 @@ async function loadScreening() {
     const forms = [await api("/v1/demo/resources/national-health-screening-form-1-2025")];
     if ([66, 70, 80].includes(age)) forms.push(await api("/v1/demo/resources/national-health-screening-form-2-2025"));
     forms.forEach(validateQuestionnaire);
-    const questionnaire = screeningQuestionnaire(forms, age, sex, $("#screeningDate").value);
+    const questionnaire = screeningQuestionnaire(forms, age, sex);
     state.sourceVersion = "r4";
     startFixed(questionnaire, questionnaire.title, pretty({
-      input: { age, sex, period: $("#screeningDate").value },
+      input: { age, sex },
       selected_official_forms: forms.map((form) => ({ id: form.id, title: form.title, derived_from: canonical(form) })),
       source: "국가법령정보센터 건강검진 실시기준 별지 제1호·제2호 서식",
       periodicity_applied: false,
@@ -1014,10 +1139,15 @@ function adaptiveQuestion(document) {
     type: options.length ? "choice" : "string",
     options,
     answerOption,
-    responseInstruction: selected?.response_instruction_ko || "내용을 자유롭게 입력해 주세요.",
+    responseInstruction: selected?.response_instruction_ko || (options.length
+      ? "번호로 답하거나, 보기에 없으면 내용을 직접 입력해 주세요."
+      : "내용을 자유롭게 입력해 주세요."),
     knowledgeTarget: selected?.target_id,
     knowledgeFact: selected?.fact_id,
-    questionTemplate: selected?.template_id
+    questionTemplate: selected?.template_id,
+    sourceLabel: selected
+      ? (document?.presentation?.status === "generated" ? "[공동 작업 지식] + [AI 표현]" : "[공동 작업 지식]")
+      : "[AI 자체 생성—진단 아님]"
   };
 }
 
@@ -1025,6 +1155,7 @@ function adaptivePrompt(question) {
   const lines = [`[${question.questionRef}] ${question.text}`];
   (question.options || []).forEach((option) => lines.push(`${option.input}. ${option.label}`));
   if (question.responseInstruction) lines.push(`응답 안내: ${question.responseInstruction}`);
+  if (question.sourceLabel) lines.push(`출처: ${question.sourceLabel}`);
   return lines.join("\n");
 }
 
@@ -1074,7 +1205,7 @@ function llmSelectionPayload() {
 
 function adaptiveOpeningPrompt() {
   return state.adaptivePurpose === "clinical_adaptive"
-    ? "오늘 진료받으려는 이유를 자유롭게 적어주세요. 증상뿐 아니라 재진, 검사 결과 상담, 복용약 검토, 퇴원 후 상태, 예방 상담도 가능합니다."
+    ? "오늘 진료받으려는 이유를 자유롭게 적어주세요. 증상뿐 아니라 재진, 검사 결과 상담, 복용약 검토, 퇴원 후 상태, 예방 상담도 가능합니다.\n\n질문 출처 표시: [공동 작업 지식]은 검증 중인 compiled Knowledge, [AI 표현]은 임상 의미를 바꾸지 않는 문장 표현만 뜻합니다. 문진 중에는 답변에 대한 의견을 제시하지 않고 완료 후 결과에서 정리합니다."
     : "궁금한 건강 문제나 응급 여부를 판단하는 데 필요한 상황을 자유롭게 적어주세요. 정보 제공 수준이며 진단·치료 결정을 대신하지 않습니다.";
 }
 
@@ -1326,9 +1457,13 @@ function updateProviderConsent() {
   $("#externalConsentRow").hidden = !provider?.external_processing;
   if (!provider?.external_processing) $("#externalConsent").checked = false;
   $("#providerPrivacy").textContent = provider?.external_processing
-    ? "선택한 상용 LLM으로 입력 내용이 전송됩니다. 전송 전에 아래 동의가 필요합니다."
+    ? "선택한 상용 LLM에는 질문 표현에 필요한 승인된 question stem만 전송합니다. 환자 답변·임상 Memory는 전송하지 않으며 아래 동의가 필요합니다."
     : "Local LLM은 분리된 내부 환경에서 처리되며 외부 상용 LLM으로 전송하지 않습니다.";
   $("#providerAuthHelp").hidden = Boolean(provider?.external_processing);
+}
+
+function shouldSubmitOnEnter(event) {
+  return event?.key === "Enter" && !event.isComposing && event.keyCode !== 229 && !event.repeat;
 }
 
 function initialize() {
@@ -1375,8 +1510,19 @@ function initialize() {
     image.addEventListener("load", () => URL.revokeObjectURL(image.src), { once: true });
     $("#imagePreview").replaceChildren(image);
   });
-  $("#fixedAnswerButton").addEventListener("click", submitFixedAnswer);
-  $("#fixedAnswer").addEventListener("keydown", (event) => { if (event.key === "Enter") submitFixedAnswer(); });
+  let fixedAnswerComposing = false;
+  $("#fixedAnswer").addEventListener("compositionstart", () => { fixedAnswerComposing = true; });
+  $("#fixedAnswer").addEventListener("compositionend", () => { fixedAnswerComposing = false; });
+  $("#fixedAnswerButton").addEventListener("click", () => {
+    $("#fixedAnswer").blur();
+    window.setTimeout(() => { if (!fixedAnswerComposing) submitFixedAnswer(); }, 0);
+  });
+  $("#fixedAnswer").addEventListener("keydown", (event) => {
+    if (!fixedAnswerComposing && shouldSubmitOnEnter(event)) {
+      event.preventDefault();
+      submitFixedAnswer();
+    }
+  });
 
   $$("[data-purpose]").forEach((button) => button.addEventListener("click", () => switchAdaptivePurpose(button.dataset.purpose)));
   $("#llmProvider").addEventListener("change", updateProviderConsent);

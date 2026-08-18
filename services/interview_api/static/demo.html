@@ -35,7 +35,8 @@
 
       <details class="api-key-panel" open>
         <summary>기관·개발자용 인증 API 연결</summary>
-        <div><label class="field api-field"><span>API key</span><input id="apiKey" type="password" autocomplete="off" placeholder="Bearer key 입력"></label><button class="button" id="connectButton" type="button">인증 API 연결</button></div>
+        <div><label class="field api-field"><span>플랫폼 API key (상용 LLM key 아님)</span><input id="apiKey" type="password" autocomplete="off" placeholder="Clinical Interactive AI Platform Bearer key"></label><button class="button" id="connectButton" type="button">인증 API 연결</button></div>
+        <p class="api-key-help">개인 상용 LLM을 쓰려면 해당 제공자의 API 이용 권한과 API key가 별도로 필요합니다. Key만으로 제공자·모델을 판별할 수 없으므로 인증 API 연결 후 관리자가 허용한 LLM provider와 model을 선택합니다. 개인용 웹 구독·로그인만으로는 연결되지 않습니다.</p>
       </details>
 
       <aside class="privacy-note">
@@ -103,12 +104,11 @@
             </div>
 
             <div id="screeningOptions" class="fixed-options">
-              <div class="form-grid three">
+              <div class="form-grid two">
                 <label class="field"><span>가상 만 나이</span><input id="screeningAge" type="number" min="0" max="120" placeholder="가상 예: 66"></label>
                 <label class="field"><span>임상적으로 필요한 성별 정보</span><select id="screeningSex"><option value="unknown">확정하지 않음</option><option value="female">여성</option><option value="male">남성</option></select></label>
-                <label class="field"><span>검진 예정일(선택)</span><input id="screeningDate" type="date"></label>
               </div>
-              <p class="context-copy">건강검진 실시기준 별지 제1호 서식을 그대로 질문하며, 만 66·70·80세에는 별지 제2호 추가 문진표도 이어서 질문합니다. 성별과 검진 예정일은 시험 결과 문맥에만 기록합니다.</p>
+              <p class="context-copy">건강검진 실시기준 별지 제1호 서식을 그대로 질문하며, 만 66·70·80세에는 별지 제2호 추가 문진표도 이어서 질문합니다. 검진 예정일은 공식 문항 선택에 필요하지 않아 묻지 않습니다.</p>
               <p class="status-warning">문항·보기·순서는 공식 원문과 대조했지만 FHIR 구조화본은 미검토 draft입니다. 공식 수검자격 조회나 검진표 제출에는 사용할 수 없습니다.</p>
               <button class="button primary" id="loadScreening" type="button">공식 문진 시작</button>
             </div>
@@ -137,8 +137,8 @@
             <p class="context-copy" id="adaptivePurposeHelp">증상만 입력하는 곳이 아닙니다. 예약 진료의 이유, 재진, 검사결과 상담, 복용약 검토, 퇴원 후 상태 등 의료진에게 미리 전달할 내용을 자유롭게 시작할 수 있습니다.</p>
             <label class="field"><span>LLM provider</span><select id="llmProvider"><option value="local_vllm">Banttas AI local LLM</option></select></label>
             <p class="provider-privacy" id="providerPrivacy">Local LLM은 분리된 내부 환경에서 처리되며 외부 상용 LLM으로 전송하지 않습니다.</p>
-            <p class="provider-auth" id="providerAuthHelp">외부 상용 LLM은 위 기관·개발자용 인증 API에 연결되고 서버에 안전하게 구성된 provider가 있을 때 선택할 수 있습니다. 개인용 계정 비밀번호나 API key는 이 화면에서 수집하지 않습니다.</p>
-            <label class="consent-row" id="externalConsentRow" hidden><input id="externalConsent" type="checkbox"><span>입력 내용이 외부 상용 LLM에서 처리되는 것에 동의합니다.</span></label>
+            <p class="provider-auth" id="providerAuthHelp">데모의 Local LLM 대신 개인 상용 LLM API 계정을 사용하려면 위 기관·개발자용 인증 API에 먼저 연결하세요. 상용 LLM은 관리자가 허용한 provider와 model이 함께 지정되고 서버에 API credential이 안전하게 구성된 경우에만 표시됩니다. Key 하나만으로 제공자·모델을 자동 판별하지 않으며 개인 계정 비밀번호나 상용 LLM key는 이 화면에서 수집하지 않습니다.</p>
+            <label class="consent-row" id="externalConsentRow" hidden><input id="externalConsent" type="checkbox"><span>승인된 질문 문장이 외부 상용 LLM에서 표현 처리되는 것에 동의합니다. 환자 답변은 질문 표현 요청에 포함하지 않습니다.</span></label>
           </div>
         </article>
 
@@ -151,6 +151,7 @@
           <div class="conversation runner" id="fixedConversation" hidden>
             <div class="conversation-head"><strong id="fixedConversationTitle">정형 대화</strong><span id="fixedProgress">0 / 0</span></div>
             <div class="chat-log" id="fixedChatLog"></div>
+            <details class="fixed-revision" id="fixedRevision" hidden><summary>지나간 응답 확인·수정</summary><div id="fixedRevisionList"></div></details>
             <div class="composer"><input id="fixedAnswer" type="text" placeholder="가상 테스트 답변 입력"><button class="button primary" id="fixedAnswerButton" type="button">답변</button></div>
           </div>
           <div class="conversation runner" id="adaptiveConversation" hidden>
