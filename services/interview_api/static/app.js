@@ -18,6 +18,37 @@ const SDC_STATUS = {
   reason: "서버의 SDC Extraction adapter가 아직 구현되지 않았습니다. 임상 데이터로 추출된 것처럼 표시하지 않습니다."
 };
 
+const ADAPTIVE_PURPOSES = {
+  clinical_adaptive: {
+    title: "진료 전 문진",
+    modeSelection: "문진 시작 (예: 기침이 나요)",
+    opening: "오늘 진료받으려는 이유를 자유롭게 적어주세요. 증상뿐 아니라 재진, 검사 결과 상담, 복용약 검토, 퇴원 후 상태, 예방 상담도 가능합니다.\n\n질문 출처 표시: [공동 작업 지식]은 검증 중인 compiled Knowledge, [AI 표현]은 임상 의미를 바꾸지 않는 문장 표현만 뜻합니다. 문진 중에는 답변에 대한 의견을 제시하지 않고 완료 후 간단히 정리하되 가능한 진단은 제시하지 않습니다.",
+    placeholder: "예: 검사 결과 상담을 받고 싶어요",
+    help: "증상만 입력하는 곳이 아닙니다. 예약 진료의 이유, 재진, 검사결과 상담, 복용약 검토, 퇴원 후 상태 등 의료진에게 미리 전달할 내용을 자유롭게 시작할 수 있습니다.",
+    busy: "Reason for Encounter와 Knowledge를 연결하고 첫 질문을 준비하고 있습니다…"
+  },
+  health_information: {
+    title: "일반 건강상담",
+    modeSelection: "일반 건강상담",
+    opening: "궁금한 건강 문제나 응급 여부를 판단하는 데 필요한 상황을 자유롭게 적어주세요. 필요한 안전 질문 후 가능한 원인에 관한 일반 정보, 대처 범위와 진료 시점을 설명합니다. 확정 진단·처방은 제공하지 않습니다.",
+    placeholder: "예: 이 증상이 응급인지 궁금해요",
+    help: "건강 질문과 현재 상황을 자유롭게 입력합니다. 필요한 문답 후 유용한 일반 정보와 안전 안내를 제공하지만 확정 진단·치료 결정을 대신하지 않습니다.",
+    busy: "안전 신호와 필요한 설명 범위를 확인하고 있습니다…"
+  },
+  screening_addon_recommendation: {
+    title: "건강검진 패키지 추천",
+    modeSelection: "건강검진 패키지 추천",
+    opening: "국가에서 정기적으로 제공하는 건강검진 외에 검진센터의 추가 패키지를 비교합니다. 먼저 검진받을 지역을 입력해 주세요. 예: 서울\n\n국가건강검진 문진은 선택사항이며 별도 Questionnaire/QuestionnaireResponse로 관리합니다.",
+    placeholder: "예: 서울",
+    help: "지역·관심 영역·가격 선호를 필요한 만큼만 확인한 뒤 시험용 공개 카탈로그에서 추가 검진 패키지를 비교합니다. 의학적 필요성과 실제 가격·구성은 확정하지 않습니다.",
+    busy: "로컬 시험 카탈로그에서 비교 절차를 준비하고 있습니다…"
+  }
+};
+
+function adaptivePurposeConfig() {
+  return ADAPTIVE_PURPOSES[state.adaptivePurpose] || ADAPTIVE_PURPOSES.clinical_adaptive;
+}
+
 const state = {
   apiKey: "",
   apiMode: "anonymous_demo",
@@ -1271,7 +1302,9 @@ function buildTextSurvey() {
 
 function adaptiveQuestion(document) {
   const stateDoc = document?.state || {};
-  const selected = stateDoc.adapter_state?.selected_question || stateDoc.selected_question;
+  const adapterState = stateDoc.adapter_state || stateDoc;
+  if (state.adaptivePurpose === "screening_addon_recommendation" && adapterState?.phase === "recommendation") return null;
+  const selected = adapterState?.selected_question || stateDoc.selected_question;
   const rawMessage = stateDoc.adapter_state?.assistant_message || document?.presentation?.text;
   const text = selected?.stem_text || selected?.text || stateDoc.prompt_ko || rawMessage;
   if (!text) return null;
@@ -1349,8 +1382,7 @@ function showAdaptiveQuestion(question) {
   if (guidance) bubble($("#adaptiveChatLog"), "notice", guidance);
   $("#adaptiveProgress").textContent = `${question.questionRef} · Knowledge Runtime`;
   $("#adaptiveAnswer").placeholder = question.options?.length ? "번호 또는 직접 답변" : "답변을 입력하세요";
-  if (question.rawMessage) paintAdaptiveSuggestions(question, []);
-  else renderAdaptiveSuggestions(question);
+  renderAdaptiveSuggestions(question);
 }
 
 function paintAdaptiveSuggestions(question, choices) {
@@ -1416,7 +1448,9 @@ function rebuildAdaptiveArtifacts(sourceDocument, finalized = false) {
   if (state.currentAdaptiveQuestion) asked.push(state.currentAdaptiveQuestion);
   const questionnaire = {
     resourceType: "Questionnaire", id: "adaptive-question-history-draft", status: "draft", experimental: true,
-    title: state.adaptivePurpose === "clinical_adaptive" ? "Knowledge 기반 진료 전 문진 이력" : "일반 건강상담 이력",
+    title: state.adaptivePurpose === "clinical_adaptive"
+      ? "Knowledge 기반 진료 전 문진 이력"
+      : (state.adaptivePurpose === "health_information" ? "일반 건강상담 이력" : "건강검진 패키지 추천 이력"),
     description: "실제로 제시된 질문만 포함한 브라우저 생성 초안입니다.",
     item: asked.map((question, index) => ({
       linkId: safeLinkId(question.linkId, index),
@@ -1520,6 +1554,24 @@ function rebuildHealthInformationArtifacts(sourceDocument, finalized = false) {
   );
 }
 
+function rebuildScreeningRecommendationArtifacts(completed) {
+  rebuildAdaptiveArtifacts(completed, true);
+  if (state.questionnaire) {
+    state.questionnaire.title = "건강검진 추가 패키지 추천 질문 이력";
+    state.questionnaire.description = "시험용 패키지 비교를 위해 실제로 확인한 문답의 브라우저 생성 초안입니다.";
+  }
+  const recommendation = completed?.result?.recommendation || {};
+  state.handoff = recommendation;
+  state.questionnaireSource = pretty({
+    purpose: "screening_addon_recommendation",
+    conversation: state.adaptiveHistory,
+    recommendation,
+    limitations: recommendation.limitations_ko,
+    response_storage: "browser_memory_only"
+  });
+  updateOutputs();
+}
+
 function safeLinkId(value, index) {
   const base = String(value || "q").replace(/[^A-Za-z0-9\-.]/g, "-").slice(0, 55) || "q";
   return `${base}-${index + 1}`;
@@ -1536,9 +1588,7 @@ function llmSelectionPayload() {
 }
 
 function adaptiveOpeningPrompt() {
-  return state.adaptivePurpose === "clinical_adaptive"
-    ? "오늘 진료받으려는 이유를 자유롭게 적어주세요. 증상뿐 아니라 재진, 검사 결과 상담, 복용약 검토, 퇴원 후 상태, 예방 상담도 가능합니다.\n\n질문 출처 표시: [공동 작업 지식]은 검증 중인 compiled Knowledge, [AI 표현]은 임상 의미를 바꾸지 않는 문장 표현만 뜻합니다. 문진 중에는 답변에 대한 의견을 제시하지 않고 완료 후 결과에서 정리합니다."
-    : "궁금한 건강 문제나 응급 여부를 판단하는 데 필요한 상황을 자유롭게 적어주세요. 정보 제공 수준이며 진단·치료 결정을 대신하지 않습니다.";
+  return adaptivePurposeConfig().opening;
 }
 
 function prepareAdaptiveConversation(force = false) {
@@ -1548,11 +1598,9 @@ function prepareAdaptiveConversation(force = false) {
     log.replaceChildren();
     bubble(log, "assistant", adaptiveOpeningPrompt());
   }
-  $("#adaptiveConversationTitle").textContent = state.adaptivePurpose === "clinical_adaptive" ? "진료 전 문진" : "일반 건강상담";
+  $("#adaptiveConversationTitle").textContent = adaptivePurposeConfig().title;
   $("#adaptiveProgress").textContent = "시작 전";
-  $("#adaptiveAnswer").placeholder = state.adaptivePurpose === "clinical_adaptive"
-    ? "예: 검사 결과 상담을 받고 싶어요"
-    : "예: 이 증상이 응급인지 궁금해요";
+  $("#adaptiveAnswer").placeholder = adaptivePurposeConfig().placeholder;
   $("#adaptiveAnswer").disabled = false;
   $("#adaptiveAnswerButton").disabled = false;
   $("#completeAdaptive").disabled = true;
@@ -1602,9 +1650,7 @@ async function switchAdaptivePurpose(nextPurpose) {
     candidate.classList.toggle("active", active);
     candidate.setAttribute("aria-checked", String(active));
   });
-  $("#adaptivePurposeHelp").textContent = nextPurpose === "clinical_adaptive"
-    ? "증상만 입력하는 곳이 아닙니다. 예약 진료의 이유, 재진, 검사결과 상담, 복용약 검토, 퇴원 후 상태 등 의료진에게 미리 전달할 내용을 자유롭게 시작할 수 있습니다."
-    : "건강 질문과 현재 상황을 자유롭게 입력합니다. 위험 신호가 의심되면 안전 안내를 제공하지만 진단·치료 결정을 대신하지 않습니다.";
+  $("#adaptivePurposeHelp").textContent = (ADAPTIVE_PURPOSES[nextPurpose] || ADAPTIVE_PURPOSES.clinical_adaptive).help;
   showToast("이전 비정형 대화를 폐기하고 새 목적의 대화를 시작합니다.");
   await resetAdaptiveConversation(nextPurpose);
   updateProviderConsent();
@@ -1613,18 +1659,19 @@ async function switchAdaptivePurpose(nextPurpose) {
 async function startAdaptive(opening) {
   if (!opening) return showToast("진료 또는 상담을 원하는 이유를 입력하세요.");
   const provider = state.providers.find((item) => item.provider_id === $("#llmProvider").value);
-  if (provider?.external_processing && !$("#externalConsent").checked) return showToast("외부 LLM 처리 동의가 필요합니다.");
-  const modeSelection = state.adaptivePurpose === "clinical_adaptive" ? "문진 시작 (예: 기침이 나요)" : "일반 건강상담";
+  if (state.adaptivePurpose !== "screening_addon_recommendation" && provider?.external_processing && !$("#externalConsent").checked) return showToast("외부 LLM 처리 동의가 필요합니다.");
+  const purposeConfig = adaptivePurposeConfig();
+  const modeSelection = purposeConfig.modeSelection;
   state.questionnaire = null;
   state.questionnaireResponse = null;
   state.questionnaireSource = "";
   state.artifactsFinalized = false;
   updateOutputs();
   const requestSerial = ++state.adaptiveRequestSerial;
-  setAdaptiveBusy(true, state.adaptivePurpose === "clinical_adaptive" ? "Reason for Encounter와 Knowledge를 연결하고 첫 질문을 준비하고 있습니다…" : "건강상담 연결을 준비하고 있습니다…");
+  setAdaptiveBusy(true, purposeConfig.busy);
   try {
     const payload = { mode_selection: modeSelection, initial_message: opening };
-    if (state.apiMode === "authenticated") payload.llm_selection = llmSelectionPayload();
+    if (state.apiMode === "authenticated" && state.adaptivePurpose !== "screening_addon_recommendation") payload.llm_selection = llmSelectionPayload();
     const document = await api("/v1/sessions", { method: "POST", body: JSON.stringify(payload) });
     if (requestSerial !== state.adaptiveRequestSerial) {
       try { await api(`/v1/sessions/${document.session_id}`, { method: "DELETE" }); } catch (_) { /* TTL remains the fallback. */ }
@@ -1634,9 +1681,23 @@ async function startAdaptive(opening) {
     state.adaptiveStarted = true;
     state.adaptiveHistory = [];
     state.healthInformationHistory = [];
+    const screeningState = document?.state?.adapter_state || {};
+    if (state.adaptivePurpose === "screening_addon_recommendation" && screeningState.answers_collected > 0) {
+      state.adaptiveHistory.push({
+        question: {
+          linkId: "screening.region",
+          questionRef: "Q1",
+          text: "추가 검진 패키지를 비교할 지역은 어디인가요?",
+          type: "string"
+        },
+        answer: opening,
+        displayAnswer: opening,
+        fhirAnswer: { valueString: opening }
+      });
+    }
     state.currentAdaptiveQuestion = adaptiveQuestion(document);
     $("#adaptiveConversation").hidden = false;
-    $("#adaptiveConversationTitle").textContent = state.adaptivePurpose === "clinical_adaptive" ? "진료 전 문진" : "일반 건강상담";
+    $("#adaptiveConversationTitle").textContent = purposeConfig.title;
     bubble($("#adaptiveChatLog"), "user", opening);
     if (state.adaptivePurpose === "health_information") {
       if (state.currentAdaptiveQuestion) {
@@ -1736,6 +1797,12 @@ async function sendAdaptiveAnswer() {
         $("#adaptiveProgress").textContent = `${state.adaptiveHistory.length}개 확인 후 정보 제공`;
         return;
       }
+      if (state.adaptivePurpose === "screening_addon_recommendation") {
+        const recommendationText = document?.presentation?.text || "패키지 비교 결과를 만들었습니다. 종료·결과를 눌러 산출물을 확인하세요.";
+        bubble($("#adaptiveChatLog"), "assistant", recommendationText);
+        $("#adaptiveProgress").textContent = `${state.adaptiveHistory.length}개 답변 · 비교 완료`;
+        return;
+      }
       const flow = document?.state?.adapter_state?.interview_flow || document?.state?.interview_flow || {};
       const reviewText = document?.presentation?.text || document?.state?.adapter_state?.assistant_message;
       bubble($("#adaptiveChatLog"), "assistant", reviewText || (flow.review_ready
@@ -1757,16 +1824,21 @@ async function completeAdaptive() {
     state.handoff = completed.result?.clinical_handoff || completed.result || {};
     if (state.adaptivePurpose === "health_information") {
       rebuildHealthInformationArtifacts(completed, true);
+    } else if (state.adaptivePurpose === "screening_addon_recommendation") {
+      rebuildScreeningRecommendationArtifacts(completed);
     } else {
       rebuildAdaptiveArtifacts(completed, true);
     }
-    bubble($("#adaptiveChatLog"), "assistant", state.adaptivePurpose === "health_information"
-      ? "건강상담을 종료했습니다. 제공된 내용은 일반 정보이며 진단·치료 결정을 대신하지 않습니다. 표시된 안전 안내가 있다면 우선해서 따르세요."
-      : "문진이 완료되었습니다. 질문 중에는 답변에 대한 의견이나 조언을 제시하지 않았습니다. 이제 오른쪽의 draft 의료인 요약을 확인하고, 진단·치료 판단은 담당 의료진과 상의해 주세요. 위험 신호 안내가 표시되면 해당 안전 안내를 우선하세요.");
+    const completionMessage = state.adaptivePurpose === "health_information"
+      ? "건강상담을 종료했습니다. 확인한 상황에 맞춘 일반 정보와 안전 안내를 제공했습니다. 확정 진단·처방은 아니며 표시된 안전 안내가 있다면 우선해서 따르세요."
+      : (state.adaptivePurpose === "screening_addon_recommendation"
+        ? "검진 패키지 후보 비교를 완료했습니다. 시험용 공개 카탈로그 결과이므로 실제 가격·구성·대상·예약 가능 여부는 해당 기관에 확인해 주세요."
+        : "문진이 완료되었습니다. 가능한 진단을 제시하지 않고, 확인한 내용과 미확인 항목만 의료진 전달용으로 정리했습니다. 진단·치료 판단은 담당 의료진과 상의해 주세요.");
+    bubble($("#adaptiveChatLog"), "assistant", completionMessage);
     $("#adaptiveAnswer").disabled = true;
     $("#adaptiveAnswerButton").disabled = true;
     $("#completeAdaptive").disabled = true;
-    selectOutput("handoff");
+    selectOutput(state.adaptivePurpose === "clinical_adaptive" ? "handoff" : "source");
   } catch (error) { showToast(error.message); }
   finally { if (requestSerial === state.adaptiveRequestSerial) setAdaptiveBusy(false); }
 }
@@ -1861,8 +1933,16 @@ async function connectAnonymous() {
 
 function updateProviderConsent() {
   const provider = state.providers.find((item) => item.provider_id === $("#llmProvider").value);
-  $("#externalConsentRow").hidden = !provider?.external_processing;
+  const screening = state.adaptivePurpose === "screening_addon_recommendation";
+  $("#providerField").hidden = screening;
+  $("#providerPrivacy").hidden = screening;
+  $("#providerAuthHelp").hidden = screening || Boolean(provider?.external_processing);
+  $("#externalConsentRow").hidden = screening || !provider?.external_processing;
   if (!provider?.external_processing) $("#externalConsent").checked = false;
+  if (screening) {
+    $("#externalConsent").checked = false;
+    return;
+  }
   const healthInformation = state.adaptivePurpose === "health_information";
   $("#providerPrivacy").textContent = provider?.external_processing
     ? (healthInformation
@@ -1872,7 +1952,6 @@ function updateProviderConsent() {
   $("#externalConsentRow span").textContent = healthInformation
     ? "입력한 건강상담 질문이 선택한 외부 상용 LLM에서 처리되는 것에 동의합니다."
     : "승인된 질문 문장이 외부 상용 LLM에서 표현 처리되는 것에 동의합니다. 환자 답변은 질문 표현 요청에 포함하지 않습니다.";
-  $("#providerAuthHelp").hidden = Boolean(provider?.external_processing);
 }
 
 function shouldSubmitOnEnter(event) {

@@ -3,6 +3,8 @@ from pathlib import Path
 import re
 import unittest
 
+from runtime.screening_recommendation import ScreeningRecommendationSession
+
 
 ROOT = Path(__file__).resolve().parents[1]
 CATALOG = (
@@ -15,6 +17,29 @@ def load(path: Path):
 
 
 class HealthScreeningPackageCatalogTests(unittest.TestCase):
+    def test_local_recommendation_workflow_is_bounded_and_includes_lowest_candidate(self):
+        session = ScreeningRecommendationSession("screening-test")
+        state = session.process("서울")
+        self.assertEqual(state["selected_question"]["fact_id"], "screening.focus")
+        for answer in ("암 검진", "가족력 없음", "가격과 관심 영역", "지금은 추가 문진만 진행"):
+            state = session.process(answer)
+        recommendation = state["recommendation"]
+        self.assertEqual(state["phase"], "recommendation")
+        self.assertEqual(recommendation["status"], "candidate_comparison_ready")
+        self.assertLessEqual(len(recommendation["candidates"]), 4)
+        self.assertTrue(any(item["lowest_price_candidate"] for item in recommendation["candidates"]))
+        self.assertFalse(recommendation["selection_basis"]["medical_necessity_inferred"])
+        self.assertTrue(all(item["source_url"] for item in recommendation["candidates"]))
+        self.assertIn("해당 기관에 직접 확인", recommendation["limitations_ko"])
+        closed = session.close()
+        self.assertTrue(closed["response_state_purged"])
+        self.assertFalse(session.answers)
+
+    def test_invalid_region_is_reprompted_without_consuming_an_answer(self):
+        state = ScreeningRecommendationSession("screening-invalid").process("아무 지역")
+        self.assertEqual(state["answers_collected"], 0)
+        self.assertEqual(state["selected_question"]["fact_id"], "screening.region")
+
     def test_test_catalog_is_versioned_isolated_and_response_free(self):
         registry = load(CATALOG / "registry.json")
         self.assertEqual(

@@ -245,14 +245,23 @@ class InterviewApi:
     def catalog(self) -> dict[str, Any]:
         catalog = self.registry.catalog()
         catalog["api_capabilities"] = {
-            "implemented_mode_ids": ["clinical_adaptive", "health_information"],
+            "implemented_mode_ids": [
+                "clinical_adaptive",
+                "health_information",
+                "screening_addon_recommendation",
+            ],
             "pending_mode_ids": sorted(
                 mode_id
                 for mode_id in self.registry.modes
-                if mode_id not in {"clinical_adaptive", "health_information"}
+                if mode_id not in {
+                    "clinical_adaptive",
+                    "health_information",
+                    "screening_addon_recommendation",
+                }
             ),
             "result_formats": {
                 "clinical_handoff_json": "implemented",
+                "screening_package_recommendation_json": "implemented",
                 "fhir_questionnaire": "not_implemented",
                 "fhir_questionnaire_response": "not_implemented",
                 "sdc_extraction": "not_implemented",
@@ -720,6 +729,47 @@ class InterviewApi:
         state: dict[str, Any],
         selection: LlmSelection,
     ) -> dict[str, Any]:
+        if core.mode_id == "screening_addon_recommendation":
+            adapter_state = state.get("adapter_state") if isinstance(state, dict) else None
+            question = (
+                adapter_state.get("selected_question")
+                if isinstance(adapter_state, dict)
+                else None
+            )
+            recommendation = (
+                adapter_state.get("recommendation")
+                if isinstance(adapter_state, dict)
+                else None
+            )
+            if isinstance(question, dict):
+                lines = [str(question.get("text", ""))]
+                for option in question.get("answer_options", []):
+                    lines.append(f"{option.get('input')}. {option.get('display_ko')}")
+                instruction = question.get("response_instruction_ko")
+                if instruction:
+                    lines.append(str(instruction))
+                return {
+                    "status": "generated",
+                    "purpose": "screening_package_question",
+                    "text": "\n".join(line for line in lines if line),
+                    "patient_input_transmitted": False,
+                    "processing_location": "local_deterministic_catalog",
+                    "clinical_authority": False,
+                }
+            if isinstance(recommendation, dict):
+                return {
+                    "status": "generated",
+                    "purpose": "screening_package_recommendation",
+                    "text": recommendation.get("summary_ko", ""),
+                    "patient_input_transmitted": False,
+                    "processing_location": "local_deterministic_catalog",
+                    "clinical_authority": False,
+                }
+            return {
+                "status": "not_applicable",
+                "purpose": "screening_package_recommendation",
+                "patient_input_transmitted": False,
+            }
         if core.mode_id == "health_information":
             adapter_state = state.get("adapter_state") if isinstance(state, dict) else None
             assistant_message = (
@@ -775,6 +825,24 @@ class InterviewApi:
         }
 
     def _result_document(self, session_id: str, record: SessionRecord) -> dict[str, Any]:
+        if (
+            record.core.mode_id == "screening_addon_recommendation"
+            and record.core.adapter is not None
+        ):
+            adapter_result = record.core.adapter.result()
+            return {
+                "session_id": session_id,
+                "mode_id": "screening_addon_recommendation",
+                "lifecycle_status": "draft",
+                "review_status": "unreviewed",
+                "clinical_use_status": "limited",
+                "independent_diagnosis_or_treatment": False,
+                "catalog_answer_transmission": "local_memory_only",
+                "available_formats": ["screening_package_recommendation_json"],
+                "recommendation": deepcopy(adapter_result.get("recommendation")),
+                "workflow": deepcopy(adapter_result),
+                "response_storage": "memory_only",
+            }
         if record.core.mode_id == "health_information" and record.core.adapter is not None:
             adapter_result = record.core.adapter.result()
             return {

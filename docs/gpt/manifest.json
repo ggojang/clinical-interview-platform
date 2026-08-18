@@ -4614,6 +4614,12 @@
           "관절이 부었어요",
           "팔다리를 다쳤어요",
           "어깨 통증",
+          "발목 통증",
+          "발목이 아파요",
+          "손목 통증",
+          "손목이 아파요",
+          "무릎 통증",
+          "팔꿈치 통증",
           "joint pain",
           "limb injury"
         ],
@@ -6754,7 +6760,7 @@
       "count": 58,
       "name": "reason-for-encounters",
       "path": "/gpt/reason-for-encounters.json",
-      "sha256": "c43642123716599eeda1010321f6ed32c0e3dd81fa7535d7ed72dbcd8967900f"
+      "sha256": "1b5961d16a0542a58bf983b73e078e65a2a560e29a722c4d843037480fd038c3"
     },
     {
       "count": 75,
@@ -8200,7 +8206,7 @@
       "count": 0,
       "name": "service-modes",
       "path": "/gpt/service-modes.json",
-      "sha256": "d789ea0461e325871af2c14f69c6470295dad4a6478e138beb8a9665832eeaf3"
+      "sha256": "ffa9fe6debc5af35bc8954667f1964b6ddce553580d05ffd3354abe89e08ae05"
     },
     {
       "count": 0,
@@ -8453,18 +8459,21 @@
           "자유 문진",
           "증상 문진",
           "진료 문진",
-          "기존 문진"
+          "기존 문진",
+          "문진 시작 (예: 기침이 나요)"
         ],
         "display_ko": "증상에 맞춰 준비하기",
         "entry": "reason_for_encounter",
         "id": "clinical_adaptive",
+        "ordinary_question_budget": 8,
         "output_resources": [
           "Questionnaire",
           "QuestionnaireResponse"
         ],
         "proactive_red_flag_questionnaire": false,
         "question_authority": "compiled_clinical_knowledge",
-        "runtime_adapter": "InterviewSession",
+        "question_priority": "clinician_handoff_minimum",
+        "runtime_adapter": "ChatbotInterviewSession",
         "safety": "reported_signal_detection_and_immediate_notification",
         "scheduled_visit_default": true,
         "sdc_extraction": "supported_when_mapping_is_verified"
@@ -8530,9 +8539,15 @@
           "건강검진 패키지 추천",
           "추가 검진 추천"
         ],
+        "candidate_selection": "deterministic_local_only",
+        "candidate_source": "versioned_isolated_test_catalog",
+        "catalog_answer_transmission": "prohibited",
         "display_ko": "추가 검진 추천받기",
         "entry": "supplemental_adaptive_interview",
         "id": "screening_addon_recommendation",
+        "institution_confirmation_required": true,
+        "lowest_price_plausible_candidate_required": true,
+        "medical_necessity_or_diagnosis": false,
         "official_questionnaire": "optional_user_choice",
         "official_questionnaire_timing": "before_or_after_supplemental_interview",
         "opening_prompt_ko": "필요한 내용만 대화로 확인하겠습니다.",
@@ -8542,6 +8557,7 @@
           "Bundle"
         ],
         "prepopulation": "verified_exact_or_equivalent_mapping_after_user_review",
+        "question_budget": 5,
         "resource_separation": "official_and_supplemental_questionnaires_remain_separate",
         "runtime_adapter": "screening_recommendation_workflow",
         "sdc_extraction": "supplemental_interview_only_when_mapping_is_verified"
@@ -8553,14 +8569,16 @@
           "의학 정보"
         ],
         "display_ko": "건강정보 묻기",
-        "entry": "free_text_question",
+        "entry": "reason_for_encounter_or_free_text_question",
         "id": "health_information",
         "independent_diagnosis_or_treatment": false,
         "must_express_uncertainty": true,
         "output_resources": [],
-        "question_authority": "user_information_need",
-        "runtime_adapter": "informational_answer",
-        "safety": "notify_and_handoff_when_red_flag_is_suspected"
+        "proactive_red_flag_questions": "smallest_symptom_specific_triage_set",
+        "question_authority": "compiled_rfe_knowledge_then_informational_answer",
+        "runtime_adapter": "health_information_conversation",
+        "safety": "notify_and_handoff_when_red_flag_is_suspected",
+        "symptom_question_budget": 6
       }
     ],
     "prepopulation": {

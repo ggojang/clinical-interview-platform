@@ -7,6 +7,7 @@ from typing import Any, Callable
 
 from runtime.service_modes import ServiceModeRegistry
 from runtime.health_information import HealthInformationSession, assess_health_information_safety
+from runtime.screening_recommendation import ScreeningRecommendationSession
 from runtime.chatbot_session import (
     ChatbotInterviewSession,
     DEFAULT_HEALTH_INFORMATION_QUESTION_BUDGET,
@@ -29,7 +30,12 @@ class CoreInteractionSession:
         [str, str, dict[str, Any] | None], dict[str, Any] | None
     ] | None = None
     mode_id: str | None = None
-    adapter: ChatbotInterviewSession | HealthInformationSession | None = None
+    adapter: (
+        ChatbotInterviewSession
+        | HealthInformationSession
+        | ScreeningRecommendationSession
+        | None
+    ) = None
     closed: bool = False
 
     def start(self) -> dict[str, Any]:
@@ -81,6 +87,10 @@ class CoreInteractionSession:
             if self.adapter is None:
                 return self._activate_health_information(message)
             return self._wrap_health_information(self.adapter.process(message))
+        if self.mode_id == "screening_addon_recommendation":
+            if self.adapter is None:
+                self.adapter = ScreeningRecommendationSession(self.session_id)
+            return self._wrap_screening_recommendation(self.adapter.process(message))
         if self.mode_id is not None:
             return {
                 "status": "adapter_input_required",
@@ -131,6 +141,16 @@ class CoreInteractionSession:
         return {
             "status": "active",
             "mode_id": "health_information",
+            "core_entry": "interaction_purpose",
+            "adapter_state": adapter_state,
+        }
+
+    def _wrap_screening_recommendation(
+        self, adapter_state: dict[str, Any]
+    ) -> dict[str, Any]:
+        return {
+            "status": "active",
+            "mode_id": "screening_addon_recommendation",
             "core_entry": "interaction_purpose",
             "adapter_state": adapter_state,
         }

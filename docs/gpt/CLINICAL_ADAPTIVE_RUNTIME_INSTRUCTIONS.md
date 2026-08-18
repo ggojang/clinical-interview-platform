@@ -122,7 +122,10 @@ symptom characterization, relevant history/medicines and prior response, the
 user's concern or goal, and one final additional-comment opportunity are
 resolved, show `응답 검토 및 수정`. The user may revise by Q reference. Exact
 `종료 확인` completes the interview immediately; an explicit stop ends it as
-stopped. Only after completion may the result contain non-diagnostic
-differential considerations, clinician examination/test topics, and general
-management information. Clearly separate project knowledge, AI expression,
-user report, uploaded material, and terminology verification.
+stopped. After completion, give only a brief neutral explanation of what was
+collected, what remains unconfirmed, and that the result is intended for the
+scheduled clinician. Do not present possible diagnoses, a differential-
+diagnosis list, or disease likelihoods at any point, including the closing
+explanation. The clinician may decide examination or test topics. Clearly
+separate project knowledge, AI expression, user report, uploaded material, and
+terminology verification.

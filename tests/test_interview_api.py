@@ -102,7 +102,11 @@ class InterviewApiServiceTests(unittest.TestCase):
         capabilities = self.api.catalog()["api_capabilities"]
         self.assertEqual(
             capabilities["implemented_mode_ids"],
-            ["clinical_adaptive", "health_information"],
+            [
+                "clinical_adaptive",
+                "health_information",
+                "screening_addon_recommendation",
+            ],
         )
         self.assertEqual(
             capabilities["result_formats"]["fhir_questionnaire_response"],
@@ -563,6 +567,29 @@ class InterviewApiRuntimeIntegrationTests(unittest.TestCase):
         self.assertEqual(result["available_formats"], ["health_information_json"])
         self.assertFalse(result["independent_diagnosis_or_treatment"])
         completed = api.complete(created["session_id"])
+        self.assertTrue(completed["response_state_purged"])
+
+    def test_screening_recommendation_uses_local_catalog_without_llm_transmission(self):
+        api = InterviewApi(max_sessions=1)
+        created = api.create_session(
+            {
+                "mode_selection": "건강검진 패키지 추천",
+                "initial_message": "서울",
+            }
+        )
+        self.assertEqual(created["mode_id"], "screening_addon_recommendation")
+        self.assertEqual(created["presentation"]["purpose"], "screening_package_question")
+        self.assertFalse(created["presentation"]["patient_input_transmitted"])
+        session_id = created["session_id"]
+        for answer in ("암 검진", "없음", "가장 저렴한 후보 우선", "지금은 추가 문진만 진행"):
+            created = api.send_message(session_id, {"message": answer})
+        self.assertEqual(created["presentation"]["purpose"], "screening_package_recommendation")
+        self.assertFalse(created["presentation"]["patient_input_transmitted"])
+        result = api.result(session_id)
+        self.assertEqual(result["available_formats"], ["screening_package_recommendation_json"])
+        self.assertTrue(result["recommendation"]["candidates"])
+        self.assertEqual(result["catalog_answer_transmission"], "local_memory_only")
+        completed = api.complete(session_id)
         self.assertTrue(completed["response_state_purged"])
 
     def test_health_information_symptom_uses_rfe_conversation_before_advice(self):
