@@ -21,6 +21,8 @@ from runtime.core import CoreInteractionSession
 from runtime.service_modes import ServiceModeRegistry
 from services.interview_api.llm import (
     LlmAdaptiveAnswerInterpreter,
+    LlmChatbotInterviewRuntime,
+    LlmChatbotRuntimeError,
     LlmClinicalInterpreter,
     LlmHealthInformationAdvisor,
     LlmInterviewPlanner,
@@ -153,6 +155,7 @@ class InterviewApi:
         interview_planner: LlmInterviewPlanner | None = None,
         answer_interpreter: LlmAdaptiveAnswerInterpreter | None = None,
         health_information_advisor: LlmHealthInformationAdvisor | None = None,
+        chatbot_runtime: LlmChatbotInterviewRuntime | None = None,
         terminology_client: TerminologyClient | None = None,
     ) -> None:
         if not MIN_SESSION_TTL_SECONDS <= session_ttl_seconds <= MAX_SESSION_TTL_SECONDS:
@@ -193,6 +196,9 @@ class InterviewApi:
         self.health_information_advisor = (
             health_information_advisor or LlmHealthInformationAdvisor.from_env()
         )
+        self.chatbot_runtime = (
+            chatbot_runtime or LlmChatbotInterviewRuntime.from_env()
+        )
         self.terminology_client = terminology_client or TerminologyClient.from_env()
         self._session_factory = session_factory or (
             lambda session_id: CoreInteractionSession(
@@ -220,9 +226,13 @@ class InterviewApi:
                 "default_provider_id": self.llm_registry.default_provider_id,
                 "presentation_enabled": self.llm_presenter.enabled,
                 "interpretation_enabled": self.clinical_interpreter.enabled,
-                "planning_enabled": self.interview_planner.enabled,
-                "answer_interpretation_enabled": self.answer_interpreter.enabled,
-                "runtime_role": "chatbot_test_semantic_coverage_runtime",
+                "planning_enabled": False,
+                "answer_interpretation_enabled": False,
+                "runtime_role": "custom_gpt_conversation_runtime",
+                "conversation_runtime_enabled": self.chatbot_runtime.enabled,
+                "instructions": "docs/gpt/GPT_INSTRUCTIONS.md (verbatim)",
+                "knowledge_delivery": "action_style_two_stage_exact_source_retrieval",
+                "legacy_deterministic_fallback": False,
                 "health_information_enabled": self.health_information_advisor.enabled,
             },
             "terminology": self.terminology_client.configuration(),
@@ -463,14 +473,9 @@ class InterviewApi:
                         llm_selection,
                     )
                 )
-                core.question_planner = lambda context, candidates: (
-                    self.interview_planner.choose(
-                        context, candidates, llm_selection
-                    )
-                )
-                core.answer_interpreter = lambda context, message, candidates: (
-                    self.answer_interpreter.interpret(
-                        context, message, candidates, llm_selection
+                core.chatbot_turn = lambda rfe_id, conversation: (
+                    self.chatbot_runtime.respond(
+                        rfe_id, conversation, llm_selection
                     )
                 )
             try:
@@ -485,6 +490,13 @@ class InterviewApi:
                 if initial_message is not None:
                     state = core.process(initial_message)
                 presentation = self._render_llm_output(core, state, llm_selection)
+            except LlmChatbotRuntimeError as exc:
+                core.close()
+                raise ServiceError(
+                    503,
+                    "chatbot_runtime_unavailable",
+                    "Chatbot test 방식의 문진 LLM을 현재 사용할 수 없습니다.",
+                ) from exc
             except Exception:
                 core.close()
                 raise
@@ -537,6 +549,12 @@ class InterviewApi:
         with record.lock:
             try:
                 state = record.core.process(message)
+            except LlmChatbotRuntimeError as exc:
+                raise ServiceError(
+                    503,
+                    "chatbot_runtime_unavailable",
+                    "Chatbot test 방식의 문진 LLM을 현재 사용할 수 없습니다.",
+                ) from exc
             except RuntimeError as exc:
                 raise ServiceError(409, "session_closed", "session is closed") from exc
             record.last_state = deepcopy(state)
@@ -680,7 +698,35 @@ class InterviewApi:
     ) -> dict[str, Any]:
         if core.mode_id == "health_information":
             return self.health_information_advisor.answer(state, selection)
-        return self.llm_presenter.present(state, selection)
+        adapter_state = state.get("adapter_state") if isinstance(state, dict) else None
+        assistant_message = (
+            adapter_state.get("assistant_message")
+            if isinstance(adapter_state, dict)
+            else None
+        )
+        if isinstance(assistant_message, str) and assistant_message.strip():
+            return {
+                "status": "generated",
+                "purpose": "custom_gpt_conversation_turn",
+                "provider_id": selection.provider.provider_id,
+                "model": selection.provider.model,
+                "text": assistant_message,
+                "patient_input_transmitted": True,
+                "processing_location": (
+                    "external_vendor"
+                    if selection.provider.external_processing
+                    else "banttas_ai_local"
+                ),
+                "clinical_authority": False,
+                "instructions": "docs/gpt/GPT_INSTRUCTIONS.md (verbatim)",
+                "legacy_deterministic_fallback": False,
+            }
+        return {
+            "status": "not_applicable",
+            "purpose": "custom_gpt_conversation_turn",
+            "provider_id": selection.provider.provider_id,
+            "patient_input_transmitted": False,
+        }
 
     def _result_document(self, session_id: str, record: SessionRecord) -> dict[str, Any]:
         if record.core.mode_id == "health_information" and record.core.adapter is not None:

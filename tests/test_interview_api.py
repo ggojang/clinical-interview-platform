@@ -8,6 +8,7 @@ from http.client import HTTPMessage
 from unittest.mock import patch
 
 from services.interview_api.llm import (
+    LlmChatbotInterviewRuntime,
     LlmClinicalInterpreter,
     LlmHealthInformationAdvisor,
     LlmInterviewPlanner,
@@ -452,7 +453,29 @@ class AnonymousDemoHttpTests(InterviewApiHttpTests):
 
 
 class InterviewApiRuntimeIntegrationTests(unittest.TestCase):
-    def test_real_api_routes_colloquial_rfe_then_uses_bounded_plan(self):
+    @staticmethod
+    def _chatbot_runtime(text=None):
+        def retrieval_transport(_provider, messages, _timeout):
+            request = json.loads(messages[-1]["content"])
+            question = request["package_index"]["questions"][0]
+            priority = request["package_index"]["priority_rules"][:1]
+            return json.dumps({
+                "question_ids": [question["id"]],
+                "fact_ids": [question.get("collects") or question.get("fact_id")],
+                "priority_rule_ids": [item["id"] for item in priority],
+            })
+
+        return LlmChatbotInterviewRuntime(
+            enabled=True,
+            retrieval_transport=retrieval_transport,
+            transport=lambda *_args: text or (
+                "**Q1.** 지금 복통은 0점부터 10점 중 몇 점인가요?\n\n"
+                "내용을 자유롭게 입력해 주세요.\n\n"
+                "출처: [공동 작업 지식] package.primary-care-abdominal-pain"
+            ),
+        )
+
+    def test_real_api_routes_colloquial_rfe_then_uses_custom_gpt_conversation(self):
         local = LlmProvider(
             provider_id="local_vllm",
             display_name="Local",
@@ -474,12 +497,7 @@ class InterviewApiRuntimeIntegrationTests(unittest.TestCase):
                     "candidates": [],
                 }),
             ),
-            interview_planner=LlmInterviewPlanner(
-                enabled=True,
-                transport=lambda *_args: json.dumps({
-                    "fact_id": "symptom.abdominal_pain.severity",
-                }),
-            ),
+            chatbot_runtime=self._chatbot_runtime(),
         )
 
         created = api.create_session({
@@ -488,23 +506,20 @@ class InterviewApiRuntimeIntegrationTests(unittest.TestCase):
         })
 
         self.assertEqual(created["mode_id"], "clinical_adaptive")
-        self.assertEqual(created["state"]["adapter_state"]["turn"], 1)
-        self.assertEqual(
-            created["state"]["adapter_state"]["package"]["id"],
-            "package.primary-care-abdominal-pain",
-        )
-        self.assertEqual(
-            created["state"]["adapter_state"]["selected_question"]["fact_id"],
-            "symptom.abdominal_pain.severity",
-        )
-        self.assertEqual(
-            created["state"]["adapter_state"]["selected_question"]["planner"],
-            "bounded_llm_candidate_selection",
-        )
+        adapter = created["state"]["adapter_state"]
+        self.assertEqual(adapter["runtime"], "custom_gpt_conversation")
+        self.assertEqual(adapter["reason_for_encounter"], "rfe.abdominal_pain")
+        self.assertEqual(adapter["selected_question"]["question_ref"], "Q1")
+        self.assertFalse(adapter["interview_flow"]["legacy_deterministic_fallback"])
         api.delete_session(created["session_id"])
 
     def test_real_core_exposes_draft_handoff_without_fhir_claim(self):
-        api = InterviewApi(max_sessions=1)
+        api = InterviewApi(
+            max_sessions=1,
+            chatbot_runtime=self._chatbot_runtime(
+                "**Q1.** 기침은 언제 시작되었나요?"
+            ),
+        )
         created = api.create_session(
             {
                 "mode_selection": "문진 시작",

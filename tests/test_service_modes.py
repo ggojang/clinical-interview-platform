@@ -67,29 +67,51 @@ def test_top_level_categories_require_submode_only_when_needed():
 
 
 def test_core_session_delegates_clinical_message_to_existing_interview_runtime():
-    session = CoreInteractionSession("purpose-core-clinical")
+    observed = {}
+
+    def turn(rfe_id, conversation):
+        observed["rfe_id"] = rfe_id
+        observed["conversation"] = conversation
+        return "Q1. 기침은 언제 시작했나요?"
+
+    session = CoreInteractionSession("purpose-core-clinical", chatbot_turn=turn)
     initial = session.start()
     assert initial["status"] == "purpose_required"
     state = session.process("기침이 4일 전부터 있어요")
     assert state["status"] == "active"
     assert state["mode_id"] == "clinical_adaptive"
-    assert state["adapter_state"]["package"]["id"] == "package.primary-care-cough"
-    assert state["adapter_state"]["selected_question"]["reason"] != "minimal_safety_gate"
+    assert state["adapter_state"]["runtime"] == "custom_gpt_conversation"
+    assert state["adapter_state"]["reason_for_encounter"] == "rfe.cough"
+    assert observed["rfe_id"] == "rfe.cough"
+    assert observed["conversation"] == [
+        {"role": "user", "content": "기침이 4일 전부터 있어요"}
+    ]
+    assert not state["adapter_state"]["interview_flow"]["legacy_deterministic_fallback"]
     assert session.adapter is not None
     closed = session.close()
     assert closed["response_state_purged"]
     assert session.adapter is None
 
 
-def test_core_clinical_route_selects_the_matching_compiled_package_and_escalates_reported_signal():
-    headache = CoreInteractionSession("purpose-core-headache").process("머리가 아파요")
-    assert headache["adapter_state"]["package"]["id"] == "package.primary-care-headache"
+def test_core_clinical_route_selects_matching_rfe_for_conversation_runtime():
+    calls = []
 
-    warning = CoreInteractionSession("purpose-core-reported-warning").process(
+    def turn(rfe_id, conversation):
+        calls.append((rfe_id, conversation))
+        return "Q1. 다음 확인 질문입니다."
+
+    headache = CoreInteractionSession(
+        "purpose-core-headache", chatbot_turn=turn
+    ).process("머리가 아파요")
+    assert headache["adapter_state"]["reason_for_encounter"] == "rfe.headache"
+
+    warning = CoreInteractionSession(
+        "purpose-core-reported-warning", chatbot_turn=turn
+    ).process(
         "기침하면서 피가 나와요"
     )
-    assert warning["adapter_state"]["safety_status"]["level"] == "urgent"
-    assert "rule.safety.hemoptysis" in warning["adapter_state"]["safety_status"]["triggered_rules"]
+    assert warning["adapter_state"]["reason_for_encounter"] == "rfe.cough"
+    assert calls[-1][1][-1]["content"] == "기침하면서 피가 나와요"
 
 
 def test_bounded_interpreter_routes_colloquial_body_region_and_prefills_atomic_location():
@@ -104,17 +126,13 @@ def test_bounded_interpreter_routes_colloquial_body_region_and_prefills_atomic_l
             "clinical_authority": False,
         },
         proactive_safety_questions=False,
+        chatbot_turn=lambda _rfe_id, _conversation: "Q1. 복통은 언제 시작했나요?",
     )
     state = session.process("아랫배 통증")
 
     assert state["status"] == "active"
-    assert state["adapter_state"]["package"]["id"] == "package.primary-care-abdominal-pain"
-    assert state["adapter_state"]["facts"]["symptom.abdominal_pain.location"]["value"] == (
-        "suprapubic_or_pelvic"
-    )
-    assert state["adapter_state"]["selected_question"]["fact_id"] == (
-        "symptom.abdominal_pain.severity"
-    )
+    assert state["adapter_state"]["reason_for_encounter"] == "rfe.abdominal_pain"
+    assert state["adapter_state"]["selected_question"]["question_ref"] == "Q1"
     assert state["clinical_interpretation"]["clinical_authority"] is False
 
 
@@ -142,20 +160,25 @@ def test_colloquial_hearing_and_test_sheet_phrases_route_to_existing_packages():
     assert fixture["status"] == "synthetic"
     assert not fixture["contains_real_patient_data"]
 
-    hearing = CoreInteractionSession("purpose-core-hearing-proxy").process(
+    turn = lambda _rfe_id, _conversation: "Q1. 다음 확인 질문입니다."
+    hearing = CoreInteractionSession(
+        "purpose-core-hearing-proxy", chatbot_turn=turn
+    ).process(
         "아이가 소리를 잘 못 듣는 것 같아 대신 답해요"
     )
     assert hearing["status"] == "active"
-    assert hearing["adapter_state"]["package"]["id"] == (
-        "package.primary-care-ear-hearing-symptoms"
+    assert hearing["adapter_state"]["reason_for_encounter"] == (
+        "rfe.ear_hearing_symptoms"
     )
 
-    result = CoreInteractionSession("purpose-core-test-sheet").process(
+    result = CoreInteractionSession(
+        "purpose-core-test-sheet", chatbot_turn=turn
+    ).process(
         "전문과 재진인데 합성 검사지를 보니 값이 서로 달라요"
     )
     assert result["status"] == "active"
-    assert result["adapter_state"]["package"]["id"] == (
-        "package.primary-care-test-result-follow-up"
+    assert result["adapter_state"]["reason_for_encounter"] == (
+        "rfe.test_result_follow_up"
     )
 
 

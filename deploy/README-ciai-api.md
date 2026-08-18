@@ -81,25 +81,26 @@ The existing `vllm-api-key` Podman secret is injected into the API container as
 `CLINICAL_LLM_LOCAL_API_KEY`. The value is never copied to Git or returned by
 the API.
 
-The deployed Chatbot-test Runtime keeps question order, the patient-facing
-stem, answer choices, the soft question budget, safety Rules and completion
-deterministic. The local model has two bounded roles: it may map the opening
-message to an allowlisted RFE id and extract several explicit allowlisted Facts
-from the current answer. This semantic-coverage extraction lets one natural
-answer satisfy more than one authored Fact without asking each compiled field
-separately. It receives the current answer and a bounded schema allowlist, but
-not prior answer values, uploaded files, medical-source documents, traces or
-handoff results. It cannot invent an RFE, Fact, Rule, diagnosis, negative
-finding, urgency, treatment or completion condition. Provider or schema
-failure falls back to deterministic routing, answer capture and question
-planning.
+The adaptive interview uses two model calls per turn. A read-only retrieval
+call receives the selected RFE package index and the full in-memory
+conversation, then returns only Question, Fact, and priority Rule ids. The
+patient-facing generation call receives `docs/gpt/GPT_INSTRUCTIONS.md`
+verbatim, the exact repository objects for those ids, every safety Rule in the
+package, and the full conversation. This preserves the 61 KB instruction
+contract without putting every full package object into the local model's
+context at once. It is the Action-style conversation-native orchestration used
+by the Custom GPT test: the model maintains semantic coverage and chooses one
+next question with its answer shortcuts. The opening symptom remains part of
+the conversation, so already stated site, laterality and symptom meaning are
+not discarded before Q1. The API parses visible Q references only for UI and
+draft FHIR history; it does not replace the model's question with a
+deterministic planner.
 
-The deployed demo disables optional LLM question planning and question-stem
-rewriting. Compiled authoring questions remain available for audit and
-clinician handoff, while the patient sees concise questions and authored
-choices or input examples. Ordinary routine interviews move to answer review
-at the configured soft budget; unasked Facts remain visibly unresolved rather
-than being treated as negative.
+There is no legacy deterministic question-selection fallback. If the selected
+LLM or required Knowledge payload is unavailable, the API returns a temporary
+service error and leaves the interview in progress instead of silently
+switching to the previous engine. Response-bearing conversation state remains
+memory-only and is purged on close or TTL expiry.
 
 To offer a commercial OpenAI-compatible provider, add only non-secret metadata
 to `CLINICAL_LLM_PROVIDERS_JSON` and inject the named credential as a Podman

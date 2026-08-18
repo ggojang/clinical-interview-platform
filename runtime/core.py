@@ -1,9 +1,4 @@
-"""Purpose-first orchestration for the Clinical Questionnaire Platform.
-
-This state machine selects a service mode before handing control to the
-existing specialized runtime. It keeps the proven adaptive interview engine
-intact while making interaction purpose the platform's primary entry point.
-"""
+"""Purpose-first orchestration for the Clinical Questionnaire Platform."""
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -12,7 +7,7 @@ from typing import Any, Callable
 
 from runtime.service_modes import ServiceModeRegistry
 from runtime.health_information import HealthInformationSession
-from runtime.session import InterviewSession
+from runtime.chatbot_session import ChatbotInterviewSession
 
 
 @dataclass
@@ -24,12 +19,9 @@ class CoreInteractionSession:
     encounter_context: dict[str, Any] | None = None
     proactive_safety_questions: bool = False
     clinical_interpreter: Callable[[str], dict[str, Any]] | None = None
-    question_planner: Callable[[dict[str, Any], list[dict[str, Any]]], str | None] | None = None
-    answer_interpreter: Callable[
-        [dict[str, Any], str, list[dict[str, Any]]], dict[str, dict[str, Any]]
-    ] | None = None
+    chatbot_turn: Callable[[str, list[dict[str, str]]], str] | None = None
     mode_id: str | None = None
-    adapter: InterviewSession | HealthInformationSession | None = None
+    adapter: ChatbotInterviewSession | HealthInformationSession | None = None
     closed: bool = False
 
     def start(self) -> dict[str, Any]:
@@ -197,25 +189,12 @@ class CoreInteractionSession:
                 "candidates": candidates,
                 "clinical_interpretation": interpretation,
             }
-        self.adapter = InterviewSession(
-            self.session_id,
-            package_path=self.registry.package_path_for(rfe),
-            execution_mode=self.execution_mode,
+        if self.chatbot_turn is None:
+            raise RuntimeError("conversation-native chatbot runtime is unavailable")
+        self.adapter = ChatbotInterviewSession(
+            session_id=self.session_id,
             reason_for_encounter=rfe["id"],
-            clinician_submission=self.clinician_submission,
-            encounter_context=self.encounter_context or {
-                "care_setting": "primary_care",
-                "encounter_type": "new_encounter",
-                "interview_initiator": "patient",
-                "interview_mode": "chat",
-                "available_information": ["scheduled_visit", "no_previous_records"],
-                "time_constraint": "scheduled",
-                "clinical_responsibility": "decision_support",
-            },
-            proactive_safety_questions=self.proactive_safety_questions,
-            question_planner=self.question_planner,
-            answer_interpreter=self.answer_interpreter,
-            interaction_style="chatbot_test",
+            chatbot_turn=self.chatbot_turn,
         )
         wrapped = self._wrap(self.adapter.process(message), resolution=resolution)
         if interpretation is not None:

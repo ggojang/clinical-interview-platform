@@ -11,86 +11,62 @@ from services.interview_api.llm import (
 )
 
 
-def _clinical_session(session_id: str, **kwargs) -> CoreInteractionSession:
-    session = CoreInteractionSession(session_id, **kwargs)
+def _clinical_session(
+    session_id: str,
+    chatbot_turn,
+) -> CoreInteractionSession:
+    session = CoreInteractionSession(session_id, chatbot_turn=chatbot_turn)
     session.select_mode("문진 시작")
     return session
 
 
 class ChatbotTestRuntimeTests(unittest.TestCase):
     def test_headache_starts_with_concise_question_and_examples(self):
-        state = _clinical_session("chatbot-headache").process("두통")["adapter_state"]
-        question = state["selected_question"]
-
-        self.assertEqual(question["fact_id"], "symptom.headache.location")
-        self.assertEqual(question["stem_text"], "머리에서 가장 아픈 곳은 어디인가요?")
-        self.assertEqual(
-            [item["display_ko"] for item in question["display_suggestions"]],
-            ["이마·눈 주위", "관자놀이", "정수리", "뒤통수·목 위쪽"],
-        )
-        self.assertEqual(
-            question["presentation_contract"]["interaction_style"], "chatbot_test"
-        )
-        self.assertFalse(
-            question["presentation_contract"]["compiled_authoring_question_exposed"]
-        )
-
-    def test_neck_pain_never_exposes_long_authoring_stem_and_stops_at_soft_budget(self):
-        session = _clinical_session("chatbot-neck")
-        state = session.process("목통증")["adapter_state"]
-        self.assertEqual(state["active_patterns"], ["encounter.neck_pain"])
-        shown = []
-        for _ in range(24):
-            question = state.get("selected_question")
-            if question is None:
-                break
-            stem = question.get("stem_text")
-            self.assertIsInstance(stem, str)
-            self.assertLessEqual(len(stem), 80)
-            shown.append(question)
-            options = question.get("answer_options") or question.get(
-                "display_suggestions"
-            )
-            if options:
-                answer = str(options[0]["input"])
-            elif "0~10" in stem:
-                answer = "4"
-            else:
-                answer = "없음"
-            state = session.process(answer)["adapter_state"]
-
-        self.assertEqual(len(shown), 18)
-        self.assertEqual(state["stop_reason"], "question_budget_reached")
-        self.assertEqual(shown[0]["stem_text"], "목에서 가장 아픈 곳은 어디인가요?")
-        self.assertTrue(any("가장 확인하고 싶은 점" in item["stem_text"] for item in shown))
-
-    def test_one_answer_can_satisfy_multiple_allowlisted_facts(self):
         observed = {}
 
-        def interpret(context, message, candidates):
-            observed["context"] = context
-            observed["message"] = message
-            observed["candidate_ids"] = {item["fact_id"] for item in candidates}
-            return {
-                "neck.onset_date_time": {"value": "어제", "confidence": 0.91},
-                "neck.onset_mode": {"value": "sudden", "confidence": 0.90},
-            }
+        def turn(rfe_id, conversation):
+            observed["rfe_id"] = rfe_id
+            observed["conversation"] = conversation
+            return (
+                "Q1. 머리에서 가장 아픈 곳은 어디인가요?\n\n"
+                "예: 이마·눈 주위, 관자놀이, 정수리, 뒤통수·목 위쪽\n\n"
+                "내용을 자유롭게 입력해 주세요."
+            )
 
-        session = _clinical_session(
-            "chatbot-multifact", answer_interpreter=interpret
-        )
-        session.process("목통증")
+        state = _clinical_session("chatbot-headache", turn).process("두통")[
+            "adapter_state"
+        ]
+        question = state["selected_question"]
+
+        self.assertEqual(observed["rfe_id"], "rfe.headache")
+        self.assertEqual(observed["conversation"], [{"role": "user", "content": "두통"}])
+        self.assertEqual(question["stem_text"], "머리에서 가장 아픈 곳은 어디인가요?")
+        self.assertEqual(state["runtime"], "custom_gpt_conversation")
+        self.assertFalse(state["interview_flow"]["legacy_deterministic_fallback"])
+
+    def test_neck_pain_keeps_full_conversation_for_llm_semantic_coverage(self):
+        calls = []
+
+        def turn(rfe_id, conversation):
+            calls.append((rfe_id, conversation))
+            number = len([item for item in conversation if item["role"] == "user"])
+            return f"Q{number}. 목 통증은 언제 시작했나요?"
+
+        session = _clinical_session("chatbot-neck", turn)
+        state = session.process("목통증")["adapter_state"]
         state = session.process("왼쪽 목덜미이고 어제 갑자기 시작했어요")
-        adapter = state["adapter_state"]
-
-        self.assertEqual(observed["context"]["expected_fact_id"], "neck.exact_site_laterality_and_extent")
-        self.assertIn("neck.onset_date_time", observed["candidate_ids"])
-        self.assertEqual(adapter["facts"]["neck.onset_date_time"]["value"], "어제")
-        self.assertEqual(adapter["facts"]["neck.onset_mode"]["value"], "sudden")
-        self.assertNotIn(
-            adapter["selected_question"]["fact_id"],
-            {"neck.onset_date_time", "neck.onset_mode"},
+        self.assertEqual(state["adapter_state"]["selected_question"]["question_ref"], "Q2")
+        self.assertEqual(calls[-1][0], "rfe.neck_pain")
+        self.assertEqual(
+            calls[-1][1][-1],
+            {"role": "user", "content": "왼쪽 목덜미이고 어제 갑자기 시작했어요"},
         )
+
+    def test_missing_conversation_llm_fails_instead_of_using_legacy_runtime(self):
+        session = CoreInteractionSession("chatbot-no-fallback")
+        session.select_mode("문진 시작")
+        with self.assertRaisesRegex(RuntimeError, "conversation-native"):
+            session.process("목통증")
 
 
 class AdaptiveAnswerInterpreterTests(unittest.TestCase):

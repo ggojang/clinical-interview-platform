@@ -1268,10 +1268,8 @@ function buildTextSurvey() {
 function adaptiveQuestion(document) {
   const stateDoc = document?.state || {};
   const selected = stateDoc.adapter_state?.selected_question || stateDoc.selected_question;
-  // Runtime-authored stems win over optional LLM wording.  In particular,
-  // selector questions must stay one short prompt followed by deterministic
-  // choices instead of becoming an explanatory paragraph.
-  const text = selected?.stem_text || document?.presentation?.text || selected?.text || stateDoc.prompt_ko;
+  const rawMessage = stateDoc.adapter_state?.assistant_message || document?.presentation?.text;
+  const text = selected?.stem_text || selected?.text || stateDoc.prompt_ko || rawMessage;
   if (!text) return null;
   const rawOptions = selected?.answer_options?.length ? selected.answer_options : (selected?.preferred_answer_options || []);
   const options = rawOptions.map((option, index) => {
@@ -1321,6 +1319,7 @@ function adaptiveQuestion(document) {
     knowledgeTarget: selected?.target_id,
     knowledgeFact: selected?.fact_id,
     questionTemplate: selected?.template_id,
+    rawMessage,
     sourceLabel: selected
       ? (document?.presentation?.status === "generated" ? "[공동 작업 지식] + [AI 표현]" : "[공동 작업 지식]")
       : "[AI 자체 생성—진단 아님]"
@@ -1338,12 +1337,16 @@ function adaptivePrompt(question) {
 }
 
 function showAdaptiveQuestion(question) {
-  bubble($("#adaptiveChatLog"), "assistant", adaptivePrompt(question));
+  // The full assistant turn is the Custom GPT-compatible contract.  Do not
+  // reconstruct it from a deterministic question planner or duplicate its
+  // numbered choices in a second text block.
+  bubble($("#adaptiveChatLog"), "assistant", question.rawMessage || adaptivePrompt(question));
   const guidance = syntheticGuidanceFor(question.text);
   if (guidance) bubble($("#adaptiveChatLog"), "notice", guidance);
   $("#adaptiveProgress").textContent = `${question.questionRef} · Knowledge Runtime`;
   $("#adaptiveAnswer").placeholder = question.options?.length ? "번호 또는 직접 답변" : "답변을 입력하세요";
-  renderAdaptiveSuggestions(question);
+  if (question.rawMessage) paintAdaptiveSuggestions(question, []);
+  else renderAdaptiveSuggestions(question);
 }
 
 function paintAdaptiveSuggestions(question, choices) {
@@ -1592,7 +1595,7 @@ async function startAdaptive(opening) {
   if (!opening) return showToast("진료 또는 상담을 원하는 이유를 입력하세요.");
   const provider = state.providers.find((item) => item.provider_id === $("#llmProvider").value);
   if (provider?.external_processing && !$("#externalConsent").checked) return showToast("외부 LLM 처리 동의가 필요합니다.");
-  const modeSelection = state.adaptivePurpose === "clinical_adaptive" ? "문진 시작" : "일반 건강상담";
+  const modeSelection = state.adaptivePurpose === "clinical_adaptive" ? "문진 시작 (예: 기침이 나요)" : "일반 건강상담";
   const requestSerial = ++state.adaptiveRequestSerial;
   setAdaptiveBusy(true, state.adaptivePurpose === "clinical_adaptive" ? "Reason for Encounter와 Knowledge를 연결하고 첫 질문을 준비하고 있습니다…" : "건강상담 연결을 준비하고 있습니다…");
   try {
@@ -1680,7 +1683,7 @@ async function sendAdaptiveAnswer() {
   bubble($("#adaptiveChatLog"), "user", answer);
   input.value = "";
   const requestSerial = ++state.adaptiveRequestSerial;
-  setAdaptiveBusy(true, "답변을 반영하고 다음 Knowledge 질문을 선택하고 있습니다…");
+  setAdaptiveBusy(true, "답변과 전체 대화 맥락을 반영해 다음 질문을 준비하고 있습니다…");
   try {
     const document = await api(`/v1/sessions/${state.sessionId}/messages`, { method: "POST", body: JSON.stringify({ message: answer }) });
     if (requestSerial !== state.adaptiveRequestSerial) return;

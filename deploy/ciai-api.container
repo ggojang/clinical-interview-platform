@@ -21,15 +21,17 @@ Environment=CLINICAL_LLM_LOCAL_ENABLED=true
 Environment=CLINICAL_LLM_LOCAL_BASE_URL=http://127.0.0.1:8000/v1
 Environment=CLINICAL_LLM_LOCAL_MODEL=qwen3-27b
 Environment=CLINICAL_LLM_DEFAULT_PROVIDER=local_vllm
-# Chatbot-test presentation and authored answer choices are selected by the
-# deterministic Runtime. The LLM maps the opening RFE and may extract several
-# explicit allowlisted Facts from only the current answer.
+# The adaptive interview retrieves source ids from a package index, then sends
+# the repository GPT instructions verbatim with exact source objects. There is
+# no legacy deterministic next-question fallback.
+Environment=CLINICAL_LLM_CHATBOT_RUNTIME_ENABLED=true
+Environment=CLINICAL_LLM_CHATBOT_RUNTIME_TIMEOUT_SECONDS=90
+Environment=CLINICAL_LLM_CHATBOT_MAX_TOKENS=1800
 Environment=CLINICAL_LLM_PRESENTATION_ENABLED=false
 Environment=CLINICAL_LLM_INTERPRETATION_ENABLED=true
 Environment=CLINICAL_LLM_INTERPRETATION_MIN_CONFIDENCE=0.65
 Environment=CLINICAL_LLM_PLANNING_ENABLED=false
-Environment=CLINICAL_LLM_ANSWER_INTERPRETATION_ENABLED=true
-Environment=CLINICAL_LLM_ANSWER_INTERPRETATION_TIMEOUT_SECONDS=18
+Environment=CLINICAL_LLM_ANSWER_INTERPRETATION_ENABLED=false
 Environment=CLINICAL_LLM_TIMEOUT_SECONDS=12
 Environment=CLINICAL_LLM_HEALTH_INFORMATION_TIMEOUT_SECONDS=30
 Environment=CLINICAL_TERMINOLOGY_BASE_URL=http://10.20.0.12:8443/fhir

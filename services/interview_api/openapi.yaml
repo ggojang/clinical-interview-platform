@@ -598,7 +598,7 @@ components:
         participant_may_choose:
           type: boolean
         runtime_role:
-          const: question_presentation_only
+          const: custom_gpt_conversation_or_health_information
         presentation_enabled:
           type: boolean
         clinical_authority:
@@ -614,7 +614,7 @@ components:
         status:
           enum: [generated, deterministic_fallback, not_applicable]
         purpose:
-          enum: [question_presentation_only, health_information]
+          enum: [custom_gpt_conversation_turn, question_presentation_only, health_information]
         provider_id:
           type: string
         model:
@@ -661,11 +661,13 @@ components:
         external_processing_requires_explicit_consent:
           const: true
         runtime_role:
-          const: question_presentation_only
+          const: custom_gpt_conversation_or_health_information
         presentation_enabled:
           type: boolean
-        clinical_routing_and_safety:
-          const: compiled_runtime_only
+        adaptive_interview:
+          const: action_retrieval_then_verbatim_instructions_exact_source_objects_and_full_conversation
+        legacy_deterministic_question_fallback:
+          const: false
         providers:
           type: array
           items:
