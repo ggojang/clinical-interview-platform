@@ -1798,7 +1798,7 @@ class LlmHealthInformationAdvisor:
     ) -> None:
         self.enabled = enabled
         self.timeout_seconds = timeout_seconds
-        self._transport = transport or _openai_compatible_completion
+        self._transport = transport or _health_information_completion
 
     @classmethod
     def from_env(cls) -> "LlmHealthInformationAdvisor":
@@ -2026,6 +2026,22 @@ def _openai_compatible_completion(
         messages,
         timeout_seconds,
         max_tokens=180,
+        temperature=0.1,
+    )
+
+
+def _health_information_completion(
+    provider: LlmProvider,
+    messages: list[dict[str, str]],
+    timeout_seconds: float,
+) -> str:
+    return _openai_compatible_chat_completion(
+        provider,
+        messages,
+        timeout_seconds,
+        max_tokens=int(
+            os.getenv("CLINICAL_LLM_HEALTH_INFORMATION_MAX_TOKENS", "500")
+        ),
         temperature=0.1,
     )
 
