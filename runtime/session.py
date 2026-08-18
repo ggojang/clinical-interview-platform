@@ -1244,12 +1244,30 @@ class InterviewSession:
         code_map = template.get("answer_code_map", {})
         bound = binding.get("fhir_bound_answer_mappings", {})
         snomed = binding.get("snomed_mappings", {})
+        option_labels: dict[str, str] = {}
+        numeric_codes = list(code_map)
+        if numeric_codes and numeric_codes == [str(index) for index in range(1, len(numeric_codes) + 1)]:
+            option_starts = [
+                (code, re.search(rf"(?:^|\s){re.escape(code)}(?:[.)]|\s)+", question["text"]))
+                for code in numeric_codes
+            ]
+            if all(match is not None for _, match in option_starts):
+                first_match = option_starts[0][1]
+                assert first_match is not None
+                question["stem_text"] = question["text"][:first_match.start()].strip()
+                for index, (code, match) in enumerate(option_starts):
+                    assert match is not None
+                    next_match = option_starts[index + 1][1] if index + 1 < len(option_starts) else None
+                    end = next_match.start() if next_match is not None else len(question["text"])
+                    option_labels[code] = question["text"][match.end():end].strip(" ,.;")
         options = []
         for input_code, internal_value in code_map.items():
             option = {
                 "input": input_code,
                 "internal_value": internal_value,
             }
+            if option_labels.get(input_code):
+                option["display_ko"] = option_labels[input_code]
             coding = bound.get(internal_value) or snomed.get(internal_value)
             if coding:
                 option["coding"] = {
@@ -1258,6 +1276,13 @@ class InterviewSession:
                     if key in coding
                 }
             options.append(option)
+        if not options and node.get("value_type") == "boolean":
+            options = [
+                {"input": "1", "internal_value": True, "display_ko": "예"},
+                {"input": "2", "internal_value": False, "display_ko": "아니오"},
+                {"input": "3", "internal_value": "asked-unknown", "display_ko": "잘 모르겠음"},
+                {"input": "4", "internal_value": "asked-declined", "display_ko": "답변하지 않음"},
+            ]
         if options:
             question["answer_options"] = options
         if binding.get("answer_value_set"):

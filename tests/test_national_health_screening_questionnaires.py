@@ -74,6 +74,13 @@ class NationalHealthScreeningQuestionnaireTests(unittest.TestCase):
         self.assertTrue(all(item["complete"] for item in official))
         self.assertTrue(all(item["digest"].startswith("sha256:") for item in official))
         self.assertTrue(all(item["kind"] == "source_defined_fixed_questionnaire" for item in official))
+        archive = manifest["binary_archive"]
+        self.assertEqual(archive["storage"], "private_server_only")
+        self.assertEqual(archive["repository_distribution"], "metadata_only")
+        self.assertEqual(
+            {item["digest"] for item in archive["files"]},
+            {item["digest"] for item in official},
+        )
 
 
 if __name__ == "__main__":

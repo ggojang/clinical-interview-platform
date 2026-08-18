@@ -22,7 +22,7 @@
         <div>
           <span class="eyebrow">RESEARCH TEST ENVIRONMENT</span>
           <h1>설문 유형을 고르고,<br><em>같은 표준 산출물</em>을 확인하세요.</h1>
-          <p>정형 서식, 고정 문항 대화, Knowledge 기반 자유 대화를 하나의 실행 화면에서 비교합니다.</p>
+          <p>정형 서식, 고정 문항 대화, Knowledge 기반 비정형 대화를 하나의 실행 화면에서 비교합니다.</p>
         </div>
         <div class="flow-map" aria-label="서비스 흐름">
           <div><span>01</span><strong>입력</strong><small>R4 · R5 · 대화</small></div>
@@ -33,16 +33,7 @@
         </div>
       </section>
 
-      <section class="connection-card" aria-labelledby="connectionTitle">
-        <div>
-          <span class="step-label">익명 테스트</span>
-          <h2 id="connectionTitle">API key 없이 자동 연결</h2>
-          <p>페이지를 열면 익명 데모에 자동 연결됩니다. 플랫폼의 로컬 LLM만 사용하고 10분 뒤 자동 폐기됩니다.</p>
-        </div>
-        <div class="demo-access"><strong>가상 정보만 사용</strong><small>실제 환자·개인정보를 입력하지 않는 연구 테스트 모드</small></div>
-      </section>
-
-      <details class="api-key-panel">
+      <details class="api-key-panel" open>
         <summary>기관·개발자용 인증 API 연결</summary>
         <div><label class="field api-field"><span>API key</span><input id="apiKey" type="password" autocomplete="off" placeholder="Bearer key 입력"></label><button class="button" id="connectButton" type="button">인증 API 연결</button></div>
       </details>
@@ -64,12 +55,12 @@
           <button class="mode-card" type="button" data-mode="fixed" role="radio" aria-checked="false">
             <span class="mode-icon">Q→</span><span class="mode-number">02</span>
             <strong>정형 대화</strong><small>Fixed questions in chat</small>
-            <p>환자경험평가·국민건강검진 공식 서식 또는 업로드 서식을 순서대로 진행합니다.</p>
+            <p>설문을 환자경험평가, 국가건강검진 문진 등과 같은 정형화된 서식 또는 업로드 서식으로 진행합니다.</p>
             <span class="capability partial">클라이언트 데모</span>
           </button>
           <button class="mode-card" type="button" data-mode="adaptive" role="radio" aria-checked="false">
             <span class="mode-icon">AI</span><span class="mode-number">03</span>
-            <strong>자유 대화</strong><small>Knowledge-adaptive</small>
+            <strong>비정형 대화</strong><small>Knowledge-adaptive</small>
             <p>진료 전 문진과 일반 건강상담을 구분해 목적에 맞는 Runtime으로 연결합니다.</p>
             <span class="capability live">API 연결</span>
           </button>
@@ -139,13 +130,14 @@
           </div>
 
           <div id="adaptiveWorkspace" class="workspace">
-            <div class="purpose-choice" role="radiogroup" aria-label="자유 대화 목적">
+            <div class="purpose-choice" role="radiogroup" aria-label="비정형 대화 목적">
               <button class="active" type="button" data-purpose="clinical_adaptive" role="radio" aria-checked="true"><strong>진료 전 문진</strong><small>예약 진료에 필요한 정보 수집 · clinician handoff</small></button>
               <button type="button" data-purpose="health_information" role="radio" aria-checked="false"><strong>일반 건강상담</strong><small>질문 설명과 응급 가능성 안내 · 진단/치료 결정 아님</small></button>
             </div>
             <p class="context-copy" id="adaptivePurposeHelp">증상만 입력하는 곳이 아닙니다. 예약 진료의 이유, 재진, 검사결과 상담, 복용약 검토, 퇴원 후 상태 등 의료진에게 미리 전달할 내용을 자유롭게 시작할 수 있습니다.</p>
             <label class="field"><span>LLM provider</span><select id="llmProvider"><option value="local_vllm">Banttas AI local LLM</option></select></label>
             <p class="provider-privacy" id="providerPrivacy">Local LLM은 분리된 내부 환경에서 처리되며 외부 상용 LLM으로 전송하지 않습니다.</p>
+            <p class="provider-auth" id="providerAuthHelp">외부 상용 LLM은 위 기관·개발자용 인증 API에 연결되고 서버에 안전하게 구성된 provider가 있을 때 선택할 수 있습니다. 개인용 계정 비밀번호나 API key는 이 화면에서 수집하지 않습니다.</p>
             <label class="consent-row" id="externalConsentRow" hidden><input id="externalConsent" type="checkbox"><span>입력 내용이 외부 상용 LLM에서 처리되는 것에 동의합니다.</span></label>
           </div>
         </article>
@@ -164,6 +156,7 @@
           <div class="conversation runner" id="adaptiveConversation" hidden>
             <div class="conversation-head"><strong id="adaptiveConversationTitle">진료 전 문진</strong><span id="adaptiveProgress">0개 답변</span></div>
             <div class="chat-log" id="adaptiveChatLog"></div>
+            <div class="processing-status" id="adaptiveProcessing" role="status" aria-live="polite" hidden><span class="spinner" aria-hidden="true"></span><span id="adaptiveProcessingText">다음 질문을 준비하고 있습니다…</span></div>
             <div class="composer"><input id="adaptiveAnswer" type="text" placeholder="진료받으려는 이유 또는 상담 질문 입력"><button class="button primary" id="adaptiveAnswerButton" type="button">보내기</button><button class="button ghost" id="completeAdaptive" type="button" disabled>종료·결과</button></div>
           </div>
           <div class="runner-placeholder" id="conversationPlaceholder" hidden><div class="empty-state compact"><span>→</span><strong>왼쪽에서 설문을 시작하세요</strong><small>질문과 답변 입력창이 이 영역에 표시됩니다.</small></div></div>

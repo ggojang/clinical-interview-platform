@@ -252,6 +252,35 @@ class ClinicianSubmissionContextTest(unittest.TestCase):
         self.assertIn("자유롭게 입력", open_question["response_instruction_ko"])
         self.assertTrue(open_question["allow_free_text"])
 
+    def test_boolean_question_exposes_numbered_korean_shortcuts(self):
+        session = self._session()
+        question = session._question_for_fact("symptom.hemoptysis", "synthetic-binary")
+
+        self.assertEqual(
+            [(option["input"], option["display_ko"]) for option in question["answer_options"]],
+            [("1", "예"), ("2", "아니오"), ("3", "잘 모르겠음"), ("4", "답변하지 않음")],
+        )
+
+    def test_inline_numbered_choices_are_split_into_stem_and_korean_labels(self):
+        session = self._session()
+        question = session._question_for_fact(
+            "encounter.context_review_state", "synthetic-inline-choice"
+        )
+
+        self.assertEqual(
+            question["stem_text"],
+            "이 서비스에서 기본 건강정보를 처음 작성하시나요?",
+        )
+        self.assertEqual(
+            [option["display_ko"] for option in question["answer_options"]],
+            [
+                "처음 작성함",
+                "복용약만 90일 넘게 확인하지 않음",
+                "전체 기본정보를 1년 넘게 확인하지 않음",
+                "최근 확인하여 현재 정보임",
+            ],
+        )
+
     def test_natural_language_current_context_skips_baseline_history(self):
         for response in (
             "최근 확인했고 바뀐 내용이 없습니다",

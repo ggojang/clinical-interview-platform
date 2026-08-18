@@ -27,6 +27,8 @@ const state = {
   sessionId: null,
   adaptivePurpose: "clinical_adaptive",
   adaptiveStarted: false,
+  adaptiveBusy: false,
+  adaptiveRequestSerial: 0,
   adaptiveHistory: [],
   currentAdaptiveQuestion: null,
   fixedQuestions: [],
@@ -89,7 +91,7 @@ function setMode(mode) {
   const labels = {
     structured: ["FHIR Questionnaire", "R4 / R5"],
     fixed: ["정형 대화", "Fixed questions"],
-    adaptive: ["자유 대화", "Purpose first"]
+    adaptive: ["비정형 대화", "Purpose first"]
   };
   $("#inputPanelTitle").textContent = labels[mode][0];
   $("#inputBadge").textContent = labels[mode][1];
@@ -992,7 +994,7 @@ function buildTextSurvey() {
 function adaptiveQuestion(document) {
   const stateDoc = document?.state || {};
   const selected = stateDoc.adapter_state?.selected_question || stateDoc.selected_question;
-  const text = document?.presentation?.text || selected?.text || stateDoc.prompt_ko;
+  const text = document?.presentation?.text || selected?.stem_text || selected?.text || stateDoc.prompt_ko;
   if (!text) return null;
   const rawOptions = selected?.answer_options?.length ? selected.answer_options : (selected?.preferred_answer_options || []);
   const options = rawOptions.map((option, index) => ({
@@ -1093,15 +1095,64 @@ function prepareAdaptiveConversation(force = false) {
   $("#completeAdaptive").disabled = true;
 }
 
+function setAdaptiveBusy(busy, message = "다음 질문을 준비하고 있습니다…") {
+  state.adaptiveBusy = busy;
+  $("#adaptiveProcessing").hidden = !busy;
+  $("#adaptiveProcessingText").textContent = message;
+  $("#adaptiveConversation").setAttribute("aria-busy", String(busy));
+  const closedAfterStart = state.adaptiveStarted && !state.sessionId;
+  $("#adaptiveAnswer").disabled = busy || closedAfterStart;
+  $("#adaptiveAnswerButton").disabled = busy || closedAfterStart;
+  $("#llmProvider").disabled = busy || state.apiMode !== "authenticated" || state.adaptiveStarted;
+  $("#completeAdaptive").disabled = busy || !state.sessionId;
+}
+
+async function resetAdaptiveConversation(nextPurpose = state.adaptivePurpose) {
+  const previousSessionId = state.sessionId;
+  state.adaptiveRequestSerial += 1;
+  state.sessionId = null;
+  state.adaptivePurpose = nextPurpose;
+  state.adaptiveStarted = false;
+  state.adaptiveHistory = [];
+  state.currentAdaptiveQuestion = null;
+  state.handoff = {};
+  setAdaptiveBusy(false);
+  $("#adaptiveChatLog").replaceChildren();
+  prepareAdaptiveConversation(true);
+  if (previousSessionId) {
+    try { await api(`/v1/sessions/${previousSessionId}`, { method: "DELETE" }); } catch (_) { /* TTL remains the fallback. */ }
+  }
+}
+
+async function switchAdaptivePurpose(nextPurpose) {
+  if (nextPurpose === state.adaptivePurpose && !state.adaptiveStarted && !state.sessionId) return;
+  $$('[data-purpose]').forEach((candidate) => {
+    const active = candidate.dataset.purpose === nextPurpose;
+    candidate.classList.toggle("active", active);
+    candidate.setAttribute("aria-checked", String(active));
+  });
+  $("#adaptivePurposeHelp").textContent = nextPurpose === "clinical_adaptive"
+    ? "증상만 입력하는 곳이 아닙니다. 예약 진료의 이유, 재진, 검사결과 상담, 복용약 검토, 퇴원 후 상태 등 의료진에게 미리 전달할 내용을 자유롭게 시작할 수 있습니다."
+    : "건강 질문과 현재 상황을 자유롭게 입력합니다. 위험 신호가 의심되면 안전 안내를 제공하지만 진단·치료 결정을 대신하지 않습니다.";
+  showToast("이전 비정형 대화를 폐기하고 새 목적의 대화를 시작합니다.");
+  await resetAdaptiveConversation(nextPurpose);
+}
+
 async function startAdaptive(opening) {
   if (!opening) return showToast("진료 또는 상담을 원하는 이유를 입력하세요.");
   const provider = state.providers.find((item) => item.provider_id === $("#llmProvider").value);
   if (provider?.external_processing && !$("#externalConsent").checked) return showToast("외부 LLM 처리 동의가 필요합니다.");
   const modeSelection = state.adaptivePurpose === "clinical_adaptive" ? "문진 시작" : "일반 건강상담";
+  const requestSerial = ++state.adaptiveRequestSerial;
+  setAdaptiveBusy(true, state.adaptivePurpose === "clinical_adaptive" ? "Reason for Encounter와 Knowledge를 연결하고 첫 질문을 준비하고 있습니다…" : "건강상담 연결을 준비하고 있습니다…");
   try {
     const payload = { mode_selection: modeSelection, initial_message: opening };
     if (state.apiMode === "authenticated") payload.llm_selection = llmSelectionPayload();
     const document = await api("/v1/sessions", { method: "POST", body: JSON.stringify(payload) });
+    if (requestSerial !== state.adaptiveRequestSerial) {
+      try { await api(`/v1/sessions/${document.session_id}`, { method: "DELETE" }); } catch (_) { /* TTL remains the fallback. */ }
+      return;
+    }
     state.sessionId = document.session_id;
     state.adaptiveStarted = true;
     state.adaptiveHistory = [];
@@ -1128,6 +1179,7 @@ async function startAdaptive(opening) {
     }
     rebuildAdaptiveArtifacts(document);
   } catch (error) { showToast(error.message); }
+  finally { if (requestSerial === state.adaptiveRequestSerial) setAdaptiveBusy(false); }
 }
 
 async function sendAdaptiveAnswer() {
@@ -1143,8 +1195,11 @@ async function sendAdaptiveAnswer() {
   const answered = clone(state.currentAdaptiveQuestion);
   bubble($("#adaptiveChatLog"), "user", answer);
   input.value = "";
+  const requestSerial = ++state.adaptiveRequestSerial;
+  setAdaptiveBusy(true, "답변을 반영하고 다음 Knowledge 질문을 선택하고 있습니다…");
   try {
     const document = await api(`/v1/sessions/${state.sessionId}/messages`, { method: "POST", body: JSON.stringify({ message: answer }) });
+    if (requestSerial !== state.adaptiveRequestSerial) return;
     state.adaptiveHistory.push({ question: answered, answer });
     state.currentAdaptiveQuestion = adaptiveQuestion(document);
     if (state.currentAdaptiveQuestion) {
@@ -1156,22 +1211,26 @@ async function sendAdaptiveAnswer() {
     }
     rebuildAdaptiveArtifacts(document);
   } catch (error) { showToast(error.message); }
+  finally { if (requestSerial === state.adaptiveRequestSerial) setAdaptiveBusy(false); }
 }
 
 async function completeAdaptive() {
   if (!state.sessionId) return;
+  const requestSerial = ++state.adaptiveRequestSerial;
+  setAdaptiveBusy(true, "답변을 정리하고 최종 결과를 생성하고 있습니다…");
   try {
     const completed = await api(`/v1/sessions/${state.sessionId}/complete`, { method: "POST", body: "{}" });
     state.sessionId = null;
     state.handoff = completed.result?.clinical_handoff || completed.result || {};
     if (state.questionnaireResponse) state.questionnaireResponse.status = "completed";
     updateOutputs();
-    bubble($("#adaptiveChatLog"), "assistant", "세션을 완료하고 서버의 응답 상태를 폐기했습니다. 오른쪽에서 draft handoff를 확인하세요.");
+    bubble($("#adaptiveChatLog"), "assistant", "문진이 완료되었습니다. 질문 중에는 답변에 대한 의견이나 조언을 제시하지 않았습니다. 이제 오른쪽의 draft 의료인 요약을 확인하고, 진단·치료 판단은 담당 의료진과 상의해 주세요. 위험 신호 안내가 표시되면 해당 안전 안내를 우선하세요.");
     $("#adaptiveAnswer").disabled = true;
     $("#adaptiveAnswerButton").disabled = true;
     $("#completeAdaptive").disabled = true;
     selectOutput("handoff");
   } catch (error) { showToast(error.message); }
+  finally { if (requestSerial === state.adaptiveRequestSerial) setAdaptiveBusy(false); }
 }
 
 function selectOutput(name) {
@@ -1269,6 +1328,7 @@ function updateProviderConsent() {
   $("#providerPrivacy").textContent = provider?.external_processing
     ? "선택한 상용 LLM으로 입력 내용이 전송됩니다. 전송 전에 아래 동의가 필요합니다."
     : "Local LLM은 분리된 내부 환경에서 처리되며 외부 상용 LLM으로 전송하지 않습니다.";
+  $("#providerAuthHelp").hidden = Boolean(provider?.external_processing);
 }
 
 function initialize() {
@@ -1318,18 +1378,7 @@ function initialize() {
   $("#fixedAnswerButton").addEventListener("click", submitFixedAnswer);
   $("#fixedAnswer").addEventListener("keydown", (event) => { if (event.key === "Enter") submitFixedAnswer(); });
 
-  $$("[data-purpose]").forEach((button) => button.addEventListener("click", () => {
-    state.adaptivePurpose = button.dataset.purpose;
-    $$("[data-purpose]").forEach((candidate) => {
-      const active = candidate === button;
-      candidate.classList.toggle("active", active);
-      candidate.setAttribute("aria-checked", String(active));
-    });
-    $("#adaptivePurposeHelp").textContent = state.adaptivePurpose === "clinical_adaptive"
-      ? "증상만 입력하는 곳이 아닙니다. 예약 진료의 이유, 재진, 검사결과 상담, 복용약 검토, 퇴원 후 상태 등 의료진에게 미리 전달할 내용을 자유롭게 시작할 수 있습니다."
-      : "건강 질문과 현재 상황을 자유롭게 입력합니다. 위험 신호가 의심되면 안전 안내를 제공하지만 진단·치료 결정을 대신하지 않습니다.";
-    prepareAdaptiveConversation(true);
-  }));
+  $$("[data-purpose]").forEach((button) => button.addEventListener("click", () => switchAdaptivePurpose(button.dataset.purpose)));
   $("#llmProvider").addEventListener("change", updateProviderConsent);
   $("#adaptiveAnswerButton").addEventListener("click", sendAdaptiveAnswer);
   $("#adaptiveAnswer").addEventListener("keydown", (event) => { if (event.key === "Enter") sendAdaptiveAnswer(); });

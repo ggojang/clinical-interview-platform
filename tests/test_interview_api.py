@@ -308,6 +308,11 @@ class InterviewApiHttpTests(unittest.TestCase):
         self.assertIn("id=\"displayLocale\"", body)
         self.assertIn("국민건강검진 문진(시험용)", body)
         self.assertIn("id=\"adaptivePurposeHelp\"", body)
+        self.assertIn("<details class=\"api-key-panel\" open>", body)
+        self.assertIn("<strong>비정형 대화</strong>", body)
+        self.assertIn("id=\"adaptiveProcessing\"", body)
+        self.assertNotIn("class=\"connection-card\"", body)
+        self.assertNotIn("API key 없이 자동 연결", body)
         self.assertIn("연계 산출물 상태", body)
         self.assertNotIn("data-output=\"preview\"", body)
         self.assertNotIn("id=\"startAdaptive\"", body)
@@ -333,6 +338,9 @@ class InterviewApiHttpTests(unittest.TestCase):
         self.assertIn("isItemEnabled", body)
         self.assertIn("loadQuestionnaireValueSets", body)
         self.assertIn("syntheticGuidanceFor", body)
+        self.assertIn("async function resetAdaptiveConversation", body)
+        self.assertIn("setAdaptiveBusy(true", body)
+        self.assertIn("adaptiveRequestSerial", body)
         self.assertIn("valueDate", body)
         self.assertNotIn("localStorage", body)
         self.assertNotIn("sessionStorage", body)
@@ -522,7 +530,31 @@ class InterviewApiLlmPolicyTests(unittest.TestCase):
         transmitted = json.dumps(captured[0][1], ensure_ascii=False)
         self.assertIn("How long have you had the cough?", transmitted)
         self.assertNotIn("must-not-leave", transmitted)
+        self.assertIn("advice is reserved for the finalized result", transmitted)
         self.assertFalse(result["patient_response_transmitted"])
+
+    def test_presenter_uses_compiled_stem_without_repeating_inline_choices(self):
+        captured = []
+
+        def transport(provider, messages, timeout):
+            captured.append(messages)
+            return "현재 흡연 상태는 무엇인가요?"
+
+        registry = LlmProviderRegistry([self.local])
+        selected = registry.select(None, None)
+        presenter = LlmQuestionPresenter(enabled=True, transport=transport)
+        presenter.present(
+            {
+                "adapter_state": {
+                    "selected_question": {
+                        "text": "현재 흡연 상태는 무엇인가요? 1 현재 흡연, 2 과거 흡연",
+                        "stem_text": "현재 흡연 상태는 무엇인가요?",
+                    }
+                }
+            },
+            selected,
+        )
+        self.assertEqual(captured[0][1]["content"], "현재 흡연 상태는 무엇인가요?")
 
 
 if __name__ == "__main__":

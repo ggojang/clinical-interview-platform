@@ -342,10 +342,13 @@ class LlmQuestionPresenter:
             {
                 "role": "system",
                 "content": (
-                    "Translate or rephrase exactly one already-approved clinical interview "
-                    "question into clear, respectful Korean for a patient. Preserve the "
-                    "clinical meaning and answer scope. Do not add diagnosis, treatment, "
-                    "urgency, explanation, or another question. Output only the question."
+                    "Rewrite exactly one already-approved clinical interview question stem "
+                    "as one short, clear, respectful Korean question. Preserve its clinical "
+                    "meaning and answer scope. Answer choices are rendered separately, so do "
+                    "not repeat or invent choices. Do not add diagnosis, treatment, urgency, "
+                    "interpretation, advice, explanation, preamble, or another question. "
+                    "During collection the platform gives no opinion on an answer; advice is "
+                    "reserved for the finalized result. Output only the single question stem."
                 ),
             },
             {"role": "user", "content": question},
@@ -481,7 +484,7 @@ def _selected_question_text(state: dict[str, Any]) -> str | None:
     question = candidate.get("selected_question")
     if not isinstance(question, dict):
         return None
-    text = question.get("text")
+    text = question.get("stem_text") or question.get("text")
     return text.strip() if isinstance(text, str) and text.strip() else None
 
 
