@@ -411,7 +411,8 @@ class ChatbotConversationRuntimeTest(unittest.TestCase):
         self.assertEqual(len(captured), 2)
         self.assertIn("question.symptom_onset", response)
         self.assertNotIn("invented-trigger", response)
-        self.assertIn("outside the Action retrieval manifest", captured[1][-1]["content"])
+        self.assertIn("outside the Action retrieval manifest", captured[1][2]["content"])
+        self.assertEqual(captured[1][-1], {"role": "user", "content": "기침"})
 
     def test_equivalent_question_namespace_alias_is_canonicalized_without_retry(self):
         response = (

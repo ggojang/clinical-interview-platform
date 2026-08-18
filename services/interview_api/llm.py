@@ -191,18 +191,20 @@ class LlmChatbotInterviewRuntime:
                     response = self._transport(
                         selection.provider,
                         [
-                            *messages,
-                            {"role": "assistant", "content": response},
+                            *messages[:2],
                             {
                                 "role": "system",
                                 "content": (
                                     "The previous draft invented or used a Question id "
                                     "outside the Action retrieval manifest. Discard it. "
                                     "Return one replacement turn based only on the single "
-                                    "selected Question object. Preserve its clinical meaning "
-                                    "and print its exact id in the provenance line."
+                                    "selected Question object. The required exact source id is "
+                                    f"{allowed_question_ids[0]}. Preserve its clinical meaning "
+                                    "and print that exact id in the provenance line. Do not "
+                                    "repeat the most recent assistant Question."
                                 ),
                             },
+                            *messages[2:],
                         ],
                         self.timeout_seconds,
                     )
