@@ -14,6 +14,7 @@ from services.interview_api.llm import (
     LlmQuestionPresenter,
     LlmSelectionError,
     _is_single_question_presentation,
+    _openai_compatible_completion,
 )
 from services.interview_api.server import AnonymousDemoGate, ServerConfig, build_handler
 from services.interview_api.service import InterviewApi, ServiceError
@@ -630,6 +631,45 @@ class InterviewApiLlmPolicyTests(unittest.TestCase):
         )
         self.assertFalse(
             _is_single_question_presentation("기침은 언제 시작되었나요? 열도 있나요?")
+        )
+
+    def test_qwen3_completion_disables_reasoning_only_output(self):
+        captured = []
+
+        class Response:
+            status = 200
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_args):
+                return False
+
+            def read(self, _limit):
+                return json.dumps(
+                    {"choices": [{"message": {"content": "간결한 안내입니다."}}]}
+                ).encode()
+
+        def fake_urlopen(request, timeout):
+            captured.append((request, timeout))
+            return Response()
+
+        provider = LlmProvider(
+            provider_id="local_vllm",
+            display_name="Banttas AI local LLM",
+            adapter="openai_compatible",
+            base_url="http://127.0.0.1:8000/v1",
+            model="qwen3-27b",
+            external_processing=False,
+        )
+        with patch("services.interview_api.llm.urlopen", side_effect=fake_urlopen):
+            result = _openai_compatible_completion(
+                provider, [{"role": "user", "content": "질문"}], 30
+            )
+        payload = json.loads(captured[0][0].data.decode())
+        self.assertEqual(result, "간결한 안내입니다.")
+        self.assertEqual(
+            payload["chat_template_kwargs"], {"enable_thinking": False}
         )
 
 
