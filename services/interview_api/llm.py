@@ -499,7 +499,7 @@ class LlmClinicalInterpreter:
 
 
 class LlmInterviewPlanner:
-    """Choose one Fact from already eligible compiled question candidates."""
+    """Choose one Fact from the next eligible compiled semantic frontier."""
 
     def __init__(
         self,
@@ -548,7 +548,7 @@ class LlmInterviewPlanner:
                 "role": "system",
                 "content": (
                     "Choose exactly one next atomic interview Fact from the supplied eligible candidates. "
-                    "Prefer core history order (site, severity, onset, duration, character, course, associated symptoms, function, history, medicines, prior evaluation, concern). "
+                    "The compiled Runtime has already limited them to the next semantic priority frontier. "
                     "Do not invent or modify a question, Fact, Rule, diagnosis, urgency, or treatment. "
                     'Return JSON only: {"fact_id":"one allowed id"}.'
                 ),

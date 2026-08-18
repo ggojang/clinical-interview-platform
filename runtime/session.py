@@ -2532,17 +2532,40 @@ class InterviewSession:
         if self._safety_first():
             return max(candidates, key=lambda item: (item["score"], item["rule_id"]))
         if self.question_planner is not None:
+            # The LLM may choose only inside the next compiled semantic
+            # frontier.  It cannot skip an authored core-history axis merely
+            # because a later Fact is also technically eligible.
+            required_tier = min(
+                0 if item["fact_id"] in required_facts else 1
+                for item in candidates
+            )
+            required_candidates = [
+                item for item in candidates
+                if (0 if item["fact_id"] in required_facts else 1) == required_tier
+            ]
+            semantic_tier = min(
+                semantic_question_rank(item["fact_id"], item.get("target_id"))
+                for item in required_candidates
+            )
+            planner_candidates = [
+                item for item in required_candidates
+                if semantic_question_rank(item["fact_id"], item.get("target_id"))
+                == semantic_tier
+            ]
             planner_context = {
                 "reason_for_encounter": self.reason_for_encounter,
                 "known_fact_ids": sorted(self.memory.facts),
                 "asked_fact_ids": list(self.asked),
                 "required_fact_ids": sorted(required_facts),
+                "compiled_semantic_frontier": semantic_tier,
             }
-            selected_fact_id = self.question_planner(planner_context, candidates)
+            selected_fact_id = self.question_planner(
+                planner_context, planner_candidates
+            )
             if isinstance(selected_fact_id, str):
                 planned = next(
                     (
-                        item for item in candidates
+                        item for item in planner_candidates
                         if item.get("fact_id") == selected_fact_id
                     ),
                     None,

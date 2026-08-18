@@ -28,7 +28,8 @@ Adaptive clinical questions are generated from compiled atomic Facts and Rules. 
 
 Within `clinical_adaptive`, an enabled LLM adapter may map the opening free text
 to one implemented RFE from the response-free catalog and may choose one next
-Fact from candidates already made eligible by the compiled Runtime. The model
+Fact from the next semantic-priority frontier already made eligible by the
+compiled Runtime. The model cannot skip an authored history axis. The model
 cannot invent identifiers, Rules, safety levels, completion conditions,
 diagnoses, or treatments. Low-confidence, invalid, or unavailable output asks
 for clarification or falls back to the deterministic plan. Safety and

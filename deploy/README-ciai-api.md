@@ -83,7 +83,8 @@ the API.
 
 The model has three bounded Runtime roles: it may map one opening message to an
 allowlisted RFE id, choose one next Fact from already-eligible compiled
-question candidates, and render the chosen question. It cannot invent an RFE,
+question candidates within the next authored semantic frontier, and render the
+chosen question. It cannot skip an authored history axis or invent an RFE,
 Fact, Rule, diagnosis, urgency, treatment, or completion condition. It never
 receives uploaded files, medical-source documents, traces, or handoff results.
 Compiled Knowledge, safety Rules, candidate eligibility, and completion remain
