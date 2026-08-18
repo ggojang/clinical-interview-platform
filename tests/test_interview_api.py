@@ -2,9 +2,17 @@ from __future__ import annotations
 
 import json
 from io import BytesIO
+import os
 import unittest
 from http.client import HTTPMessage
+from unittest.mock import patch
 
+from services.interview_api.llm import (
+    LlmProvider,
+    LlmProviderRegistry,
+    LlmQuestionPresenter,
+    LlmSelectionError,
+)
 from services.interview_api.server import ServerConfig, build_handler
 from services.interview_api.service import InterviewApi, ServiceError
 
@@ -110,6 +118,20 @@ class InterviewApiServiceTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "research_test"):
             InterviewApi(execution_mode="production")
 
+    def test_default_session_uses_local_llm_without_clinical_authority(self):
+        created = self.api.create_session()
+        self.assertEqual(created["llm"]["provider_id"], "local_vllm")
+        self.assertEqual(created["llm"]["selected_by"], "platform_default")
+        self.assertFalse(created["llm"]["external_processing"])
+        self.assertFalse(created["llm"]["clinical_authority"])
+
+    def test_request_body_cannot_supply_llm_credentials(self):
+        with self.assertRaises(ServiceError) as context:
+            self.api.create_session(
+                {"llm_selection": {"provider_id": "local_vllm", "api_key": "no"}}
+            )
+        self.assertEqual(context.exception.code, "invalid_llm_selection")
+
 
 class InterviewApiHttpTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -188,6 +210,11 @@ class InterviewApiHttpTests(unittest.TestCase):
         self.assertEqual(status, 404)
         self.assertEqual(missing["error"]["code"], "session_not_found")
 
+        status, _, providers = self._request("GET", "/v1/llm/providers")
+        self.assertEqual(status, 200)
+        self.assertEqual(providers["default_provider_id"], "local_vllm")
+        self.assertEqual(providers["credentials_in_request_body"], "prohibited")
+
     def test_origin_is_denied_by_default(self):
         status, _, body = self._request(
             "GET",
@@ -214,6 +241,94 @@ class InterviewApiRuntimeIntegrationTests(unittest.TestCase):
         self.assertEqual(result["clinical_handoff"]["lifecycle_status"], "draft")
         self.assertEqual(result["fhir"]["status"], "not_implemented")
         api.delete_session(created["session_id"])
+
+
+class InterviewApiLlmPolicyTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.local = LlmProvider(
+            provider_id="local_vllm",
+            display_name="Local",
+            adapter="openai_compatible_chat",
+            base_url="http://127.0.0.1:8000/v1",
+            model="qwen3-27b",
+            external_processing=False,
+        )
+        self.external = LlmProvider(
+            provider_id="commercial_test",
+            display_name="Commercial test",
+            adapter="openai_compatible_chat",
+            base_url="https://llm.example/v1",
+            model="approved-model",
+            external_processing=True,
+            api_key_env="COMMERCIAL_TEST_KEY",
+        )
+
+    def test_external_provider_requires_server_secret_and_explicit_consent(self):
+        with patch.dict(os.environ, {"COMMERCIAL_TEST_KEY": "secret"}):
+            registry = LlmProviderRegistry([self.local, self.external])
+            with self.assertRaises(LlmSelectionError) as context:
+                registry.select(
+                    {"allowed_provider_ids": ["local_vllm", "commercial_test"]},
+                    {"provider_id": "commercial_test", "selected_by": "participant"},
+                )
+            self.assertEqual(
+                context.exception.code, "external_processing_consent_required"
+            )
+            selected = registry.select(
+                {"allowed_provider_ids": ["local_vllm", "commercial_test"]},
+                {
+                    "provider_id": "commercial_test",
+                    "selected_by": "participant",
+                    "external_processing_consent": True,
+                },
+            )
+            self.assertEqual(selected.provider.provider_id, "commercial_test")
+
+    def test_requester_can_disable_participant_provider_choice(self):
+        registry = LlmProviderRegistry([self.local])
+        with self.assertRaises(LlmSelectionError) as context:
+            registry.select(
+                {
+                    "allowed_provider_ids": ["local_vllm"],
+                    "participant_may_choose": False,
+                },
+                {"provider_id": "local_vllm", "selected_by": "participant"},
+            )
+        self.assertEqual(context.exception.code, "participant_llm_selection_disabled")
+
+        requester_default = registry.select(
+            {
+                "allowed_provider_ids": ["local_vllm"],
+                "default_provider_id": "local_vllm",
+                "participant_may_choose": False,
+            },
+            None,
+        )
+        self.assertEqual(requester_default.selected_by, "requester")
+
+    def test_presenter_transmits_only_compiled_question(self):
+        captured = []
+
+        def transport(provider, messages, timeout):
+            captured.append((provider, messages, timeout))
+            return "기침은 얼마나 오래되었나요?"
+
+        registry = LlmProviderRegistry([self.local])
+        selected = registry.select(None, None)
+        presenter = LlmQuestionPresenter(enabled=True, transport=transport)
+        state = {
+            "adapter_state": {
+                "facts": {"patient.secret": "must-not-leave"},
+                "selected_question": {"text": "How long have you had the cough?"},
+            }
+        }
+        result = presenter.present(state, selected)
+        self.assertEqual(result["status"], "generated")
+        self.assertEqual(result["text"], "기침은 얼마나 오래되었나요?")
+        transmitted = json.dumps(captured[0][1], ensure_ascii=False)
+        self.assertIn("How long have you had the cough?", transmitted)
+        self.assertNotIn("must-not-leave", transmitted)
+        self.assertFalse(result["patient_response_transmitted"])
 
 
 if __name__ == "__main__":

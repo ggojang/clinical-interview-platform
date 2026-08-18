@@ -5,22 +5,29 @@ After=network-online.target
 [Container]
 ContainerName=ciai-api
 Image=localhost/ciai-api:staging
-PublishPort=10.20.0.12:9090:8000
+Network=host
 
 Environment=TZ=Asia/Seoul
-Environment=CLINICAL_API_HOST=0.0.0.0
-Environment=CLINICAL_API_PORT=8000
+Environment=CLINICAL_API_HOST=10.20.0.12
+Environment=CLINICAL_API_PORT=9090
 Environment=CLINICAL_API_SESSION_TTL=1800
 Environment=CLINICAL_API_MAX_SESSIONS=250
 Environment=CLINICAL_API_EXECUTION_MODE=research_test
+Environment=CLINICAL_LLM_LOCAL_ENABLED=true
+Environment=CLINICAL_LLM_LOCAL_BASE_URL=http://127.0.0.1:8000/v1
+Environment=CLINICAL_LLM_LOCAL_MODEL=qwen3-27b
+Environment=CLINICAL_LLM_DEFAULT_PROVIDER=local_vllm
+Environment=CLINICAL_LLM_PRESENTATION_ENABLED=true
+Environment=CLINICAL_LLM_TIMEOUT_SECONDS=12
 Secret=ciai-api-key,type=env,target=CLINICAL_API_KEY
+Secret=vllm-api-key,type=env,target=CLINICAL_LLM_LOCAL_API_KEY
 
 ReadOnly=true
 ReadOnlyTmpfs=true
 DropCapability=all
 NoNewPrivileges=true
 
-HealthCmd=["CMD","python","-c","import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=3).read()"]
+HealthCmd=["CMD","python","-c","import urllib.request; urllib.request.urlopen('http://10.20.0.12:9090/healthz', timeout=3).read()"]
 HealthInterval=30s
 HealthTimeout=5s
 HealthRetries=3

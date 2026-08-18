@@ -36,6 +36,21 @@ paths:
                 additionalProperties: true
         "401":
           $ref: "#/components/responses/Unauthorized"
+  /v1/llm/providers:
+    get:
+      summary: List server-approved LLM providers and selection rules
+      description: >-
+        Returns public provider metadata only. Provider endpoints, secret names,
+        and credentials are never returned.
+      responses:
+        "200":
+          description: Governed LLM provider catalog
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LlmProviderCatalog"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /v1/sessions:
     post:
       summary: Create an ephemeral interaction session
@@ -55,6 +70,10 @@ paths:
                   type: string
                   maxLength: 10000
                   description: Optional first patient message
+                llm_policy:
+                  $ref: "#/components/schemas/LlmPolicy"
+                llm_selection:
+                  $ref: "#/components/schemas/LlmSelectionRequest"
       responses:
         "201":
           description: Session created
@@ -204,7 +223,15 @@ components:
           minimum: 0
     Session:
       type: object
-      required: [session_id, status, created_at, expires_at, retention, state]
+      required:
+        - session_id
+        - status
+        - created_at
+        - expires_at
+        - retention
+        - llm
+        - presentation
+        - state
       properties:
         session_id:
           type: string
@@ -229,6 +256,10 @@ components:
               type: integer
             delete_endpoint:
               type: string
+        llm:
+          $ref: "#/components/schemas/LlmSelection"
+        presentation:
+          $ref: "#/components/schemas/LlmPresentation"
         state:
           type: object
           additionalProperties: true
@@ -241,6 +272,7 @@ components:
         - review_status
         - clinical_use_status
         - independent_diagnosis_or_treatment
+        - llm
         - available_formats
         - fhir
       properties:
@@ -257,6 +289,8 @@ components:
           const: limited
         independent_diagnosis_or_treatment:
           const: false
+        llm:
+          $ref: "#/components/schemas/LlmSelection"
         available_formats:
           type: array
           items:
@@ -267,6 +301,131 @@ components:
         fhir:
           type: object
           additionalProperties: true
+    LlmPolicy:
+      type: object
+      additionalProperties: false
+      description: Requester-defined allowlist for this interaction.
+      properties:
+        allowed_provider_ids:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            type: string
+        default_provider_id:
+          type: string
+        participant_may_choose:
+          type: boolean
+          default: true
+    LlmSelectionRequest:
+      type: object
+      additionalProperties: false
+      description: >-
+        Provider choice only. Credentials, endpoint URLs, and arbitrary model
+        identifiers are prohibited in the request body.
+      properties:
+        provider_id:
+          type: string
+        selected_by:
+          enum: [platform_default, requester, participant]
+        external_processing_consent:
+          type: boolean
+          default: false
+    LlmSelection:
+      type: object
+      required:
+        - provider_id
+        - model
+        - selected_by
+        - processing_location
+        - external_processing
+        - runtime_role
+        - clinical_authority
+      properties:
+        provider_id:
+          type: string
+        display_name:
+          type: string
+        model:
+          type: string
+        selected_by:
+          enum: [platform_default, requester, participant]
+        processing_location:
+          enum: [banttas_ai_local, external_vendor]
+        external_processing:
+          type: boolean
+        external_processing_consent:
+          type: boolean
+        allowed_provider_ids:
+          type: array
+          items:
+            type: string
+        participant_may_choose:
+          type: boolean
+        runtime_role:
+          const: question_presentation_only
+        presentation_enabled:
+          type: boolean
+        clinical_authority:
+          const: false
+    LlmPresentation:
+      type: object
+      required:
+        - status
+        - purpose
+        - provider_id
+        - patient_response_transmitted
+      properties:
+        status:
+          enum: [generated, deterministic_fallback, not_applicable]
+        purpose:
+          const: question_presentation_only
+        provider_id:
+          type: string
+        model:
+          type: string
+        text:
+          type: string
+        reason:
+          type: string
+        cached:
+          type: boolean
+        patient_response_transmitted:
+          const: false
+        clinical_authority:
+          const: false
+    LlmProviderCatalog:
+      type: object
+      required:
+        - default_provider_id
+        - selection_scope
+        - external_processing_requires_explicit_consent
+        - runtime_role
+        - providers
+      properties:
+        default_provider_id:
+          type: string
+        selection_scope:
+          const: server_configured_allowlist
+        participant_selection_supported:
+          type: boolean
+        requester_policy_supported:
+          type: boolean
+        credentials_in_request_body:
+          const: prohibited
+        external_processing_requires_explicit_consent:
+          const: true
+        runtime_role:
+          const: question_presentation_only
+        presentation_enabled:
+          type: boolean
+        clinical_routing_and_safety:
+          const: compiled_runtime_only
+        providers:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
     PurgeResult:
       type: object
       required: [session_id, status, response_state_purged]

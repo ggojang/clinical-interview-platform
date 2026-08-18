@@ -17,6 +17,12 @@ from uuid import UUID, uuid4
 
 from runtime.core import CoreInteractionSession
 from runtime.service_modes import ServiceModeRegistry
+from services.interview_api.llm import (
+    LlmProviderRegistry,
+    LlmQuestionPresenter,
+    LlmSelection,
+    LlmSelectionError,
+)
 
 
 MAX_MESSAGE_CHARACTERS = 10_000
@@ -102,6 +108,8 @@ class SessionRecord:
     touched_at: float
     expires_at: float
     last_state: dict[str, Any]
+    llm_selection: LlmSelection
+    llm_presentation: dict[str, Any]
     lock: threading.RLock = field(default_factory=threading.RLock)
 
 
@@ -116,6 +124,8 @@ class InterviewApi:
         execution_mode: str = "research_test",
         clock: Callable[[], float] = time.time,
         session_factory: Callable[[str], CoreInteractionSession] | None = None,
+        llm_registry: LlmProviderRegistry | None = None,
+        llm_presenter: LlmQuestionPresenter | None = None,
     ) -> None:
         if not MIN_SESSION_TTL_SECONDS <= session_ttl_seconds <= MAX_SESSION_TTL_SECONDS:
             raise ValueError(
@@ -133,6 +143,8 @@ class InterviewApi:
         self.execution_mode = execution_mode
         self.clock = clock
         self.registry = ServiceModeRegistry()
+        self.llm_registry = llm_registry or LlmProviderRegistry.from_env()
+        self.llm_presenter = llm_presenter or LlmQuestionPresenter.from_env()
         self._session_factory = session_factory or (
             lambda session_id: CoreInteractionSession(
                 session_id,
@@ -155,6 +167,11 @@ class InterviewApi:
             "execution_mode": self.execution_mode,
             "response_storage": "memory_only",
             "active_sessions": active_sessions,
+            "llm": {
+                "default_provider_id": self.llm_registry.default_provider_id,
+                "presentation_enabled": self.llm_presenter.enabled,
+                "runtime_role": "question_presentation_only",
+            },
         }
 
     def catalog(self) -> dict[str, Any]:
@@ -172,14 +189,27 @@ class InterviewApi:
                 "fhir_questionnaire_response": "not_implemented",
                 "sdc_extraction": "not_implemented",
             },
+            "llm": self.llm_registry.catalog(
+                presentation_enabled=self.llm_presenter.enabled
+            ),
         }
         return catalog
+
+    def llm_providers(self) -> dict[str, Any]:
+        return self.llm_registry.catalog(
+            presentation_enabled=self.llm_presenter.enabled
+        )
 
     def create_session(self, payload: dict[str, Any] | None = None) -> dict[str, Any]:
         payload = payload or {}
         if not isinstance(payload, dict):
             raise ServiceError(400, "invalid_request", "request body must be an object")
-        allowed = {"mode_selection", "initial_message"}
+        allowed = {
+            "mode_selection",
+            "initial_message",
+            "llm_policy",
+            "llm_selection",
+        }
         unknown = sorted(set(payload) - allowed)
         if unknown:
             raise ServiceError(
@@ -190,6 +220,12 @@ class InterviewApi:
             )
         mode_selection = _optional_text(payload.get("mode_selection"), "mode_selection")
         initial_message = _optional_text(payload.get("initial_message"), "initial_message")
+        try:
+            llm_selection = self.llm_registry.select(
+                payload.get("llm_policy"), payload.get("llm_selection")
+            )
+        except LlmSelectionError as exc:
+            raise ServiceError(400, exc.code, exc.message) from exc
 
         self.purge_expired()
         now = self.clock()
@@ -208,6 +244,7 @@ class InterviewApi:
                     state = core.process(mode_selection)
                 if initial_message is not None:
                     state = core.process(initial_message)
+                presentation = self.llm_presenter.present(state, llm_selection)
             except Exception:
                 core.close()
                 raise
@@ -217,6 +254,8 @@ class InterviewApi:
                 touched_at=now,
                 expires_at=now + self.session_ttl_seconds,
                 last_state=deepcopy(state),
+                llm_selection=llm_selection,
+                llm_presentation=deepcopy(presentation),
             )
             self._sessions[session_id] = record
         return self._session_document(session_id, record)
@@ -248,6 +287,9 @@ class InterviewApi:
             except RuntimeError as exc:
                 raise ServiceError(409, "session_closed", "session is closed") from exc
             record.last_state = deepcopy(state)
+            record.llm_presentation = self.llm_presenter.present(
+                state, record.llm_selection
+            )
             self._touch(record)
             return self._session_document(session_id, record)
 
@@ -336,6 +378,10 @@ class InterviewApi:
                 "ttl_seconds": self.session_ttl_seconds,
                 "delete_endpoint": f"/v1/sessions/{session_id}",
             },
+            "llm": record.llm_selection.public_document(
+                presentation_enabled=self.llm_presenter.enabled
+            ),
+            "presentation": deepcopy(record.llm_presentation),
             "state": deepcopy(record.last_state),
         }
 
@@ -354,6 +400,9 @@ class InterviewApi:
             "review_status": "unreviewed",
             "clinical_use_status": "limited",
             "independent_diagnosis_or_treatment": False,
+            "llm": record.llm_selection.public_document(
+                presentation_enabled=self.llm_presenter.enabled
+            ),
             "available_formats": ["clinical_handoff_json"],
             "clinical_handoff": deepcopy(handoff),
             "fhir": {

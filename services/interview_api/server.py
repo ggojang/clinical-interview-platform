@@ -97,6 +97,9 @@ def build_handler(api: InterviewApi, config: ServerConfig) -> type[BaseHTTPReque
                 if path == "/v1/catalog" and method == "GET":
                     self._json(HTTPStatus.OK, api.catalog(), request_id)
                     return
+                if path == "/v1/llm/providers" and method == "GET":
+                    self._json(HTTPStatus.OK, api.llm_providers(), request_id)
+                    return
                 if path == "/v1/sessions" and method == "POST":
                     self._json(HTTPStatus.CREATED, api.create_session(self._body()), request_id)
                     return

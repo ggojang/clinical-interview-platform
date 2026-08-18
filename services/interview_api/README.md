@@ -10,12 +10,41 @@
 - 세션 완료 또는 삭제 시 응답 상태 즉시 폐기
 - TTL 만료에 의한 자동 폐기
 - Bearer API key, 기본 CORS 차단, 요청 본문 비로깅
+- 서버 허용목록 기반 LLM provider 조회·선택
+- 기본 `local_vllm`, 요청자 허용범위와 참여자 선택권 분리
+- 외부 상용 LLM 선택 시 명시적 외부처리 동의 강제
+- 컴파일된 질문의 환자 친화적 표현만 LLM에 위임하고 임상 판단은 Runtime에 유지
 
 임상 콘텐츠는 `draft`, `unreviewed`, `limited use`입니다. 독립적인 진단·치료 결정에 사용하지 않습니다. 안전 신호는 진단을 확정하지 않고 보수적으로 알리며 의료인 확인으로 연결합니다.
 
 FHIR `Questionnaire`, `QuestionnaireResponse`, SDC Extraction은 아직 이 API에 구현되지 않았습니다. 현재 결과 응답에도 이를 `not_implemented`로 명시합니다. 다음 구현 단계에서 기존 질문·Fact 바인딩을 사용해 추가합니다.
 
 현재 API에서 실제 실행되는 모드는 `clinical_adaptive`(자유 문진)입니다. 목록에는 향후 연결할 다른 플랫폼 모드도 보이지만 `api_capabilities.pending_mode_ids`로 구분되며, 해당 adapter는 아직 응답을 수집하지 않습니다.
+
+## LLM provider 경계
+
+원격 `banttas-ai` 배포의 기본 provider는 같은 서버의 `qwen3-27b`입니다. 선택된 LLM은 현재 **이미 컴파일된 한 개의 질문을 환자에게 자연스럽게 표현하는 용도**로만 호출됩니다. 환자 답변, Fact, trace, 파일, clinician handoff는 LLM 호출에 전달하지 않습니다. 질문 선택, red flag, 질문 순서와 완료 판정은 계속 컴파일된 Knowledge·Rule Runtime이 담당합니다. Provider 장애 시 원문 질문으로 즉시 fallback합니다.
+
+`GET /v1/llm/providers`에서 선택 가능한 provider를 확인할 수 있습니다. 세션 생성 시 요청자는 `llm_policy.allowed_provider_ids`, `default_provider_id`, `participant_may_choose`를 선언하고, 참여자는 허용범위 안에서 `llm_selection`을 지정할 수 있습니다. 아무 선택도 없으면 `local_vllm`입니다.
+
+```json
+{
+  "mode_selection": "문진 시작",
+  "initial_message": "기침이 나요",
+  "llm_policy": {
+    "allowed_provider_ids": ["local_vllm", "commercial_approved"],
+    "default_provider_id": "local_vllm",
+    "participant_may_choose": true
+  },
+  "llm_selection": {
+    "provider_id": "commercial_approved",
+    "selected_by": "participant",
+    "external_processing_consent": true
+  }
+}
+```
+
+Provider URL, model과 API key는 클라이언트가 임의 지정할 수 없습니다. 상용 provider는 운영자가 `CLINICAL_LLM_PROVIDERS_JSON`으로 allowlist에 등록하고, 실제 키는 `api_key_env`가 가리키는 Podman secret으로 별도 주입합니다. 외부 provider에 대한 명시적 동의가 없으면 세션 생성이 거부됩니다. 현재 공용 API key 하나를 쓰는 staging 단계이므로 요청자/참여자 권한의 암호학적 분리는 후속 execution-order API에서 추가해야 합니다.
 
 ## 로컬 실행
 
