@@ -37,8 +37,11 @@ DEMO_RESOURCE_PATHS = {
         REPOSITORY_ROOT
         / "fhir/r4/questionnaires/kr-patient-experience-evaluation-5th-2025.json"
     ),
-    "national-health-screening-2026": (
-        REPOSITORY_ROOT / "knowledge/preventive/kr-national-health-screening-2026.json"
+    "national-health-screening-form-1-2025": (
+        REPOSITORY_ROOT / "fhir/r4/questionnaires/kr-national-health-screening-form-1-2025.json"
+    ),
+    "national-health-screening-form-2-2025": (
+        REPOSITORY_ROOT / "fhir/r4/questionnaires/kr-national-health-screening-form-2-2025.json"
     ),
 }
 
@@ -268,12 +271,20 @@ class InterviewApi:
                     "use": "internal_research_test",
                 },
                 {
-                    "id": "national-health-screening-2026",
-                    "title": "2026 국가건강검진 후보 문진",
-                    "kind": "knowledge_question_groups",
-                    "fhir_version": None,
-                    "source_defined": False,
-                    "use": "advisory_candidate_selection",
+                    "id": "national-health-screening-form-1-2025",
+                    "title": "건강검진 문진표 (별지 제1호 서식, 개정 2025. 1. 1.)",
+                    "kind": "fhir_questionnaire",
+                    "fhir_version": "R4",
+                    "source_defined": True,
+                    "use": "internal_research_test",
+                },
+                {
+                    "id": "national-health-screening-form-2-2025",
+                    "title": "건강검진 추가 문진표 (별지 제2호 서식)",
+                    "kind": "fhir_questionnaire",
+                    "fhir_version": "R4",
+                    "source_defined": True,
+                    "use": "internal_research_test",
                 },
             ],
             "contains_patient_responses": False,

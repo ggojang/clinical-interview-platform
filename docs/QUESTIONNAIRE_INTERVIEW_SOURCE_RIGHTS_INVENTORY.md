@@ -7,10 +7,10 @@
 
 ## 요약
 
-- 현재 자원: **78개**
+- 현재 자원: **80개**
 - 외부 획득 후보군: **7개**
-- source manifest artifact entry: **728개**
-- 고유 source ID: **630개**
+- source manifest artifact entry: **730개**
+- 고유 source ID: **632개**
 - 검증 오류: **0개**
 
 ### 자원 유형별 수
@@ -20,7 +20,7 @@
 | `adaptive_preventive_question_group` | 10 |
 | `assessment_program` | 8 |
 | `dynamic_clinical_interview` | 56 |
-| `fhir_fixed_questionnaire` | 1 |
+| `fhir_fixed_questionnaire` | 3 |
 | `fixed_questionnaire` | 1 |
 | `fixed_standardized_instrument` | 1 |
 | `shared_assessment_component` | 1 |
@@ -132,6 +132,8 @@ HIRA 프로그램에 이름이 등장하더라도 해당 척도의 문항을 시
 | `kr.nhis.cancer.lung` | `adaptive_preventive_question_group` | 1 | 아니오 | `allowed_under_draft_limited_use_policy` | `documented_sources_only` |
 | `kr.nhis.cancer.breast` | `adaptive_preventive_question_group` | 1 | 아니오 | `allowed_under_draft_limited_use_policy` | `documented_sources_only` |
 | `kr.nhis.cancer.cervical` | `adaptive_preventive_question_group` | 1 | 아니오 | `allowed_under_draft_limited_use_policy` | `documented_sources_only` |
+| `kr-national-health-screening-form-1-2025` | `fhir_fixed_questionnaire` | 70 | 예 | `repository_research_source_only_rights_confirmation_pending` | `documented_sources_only` |
+| `kr-national-health-screening-form-2-2025` | `fhir_fixed_questionnaire` | 12 | 예 | `repository_research_source_only_rights_confirmation_pending` | `documented_sources_only` |
 | `kr-patient-experience-evaluation-5th-2025` | `fhir_fixed_questionnaire` | 26 | 예 | `repository_research_source_only_rights_confirmation_pending` | `rights_review_required` |
 | `knowledge.shared.hira-pain-assessment` | `shared_assessment_component` | 2 | 아니오 | `allowed_under_draft_limited_use_policy` | `rights_review_required` |
 

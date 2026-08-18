@@ -58,6 +58,7 @@ const result = vm.runInContext(`
   JSON.stringify({{
     smoking: typedStructuredAnswer(items[0], '10', smokingUnits[0]),
     alcohol: typedStructuredAnswer(items[1], '2', alcoholUnits[0]),
+    fixedAlcohol: answerValue(items[1], '2 잔'),
     unitCounts: [smokingUnits.length, alcoholUnits.length]
   }});
 `, context);
@@ -78,6 +79,17 @@ console.log(result);
         )
         self.assertEqual(
             result["alcohol"],
+            {
+                "valueQuantity": {
+                    "value": 2,
+                    "unit": "잔",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "{glass}",
+                }
+            },
+        )
+        self.assertEqual(
+            result["fixedAlcohol"],
             {
                 "valueQuantity": {
                     "value": 2,
@@ -213,6 +225,94 @@ console.log(vm.runInContext(`fixedPrompt({{text:'흡연 상태는 어떻게 되�
         )
         self.assertTrue(completed.stdout.startswith("[3/9] "))
         self.assertIn("1. 현재 흡연", completed.stdout)
+
+    def test_hidden_questionnaire_items_are_not_asked_or_counted(self):
+        questionnaire = {
+            "resourceType": "Questionnaire",
+            "status": "active",
+            "item": [
+                {
+                    "linkId": "internal-calculation",
+                    "type": "string",
+                    "extension": [
+                        {
+                            "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-hidden",
+                            "valueBoolean": True,
+                        }
+                    ],
+                },
+                {"linkId": "visible-question", "text": "보이는 질문", "type": "string"},
+            ],
+        }
+        script = fr"""
+const fs = require('fs');
+const vm = require('vm');
+const source = fs.readFileSync({json.dumps(str(APP_JS))}, 'utf8').replace(/initialize\(\);\s*$/, '');
+const context = {{ console }};
+vm.createContext(context);
+vm.runInContext(source, context);
+console.log(vm.runInContext(`JSON.stringify({{
+  all: answerBearingItems(${{JSON.stringify({json.dumps(questionnaire)})}}).map(item => item.linkId),
+  active: activeAnswerBearingItems(${{JSON.stringify({json.dumps(questionnaire)})}}).map(item => item.linkId)
+}})`, context));
+"""
+        completed = subprocess.run(
+            ["node", "-e", script],
+            check=True,
+            capture_output=True,
+            text=True,
+            cwd=REPOSITORY_ROOT,
+        )
+        self.assertEqual(
+            json.loads(completed.stdout),
+            {"all": ["visible-question"], "active": ["visible-question"]},
+        )
+
+    def test_adaptive_runtime_question_keeps_number_options_and_instruction(self):
+        document = {
+            "state": {
+                "adapter_state": {
+                    "selected_question": {
+                        "question_ref": "Q7",
+                        "target_id": "target.smoking_status",
+                        "fact_id": "patient.smoking.status",
+                        "template_id": "question.smoking_status",
+                        "text": "흡연 상태를 선택해 주세요.",
+                        "response_instruction_ko": "보기 번호 또는 상태를 입력해 주세요.",
+                        "answer_options": [
+                            {"input": "1", "display_ko": "현재 흡연", "internal_value": "current"},
+                            {"input": "2", "display_ko": "과거 흡연", "internal_value": "former"},
+                        ],
+                    }
+                }
+            },
+            "presentation": {"text": "흡연 상태를 선택해 주세요."},
+        }
+        script = fr"""
+const fs = require('fs');
+const vm = require('vm');
+const source = fs.readFileSync({json.dumps(str(APP_JS))}, 'utf8').replace(/initialize\(\);\s*$/, '');
+const context = {{ console }};
+vm.createContext(context);
+vm.runInContext(source, context);
+console.log(vm.runInContext(`(() => {{
+  const question = adaptiveQuestion(${{JSON.stringify({json.dumps(document)})}});
+  return JSON.stringify({{ question, prompt: adaptivePrompt(question) }});
+}})()`, context));
+"""
+        completed = subprocess.run(
+            ["node", "-e", script],
+            check=True,
+            capture_output=True,
+            text=True,
+            cwd=REPOSITORY_ROOT,
+        )
+        result = json.loads(completed.stdout)
+        self.assertEqual(result["question"]["questionRef"], "Q7")
+        self.assertEqual(result["question"]["knowledgeFact"], "patient.smoking.status")
+        self.assertIn("[Q7] 흡연 상태를 선택해 주세요.", result["prompt"])
+        self.assertIn("1. 현재 흡연", result["prompt"])
+        self.assertIn("응답 안내: 보기 번호 또는 상태를 입력해 주세요.", result["prompt"])
 
     def test_enable_when_reveals_only_selected_repeated_body_area_questions(self):
         questionnaire = {

@@ -3,6 +3,7 @@
 const MAX_FILE_BYTES = 1024 * 1024;
 const FHIR_TRANSLATION_URL = "http://hl7.org/fhir/StructureDefinition/translation";
 const FHIR_RENDERING_XHTML_URL = "http://hl7.org/fhir/StructureDefinition/rendering-xhtml";
+const FHIR_QUESTIONNAIRE_HIDDEN_URL = "http://hl7.org/fhir/StructureDefinition/questionnaire-hidden";
 const FHIR_QUESTIONNAIRE_UNIT_URL = "http://hl7.org/fhir/StructureDefinition/questionnaire-unit";
 const FHIR_QUESTIONNAIRE_UNIT_OPTION_URL = "http://hl7.org/fhir/StructureDefinition/questionnaire-unitOption";
 const SDC_STATUS = {
@@ -109,10 +110,16 @@ function walkItems(items, visit) {
   });
 }
 
+function isQuestionnaireItemHidden(item) {
+  return (item?.extension || []).some((extension) => (
+    extension.url === FHIR_QUESTIONNAIRE_HIDDEN_URL && extension.valueBoolean === true
+  ));
+}
+
 function answerBearingItems(questionnaire) {
   const result = [];
   walkItems(questionnaire?.item, (item) => {
-    if (!['group', 'display'].includes(item.type)) result.push(item);
+    if (!isQuestionnaireItemHidden(item) && !['group', 'display'].includes(item.type)) result.push(item);
   });
   return result;
 }
@@ -166,7 +173,7 @@ function isItemEnabled(item) {
 function activeAnswerBearingItems(questionnaire) {
   const result = [];
   const visit = (items, parentEnabled = true) => (items || []).forEach((item) => {
-    const enabled = parentEnabled && isItemEnabled(item);
+    const enabled = parentEnabled && !isQuestionnaireItemHidden(item) && isItemEnabled(item);
     if (enabled && !["group", "display"].includes(item.type)) result.push(item);
     visit(item.item, enabled);
   });
@@ -567,6 +574,7 @@ function structuredControl(block, item) {
 
 function renderQuestionnaireItems(root, items, { interactive = false, depth = 0 } = {}) {
   (items || []).forEach((item) => {
+    if (isQuestionnaireItemHidden(item)) return;
     if (!isItemEnabled(item)) return;
     if (item.type === "group") {
       const group = append(root, "div", item.text || item.linkId, "preview-group");
@@ -779,24 +787,27 @@ async function readTextFile(file) {
   return file.text();
 }
 
-function flattenQuestions(questionnaire) {
-  return answerBearingItems(questionnaire).map((item) => clone(item));
+function refreshFixedQuestions() {
+  state.fixedQuestions = activeAnswerBearingItems(state.questionnaire).map((item) => clone(item));
+  state.fixedIndex = state.fixedAnswers.length;
 }
 
 function startFixed(questionnaire, title, source) {
   state.fixedTitle = title;
-  state.fixedQuestions = flattenQuestions(questionnaire);
   state.fixedAnswers = [];
   state.fixedIndex = 0;
+  state.structuredAnswers = new Map();
   $("#fixedConversationTitle").textContent = title;
   $("#fixedChatLog").replaceChildren();
   $("#fixedConversation").hidden = false;
-  bubble($("#fixedChatLog"), "notice", `설문: ${title}\n전체 ${state.fixedQuestions.length}문항${questionnaire.description ? `\n${questionnaire.description}` : ""}`);
   setArtifacts(questionnaire, blankResponse(questionnaire), source, {
     status: "fixed_conversation_in_progress",
-    source_defined: questionnaire.id === "kr-patient-experience-evaluation-5th-2025",
+    source_defined: questionnaire.id === "kr-patient-experience-evaluation-5th-2025"
+      || questionnaire.id.startsWith("kr-national-health-screening"),
     response_storage: "browser_memory_only"
   });
+  refreshFixedQuestions();
+  bubble($("#fixedChatLog"), "notice", `설문: ${title}\n현재 답변에 적용되는 문항은 ${state.fixedQuestions.length}개이며, 조건부 문항은 관련 답변에 따라 펼쳐집니다.${questionnaire.description ? `\n${questionnaire.description}` : ""}`);
   askFixedQuestion();
 }
 
@@ -808,7 +819,12 @@ function bubble(root, role, text) {
 
 function fixedPrompt(question, index, count) {
   const options = (question.answerOption || []).map(displayAnswer).filter(Boolean);
-  return `[${index + 1}/${count}] ${question.text || question.linkId}${options.length ? `\n${options.map((value, optionIndex) => `${optionIndex + 1}. ${value}`).join("\n")}` : ""}`;
+  const units = question.type === "quantity" ? quantityUnitOptions(question) : [];
+  const prefix = question.prefix ? `${question.prefix} ` : "";
+  const unitGuide = units.length
+    ? `\n입력 형식: 숫자 + 단위${units.length > 1 ? ` (${units.map((unit) => unit.display || unit.code).join(" / ")})` : ` (단위: ${units[0].display || units[0].code})`}`
+    : "";
+  return `[${index + 1}/${count}] ${prefix}${question.text || question.linkId}${options.length ? `\n${options.map((value, optionIndex) => `${optionIndex + 1}. ${value}`).join("\n")}` : ""}${unitGuide}`;
 }
 
 function askFixedQuestion() {
@@ -844,6 +860,22 @@ function answerValue(question, raw) {
     ? options[numeric - 1]
     : options.find((candidate) => [activeLocale(), "ko", "en"].some((locale) => displayAnswer(candidate, locale) === normalized));
   if (option) return clone(option);
+  if (question.type === "quantity") {
+    const units = quantityUnitOptions(question);
+    const match = normalized.match(/^(-?\d+(?:\.\d+)?)\s*(.*)$/);
+    if (match) {
+      const requestedUnit = match[2].trim();
+      const unit = units.find((candidate) => [candidate.display, candidate.code].includes(requestedUnit))
+        || (units.length === 1 ? units[0] : null);
+      const valueQuantity = { value: Number(match[1]) };
+      if (unit) {
+        if (unit.display) valueQuantity.unit = unit.display;
+        if (unit.system) valueQuantity.system = unit.system;
+        if (unit.code) valueQuantity.code = unit.code;
+      }
+      return { valueQuantity };
+    }
+  }
   if (question.type === "integer" && /^-?\d+$/.test(normalized)) return { valueInteger: Number(normalized) };
   if (question.type === "decimal" && /^-?\d+(\.\d+)?$/.test(normalized)) return { valueDecimal: Number(normalized) };
   if (question.type === "boolean" && /^(true|false)$/i.test(normalized)) return { valueBoolean: normalized.toLowerCase() === "true" };
@@ -872,10 +904,11 @@ function submitFixedAnswer() {
   const question = state.fixedQuestions[state.fixedIndex];
   bubble($("#fixedChatLog"), "user", value);
   const answer = answerValue(question, value);
-  state.fixedAnswers.push({ linkId: question.linkId, text: question.text, answer: [answer] });
-  const answers = new Map(state.fixedAnswers.map((item) => [item.linkId, item]));
-  state.questionnaireResponse.item = responseItemsFor(state.questionnaire.item, answers);
-  state.fixedIndex += 1;
+  const responseItem = { linkId: question.linkId, text: question.text, answer: [answer] };
+  state.fixedAnswers.push(responseItem);
+  state.structuredAnswers.set(question.linkId, responseItem);
+  state.questionnaireResponse.item = responseItemsFor(state.questionnaire.item, state.structuredAnswers);
+  refreshFixedQuestions();
   input.value = "";
   updateOutputs();
   askFixedQuestion();
@@ -891,38 +924,20 @@ async function loadPatientExperience() {
   } catch (error) { showToast(error.message); }
 }
 
-function eligibleScreeningGroups(resource, age, sex) {
-  const byId = new Map((resource.question_groups || []).map((group) => [group.id, group]));
-  const ids = [];
-  if (age >= 20) ids.push("kr.nhis.general.common", "kr.nhis.oral.general");
-  if (age === 66) ids.push("kr.nhis.general.age66.additional");
-  if (age >= 40) ids.push("kr.nhis.cancer.gastric");
-  if (age >= 50) ids.push("kr.nhis.cancer.colorectal");
-  if (sex === "female" && age >= 40) ids.push("kr.nhis.cancer.breast");
-  if (sex === "female" && age >= 20) ids.push("kr.nhis.cancer.cervical");
-  if (ids.some((id) => id.startsWith("kr.nhis.cancer."))) ids.splice(ids.indexOf("kr.nhis.general.common") + 1, 0, "kr.nhis.cancer.common");
-  return [...new Set(ids)].map((id) => byId.get(id)).filter(Boolean);
-}
-
-function screeningQuestionnaire(resource, groups, age, sex, period) {
-  const selectedTitles = groups.map((group) => group.title?.ko || group.id);
+function screeningQuestionnaire(forms, age, sex, period) {
   return {
     resourceType: "Questionnaire",
-    id: "draft-national-health-screening-interview",
+    id: "kr-national-health-screening-selected-forms-2025",
     status: "draft",
     experimental: true,
-    title: `국민건강검진 문진(시험용) · ${selectedTitles.join(" · ")}`,
-    description: `만 ${age}세 · 성별정보 ${sex} · 검진 예정일 ${period || "미입력"}. 선택된 내부 검증용 문진을 원래 순서대로 제공합니다. 공식 원문 검증과 수검자격 확인 전입니다.`,
-    item: groups.map((group) => ({
-      linkId: group.id.replaceAll(".", "-"), type: "group", text: group.title?.ko || group.id,
-      item: (group.questions || []).map((question) => ({
-        linkId: question.id.replaceAll(".", "-"),
-        text: question.text?.ko || question.id,
-        type: question.answer_type === "choice" ? "choice" : "string",
-        answerOption: question.answer_type === "choice"
-          ? Object.entries(question.shortcuts || {}).filter(([, value]) => !String(value).startsWith("asked-")).map(([code, display]) => ({ valueCoding: { system: "https://ggojang.github.io/clinical-interview-platform/fhir/CodeSystem/demo-screening-answer", code, display } }))
-          : undefined
-      }))
+    title: `국민건강검진 공식 문진 서식(시험용) · ${forms.map((form) => form.title).join(" · ")}`,
+    description: `만 ${age}세 · 성별정보 ${sex} · 검진 예정일 ${period || "미입력"}. 국가법령정보센터 건강검진 실시기준 별지 서식의 문항·보기·순서를 보존한 시험용 실행본입니다. 실제 수검 자격과 검사항목은 국민건강보험공단 확인이 필요합니다.`,
+    derivedFrom: forms.map(canonical).filter(Boolean),
+    item: forms.map((form, index) => ({
+      linkId: `official-form-${index + 1}`,
+      type: "group",
+      text: form.title,
+      item: clone(form.item || [])
     }))
   };
 }
@@ -932,21 +947,21 @@ async function loadScreening() {
   if (!Number.isInteger(age) || age < 0 || age > 120) return showToast("유효한 만 나이를 입력하세요.");
   const sex = $("#screeningSex").value;
   try {
-    const resource = await api("/v1/demo/resources/national-health-screening-2026");
-    const groups = eligibleScreeningGroups(resource, age, sex);
-    if (!groups.length) return showToast("현재 입력값으로 적용할 시험용 문진이 없습니다. 공식 대상 여부는 국민건강보험공단에서 확인하세요.");
-    const questionnaire = screeningQuestionnaire(resource, groups, age, sex, $("#screeningDate").value);
+    const forms = [await api("/v1/demo/resources/national-health-screening-form-1-2025")];
+    if ([66, 70, 80].includes(age)) forms.push(await api("/v1/demo/resources/national-health-screening-form-2-2025"));
+    forms.forEach(validateQuestionnaire);
+    const questionnaire = screeningQuestionnaire(forms, age, sex, $("#screeningDate").value);
     state.sourceVersion = "r4";
     startFixed(questionnaire, questionnaire.title, pretty({
       input: { age, sex, period: $("#screeningDate").value },
-      selected_group_ids: groups.map((g) => g.id),
-      selected_questionnaire_titles: groups.map((g) => g.title?.ko || g.id),
-      source: resource.id,
+      selected_official_forms: forms.map((form) => ({ id: form.id, title: form.title, derived_from: canonical(form) })),
+      source: "국가법령정보센터 건강검진 실시기준 별지 제1호·제2호 서식",
       periodicity_applied: false,
       periodicity_reason: "출생연도, 직역, 이전 수검일과 공식 NHIS 자격정보가 제공되지 않음",
-      omitted_due_to_missing_risk_information: ["kr.nhis.cancer.liver", "kr.nhis.cancer.lung"]
+      exact_form_content: true,
+      source_defined_fixed_questionnaire: true
     }));
-    showToast(`${groups.length}개 시험용 문진, 총 ${state.fixedQuestions.length}개 문항을 시작합니다.`);
+    showToast(`${forms.length}개 공식 서식, 총 ${state.fixedQuestions.length}개 응답 항목을 시작합니다.`);
   } catch (error) { showToast(error.message); }
 }
 
@@ -979,7 +994,44 @@ function adaptiveQuestion(document) {
   const selected = stateDoc.adapter_state?.selected_question || stateDoc.selected_question;
   const text = document?.presentation?.text || selected?.text || stateDoc.prompt_ko;
   if (!text) return null;
-  return { linkId: selected?.fact_id || selected?.question_ref || `q-${state.adaptiveHistory.length + 1}`, text, type: "string" };
+  const rawOptions = selected?.answer_options?.length ? selected.answer_options : (selected?.preferred_answer_options || []);
+  const options = rawOptions.map((option, index) => ({
+    input: String(option.input || index + 1),
+    label: option.display_ko || option.display || option.coding?.display || String(option.internal_value || option.coding?.code || index + 1).replaceAll("_", " "),
+    internalValue: option.internal_value,
+    coding: option.coding
+  }));
+  const answerOption = options.map((option) => option.coding
+    ? { valueCoding: clone(option.coding) }
+    : { valueString: String(option.internalValue || option.label) });
+  return {
+    linkId: selected?.fact_id || selected?.question_ref || `q-${state.adaptiveHistory.length + 1}`,
+    questionRef: selected?.question_ref || `Q${state.adaptiveHistory.length + 1}`,
+    text,
+    originalText: selected?.text || text,
+    type: options.length ? "choice" : "string",
+    options,
+    answerOption,
+    responseInstruction: selected?.response_instruction_ko || "내용을 자유롭게 입력해 주세요.",
+    knowledgeTarget: selected?.target_id,
+    knowledgeFact: selected?.fact_id,
+    questionTemplate: selected?.template_id
+  };
+}
+
+function adaptivePrompt(question) {
+  const lines = [`[${question.questionRef}] ${question.text}`];
+  (question.options || []).forEach((option) => lines.push(`${option.input}. ${option.label}`));
+  if (question.responseInstruction) lines.push(`응답 안내: ${question.responseInstruction}`);
+  return lines.join("\n");
+}
+
+function showAdaptiveQuestion(question) {
+  const guidance = syntheticGuidanceFor(question.text);
+  if (guidance) bubble($("#adaptiveChatLog"), "notice", guidance);
+  bubble($("#adaptiveChatLog"), "assistant", adaptivePrompt(question));
+  $("#adaptiveProgress").textContent = `${question.questionRef} · Knowledge Runtime`;
+  $("#adaptiveAnswer").placeholder = question.options?.length ? "번호 또는 직접 답변" : "답변을 입력하세요";
 }
 
 function rebuildAdaptiveArtifacts(sourceDocument) {
@@ -989,7 +1041,13 @@ function rebuildAdaptiveArtifacts(sourceDocument) {
     resourceType: "Questionnaire", id: "adaptive-question-history-draft", status: "draft", experimental: true,
     title: state.adaptivePurpose === "clinical_adaptive" ? "Knowledge 기반 진료 전 문진 이력" : "일반 건강상담 이력",
     description: "실제로 제시된 질문만 포함한 브라우저 생성 초안입니다.",
-    item: asked.map((question, index) => ({ linkId: safeLinkId(question.linkId, index), text: question.text, type: "string" }))
+    item: asked.map((question, index) => ({
+      linkId: safeLinkId(question.linkId, index),
+      prefix: question.questionRef,
+      text: question.text,
+      type: question.type || "string",
+      answerOption: question.answerOption?.length ? clone(question.answerOption) : undefined
+    }))
   };
   const response = blankResponse(questionnaire);
   response.item = state.adaptiveHistory.map((entry, index) => ({ linkId: safeLinkId(entry.question.linkId, index), text: entry.question.text, answer: [{ valueString: entry.answer }] }));
@@ -1061,9 +1119,7 @@ async function startAdaptive(opening) {
       $("#adaptiveAnswerButton").disabled = true;
       $("#completeAdaptive").disabled = true;
     } else if (state.currentAdaptiveQuestion) {
-      const guidance = syntheticGuidanceFor(state.currentAdaptiveQuestion.text);
-      if (guidance) bubble($("#adaptiveChatLog"), "notice", guidance);
-      bubble($("#adaptiveChatLog"), "assistant", state.currentAdaptiveQuestion.text);
+      showAdaptiveQuestion(state.currentAdaptiveQuestion);
       $("#adaptiveAnswer").disabled = false;
       $("#adaptiveAnswerButton").disabled = false;
       $("#completeAdaptive").disabled = false;
@@ -1092,12 +1148,12 @@ async function sendAdaptiveAnswer() {
     state.adaptiveHistory.push({ question: answered, answer });
     state.currentAdaptiveQuestion = adaptiveQuestion(document);
     if (state.currentAdaptiveQuestion) {
-      const guidance = syntheticGuidanceFor(state.currentAdaptiveQuestion.text);
-      if (guidance) bubble($("#adaptiveChatLog"), "notice", guidance);
-      bubble($("#adaptiveChatLog"), "assistant", state.currentAdaptiveQuestion.text);
+      showAdaptiveQuestion(state.currentAdaptiveQuestion);
     }
-    else bubble($("#adaptiveChatLog"), "assistant", "현재 Runtime 단계가 종료 또는 확인 대기 상태입니다. 결과를 확인하거나 대화를 종료하세요.");
-    $("#adaptiveProgress").textContent = `${state.adaptiveHistory.length}개 답변`;
+    else {
+      bubble($("#adaptiveChatLog"), "assistant", "현재 Runtime 단계가 종료 또는 확인 대기 상태입니다. 결과를 확인하거나 대화를 종료하세요.");
+      $("#adaptiveProgress").textContent = `${state.adaptiveHistory.length}개 답변`;
+    }
     rebuildAdaptiveArtifacts(document);
   } catch (error) { showToast(error.message); }
 }

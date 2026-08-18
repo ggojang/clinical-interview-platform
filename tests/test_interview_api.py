@@ -138,8 +138,11 @@ class InterviewApiServiceTests(unittest.TestCase):
         self.assertEqual(catalog["response_storage"], "none")
         questionnaire = self.api.demo_resource("patient-experience-5th-2025")
         self.assertEqual(questionnaire["resourceType"], "Questionnaire")
-        screening = self.api.demo_resource("national-health-screening-2026")
-        self.assertIn("question_groups", screening)
+        screening = self.api.demo_resource("national-health-screening-form-1-2025")
+        self.assertEqual(screening["resourceType"], "Questionnaire")
+        self.assertEqual(screening["title"], "건강검진 문진표")
+        additional = self.api.demo_resource("national-health-screening-form-2-2025")
+        self.assertEqual(additional["resourceType"], "Questionnaire")
         with self.assertRaises(ServiceError) as context:
             self.api.demo_resource("../../private")
         self.assertEqual(context.exception.code, "demo_resource_not_found")

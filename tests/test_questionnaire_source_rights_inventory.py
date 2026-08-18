@@ -22,14 +22,14 @@ class QuestionnaireSourceRightsInventoryTest(unittest.TestCase):
 
     def test_inventory_covers_current_resource_families(self):
         self.assertEqual(self.report["validation_errors"], [])
-        self.assertEqual(self.report["summary"]["asset_count"], 78)
+        self.assertEqual(self.report["summary"]["asset_count"], 80)
         self.assertEqual(
             self.report["summary"]["asset_class_counts"],
             {
                 "adaptive_preventive_question_group": 10,
                 "assessment_program": 8,
                 "dynamic_clinical_interview": 56,
-                "fhir_fixed_questionnaire": 1,
+                "fhir_fixed_questionnaire": 3,
                 "fixed_questionnaire": 1,
                 "fixed_standardized_instrument": 1,
                 "shared_assessment_component": 1,
