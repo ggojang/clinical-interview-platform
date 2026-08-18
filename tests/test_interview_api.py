@@ -13,7 +13,7 @@ from services.interview_api.llm import (
     LlmQuestionPresenter,
     LlmSelectionError,
 )
-from services.interview_api.server import ServerConfig, build_handler
+from services.interview_api.server import AnonymousDemoGate, ServerConfig, build_handler
 from services.interview_api.service import InterviewApi, ServiceError
 
 
@@ -144,6 +144,44 @@ class InterviewApiServiceTests(unittest.TestCase):
             self.api.demo_resource("../../private")
         self.assertEqual(context.exception.code, "demo_resource_not_found")
 
+    def test_anonymous_demo_is_local_only_scoped_and_short_lived(self):
+        configuration = self.api.anonymous_demo_configuration()
+        self.assertFalse(configuration["authentication_required"])
+        self.assertTrue(configuration["synthetic_test_information_required"])
+        self.assertFalse(configuration["providers"][0]["external_processing"])
+
+        created = self.api.create_anonymous_demo_session(
+            {"mode_selection": "문진 시작", "initial_message": "가상 기침 사례"}
+        )
+        self.assertEqual(created["access_scope"], "anonymous_demo")
+        self.assertEqual(created["retention"]["ttl_seconds"], 60)
+        self.assertTrue(
+            created["retention"]["delete_endpoint"].startswith(
+                "/demo-api/sessions/"
+            )
+        )
+        session_id = created["session_id"]
+        updated = self.api.send_anonymous_demo_message(
+            session_id, {"message": "가상 답변"}
+        )
+        self.assertEqual(updated["access_scope"], "anonymous_demo")
+        completed = self.api.complete_anonymous_demo_session(session_id)
+        self.assertTrue(completed["response_state_purged"])
+
+    def test_anonymous_demo_rejects_provider_override_and_authenticated_session(self):
+        with self.assertRaises(ServiceError) as context:
+            self.api.create_anonymous_demo_session(
+                {"llm_selection": {"provider_id": "local_vllm"}}
+            )
+        self.assertEqual(context.exception.code, "invalid_request")
+
+        authenticated = self.api.create_session({"initial_message": "test"})
+        with self.assertRaises(ServiceError) as context:
+            self.api.send_anonymous_demo_message(
+                authenticated["session_id"], {"message": "test"}
+            )
+        self.assertEqual(context.exception.code, "session_not_found")
+
 
 class InterviewApiHttpTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -159,8 +197,10 @@ class InterviewApiHttpTests(unittest.TestCase):
         *,
         authorized=True,
         origin=None,
+        host="demo.example",
     ):
         headers = HTTPMessage()
+        headers.add_header("Host", host)
         raw_body = b""
         if authorized:
             headers.add_header("Authorization", "Bearer test-secret")
@@ -243,6 +283,16 @@ class InterviewApiHttpTests(unittest.TestCase):
         self.assertEqual(status, 403)
         self.assertEqual(body["error"]["code"], "origin_not_allowed")
 
+    def test_same_origin_browser_request_is_allowed(self):
+        status, _, body = self._request(
+            "GET",
+            "/healthz",
+            authorized=False,
+            origin="https://demo.example",
+        )
+        self.assertEqual(status, 200)
+        self.assertEqual(body["status"], "ok")
+
     def test_demo_shell_is_public_but_resources_require_auth(self):
         status, headers, body = self._request("GET", "/demo", authorized=False)
         self.assertEqual(status, 200)
@@ -266,6 +316,68 @@ class InterviewApiHttpTests(unittest.TestCase):
         self.assertNotIn("localStorage", body)
         self.assertNotIn("sessionStorage", body)
         self.assertNotIn("document.cookie", body)
+
+
+class AnonymousDemoHttpTests(InterviewApiHttpTests):
+    def setUp(self) -> None:
+        api = InterviewApi(session_factory=_FakeCore)
+        config = ServerConfig(
+            api_key="test-secret",
+            anonymous_demo_enabled=True,
+            anonymous_demo_requests_per_minute=30,
+        )
+        self.handler_class = build_handler(api, config)
+
+    def test_anonymous_demo_lifecycle_needs_no_api_key(self):
+        status, _, configuration = self._request(
+            "GET", "/demo-api/config", authorized=False
+        )
+        self.assertEqual(status, 200)
+        self.assertTrue(configuration["synthetic_test_information_required"])
+
+        status, _, created = self._request(
+            "POST",
+            "/demo-api/sessions",
+            {"mode_selection": "문진 시작", "initial_message": "가상 기침 사례"},
+            authorized=False,
+            origin="https://demo.example",
+        )
+        self.assertEqual(status, 201)
+        self.assertEqual(created["access_scope"], "anonymous_demo")
+        session_id = created["session_id"]
+
+        status, _, updated = self._request(
+            "POST",
+            f"/demo-api/sessions/{session_id}/messages",
+            {"message": "가상 답변"},
+            authorized=False,
+            origin="https://demo.example",
+        )
+        self.assertEqual(status, 200)
+        self.assertEqual(updated["access_scope"], "anonymous_demo")
+
+        status, _, completed = self._request(
+            "POST",
+            f"/demo-api/sessions/{session_id}/complete",
+            {},
+            authorized=False,
+            origin="https://demo.example",
+        )
+        self.assertEqual(status, 200)
+        self.assertTrue(completed["response_state_purged"])
+
+        status, _, protected = self._request(
+            "GET", "/v1/catalog", authorized=False
+        )
+        self.assertEqual(status, 401)
+        self.assertEqual(protected["error"]["code"], "unauthorized")
+
+    def test_anonymous_demo_gate_does_not_store_client_identity(self):
+        gate = AnonymousDemoGate(2)
+        self.assertTrue(gate.allow())
+        self.assertTrue(gate.allow())
+        self.assertFalse(gate.allow())
+        self.assertFalse(hasattr(gate, "client_addresses"))
 
 
 class InterviewApiRuntimeIntegrationTests(unittest.TestCase):

@@ -10,6 +10,7 @@ const SDC_STATUS = {
 
 const state = {
   apiKey: "",
+  apiMode: "anonymous_demo",
   mode: "structured",
   sourceVersion: "auto",
   questionnaire: null,
@@ -40,10 +41,15 @@ function showToast(message) {
 }
 
 async function api(path, options = {}) {
-  if (!state.apiKey) throw new Error("먼저 Demo Backend API key로 연결하세요.");
-  const headers = { Authorization: `Bearer ${state.apiKey}`, ...(options.headers || {}) };
+  const anonymousPath = path
+    .replace(/^\/v1\/llm\/providers$/, "/demo-api/config")
+    .replace(/^\/v1\/demo\/resources/, "/demo-api/resources")
+    .replace(/^\/v1\/sessions/, "/demo-api/sessions");
+  const target = state.apiMode === "authenticated" ? path : anonymousPath;
+  const headers = { ...(options.headers || {}) };
+  if (state.apiMode === "authenticated") headers.Authorization = `Bearer ${state.apiKey}`;
   if (options.body) headers["Content-Type"] = "application/json";
-  const response = await fetch(path, { ...options, headers });
+  const response = await fetch(target, { ...options, headers });
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(payload.error?.message || `API 오류 (${response.status})`);
   return payload;
@@ -479,7 +485,9 @@ async function startAdaptive() {
   if (provider?.external_processing && !$("#externalConsent").checked) return showToast("외부 LLM 처리 동의가 필요합니다.");
   const modeSelection = state.adaptivePurpose === "clinical_adaptive" ? "문진 시작" : "일반 건강상담";
   try {
-    const document = await api("/v1/sessions", { method: "POST", body: JSON.stringify({ mode_selection: modeSelection, initial_message: opening, llm_selection: llmSelectionPayload() }) });
+    const payload = { mode_selection: modeSelection, initial_message: opening };
+    if (state.apiMode === "authenticated") payload.llm_selection = llmSelectionPayload();
+    const document = await api("/v1/sessions", { method: "POST", body: JSON.stringify(payload) });
     state.sessionId = document.session_id;
     state.adaptiveHistory = [];
     state.currentAdaptiveQuestion = adaptiveQuestion(document);
@@ -575,12 +583,14 @@ function downloadDraft(version) {
 async function connect() {
   state.apiKey = $("#apiKey").value;
   if (!state.apiKey) return showToast("API key를 입력하세요.");
+  state.apiMode = "authenticated";
   try {
     const providers = await api("/v1/llm/providers");
     await api("/v1/demo/resources");
     state.providers = (providers.providers || []).filter((item) => item.selectable);
     const select = $("#llmProvider");
     select.replaceChildren();
+    select.disabled = false;
     state.providers.forEach((provider) => {
       const option = document.createElement("option");
       option.value = provider.provider_id;
@@ -593,7 +603,33 @@ async function connect() {
     updateProviderConsent();
   } catch (error) {
     state.apiKey = "";
+    state.apiMode = "anonymous_demo";
     setConnected(false, "연결 실패");
+    showToast(error.message);
+  }
+}
+
+async function connectAnonymous() {
+  state.apiKey = "";
+  state.apiMode = "anonymous_demo";
+  try {
+    const configuration = await api("/v1/llm/providers");
+    await api("/v1/demo/resources");
+    state.providers = (configuration.providers || []).filter((item) => item.selectable);
+    const select = $("#llmProvider");
+    select.replaceChildren();
+    state.providers.forEach((provider) => {
+      const option = document.createElement("option");
+      option.value = provider.provider_id;
+      option.textContent = `${provider.display_name} · ${provider.model}`;
+      select.append(option);
+    });
+    select.disabled = true;
+    setConnected(true, "익명 데모 연결됨");
+    showToast("API key 없이 익명 데모를 시작합니다. 실제 개인정보 대신 가상값을 사용하세요.");
+    updateProviderConsent();
+  } catch (error) {
+    setConnected(false, "익명 데모 준비 안됨");
     showToast(error.message);
   }
 }
@@ -611,6 +647,7 @@ function initialize() {
     $$("[data-version]").forEach((candidate) => candidate.classList.toggle("active", candidate === button));
   }));
   $("#connectButton").addEventListener("click", connect);
+  $("#anonymousConnectButton").addEventListener("click", connectAnonymous);
   $("#apiKey").addEventListener("keydown", (event) => { if (event.key === "Enter") connect(); });
   $("#parseQuestionnaire").addEventListener("click", parseStructured);
   $("#loadSample").addEventListener("click", sampleQuestionnaire);
@@ -666,6 +703,7 @@ function initialize() {
   $("#downloadR4").addEventListener("click", () => downloadDraft("r4"));
   $("#downloadR5").addEventListener("click", () => downloadDraft("r5"));
   updateOutputs();
+  connectAnonymous();
 }
 
 initialize();

@@ -35,17 +35,22 @@
 
       <section class="connection-card" aria-labelledby="connectionTitle">
         <div>
-          <span class="step-label">환경 연결</span>
-          <h2 id="connectionTitle">Demo Backend</h2>
-          <p>키는 브라우저 메모리에서만 사용하며 저장하지 않습니다.</p>
+          <span class="step-label">익명 테스트</span>
+          <h2 id="connectionTitle">API key 없이 데모 시작</h2>
+          <p>익명 데모는 플랫폼의 로컬 LLM만 사용하고 10분 뒤 자동 폐기됩니다.</p>
         </div>
-        <label class="field api-field"><span>API key</span><input id="apiKey" type="password" autocomplete="off" placeholder="Bearer key 입력"></label>
-        <button class="button primary" id="connectButton" type="button">연결 확인</button>
+        <div class="demo-access"><strong>가상 정보만 사용</strong><small>실제 환자·개인정보를 입력하지 않는 연구 테스트 모드</small></div>
+        <button class="button primary" id="anonymousConnectButton" type="button">익명 데모 연결</button>
       </section>
 
+      <details class="api-key-panel">
+        <summary>기관·개발자용 인증 API 연결</summary>
+        <div><label class="field api-field"><span>API key</span><input id="apiKey" type="password" autocomplete="off" placeholder="Bearer key 입력"></label><button class="button" id="connectButton" type="button">인증 API 연결</button></div>
+      </details>
+
       <aside class="privacy-note">
-        <strong>테스트 데이터 경계</strong>
-        <span>실제 이름·연락처·주민번호 등 직접 식별정보는 입력하지 마세요. 응답은 서버 메모리에만 존재하고 완료·삭제·TTL 만료 시 폐기됩니다. 업로드 파일은 현재 브라우저 밖으로 전송하지 않습니다.</span>
+        <strong>가상 참여자로 테스트하세요</strong>
+        <span>설문이 개인정보를 요구하면 이름은 ‘홍길동(가상)’, 성별은 임의 선택, 생일은 ‘1990-01-01(가상)’처럼 실제 본인과 무관한 값을 입력하세요. 실제 이름·연락처·주민번호·진료기록은 입력하지 마세요. 응답은 서버 메모리에서 완료·삭제·10분 만료 시 폐기됩니다.</span>
       </aside>
 
       <section class="mode-section" aria-labelledby="modeTitle">
@@ -107,7 +112,7 @@
 
             <div id="screeningOptions" class="fixed-options">
               <div class="form-grid three">
-                <label class="field"><span>만 나이</span><input id="screeningAge" type="number" min="0" max="120" placeholder="예: 66"></label>
+                <label class="field"><span>가상 만 나이</span><input id="screeningAge" type="number" min="0" max="120" placeholder="가상 예: 66"></label>
                 <label class="field"><span>임상적으로 필요한 성별 정보</span><select id="screeningSex"><option value="unknown">확정하지 않음</option><option value="female">여성</option><option value="male">남성</option></select></label>
                 <label class="field"><span>검진 기준 시기</span><input id="screeningDate" type="month" value="2026-08"></label>
               </div>
@@ -132,7 +137,7 @@
             <div class="conversation" id="fixedConversation" hidden>
               <div class="conversation-head"><strong id="fixedConversationTitle">정형 대화</strong><span id="fixedProgress">0 / 0</span></div>
               <div class="chat-log" id="fixedChatLog"></div>
-              <div class="composer"><input id="fixedAnswer" type="text" placeholder="답변 입력"><button class="button primary" id="fixedAnswerButton" type="button">답변</button></div>
+              <div class="composer"><input id="fixedAnswer" type="text" placeholder="가상 테스트 답변 입력"><button class="button primary" id="fixedAnswerButton" type="button">답변</button></div>
             </div>
           </div>
 
@@ -150,7 +155,7 @@
             <div class="conversation" id="adaptiveConversation" hidden>
               <div class="conversation-head"><strong id="adaptiveConversationTitle">진료 전 문진</strong><span id="adaptiveProgress">0개 답변</span></div>
               <div class="chat-log" id="adaptiveChatLog"></div>
-              <div class="composer"><input id="adaptiveAnswer" type="text" placeholder="답변 입력"><button class="button primary" id="adaptiveAnswerButton" type="button">보내기</button><button class="button ghost" id="completeAdaptive" type="button">종료·결과</button></div>
+              <div class="composer"><input id="adaptiveAnswer" type="text" placeholder="가상 테스트 답변 입력"><button class="button primary" id="adaptiveAnswerButton" type="button">보내기</button><button class="button ghost" id="completeAdaptive" type="button">종료·결과</button></div>
             </div>
           </div>
         </article>

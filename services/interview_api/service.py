@@ -122,6 +122,7 @@ class SessionRecord:
     last_state: dict[str, Any]
     llm_selection: LlmSelection
     llm_presentation: dict[str, Any]
+    access_scope: str = "authenticated"
     lock: threading.RLock = field(default_factory=threading.RLock)
 
 
@@ -133,6 +134,8 @@ class InterviewApi:
         *,
         session_ttl_seconds: int = 1_800,
         max_sessions: int = 1_000,
+        max_anonymous_demo_sessions: int | None = None,
+        anonymous_demo_ttl_seconds: int | None = None,
         execution_mode: str = "research_test",
         clock: Callable[[], float] = time.time,
         session_factory: Callable[[str], CoreInteractionSession] | None = None,
@@ -146,12 +149,22 @@ class InterviewApi:
             )
         if max_sessions < 1:
             raise ValueError("max_sessions must be positive")
+        if max_anonymous_demo_sessions is None:
+            max_anonymous_demo_sessions = min(50, max_sessions)
+        if anonymous_demo_ttl_seconds is None:
+            anonymous_demo_ttl_seconds = min(600, session_ttl_seconds)
+        if max_anonymous_demo_sessions < 1 or max_anonymous_demo_sessions > max_sessions:
+            raise ValueError("max_anonymous_demo_sessions must be positive and not exceed max_sessions")
+        if not MIN_SESSION_TTL_SECONDS <= anonymous_demo_ttl_seconds <= session_ttl_seconds:
+            raise ValueError("anonymous_demo_ttl_seconds must be between 60 and session_ttl_seconds")
         if execution_mode not in {"research_test", "clinician_supervised_pilot"}:
             raise ValueError(
                 "the API may run only in research_test or clinician_supervised_pilot mode"
             )
         self.session_ttl_seconds = session_ttl_seconds
         self.max_sessions = max_sessions
+        self.max_anonymous_demo_sessions = max_anonymous_demo_sessions
+        self.anonymous_demo_ttl_seconds = anonymous_demo_ttl_seconds
         self.execution_mode = execution_mode
         self.clock = clock
         self.registry = ServiceModeRegistry()
@@ -258,7 +271,80 @@ class InterviewApi:
             )
         return deepcopy(payload)
 
+    def anonymous_demo_configuration(self) -> dict[str, Any]:
+        provider = self.llm_registry.providers[self.llm_registry.default_provider_id]
+        if provider.external_processing:
+            raise ServiceError(
+                503,
+                "anonymous_demo_provider_unavailable",
+                "anonymous demo requires a local LLM provider",
+            )
+        return {
+            "anonymous_demo": True,
+            "authentication_required": False,
+            "execution_mode": self.execution_mode,
+            "response_storage": "memory_only",
+            "session_ttl_seconds": self.anonymous_demo_ttl_seconds,
+            "provider_policy": "platform_local_only",
+            "providers": [
+                provider.public_document(
+                    is_default=True,
+                )
+            ],
+            "real_personal_information_allowed": False,
+            "synthetic_test_information_required": True,
+        }
+
+    def create_anonymous_demo_session(
+        self, payload: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
+        payload = payload or {}
+        if not isinstance(payload, dict):
+            raise ServiceError(400, "invalid_request", "request body must be an object")
+        allowed = {"mode_selection", "initial_message"}
+        unknown = sorted(set(payload) - allowed)
+        if unknown:
+            raise ServiceError(
+                400,
+                "invalid_request",
+                "anonymous demo accepts only mode_selection and initial_message",
+                details={"unsupported_fields": unknown},
+            )
+        provider_id = self.llm_registry.default_provider_id
+        return self._create_session(
+            {
+                **payload,
+                "llm_policy": {
+                    "allowed_provider_ids": [provider_id],
+                    "default_provider_id": provider_id,
+                    "participant_may_choose": False,
+                },
+            },
+            access_scope="anonymous_demo",
+        )
+
+    def send_anonymous_demo_message(
+        self, session_id: str, payload: dict[str, Any]
+    ) -> dict[str, Any]:
+        return self.send_message(
+            session_id, payload, required_access_scope="anonymous_demo"
+        )
+
+    def complete_anonymous_demo_session(self, session_id: str) -> dict[str, Any]:
+        return self.complete(session_id, required_access_scope="anonymous_demo")
+
+    def delete_anonymous_demo_session(self, session_id: str) -> dict[str, Any]:
+        return self.delete_session(session_id, required_access_scope="anonymous_demo")
+
     def create_session(self, payload: dict[str, Any] | None = None) -> dict[str, Any]:
+        return self._create_session(payload, access_scope="authenticated")
+
+    def _create_session(
+        self,
+        payload: dict[str, Any] | None,
+        *,
+        access_scope: str,
+    ) -> dict[str, Any]:
         payload = payload or {}
         if not isinstance(payload, dict):
             raise ServiceError(400, "invalid_request", "request body must be an object")
@@ -294,6 +380,15 @@ class InterviewApi:
                     "session_capacity_reached",
                     "temporary session capacity has been reached",
                 )
+            if access_scope == "anonymous_demo" and sum(
+                record.access_scope == "anonymous_demo"
+                for record in self._sessions.values()
+            ) >= self.max_anonymous_demo_sessions:
+                raise ServiceError(
+                    503,
+                    "anonymous_demo_capacity_reached",
+                    "temporary anonymous demo capacity has been reached",
+                )
             session_id = str(uuid4())
             core = self._session_factory(session_id)
             try:
@@ -310,10 +405,15 @@ class InterviewApi:
                 core=core,
                 created_at=now,
                 touched_at=now,
-                expires_at=now + self.session_ttl_seconds,
+                expires_at=now + (
+                    self.anonymous_demo_ttl_seconds
+                    if access_scope == "anonymous_demo"
+                    else self.session_ttl_seconds
+                ),
                 last_state=deepcopy(state),
                 llm_selection=llm_selection,
                 llm_presentation=deepcopy(presentation),
+                access_scope=access_scope,
             )
             self._sessions[session_id] = record
         return self._session_document(session_id, record)
@@ -324,7 +424,13 @@ class InterviewApi:
             self._touch(record)
             return self._session_document(session_id, record)
 
-    def send_message(self, session_id: str, payload: dict[str, Any]) -> dict[str, Any]:
+    def send_message(
+        self,
+        session_id: str,
+        payload: dict[str, Any],
+        *,
+        required_access_scope: str | None = None,
+    ) -> dict[str, Any]:
         if not isinstance(payload, dict):
             raise ServiceError(400, "invalid_request", "request body must be an object")
         unknown = sorted(set(payload) - {"message"})
@@ -338,7 +444,9 @@ class InterviewApi:
         message = _optional_text(payload.get("message"), "message")
         if message is None:
             raise ServiceError(400, "invalid_request", "message is required")
-        session_id, record = self._record(session_id)
+        session_id, record = self._record(
+            session_id, required_access_scope=required_access_scope
+        )
         with record.lock:
             try:
                 state = record.core.process(message)
@@ -357,8 +465,12 @@ class InterviewApi:
             self._touch(record)
             return self._result_document(session_id, record)
 
-    def complete(self, session_id: str) -> dict[str, Any]:
-        session_id, record = self._record(session_id)
+    def complete(
+        self, session_id: str, *, required_access_scope: str | None = None
+    ) -> dict[str, Any]:
+        session_id, record = self._record(
+            session_id, required_access_scope=required_access_scope
+        )
         with record.lock:
             result = self._result_document(session_id, record)
             closure = record.core.close()
@@ -372,10 +484,19 @@ class InterviewApi:
             "closure": closure,
         }
 
-    def delete_session(self, session_id: str) -> dict[str, Any]:
+    def delete_session(
+        self, session_id: str, *, required_access_scope: str | None = None
+    ) -> dict[str, Any]:
         session_id = _validate_session_id(session_id)
         with self._lock:
-            record = self._sessions.pop(session_id, None)
+            record = self._sessions.get(session_id)
+            if record is not None and (
+                required_access_scope is None
+                or record.access_scope == required_access_scope
+            ):
+                self._sessions.pop(session_id, None)
+            else:
+                record = None
         if record is None:
             raise ServiceError(404, "session_not_found", "session was not found or expired")
         with record.lock:
@@ -410,31 +531,52 @@ class InterviewApi:
                 record.core.close()
         return len(records)
 
-    def _record(self, session_id: str) -> tuple[str, SessionRecord]:
+    def _record(
+        self,
+        session_id: str,
+        *,
+        required_access_scope: str | None = None,
+    ) -> tuple[str, SessionRecord]:
         session_id = _validate_session_id(session_id)
         self.purge_expired()
         with self._lock:
             record = self._sessions.get(session_id)
-        if record is None:
+        if record is None or (
+            required_access_scope is not None
+            and record.access_scope != required_access_scope
+        ):
             raise ServiceError(404, "session_not_found", "session was not found or expired")
         return session_id, record
 
     def _touch(self, record: SessionRecord) -> None:
         now = self.clock()
         record.touched_at = now
-        record.expires_at = now + self.session_ttl_seconds
+        record.expires_at = now + (
+            self.anonymous_demo_ttl_seconds
+            if record.access_scope == "anonymous_demo"
+            else self.session_ttl_seconds
+        )
 
     def _session_document(self, session_id: str, record: SessionRecord) -> dict[str, Any]:
         return {
             "session_id": session_id,
             "status": "active",
             "mode_id": record.core.mode_id,
+            "access_scope": record.access_scope,
             "created_at": _utc_iso(record.created_at),
             "expires_at": _utc_iso(record.expires_at),
             "retention": {
                 "storage": "memory_only",
-                "ttl_seconds": self.session_ttl_seconds,
-                "delete_endpoint": f"/v1/sessions/{session_id}",
+                "ttl_seconds": (
+                    self.anonymous_demo_ttl_seconds
+                    if record.access_scope == "anonymous_demo"
+                    else self.session_ttl_seconds
+                ),
+                "delete_endpoint": (
+                    f"/demo-api/sessions/{session_id}"
+                    if record.access_scope == "anonymous_demo"
+                    else f"/v1/sessions/{session_id}"
+                ),
             },
             "llm": record.llm_selection.public_document(
                 presentation_enabled=self.llm_presenter.enabled

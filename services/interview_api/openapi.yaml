@@ -23,6 +23,120 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Health"
+  /demo-api/config:
+    get:
+      security: []
+      summary: Read the constrained anonymous demo configuration
+      responses:
+        "200":
+          description: Anonymous demo policy and local provider metadata
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+  /demo-api/resources:
+    get:
+      security: []
+      summary: List response-free resources available to the anonymous demo
+      responses:
+        "200":
+          description: Anonymous demo resource catalog
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+  /demo-api/resources/{resource_id}:
+    parameters:
+      - name: resource_id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      security: []
+      summary: Read one allowlisted anonymous demo resource
+      responses:
+        "200":
+          description: Allowlisted resource
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /demo-api/sessions:
+    post:
+      security: []
+      summary: Start a short-lived synthetic anonymous demo session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                mode_selection:
+                  type: string
+                initial_message:
+                  type: string
+      responses:
+        "201":
+          description: Anonymous demo session created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Session"
+        "429":
+          description: Anonymous demo request limit reached
+  /demo-api/sessions/{session_id}/messages:
+    parameters:
+      - $ref: "#/components/parameters/SessionId"
+    post:
+      security: []
+      summary: Submit one synthetic response to an anonymous demo session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [message]
+              properties:
+                message:
+                  type: string
+      responses:
+        "200":
+          description: Updated anonymous demo session
+  /demo-api/sessions/{session_id}/complete:
+    parameters:
+      - $ref: "#/components/parameters/SessionId"
+    post:
+      security: []
+      summary: Return the draft result and purge anonymous response state
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+      responses:
+        "200":
+          description: Anonymous demo completed and purged
+  /demo-api/sessions/{session_id}:
+    parameters:
+      - $ref: "#/components/parameters/SessionId"
+    delete:
+      security: []
+      summary: Purge an anonymous demo session without returning a result
+      responses:
+        "200":
+          description: Anonymous demo session purged
   /v1/catalog:
     get:
       summary: Get the available interaction-purpose catalog

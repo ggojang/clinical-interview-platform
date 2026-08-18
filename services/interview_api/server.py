@@ -1,6 +1,7 @@
 """Dependency-free HTTP adapter for the interview application service."""
 from __future__ import annotations
 
+from collections import deque
 from dataclasses import dataclass
 import hmac
 from http import HTTPStatus
@@ -10,6 +11,7 @@ import os
 from pathlib import Path
 import re
 import threading
+import time
 from typing import Any
 from urllib.parse import urlsplit
 from uuid import uuid4
@@ -23,6 +25,10 @@ MESSAGE_PATH = re.compile(r"^/v1/sessions/([^/]+)/messages$")
 RESULT_PATH = re.compile(r"^/v1/sessions/([^/]+)/result$")
 COMPLETE_PATH = re.compile(r"^/v1/sessions/([^/]+)/complete$")
 DEMO_RESOURCE_PATH = re.compile(r"^/v1/demo/resources/([^/]+)$")
+ANONYMOUS_DEMO_RESOURCE_PATH = re.compile(r"^/demo-api/resources/([^/]+)$")
+ANONYMOUS_DEMO_SESSION_PATH = re.compile(r"^/demo-api/sessions/([^/]+)$")
+ANONYMOUS_DEMO_MESSAGE_PATH = re.compile(r"^/demo-api/sessions/([^/]+)/messages$")
+ANONYMOUS_DEMO_COMPLETE_PATH = re.compile(r"^/demo-api/sessions/([^/]+)/complete$")
 STATIC_ROOT = Path(__file__).resolve().parent / "static"
 STATIC_FILES = {
     "/": ("demo.html", "text/html; charset=utf-8"),
@@ -33,6 +39,32 @@ STATIC_FILES = {
 }
 
 
+def _env_bool(name: str, default: bool) -> bool:
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
+class AnonymousDemoGate:
+    """Bound anonymous traffic globally without retaining client identifiers."""
+
+    def __init__(self, requests_per_minute: int) -> None:
+        self.requests_per_minute = requests_per_minute
+        self._requests: deque[float] = deque()
+        self._lock = threading.Lock()
+
+    def allow(self) -> bool:
+        now = time.monotonic()
+        with self._lock:
+            while self._requests and self._requests[0] <= now - 60:
+                self._requests.popleft()
+            if len(self._requests) >= self.requests_per_minute:
+                return False
+            self._requests.append(now)
+            return True
+
+
 @dataclass(frozen=True)
 class ServerConfig:
     host: str = "127.0.0.1"
@@ -41,6 +73,10 @@ class ServerConfig:
     allowed_origins: tuple[str, ...] = ()
     session_ttl_seconds: int = 1_800
     max_sessions: int = 1_000
+    anonymous_demo_enabled: bool = False
+    anonymous_demo_ttl_seconds: int = 600
+    anonymous_demo_max_sessions: int = 50
+    anonymous_demo_requests_per_minute: int = 240
     execution_mode: str = "research_test"
 
     @classmethod
@@ -57,6 +93,18 @@ class ServerConfig:
             allowed_origins=origins,
             session_ttl_seconds=int(os.getenv("CLINICAL_API_SESSION_TTL", "1800")),
             max_sessions=int(os.getenv("CLINICAL_API_MAX_SESSIONS", "1000")),
+            anonymous_demo_enabled=_env_bool(
+                "CLINICAL_API_ANONYMOUS_DEMO_ENABLED", False
+            ),
+            anonymous_demo_ttl_seconds=int(
+                os.getenv("CLINICAL_API_ANONYMOUS_DEMO_TTL", "600")
+            ),
+            anonymous_demo_max_sessions=int(
+                os.getenv("CLINICAL_API_ANONYMOUS_DEMO_MAX_SESSIONS", "50")
+            ),
+            anonymous_demo_requests_per_minute=int(
+                os.getenv("CLINICAL_API_ANONYMOUS_DEMO_REQUESTS_PER_MINUTE", "240")
+            ),
             execution_mode=os.getenv("CLINICAL_API_EXECUTION_MODE", "research_test"),
         )
 
@@ -66,9 +114,19 @@ class ServerConfig:
             raise ValueError("CLINICAL_API_KEY is required for a non-loopback bind address")
         if not 1 <= self.port <= 65_535:
             raise ValueError("CLINICAL_API_PORT must be between 1 and 65535")
+        if self.anonymous_demo_enabled and self.execution_mode != "research_test":
+            raise ValueError("anonymous demo is allowed only in research_test mode")
+        if not 1 <= self.anonymous_demo_max_sessions <= self.max_sessions:
+            raise ValueError("anonymous demo session capacity is invalid")
+        if not 60 <= self.anonymous_demo_ttl_seconds <= self.session_ttl_seconds:
+            raise ValueError("anonymous demo TTL is invalid")
+        if self.anonymous_demo_requests_per_minute < 1:
+            raise ValueError("anonymous demo request limit must be positive")
 
 
 def build_handler(api: InterviewApi, config: ServerConfig) -> type[BaseHTTPRequestHandler]:
+    anonymous_gate = AnonymousDemoGate(config.anonymous_demo_requests_per_minute)
+
     class Handler(BaseHTTPRequestHandler):
         server_version = "ClinicalInterviewAPI"
         sys_version = ""
@@ -106,6 +164,9 @@ def build_handler(api: InterviewApi, config: ServerConfig) -> type[BaseHTTPReque
                 if path in STATIC_FILES and method == "GET":
                     filename, content_type = STATIC_FILES[path]
                     self._static(filename, content_type, request_id)
+                    return
+                if path.startswith("/demo-api/"):
+                    self._anonymous_demo(path, method, request_id)
                     return
                 self._authenticate()
                 if path == "/v1/catalog" and method == "GET":
@@ -153,6 +214,64 @@ def build_handler(api: InterviewApi, config: ServerConfig) -> type[BaseHTTPReque
                 error = ServiceError(500, "internal_error", "the request could not be completed")
                 self._json(error.status, error.as_dict(request_id), request_id)
 
+        def _anonymous_demo(self, path: str, method: str, request_id: str) -> None:
+            if not config.anonymous_demo_enabled:
+                raise ServiceError(404, "route_not_found", "route was not found")
+            if not anonymous_gate.allow():
+                raise ServiceError(
+                    429,
+                    "anonymous_demo_rate_limited",
+                    "anonymous demo request limit has been reached; try again shortly",
+                )
+            if path == "/demo-api/config" and method == "GET":
+                self._json(
+                    HTTPStatus.OK, api.anonymous_demo_configuration(), request_id
+                )
+                return
+            if path == "/demo-api/resources" and method == "GET":
+                self._json(HTTPStatus.OK, api.demo_resources(), request_id)
+                return
+            if match := ANONYMOUS_DEMO_RESOURCE_PATH.fullmatch(path):
+                if method == "GET":
+                    self._json(
+                        HTTPStatus.OK, api.demo_resource(match.group(1)), request_id
+                    )
+                    return
+            if path == "/demo-api/sessions" and method == "POST":
+                self._json(
+                    HTTPStatus.CREATED,
+                    api.create_anonymous_demo_session(self._body()),
+                    request_id,
+                )
+                return
+            if match := ANONYMOUS_DEMO_MESSAGE_PATH.fullmatch(path):
+                if method == "POST":
+                    self._json(
+                        HTTPStatus.OK,
+                        api.send_anonymous_demo_message(
+                            match.group(1), self._body()
+                        ),
+                        request_id,
+                    )
+                    return
+            if match := ANONYMOUS_DEMO_COMPLETE_PATH.fullmatch(path):
+                if method == "POST":
+                    self._json(
+                        HTTPStatus.OK,
+                        api.complete_anonymous_demo_session(match.group(1)),
+                        request_id,
+                    )
+                    return
+            if match := ANONYMOUS_DEMO_SESSION_PATH.fullmatch(path):
+                if method == "DELETE":
+                    self._json(
+                        HTTPStatus.OK,
+                        api.delete_anonymous_demo_session(match.group(1)),
+                        request_id,
+                    )
+                    return
+            raise ServiceError(404, "route_not_found", "route was not found")
+
         def _authenticate(self) -> None:
             if not config.api_key:
                 return
@@ -163,7 +282,16 @@ def build_handler(api: InterviewApi, config: ServerConfig) -> type[BaseHTTPReque
 
         def _origin_allowed(self, request_id: str | None = None) -> bool:
             origin = self.headers.get("Origin")
-            if origin is None or origin in config.allowed_origins:
+            host = self.headers.get("Host", "").strip().lower()
+            try:
+                origin_host = urlsplit(origin).netloc.lower() if origin else ""
+            except ValueError:
+                origin_host = ""
+            if (
+                origin is None
+                or origin in config.allowed_origins
+                or (host and origin_host == host)
+            ):
                 return True
             if request_id is not None:
                 error = ServiceError(403, "origin_not_allowed", "request origin is not allowed")
@@ -252,6 +380,8 @@ def serve(config: ServerConfig | None = None) -> None:
     api = InterviewApi(
         session_ttl_seconds=config.session_ttl_seconds,
         max_sessions=config.max_sessions,
+        max_anonymous_demo_sessions=config.anonymous_demo_max_sessions,
+        anonymous_demo_ttl_seconds=config.anonymous_demo_ttl_seconds,
         execution_mode=config.execution_mode,
     )
     server = ThreadingHTTPServer((config.host, config.port), build_handler(api, config))

@@ -14,6 +14,12 @@ Quadlet. Do not edit application source inside the running container.
 - the API container uses host networking but binds only `10.20.0.12:9090`, so
   it can reach the host-only LLM at `127.0.0.1:8000`
 
+The `/demo-api` surface may be exposed without an API key for synthetic public
+testing. It is separately bounded to the platform-local LLM, memory-only
+sessions, a ten-minute TTL, a concurrent-session cap, and a global request
+limit. The authenticated `/v1` API remains protected. Public internet exposure
+still requires an HTTPS reverse proxy, WAF/network rate limiting, and monitoring.
+
 ## Build and install
 
 From the repository root on the host:
