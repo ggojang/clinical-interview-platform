@@ -25,6 +25,9 @@ class CoreInteractionSession:
     proactive_safety_questions: bool = False
     clinical_interpreter: Callable[[str], dict[str, Any]] | None = None
     question_planner: Callable[[dict[str, Any], list[dict[str, Any]]], str | None] | None = None
+    answer_interpreter: Callable[
+        [dict[str, Any], str, list[dict[str, Any]]], dict[str, dict[str, Any]]
+    ] | None = None
     mode_id: str | None = None
     adapter: InterviewSession | HealthInformationSession | None = None
     closed: bool = False
@@ -211,6 +214,8 @@ class CoreInteractionSession:
             },
             proactive_safety_questions=self.proactive_safety_questions,
             question_planner=self.question_planner,
+            answer_interpreter=self.answer_interpreter,
+            interaction_style="chatbot_test",
         )
         wrapped = self._wrap(self.adapter.process(message), resolution=resolution)
         if interpretation is not None:

@@ -1695,7 +1695,10 @@ async function sendAdaptiveAnswer() {
       showAdaptiveQuestion(state.currentAdaptiveQuestion);
     }
     else {
-      bubble($("#adaptiveChatLog"), "assistant", "현재 Runtime 단계가 종료 또는 확인 대기 상태입니다. 결과를 확인하거나 대화를 종료하세요.");
+      const flow = document?.state?.adapter_state?.interview_flow || document?.state?.interview_flow || {};
+      bubble($("#adaptiveChatLog"), "assistant", flow.review_ready
+        ? "진료 준비에 필요한 핵심 질문을 마쳤습니다. 지금까지의 답변과 확인하지 못한 항목은 결과에 구분해 표시됩니다. 답변을 검토한 뒤 ‘문진 완료’를 눌러주세요."
+        : "현재 Runtime 단계가 종료 또는 확인 대기 상태입니다. 결과를 확인하거나 대화를 종료하세요.");
       $("#adaptiveProgress").textContent = `${state.adaptiveHistory.length}개 답변`;
     }
     rebuildAdaptiveArtifacts(document);

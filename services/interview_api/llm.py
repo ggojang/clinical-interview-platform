@@ -33,6 +33,8 @@ MAX_HEALTH_INFORMATION_CHARACTERS = 4_000
 MAX_PRESENTATION_CACHE_ENTRIES = 2_048
 MAX_INTERPRETATION_CHARACTERS = 4_000
 MAX_PLANNER_CANDIDATES = 24
+MAX_ANSWER_INTERPRETATION_CHARACTERS = 8_000
+MAX_ANSWER_FACT_UPDATES = 12
 
 
 class LlmConfigurationError(ValueError):
@@ -105,7 +107,7 @@ class LlmSelection:
             "external_processing_consent": self.external_processing_consent,
             "allowed_provider_ids": list(self.allowed_provider_ids),
             "participant_may_choose": self.participant_may_choose,
-            "runtime_role": "bounded_interpretation_planning_and_presentation",
+            "runtime_role": "bounded_interpretation_current_turn_extraction_planning_and_presentation",
             "presentation_enabled": presentation_enabled,
             "clinical_authority": False,
         }
@@ -176,9 +178,10 @@ class LlmProviderRegistry:
             "requester_policy_supported": True,
             "credentials_in_request_body": "prohibited",
             "external_processing_requires_explicit_consent": True,
-            "runtime_role": "bounded_interpretation_planning_and_presentation",
+            "runtime_role": "bounded_interpretation_current_turn_extraction_planning_and_presentation",
             "presentation_enabled": presentation_enabled,
             "clinical_interpretation": "allowlisted_rfe_catalog_only",
+            "answer_interpretation": "current_turn_allowlisted_facts_only",
             "question_planning": "eligible_compiled_candidates_only",
             "clinical_safety_and_completion": "compiled_runtime_only",
             "providers": [
@@ -573,6 +576,109 @@ class LlmInterviewPlanner:
             return None
 
 
+class LlmAdaptiveAnswerInterpreter:
+    """Extract explicit allowlisted Facts from only the current patient turn.
+
+    The adapter implements the semantic coverage behavior of the Custom GPT:
+    one answer may satisfy more than the currently displayed question. It does
+    not receive prior answer values and cannot create a Fact, Rule, diagnosis,
+    urgency, or treatment. Every returned value is checked against the schema
+    supplied by the compiled Runtime before it can enter Clinical Memory.
+    """
+
+    def __init__(
+        self,
+        *,
+        enabled: bool = False,
+        timeout_seconds: float = 18.0,
+        transport: CompletionTransport | None = None,
+    ) -> None:
+        self.enabled = enabled
+        self.timeout_seconds = timeout_seconds
+        self._transport = transport or _openai_compatible_completion
+
+    @classmethod
+    def from_env(cls) -> "LlmAdaptiveAnswerInterpreter":
+        return cls(
+            enabled=_env_bool("CLINICAL_LLM_ANSWER_INTERPRETATION_ENABLED", False),
+            timeout_seconds=float(
+                os.getenv("CLINICAL_LLM_ANSWER_INTERPRETATION_TIMEOUT_SECONDS", "18")
+            ),
+        )
+
+    def interpret(
+        self,
+        context: dict[str, Any],
+        patient_text: str,
+        candidates: list[dict[str, Any]],
+        selection: LlmSelection,
+    ) -> dict[str, dict[str, Any]]:
+        if not self.enabled or not candidates or not patient_text.strip():
+            return {}
+        schemas = {
+            item["fact_id"]: item
+            for item in candidates
+            if isinstance(item, dict) and isinstance(item.get("fact_id"), str)
+        }
+        messages = [
+            {
+                "role": "system",
+                "content": (
+                    "Extract only information explicitly stated in the current Korean or English patient answer. "
+                    "One answer may satisfy several supplied Fact schemas. Never infer a diagnosis, negative finding, "
+                    "urgency, treatment, demographic, date, or value that was not stated. Use only supplied fact_id values. "
+                    "Preserve useful free text briefly. For coded Facts use only an allowed_values token. "
+                    "Return JSON only as {\"fact_updates\":[{\"fact_id\":\"...\",\"value\":...,\"confidence\":0.0}]}. "
+                    "Omit uncertain or merely possible updates; return an empty array when nothing is explicit."
+                ),
+            },
+            {
+                "role": "user",
+                "content": json.dumps(
+                    {
+                        "context": context,
+                        "current_patient_answer": patient_text,
+                        "allowlisted_fact_schemas": candidates,
+                    },
+                    ensure_ascii=False,
+                ),
+            },
+        ]
+        try:
+            raw = self._transport(selection.provider, messages, self.timeout_seconds)
+            if not isinstance(raw, str) or len(raw) > MAX_ANSWER_INTERPRETATION_CHARACTERS:
+                raise ValueError("invalid answer interpretation response")
+            document = _parse_json_object(raw)
+            updates = document.get("fact_updates", [])
+            if not isinstance(updates, list):
+                raise ValueError("fact_updates must be an array")
+            accepted: dict[str, dict[str, Any]] = {}
+            for update in updates[:MAX_ANSWER_FACT_UPDATES]:
+                if not isinstance(update, dict):
+                    continue
+                fact_id = update.get("fact_id")
+                schema = schemas.get(fact_id)
+                if schema is None or "value" not in update:
+                    continue
+                value = _validated_fact_value(update["value"], schema)
+                if value is _INVALID_FACT_VALUE:
+                    continue
+                confidence = update.get("confidence", 0.75)
+                if not isinstance(confidence, (int, float)) or isinstance(confidence, bool):
+                    continue
+                confidence = float(confidence)
+                if not math.isfinite(confidence) or confidence < 0.55:
+                    continue
+                accepted[fact_id] = {
+                    "value": value,
+                    "confidence": min(confidence, 0.95),
+                    "method": "bounded_llm_current_turn_extraction",
+                }
+            return accepted
+        except (HTTPError, URLError, TimeoutError, OSError, ValueError, KeyError, TypeError):
+            return {}
+
+
 class LlmHealthInformationAdvisor:
     """Generate informational health guidance after deterministic safety screening."""
 
@@ -662,6 +768,49 @@ class LlmHealthInformationAdvisor:
             "independent_diagnosis_or_treatment": False,
             "safety_status": deepcopy(safety),
         }
+
+
+_INVALID_FACT_VALUE = object()
+
+
+def _validated_fact_value(value: Any, schema: dict[str, Any]) -> Any:
+    value_type = schema.get("value_type")
+    allowed = schema.get("allowed_values") or []
+    if allowed and value not in allowed:
+        return _INVALID_FACT_VALUE
+    if value_type == "boolean":
+        return value if isinstance(value, bool) else _INVALID_FACT_VALUE
+    if value_type == "integer":
+        if not isinstance(value, int) or isinstance(value, bool):
+            return _INVALID_FACT_VALUE
+        minimum, maximum = schema.get("minimum"), schema.get("maximum")
+        if minimum is not None and value < minimum:
+            return _INVALID_FACT_VALUE
+        if maximum is not None and value > maximum:
+            return _INVALID_FACT_VALUE
+        return value
+    if value_type == "quantity":
+        if not isinstance(value, dict):
+            return _INVALID_FACT_VALUE
+        amount, unit = value.get("amount"), value.get("unit")
+        if not isinstance(amount, (int, float)) or isinstance(amount, bool):
+            return _INVALID_FACT_VALUE
+        if schema.get("unit") and unit != schema["unit"]:
+            return _INVALID_FACT_VALUE
+        minimum, maximum = schema.get("minimum"), schema.get("maximum")
+        if minimum is not None and amount < minimum:
+            return _INVALID_FACT_VALUE
+        if maximum is not None and amount > maximum:
+            return _INVALID_FACT_VALUE
+        return {"amount": amount, "unit": unit}
+    if value_type in {
+        "string", "coded", "coded_or_string", "string_or_reference",
+        "date", "date_or_period", "datetime",
+    }:
+        if not isinstance(value, str) or not value.strip() or len(value) > 500:
+            return _INVALID_FACT_VALUE
+        return value.strip()
+    return _INVALID_FACT_VALUE
 
 
 def _parse_json_object(raw: str) -> dict[str, Any]:

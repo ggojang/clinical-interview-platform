@@ -28,6 +28,7 @@ from runtime.adaptive_answer_presentation import (
     patient_answer_options,
     selector_fact_ids,
 )
+from runtime.question_presentation import PRESENTATION_CONTRACT_VERSION
 from tools.fhir.build_answer_valuesets import build as build_answer_valuesets
 
 
@@ -367,7 +368,7 @@ def run() -> dict[str, Any]:
             "composite_refactoring_queue_sample": composite_candidates[:100],
         },
         "patient_answer_presentation": {
-            "contract_version": "0.3.0",
+            "contract_version": PRESENTATION_CONTRACT_VERSION,
             "selector_fact_count": len(patient_presented_selector_facts),
             "nonselector_coded_fact_count": len(
                 patient_presented_nonselector_facts

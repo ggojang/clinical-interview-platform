@@ -19,6 +19,7 @@ from runtime.question_presentation import (
     DATA_ABSENT_ACTIONS,
     PRESENTATION_CONTRACT_VERSION,
     data_absent_actions,
+    chatbot_stem_ko,
     display_suggestions,
     resolve_data_absent_input,
     resolve_presentation_input,
@@ -31,6 +32,8 @@ from runtime.adaptive_answer_presentation import (
     selector_stem_ko,
 )
 from runtime.question_planning import (
+    CHATBOT_TEST_SOFT_QUESTION_BUDGET,
+    chatbot_question_rank,
     internal_routing_fact_ids,
     proactive_safety_fact_ids,
     semantic_question_rank,
@@ -490,6 +493,10 @@ class InterviewSession:
     encounter_context: dict[str, Any] | None = None
     proactive_safety_questions: bool = True
     question_planner: Callable[[dict[str, Any], list[dict[str, Any]]], str | None] | None = None
+    answer_interpreter: Callable[
+        [dict[str, Any], str, list[dict[str, Any]]], dict[str, dict[str, Any]]
+    ] | None = None
+    interaction_style: str = "compiled_checklist"
     asked: list[str] = field(default_factory=list)
     active_patterns: list[str] = field(default_factory=list)
     trace: list[dict[str, Any]] = field(default_factory=list)
@@ -513,6 +520,8 @@ class InterviewSession:
     )
 
     def __post_init__(self) -> None:
+        if self.interaction_style not in {"compiled_checklist", "chatbot_test"}:
+            raise ValueError("unsupported interaction_style")
         self.encounter_context = normalize_encounter_context(self.encounter_context)
         self.package = load_package(self.package_path, self.execution_mode)
         shared_context = (
@@ -670,7 +679,11 @@ class InterviewSession:
                     answer_text, data_absent_actions(len(patient_options) + 1)
                 )
                 if patient_options
-                else resolve_presentation_input(expected_fact, answer_text)
+                else resolve_presentation_input(
+                    expected_fact,
+                    answer_text,
+                    chatbot=self.interaction_style == "chatbot_test",
+                )
             )
         extraction_text = (
             presentation_input["answer_text"]
@@ -692,6 +705,35 @@ class InterviewSession:
                 candidate["raw_text"] = answer_text
                 for evidence in candidate.get("evidence", []):
                     evidence["text"] = answer_text
+        if (
+            self.interaction_style == "chatbot_test"
+            and self.answer_interpreter is not None
+            and expected_fact is not None
+            and answer_text.strip()
+        ):
+            interpreted = self.answer_interpreter(
+                {
+                    "reason_for_encounter": self.reason_for_encounter,
+                    "expected_fact_id": expected_fact,
+                    "known_fact_ids": sorted(self.memory.facts),
+                    "asked_fact_ids": list(self.asked),
+                    "turn": turn,
+                },
+                answer_text,
+                self._answer_interpretation_candidates(expected_fact),
+            )
+            for fact_id, candidate in interpreted.items():
+                if not isinstance(candidate, dict) or "value" not in candidate:
+                    continue
+                additions.setdefault(
+                    fact_id,
+                    fact(
+                        candidate["value"],
+                        answer_text,
+                        turn,
+                        float(candidate.get("confidence", 0.75)),
+                    ),
+                )
         social_prefill_sources = set(
             self._clinician_context().get("completion", {})
             .get("social_history_atomic_prefill_source_facts", [])
@@ -1400,7 +1442,20 @@ class InterviewSession:
                 stem = concise_stem_ko(fact_id, str(template.get("wording") or ""))
                 if stem:
                     question["stem_text"] = stem
-        suggestions = display_suggestions(fact_id) if not options else []
+        if self.interaction_style == "chatbot_test":
+            chatbot_stem = chatbot_stem_ko(
+                fact_id, str(template.get("wording") or question.get("text") or "")
+            )
+            if chatbot_stem:
+                question["stem_text"] = chatbot_stem
+                question["capture_scope"] = "patient_facing_atomic_axis"
+        suggestions = (
+            display_suggestions(
+                fact_id, chatbot=self.interaction_style == "chatbot_test"
+            )
+            if not options
+            else []
+        )
         if suggestions:
             question["display_suggestions"] = suggestions
             question["suggestion_semantics"] = "input_shortcut_only"
@@ -1421,6 +1476,8 @@ class InterviewSession:
                 )
                 else "fact_value"
             ),
+            "interaction_style": self.interaction_style,
+            "compiled_authoring_question_exposed": False,
         }
         if binding.get("answer_value_set"):
             question["answer_value_set"] = binding["answer_value_set"]
@@ -1496,6 +1553,48 @@ class InterviewSession:
                 "local_answer_code_system"
             ),
         )
+
+    def _answer_interpretation_candidates(
+        self, expected_fact: str
+    ) -> list[dict[str, Any]]:
+        """Expose a bounded allowlist for one-turn, multi-Fact extraction.
+
+        Only schema and authored question metadata leave the compiled Runtime.
+        Historical patient values are not included. The selected provider sees
+        the current answer because it is the component explicitly chosen to
+        understand that answer.
+        """
+        questions = self._questions_by_fact()
+        candidates = []
+        for node in self._fact_nodes():
+            fact_id = node.get("id")
+            if not isinstance(fact_id, str):
+                continue
+            if fact_id != expected_fact and self.memory.state(fact_id) in {
+                "known", "unknown", "not_applicable"
+            }:
+                continue
+            question = questions.get(fact_id, {})
+            candidates.append({
+                "fact_id": fact_id,
+                "value_type": node.get("value_type"),
+                "allowed_values": deepcopy(node.get("allowed_values", [])),
+                "minimum": node.get("minimum"),
+                "maximum": node.get("maximum"),
+                "unit": node.get("unit"),
+                "question": chatbot_stem_ko(
+                    fact_id, str(question.get("wording") or "")
+                ) or str(question.get("wording") or fact_id),
+                "expected": fact_id == expected_fact,
+            })
+        return sorted(
+            candidates,
+            key=lambda item: (
+                0 if item["expected"] else 1,
+                chatbot_question_rank(item["fact_id"], self._target_for_fact(item["fact_id"])),
+                item["fact_id"],
+            ),
+        )[:48]
 
     def _fact_nodes(self) -> list[dict[str, Any]]:
         nodes = [
@@ -1607,6 +1706,11 @@ class InterviewSession:
             return
         if self.reason_for_encounter == "rfe.diabetes_follow_up":
             self._update_diabetes_follow_up_patterns()
+            return
+        if self.reason_for_encounter != "rfe.cough":
+            self.active_patterns = [
+                f"encounter.{self.reason_for_encounter.removeprefix('rfe.')}"
+            ]
             return
         active = ["respiratory.cough"]
         cold_support = sum(
@@ -2386,6 +2490,8 @@ class InterviewSession:
         context_cap = self.encounter_context.get("question_budget_cap")
         if context_cap is not None:
             budget = min(budget, int(context_cap))
+        if self.interaction_style == "chatbot_test" and safety_level == "routine":
+            budget = min(budget, CHATBOT_TEST_SOFT_QUESTION_BUDGET)
         return budget
 
     def _safety(self) -> dict[str, Any]:
@@ -2529,6 +2635,11 @@ class InterviewSession:
                 )
         if not candidates:
             return None
+        question_rank = (
+            chatbot_question_rank
+            if self.interaction_style == "chatbot_test"
+            else semantic_question_rank
+        )
         if self._safety_first():
             return max(candidates, key=lambda item: (item["score"], item["rule_id"]))
         if self.question_planner is not None:
@@ -2544,12 +2655,12 @@ class InterviewSession:
                 if (0 if item["fact_id"] in required_facts else 1) == required_tier
             ]
             semantic_tier = min(
-                semantic_question_rank(item["fact_id"], item.get("target_id"))
+                question_rank(item["fact_id"], item.get("target_id"))
                 for item in required_candidates
             )
             planner_candidates = [
                 item for item in required_candidates
-                if semantic_question_rank(item["fact_id"], item.get("target_id"))
+                if question_rank(item["fact_id"], item.get("target_id"))
                 == semantic_tier
             ]
             planner_context = {
@@ -2581,7 +2692,7 @@ class InterviewSession:
             candidates,
             key=lambda item: (
                 0 if item["fact_id"] in required_facts else 1,
-                semantic_question_rank(item["fact_id"], item.get("target_id")),
+                question_rank(item["fact_id"], item.get("target_id")),
                 -int(item["score"]),
                 item["rule_id"],
             ),
@@ -2745,6 +2856,22 @@ class InterviewSession:
             "safety_status": safety,
             "selected_question": question,
             "stop_reason": stop_reason,
+            "interview_flow": {
+                "interaction_style": self.interaction_style,
+                "question_budget": self._question_budget(safety["level"]),
+                "questions_shown": len(self.asked),
+                "review_ready": bool(
+                    self.interaction_style == "chatbot_test"
+                    and question is None
+                    and stop_reason in {
+                        "question_budget_reached",
+                        "all_required_targets_resolved",
+                        "required_targets_addressed_with_absent_data",
+                        "no_eligible_question",
+                    }
+                ),
+                "unasked_compiled_facts_remain_visible_in_handoff": True,
+            },
             "completion_status": completion,
             "clinician_handoff": self.clinician_handoff(),
             "revision_status": {

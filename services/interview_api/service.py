@@ -20,6 +20,7 @@ from uuid import UUID, uuid4
 from runtime.core import CoreInteractionSession
 from runtime.service_modes import ServiceModeRegistry
 from services.interview_api.llm import (
+    LlmAdaptiveAnswerInterpreter,
     LlmClinicalInterpreter,
     LlmHealthInformationAdvisor,
     LlmInterviewPlanner,
@@ -150,6 +151,7 @@ class InterviewApi:
         llm_presenter: LlmQuestionPresenter | None = None,
         clinical_interpreter: LlmClinicalInterpreter | None = None,
         interview_planner: LlmInterviewPlanner | None = None,
+        answer_interpreter: LlmAdaptiveAnswerInterpreter | None = None,
         health_information_advisor: LlmHealthInformationAdvisor | None = None,
         terminology_client: TerminologyClient | None = None,
     ) -> None:
@@ -185,6 +187,9 @@ class InterviewApi:
             clinical_interpreter or LlmClinicalInterpreter.from_env()
         )
         self.interview_planner = interview_planner or LlmInterviewPlanner.from_env()
+        self.answer_interpreter = (
+            answer_interpreter or LlmAdaptiveAnswerInterpreter.from_env()
+        )
         self.health_information_advisor = (
             health_information_advisor or LlmHealthInformationAdvisor.from_env()
         )
@@ -216,7 +221,8 @@ class InterviewApi:
                 "presentation_enabled": self.llm_presenter.enabled,
                 "interpretation_enabled": self.clinical_interpreter.enabled,
                 "planning_enabled": self.interview_planner.enabled,
-                "runtime_role": "bounded_interpretation_planning_and_presentation",
+                "answer_interpretation_enabled": self.answer_interpreter.enabled,
+                "runtime_role": "chatbot_test_semantic_coverage_runtime",
                 "health_information_enabled": self.health_information_advisor.enabled,
             },
             "terminology": self.terminology_client.configuration(),
@@ -460,6 +466,11 @@ class InterviewApi:
                 core.question_planner = lambda context, candidates: (
                     self.interview_planner.choose(
                         context, candidates, llm_selection
+                    )
+                )
+                core.answer_interpreter = lambda context, message, candidates: (
+                    self.answer_interpreter.interpret(
+                        context, message, candidates, llm_selection
                     )
                 )
             try:

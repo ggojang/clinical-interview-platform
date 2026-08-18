@@ -207,3 +207,53 @@ def semantic_question_rank(fact_id: str, target_id: str | None = None) -> int:
     )):
         return 150
     return 95
+
+
+CHATBOT_TEST_SOFT_QUESTION_BUDGET = 18
+
+
+def chatbot_question_rank(fact_id: str, target_id: str | None = None) -> int:
+    """Patient-conversation order used by the Custom-GPT-compatible Runtime.
+
+    The authoring graph may rank a standardized module or a broad composite
+    Fact highly for completeness.  A patient conversation instead begins with
+    location, onset, duration, severity and character, then asks only history
+    that can materially improve safety or the clinician handoff.
+    """
+    low = fact_id.casefold()
+    text = f"{low} {(target_id or '').casefold()}"
+    if any(token in low for token in ("exact_site", ".location", "pain_site")):
+        return 10
+    if any(token in low for token in ("current_pain_nrs", "current_nrs", ".severity")):
+        return 20
+    if low == "symptom.duration" or "duration_course" in low or "continuous_episodic" in low:
+        return 25
+    if any(token in low for token in ("onset_date", "date_time", "started_at")):
+        return 30
+    if low.endswith(".onset") or low.endswith(".onset_mode") or "onset_speed" in low:
+        return 35
+    if any(token in low for token in ("pain_quality", ".quality", ".character")):
+        return 50
+    if any(token in low for token in ("radiation", "laterality", "spread", "migration")):
+        return 60
+    if any(token in text for token in ("trigger", "aggravat", "provok", "movement_posture")):
+        return 70
+    if any(token in text for token in ("relief", "alleviat")):
+        return 75
+    if any(token in text for token in ("concern", "goal", "expectation")):
+        return 78
+    if any(token in text for token in ("function", "activity_impact", "selfcare", "sleep")):
+        return 80
+    if any(token in text for token in ("medicine", "medication", "allerg")):
+        return 82
+    if any(token in text for token in ("prior_assessment", "prior_imaging", "prior_labs", "treatment")):
+        return 83
+    if any(token in text for token in ("history", "prior_episode", "surgery", "procedure")):
+        return 84
+    if any(token in text for token in ("numbness", "weakness", "gait", "balance", "visual", "speech")):
+        return 90
+    if any(token in text for token in ("injury", "trauma", "fever", "chills", "weight_loss")):
+        return 90
+    if any(token in text for token in ("information_source", "proxy", "reliability", "accessibility")):
+        return 180
+    return semantic_question_rank(fact_id, target_id)

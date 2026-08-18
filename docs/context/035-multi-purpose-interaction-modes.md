@@ -1,7 +1,7 @@
 # Purpose-first multi-purpose interaction core
 
 Status: Draft, unreviewed
-Version: 0.3.0
+Version: 0.4.0
 
 ## Decision
 
@@ -26,14 +26,25 @@ For `clinical_adaptive`, the test context assumes that the user already has a sc
 
 Adaptive clinical questions are generated from compiled atomic Facts and Rules. Source-defined fixed questionnaires and supplied FHIR Questionnaires control their own wording, order, answer options, and scoring. The LLM may explain or present those items but must not rewrite their clinical meaning. Automatic question terminology mapping remains excluded for fixed questionnaires unless the official source and mapping were explicitly verified.
 
-Within `clinical_adaptive`, an enabled LLM adapter may map the opening free text
-to one implemented RFE from the response-free catalog and may choose one next
-Fact from the next semantic-priority frontier already made eligible by the
-compiled Runtime. The model cannot skip an authored history axis. The model
+Within `clinical_adaptive`, the patient-facing default follows the Custom GPT
+test interaction contract rather than exposing the compiled authoring graph as
+a Fact-by-Fact checklist. It asks one short question at a time, prints audited
+answer shortcuts or non-coded examples when available, accepts free text, and
+uses a semantic coverage ledger so one answer may satisfy several allowlisted
+Facts. The ordinary scheduled-visit flow has an 18-question soft budget within
+the GPT policy's 12–24 range. It may continue only for unresolved safety or a
+value explicitly declared mandatory; unasked compiled Facts remain visible as
+`not-asked` in the clinician handoff instead of being disguised as negative.
+
+An enabled LLM adapter may map the opening free text to one implemented RFE and
+extract several explicitly stated, allowlisted Facts from the current answer.
+The model receives no prior answer values for this operation. Runtime validates
+every Fact identifier, value type, allowed token, unit and numeric range before
+merge. The model may also choose only among already eligible candidates. It
 cannot invent identifiers, Rules, safety levels, completion conditions,
-diagnoses, or treatments. Low-confidence, invalid, or unavailable output asks
-for clarification or falls back to the deterministic plan. Safety and
-completion remain compiled-Runtime decisions.
+diagnoses, or treatments. Low-confidence, invalid, or unavailable output falls
+back to deterministic extraction and presentation. Compiled Rules remain the
+only authority for safety and routing.
 
 Clinical adaptive output may project to a session-specific FHIR R4 Questionnaire and QuestionnaireResponse. Clinical structured forms produce a QuestionnaireResponse and may use SDC extraction only when the Questionnaire declares a verified extraction mapping. Non-clinical structured surveys do not extract clinical resources by default.
 
@@ -47,11 +58,11 @@ The official Questionnaire/QuestionnaireResponse and the supplemental Questionna
 
 ## Current test privacy boundary
 
-The Runtime may hold necessary personal or health information in current-process memory to ask and answer relevant questions. It does not persist those answers to the repository, public Knowledge Action, database, raw logs, or analytics. The opening message may be sent to the selected LLM solely for bounded RFE interpretation. External providers require explicit consent; the anonymous demo is restricted to the platform-local provider. Question planning sends Fact identifiers and approved question metadata without answer values. Previewed FHIR resources and temporary uploads are discarded when the session closes or expires. ChatGPT or another model provider may have a separate retention policy outside this repository, so the existing public-test notice remains required.
+The Runtime may hold necessary personal or health information in current-process memory to ask and answer relevant questions. It does not persist those answers to the repository, public Knowledge Action, database, raw logs, or analytics. The opening message and each current answer may be sent to the selected LLM only for bounded RFE interpretation or current-turn semantic extraction. Historical answer values are not included in planning payloads. External providers require explicit consent; the anonymous demo is restricted to the platform-local provider. Previewed FHIR resources and temporary uploads are discarded when the session closes or expires. ChatGPT or another model provider may have a separate retention policy outside this repository, so the existing public-test notice remains required.
 
 ## Implementation boundary
 
-`runtime/service_modes.py` resolves explicit and conservatively inferred purpose and exposes the allowlisted RFE catalog. `services/interview_api/llm.py` implements bounded RFE interpretation, eligible-candidate question planning, and presentation. `runtime/core.py` validates the proposed RFE and hands clinical input to `InterviewSession`; `runtime/session.py` retains authority over eligible Facts, safety, completion, and deterministic fallback. `runtime/questionnaire_prepopulation.py` provides a source-immutable, review-required FHIR R4 prepopulation primitive. `preventive/package_recommendation.py` compares a supplied, versioned center catalog and cannot invent a recommendation when that catalog is absent.
+`runtime/service_modes.py` resolves explicit and conservatively inferred purpose and exposes the allowlisted RFE catalog. `services/interview_api/llm.py` implements bounded RFE interpretation, current-turn multi-Fact extraction, eligible-candidate question planning, and optional presentation. `runtime/question_presentation.py` owns concise stems and response shortcuts; `runtime/question_planning.py` owns the Chatbot-test order and soft budget. `runtime/core.py` validates the proposed RFE and hands clinical input to `InterviewSession`; `runtime/session.py` retains authority over eligible Facts, validation, safety, missingness and deterministic fallback. `runtime/questionnaire_prepopulation.py` provides a source-immutable, review-required FHIR R4 prepopulation primitive. `preventive/package_recommendation.py` compares a supplied, versioned center catalog and cannot invent a recommendation when that catalog is absent.
 
 API `mode_selection` is control-plane input and never consumes an interview
 turn or becomes patient evidence. Only `initial_message` and later message
