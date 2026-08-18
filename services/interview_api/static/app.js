@@ -1262,6 +1262,17 @@ function adaptiveQuestion(document) {
     internalValue: option.internal_value,
     coding: option.coding
   }));
+  const suggestions = (selected?.display_suggestions || []).map((suggestion, index) => ({
+    input: String(suggestion.input || index + 1),
+    label: suggestion.display_ko || suggestion.answer_text || String(index + 1),
+    answerText: suggestion.answer_text || suggestion.display_ko || String(index + 1)
+  }));
+  const dataAbsentActions = (selected?.data_absent_actions || []).map((action) => ({
+    input: String(action.input),
+    label: action.display_ko,
+    answerText: action.answer_text,
+    dataAbsentReason: action.dataAbsentReason
+  }));
   const answerOption = options.map((option) => option.coding
     ? { valueCoding: clone(option.coding) }
     : { valueString: String(option.internalValue || option.label) });
@@ -1272,6 +1283,8 @@ function adaptiveQuestion(document) {
     originalText: selected?.text || text,
     type: options.length ? "choice" : "string",
     options,
+    suggestions,
+    dataAbsentActions,
     answerOption,
     answerValueSet: selected?.answer_value_set,
     responseInstruction: selected?.response_instruction_ko || (options.length
@@ -1288,7 +1301,11 @@ function adaptiveQuestion(document) {
 
 function adaptivePrompt(question) {
   const lines = [`[${question.questionRef}] ${question.text}`];
-  (question.options || []).forEach((option) => lines.push(`${option.input}. ${option.label}`));
+  const choices = question.options?.length ? question.options : (question.suggestions || []);
+  choices.forEach((option) => lines.push(`${option.input}. ${option.label}`));
+  if (!question.options?.length) {
+    (question.dataAbsentActions || []).forEach((action) => lines.push(`${action.input}. ${action.label}`));
+  }
   if (question.responseInstruction) lines.push(`응답 안내: ${question.responseInstruction}`);
   if (question.sourceLabel) lines.push(`출처: ${question.sourceLabel}`);
   return lines.join("\n");
@@ -1301,17 +1318,6 @@ function showAdaptiveQuestion(question) {
   $("#adaptiveProgress").textContent = `${question.questionRef} · Knowledge Runtime`;
   $("#adaptiveAnswer").placeholder = question.options?.length ? "번호 또는 직접 답변" : "답변을 입력하세요";
   renderAdaptiveSuggestions(question);
-}
-
-function inferredAdaptiveSuggestions(question) {
-  const target = `${question.knowledgeFact || ""} ${question.originalText || question.text || ""}`.toLowerCase();
-  if (/duration|onset|언제|얼마나.*지속|기간/.test(target)) return ["오늘부터", "2~3일", "1주일 정도", "한 달 이상"];
-  if (/nrs|0.*10|통증.*숫자/.test(target)) return ["0", "2", "5", "8", "10"];
-  if (/frequency|횟수|몇 번|얼마나 자주/.test(target)) return ["하루 1~2회", "하루 여러 차례", "간헐적", "잘 모르겠음"];
-  if (/(있나요|하나요|인가요|했나요|됩니까|습니까)\??$/.test((question.originalText || question.text || "").trim())) {
-    return ["예", "아니오", "잘 모르겠음", "답변하지 않음"];
-  }
-  return [];
 }
 
 function paintAdaptiveSuggestions(question, choices) {
@@ -1337,6 +1343,19 @@ async function renderAdaptiveSuggestions(question) {
     value: option.input
   }));
   if (explicit.length) return paintAdaptiveSuggestions(question, explicit);
+  const presentationChoices = [
+    ...(question.suggestions || []).map((suggestion) => ({
+      label: `${suggestion.input}. ${suggestion.label}`,
+      value: suggestion.input
+    })),
+    ...(question.dataAbsentActions || []).map((action) => ({
+      label: `${action.input}. ${action.label}`,
+      value: action.input
+    }))
+  ];
+  if (presentationChoices.length) {
+    return paintAdaptiveSuggestions(question, presentationChoices);
+  }
   if (question.answerValueSet) {
     try {
       const expansion = await api("/v1/terminology/expand", {
@@ -1358,7 +1377,7 @@ async function renderAdaptiveSuggestions(question) {
       })));
     } catch (_) { /* Free text remains available when terminology is unavailable. */ }
   }
-  paintAdaptiveSuggestions(question, inferredAdaptiveSuggestions(question).map((value) => ({ label: value, value })));
+  paintAdaptiveSuggestions(question, []);
 }
 
 function rebuildAdaptiveArtifacts(sourceDocument) {

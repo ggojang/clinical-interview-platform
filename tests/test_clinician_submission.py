@@ -261,6 +261,57 @@ class ClinicianSubmissionContextTest(unittest.TestCase):
             [("1", "예"), ("2", "아니오"), ("3", "잘 모르겠음"), ("4", "답변하지 않음")],
         )
 
+    def test_duration_question_exposes_non_coded_runtime_shortcuts(self):
+        session = self._session()
+        question = session._question_for_fact("symptom.duration", "synthetic-duration")
+
+        self.assertNotIn("answer_options", question)
+        self.assertEqual(question["suggestion_semantics"], "input_shortcut_only")
+        self.assertEqual(
+            [(item["input"], item["display_ko"]) for item in question["display_suggestions"]],
+            [("1", "오늘부터"), ("2", "3일 정도"), ("3", "1주일 정도"), ("4", "1개월 정도")],
+        )
+        self.assertEqual(
+            [(item["input"], item["dataAbsentReason"]) for item in question["data_absent_actions"]],
+            [("5", "asked-unknown"), ("6", "asked-declined")],
+        )
+        self.assertEqual(
+            question["presentation_contract"]["intermediate_answer_commentary"],
+            "prohibited",
+        )
+
+    def test_duration_shortcut_number_is_stored_as_semantic_duration(self):
+        session = self._session()
+        session.last_question_fact = "symptom.duration"
+        session.asked = ["symptom.duration"]
+
+        session.process("2")
+
+        self.assertEqual(
+            session.memory.value("symptom.duration"),
+            {"amount": 3, "unit": "day"},
+        )
+        self.assertEqual(
+            session.memory.facts["symptom.duration"]["raw_text"],
+            "2",
+        )
+
+    def test_duration_data_absent_action_does_not_become_clinical_value(self):
+        session = self._session()
+        session.last_question_fact = "symptom.duration"
+        session.asked = ["symptom.duration"]
+
+        session.process("5")
+
+        self.assertEqual(
+            session.memory.facts["symptom.duration"]["status"],
+            "unknown",
+        )
+        self.assertEqual(
+            session.memory.facts["symptom.duration"]["dataAbsentReason"]["code"],
+            "asked-unknown",
+        )
+
     def test_inline_numbered_choices_are_split_into_stem_and_korean_labels(self):
         session = self._session()
         question = session._question_for_fact(

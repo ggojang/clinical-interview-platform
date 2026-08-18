@@ -42,6 +42,25 @@ FHIR `Questionnaire`, `QuestionnaireResponse`, SDC Extraction은 아직 이 API�
 
 원격 `banttas-ai` 배포의 기본 provider는 같은 서버의 `qwen3-27b`입니다. 선택된 LLM은 현재 **이미 컴파일된 한 개의 질문을 환자에게 자연스럽게 표현하는 용도**로만 호출됩니다. 환자 답변, Fact, trace, 파일, clinician handoff는 LLM 호출에 전달하지 않습니다. 질문 선택, red flag, 질문 순서와 완료 판정은 계속 컴파일된 Knowledge·Rule Runtime이 담당합니다. Provider 장애 시 원문 질문으로 즉시 fallback합니다.
 
+적응형 문항의 `selected_question`은 Runtime이 완성한 표시 계약입니다. `question_ref`는 세션 내에서 안정적인 문항번호이고, `answer_options`는 실제 Knowledge/ValueSet 의미를 가진 답변이며, `display_suggestions`는 자유입력을 돕는 비코드 단축 예시입니다. `data_absent_actions`는 임상 음성 코드가 아니라 FHIR `dataAbsentReason`으로 별도 처리됩니다. 클라이언트는 이 세 항목을 합쳐 임의의 임상 ValueSet을 만들거나 LLM에게 새 보기를 생성하게 해서는 안 됩니다.
+
+```json
+{
+  "question_ref": "Q1",
+  "fact_id": "symptom.duration",
+  "text": "How long have you had the cough?",
+  "display_suggestions": [
+    {"input": "1", "display_ko": "오늘부터", "answer_text": "1일"},
+    {"input": "2", "display_ko": "3일 정도", "answer_text": "3일"}
+  ],
+  "suggestion_semantics": "input_shortcut_only",
+  "data_absent_actions": [
+    {"input": "5", "display_ko": "잘 모르겠음", "dataAbsentReason": "asked-unknown"},
+    {"input": "6", "display_ko": "답변하지 않음", "dataAbsentReason": "asked-declined"}
+  ]
+}
+```
+
 `GET /v1/llm/providers`에서 선택 가능한 provider를 확인할 수 있습니다. 세션 생성 시 요청자는 `llm_policy.allowed_provider_ids`, `default_provider_id`, `participant_may_choose`를 선언하고, 참여자는 허용범위 안에서 `llm_selection`을 지정할 수 있습니다. 아무 선택도 없으면 `local_vllm`입니다.
 
 ```json

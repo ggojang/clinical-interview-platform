@@ -15,6 +15,12 @@ import re
 from runtime.memory import ClinicalMemory
 from runtime.encounter_context import normalize_encounter_context
 from runtime.package import DEFAULT_PACKAGE, load_package
+from runtime.question_presentation import (
+    DATA_ABSENT_ACTIONS,
+    PRESENTATION_CONTRACT_VERSION,
+    display_suggestions,
+    resolve_presentation_input,
+)
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
@@ -612,7 +618,24 @@ class InterviewSession:
                 return self._edit_menu_state(turn, "수정할 수 있는 항목을 찾지 못했습니다.")
             answer_text = edit_action[2] or ""
         expected_fact = correction_target or self.last_question_fact
-        additions = extract(answer_text, turn, expected_fact)
+        presentation_input = (
+            resolve_presentation_input(expected_fact, answer_text)
+            if expected_fact else None
+        )
+        extraction_text = (
+            presentation_input["answer_text"]
+            if presentation_input
+            and presentation_input["kind"] == "display_suggestion"
+            else answer_text
+        )
+        additions = extract(extraction_text, turn, expected_fact)
+        if extraction_text != answer_text:
+            # The normalized shortcut drives extraction, while provenance keeps
+            # exactly what the patient entered or selected.
+            for candidate in additions.values():
+                candidate["raw_text"] = answer_text
+                for evidence in candidate.get("evidence", []):
+                    evidence["text"] = answer_text
         social_prefill_sources = set(
             self._clinician_context().get("completion", {})
             .get("social_history_atomic_prefill_source_facts", [])
@@ -626,7 +649,7 @@ class InterviewSession:
                 answer_text, turn
             ).items():
                 additions.setdefault(fact_id, candidate)
-        low = answer_text.lower().strip()
+        low = extraction_text.lower().strip()
         low_normalized = low.rstrip(".!?")
         for node in self._fact_nodes():
             if node["type"] != "Fact" or node["id"] in additions:
@@ -842,7 +865,21 @@ class InterviewSession:
             template = self._questions_by_fact().get(expected_fact, {})
             data_absent_code_map = template.get("data_absent_code_map", {})
             mapped_absence = data_absent_code_map.get(low_normalized)
-            if mapped_absence:
+            presentation_absence = (
+                presentation_input.get("dataAbsentReason")
+                if presentation_input
+                and presentation_input["kind"] == "data_absent"
+                else None
+            )
+            if presentation_absence:
+                self.memory.mark_absent(
+                    expected_fact, answer_text, presentation_absence,
+                    correction=bool(correction_target),
+                )
+                merge_results[expected_fact] = (
+                    "corrected" if correction_target else presentation_absence
+                )
+            elif mapped_absence:
                 self.memory.mark_absent(
                     expected_fact, answer_text, mapped_absence,
                     correction=bool(correction_target),
@@ -1285,6 +1322,17 @@ class InterviewSession:
             ]
         if options:
             question["answer_options"] = options
+        suggestions = display_suggestions(fact_id) if not options else []
+        if suggestions:
+            question["display_suggestions"] = suggestions
+            question["suggestion_semantics"] = "input_shortcut_only"
+            question["data_absent_actions"] = deepcopy(DATA_ABSENT_ACTIONS)
+        question["presentation_contract"] = {
+            "version": PRESENTATION_CONTRACT_VERSION,
+            "question_count_per_turn": 1,
+            "stable_question_reference": True,
+            "intermediate_answer_commentary": "prohibited",
+        }
         if binding.get("answer_value_set"):
             question["answer_value_set"] = binding["answer_value_set"]
         if binding.get("preferred_answer_codes"):
@@ -1326,6 +1374,11 @@ class InterviewSession:
         if options:
             question["response_instruction_ko"] = (
                 "번호로 답하거나, 보기에 없으면 내용을 직접 입력해 주세요."
+            )
+        elif suggestions:
+            question["response_instruction_ko"] = (
+                "번호로 답하거나 내용을 직접 입력해 주세요. 잘 모르겠거나 "
+                "답변을 원하지 않는 경우 해당 항목을 선택할 수 있습니다."
             )
         else:
             question["response_instruction_ko"] = (

@@ -425,11 +425,29 @@ console.log(vm.runInContext(`(() => {{
         self.assertIn("응답 안내: 보기 번호 또는 상태를 입력해 주세요.", result["prompt"])
         self.assertIn("출처: [공동 작업 지식]", result["prompt"])
 
-    def test_adaptive_free_text_question_gets_quick_answer_suggestions(self):
-        question = {
-            "knowledgeFact": "symptom.duration",
-            "originalText": "How long have you had the cough?",
-            "text": "기침은 언제 시작되었나요?",
+    def test_adaptive_free_text_question_uses_runtime_presentation_contract(self):
+        document = {
+            "state": {
+                "adapter_state": {
+                    "selected_question": {
+                        "question_ref": "Q1",
+                        "target_id": "target.cough_duration",
+                        "fact_id": "symptom.duration",
+                        "template_id": "question.symptom_duration",
+                        "text": "How long have you had the cough?",
+                        "display_suggestions": [
+                            {"input": "1", "display_ko": "오늘부터", "answer_text": "1일"},
+                            {"input": "2", "display_ko": "3일 정도", "answer_text": "3일"},
+                        ],
+                        "data_absent_actions": [
+                            {"input": "5", "display_ko": "잘 모르겠음", "answer_text": "잘 모르겠습니다", "dataAbsentReason": "asked-unknown"},
+                            {"input": "6", "display_ko": "답변하지 않음", "answer_text": "답변하지 않음", "dataAbsentReason": "asked-declined"},
+                        ],
+                        "response_instruction_ko": "번호로 답하거나 내용을 직접 입력해 주세요.",
+                    }
+                }
+            },
+            "presentation": {"text": "기침이 얼마나 지속되고 있나요?"},
         }
         script = fr"""
 const fs = require('fs');
@@ -438,10 +456,10 @@ const source = fs.readFileSync({json.dumps(str(APP_JS))}, 'utf8').replace(/initi
 const context = {{ console }};
 vm.createContext(context);
 vm.runInContext(source, context);
-console.log(vm.runInContext(
-  `JSON.stringify(inferredAdaptiveSuggestions(${{JSON.stringify({json.dumps(question)})}}))`,
-  context
-));
+console.log(vm.runInContext(`(() => {{
+  const question = adaptiveQuestion(${{JSON.stringify({json.dumps(document)})}});
+  return JSON.stringify({{ question, prompt: adaptivePrompt(question) }});
+}})()`, context));
 """
         completed = subprocess.run(
             ["node", "-e", script],
@@ -450,10 +468,22 @@ console.log(vm.runInContext(
             text=True,
             cwd=REPOSITORY_ROOT,
         )
+        result = json.loads(completed.stdout)
+        self.assertEqual(result["question"]["type"], "string")
+        self.assertEqual(result["question"]["answerOption"], [])
         self.assertEqual(
-            json.loads(completed.stdout),
-            ["오늘부터", "2~3일", "1주일 정도", "한 달 이상"],
+            [item["label"] for item in result["question"]["suggestions"]],
+            ["오늘부터", "3일 정도"],
         )
+        self.assertIn("1. 오늘부터", result["prompt"])
+        self.assertIn("2. 3일 정도", result["prompt"])
+        self.assertIn("5. 잘 모르겠음", result["prompt"])
+        self.assertIn("6. 답변하지 않음", result["prompt"])
+        self.assertNotIn("answerValueSet", result["question"])
+
+    def test_adaptive_ui_does_not_invent_client_side_clinical_suggestions(self):
+        source = APP_JS.read_text(encoding="utf-8")
+        self.assertNotIn("inferredAdaptiveSuggestions", source)
 
     def test_fixed_skip_is_explicit_data_absence_not_negative_answer(self):
         response_item = {
