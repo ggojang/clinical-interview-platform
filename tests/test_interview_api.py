@@ -550,20 +550,55 @@ class InterviewApiRuntimeIntegrationTests(unittest.TestCase):
         created = api.create_session(
             {
                 "mode_selection": "일반 건강상담",
-                "initial_message": "가상 사용자의 두통이 궁금합니다",
+                "initial_message": "건강한 생활습관의 일반 원칙을 설명해주세요",
             }
         )
         self.assertEqual(created["mode_id"], "health_information")
         self.assertEqual(created["presentation"]["purpose"], "health_information")
         self.assertTrue(created["presentation"]["patient_input_transmitted"])
         self.assertFalse(created["presentation"]["clinical_authority"])
-        self.assertIn("가상 사용자의 두통", json.dumps(captured[0], ensure_ascii=False))
+        self.assertIn("건강한 생활습관", json.dumps(captured[0], ensure_ascii=False))
 
         result = api.result(created["session_id"])
         self.assertEqual(result["available_formats"], ["health_information_json"])
         self.assertFalse(result["independent_diagnosis_or_treatment"])
         completed = api.complete(created["session_id"])
         self.assertTrue(completed["response_state_purged"])
+
+    def test_health_information_symptom_uses_rfe_conversation_before_advice(self):
+        advisor_calls = []
+        advisor = LlmHealthInformationAdvisor(
+            enabled=True,
+            transport=lambda *args: advisor_calls.append(args) or "최종 정보",
+        )
+        api = InterviewApi(
+            max_sessions=1,
+            health_information_advisor=advisor,
+            chatbot_runtime=self._chatbot_runtime(
+                "**Q1.** 두통은 언제 시작되었나요?"
+            ),
+        )
+        created = api.create_session(
+            {
+                "mode_selection": "일반 건강상담",
+                "initial_message": "머리가 아파요",
+            }
+        )
+        self.assertEqual(created["mode_id"], "health_information")
+        self.assertEqual(
+            created["presentation"]["purpose"],
+            "health_information_conversation_turn",
+        )
+        self.assertEqual(
+            created["state"]["adapter_state"]["interaction_purpose"],
+            "health_information",
+        )
+        self.assertEqual(
+            created["state"]["adapter_state"]["interview_flow"]["question_budget"],
+            6,
+        )
+        self.assertFalse(advisor_calls)
+        api.delete_session(created["session_id"])
 
     def test_health_information_red_flag_precedes_llm_and_is_not_diagnosis(self):
         advisor = LlmHealthInformationAdvisor(

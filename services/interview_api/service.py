@@ -231,6 +231,9 @@ class InterviewApi:
                 "runtime_role": "custom_gpt_conversation_runtime",
                 "conversation_runtime_enabled": self.chatbot_runtime.enabled,
                 "instructions": self.chatbot_runtime.instructions_source,
+                "health_information_instructions": (
+                    self.chatbot_runtime.health_instructions_source
+                ),
                 "instruction_profile": self.chatbot_runtime.instruction_profile,
                 "knowledge_delivery": self.chatbot_runtime.knowledge_delivery,
                 "legacy_deterministic_fallback": False,
@@ -476,7 +479,27 @@ class InterviewApi:
                 )
                 core.chatbot_turn = lambda rfe_id, conversation: (
                     self.chatbot_runtime.respond(
-                        rfe_id, conversation, llm_selection
+                        rfe_id,
+                        conversation,
+                        llm_selection,
+                        interaction_purpose="clinical_adaptive",
+                    )
+                )
+                core.health_chatbot_turn = lambda rfe_id, conversation: (
+                    self.chatbot_runtime.respond(
+                        rfe_id,
+                        conversation,
+                        llm_selection,
+                        interaction_purpose="health_information",
+                    )
+                )
+                core.health_safety_assessor = (
+                    lambda rfe_id, answer, question: (
+                        self.chatbot_runtime.assess_health_information_answer(
+                            rfe_id,
+                            answer,
+                            question,
+                        )
                     )
                 )
             try:
@@ -698,6 +721,27 @@ class InterviewApi:
         selection: LlmSelection,
     ) -> dict[str, Any]:
         if core.mode_id == "health_information":
+            adapter_state = state.get("adapter_state") if isinstance(state, dict) else None
+            assistant_message = (
+                adapter_state.get("assistant_message")
+                if isinstance(adapter_state, dict)
+                else None
+            )
+            if isinstance(assistant_message, str) and assistant_message.strip():
+                return {
+                    "status": "generated",
+                    "purpose": "health_information_conversation_turn",
+                    "provider_id": selection.provider.provider_id,
+                    "model": selection.provider.model,
+                    "text": assistant_message,
+                    "patient_input_transmitted": True,
+                    "processing_location": (
+                        "external_vendor"
+                        if selection.provider.external_processing
+                        else "banttas_ai_local"
+                    ),
+                    "clinical_authority": False,
+                }
             return self.health_information_advisor.answer(state, selection)
         adapter_state = state.get("adapter_state") if isinstance(state, dict) else None
         assistant_message = (

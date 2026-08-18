@@ -35,10 +35,12 @@ questioning.
 - Ask exactly one clinical question per assistant turn.
 - Never select a composite `primary-group` or `primary-context` Question that
   combines several independent clinical meanings. Ask one atomic Fact instead.
-- Prefer an applicable safety or branch-gating question before routine
-  characterization. Do not ask a branch whose prerequisite was answered false
-  or absent. After applicable safety gates, collect the core symptom dimensions
-  needed for the selected RFE and clinician handoff.
+- This is a scheduled pre-visit clinician-handoff interview, not a triage
+  consultation. Do not proactively exhaust red-flag Questions. Detect warning
+  information already reported and ask a safety clarification only when it can
+  materially change immediate action for this symptom.
+- Prefer concise core symptom characterization and clinician-handoff Facts.
+  Do not ask a branch whose prerequisite was answered false or absent.
 - For localized joint or limb pain without an injury answer, ask whether it
   started after a fall, collision, twist, or direct impact before routine pain
   characterization because this gates trauma branches.
@@ -113,7 +115,9 @@ care. Notify even when the concern may later prove to be a false positive.
 
 ## Completion
 
-Do not exhaust every loaded Fact as a checklist. After applicable safety, core
+Do not exhaust every loaded Fact as a checklist. Use no more than eight
+patient-facing questions in the ordinary pre-visit flow. After reported-signal
+safety clarification, core
 symptom characterization, relevant history/medicines and prior response, the
 user's concern or goal, and one final additional-comment opportunity are
 resolved, show `응답 검토 및 수정`. The user may revise by Q reference. Exact

@@ -6,8 +6,12 @@ import re
 from typing import Any, Callable
 
 from runtime.service_modes import ServiceModeRegistry
-from runtime.health_information import HealthInformationSession
-from runtime.chatbot_session import ChatbotInterviewSession
+from runtime.health_information import HealthInformationSession, assess_health_information_safety
+from runtime.chatbot_session import (
+    ChatbotInterviewSession,
+    DEFAULT_HEALTH_INFORMATION_QUESTION_BUDGET,
+    DEFAULT_PREVISIT_QUESTION_BUDGET,
+)
 
 
 @dataclass
@@ -20,6 +24,10 @@ class CoreInteractionSession:
     proactive_safety_questions: bool = False
     clinical_interpreter: Callable[[str], dict[str, Any]] | None = None
     chatbot_turn: Callable[[str, list[dict[str, str]]], str] | None = None
+    health_chatbot_turn: Callable[[str, list[dict[str, str]]], str] | None = None
+    health_safety_assessor: Callable[
+        [str, str, dict[str, Any] | None], dict[str, Any] | None
+    ] | None = None
     mode_id: str | None = None
     adapter: ChatbotInterviewSession | HealthInformationSession | None = None
     closed: bool = False
@@ -46,8 +54,6 @@ class CoreInteractionSession:
         if resolution["status"] != "resolved":
             return resolution
         self.mode_id = resolution["mode"]["id"]
-        if self.mode_id == "health_information":
-            self.adapter = HealthInformationSession(self.session_id)
         next_step = resolution.get("next", {"entry": resolution["mode"]["entry"]})
         if self.mode_id == "clinical_adaptive":
             next_step = {
@@ -73,7 +79,7 @@ class CoreInteractionSession:
             return self._wrap(self.adapter.process(message))
         if self.mode_id == "health_information":
             if self.adapter is None:
-                self.adapter = HealthInformationSession(self.session_id)
+                return self._activate_health_information(message)
             return self._wrap_health_information(self.adapter.process(message))
         if self.mode_id is not None:
             return {
@@ -94,9 +100,6 @@ class CoreInteractionSession:
                 # never consumed as clinical content.
                 return self._selected_mode_ready(resolution)
             return self._activate_clinical(message, resolution=resolution)
-
-        if self.mode_id == "health_information":
-            self.adapter = HealthInformationSession(self.session_id)
 
         return {
             **resolution,
@@ -195,11 +198,68 @@ class CoreInteractionSession:
             session_id=self.session_id,
             reason_for_encounter=rfe["id"],
             chatbot_turn=self.chatbot_turn,
+            interaction_purpose="clinical_adaptive",
+            question_budget=DEFAULT_PREVISIT_QUESTION_BUDGET,
         )
         wrapped = self._wrap(self.adapter.process(message), resolution=resolution)
         if interpretation is not None:
             wrapped["clinical_interpretation"] = interpretation
         return wrapped
+
+    def _activate_health_information(self, message: str) -> dict[str, Any]:
+        """Start symptom consultation from RFE Knowledge or answer a general query.
+
+        Symptom-like requests use the same compiled package as pre-visit
+        interviewing, but with an informational purpose and proactive triage
+        questions. General medical-information questions remain direct answers.
+        """
+        rfe = self.registry.match_reason_for_encounter(message)
+        interpretation = None
+        if rfe is None and self.clinical_interpreter is not None:
+            interpretation = self.clinical_interpreter(message)
+            if interpretation.get("status") == "resolved":
+                rfe_id = interpretation.get("rfe_id")
+                if isinstance(rfe_id, str):
+                    rfe = self.registry.reason_for_encounter_by_id(rfe_id)
+        if rfe is None or self.health_chatbot_turn is None:
+            self.adapter = HealthInformationSession(self.session_id)
+            return self._wrap_health_information(self.adapter.process(message))
+        self.adapter = ChatbotInterviewSession(
+            session_id=self.session_id,
+            reason_for_encounter=rfe["id"],
+            chatbot_turn=self.health_chatbot_turn,
+            interaction_purpose="health_information",
+            question_budget=DEFAULT_HEALTH_INFORMATION_QUESTION_BUDGET,
+            safety_assessor=lambda answer, question: self._assess_health_safety(
+                rfe["id"], answer, question
+            ),
+        )
+        wrapped = self._wrap_health_information(self.adapter.process(message))
+        if interpretation is not None:
+            wrapped["clinical_interpretation"] = interpretation
+        return wrapped
+
+    def _assess_health_safety(
+        self,
+        reason_for_encounter: str,
+        answer: str,
+        question: dict[str, Any] | None,
+    ) -> dict[str, Any]:
+        direct = assess_health_information_safety(answer)
+        if direct.get("level") in {
+            "emergency_suspected",
+            "urgent_assessment_suggested",
+        }:
+            return direct
+        if self.health_safety_assessor is not None:
+            contextual = self.health_safety_assessor(
+                reason_for_encounter,
+                answer,
+                question,
+            )
+            if contextual is not None:
+                return contextual
+        return direct
 
     def _ensure_open(self) -> None:
         if self.closed:

@@ -102,6 +102,140 @@ class ChatbotConversationRuntimeTest(unittest.TestCase):
             ["예", "아니오", "잘 모르겠음", "답변하지 않음"],
         )
 
+    def test_previsit_session_stops_questioning_at_eight_and_enters_review(self):
+        calls = []
+
+        def turn(_rfe_id, _conversation):
+            number = len(calls) + 1
+            calls.append(number)
+            return f"Q{number}. 필수 정보 {number}을 알려주세요?"
+
+        session = ChatbotInterviewSession("budget", "rfe.cough", turn)
+        state = session.process("기침")
+        for _ in range(8):
+            state = session.process("답변")
+
+        self.assertEqual(calls, list(range(1, 9)))
+        self.assertEqual(state["interview_flow"]["status"], "review")
+        self.assertIn("응답 검토", state["assistant_message"])
+        self.assertEqual(state["interview_flow"]["questions_asked"], 8)
+
+    def test_health_consultation_uses_six_questions_then_requests_advice(self):
+        calls = []
+
+        def turn(_rfe_id, _conversation):
+            number = len(calls) + 1
+            calls.append(number)
+            return f"Q{number}. 안전 확인 {number}이 있나요?"
+
+        session = ChatbotInterviewSession(
+            "health-budget",
+            "rfe.abdominal_pain",
+            turn,
+            interaction_purpose="health_information",
+            question_budget=6,
+        )
+        session.process("배가 아파요")
+        for _ in range(6):
+            state = session.process("아니오")
+
+        self.assertEqual(calls, list(range(1, 7)))
+        self.assertEqual(state["interview_flow"]["status"], "information_ready")
+        self.assertEqual(state["interview_flow"]["phase"], "advice")
+        self.assertIsNone(state["assistant_message"])
+
+    def test_numbered_yes_to_direct_health_safety_question_triggers_action(self):
+        runtime = LlmChatbotInterviewRuntime(enabled=False, repository_root=ROOT)
+        assessment = runtime.assess_health_information_answer(
+            "rfe.abdominal_pain",
+            "1",
+            {
+                "source_question_id": "question.abdominal_pain.collapse-shock",
+                "answer_options": [
+                    {"input": "1", "display_ko": "예"},
+                    {"input": "2", "display_ko": "아니오"},
+                ],
+            },
+        )
+
+        self.assertIsNotNone(assessment)
+        self.assertEqual(assessment["level"], "emergency_suspected")
+        self.assertIn("rule.abdominal_pain.safety.collapse-shock", assessment["matched_signals"])
+        self.assertIn("119", assessment["action_ko"])
+
+    def test_numbered_no_does_not_trigger_compiled_health_safety_rule(self):
+        runtime = LlmChatbotInterviewRuntime(enabled=False, repository_root=ROOT)
+        assessment = runtime.assess_health_information_answer(
+            "rfe.abdominal_pain",
+            "2",
+            {
+                "source_question_id": "question.abdominal_pain.collapse-shock",
+                "answer_options": [
+                    {"input": "1", "display_ko": "예"},
+                    {"input": "2", "display_ko": "아니오"},
+                ],
+            },
+        )
+
+        self.assertIsNone(assessment)
+
+    def test_previsit_and_health_consultation_rank_safety_differently(self):
+        runtime = LlmChatbotInterviewRuntime(enabled=False, repository_root=ROOT)
+        package = runtime._load_package("rfe.abdominal_pain")
+        opening = [{"role": "user", "content": "배가 아파요"}]
+
+        first = runtime._compiled_candidate_retrieval(
+            "rfe.abdominal_pain", opening, package,
+            interaction_purpose="clinical_adaptive",
+        )["question_ids"][0]
+        conversation = [
+            *opening,
+            {"role": "assistant", "content": f"Q1. 갑자기 시작했나요?\n1 예\n2 아니오\n출처: {first}"},
+            {"role": "user", "content": "2"},
+        ]
+        previsit_second = runtime._compiled_candidate_retrieval(
+            "rfe.abdominal_pain", conversation, package,
+            interaction_purpose="clinical_adaptive",
+        )["question_ids"][0]
+        health_second = runtime._compiled_candidate_retrieval(
+            "rfe.abdominal_pain", conversation, package,
+            interaction_purpose="health_information",
+        )["question_ids"][0]
+
+        previsit_third = runtime._compiled_candidate_retrieval(
+            "rfe.abdominal_pain",
+            [
+                *conversation,
+                {"role": "assistant", "content": f"Q2. 두 번째 질문?\n1 예\n2 아니오\n출처: {previsit_second}"},
+                {"role": "user", "content": "2"},
+            ],
+            package,
+            interaction_purpose="clinical_adaptive",
+        )["question_ids"][0]
+        health_third = runtime._compiled_candidate_retrieval(
+            "rfe.abdominal_pain",
+            [
+                *conversation,
+                {"role": "assistant", "content": f"Q2. 두 번째 질문?\n1 예\n2 아니오\n출처: {health_second}"},
+                {"role": "user", "content": "2"},
+            ],
+            package,
+            interaction_purpose="health_information",
+        )["question_ids"][0]
+
+        self.assertIn(previsit_second, {
+            "question.abdominal_pain.severity",
+            "question.abdominal_pain.duration",
+            "question.abdominal_pain.location",
+        })
+        self.assertTrue(
+            health_second.startswith("question.abdominal_pain."),
+            health_second,
+        )
+        self.assertNotEqual(previsit_second, "question.abdominal_pain.collapse-shock")
+        self.assertNotEqual(previsit_third, "question.abdominal_pain.collapse-shock")
+        self.assertEqual(health_third, "question.abdominal_pain.collapse-shock")
+
     def test_core_uses_conversation_runtime_not_legacy_interview_session(self):
         core = CoreInteractionSession("core-chatbot")
         core.chatbot_turn = lambda rfe_id, conversation: (

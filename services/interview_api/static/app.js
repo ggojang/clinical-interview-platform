@@ -1473,26 +1473,40 @@ function showHealthInformationReply(document) {
 }
 
 function rebuildHealthInformationArtifacts(sourceDocument, finalized = false) {
+  const symptomDialogue = state.adaptiveHistory.length > 0;
   const questionnaire = {
     resourceType: "Questionnaire",
     id: "health-information-conversation-draft",
     status: "draft",
     experimental: true,
     title: "일반 건강상담 질문 이력",
-    description: "사용자가 입력한 건강상담 질문을 기록한 브라우저 초안입니다. 상담 답변은 진단·치료 결정이 아닙니다.",
-    item: state.healthInformationHistory.map((entry, index) => ({
-      linkId: `health-question-${index + 1}`,
-      prefix: `Q${index + 1}`,
-      text: "건강상담에서 궁금한 내용",
-      type: "text"
-    }))
+    description: "건강상담 중 실제로 확인한 문답의 브라우저 초안입니다. 상담 답변은 진단·치료 결정이 아닙니다.",
+    item: symptomDialogue
+      ? state.adaptiveHistory.map((entry, index) => ({
+          linkId: safeLinkId(entry.question.linkId, index),
+          prefix: entry.question.questionRef,
+          text: entry.question.text,
+          type: entry.question.type || "string"
+        }))
+      : state.healthInformationHistory.map((entry, index) => ({
+          linkId: `health-question-${index + 1}`,
+          prefix: `Q${index + 1}`,
+          text: "건강상담에서 궁금한 내용",
+          type: "text"
+        }))
   };
   const response = blankResponse(questionnaire, finalized ? "completed" : "in-progress");
-  response.item = state.healthInformationHistory.map((entry, index) => ({
-    linkId: `health-question-${index + 1}`,
-    text: "건강상담에서 궁금한 내용",
-    answer: [{ valueString: entry.query }]
-  }));
+  response.item = symptomDialogue
+    ? state.adaptiveHistory.map((entry, index) => ({
+        linkId: safeLinkId(entry.question.linkId, index),
+        text: entry.question.text,
+        answer: [clone(entry.fhirAnswer || { valueString: entry.answer })]
+      }))
+    : state.healthInformationHistory.map((entry, index) => ({
+        linkId: `health-question-${index + 1}`,
+        text: "건강상담에서 궁금한 내용",
+        answer: [{ valueString: entry.query }]
+      }));
   setArtifacts(
     questionnaire,
     response,
@@ -1625,8 +1639,11 @@ async function startAdaptive(opening) {
     $("#adaptiveConversationTitle").textContent = state.adaptivePurpose === "clinical_adaptive" ? "진료 전 문진" : "일반 건강상담";
     bubble($("#adaptiveChatLog"), "user", opening);
     if (state.adaptivePurpose === "health_information") {
-      state.currentAdaptiveQuestion = null;
-      showHealthInformationReply(document);
+      if (state.currentAdaptiveQuestion) {
+        showAdaptiveQuestion(state.currentAdaptiveQuestion);
+      } else {
+        showHealthInformationReply(document);
+      }
       $("#adaptiveAnswer").disabled = false;
       $("#adaptiveAnswerButton").disabled = false;
       $("#completeAdaptive").disabled = false;
@@ -1657,7 +1674,7 @@ async function sendAdaptiveAnswer() {
     await completeAdaptive();
     return;
   }
-  if (state.adaptivePurpose === "health_information") {
+  if (state.adaptivePurpose === "health_information" && !state.currentAdaptiveQuestion) {
     bubble($("#adaptiveChatLog"), "user", answer);
     input.value = "";
     const requestSerial = ++state.adaptiveRequestSerial;
@@ -1668,7 +1685,9 @@ async function sendAdaptiveAnswer() {
         body: JSON.stringify({ message: answer })
       });
       if (requestSerial !== state.adaptiveRequestSerial) return;
-      showHealthInformationReply(document);
+      state.currentAdaptiveQuestion = adaptiveQuestion(document);
+      if (state.currentAdaptiveQuestion) showAdaptiveQuestion(state.currentAdaptiveQuestion);
+      else showHealthInformationReply(document);
     } catch (error) { showToast(error.message); }
     finally { if (requestSerial === state.adaptiveRequestSerial) setAdaptiveBusy(false); }
     return;
@@ -1712,10 +1731,16 @@ async function sendAdaptiveAnswer() {
       showAdaptiveQuestion(state.currentAdaptiveQuestion);
     }
     else {
+      if (state.adaptivePurpose === "health_information") {
+        showHealthInformationReply(document);
+        $("#adaptiveProgress").textContent = `${state.adaptiveHistory.length}개 확인 후 정보 제공`;
+        return;
+      }
       const flow = document?.state?.adapter_state?.interview_flow || document?.state?.interview_flow || {};
-      bubble($("#adaptiveChatLog"), "assistant", flow.review_ready
+      const reviewText = document?.presentation?.text || document?.state?.adapter_state?.assistant_message;
+      bubble($("#adaptiveChatLog"), "assistant", reviewText || (flow.review_ready
         ? "진료 준비에 필요한 핵심 질문을 마쳤습니다. 지금까지의 답변과 확인하지 못한 항목은 결과에 구분해 표시됩니다. 답변을 검토한 뒤 ‘문진 완료’를 눌러주세요."
-        : "현재 Runtime 단계가 종료 또는 확인 대기 상태입니다. 결과를 확인하거나 대화를 종료하세요.");
+        : "현재 Runtime 단계가 종료 또는 확인 대기 상태입니다. 결과를 확인하거나 대화를 종료하세요."));
       $("#adaptiveProgress").textContent = `${state.adaptiveHistory.length}개 답변`;
     }
   } catch (error) { showToast(error.message); }
