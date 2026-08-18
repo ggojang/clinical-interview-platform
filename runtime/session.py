@@ -9,7 +9,7 @@ from copy import deepcopy
 from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 import re
 
 from runtime.memory import ClinicalMemory
@@ -73,6 +73,29 @@ def extract(text: str, turn: int, expected_fact: str | None = None) -> dict[str,
     low = text.lower().strip()
     low_normalized = low.rstrip(".!?")
     out: dict[str, dict[str, Any]] = {}
+
+    # Initial free text may already answer an atomic location question.  Keep
+    # the extraction package-scoped later in ``process``; these candidates are
+    # discarded automatically when the selected package does not define the
+    # Fact.  This prevents a phrase such as "아랫배 통증" from being routed to
+    # abdominal pain only to ask the same location again.
+    abdominal_location_cues = (
+        ("right_lower", ("오른쪽 아랫배", "우하복부", "right lower abdomen", "rlq")),
+        ("left_lower", ("왼쪽 아랫배", "좌하복부", "left lower abdomen", "llq")),
+        ("epigastric", ("명치", "윗배 중앙", "epigastric")),
+        ("right_upper", ("오른쪽 윗배", "우상복부", "right upper abdomen", "ruq")),
+        ("left_upper", ("왼쪽 윗배", "좌상복부", "left upper abdomen", "luq")),
+        ("periumbilical", ("배꼽 주위", "배꼽 주변", "periumbilical")),
+        ("flank", ("옆구리", "flank")),
+        ("suprapubic_or_pelvic", ("아랫배", "하복부", "골반", "lower abdomen", "pelvic")),
+        ("generalized_or_migratory", ("배 전체", "온 배", "전반적", "이동성", "generalized")),
+    )
+    for location_value, cues in abdominal_location_cues:
+        if any(cue in low for cue in cues):
+            out["symptom.abdominal_pain.location"] = fact(
+                location_value, text, turn, .94
+            )
+            break
 
     age_match_ko = re.search(r"(?:만\s*)?(\d{1,3})\s*세", text)
     age_match_en = re.search(
@@ -466,6 +489,7 @@ class InterviewSession:
     clinician_submission: bool = False
     encounter_context: dict[str, Any] | None = None
     proactive_safety_questions: bool = True
+    question_planner: Callable[[dict[str, Any], list[dict[str, Any]]], str | None] | None = None
     asked: list[str] = field(default_factory=list)
     active_patterns: list[str] = field(default_factory=list)
     trace: list[dict[str, Any]] = field(default_factory=list)
@@ -2507,6 +2531,26 @@ class InterviewSession:
             return None
         if self._safety_first():
             return max(candidates, key=lambda item: (item["score"], item["rule_id"]))
+        if self.question_planner is not None:
+            planner_context = {
+                "reason_for_encounter": self.reason_for_encounter,
+                "known_fact_ids": sorted(self.memory.facts),
+                "asked_fact_ids": list(self.asked),
+                "required_fact_ids": sorted(required_facts),
+            }
+            selected_fact_id = self.question_planner(planner_context, candidates)
+            if isinstance(selected_fact_id, str):
+                planned = next(
+                    (
+                        item for item in candidates
+                        if item.get("fact_id") == selected_fact_id
+                    ),
+                    None,
+                )
+                if planned is not None:
+                    planned = deepcopy(planned)
+                    planned["planner"] = "bounded_llm_candidate_selection"
+                    return planned
         # Scheduled/routine interviews prioritize the authored atomic clinical
         # history axis. Rule priority remains a deterministic tie-breaker, and
         # required Facts always precede optional refinements.

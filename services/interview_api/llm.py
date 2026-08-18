@@ -1,9 +1,10 @@
 """Governed LLM selection and bounded LLM adapters.
 
-The compiled runtime remains authoritative for clinical routing, safety,
-question selection, and completion.  This module may only render an already
-selected question into patient-friendly language.  It never receives patient
-answers, files, Facts, traces, or clinician handoff content.  The separate
+The compiled runtime remains authoritative for clinical safety, candidate
+eligibility, and completion.  This module may interpret one opening message
+against an allowlisted RFE catalog, choose among already-eligible question
+candidates, and render the selected question.  It never receives files,
+traces, or clinician handoff content and cannot invent medical Rules.  The separate
 health-information advisor may receive the user's explicit consultation query
 after provider selection and consent; it has no clinical authority and does
 not cache the query or generated answer.
@@ -14,6 +15,7 @@ from collections import OrderedDict
 from copy import deepcopy
 from dataclasses import dataclass
 import json
+import math
 import os
 import re
 import threading
@@ -29,6 +31,8 @@ MAX_PROVIDER_CONFIG_BYTES = 32_768
 MAX_PRESENTATION_CHARACTERS = 1_000
 MAX_HEALTH_INFORMATION_CHARACTERS = 4_000
 MAX_PRESENTATION_CACHE_ENTRIES = 2_048
+MAX_INTERPRETATION_CHARACTERS = 4_000
+MAX_PLANNER_CANDIDATES = 24
 
 
 class LlmConfigurationError(ValueError):
@@ -101,7 +105,7 @@ class LlmSelection:
             "external_processing_consent": self.external_processing_consent,
             "allowed_provider_ids": list(self.allowed_provider_ids),
             "participant_may_choose": self.participant_may_choose,
-            "runtime_role": "question_presentation_only",
+            "runtime_role": "bounded_interpretation_planning_and_presentation",
             "presentation_enabled": presentation_enabled,
             "clinical_authority": False,
         }
@@ -172,9 +176,11 @@ class LlmProviderRegistry:
             "requester_policy_supported": True,
             "credentials_in_request_body": "prohibited",
             "external_processing_requires_explicit_consent": True,
-            "runtime_role": "question_presentation_only",
+            "runtime_role": "bounded_interpretation_planning_and_presentation",
             "presentation_enabled": presentation_enabled,
-            "clinical_routing_and_safety": "compiled_runtime_only",
+            "clinical_interpretation": "allowlisted_rfe_catalog_only",
+            "question_planning": "eligible_compiled_candidates_only",
+            "clinical_safety_and_completion": "compiled_runtime_only",
             "providers": [
                 provider.public_document(
                     is_default=provider.provider_id == self.default_provider_id
@@ -376,6 +382,197 @@ class LlmQuestionPresenter:
         return _generated_presentation(rendered, selection, cached=False)
 
 
+class LlmClinicalInterpreter:
+    """Map one free-text opening to the allowlisted RFE catalog.
+
+    This adapter has no authority to invent an RFE, diagnosis, Fact, Rule, or
+    question.  It returns a bounded routing proposal which Core validates
+    against the compiled catalog before package activation.
+    """
+
+    def __init__(
+        self,
+        *,
+        enabled: bool = False,
+        timeout_seconds: float = 12.0,
+        minimum_confidence: float = 0.65,
+        transport: CompletionTransport | None = None,
+    ) -> None:
+        self.enabled = enabled
+        self.timeout_seconds = timeout_seconds
+        self.minimum_confidence = minimum_confidence
+        self._transport = transport or _openai_compatible_completion
+
+    @classmethod
+    def from_env(cls) -> "LlmClinicalInterpreter":
+        return cls(
+            enabled=_env_bool("CLINICAL_LLM_INTERPRETATION_ENABLED", True),
+            timeout_seconds=float(os.getenv("CLINICAL_LLM_TIMEOUT_SECONDS", "12")),
+            minimum_confidence=float(
+                os.getenv("CLINICAL_LLM_INTERPRETATION_MIN_CONFIDENCE", "0.65")
+            ),
+        )
+
+    def interpret(
+        self,
+        message: str,
+        rfe_candidates: list[dict[str, Any]],
+        selection: LlmSelection,
+    ) -> dict[str, Any]:
+        if not self.enabled:
+            return {"status": "unavailable", "reason": "llm_interpretation_disabled"}
+        allowed_ids = {
+            item["id"] for item in rfe_candidates if isinstance(item.get("id"), str)
+        }
+        messages = [
+            {
+                "role": "system",
+                "content": (
+                    "You are a constrained Korean clinical-interview routing adapter, not a diagnostic model. "
+                    "Select only from the supplied Reason-for-Encounter ids. Interpret colloquial wording, typos, body-region phrases, follow-up purposes, and proxy wording. "
+                    "If one candidate is clearly best, return JSON only: "
+                    '{"status":"resolved","rfe_id":"...","confidence":0.0,"candidates":[]}. '
+                    "If ambiguous or unsupported, return status clarification and up to three candidate ids. "
+                    "Never invent an id, diagnosis, treatment, urgency, Fact, or question."
+                ),
+            },
+            {
+                "role": "user",
+                "content": json.dumps(
+                    {
+                        "message": message,
+                        "allowed_reason_for_encounter": rfe_candidates,
+                    },
+                    ensure_ascii=False,
+                ),
+            },
+        ]
+        try:
+            raw = self._transport(selection.provider, messages, self.timeout_seconds)
+            if not isinstance(raw, str) or len(raw) > MAX_INTERPRETATION_CHARACTERS:
+                raise ValueError("invalid interpretation response")
+            document = _parse_json_object(raw)
+            status = document.get("status")
+            confidence = float(document.get("confidence", 0.0))
+            if not math.isfinite(confidence):
+                raise ValueError("interpretation confidence must be finite")
+            rfe_id = document.get("rfe_id")
+            candidate_ids = [
+                item for item in document.get("candidates", [])
+                if isinstance(item, str) and item in allowed_ids
+            ][:3]
+            if (
+                status == "resolved"
+                and isinstance(rfe_id, str)
+                and rfe_id in allowed_ids
+                and confidence >= self.minimum_confidence
+            ):
+                return {
+                    "status": "resolved",
+                    "rfe_id": rfe_id,
+                    "confidence": min(confidence, 1.0),
+                    "candidates": candidate_ids,
+                    "method": "bounded_llm_catalog_selection",
+                    "provider_id": selection.provider.provider_id,
+                    "patient_input_transmitted": True,
+                    "clinical_authority": False,
+                }
+            return {
+                "status": "clarification",
+                "confidence": max(0.0, min(confidence, 1.0)),
+                "candidates": candidate_ids,
+                "method": "bounded_llm_catalog_selection",
+                "provider_id": selection.provider.provider_id,
+                "patient_input_transmitted": True,
+                "clinical_authority": False,
+            }
+        except (HTTPError, URLError, TimeoutError, OSError, ValueError, KeyError, TypeError):
+            return {
+                "status": "unavailable",
+                "reason": "provider_unavailable_or_invalid_output",
+                # Once transport is invoked the request may have reached the
+                # selected provider even when its response is unavailable or
+                # invalid.  Do not understate that privacy boundary.
+                "patient_input_transmitted": True,
+                "clinical_authority": False,
+            }
+
+
+class LlmInterviewPlanner:
+    """Choose one Fact from already eligible compiled question candidates."""
+
+    def __init__(
+        self,
+        *,
+        enabled: bool = False,
+        timeout_seconds: float = 12.0,
+        transport: CompletionTransport | None = None,
+    ) -> None:
+        self.enabled = enabled
+        self.timeout_seconds = timeout_seconds
+        self._transport = transport or _openai_compatible_completion
+
+    @classmethod
+    def from_env(cls) -> "LlmInterviewPlanner":
+        return cls(
+            enabled=_env_bool("CLINICAL_LLM_PLANNING_ENABLED", True),
+            timeout_seconds=float(os.getenv("CLINICAL_LLM_TIMEOUT_SECONDS", "12")),
+        )
+
+    def choose(
+        self,
+        context: dict[str, Any],
+        candidates: list[dict[str, Any]],
+        selection: LlmSelection,
+    ) -> str | None:
+        if not self.enabled or not candidates:
+            return None
+        bounded = sorted(
+            candidates,
+            key=lambda item: (-int(item.get("score", 0)), str(item.get("fact_id", ""))),
+        )[:MAX_PLANNER_CANDIDATES]
+        allowed = {
+            item["fact_id"] for item in bounded if isinstance(item.get("fact_id"), str)
+        }
+        payload_candidates = [
+            {
+                "fact_id": item.get("fact_id"),
+                "question": item.get("stem_text") or item.get("text"),
+                "reason": item.get("reason"),
+                "required": item.get("fact_id") in set(context.get("required_fact_ids", [])),
+            }
+            for item in bounded
+        ]
+        messages = [
+            {
+                "role": "system",
+                "content": (
+                    "Choose exactly one next atomic interview Fact from the supplied eligible candidates. "
+                    "Prefer core history order (site, severity, onset, duration, character, course, associated symptoms, function, history, medicines, prior evaluation, concern). "
+                    "Do not invent or modify a question, Fact, Rule, diagnosis, urgency, or treatment. "
+                    'Return JSON only: {"fact_id":"one allowed id"}.'
+                ),
+            },
+            {
+                "role": "user",
+                "content": json.dumps(
+                    {
+                        "context": context,
+                        "eligible_candidates": payload_candidates,
+                    },
+                    ensure_ascii=False,
+                ),
+            },
+        ]
+        try:
+            raw = self._transport(selection.provider, messages, self.timeout_seconds)
+            document = _parse_json_object(raw)
+            fact_id = document.get("fact_id")
+            return fact_id if isinstance(fact_id, str) and fact_id in allowed else None
+        except (HTTPError, URLError, TimeoutError, OSError, ValueError, KeyError, TypeError):
+            return None
+
+
 class LlmHealthInformationAdvisor:
     """Generate informational health guidance after deterministic safety screening."""
 
@@ -465,6 +662,19 @@ class LlmHealthInformationAdvisor:
             "independent_diagnosis_or_treatment": False,
             "safety_status": deepcopy(safety),
         }
+
+
+def _parse_json_object(raw: str) -> dict[str, Any]:
+    if not isinstance(raw, str):
+        raise ValueError("LLM response must be text")
+    cleaned = raw.strip()
+    if cleaned.startswith("```"):
+        cleaned = re.sub(r"^```(?:json)?\s*", "", cleaned, flags=re.IGNORECASE)
+        cleaned = re.sub(r"\s*```$", "", cleaned)
+    document = json.loads(cleaned)
+    if not isinstance(document, dict):
+        raise ValueError("LLM response must be a JSON object")
+    return document
 
 
 def _provider_from_document(document: Any) -> LlmProvider:

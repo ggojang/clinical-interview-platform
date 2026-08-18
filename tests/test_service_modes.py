@@ -92,6 +92,47 @@ def test_core_clinical_route_selects_the_matching_compiled_package_and_escalates
     assert "rule.safety.hemoptysis" in warning["adapter_state"]["safety_status"]["triggered_rules"]
 
 
+def test_bounded_interpreter_routes_colloquial_body_region_and_prefills_atomic_location():
+    session = CoreInteractionSession(
+        "purpose-core-lower-abdominal-pain",
+        clinical_interpreter=lambda _message: {
+            "status": "resolved",
+            "rfe_id": "rfe.abdominal_pain",
+            "confidence": 0.94,
+            "candidates": [],
+            "method": "bounded_llm_catalog_selection",
+            "clinical_authority": False,
+        },
+        proactive_safety_questions=False,
+    )
+    state = session.process("아랫배 통증")
+
+    assert state["status"] == "active"
+    assert state["adapter_state"]["package"]["id"] == "package.primary-care-abdominal-pain"
+    assert state["adapter_state"]["facts"]["symptom.abdominal_pain.location"]["value"] == (
+        "suprapubic_or_pelvic"
+    )
+    assert state["adapter_state"]["selected_question"]["fact_id"] == (
+        "symptom.abdominal_pain.severity"
+    )
+    assert state["clinical_interpretation"]["clinical_authority"] is False
+
+
+def test_unresolved_interpretation_requests_clarification_instead_of_restarting():
+    session = CoreInteractionSession(
+        "purpose-core-rfe-clarification",
+        clinical_interpreter=lambda _message: {
+            "status": "clarification",
+            "confidence": 0.42,
+            "candidates": ["rfe.abdominal_pain", "rfe.urinary_symptoms"],
+        },
+    )
+    state = session.process("아래쪽이 불편해요")
+    assert state["status"] == "reason_for_encounter_clarification"
+    assert state["candidates"] == ["rfe.abdominal_pain", "rfe.urinary_symptoms"]
+    assert "어느 문진" in state["prompt_ko"]
+
+
 def test_colloquial_hearing_and_test_sheet_phrases_route_to_existing_packages():
     fixture = json.loads(
         (ROOT / "simulation/workflows/rfe-routing-colloquial-cases.json").read_text(

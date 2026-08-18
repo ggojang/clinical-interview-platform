@@ -204,6 +204,34 @@ class ServiceModeRegistry:
             return None
         return deepcopy(next(iter(unique.values())))
 
+    def reason_for_encounter_candidates(self) -> list[dict[str, Any]]:
+        """Return the bounded, response-free RFE catalog for interpretation.
+
+        The adapter receives only catalog labels and aliases.  Package content,
+        medical sources, Rules, patient history, and session traces are not
+        included in this routing context.
+        """
+        return [
+            {
+                "id": entry["id"],
+                "display_ko": entry.get("display_ko") or entry.get("display"),
+                "aliases": list(entry.get("aliases", [])),
+            }
+            for entry in self.rfe_entries
+            if entry.get("implementation_status") == "implemented"
+            and entry.get("package_id")
+        ]
+
+    def reason_for_encounter_by_id(self, rfe_id: str) -> dict[str, Any] | None:
+        for entry in self.rfe_entries:
+            if (
+                entry.get("id") == rfe_id
+                and entry.get("implementation_status") == "implemented"
+                and entry.get("package_id")
+            ):
+                return deepcopy(entry)
+        return None
+
     def package_path_for(self, entry: dict[str, Any]) -> Path:
         package_id = entry.get("package_id")
         if not package_id:

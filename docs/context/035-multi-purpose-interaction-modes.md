@@ -1,7 +1,7 @@
 # Purpose-first multi-purpose interaction core
 
 Status: Draft, unreviewed
-Version: 0.2.0
+Version: 0.3.0
 
 ## Decision
 
@@ -26,6 +26,14 @@ For `clinical_adaptive`, the test context assumes that the user already has a sc
 
 Adaptive clinical questions are generated from compiled atomic Facts and Rules. Source-defined fixed questionnaires and supplied FHIR Questionnaires control their own wording, order, answer options, and scoring. The LLM may explain or present those items but must not rewrite their clinical meaning. Automatic question terminology mapping remains excluded for fixed questionnaires unless the official source and mapping were explicitly verified.
 
+Within `clinical_adaptive`, an enabled LLM adapter may map the opening free text
+to one implemented RFE from the response-free catalog and may choose one next
+Fact from candidates already made eligible by the compiled Runtime. The model
+cannot invent identifiers, Rules, safety levels, completion conditions,
+diagnoses, or treatments. Low-confidence, invalid, or unavailable output asks
+for clarification or falls back to the deterministic plan. Safety and
+completion remain compiled-Runtime decisions.
+
 Clinical adaptive output may project to a session-specific FHIR R4 Questionnaire and QuestionnaireResponse. Clinical structured forms produce a QuestionnaireResponse and may use SDC extraction only when the Questionnaire declares a verified extraction mapping. Non-clinical structured surveys do not extract clinical resources by default.
 
 ## Additional screening recommendation
@@ -38,10 +46,14 @@ The official Questionnaire/QuestionnaireResponse and the supplemental Questionna
 
 ## Current test privacy boundary
 
-The Runtime may hold necessary personal or health information in current-process memory to ask and answer relevant questions. It does not persist those answers to the repository, public Knowledge Action, database, raw logs, or analytics. Previewed FHIR resources and temporary uploads are discarded when the session closes or expires. ChatGPT or another model provider may have a separate retention policy outside this repository, so the existing public-test notice remains required.
+The Runtime may hold necessary personal or health information in current-process memory to ask and answer relevant questions. It does not persist those answers to the repository, public Knowledge Action, database, raw logs, or analytics. The opening message may be sent to the selected LLM solely for bounded RFE interpretation. External providers require explicit consent; the anonymous demo is restricted to the platform-local provider. Question planning sends Fact identifiers and approved question metadata without answer values. Previewed FHIR resources and temporary uploads are discarded when the session closes or expires. ChatGPT or another model provider may have a separate retention policy outside this repository, so the existing public-test notice remains required.
 
 ## Implementation boundary
 
-`runtime/service_modes.py` resolves explicit and conservatively inferred purpose. `runtime/core.py` owns the core session and hands clinical input to the existing `InterviewSession`. `runtime/questionnaire_prepopulation.py` provides a source-immutable, review-required FHIR R4 prepopulation primitive. `preventive/package_recommendation.py` compares a supplied, versioned center catalog and cannot invent a recommendation when that catalog is absent.
+`runtime/service_modes.py` resolves explicit and conservatively inferred purpose and exposes the allowlisted RFE catalog. `services/interview_api/llm.py` implements bounded RFE interpretation, eligible-candidate question planning, and presentation. `runtime/core.py` validates the proposed RFE and hands clinical input to `InterviewSession`; `runtime/session.py` retains authority over eligible Facts, safety, completion, and deterministic fallback. `runtime/questionnaire_prepopulation.py` provides a source-immutable, review-required FHIR R4 prepopulation primitive. `preventive/package_recommendation.py` compares a supplied, versioned center catalog and cannot invent a recommendation when that catalog is absent.
+
+API `mode_selection` is control-plane input and never consumes an interview
+turn or becomes patient evidence. Only `initial_message` and later message
+payloads may enter the clinical adapter.
 
 The official 2026 NHIS Questionnaire resource and its linkId mapping are not asserted by this overlay until the official source is converted and verified. The prepopulation primitive is regression-tested with synthetic resources in the meantime.

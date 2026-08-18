@@ -8,7 +8,9 @@ from http.client import HTTPMessage
 from unittest.mock import patch
 
 from services.interview_api.llm import (
+    LlmClinicalInterpreter,
     LlmHealthInformationAdvisor,
+    LlmInterviewPlanner,
     LlmProvider,
     LlmProviderRegistry,
     LlmQuestionPresenter,
@@ -450,6 +452,57 @@ class AnonymousDemoHttpTests(InterviewApiHttpTests):
 
 
 class InterviewApiRuntimeIntegrationTests(unittest.TestCase):
+    def test_real_api_routes_colloquial_rfe_then_uses_bounded_plan(self):
+        local = LlmProvider(
+            provider_id="local_vllm",
+            display_name="Local",
+            adapter="openai_compatible_chat",
+            base_url="http://127.0.0.1:8000/v1",
+            model="qwen3-27b",
+            external_processing=False,
+        )
+        api = InterviewApi(
+            max_sessions=1,
+            llm_registry=LlmProviderRegistry([local]),
+            llm_presenter=LlmQuestionPresenter(enabled=False),
+            clinical_interpreter=LlmClinicalInterpreter(
+                enabled=True,
+                transport=lambda *_args: json.dumps({
+                    "status": "resolved",
+                    "rfe_id": "rfe.abdominal_pain",
+                    "confidence": 0.94,
+                    "candidates": [],
+                }),
+            ),
+            interview_planner=LlmInterviewPlanner(
+                enabled=True,
+                transport=lambda *_args: json.dumps({
+                    "fact_id": "symptom.abdominal_pain.severity",
+                }),
+            ),
+        )
+
+        created = api.create_session({
+            "mode_selection": "문진 시작",
+            "initial_message": "아랫배 통증",
+        })
+
+        self.assertEqual(created["mode_id"], "clinical_adaptive")
+        self.assertEqual(created["state"]["adapter_state"]["turn"], 1)
+        self.assertEqual(
+            created["state"]["adapter_state"]["package"]["id"],
+            "package.primary-care-abdominal-pain",
+        )
+        self.assertEqual(
+            created["state"]["adapter_state"]["selected_question"]["fact_id"],
+            "symptom.abdominal_pain.severity",
+        )
+        self.assertEqual(
+            created["state"]["adapter_state"]["selected_question"]["planner"],
+            "bounded_llm_candidate_selection",
+        )
+        api.delete_session(created["session_id"])
+
     def test_real_core_exposes_draft_handoff_without_fhir_claim(self):
         api = InterviewApi(max_sessions=1)
         created = api.create_session(
@@ -598,6 +651,81 @@ class InterviewApiLlmPolicyTests(unittest.TestCase):
         self.assertNotIn("must-not-leave", transmitted)
         self.assertIn("advice is reserved for the finalized result", transmitted)
         self.assertFalse(result["patient_response_transmitted"])
+
+    def test_clinical_interpreter_accepts_only_allowlisted_rfe_json(self):
+        captured = []
+
+        def transport(provider, messages, timeout):
+            captured.append(messages)
+            return json.dumps({
+                "status": "resolved",
+                "rfe_id": "rfe.abdominal_pain",
+                "confidence": 0.93,
+                "candidates": [],
+            })
+
+        registry = LlmProviderRegistry([self.local])
+        selected = registry.select(None, None)
+        interpreter = LlmClinicalInterpreter(enabled=True, transport=transport)
+        result = interpreter.interpret(
+            "아랫배 통증",
+            [
+                {"id": "rfe.abdominal_pain", "display_ko": "복통", "aliases": ["복통"]},
+                {"id": "rfe.urinary_symptoms", "display_ko": "배뇨 증상", "aliases": ["소변"]},
+            ],
+            selected,
+        )
+        self.assertEqual(result["rfe_id"], "rfe.abdominal_pain")
+        self.assertFalse(result["clinical_authority"])
+        transmitted = json.dumps(captured[0], ensure_ascii=False)
+        self.assertIn("아랫배 통증", transmitted)
+        self.assertIn("rfe.abdominal_pain", transmitted)
+
+        invalid = LlmClinicalInterpreter(
+            enabled=True,
+            transport=lambda *_args: json.dumps({
+                "status": "resolved",
+                "rfe_id": "rfe.invented_diagnosis",
+                "confidence": 0.99,
+            }),
+        ).interpret(
+            "아랫배 통증",
+            [{"id": "rfe.abdominal_pain", "display_ko": "복통", "aliases": []}],
+            selected,
+        )
+        self.assertNotEqual(invalid["status"], "resolved")
+
+        non_finite = LlmClinicalInterpreter(
+            enabled=True,
+            transport=lambda *_args: (
+                '{"status":"resolved","rfe_id":"rfe.abdominal_pain",'
+                '"confidence":NaN}'
+            ),
+        ).interpret(
+            "아랫배 통증",
+            [{"id": "rfe.abdominal_pain", "display_ko": "복통", "aliases": []}],
+            selected,
+        )
+        self.assertEqual(non_finite["status"], "unavailable")
+        self.assertTrue(non_finite["patient_input_transmitted"])
+
+    def test_interview_planner_rejects_non_candidate_fact(self):
+        registry = LlmProviderRegistry([self.local])
+        selected = registry.select(None, None)
+        candidates = [
+            {"fact_id": "symptom.location", "text": "어디가 아픈가요?", "score": 10},
+            {"fact_id": "symptom.severity", "text": "얼마나 심한가요?", "score": 9},
+        ]
+        valid = LlmInterviewPlanner(
+            enabled=True,
+            transport=lambda *_args: '{"fact_id":"symptom.location"}',
+        )
+        self.assertEqual(valid.choose({}, candidates, selected), "symptom.location")
+        invalid = LlmInterviewPlanner(
+            enabled=True,
+            transport=lambda *_args: '{"fact_id":"diagnosis.appendicitis"}',
+        )
+        self.assertIsNone(invalid.choose({}, candidates, selected))
 
     def test_presenter_uses_compiled_stem_without_repeating_inline_choices(self):
         captured = []

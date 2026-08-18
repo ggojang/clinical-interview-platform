@@ -81,10 +81,19 @@ The existing `vllm-api-key` Podman secret is injected into the API container as
 `CLINICAL_LLM_LOCAL_API_KEY`. The value is never copied to Git or returned by
 the API.
 
-The model is a presentation adapter only. It receives the compiled question,
-not patient answers, Facts, files, traces, or results. Runtime Knowledge and
-Rules remain authoritative, and a provider failure falls back to the compiled
-question.
+The model has three bounded Runtime roles: it may map one opening message to an
+allowlisted RFE id, choose one next Fact from already-eligible compiled
+question candidates, and render the chosen question. It cannot invent an RFE,
+Fact, Rule, diagnosis, urgency, treatment, or completion condition. It never
+receives uploaded files, medical-source documents, traces, or handoff results.
+Compiled Knowledge, safety Rules, candidate eligibility, and completion remain
+authoritative. Provider or schema failure falls back to deterministic routing,
+clarification, and question planning.
+
+The deployed demo disables the optional question-stem rewrite so the authored
+compiled Korean wording and options are shown exactly and only one LLM call is
+needed for each routine planning turn. The presentation adapter remains
+available for separately evaluated deployments.
 
 To offer a commercial OpenAI-compatible provider, add only non-secret metadata
 to `CLINICAL_LLM_PROVIDERS_JSON` and inject the named credential as a Podman

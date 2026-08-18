@@ -14,6 +14,45 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class QuestionPlanningTests(unittest.TestCase):
+    def test_bounded_planner_can_select_only_an_eligible_compiled_fact(self):
+        observed = {}
+
+        def planner(context, candidates):
+            observed["context"] = context
+            observed["candidate_ids"] = [item["fact_id"] for item in candidates]
+            return "symptom.abdominal_pain.severity"
+
+        session = InterviewSession(
+            "abdominal-bounded-planner",
+            package_path=ABDOMINAL_PAIN_PACKAGE,
+            proactive_safety_questions=False,
+            question_planner=planner,
+        )
+        state = session.process("아랫배 통증")
+        question = state["selected_question"]
+
+        self.assertEqual(question["fact_id"], "symptom.abdominal_pain.severity")
+        self.assertEqual(question["planner"], "bounded_llm_candidate_selection")
+        self.assertNotIn(
+            "symptom.abdominal_pain.location", observed["candidate_ids"]
+        )
+        self.assertEqual(
+            observed["context"]["reason_for_encounter"], "rfe.abdominal_pain"
+        )
+
+    def test_invalid_planner_choice_falls_back_to_deterministic_plan(self):
+        session = InterviewSession(
+            "abdominal-invalid-planner",
+            package_path=ABDOMINAL_PAIN_PACKAGE,
+            proactive_safety_questions=False,
+            question_planner=lambda _context, _candidates: "invented.fact",
+        )
+        state = session.process("배가 아파요")
+        self.assertEqual(
+            state["selected_question"]["fact_id"],
+            "symptom.abdominal_pain.location",
+        )
+
     def test_scheduled_abdominal_history_starts_with_atomic_core_axes(self):
         session = InterviewSession(
             "abdominal-atomic-order",

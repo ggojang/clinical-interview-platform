@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 import re
-from typing import Any
+from typing import Any, Callable
 
 from runtime.service_modes import ServiceModeRegistry
 from runtime.health_information import HealthInformationSession
@@ -23,6 +23,8 @@ class CoreInteractionSession:
     clinician_submission: bool = False
     encounter_context: dict[str, Any] | None = None
     proactive_safety_questions: bool = False
+    clinical_interpreter: Callable[[str], dict[str, Any]] | None = None
+    question_planner: Callable[[dict[str, Any], list[dict[str, Any]]], str | None] | None = None
     mode_id: str | None = None
     adapter: InterviewSession | HealthInformationSession | None = None
     closed: bool = False
@@ -30,6 +32,43 @@ class CoreInteractionSession:
     def start(self) -> dict[str, Any]:
         self._ensure_open()
         return self.registry.resolve()
+
+    def select_mode(self, selection: str) -> dict[str, Any]:
+        """Apply an API/UI mode selection without consuming an answer turn.
+
+        ``mode_selection`` is control-plane input, not patient clinical text.
+        Keeping it separate prevents labels such as ``문진 시작`` from being
+        interpreted as the Reason for Encounter and creating a phantom Q1.
+        """
+        self._ensure_open()
+        if self.mode_id is not None:
+            return {
+                "status": "mode_already_selected",
+                "mode_id": self.mode_id,
+                "runtime_adapter": self.registry.modes[self.mode_id]["runtime_adapter"],
+            }
+        resolution = self.registry.resolve(selection)
+        if resolution["status"] != "resolved":
+            return resolution
+        self.mode_id = resolution["mode"]["id"]
+        if self.mode_id == "health_information":
+            self.adapter = HealthInformationSession(self.session_id)
+        next_step = resolution.get("next", {"entry": resolution["mode"]["entry"]})
+        if self.mode_id == "clinical_adaptive":
+            next_step = {
+                "entry": "reason_for_encounter",
+                "prompt_ko": (
+                    "오늘 진료받으려는 이유나 의료진에게 미리 전달할 내용을 "
+                    "자유롭게 말씀해 주세요."
+                ),
+            }
+        return {
+            **resolution,
+            "explicit_selection": True,
+            "status": "mode_ready",
+            "runtime_adapter": resolution["mode"]["runtime_adapter"],
+            "next": next_step,
+        }
 
     def process(self, message: str) -> dict[str, Any]:
         self._ensure_open()
@@ -54,6 +93,11 @@ class CoreInteractionSession:
         self.mode_id = resolution["mode"]["id"]
 
         if self.mode_id == "clinical_adaptive":
+            if resolution.get("explicit_selection"):
+                # Direct conversational callers may use an exact mode alias.
+                # API callers use ``select_mode`` so even inferred labels are
+                # never consumed as clinical content.
+                return self._selected_mode_ready(resolution)
             return self._activate_clinical(message, resolution=resolution)
 
         if self.mode_id == "health_information":
@@ -66,6 +110,21 @@ class CoreInteractionSession:
             "next": resolution.get("next", {
                 "entry": resolution["mode"]["entry"],
             }),
+        }
+
+    def _selected_mode_ready(self, resolution: dict[str, Any]) -> dict[str, Any]:
+        return {
+            **resolution,
+            "explicit_selection": True,
+            "status": "mode_ready",
+            "runtime_adapter": resolution["mode"]["runtime_adapter"],
+            "next": {
+                "entry": "reason_for_encounter",
+                "prompt_ko": (
+                    "오늘 진료받으려는 이유나 의료진에게 미리 전달할 내용을 "
+                    "자유롭게 말씀해 주세요."
+                ),
+            },
         }
 
     def _wrap_health_information(
@@ -112,12 +171,28 @@ class CoreInteractionSession:
         resolution: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         rfe = self.registry.match_reason_for_encounter(message)
+        interpretation = None
+        if rfe is None and self.clinical_interpreter is not None:
+            interpretation = self.clinical_interpreter(message)
+            if interpretation.get("status") == "resolved":
+                rfe_id = interpretation.get("rfe_id")
+                if isinstance(rfe_id, str):
+                    rfe = self.registry.reason_for_encounter_by_id(rfe_id)
         if rfe is None:
+            candidates = (
+                interpretation.get("candidates", [])
+                if isinstance(interpretation, dict) else []
+            )
             return {
-                "status": "reason_for_encounter_required",
+                "status": "reason_for_encounter_clarification",
                 "mode_id": "clinical_adaptive",
                 "core_entry": "interaction_purpose",
-                "prompt_ko": "오늘 어떤 이유로 오셨나요? 불편한 증상이나 상담받고 싶은 내용을 자유롭게 말씀해 주세요.",
+                "prompt_ko": (
+                    "말씀하신 내용을 어느 문진으로 진행할지 확인이 필요합니다. "
+                    "가장 가까운 증상이나 상담 목적을 조금 더 구체적으로 알려주세요."
+                ),
+                "candidates": candidates,
+                "clinical_interpretation": interpretation,
             }
         self.adapter = InterviewSession(
             self.session_id,
@@ -135,8 +210,12 @@ class CoreInteractionSession:
                 "clinical_responsibility": "decision_support",
             },
             proactive_safety_questions=self.proactive_safety_questions,
+            question_planner=self.question_planner,
         )
-        return self._wrap(self.adapter.process(message), resolution=resolution)
+        wrapped = self._wrap(self.adapter.process(message), resolution=resolution)
+        if interpretation is not None:
+            wrapped["clinical_interpretation"] = interpretation
+        return wrapped
 
     def _ensure_open(self) -> None:
         if self.closed:

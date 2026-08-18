@@ -20,7 +20,9 @@ from uuid import UUID, uuid4
 from runtime.core import CoreInteractionSession
 from runtime.service_modes import ServiceModeRegistry
 from services.interview_api.llm import (
+    LlmClinicalInterpreter,
     LlmHealthInformationAdvisor,
+    LlmInterviewPlanner,
     LlmProviderRegistry,
     LlmQuestionPresenter,
     LlmSelection,
@@ -146,6 +148,8 @@ class InterviewApi:
         session_factory: Callable[[str], CoreInteractionSession] | None = None,
         llm_registry: LlmProviderRegistry | None = None,
         llm_presenter: LlmQuestionPresenter | None = None,
+        clinical_interpreter: LlmClinicalInterpreter | None = None,
+        interview_planner: LlmInterviewPlanner | None = None,
         health_information_advisor: LlmHealthInformationAdvisor | None = None,
         terminology_client: TerminologyClient | None = None,
     ) -> None:
@@ -177,6 +181,10 @@ class InterviewApi:
         self.registry = ServiceModeRegistry()
         self.llm_registry = llm_registry or LlmProviderRegistry.from_env()
         self.llm_presenter = llm_presenter or LlmQuestionPresenter.from_env()
+        self.clinical_interpreter = (
+            clinical_interpreter or LlmClinicalInterpreter.from_env()
+        )
+        self.interview_planner = interview_planner or LlmInterviewPlanner.from_env()
         self.health_information_advisor = (
             health_information_advisor or LlmHealthInformationAdvisor.from_env()
         )
@@ -206,7 +214,9 @@ class InterviewApi:
             "llm": {
                 "default_provider_id": self.llm_registry.default_provider_id,
                 "presentation_enabled": self.llm_presenter.enabled,
-                "runtime_role": "question_presentation_only",
+                "interpretation_enabled": self.clinical_interpreter.enabled,
+                "planning_enabled": self.interview_planner.enabled,
+                "runtime_role": "bounded_interpretation_planning_and_presentation",
                 "health_information_enabled": self.health_information_advisor.enabled,
             },
             "terminology": self.terminology_client.configuration(),
@@ -439,10 +449,28 @@ class InterviewApi:
                 )
             session_id = str(uuid4())
             core = self._session_factory(session_id)
+            if isinstance(core, CoreInteractionSession):
+                core.clinical_interpreter = lambda message: (
+                    self.clinical_interpreter.interpret(
+                        message,
+                        core.registry.reason_for_encounter_candidates(),
+                        llm_selection,
+                    )
+                )
+                core.question_planner = lambda context, candidates: (
+                    self.interview_planner.choose(
+                        context, candidates, llm_selection
+                    )
+                )
             try:
                 state = core.start()
                 if mode_selection is not None:
-                    state = core.process(mode_selection)
+                    select_mode = getattr(core, "select_mode", None)
+                    state = (
+                        select_mode(mode_selection)
+                        if callable(select_mode)
+                        else core.process(mode_selection)
+                    )
                 if initial_message is not None:
                     state = core.process(initial_message)
                 presentation = self._render_llm_output(core, state, llm_selection)
