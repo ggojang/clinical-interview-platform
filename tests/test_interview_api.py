@@ -326,6 +326,10 @@ class InterviewApiHttpTests(unittest.TestCase):
         self.assertIn("default-src 'self'", headers["Content-Security-Policy"])
         self.assertEqual(headers["Cache-Control"], "no-store")
 
+        status, _, stylesheet = self._request("GET", "/demo/styles.css", authorized=False)
+        self.assertEqual(status, 200)
+        self.assertIn("[hidden] { display: none !important; }", stylesheet)
+
         status, _, body = self._request(
             "GET", "/v1/demo/resources", authorized=False
         )
