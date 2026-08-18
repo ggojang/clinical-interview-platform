@@ -296,7 +296,10 @@ class InterviewApiHttpTests(unittest.TestCase):
     def test_demo_shell_is_public_but_resources_require_auth(self):
         status, headers, body = self._request("GET", "/demo", authorized=False)
         self.assertEqual(status, 200)
-        self.assertIn("Clinical Interaction Studio", body)
+        self.assertIn("Clinical Interactive AI Platform", body)
+        self.assertIn("1 · 설문 유형", body)
+        self.assertIn("응답 완료·결과 생성", body)
+        self.assertIn("결과 확인", body)
         self.assertIn("default-src 'self'", headers["Content-Security-Policy"])
         self.assertEqual(headers["Cache-Control"], "no-store")
 
@@ -313,6 +316,10 @@ class InterviewApiHttpTests(unittest.TestCase):
     def test_demo_javascript_does_not_use_browser_persistence(self):
         status, _, body = self._request("GET", "/demo/app.js", authorized=False)
         self.assertEqual(status, 200)
+        self.assertIn("completeStructuredResponse", body)
+        self.assertIn("structuredAnswers", body)
+        self.assertIn("syntheticGuidanceFor", body)
+        self.assertIn("valueDate", body)
         self.assertNotIn("localStorage", body)
         self.assertNotIn("sessionStorage", body)
         self.assertNotIn("document.cookie", body)

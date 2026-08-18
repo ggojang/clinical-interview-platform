@@ -25,7 +25,8 @@ const state = {
   fixedQuestions: [],
   fixedAnswers: [],
   fixedIndex: 0,
-  fixedTitle: ""
+  fixedTitle: "",
+  structuredAnswers: new Map()
 };
 
 const $ = (selector) => document.querySelector(selector);
@@ -77,6 +78,7 @@ function setMode(mode) {
   };
   $("#inputPanelTitle").textContent = labels[mode][0];
   $("#inputBadge").textContent = labels[mode][1];
+  renderPreview(state.questionnaire);
 }
 
 function canonical(questionnaire) {
@@ -123,7 +125,7 @@ function setArtifacts(questionnaire, response, source, handoff = {}) {
   updateOutputs();
 }
 
-function updateOutputs() {
+function refreshOutputData() {
   $("#sourceCode").textContent = state.questionnaireSource || "입력 소스가 여기에 표시됩니다.";
   $("#questionnaireCode").textContent = pretty(state.questionnaire || {});
   $("#responseCode").textContent = pretty(state.questionnaireResponse || {});
@@ -134,9 +136,13 @@ function updateOutputs() {
   $("#qState").textContent = hasQ ? `${answerBearingItems(state.questionnaire).length}개 문항` : "입력 대기";
   $("#qrState").textContent = hasQr ? state.questionnaireResponse.status : "입력 대기";
   $("#sdcState").textContent = "미구현";
-  $("#outputStatus").textContent = hasQ ? "Draft" : "대기";
+  $("#outputStatus").textContent = state.questionnaireResponse?.status === "completed" ? "완료" : (hasQ ? "Draft" : "대기");
   $("#downloadR4").disabled = !hasQ;
   $("#downloadR5").disabled = !hasQ;
+}
+
+function updateOutputs() {
+  refreshOutputData();
   renderPreview(state.questionnaire);
 }
 
@@ -153,6 +159,83 @@ function displayAnswer(option) {
   const value = key ? option[key] : "";
   if (value && typeof value === "object") return value.display || value.code || pretty(value);
   return String(value ?? "");
+}
+
+function syntheticGuidanceFor(text) {
+  const value = String(text || "").toLowerCase();
+  const identity = /(이름|성명|생년|생일|출생|성별|젠더|연락처|전화|휴대폰|이메일|주소|주민번호|식별자|name|birth|sex|gender|phone|email|address|identifier)/i;
+  const clinical = /(진료기록|건강정보|처방전|진단서|퇴원|검사결과|영상|스캔|복용약|약물|병력|수술력|medical record|health record|prescription|diagnosis|discharge|scan|medication)/i;
+  if (identity.test(value)) return "데모 안내 · 실제 개인정보 대신 가상값을 입력하세요. 예: 홍길동(가상), 1990-01-01(가상).";
+  if (clinical.test(value)) return "데모 안내 · 실제 진료·건강정보나 문서 대신 실제 환자와 무관한 합성 정보를 입력하세요.";
+  return "";
+}
+
+function answerScalar(answer) {
+  const key = Object.keys(answer || {}).find((name) => name.startsWith("value"));
+  const value = key ? answer[key] : "";
+  if (value && typeof value === "object") return value.value ?? value.code ?? value.display ?? "";
+  return value ?? "";
+}
+
+function typedStructuredAnswer(item, raw) {
+  if (item.type === "integer") return { valueInteger: Number.parseInt(raw, 10) };
+  if (item.type === "decimal") return { valueDecimal: Number(raw) };
+  if (item.type === "boolean") return { valueBoolean: raw === "true" };
+  if (item.type === "date") return { valueDate: raw };
+  if (item.type === "dateTime") return { valueDateTime: raw };
+  if (item.type === "time") return { valueTime: raw };
+  if (item.type === "url") return { valueUri: raw };
+  if (item.type === "quantity") return { valueQuantity: { value: Number(raw) } };
+  return { valueString: raw };
+}
+
+function recordStructuredAnswer(item, answer) {
+  if (!answer) state.structuredAnswers.delete(item.linkId);
+  else state.structuredAnswers.set(item.linkId, { linkId: item.linkId, text: item.text, answer: [clone(answer)] });
+  state.questionnaireResponse.item = responseItemsFor(state.questionnaire.item, state.structuredAnswers);
+  state.questionnaireResponse.status = "in-progress";
+  state.handoff = {
+    status: "structured_response_in_progress",
+    answered_items: state.structuredAnswers.size,
+    response_storage: "browser_memory_only"
+  };
+  refreshOutputData();
+}
+
+function structuredControl(block, item) {
+  const existing = state.structuredAnswers.get(item.linkId)?.answer?.[0];
+  if (item.answerOption?.length || item.type === "boolean") {
+    const select = document.createElement("select");
+    select.setAttribute("aria-label", item.text || item.linkId);
+    const blank = document.createElement("option");
+    blank.value = "";
+    blank.textContent = "선택하세요";
+    select.append(blank);
+    const options = item.answerOption?.length
+      ? item.answerOption
+      : [{ valueBoolean: true }, { valueBoolean: false }];
+    options.forEach((option, index) => {
+      const node = document.createElement("option");
+      node.value = String(index);
+      node.textContent = item.type === "boolean" ? (option.valueBoolean ? "예" : "아니요") : displayAnswer(option);
+      if (existing && pretty(existing) === pretty(option)) node.selected = true;
+      select.append(node);
+    });
+    select.addEventListener("change", () => recordStructuredAnswer(item, select.value === "" ? null : options[Number(select.value)]));
+    block.append(select);
+    return;
+  }
+  const input = document.createElement(item.type === "text" ? "textarea" : "input");
+  const inputTypes = { integer: "number", decimal: "number", date: "date", dateTime: "datetime-local", time: "time", url: "url", quantity: "number" };
+  if (input.tagName === "INPUT") input.type = inputTypes[item.type] || "text";
+  if (["decimal", "quantity"].includes(item.type)) input.step = "any";
+  input.placeholder = `${item.type || "string"} 응답`;
+  input.value = String(answerScalar(existing));
+  input.addEventListener("input", () => {
+    const raw = input.value.trim();
+    recordStructuredAnswer(item, raw === "" ? null : typedStructuredAnswer(item, raw));
+  });
+  block.append(input);
 }
 
 function renderPreview(questionnaire) {
@@ -184,7 +267,11 @@ function renderPreview(questionnaire) {
     }
     const block = append(root, "div", undefined, "preview-question");
     append(block, "label", `${item.prefix ? `${item.prefix} ` : ""}${item.text || item.linkId}${item.required ? " *" : ""}`);
-    if (item.answerOption?.length) {
+    const guidance = syntheticGuidanceFor(item.text);
+    if (guidance) append(block, "p", guidance, "privacy-prompt");
+    if (state.mode === "structured") {
+      structuredControl(block, item);
+    } else if (item.answerOption?.length) {
       const options = append(block, "div", undefined, "preview-options");
       item.answerOption.slice(0, 12).forEach((option) => append(options, "div", displayAnswer(option), "preview-option"));
     } else {
@@ -217,17 +304,39 @@ function parseStructured() {
   try {
     const questionnaire = validateQuestionnaire(JSON.parse(raw));
     const response = blankResponse(questionnaire);
+    state.structuredAnswers = new Map();
     setArtifacts(questionnaire, response, raw, {
-      status: "preview_only",
-      note: "정형 서식 입력을 브라우저에서 구조 검증했습니다. 서버 저장·SDC Extraction은 수행하지 않았습니다."
+      status: "structured_response_ready",
+      note: "정형 서식 입력을 구조 검증했습니다. 오른쪽 미리보기에서 답변을 입력할 수 있습니다. 서버 저장·SDC Extraction은 수행하지 않았습니다."
     });
+    $("#completeStructured").disabled = false;
     const count = answerBearingItems(questionnaire).length;
     $("#questionnaireMeta").textContent = `${inferVersion(questionnaire)} · ${count}개 응답 문항 · ${canonical(questionnaire) || "canonical 없음"}`;
     selectOutput("preview");
-    showToast("구조 검증과 미리보기를 완료했습니다.");
+    showToast("구조 검증을 마쳤습니다. 오른쪽 미리보기에서 답변을 입력하세요.");
   } catch (error) {
     showToast(`검증 실패: ${error.message}`);
   }
+}
+
+function completeStructuredResponse() {
+  if (!state.questionnaire || !state.questionnaireResponse) return showToast("먼저 Questionnaire를 실행하세요.");
+  const missing = answerBearingItems(state.questionnaire).filter((item) => item.required && !state.structuredAnswers.has(item.linkId));
+  if (missing.length) {
+    selectOutput("preview");
+    return showToast(`필수 문항 ${missing.length}개에 답변이 필요합니다: ${missing.slice(0, 2).map((item) => item.text || item.linkId).join(", ")}`);
+  }
+  state.questionnaireResponse.status = "completed";
+  state.handoff = {
+    status: "structured_response_completed",
+    answered_items: state.structuredAnswers.size,
+    required_items_complete: true,
+    response_storage: "browser_memory_only",
+    sdc_extraction: "not_implemented"
+  };
+  refreshOutputData();
+  selectOutput("response");
+  showToast("응답을 완료했습니다. 결과 확인에 QuestionnaireResponse를 표시합니다.");
 }
 
 function sampleQuestionnaire() {
@@ -297,11 +406,15 @@ function askFixedQuestion() {
     bubble($("#fixedChatLog"), "assistant", "모든 문항이 끝났습니다. 오른쪽에서 QuestionnaireResponse를 확인하세요.");
     $("#fixedAnswer").disabled = true;
     $("#fixedAnswerButton").disabled = true;
+    selectOutput("response");
     return;
   }
   $("#fixedAnswer").disabled = false;
   $("#fixedAnswerButton").disabled = false;
-  bubble($("#fixedChatLog"), "assistant", fixedPrompt(state.fixedQuestions[state.fixedIndex]));
+  const question = state.fixedQuestions[state.fixedIndex];
+  const guidance = syntheticGuidanceFor(question.text);
+  if (guidance) bubble($("#fixedChatLog"), "notice", guidance);
+  bubble($("#fixedChatLog"), "assistant", fixedPrompt(question));
 }
 
 function answerValue(question, raw) {
@@ -505,6 +618,8 @@ async function startAdaptive() {
       $("#adaptiveAnswerButton").disabled = true;
       $("#completeAdaptive").disabled = true;
     } else if (state.currentAdaptiveQuestion) {
+      const guidance = syntheticGuidanceFor(state.currentAdaptiveQuestion.text);
+      if (guidance) bubble($("#adaptiveChatLog"), "notice", guidance);
       bubble($("#adaptiveChatLog"), "assistant", state.currentAdaptiveQuestion.text);
       $("#adaptiveAnswer").disabled = false;
       $("#adaptiveAnswerButton").disabled = false;
@@ -527,7 +642,11 @@ async function sendAdaptiveAnswer() {
     const document = await api(`/v1/sessions/${state.sessionId}/messages`, { method: "POST", body: JSON.stringify({ message: answer }) });
     state.adaptiveHistory.push({ question: answered, answer });
     state.currentAdaptiveQuestion = adaptiveQuestion(document);
-    if (state.currentAdaptiveQuestion) bubble($("#adaptiveChatLog"), "assistant", state.currentAdaptiveQuestion.text);
+    if (state.currentAdaptiveQuestion) {
+      const guidance = syntheticGuidanceFor(state.currentAdaptiveQuestion.text);
+      if (guidance) bubble($("#adaptiveChatLog"), "notice", guidance);
+      bubble($("#adaptiveChatLog"), "assistant", state.currentAdaptiveQuestion.text);
+    }
     else bubble($("#adaptiveChatLog"), "assistant", "현재 Runtime 단계가 종료 또는 확인 대기 상태입니다. 결과를 확인하거나 대화를 종료하세요.");
     $("#adaptiveProgress").textContent = `${state.adaptiveHistory.length}개 답변`;
     rebuildAdaptiveArtifacts(document);
@@ -650,6 +769,7 @@ function initialize() {
   $("#anonymousConnectButton").addEventListener("click", connectAnonymous);
   $("#apiKey").addEventListener("keydown", (event) => { if (event.key === "Enter") connect(); });
   $("#parseQuestionnaire").addEventListener("click", parseStructured);
+  $("#completeStructured").addEventListener("click", completeStructuredResponse);
   $("#loadSample").addEventListener("click", sampleQuestionnaire);
   $("#questionnaireFile").addEventListener("change", async (event) => {
     try { $("#questionnaireJson").value = await readTextFile(event.target.files[0]); parseStructured(); } catch (error) { showToast(error.message); }
