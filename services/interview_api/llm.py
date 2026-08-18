@@ -394,7 +394,9 @@ class LlmHealthInformationAdvisor:
     def from_env(cls) -> "LlmHealthInformationAdvisor":
         return cls(
             enabled=_env_bool("CLINICAL_LLM_HEALTH_INFORMATION_ENABLED", True),
-            timeout_seconds=float(os.getenv("CLINICAL_LLM_TIMEOUT_SECONDS", "20")),
+            timeout_seconds=float(
+                os.getenv("CLINICAL_LLM_HEALTH_INFORMATION_TIMEOUT_SECONDS", "30")
+            ),
         )
 
     def answer(
