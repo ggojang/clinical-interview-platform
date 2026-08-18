@@ -40,6 +40,14 @@ MAX_CHATBOT_TURN_CHARACTERS = 20_000
 MAX_CHATBOT_RETRIEVAL_QUESTIONS = 4
 MAX_CHATBOT_RETRIEVAL_FACTS = 12
 MAX_CHATBOT_RETRIEVAL_PRIORITY_RULES = 8
+MAX_CHATBOT_GENERATION_ATTEMPTS = 2
+CHATBOT_RUNTIME_EXCLUDED_QUESTION_IDS = {
+    # This legacy cough item collects frequency, bout count, episode duration,
+    # and between-bout state in one answer.  Keep it available for audit while
+    # the Knowledge Factory splits it into atomic Questions, but do not expose
+    # it through the adaptive patient-facing runtime.
+    "question.cough.frequency-bouts",
+}
 CHATBOT_KNOWLEDGE_DELIVERY_STRATEGIES = {
     "inline_linked_index",
     "action_two_stage_exact_objects",
@@ -171,6 +179,43 @@ class LlmChatbotInterviewRuntime:
             response = self._transport(
                 selection.provider, messages, self.timeout_seconds
             )
+            if self.knowledge_delivery == "compiled_candidate_window":
+                allowed_question_ids = retrieval["question_ids"]
+                attempts = 1
+                while (
+                    _response_has_unsupported_question_id(
+                        response, allowed_question_ids
+                    )
+                    and attempts < MAX_CHATBOT_GENERATION_ATTEMPTS
+                ):
+                    response = self._transport(
+                        selection.provider,
+                        [
+                            *messages,
+                            {"role": "assistant", "content": response},
+                            {
+                                "role": "system",
+                                "content": (
+                                    "The previous draft invented or used a Question id "
+                                    "outside the Action retrieval manifest. Discard it. "
+                                    "Return one replacement turn based only on the single "
+                                    "selected Question object. Preserve its clinical meaning "
+                                    "and print its exact id in the provenance line."
+                                ),
+                            },
+                        ],
+                        self.timeout_seconds,
+                    )
+                    attempts += 1
+                if _response_has_unsupported_question_id(
+                    response, allowed_question_ids
+                ):
+                    raise ValueError(
+                        "generation used a Question outside the retrieval manifest"
+                    )
+                response = _ensure_question_provenance(
+                    response, allowed_question_ids[0]
+                )
         except (HTTPError, URLError, TimeoutError, OSError, ValueError, KeyError) as exc:
             raise LlmChatbotRuntimeError(
                 "chatbot interview LLM is temporarily unavailable"
@@ -341,6 +386,8 @@ class LlmChatbotInterviewRuntime:
             if item.get("role") == "assistant"
         )
         asked_ids = set(re.findall(r"question\.[A-Za-z0-9_.-]+", assistant_text))
+        asked_id_keys = {_question_id_key(item) for item in asked_ids}
+        answer_states = _question_answer_states(conversation, package)
         questions = package["objects"]["selected_questions"]
         index_by_id = {
             item["id"]: item for item in package["index"].get("questions", [])
@@ -352,7 +399,7 @@ class LlmChatbotInterviewRuntime:
         )
 
         def already_shown(question_id: str, question: dict[str, Any]) -> bool:
-            if question_id in asked_ids:
+            if _question_id_key(question_id) in asked_id_keys:
                 return True
             wording = question.get("wording")
             return isinstance(wording, str) and len(wording) >= 12 and wording in assistant_text
@@ -362,6 +409,42 @@ class LlmChatbotInterviewRuntime:
             priority = indexed.get("priority")
             numeric_priority = priority if isinstance(priority, int) else 0
             core_bonus = 400 if any(term in question_id for term in core_terms) else 0
+            stage_bonus = 0
+            if reason_for_encounter == "rfe.cough":
+                if not _any_question_asked(
+                    asked_id_keys,
+                    "question.symptom_onset",
+                    "question.cough.timeline",
+                ):
+                    if question_id == "question.symptom_onset":
+                        stage_bonus += 3_000
+                    elif question_id == "question.cough.timeline":
+                        stage_bonus += 2_500
+                elif not _any_question_asked(
+                    asked_id_keys, "question.symptom_cough_sudden_onset"
+                ) and question_id == "question.symptom_cough_sudden_onset":
+                    stage_bonus += 3_000
+
+                sudden_state = answer_states.get(
+                    _question_id_key("question.symptom_cough_sudden_onset")
+                )
+                if sudden_state == "positive" and question_id == "question.cough.swallowing-context":
+                    stage_bonus += 4_000
+
+                positive_detail_gates = {
+                    "question.symptom_chest_pain": "chest-pain",
+                    "question.symptom_dyspnea": "dyspnea",
+                    "question.symptom_fever": "fever",
+                    "question.symptom_hemoptysis": "hemoptysis",
+                    "question.symptom_sputum": "sputum",
+                    "question.symptom_wheeze": "wheeze",
+                }
+                for gate_id, detail_token in positive_detail_gates.items():
+                    if (
+                        answer_states.get(_question_id_key(gate_id)) == "positive"
+                        and detail_token in question_id
+                    ):
+                        stage_bonus += 2_000
             trauma_bonus = (
                 1_000
                 if reason_for_encounter == "rfe.joint_limb_complaint"
@@ -369,15 +452,41 @@ class LlmChatbotInterviewRuntime:
                 and not assistant_text
                 else 0
             )
-            return numeric_priority + core_bonus + trauma_bonus, question_id
+            return numeric_priority + core_bonus + trauma_bonus + stage_bonus, question_id
+
+        def applicable(question_id: str) -> bool:
+            if question_id in CHATBOT_RUNTIME_EXCLUDED_QUESTION_IDS:
+                return False
+            if reason_for_encounter == "rfe.cough":
+                if "pain" in question_id and "chest-pain" not in question_id:
+                    return False
+                negative_detail_gates = {
+                    "question.symptom_chest_pain": "chest-pain",
+                    "question.symptom_dyspnea": "dyspnea",
+                    "question.symptom_fever": "fever",
+                    "question.symptom_hemoptysis": "hemoptysis",
+                    "question.symptom_sputum": "sputum",
+                    "question.symptom_wheeze": "wheeze",
+                }
+                for gate_id, detail_token in negative_detail_gates.items():
+                    if (
+                        answer_states.get(_question_id_key(gate_id)) == "negative"
+                        and detail_token in question_id
+                    ):
+                        return False
+            return True
 
         available = [
             question_id for question_id, question in questions.items()
             if not already_shown(question_id, question)
+            and applicable(question_id)
             and not question_id.endswith((".primary-group", ".primary-context"))
         ]
         ranked = sorted(available, key=score, reverse=True)
-        selected_question_ids = ranked[:5]
+        # A single exact object gives a smaller local model the same bounded
+        # contract that the Custom GPT follows: the model adapts language, but
+        # cannot choose an unrelated Question from the rest of the package.
+        selected_question_ids = ranked[:1]
         if not selected_question_ids:
             raise ValueError("no unresolved source Question remains")
 
@@ -570,6 +679,95 @@ def _chatbot_package_index(package: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _question_id_key(question_id: str) -> str:
+    """Normalize cosmetic id separators without changing clinical identity."""
+    return re.sub(r"[^a-z0-9]+", ".", question_id.casefold()).strip(".")
+
+
+def _any_question_asked(asked_id_keys: set[str], *question_ids: str) -> bool:
+    return any(_question_id_key(item) in asked_id_keys for item in question_ids)
+
+
+def _question_answer_states(
+    conversation: list[dict[str, str]],
+    package: dict[str, Any],
+) -> dict[str, str]:
+    """Return only explicit positive/negative branch states by source Question.
+
+    The helper never creates clinical Facts.  It exists solely to prevent the
+    candidate window from offering a conditional detail Question after its
+    visible gate was explicitly answered no.
+    """
+    available = {
+        _question_id_key(item): item
+        for item in package["objects"]["selected_questions"]
+    }
+    states: dict[str, str] = {}
+    for index, assistant in enumerate(conversation[:-1]):
+        if assistant.get("role") != "assistant":
+            continue
+        user = conversation[index + 1]
+        if user.get("role") != "user":
+            continue
+        source_ids = re.findall(
+            r"question\.[A-Za-z0-9_.-]+", assistant.get("content", "")
+        )
+        source_key = next(
+            (
+                _question_id_key(item)
+                for item in source_ids
+                if _question_id_key(item) in available
+            ),
+            None,
+        )
+        if source_key is None:
+            continue
+        answer = user.get("content", "").strip()
+        numeric = re.fullmatch(r"(\d{1,2})(?:[.)])?", answer)
+        if numeric is not None:
+            selected = numeric.group(1)
+            for line in assistant.get("content", "").splitlines():
+                option = re.fullmatch(
+                    r"\s*`?(\d{1,2})(?:[.)])?\s+(.+?)`?\s*", line
+                )
+                if option is not None and option.group(1) == selected:
+                    answer = option.group(2).strip().strip("*`")
+                    break
+        normalized = re.sub(r"[\s.]+", "", answer.casefold())
+        if normalized in {"예", "네", "yes", "y", "있음", "있어요"}:
+            states[source_key] = "positive"
+        elif normalized in {
+            "아니오", "아니요", "no", "n", "없음", "없어요", "해당없음"
+        }:
+            states[source_key] = "negative"
+    return states
+
+
+def _response_question_ids(response: str) -> list[str]:
+    return re.findall(r"question\.[A-Za-z0-9_.-]+", response or "")
+
+
+def _response_has_unsupported_question_id(
+    response: str,
+    allowed_question_ids: list[str],
+) -> bool:
+    ids = _response_question_ids(response)
+    if not ids:
+        return False
+    allowed = {_question_id_key(item) for item in allowed_question_ids}
+    return any(_question_id_key(item) not in allowed for item in ids)
+
+
+def _ensure_question_provenance(response: str, question_id: str) -> str:
+    """Make the host-selected source id visible even when the model omits it."""
+    if _response_question_ids(response):
+        return response
+    return (
+        response.rstrip()
+        + f"\n\n출처: [공동 작업 지식] {question_id} · [AI 표현] 문장"
+    )
+
+
 def _adapt_chatbot_channel_notice(response: str) -> str:
     """Remove ChatGPT-product notices that do not apply to the CIAI channel."""
     paragraphs = response.split("\n\n")
@@ -590,7 +788,16 @@ def _adapt_chatbot_channel_notice(response: str) -> str:
                 replaced = True
             continue
         adapted.append(paragraph)
-    return "\n\n".join(adapted).strip()
+    result = "\n\n".join(adapted).strip()
+    # The compact prompt formerly showed the binary answer example using
+    # inline-code notation.  Some local models copied those backticks into the
+    # patient-visible answer list.  Keep source identifiers and other Markdown
+    # untouched while normalizing only these known option lines.
+    return re.sub(
+        r"(?m)^`(응답|\d{1,2}\s+(?:예|아니오|잘 모르겠음|답변하지 않음))`$",
+        r"\1",
+        result,
+    )
 
 
 def _resolve_last_numbered_answer(

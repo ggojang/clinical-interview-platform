@@ -87,11 +87,12 @@ CIAI adaptive Runtime defaults to the semantically equivalent, channel-specific
 reprocess the 61 KB editor and ChatGPT operating instructions on every turn.
 Set `CLINICAL_LLM_CHATBOT_INSTRUCTION_PROFILE=verbatim_gpt_editor` only for
 explicit regression comparison. The CIAI demo defaults to
-`compiled_candidate_window`: the host removes already displayed Questions and
-builds a small candidate window from compiled priority and core symptom axes;
-the LLM still decides semantic coverage, branch applicability, safety
-interruption, the final next Question, and patient-facing wording. The final
-call receives exact repository objects plus every safety Rule. The regression
+`compiled_candidate_window`: the host removes already displayed Questions,
+applies explicit branch answers, and selects one exact source Question from
+compiled priority and core symptom axes. The LLM adapts only the patient-facing
+wording and must return that exact Question id; an invented id is rejected and
+retried once instead of becoming session state. The final call receives that
+one exact repository Question and Fact plus every safety Rule. The regression
 strategy `action_two_stage_exact_objects` asks the LLM to retrieve ids first
 and keeps retrieval and generation in separate llama.cpp KV-cache slots. The
 optional `inline_linked_index` strategy performs one call
@@ -101,10 +102,12 @@ reliable first-question selection in Qwen3-27B testing.
 Both strategies use the full in-memory conversation as a semantic coverage
 ledger. The opening symptom remains part of the conversation, so already
 stated site, laterality and symptom meaning are not discarded before Q1. The
-API parses visible Q references only for UI and draft FHIR history; it does not
-replace the model's question with a deterministic planner. CIAI channel
-adaptation suppresses ChatGPT plan and upload-limit notices that do not apply
-to the local demo.
+API parses visible Q references for UI and draft FHIR history and keeps the
+host-selected source id as the stable coverage key. This bounded contract is
+required because the local model previously invented Question ids and could
+repeat one unsupported question indefinitely. CIAI channel adaptation also
+suppresses ChatGPT plan and upload-limit notices and stray answer-list
+backticks that do not apply to the local demo.
 
 There is no legacy deterministic question-selection fallback. If the selected
 LLM or required Knowledge payload is unavailable, the API returns a temporary

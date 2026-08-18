@@ -11,6 +11,8 @@ from services.interview_api.llm import (
     LlmProvider,
     LlmSelection,
     _adapt_chatbot_channel_notice,
+    _question_answer_states,
+    _question_id_key,
     _resolve_last_numbered_answer,
 )
 
@@ -29,6 +31,16 @@ class ChatbotConversationRuntimeTest(unittest.TestCase):
         self.assertNotIn("ChatGPT", adapted)
         self.assertIn("CIAI 데모", adapted)
         self.assertIn("Q1. 언제 시작했나요?", adapted)
+
+    def test_ciai_channel_removes_literal_backticks_from_binary_answer_lines(self):
+        adapted = _adapt_chatbot_channel_notice(
+            "Q1. 숨이 차나요?\n\n`응답`\n\n`1 예`\n\n`2 아니오`\n\n"
+            "`3 잘 모르겠음`\n\n`4 답변하지 않음`"
+        )
+        self.assertNotIn("`응답`", adapted)
+        self.assertNotIn("`1 예`", adapted)
+        self.assertIn("\n응답\n", adapted)
+        self.assertIn("\n1 예\n", adapted)
 
     def test_retrieval_index_links_facts_and_priority_without_duplicate_catalogs(self):
         runtime = LlmChatbotInterviewRuntime(enabled=False, repository_root=ROOT)
@@ -284,6 +296,120 @@ class ChatbotConversationRuntimeTest(unittest.TestCase):
         )
         manifest = captured[1][1]["content"].split("<action_retrieval_manifest>", 1)[1].split("</action_retrieval_manifest>", 1)[0]
         self.assertNotIn("question.joint-limb.recent-injury", manifest)
+
+    def test_compiled_candidate_window_uses_single_exact_question(self):
+        runtime = LlmChatbotInterviewRuntime(
+            enabled=False,
+            knowledge_delivery="compiled_candidate_window",
+            repository_root=ROOT,
+        )
+        package = runtime._load_package("rfe.cough")
+        retrieval = runtime._compiled_candidate_retrieval(
+            "rfe.cough", [{"role": "user", "content": "기침"}], package
+        )
+        self.assertEqual(retrieval["question_ids"], ["question.symptom_onset"])
+        self.assertNotIn("question.cough.frequency-bouts", retrieval["question_ids"])
+
+    def test_cough_sudden_onset_positive_prioritizes_swallowing_context(self):
+        runtime = LlmChatbotInterviewRuntime(
+            enabled=False,
+            knowledge_delivery="compiled_candidate_window",
+            repository_root=ROOT,
+        )
+        package = runtime._load_package("rfe.cough")
+        conversation = [
+            {"role": "user", "content": "기침"},
+            {
+                "role": "assistant",
+                "content": (
+                    "Q1. 언제 시작했나요?\n"
+                    "출처: question.symptom_onset"
+                ),
+            },
+            {"role": "user", "content": "어제"},
+            {
+                "role": "assistant",
+                "content": (
+                    "Q2. 매우 갑자기 시작했나요?\n\n"
+                    "1 예\n2 아니오\n3 잘 모르겠음\n4 답변하지 않음\n\n"
+                    "출처: question.symptom_cough_sudden_onset"
+                ),
+            },
+            {"role": "user", "content": "1"},
+        ]
+        retrieval = runtime._compiled_candidate_retrieval(
+            "rfe.cough", conversation, package
+        )
+        self.assertEqual(
+            retrieval["question_ids"], ["question.cough.swallowing-context"]
+        )
+
+    def test_negative_cough_gate_suppresses_conditional_detail(self):
+        runtime = LlmChatbotInterviewRuntime(enabled=False, repository_root=ROOT)
+        package = runtime._load_package("rfe.cough")
+        conversation = [
+            {"role": "user", "content": "기침"},
+            {
+                "role": "assistant",
+                "content": (
+                    "Q3. 숨이 차나요?\n\n1 예\n2 아니오\n"
+                    "출처: question.symptom_dyspnea"
+                ),
+            },
+            {"role": "user", "content": "2"},
+        ]
+        states = _question_answer_states(conversation, package)
+        self.assertEqual(
+            states[_question_id_key("question.symptom_dyspnea")], "negative"
+        )
+        retrieval = runtime._compiled_candidate_retrieval(
+            "rfe.cough", conversation, package
+        )
+        self.assertNotEqual(
+            retrieval["question_ids"], ["question.cough.dyspnea-detail"]
+        )
+
+    def test_invalid_generated_question_id_is_retried_and_canonicalized(self):
+        responses = iter([
+            (
+                "Q1. 웃다가 기침이 시작됐나요?\n\n1 예\n2 아니오\n\n"
+                "출처: [공동 작업 지식] question.cough.invented-trigger"
+            ),
+            (
+                "Q1. 기침은 언제 처음 시작되었나요?\n\n"
+                "시작 시점을 입력해 주세요.\n\n"
+                "출처: [공동 작업 지식] question.symptom_onset · [AI 표현] 문장"
+            ),
+        ])
+        captured = []
+
+        def generation_transport(_provider, messages, _timeout):
+            captured.append(messages)
+            return next(responses)
+
+        runtime = LlmChatbotInterviewRuntime(
+            transport=generation_transport,
+            retrieval_transport=lambda *_args: self.fail("retrieval LLM must not run"),
+            knowledge_delivery="compiled_candidate_window",
+            repository_root=ROOT,
+        )
+        provider = LlmProvider(
+            provider_id="local_vllm", display_name="Local",
+            adapter="openai_compatible_chat", base_url="http://127.0.0.1:8000/v1",
+            model="qwen3-27b", external_processing=False,
+        )
+        selection = LlmSelection(
+            provider=provider, selected_by="platform_default",
+            external_processing_consent=False, allowed_provider_ids=("local_vllm",),
+            participant_may_choose=False,
+        )
+        response = runtime.respond(
+            "rfe.cough", [{"role": "user", "content": "기침"}], selection
+        )
+        self.assertEqual(len(captured), 2)
+        self.assertIn("question.symptom_onset", response)
+        self.assertNotIn("invented-trigger", response)
+        self.assertIn("outside the Action retrieval manifest", captured[1][-1]["content"])
 
     def test_inline_delivery_uses_one_generation_call_and_linked_index(self):
         captured = []

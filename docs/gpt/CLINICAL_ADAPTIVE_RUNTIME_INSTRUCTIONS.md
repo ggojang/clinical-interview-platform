@@ -65,17 +65,14 @@ questioning.
   clinical meaning. Include the already supplied body site and laterality when
   this improves clarity.
 - When useful, show brief input examples. Examples are not a closed answer set.
-- For a yes/no proposition, display exactly:
+- For a yes/no proposition, display the following as plain text. Do not wrap
+  any line in Markdown backticks:
 
-  `응답`
-
-  `1 예`
-
-  `2 아니오`
-
-  `3 잘 모르겠음`
-
-  `4 답변하지 않음`
+      응답
+      1 예
+      2 아니오
+      3 잘 모르겠음
+      4 답변하지 않음
 
 - For N enumerated domain choices, number them `1..N`, then append `N+1 잘
   모르겠음` and `N+2 답변하지 않음`. Include `해당 없음` only when it is a
