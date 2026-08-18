@@ -37,9 +37,18 @@ MAX_PLANNER_CANDIDATES = 24
 MAX_ANSWER_INTERPRETATION_CHARACTERS = 8_000
 MAX_ANSWER_FACT_UPDATES = 12
 MAX_CHATBOT_TURN_CHARACTERS = 20_000
-MAX_CHATBOT_RETRIEVAL_QUESTIONS = 8
-MAX_CHATBOT_RETRIEVAL_FACTS = 20
-MAX_CHATBOT_RETRIEVAL_PRIORITY_RULES = 12
+MAX_CHATBOT_RETRIEVAL_QUESTIONS = 4
+MAX_CHATBOT_RETRIEVAL_FACTS = 12
+MAX_CHATBOT_RETRIEVAL_PRIORITY_RULES = 8
+CHATBOT_KNOWLEDGE_DELIVERY_STRATEGIES = {
+    "inline_linked_index",
+    "action_two_stage_exact_objects",
+    "compiled_candidate_window",
+}
+CHATBOT_INSTRUCTION_PROFILES = {
+    "verbatim_gpt_editor",
+    "compiled_clinical_adaptive",
+}
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -61,7 +70,7 @@ class LlmChatbotRuntimeError(RuntimeError):
 
 
 class LlmChatbotInterviewRuntime:
-    """Run the adaptive interview with the Custom GPT contract verbatim.
+    """Run the adaptive interview with the Custom GPT clinical contract.
 
     The first LLM call is an Action-style read-only retrieval step: it receives
     a small package index and returns only source object ids.  The second call
@@ -77,16 +86,34 @@ class LlmChatbotInterviewRuntime:
         timeout_seconds: float = 90.0,
         transport: CompletionTransport | None = None,
         retrieval_transport: CompletionTransport | None = None,
+        knowledge_delivery: str | None = None,
+        instruction_profile: str | None = None,
         repository_root: Path = REPOSITORY_ROOT,
     ) -> None:
         self.enabled = enabled
         self.timeout_seconds = timeout_seconds
         self._transport = transport or _chatbot_completion
         self._retrieval_transport = retrieval_transport or _chatbot_retrieval_completion
+        self.knowledge_delivery = knowledge_delivery or os.getenv(
+            "CLINICAL_LLM_CHATBOT_KNOWLEDGE_DELIVERY",
+            "compiled_candidate_window",
+        )
+        if self.knowledge_delivery not in CHATBOT_KNOWLEDGE_DELIVERY_STRATEGIES:
+            raise LlmConfigurationError("unsupported chatbot Knowledge delivery strategy")
+        self.instruction_profile = instruction_profile or os.getenv(
+            "CLINICAL_LLM_CHATBOT_INSTRUCTION_PROFILE",
+            "compiled_clinical_adaptive",
+        )
+        if self.instruction_profile not in CHATBOT_INSTRUCTION_PROFILES:
+            raise LlmConfigurationError("unsupported chatbot instruction profile")
         self.repository_root = repository_root
-        self.instructions = (
+        instruction_path = (
             repository_root / "docs/gpt/GPT_INSTRUCTIONS.md"
-        ).read_text(encoding="utf-8")
+            if self.instruction_profile == "verbatim_gpt_editor"
+            else repository_root / "docs/gpt/CLINICAL_ADAPTIVE_RUNTIME_INSTRUCTIONS.md"
+        )
+        self.instructions_source = str(instruction_path.relative_to(repository_root))
+        self.instructions = instruction_path.read_text(encoding="utf-8")
         self._package_cache: dict[str, dict[str, Any]] = {}
 
     @classmethod
@@ -108,17 +135,34 @@ class LlmChatbotInterviewRuntime:
             raise LlmChatbotRuntimeError("chatbot interview runtime is disabled")
         try:
             package = self._load_package(reason_for_encounter)
-            retrieval = self._retrieve_source_objects(
-                reason_for_encounter,
-                conversation,
-                selection,
-                package,
-            )
-            knowledge = self._selected_knowledge_context(
-                reason_for_encounter,
-                package,
-                retrieval,
-            )
+            if self.knowledge_delivery == "action_two_stage_exact_objects":
+                retrieval = self._retrieve_source_objects(
+                    reason_for_encounter,
+                    conversation,
+                    selection,
+                    package,
+                )
+                knowledge = self._selected_knowledge_context(
+                    reason_for_encounter,
+                    package,
+                    retrieval,
+                )
+            elif self.knowledge_delivery == "compiled_candidate_window":
+                retrieval = self._compiled_candidate_retrieval(
+                    reason_for_encounter,
+                    conversation,
+                    package,
+                )
+                knowledge = self._selected_knowledge_context(
+                    reason_for_encounter,
+                    package,
+                    retrieval,
+                )
+            else:
+                knowledge = self._inline_knowledge_context(
+                    reason_for_encounter,
+                    package,
+                )
             messages = [
                 {"role": "system", "content": self.instructions},
                 {"role": "system", "content": knowledge},
@@ -136,7 +180,7 @@ class LlmChatbotInterviewRuntime:
         response = response.strip()
         if not response or len(response) > MAX_CHATBOT_TURN_CHARACTERS:
             raise LlmChatbotRuntimeError("chatbot interview LLM returned invalid output")
-        return response
+        return _adapt_chatbot_channel_notice(response)
 
     def _load_package(self, reason_for_encounter: str) -> dict[str, Any]:
         cached = self._package_cache.get(reason_for_encounter)
@@ -200,8 +244,8 @@ class LlmChatbotInterviewRuntime:
             "false Fact does not justify asking its other Facts. Prefer applicable, "
             "unresolved safety and branch-gating Questions before routine characterization. For localized "
             "joint or limb pain without an injury answer, the recent-injury Question "
-            "must be considered because it gates trauma Rules. Select 1-8 Questions, "
-            "their Facts (up to 20), and up to 12 directly relevant priority Rules."
+            "must be considered because it gates trauma Rules. Select 1-4 Questions, "
+            "their Facts (up to 12), and up to 8 directly relevant priority Rules."
         )
         request = {
             "reason_for_encounter": reason_for_encounter,
@@ -277,6 +321,84 @@ class LlmChatbotInterviewRuntime:
             raise ValueError("selected Question dependencies exceed the Fact limit")
         return result
 
+    def _compiled_candidate_retrieval(
+        self,
+        reason_for_encounter: str,
+        conversation: list[dict[str, str]],
+        package: dict[str, Any],
+    ) -> dict[str, list[str]]:
+        """Build a small exact-object window without a second model call.
+
+        The host does not choose the patient-facing question. It only removes
+        Questions already shown and ranks exact repository objects by their
+        compiled priority and core symptom dimensions. The generation LLM
+        remains responsible for semantic coverage, branch applicability,
+        safety interruption, final question selection, and wording.
+        """
+        assistant_text = "\n".join(
+            item.get("content", "")
+            for item in conversation
+            if item.get("role") == "assistant"
+        )
+        asked_ids = set(re.findall(r"question\.[A-Za-z0-9_.-]+", assistant_text))
+        questions = package["objects"]["selected_questions"]
+        index_by_id = {
+            item["id"]: item for item in package["index"].get("questions", [])
+        }
+        core_terms = (
+            "recent-injury", "sudden-onset", "onset", "location", "site",
+            "severity", "duration", "frequency", "character", "impact",
+            "current", "primary-context", "primary-group",
+        )
+
+        def already_shown(question_id: str, question: dict[str, Any]) -> bool:
+            if question_id in asked_ids:
+                return True
+            wording = question.get("wording")
+            return isinstance(wording, str) and len(wording) >= 12 and wording in assistant_text
+
+        def score(question_id: str) -> tuple[int, str]:
+            indexed = index_by_id.get(question_id, {})
+            priority = indexed.get("priority")
+            numeric_priority = priority if isinstance(priority, int) else 0
+            core_bonus = 400 if any(term in question_id for term in core_terms) else 0
+            trauma_bonus = (
+                1_000
+                if reason_for_encounter == "rfe.joint_limb_complaint"
+                and question_id.endswith(".recent-injury")
+                and not assistant_text
+                else 0
+            )
+            return numeric_priority + core_bonus + trauma_bonus, question_id
+
+        available = [
+            question_id for question_id, question in questions.items()
+            if not already_shown(question_id, question)
+            and not question_id.endswith((".primary-group", ".primary-context"))
+        ]
+        ranked = sorted(available, key=score, reverse=True)
+        selected_question_ids = ranked[:5]
+        if not selected_question_ids:
+            raise ValueError("no unresolved source Question remains")
+
+        fact_ids: list[str] = []
+        priority_rule_ids: list[str] = []
+        fact_objects = package["objects"]["selected_facts"]
+        priority_objects = package["objects"]["selected_priority"]
+        for question_id in selected_question_ids:
+            question = questions[question_id]
+            fact_id = question.get("collects") or question.get("fact_id")
+            if isinstance(fact_id, str) and fact_id in fact_objects and fact_id not in fact_ids:
+                fact_ids.append(fact_id)
+            for rule_id in index_by_id.get(question_id, {}).get("priority_rule_ids", []):
+                if rule_id in priority_objects and rule_id not in priority_rule_ids:
+                    priority_rule_ids.append(rule_id)
+        return {
+            "question_ids": selected_question_ids,
+            "fact_ids": fact_ids[:MAX_CHATBOT_RETRIEVAL_FACTS],
+            "priority_rule_ids": priority_rule_ids[:MAX_CHATBOT_RETRIEVAL_PRIORITY_RULES],
+        }
+
     def _selected_knowledge_context(
         self,
         reason_for_encounter: str,
@@ -318,12 +440,68 @@ class LlmChatbotInterviewRuntime:
                     "GPT-style interview turn. The package retriever supplied eligible "
                     "source objects but did not answer the patient or choose final wording."
                 ),
+                (
+                    "CIAI channel adaptation: this conversation runs in Clinical "
+                    "Interactive AI Platform using its configured LLM, not in ChatGPT. "
+                    "Never mention ChatGPT plans, GPT usage limits, or ChatGPT file/image "
+                    "upload limits. If a first-turn test notice is needed, state only "
+                    "that the CIAI demo uses the configured local LLM and in-memory "
+                    "response state is purged when the session closes or expires."
+                ),
                 "<action_retrieval_manifest>",
                 json.dumps(retrieval, ensure_ascii=False, separators=(",", ":")),
                 "</action_retrieval_manifest>",
                 "<exact_repository_source_objects>",
                 json.dumps(selected_documents, ensure_ascii=False, separators=(",", ":")),
                 "</exact_repository_source_objects>",
+            ]
+        )
+
+    def _inline_knowledge_context(
+        self,
+        reason_for_encounter: str,
+        package: dict[str, Any],
+    ) -> str:
+        documents = {
+            "draft_clinical_use_policy": package["documents"]["draft_clinical_use_policy"],
+            "selected_rules": list(package["objects"]["selected_rules"].values()),
+            "linked_package_index": package["index"],
+        }
+        return "\n".join(
+            [
+                "Fast inline Knowledge delivery is active for this CIAI turn.",
+                f"Selected Reason for Encounter: {reason_for_encounter}",
+                "Selected interaction purpose: clinical_adaptive",
+                (
+                    "The linked package index preserves every Question id and exact "
+                    "wording, its collected Fact id and answer constraints, and linked "
+                    "priority Rule ids. Every safety Rule is included as an exact "
+                    "repository object. Use this index as the read-only Action result "
+                    "and generate exactly one next Custom GPT-style interview turn."
+                ),
+                (
+                    "Authoritative runtime state: interaction_purpose and Reason for "
+                    "Encounter are already resolved. The first user turn is the "
+                    "substantive Reason for Encounter. Do not ask the core-purpose or "
+                    "open Reason-for-Encounter question again. Use the full conversation "
+                    "as the semantic coverage ledger, resolve numbered answers against "
+                    "the preceding choices, and do not repeat answered Facts or ask a "
+                    "branch whose prerequisite was answered false or absent. For "
+                    "localized joint or limb pain without an injury answer, consider "
+                    "the recent-injury Question before routine characterization because "
+                    "it gates trauma safety branches."
+                ),
+                (
+                    "CIAI channel adaptation: this conversation runs in Clinical "
+                    "Interactive AI Platform using its configured LLM, not in ChatGPT. "
+                    "Never mention ChatGPT plans, GPT usage limits, or ChatGPT file/image "
+                    "upload limits. If a first-turn test notice is needed, state only "
+                    "that the CIAI demo uses the configured local LLM and in-memory "
+                    "response state is purged when the session closes or expires."
+                ),
+                "<inline_linked_repository_knowledge>",
+                json.dumps(documents, ensure_ascii=False, separators=(",", ":")),
+                "</inline_linked_repository_knowledge>",
             ]
         )
 
@@ -344,34 +522,43 @@ def _items_by_id(document: dict[str, Any], label: str) -> dict[str, dict[str, An
 
 def _chatbot_package_index(package: dict[str, Any]) -> dict[str, Any]:
     objects = package["objects"]
+    facts = objects["selected_facts"]
+    priority_by_reason: dict[str, list[dict[str, Any]]] = {}
+    for rule in objects["selected_priority"].values():
+        then = rule.get("then", {})
+        reason = then.get("reason") if isinstance(then, dict) else None
+        if isinstance(reason, str):
+            priority_by_reason.setdefault(reason, []).append(rule)
+
+    questions = []
+    for item in objects["selected_questions"].values():
+        fact_id = item.get("collects") or item.get("fact_id")
+        fact = facts.get(fact_id, {}) if isinstance(fact_id, str) else {}
+        reason = item["id"].rsplit(".", 1)[-1]
+        linked_priority = priority_by_reason.get(reason, [])
+        question = {
+            "id": item["id"],
+            "fact_id": fact_id,
+            "wording": item.get("wording"),
+            "value_type": fact.get("value_type"),
+            "safety_relevant": bool(fact.get("safety_relevant")),
+            "priority_rule_ids": [rule["id"] for rule in linked_priority],
+            "priority": max(
+                (rule.get("priority", 0) for rule in linked_priority),
+                default=0,
+            ),
+            "allowed_values": fact.get("allowed_values"),
+            "minimum": fact.get("minimum"),
+            "maximum": fact.get("maximum"),
+            "scale": fact.get("scale"),
+        }
+        questions.append({
+            key: value
+            for key, value in question.items()
+            if value not in (None, "", [], False, 0)
+        })
     return {
-        "questions": [
-            {
-                key: item[key]
-                for key in ("id", "collects", "fact_id", "wording")
-                if key in item
-            }
-            for item in objects["selected_questions"].values()
-        ],
-        "facts": [
-            {
-                key: item[key]
-                for key in (
-                    "id", "display", "display_ko", "description", "value_type",
-                    "safety_relevant",
-                )
-                if key in item and item[key] not in (None, "", [])
-            }
-            for item in objects["selected_facts"].values()
-        ],
-        "priority_rules": [
-            {
-                key: item[key]
-                for key in ("id", "priority", "when", "then")
-                if key in item
-            }
-            for item in objects["selected_priority"].values()
-        ],
+        "questions": questions,
         "safety_rule_index": [
             {
                 "id": item["id"],
@@ -381,6 +568,29 @@ def _chatbot_package_index(package: dict[str, Any]) -> dict[str, Any]:
             for item in objects["selected_rules"].values()
         ],
     }
+
+
+def _adapt_chatbot_channel_notice(response: str) -> str:
+    """Remove ChatGPT-product notices that do not apply to the CIAI channel."""
+    paragraphs = response.split("\n\n")
+    adapted: list[str] = []
+    replaced = False
+    for paragraph in paragraphs:
+        normalized = paragraph.casefold()
+        is_chatgpt_plan_notice = "chatgpt" in normalized and any(
+            marker in paragraph
+            for marker in ("무료 플랜", "사용량", "파일·이미지 업로드", "초기화 시점")
+        )
+        if is_chatgpt_plan_notice:
+            if not replaced:
+                adapted.append(
+                    "테스트 안내: CIAI 데모는 설정된 로컬 LLM을 사용하며 "
+                    "응답 상태는 세션 종료 또는 만료 시 폐기됩니다."
+                )
+                replaced = True
+            continue
+        adapted.append(paragraph)
+    return "\n\n".join(adapted).strip()
 
 
 def _resolve_last_numbered_answer(
@@ -542,7 +752,7 @@ class LlmProviderRegistry:
             "runtime_role": "custom_gpt_conversation_or_health_information",
             "presentation_enabled": presentation_enabled,
             "clinical_interpretation": "allowlisted_rfe_catalog_only",
-            "adaptive_interview": "verbatim_gpt_instructions_selected_knowledge_and_full_conversation",
+            "adaptive_interview": "compiled_runtime_instructions_exact_knowledge_and_full_conversation",
             "legacy_deterministic_question_fallback": False,
             "providers": [
                 provider.public_document(
@@ -1279,6 +1489,10 @@ def _chatbot_completion(
         timeout_seconds,
         max_tokens=int(os.getenv("CLINICAL_LLM_CHATBOT_MAX_TOKENS", "1800")),
         temperature=float(os.getenv("CLINICAL_LLM_CHATBOT_TEMPERATURE", "0.15")),
+        id_slot=(
+            int(os.getenv("CLINICAL_LLM_CHATBOT_GENERATION_SLOT", "2"))
+            if not provider.external_processing else None
+        ),
     )
 
 
@@ -1293,6 +1507,10 @@ def _chatbot_retrieval_completion(
         timeout_seconds,
         max_tokens=int(os.getenv("CLINICAL_LLM_CHATBOT_RETRIEVAL_MAX_TOKENS", "700")),
         temperature=0.0,
+        id_slot=(
+            int(os.getenv("CLINICAL_LLM_CHATBOT_RETRIEVAL_SLOT", "3"))
+            if not provider.external_processing else None
+        ),
     )
 
 
@@ -1303,6 +1521,7 @@ def _openai_compatible_chat_completion(
     *,
     max_tokens: int,
     temperature: float,
+    id_slot: int | None = None,
 ) -> str:
     payload_document: dict[str, Any] = {
         "model": provider.model,
@@ -1311,6 +1530,11 @@ def _openai_compatible_chat_completion(
         "max_tokens": max_tokens,
         "stream": False,
     }
+    if id_slot is not None:
+        if id_slot < 0:
+            raise ValueError("llama.cpp slot id must be non-negative")
+        payload_document["cache_prompt"] = True
+        payload_document["id_slot"] = id_slot
     # Qwen3 may spend the entire bounded token budget in reasoning_content and
     # return an empty patient-visible content field.  Its OpenAI-compatible
     # chat template supports an explicit non-thinking mode for this concise UI

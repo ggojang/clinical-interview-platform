@@ -81,20 +81,30 @@ The existing `vllm-api-key` Podman secret is injected into the API container as
 `CLINICAL_LLM_LOCAL_API_KEY`. The value is never copied to Git or returned by
 the API.
 
-The adaptive interview uses two model calls per turn. A read-only retrieval
-call receives the selected RFE package index and the full in-memory
-conversation, then returns only Question, Fact, and priority Rule ids. The
-patient-facing generation call receives `docs/gpt/GPT_INSTRUCTIONS.md`
-verbatim, the exact repository objects for those ids, every safety Rule in the
-package, and the full conversation. This preserves the 61 KB instruction
-contract without putting every full package object into the local model's
-context at once. It is the Action-style conversation-native orchestration used
-by the Custom GPT test: the model maintains semantic coverage and chooses one
-next question with its answer shortcuts. The opening symptom remains part of
-the conversation, so already stated site, laterality and symptom meaning are
-not discarded before Q1. The API parses visible Q references only for UI and
-draft FHIR history; it does not replace the model's question with a
-deterministic planner.
+The GPT editor continues to use `docs/gpt/GPT_INSTRUCTIONS.md` verbatim. The
+CIAI adaptive Runtime defaults to the semantically equivalent, channel-specific
+`docs/gpt/CLINICAL_ADAPTIVE_RUNTIME_INSTRUCTIONS.md` profile so it does not
+reprocess the 61 KB editor and ChatGPT operating instructions on every turn.
+Set `CLINICAL_LLM_CHATBOT_INSTRUCTION_PROFILE=verbatim_gpt_editor` only for
+explicit regression comparison. The CIAI demo defaults to
+`compiled_candidate_window`: the host removes already displayed Questions and
+builds a small candidate window from compiled priority and core symptom axes;
+the LLM still decides semantic coverage, branch applicability, safety
+interruption, the final next Question, and patient-facing wording. The final
+call receives exact repository objects plus every safety Rule. The regression
+strategy `action_two_stage_exact_objects` asks the LLM to retrieve ids first
+and keeps retrieval and generation in separate llama.cpp KV-cache slots. The
+optional `inline_linked_index` strategy performs one call
+but remains non-default because its broader candidate context produced less
+reliable first-question selection in Qwen3-27B testing.
+
+Both strategies use the full in-memory conversation as a semantic coverage
+ledger. The opening symptom remains part of the conversation, so already
+stated site, laterality and symptom meaning are not discarded before Q1. The
+API parses visible Q references only for UI and draft FHIR history; it does not
+replace the model's question with a deterministic planner. CIAI channel
+adaptation suppresses ChatGPT plan and upload-limit notices that do not apply
+to the local demo.
 
 There is no legacy deterministic question-selection fallback. If the selected
 LLM or required Knowledge payload is unavailable, the API returns a temporary

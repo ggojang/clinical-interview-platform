@@ -27,6 +27,7 @@ const state = {
   questionnaire: null,
   questionnaireSource: "",
   questionnaireResponse: null,
+  artifactsFinalized: false,
   handoff: {},
   providers: [],
   sessionId: null,
@@ -255,36 +256,38 @@ function blankResponse(questionnaire, status = "in-progress") {
   return response;
 }
 
-function setArtifacts(questionnaire, response, source, handoff = {}) {
+function setArtifacts(questionnaire, response, source, handoff = {}, finalized = false) {
   state.questionnaire = questionnaire ? clone(questionnaire) : null;
   state.questionnaireResponse = response ? clone(response) : null;
   state.questionnaireSource = typeof source === "string" ? source : pretty(source || {});
   state.handoff = clone(handoff || {});
+  state.artifactsFinalized = finalized;
   updateOutputs();
 }
 
 function refreshOutputData() {
-  $("#sourceCode").textContent = state.questionnaireSource || "입력 소스가 여기에 표시됩니다.";
-  $("#questionnaireCode").textContent = pretty(state.questionnaire || {});
-  $("#responseCode").textContent = pretty(state.questionnaireResponse || {});
+  const finalized = state.artifactsFinalized;
+  $("#sourceCode").textContent = finalized ? (state.questionnaireSource || "입력 소스가 없습니다.") : "설문 최종 완료 후 생성됩니다.";
+  $("#questionnaireCode").textContent = finalized ? pretty(state.questionnaire || {}) : "설문 최종 완료 후 생성됩니다.";
+  $("#responseCode").textContent = finalized ? pretty(state.questionnaireResponse || {}) : "설문 최종 완료 후 생성됩니다.";
   $("#extractionCode").textContent = pretty(SDC_STATUS);
   $("#handoffCode").textContent = pretty(state.handoff || {});
-  const hasQ = Boolean(state.questionnaire);
-  const hasQr = Boolean(state.questionnaireResponse);
-  $("#qState").textContent = hasQ ? `${answerBearingItems(state.questionnaire).length}개 문항` : "입력 대기";
-  $("#qrState").textContent = hasQr ? state.questionnaireResponse.status : "입력 대기";
+  const hasQ = finalized && Boolean(state.questionnaire);
+  const hasQr = finalized && Boolean(state.questionnaireResponse);
+  $("#qState").textContent = hasQ ? `${answerBearingItems(state.questionnaire).length}개 문항` : "완료 후 생성";
+  $("#qrState").textContent = hasQr ? state.questionnaireResponse.status : "완료 후 생성";
   const showHandoff = state.mode === "adaptive"
     && state.adaptivePurpose === "clinical_adaptive"
     && Boolean(Object.keys(state.handoff || {}).length);
   $("#handoffTab").hidden = !showHandoff;
-  $("#outputStatus").textContent = state.questionnaireResponse?.status === "completed" ? "완료" : (hasQ ? "Draft" : "대기");
+  $("#outputStatus").textContent = finalized && state.questionnaireResponse?.status === "completed" ? "완료" : "완료 대기";
   $("#downloadR4").disabled = !hasQ;
   $("#downloadR5").disabled = !hasQ;
 }
 
 function updateOutputs() {
   refreshOutputData();
-  renderPreview(state.questionnaire);
+  renderPreview(state.artifactsFinalized ? state.questionnaire : null);
   renderResponseEntry(state.questionnaire);
   syncRunnerVisibility();
 }
@@ -881,7 +884,7 @@ async function loadQuestionnaireValueSets(questionnaire) {
     }
   }));
   renderResponseEntry(questionnaire);
-  renderPreview(questionnaire);
+  renderPreview(state.artifactsFinalized ? questionnaire : null);
 }
 
 function parseStructured() {
@@ -903,7 +906,6 @@ function parseStructured() {
     const activeCount = activeAnswerBearingItems(questionnaire).length;
     $("#questionnaireMeta").textContent = `${inferVersion(questionnaire)} · 전체 ${count}개 / 현재 ${activeCount}개 문항 · ${canonical(questionnaire) || "canonical 없음"}`;
     syncRunnerVisibility();
-    selectOutput("source");
     loadQuestionnaireValueSets(questionnaire);
     showToast("구조 검증을 마쳤습니다. 가운데에서 조건에 맞는 문항에 답변하세요.");
   } catch (error) {
@@ -918,6 +920,7 @@ function completeStructuredResponse() {
     return showToast(`필수 문항 ${missing.length}개에 답변이 필요합니다: ${missing.slice(0, 2).map((item) => item.text || item.linkId).join(", ")}`);
   }
   state.questionnaireResponse.status = "completed";
+  state.artifactsFinalized = true;
   state.handoff = {
     status: "structured_response_completed",
     answered_items: state.structuredAnswers.size,
@@ -1005,6 +1008,7 @@ function editFixedAnswer(index) {
   state.fixedEditingLinkId = responseItem.linkId;
   state.fixedComplete = false;
   state.questionnaireResponse.status = "in-progress";
+  state.artifactsFinalized = false;
   rebuildFixedConversationLog();
   renderFixedRevisionList();
   updateOutputs();
@@ -1073,6 +1077,7 @@ function askFixedQuestion() {
   if (state.fixedIndex >= count) {
     state.fixedComplete = true;
     if (state.questionnaireResponse) state.questionnaireResponse.status = "completed";
+    state.artifactsFinalized = true;
     state.handoff = {
       status: "fixed_conversation_completed",
       answered_items: state.fixedAnswers.length,
@@ -1196,7 +1201,6 @@ async function loadPatientExperience() {
     validateQuestionnaire(questionnaire);
     state.sourceVersion = "r4";
     startFixed(questionnaire, questionnaire.title || "환자경험평가", pretty(questionnaire));
-    selectOutput("questionnaire");
   } catch (error) { showToast(error.message); }
 }
 
@@ -1407,7 +1411,7 @@ async function renderAdaptiveSuggestions(question) {
   paintAdaptiveSuggestions(question, []);
 }
 
-function rebuildAdaptiveArtifacts(sourceDocument) {
+function rebuildAdaptiveArtifacts(sourceDocument, finalized = false) {
   const asked = [...state.adaptiveHistory.map((entry) => entry.question)];
   if (state.currentAdaptiveQuestion) asked.push(state.currentAdaptiveQuestion);
   const questionnaire = {
@@ -1426,14 +1430,14 @@ function rebuildAdaptiveArtifacts(sourceDocument) {
         ? clone(question.answerOption) : undefined
     }))
   };
-  const response = blankResponse(questionnaire);
+  const response = blankResponse(questionnaire, finalized ? "completed" : "in-progress");
   response.item = state.adaptiveHistory.map((entry, index) => ({
     linkId: safeLinkId(entry.question.linkId, index),
     text: entry.question.text,
     answer: [clone(entry.fhirAnswer || { valueString: entry.answer })]
   }));
   const source = { purpose: state.adaptivePurpose, conversation: state.adaptiveHistory, current_question: state.currentAdaptiveQuestion, backend_state: sourceDocument?.state || null };
-  setArtifacts(questionnaire, response, pretty(source), state.handoff);
+  setArtifacts(questionnaire, response, pretty(source), state.handoff, finalized);
 }
 
 function healthInformationState(document) {
@@ -1466,10 +1470,9 @@ function showHealthInformationReply(document) {
     response_storage: "browser_memory_only"
   };
   $("#adaptiveProgress").textContent = `${state.healthInformationHistory.length}개 상담`;
-  rebuildHealthInformationArtifacts(document);
 }
 
-function rebuildHealthInformationArtifacts(sourceDocument) {
+function rebuildHealthInformationArtifacts(sourceDocument, finalized = false) {
   const questionnaire = {
     resourceType: "Questionnaire",
     id: "health-information-conversation-draft",
@@ -1484,7 +1487,7 @@ function rebuildHealthInformationArtifacts(sourceDocument) {
       type: "text"
     }))
   };
-  const response = blankResponse(questionnaire);
+  const response = blankResponse(questionnaire, finalized ? "completed" : "in-progress");
   response.item = state.healthInformationHistory.map((entry, index) => ({
     linkId: `health-question-${index + 1}`,
     text: "건강상담에서 궁금한 내용",
@@ -1498,7 +1501,8 @@ function rebuildHealthInformationArtifacts(sourceDocument) {
       conversation: state.healthInformationHistory,
       backend_state: sourceDocument?.state || null
     }),
-    state.handoff
+    state.handoff,
+    finalized
   );
 }
 
@@ -1565,6 +1569,7 @@ async function resetAdaptiveConversation(nextPurpose = state.adaptivePurpose) {
   state.questionnaire = null;
   state.questionnaireResponse = null;
   state.questionnaireSource = "";
+  state.artifactsFinalized = false;
   $("#adaptiveSuggestions").hidden = true;
   $("#adaptiveSuggestions").replaceChildren();
   setAdaptiveBusy(false);
@@ -1596,6 +1601,11 @@ async function startAdaptive(opening) {
   const provider = state.providers.find((item) => item.provider_id === $("#llmProvider").value);
   if (provider?.external_processing && !$("#externalConsent").checked) return showToast("외부 LLM 처리 동의가 필요합니다.");
   const modeSelection = state.adaptivePurpose === "clinical_adaptive" ? "문진 시작 (예: 기침이 나요)" : "일반 건강상담";
+  state.questionnaire = null;
+  state.questionnaireResponse = null;
+  state.questionnaireSource = "";
+  state.artifactsFinalized = false;
+  updateOutputs();
   const requestSerial = ++state.adaptiveRequestSerial;
   setAdaptiveBusy(true, state.adaptivePurpose === "clinical_adaptive" ? "Reason for Encounter와 Knowledge를 연결하고 첫 질문을 준비하고 있습니다…" : "건강상담 연결을 준비하고 있습니다…");
   try {
@@ -1628,7 +1638,6 @@ async function startAdaptive(opening) {
     } else {
       bubble($("#adaptiveChatLog"), "assistant", "현재 입력에 맞는 전용 Knowledge 패키지를 찾지 못했습니다. 다른 증상으로 임의 대체하지 않습니다.");
     }
-    if (state.adaptivePurpose !== "health_information") rebuildAdaptiveArtifacts(document);
   } catch (error) { showToast(error.message); }
   finally { if (requestSerial === state.adaptiveRequestSerial) setAdaptiveBusy(false); }
 }
@@ -1643,6 +1652,11 @@ async function sendAdaptiveAnswer() {
     return;
   }
   if (!answer || !state.sessionId) return;
+  if (answer === "종료 확인") {
+    input.value = "";
+    await completeAdaptive();
+    return;
+  }
   if (state.adaptivePurpose === "health_information") {
     bubble($("#adaptiveChatLog"), "user", answer);
     input.value = "";
@@ -1704,7 +1718,6 @@ async function sendAdaptiveAnswer() {
         : "현재 Runtime 단계가 종료 또는 확인 대기 상태입니다. 결과를 확인하거나 대화를 종료하세요.");
       $("#adaptiveProgress").textContent = `${state.adaptiveHistory.length}개 답변`;
     }
-    rebuildAdaptiveArtifacts(document);
   } catch (error) { showToast(error.message); }
   finally { if (requestSerial === state.adaptiveRequestSerial) setAdaptiveBusy(false); }
 }
@@ -1717,8 +1730,11 @@ async function completeAdaptive() {
     const completed = await api(`/v1/sessions/${state.sessionId}/complete`, { method: "POST", body: "{}" });
     state.sessionId = null;
     state.handoff = completed.result?.clinical_handoff || completed.result || {};
-    if (state.questionnaireResponse) state.questionnaireResponse.status = "completed";
-    updateOutputs();
+    if (state.adaptivePurpose === "health_information") {
+      rebuildHealthInformationArtifacts(completed, true);
+    } else {
+      rebuildAdaptiveArtifacts(completed, true);
+    }
     bubble($("#adaptiveChatLog"), "assistant", state.adaptivePurpose === "health_information"
       ? "건강상담을 종료했습니다. 제공된 내용은 일반 정보이며 진단·치료 결정을 대신하지 않습니다. 표시된 안전 안내가 있다면 우선해서 따르세요."
       : "문진이 완료되었습니다. 질문 중에는 답변에 대한 의견이나 조언을 제시하지 않았습니다. 이제 오른쪽의 draft 의료인 요약을 확인하고, 진단·치료 판단은 담당 의료진과 상의해 주세요. 위험 신호 안내가 표시되면 해당 안전 안내를 우선하세요.");

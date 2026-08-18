@@ -230,8 +230,9 @@ class InterviewApi:
                 "answer_interpretation_enabled": False,
                 "runtime_role": "custom_gpt_conversation_runtime",
                 "conversation_runtime_enabled": self.chatbot_runtime.enabled,
-                "instructions": "docs/gpt/GPT_INSTRUCTIONS.md (verbatim)",
-                "knowledge_delivery": "action_style_two_stage_exact_source_retrieval",
+                "instructions": self.chatbot_runtime.instructions_source,
+                "instruction_profile": self.chatbot_runtime.instruction_profile,
+                "knowledge_delivery": self.chatbot_runtime.knowledge_delivery,
                 "legacy_deterministic_fallback": False,
                 "health_information_enabled": self.health_information_advisor.enabled,
             },
@@ -718,7 +719,8 @@ class InterviewApi:
                     else "banttas_ai_local"
                 ),
                 "clinical_authority": False,
-                "instructions": "docs/gpt/GPT_INSTRUCTIONS.md (verbatim)",
+                "instructions": self.chatbot_runtime.instructions_source,
+                "instruction_profile": self.chatbot_runtime.instruction_profile,
                 "legacy_deterministic_fallback": False,
             }
         return {

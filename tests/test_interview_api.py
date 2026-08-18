@@ -16,6 +16,8 @@ from services.interview_api.llm import (
     LlmProviderRegistry,
     LlmQuestionPresenter,
     LlmSelectionError,
+    _chatbot_completion,
+    _chatbot_retrieval_completion,
     _is_single_question_presentation,
     _openai_compatible_completion,
 )
@@ -364,6 +366,10 @@ class InterviewApiHttpTests(unittest.TestCase):
         self.assertIn("hasRenderableQuestionnaireContent", body)
         self.assertIn("shouldSubmitOnEnter", body)
         self.assertIn("editFixedAnswer", body)
+        self.assertIn('"설문 최종 완료 후 생성됩니다."', body)
+        self.assertIn("state.artifactsFinalized = true", body)
+        self.assertIn('if (answer === "종료 확인")', body)
+        self.assertNotIn("rebuildAdaptiveArtifacts(document);", body)
         self.assertIn("refreshFixedQuestions();\n  renderFixedRevisionList();\n  syncRunnerVisibility();", body)
         self.assertIn("valueDate", body)
         self.assertNotIn("localStorage", body)
@@ -458,11 +464,10 @@ class InterviewApiRuntimeIntegrationTests(unittest.TestCase):
         def retrieval_transport(_provider, messages, _timeout):
             request = json.loads(messages[-1]["content"])
             question = request["package_index"]["questions"][0]
-            priority = request["package_index"]["priority_rules"][:1]
             return json.dumps({
                 "question_ids": [question["id"]],
-                "fact_ids": [question.get("collects") or question.get("fact_id")],
-                "priority_rule_ids": [item["id"] for item in priority],
+                "fact_ids": [question["fact_id"]],
+                "priority_rule_ids": question.get("priority_rule_ids", [])[:1],
             })
 
         return LlmChatbotInterviewRuntime(
@@ -814,6 +819,36 @@ class InterviewApiLlmPolicyTests(unittest.TestCase):
         self.assertEqual(
             payload["chat_template_kwargs"], {"enable_thinking": False}
         )
+
+    def test_local_chatbot_uses_separate_prompt_cache_slots(self):
+        captured = []
+
+        class Response:
+            status = 200
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_args):
+                return False
+
+            def read(self, _limit):
+                return json.dumps(
+                    {"choices": [{"message": {"content": "ok"}}]}
+                ).encode()
+
+        def fake_urlopen(request, timeout):
+            captured.append(json.loads(request.data.decode()))
+            return Response()
+
+        with patch("services.interview_api.llm.urlopen", side_effect=fake_urlopen):
+            _chatbot_completion(self.local, [{"role": "user", "content": "Q"}], 30)
+            _chatbot_retrieval_completion(
+                self.local, [{"role": "user", "content": "index"}], 30
+            )
+
+        self.assertEqual([item["id_slot"] for item in captured], [2, 3])
+        self.assertTrue(all(item["cache_prompt"] for item in captured))
 
 
 if __name__ == "__main__":

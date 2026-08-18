@@ -46,7 +46,7 @@ class ChatbotInterviewSession:
         assistant = assistant.strip()
         self.conversation.append({"role": "assistant", "content": assistant})
         self.latest_question = _parse_question(assistant)
-        completed = "설문이 종료되었습니다" in assistant
+        completed = text == "종료 확인" or "설문이 종료되었습니다" in assistant
         stopped = any(
             marker in assistant
             for marker in ("설문을 중단", "문진을 중단", "상태: stopped")
@@ -58,7 +58,7 @@ class ChatbotInterviewSession:
             "selected_question": deepcopy(self.latest_question),
             "interview_flow": {
                 "status": "completed" if completed else "stopped" if stopped else "in-progress",
-                "question_selection": "llm_with_verbatim_gpt_instructions",
+                "question_selection": "llm_with_exact_repository_knowledge",
                 "legacy_deterministic_fallback": False,
             },
             "turn_count": len(self.conversation),
