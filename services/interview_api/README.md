@@ -13,7 +13,7 @@
 - 서버 허용목록 기반 LLM provider 조회·선택
 - 기본 `local_vllm`, 요청자 허용범위와 참여자 선택권 분리
 - 외부 상용 LLM 선택 시 명시적 외부처리 동의 강제
-- 컴파일된 질문의 환자 친화적 표현만 LLM에 위임하고 임상 판단은 Runtime에 유지
+- 시작 문장의 RFE 해석과 현재 답변의 allowlisted Fact 추출만 LLM에 위임하고 임상 판단은 Runtime에 유지
 - `/demo`에서 세 입력 유형과 draft 산출물을 비교하는 테스트 UI 제공
 - FHIR R4/R5 Questionnaire JSON 업로드·붙여넣기와 브라우저 미리보기
 - 브라우저 locale 또는 사용자가 선택한 한국어/영어에 따른 문항·보기 표현 선택 (`translation`, terminology `designation`, 한글 rendering 표현 지원)
@@ -40,7 +40,7 @@ FHIR `Questionnaire`, `QuestionnaireResponse`, SDC Extraction은 아직 이 API�
 
 ## LLM provider 경계
 
-원격 `banttas-ai` 배포의 기본 provider는 같은 서버의 `qwen3-27b`입니다. 선택된 LLM은 현재 **이미 컴파일된 한 개의 질문을 환자에게 자연스럽게 표현하는 용도**로만 호출됩니다. 환자 답변, Fact, trace, 파일, clinician handoff는 LLM 호출에 전달하지 않습니다. 질문 선택, red flag, 질문 순서와 완료 판정은 계속 컴파일된 Knowledge·Rule Runtime이 담당합니다. Provider 장애 시 원문 질문으로 즉시 fallback합니다.
+원격 `banttas-ai` 배포의 기본 provider는 같은 서버의 `qwen3-27b`입니다. 선택된 LLM은 시작 문장을 allowlisted RFE로 해석하고, **현재 한 번의 답변**에서 명시된 여러 allowlisted Fact를 추출하는 용도로만 호출됩니다. 과거 답변 값, trace, 업로드 파일, clinician handoff는 LLM 호출에 전달하지 않습니다. 질문 표현·보기·순서·문항 예산, red flag와 완료 판정은 계속 컴파일된 Knowledge·Rule Runtime이 담당합니다. LLM이 새 Fact·진단·음성 소견·긴급도·치료를 만들 수 없으며, Provider 또는 JSON schema 실패 시 현재 답변의 결정론적 처리와 다음 질문으로 fallback합니다. 외부 상용 provider를 선택하면 현재 답변이 외부 처리되므로 명시적 동의가 필수이고, 익명 데모는 서버 내부 local provider로 제한됩니다.
 
 적응형 문항의 `selected_question`은 Runtime이 완성한 표시 계약입니다. `question_ref`는 세션 내에서 안정적인 문항번호이고, `answer_options`는 실제 Knowledge/ValueSet 의미를 가진 답변이며, `display_suggestions`는 자유입력을 돕는 비코드 단축 예시입니다. `data_absent_actions`는 임상 음성 코드가 아니라 FHIR `dataAbsentReason`으로 별도 처리됩니다. 클라이언트는 이 세 항목을 합쳐 임의의 임상 ValueSet을 만들거나 LLM에게 새 보기를 생성하게 해서는 안 됩니다.
 
