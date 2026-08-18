@@ -302,6 +302,7 @@ class InterviewApiHttpTests(unittest.TestCase):
         self.assertIn("결과 확인", body)
         self.assertIn("id=\"responseForm\"", body)
         self.assertIn("id=\"terminologyState\"", body)
+        self.assertIn("id=\"displayLocale\"", body)
         self.assertIn("국민건강검진 문진(시험용)", body)
         self.assertIn("id=\"adaptivePurposeHelp\"", body)
         self.assertIn("연계 산출물 상태", body)

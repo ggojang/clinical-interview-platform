@@ -1,6 +1,8 @@
 "use strict";
 
 const MAX_FILE_BYTES = 1024 * 1024;
+const FHIR_TRANSLATION_URL = "http://hl7.org/fhir/StructureDefinition/translation";
+const FHIR_RENDERING_XHTML_URL = "http://hl7.org/fhir/StructureDefinition/rendering-xhtml";
 const SDC_STATUS = {
   status: "not_implemented",
   specification: "HL7 FHIR Structured Data Capture",
@@ -12,6 +14,7 @@ const state = {
   apiKey: "",
   apiMode: "anonymous_demo",
   mode: "structured",
+  displayLocale: "auto",
   sourceVersion: "auto",
   questionnaire: null,
   questionnaireSource: "",
@@ -259,11 +262,85 @@ function append(parent, tag, text, className) {
   return node;
 }
 
-function displayAnswer(option) {
+function browserLocale() {
+  if (typeof navigator !== "undefined") {
+    return navigator.languages?.[0] || navigator.language || "ko";
+  }
+  if (typeof document !== "undefined") return document.documentElement?.lang || "ko";
+  return "ko";
+}
+
+function activeLocale() {
+  const selected = state.displayLocale === "auto" ? browserLocale() : state.displayLocale;
+  return String(selected || "ko").toLowerCase().replace("_", "-");
+}
+
+function localeMatches(candidate, requested) {
+  const left = String(candidate || "").toLowerCase().replace("_", "-");
+  const right = String(requested || "").toLowerCase().replace("_", "-");
+  return left === right || left.split("-")[0] === right.split("-")[0];
+}
+
+function extensionValue(extension) {
+  const key = Object.keys(extension || {}).find((name) => name.startsWith("value"));
+  return key ? extension[key] : undefined;
+}
+
+function stripMarkup(value) {
+  return String(value || "")
+    .replace(/<br\s*\/?\s*>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function translatedPrimitive(metadata, locale) {
+  const translations = (metadata?.extension || []).filter((extension) => extension.url === FHIR_TRANSLATION_URL);
+  for (const translation of translations) {
+    const language = translation.extension?.find((extension) => extension.url === "lang")?.valueCode;
+    const content = translation.extension?.find((extension) => extension.url === "content");
+    if (localeMatches(language, locale) && content) return stripMarkup(extensionValue(content));
+  }
+  return "";
+}
+
+function renderingText(metadata) {
+  const rendering = (metadata?.extension || []).find((extension) => extension.url === FHIR_RENDERING_XHTML_URL);
+  return rendering ? stripMarkup(extensionValue(rendering)) : "";
+}
+
+function displayCoding(coding, locale) {
+  const translation = translatedPrimitive(coding?._display, locale);
+  if (translation) return translation;
+  const designation = (coding?.designation || []).find((entry) => localeMatches(entry.language, locale));
+  if (designation?.value) return designation.value;
+  const rendered = renderingText(coding?._display);
+  if (localeMatches(locale, "ko") && /[가-힣]/.test(rendered)) return rendered;
+  return coding?.display || coding?.code || pretty(coding || {});
+}
+
+function displayAnswer(option, locale = activeLocale()) {
   const key = Object.keys(option || {}).find((name) => name.startsWith("value"));
   const value = key ? option[key] : "";
+  if (key === "valueCoding" && value && typeof value === "object") return displayCoding(value, locale);
+  if (typeof value === "string") {
+    return translatedPrimitive(option[`_${key}`], locale) || value;
+  }
   if (value && typeof value === "object") return value.display || value.code || pretty(value);
   return String(value ?? "");
+}
+
+function updateDisplayLocale() {
+  state.displayLocale = $("#displayLocale").value;
+  const locale = activeLocale();
+  const label = localeMatches(locale, "ko") ? "한국어" : (localeMatches(locale, "en") ? "English" : locale);
+  $("#localeDetail").textContent = `${state.displayLocale === "auto" ? `브라우저 locale ${locale}` : `선택 locale ${locale}`} · ${label} 표현을 우선하고 없으면 원문 display를 유지합니다.`;
+  if (state.questionnaire) {
+    renderResponseEntry(state.questionnaire);
+    renderPreview(state.questionnaire);
+  }
 }
 
 function syntheticGuidanceFor(text) {
@@ -347,7 +424,7 @@ function conditionalContext(item) {
   const labels = (item.enableWhen || []).map((condition) => {
     const expected = fhirValue(condition, "answer");
     if (condition.operator === "exists") return condition.answerBoolean ? "선행 답변 있음" : "선행 답변 없음";
-    if (expected && typeof expected === "object") return expected.display || expected.code;
+    if (expected && typeof expected === "object") return displayCoding(expected, activeLocale());
     return expected;
   }).filter((value) => value !== undefined && value !== "");
   return labels.length ? `표시 조건 · ${labels.join(item.enableBehavior === "any" ? " 또는 " : " · ")}` : "";
@@ -691,7 +768,7 @@ function answerValue(question, raw) {
   const numeric = Number.parseInt(normalized, 10);
   const option = Number.isInteger(numeric) && numeric >= 1 && numeric <= options.length
     ? options[numeric - 1]
-    : options.find((candidate) => displayAnswer(candidate) === normalized);
+    : options.find((candidate) => [activeLocale(), "ko", "en"].some((locale) => displayAnswer(candidate, locale) === normalized));
   if (option) return clone(option);
   if (question.type === "integer" && /^-?\d+$/.test(normalized)) return { valueInteger: Number(normalized) };
   if (question.type === "decimal" && /^-?\d+(\.\d+)?$/.test(normalized)) return { valueDecimal: Number(normalized) };
@@ -1070,6 +1147,7 @@ function initialize() {
     state.sourceVersion = button.dataset.version;
     $$("[data-version]").forEach((candidate) => candidate.classList.toggle("active", candidate === button));
   }));
+  $("#displayLocale").addEventListener("change", updateDisplayLocale);
   $("#connectButton").addEventListener("click", connect);
   $("#apiKey").addEventListener("keydown", (event) => { if (event.key === "Enter") connect(); });
   $("#parseQuestionnaire").addEventListener("click", parseStructured);
@@ -1130,6 +1208,7 @@ function initialize() {
   $("#downloadR4").addEventListener("click", () => downloadDraft("r4"));
   $("#downloadR5").addEventListener("click", () => downloadDraft("r5"));
   updateOutputs();
+  updateDisplayLocale();
   connectAnonymous();
 }
 

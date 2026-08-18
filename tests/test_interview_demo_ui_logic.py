@@ -13,6 +13,76 @@ APP_JS = REPOSITORY_ROOT / "services/interview_api/static/app.js"
 
 @unittest.skipUnless(shutil.which("node"), "Node.js is required for browser logic regression")
 class InterviewDemoUiLogicTests(unittest.TestCase):
+    def test_answer_display_uses_korean_rendering_and_english_base_display(self):
+        option = {
+            "valueCoding": {
+                "system": "http://snomed.info/sct",
+                "code": "81680005",
+                "display": "Neck pain",
+                "_display": {
+                    "extension": [
+                        {
+                            "url": "http://hl7.org/fhir/StructureDefinition/rendering-xhtml",
+                            "valueString": "뒷목 통증",
+                        }
+                    ]
+                },
+            }
+        }
+        script = fr"""
+const fs = require('fs');
+const vm = require('vm');
+const source = fs.readFileSync({json.dumps(str(APP_JS))}, 'utf8').replace(/initialize\(\);\s*$/, '');
+const context = {{ console }};
+vm.createContext(context);
+vm.runInContext(source, context);
+console.log(JSON.stringify([
+  vm.runInContext(`displayAnswer(${{JSON.stringify({json.dumps(option)})}}, 'ko-KR')`, context),
+  vm.runInContext(`displayAnswer(${{JSON.stringify({json.dumps(option)})}}, 'en-US')`, context)
+]));
+"""
+        completed = subprocess.run(
+            ["node", "-e", script],
+            check=True,
+            capture_output=True,
+            text=True,
+            cwd=REPOSITORY_ROOT,
+        )
+        self.assertEqual(json.loads(completed.stdout), ["뒷목 통증", "Neck pain"])
+
+    def test_answer_display_supports_fhir_translation_extension(self):
+        option = {
+            "valueString": "Original text",
+            "_valueString": {
+                "extension": [
+                    {
+                        "url": "http://hl7.org/fhir/StructureDefinition/translation",
+                        "extension": [
+                            {"url": "lang", "valueCode": "ko"},
+                            {"url": "content", "valueString": "번역된 문구"},
+                        ],
+                    }
+                ]
+            },
+        }
+        script = fr"""
+const fs = require('fs');
+const vm = require('vm');
+const source = fs.readFileSync({json.dumps(str(APP_JS))}, 'utf8').replace(/initialize\(\);\s*$/, '');
+const context = {{ console }};
+vm.createContext(context);
+vm.runInContext(source, context);
+console.log(vm.runInContext(`displayAnswer(${{JSON.stringify({json.dumps(option)})}}, 'ko')`, context));
+"""
+        completed = subprocess.run(
+            ["node", "-e", script],
+            check=True,
+            capture_output=True,
+            text=True,
+            cwd=REPOSITORY_ROOT,
+        )
+        self.assertEqual(completed.stdout.strip(), "번역된 문구")
+
     def test_fixed_conversation_prompt_contains_current_and_total_number(self):
         script = fr"""
 const fs = require('fs');

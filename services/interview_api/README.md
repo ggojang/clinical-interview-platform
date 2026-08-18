@@ -16,6 +16,7 @@
 - 컴파일된 질문의 환자 친화적 표현만 LLM에 위임하고 임상 판단은 Runtime에 유지
 - `/demo`에서 세 입력 유형과 draft 산출물을 비교하는 테스트 UI 제공
 - FHIR R4/R5 Questionnaire JSON 업로드·붙여넣기와 브라우저 미리보기
+- 브라우저 locale 또는 사용자가 선택한 한국어/영어에 따른 문항·보기 표현 선택 (`translation`, terminology `designation`, 한글 rendering 표현 지원)
 - `enableWhen`/`enableBehavior` 조건부 문항 및 반복 선택 답변 지원
 - 고정된 STOM FHIR endpoint를 통한 `answerValueSet` 확장과 연결 상태 표시
 - 환자경험평가, 나이·성별로 선택하는 국민건강검진 시험용 문진, 텍스트 설문의 브라우저 정형 대화 데모
