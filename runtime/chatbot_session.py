@@ -219,6 +219,8 @@ def _parse_question(message: str) -> dict[str, Any] | None:
         r"출처:\s*\[공동 작업 지식\]\s*([A-Za-z0-9_.-]+)",
         message,
     )
+    if provenance is None:
+        provenance = re.search(r"\b(question\.[A-Za-z0-9_.-]+)\b", message)
     return {
         "question_ref": question_ref,
         "fact_id": f"chatbot.{question_ref.lower()}",

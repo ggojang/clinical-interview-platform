@@ -74,6 +74,24 @@ class ChatbotConversationRuntimeTest(unittest.TestCase):
             {"input": "2", "display": "아니오"},
         )
 
+    def test_parenthesized_question_provenance_is_preserved_for_safety_mapping(self):
+        session = ChatbotInterviewSession(
+            "source-id",
+            "rfe.abdominal_pain",
+            lambda _rfe, _conversation: (
+                "Q1. 쓰러질 듯한 상태가 있나요?\n\n"
+                "1 예\n2 아니오\n3 잘 모르겠음\n4 답변하지 않음\n\n"
+                "(question.abdominal_pain.collapse-shock)"
+            ),
+        )
+
+        state = session.process("배가 아파요")
+
+        self.assertEqual(
+            state["selected_question"]["source_question_id"],
+            "question.abdominal_pain.collapse-shock",
+        )
+
     def test_chatbot_session_preserves_opening_semantics_and_visible_turn(self):
         calls = []
 
