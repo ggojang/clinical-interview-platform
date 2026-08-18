@@ -2,12 +2,32 @@
 from __future__ import annotations
 from typing import Any
 
+from runtime.question_planning import internal_routing_fact_ids
+
 class PatientSimulator:
     def __init__(self, case: dict[str, Any]):
         self.case = case
 
     def initial(self, language: str = "en") -> str:
         return self.case["initial_statement"].get(language) or next(iter(self.case["initial_statement"].values()))
+
+    def internal_routing_state(
+        self, completion_policy: dict[str, Any]
+    ) -> dict[str, Any]:
+        """Return synthetic routing-oracle values without patient questioning.
+
+        Simulation fixtures already declare their hidden branch state.  After
+        routing selectors became internal Runtime state, replay must seed those
+        values as synthetic structured input rather than waiting for a
+        patient-facing selector question that is intentionally prohibited.
+        """
+        hidden = self.case.get("hidden_state", {})
+        return {
+            fact_id: hidden[fact_id]["value"]
+            for fact_id in internal_routing_fact_ids(completion_policy)
+            if isinstance(hidden.get(fact_id), dict)
+            and "value" in hidden[fact_id]
+        }
 
     def answer(self, fact_id: str) -> str:
         language = self.case.get("simulation_language", "en")

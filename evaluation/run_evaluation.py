@@ -24,6 +24,20 @@ def evaluate_case(case_path: Path, package_path: Path) -> dict[str, Any]:
         encounter_context=case.get("encounter_context"),
         clinician_submission=bool(case.get("clinician_submission", False)),
     )
+    for fact_id, value in simulator.internal_routing_state(
+        session.package["interview_completion_policy"]
+    ).items():
+        session.memory.merge(fact_id, {
+            "value": value,
+            "raw_text": "[synthetic internal routing state]",
+            "confidence": 1.0,
+            "speaker": "simulator",
+            "evidence": [{
+                "speaker": "simulator",
+                "turn": 0,
+                "text": "[synthetic internal routing state]",
+            }],
+        })
     utterance = simulator.initial(case.get("simulation_language", "en"))
     selected_facts: list[str] = []
 

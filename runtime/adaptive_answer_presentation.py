@@ -39,6 +39,23 @@ _TERMINAL_LABELS = {
 # stable semantic identity remains the compiled system + code, and absent
 # states are projected through dataAbsentReason rather than coded here.
 _EXACT_AXIS_LABELS: dict[tuple[str, ...], dict[str, str]] = {
+    (
+        "epigastric", "right_upper", "left_upper", "periumbilical",
+        "right_lower", "left_lower", "suprapubic_or_pelvic", "flank",
+        "generalized_or_migratory",
+    ): {
+        "epigastric": "윗배 중앙", "right_upper": "오른쪽 윗배",
+        "left_upper": "왼쪽 윗배", "periumbilical": "배꼽 주위",
+        "right_lower": "오른쪽 아랫배", "left_lower": "왼쪽 아랫배",
+        "suprapubic_or_pelvic": "아랫배 중앙·골반", "flank": "옆구리",
+        "generalized_or_migratory": "전반적·이동성",
+    },
+    ("cramping", "stabbing", "burning", "dull", "pressure_or_distension", "colicky", "other"): {
+        "cramping": "쥐어짜는 경련", "stabbing": "찌르는 느낌",
+        "burning": "타는 느낌", "dull": "둔한 느낌",
+        "pressure_or_distension": "압박·팽만", "colicky": "파도처럼 반복",
+        "other": "그 밖의 양상",
+    },
     ("none", "mild", "moderate", "severe"): {
         "none": "없음", "mild": "가벼움", "moderate": "중간", "severe": "심함",
     },
@@ -287,6 +304,37 @@ def selector_stem_ko(fact_id: str) -> str:
     if fact_id.endswith((".primary_group", ".primary_context")):
         return "이번 방문에서 현재 상황과 가장 가까운 항목을 선택해 주세요."
     return "현재 상황과 가장 가까운 항목을 선택해 주세요."
+
+
+def concise_stem_ko(fact_id: str, wording: str) -> str | None:
+    """Separate an authored Korean option list from its concise question stem."""
+    text = wording.strip()
+    overrides = {
+        "symptom.abdominal_pain.location": "통증이 가장 심한 곳은 어디인가요?",
+        "symptom.abdominal_pain.severity": "복통은 어느 정도인가요?",
+        "symptom.abdominal_pain.character": "통증은 어떤 느낌인가요?",
+    }
+    if fact_id in overrides:
+        return overrides[fact_id]
+    # Safe only for the common authored form ``<topic>은/는 <choices> 중
+    # <question>``.  Requiring a comma or middle-dot in the removed portion
+    # avoids shortening ordinary prose that happens to contain ``중``.
+    match = re.match(
+        r"^(?P<topic>.{1,70}?(?:은|는))\s+"
+        r"(?P<choices>.+[,·].+)\s+중\s+"
+        r"(?P<query>어디|무엇|어느)[^?]*\?$",
+        text,
+    )
+    if not match:
+        return None
+    query = match.group("query")
+    if query == "어디":
+        tail = "어디인가요?"
+    elif query == "어느":
+        tail = "어느 정도인가요?" if "정도" in text else "어느 쪽인가요?"
+    else:
+        tail = "무엇에 가장 가깝나요?"
+    return f"{match.group('topic')} {tail}"
 
 
 def resolve_patient_option(

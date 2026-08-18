@@ -24,10 +24,16 @@ from runtime.question_presentation import (
     resolve_presentation_input,
 )
 from runtime.adaptive_answer_presentation import (
+    concise_stem_ko,
     patient_answer_options,
     resolve_patient_option,
     selector_fact_ids,
     selector_stem_ko,
+)
+from runtime.question_planning import (
+    internal_routing_fact_ids,
+    proactive_safety_fact_ids,
+    semantic_question_rank,
 )
 
 
@@ -1366,6 +1372,10 @@ class InterviewSession:
                 self.package.get("interview_completion_policy", {})
             ):
                 question["stem_text"] = selector_stem_ko(fact_id)
+            elif "stem_text" not in question:
+                stem = concise_stem_ko(fact_id, str(template.get("wording") or ""))
+                if stem:
+                    question["stem_text"] = stem
         suggestions = display_suggestions(fact_id) if not options else []
         if suggestions:
             question["display_suggestions"] = suggestions
@@ -2242,7 +2252,12 @@ class InterviewSession:
                 required.update(rfe_specific)
             else:
                 required.update(minimum.get("always_required_facts", []))
-        if not self.proactive_safety_questions and safety["level"] == "routine":
+        # Broad primary-group/context selectors are compiler routing state, not
+        # atomic patient questions.  A selector supplied or derived upstream can
+        # still activate its conditional branch; an unresolved selector is
+        # reported separately by _completion().
+        required.difference_update(internal_routing_fact_ids(policy))
+        if not self._safety_first() and safety["level"] == "routine":
             required.difference_update(self._proactive_safety_fact_ids())
         not_applicable_target_facts = {
             fact_id
@@ -2255,16 +2270,14 @@ class InterviewSession:
 
     def _proactive_safety_fact_ids(self) -> set[str]:
         """Facts asked only as an explicit safety gate, not all safety inputs."""
-        fact_ids: set[str] = set()
-        for rule in self.package["rule_graph"]["rules"]:
-            if rule.get("type") != "priority":
-                continue
-            reason = str(rule.get("then", {}).get("reason", "")).casefold()
-            if "safety" not in reason and "red_flag" not in reason:
-                continue
-            target = rule.get("then", {}).get("target")
-            fact_ids.update(self.package["indexes"]["target_facts"].get(target, []))
-        return fact_ids
+        return proactive_safety_fact_ids(self.package)
+
+    def _safety_first(self) -> bool:
+        """Whether this encounter should proactively lead with safety screens."""
+        return bool(
+            self.proactive_safety_questions
+            or self.encounter_context.get("safety_first")
+        )
 
     def _required_facts(
         self, classification: str | None, safety: dict[str, Any]
@@ -2312,6 +2325,13 @@ class InterviewSession:
             fact_id for fact_id in sorted(must_be_known)
             if self.memory.state(fact_id) != "known"
         ]
+        internal_routing = sorted(
+            internal_routing_fact_ids(self.package["interview_completion_policy"])
+        )
+        deferred_routing = [
+            fact_id for fact_id in internal_routing
+            if self.memory.state(fact_id) == "not_asked"
+        ]
         return {
             "complete": (
                 bool(required) and not missing and not conflicted
@@ -2324,6 +2344,7 @@ class InterviewSession:
             "conflicted_facts": conflicted,
             "must_be_known_facts": sorted(must_be_known),
             "required_known_missing_facts": required_known_missing,
+            "deferred_internal_routing_facts": deferred_routing,
         }
 
     def _question_budget(self, safety_level: str) -> int:
@@ -2390,6 +2411,9 @@ class InterviewSession:
 
         candidates: list[dict[str, Any]] = []
         proactive_safety_fact_ids = self._proactive_safety_fact_ids()
+        internal_routing = internal_routing_fact_ids(
+            self.package["interview_completion_policy"]
+        )
         for rule in self.package["rule_graph"]["rules"]:
             if rule["type"] != "priority":
                 continue
@@ -2398,8 +2422,10 @@ class InterviewSession:
             if not facts:
                 continue
             fact_id = facts[0]
+            if fact_id in internal_routing:
+                continue
             if (
-                not self.proactive_safety_questions
+                not self._safety_first()
                 and safety_level == "routine"
                 and fact_id in proactive_safety_fact_ids
             ):
@@ -2479,7 +2505,20 @@ class InterviewSession:
                 )
         if not candidates:
             return None
-        return max(candidates, key=lambda item: (item["score"], item["rule_id"]))
+        if self._safety_first():
+            return max(candidates, key=lambda item: (item["score"], item["rule_id"]))
+        # Scheduled/routine interviews prioritize the authored atomic clinical
+        # history axis. Rule priority remains a deterministic tie-breaker, and
+        # required Facts always precede optional refinements.
+        return min(
+            candidates,
+            key=lambda item: (
+                0 if item["fact_id"] in required_facts else 1,
+                semantic_question_rank(item["fact_id"], item.get("target_id")),
+                -int(item["score"]),
+                item["rule_id"],
+            ),
+        )
 
     def _target_for_fact(self, fact_id: str) -> str | None:
         if fact_id in self.clinician_fact_index:
