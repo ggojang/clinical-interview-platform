@@ -16,6 +16,8 @@
 - 컴파일된 질문의 환자 친화적 표현만 LLM에 위임하고 임상 판단은 Runtime에 유지
 - `/demo`에서 세 입력 유형과 draft 산출물을 비교하는 테스트 UI 제공
 - FHIR R4/R5 Questionnaire JSON 업로드·붙여넣기와 브라우저 미리보기
+- `enableWhen`/`enableBehavior` 조건부 문항 및 반복 선택 답변 지원
+- 고정된 STOM FHIR endpoint를 통한 `answerValueSet` 확장과 연결 상태 표시
 - 환자경험평가, 국가검진 후보 질문군, 텍스트 설문의 브라우저 정형 대화 데모
 - API key가 없는 외부 테스트 사용자를 위한 별도 `/demo-api` 익명 경로
 
@@ -24,6 +26,8 @@
 FHIR `Questionnaire`, `QuestionnaireResponse`, SDC Extraction은 아직 이 API에 구현되지 않았습니다. 현재 결과 응답에도 이를 `not_implemented`로 명시합니다. 다음 구현 단계에서 기존 질문·Fact 바인딩을 사용해 추가합니다.
 
 데모 UI가 만드는 Questionnaire/QuestionnaireResponse 및 R4/R5 다운로드는 공통 요소를 이용한 **브라우저 draft**입니다. 서버 변환이나 공식 FHIR validator 검증 결과가 아니며, SDC Extraction은 가짜 결과를 만들지 않고 `not_implemented`로 표시합니다. 이미지 설문은 브라우저 미리보기만 지원하고 OCR·문항 구조화는 아직 지원하지 않습니다. 업로드 파일과 API key는 브라우저 영구 저장소에 기록하지 않습니다. 이름·성별·생일 같은 정보가 필요한 설문도 실제 개인정보 대신 명시적인 가상 테스트 값을 사용해야 합니다.
+
+용어 조회 API는 운영자가 지정한 단일 `CLINICAL_TERMINOLOGY_BASE_URL`만 호출합니다. 클라이언트가 보낸 URL로 직접 접속하지 않으므로 범용 proxy로 동작하지 않습니다. `$expand` 요청에는 ValueSet canonical, 선택적 filter와 count만 포함되며 참가자 답변·QuestionnaireResponse·개인정보는 전송하지 않습니다. 용어서버가 canonical을 찾지 못하면 선택지를 추측하지 않고 UI에 미확인 상태로 남깁니다.
 
 익명 데모가 활성화되면 `/demo-api`만 인증 없이 열립니다. 로컬 기본 LLM으로 고정되고 provider 변경과 credential 입력은 금지되며, 응답은 메모리에만 보관되고 기본 10분 뒤 폐기됩니다. 익명 세션 수와 분당 요청 수를 제한합니다. 일반 `/v1` 경로의 Bearer 인증은 그대로 유지됩니다. 공개 인터넷 배포에서는 이 애플리케이션 제한 외에도 TLS, reverse proxy/WAF, 네트워크 rate limit과 모니터링이 필요합니다.
 
@@ -60,6 +64,7 @@ Provider URL, model과 API key는 클라이언트가 임의 지정할 수 없습
 
 ```bash
 export CLINICAL_API_KEY='긴-무작위-테스트-키'
+export CLINICAL_TERMINOLOGY_BASE_URL='https://stom.banttas.com/fhir'
 python3 -m services.interview_api
 ```
 

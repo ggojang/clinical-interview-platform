@@ -175,6 +175,12 @@ def build_handler(api: InterviewApi, config: ServerConfig) -> type[BaseHTTPReque
                 if path == "/v1/llm/providers" and method == "GET":
                     self._json(HTTPStatus.OK, api.llm_providers(), request_id)
                     return
+                if path == "/v1/terminology/status" and method == "GET":
+                    self._json(HTTPStatus.OK, api.terminology_status(), request_id)
+                    return
+                if path == "/v1/terminology/expand" and method == "POST":
+                    self._json(HTTPStatus.OK, api.expand_valueset(self._body()), request_id)
+                    return
                 if path == "/v1/demo/resources" and method == "GET":
                     self._json(HTTPStatus.OK, api.demo_resources(), request_id)
                     return
@@ -227,6 +233,12 @@ def build_handler(api: InterviewApi, config: ServerConfig) -> type[BaseHTTPReque
                 self._json(
                     HTTPStatus.OK, api.anonymous_demo_configuration(), request_id
                 )
+                return
+            if path == "/demo-api/terminology/status" and method == "GET":
+                self._json(HTTPStatus.OK, api.terminology_status(), request_id)
+                return
+            if path == "/demo-api/terminology/expand" and method == "POST":
+                self._json(HTTPStatus.OK, api.expand_valueset(self._body()), request_id)
                 return
             if path == "/demo-api/resources" and method == "GET":
                 self._json(HTTPStatus.OK, api.demo_resources(), request_id)

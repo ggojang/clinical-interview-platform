@@ -58,6 +58,13 @@ persistent job state, requester/participant authorization separation, and
 artifact ingestion are subsequent milestones and must not be advertised as
 implemented.
 
+The demo also exposes a read-only, fixed-upstream terminology proxy at
+`/demo-api/terminology`. The container is configured for
+`https://stom.banttas.com/fhir`; only ValueSet canonical/filter/count values are
+sent to STOM. QuestionnaireResponse data and participant answers are never sent
+to the terminology server. Missing ValueSets remain unresolved instead of
+receiving invented answer options.
+
 ## LLM providers
 
 The Quadlet enables question presentation through the local OpenAI-compatible

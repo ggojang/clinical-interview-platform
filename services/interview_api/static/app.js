@@ -26,7 +26,10 @@ const state = {
   fixedAnswers: [],
   fixedIndex: 0,
   fixedTitle: "",
-  structuredAnswers: new Map()
+  structuredAnswers: new Map(),
+  valueSetOptions: new Map(),
+  valueSetErrors: new Map(),
+  terminologyAvailable: false
 };
 
 const $ = (selector) => document.querySelector(selector);
@@ -44,6 +47,7 @@ function showToast(message) {
 async function api(path, options = {}) {
   const anonymousPath = path
     .replace(/^\/v1\/llm\/providers$/, "/demo-api/config")
+    .replace(/^\/v1\/terminology/, "/demo-api/terminology")
     .replace(/^\/v1\/demo\/resources/, "/demo-api/resources")
     .replace(/^\/v1\/sessions/, "/demo-api/sessions");
   const target = state.apiMode === "authenticated" ? path : anonymousPath;
@@ -52,7 +56,11 @@ async function api(path, options = {}) {
   if (options.body) headers["Content-Type"] = "application/json";
   const response = await fetch(target, { ...options, headers });
   const payload = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(payload.error?.message || `API 오류 (${response.status})`);
+  if (!response.ok) {
+    const error = new Error(payload.error?.message || `API 오류 (${response.status})`);
+    error.code = payload.error?.code;
+    throw error;
+  }
   return payload;
 }
 
@@ -78,7 +86,8 @@ function setMode(mode) {
   };
   $("#inputPanelTitle").textContent = labels[mode][0];
   $("#inputBadge").textContent = labels[mode][1];
-  renderPreview(state.questionnaire);
+  updateOutputs();
+  syncRunnerVisibility();
 }
 
 function canonical(questionnaire) {
@@ -99,6 +108,76 @@ function answerBearingItems(questionnaire) {
     if (!['group', 'display'].includes(item.type)) result.push(item);
   });
   return result;
+}
+
+function fhirValue(source, prefix = "value") {
+  const key = Object.keys(source || {}).find((name) => name.startsWith(prefix));
+  return key ? source[key] : undefined;
+}
+
+function valuesEqual(left, right) {
+  if (left && right && typeof left === "object" && typeof right === "object") {
+    if (left.code !== undefined || right.code !== undefined) {
+      return String(left.code ?? "") === String(right.code ?? "")
+        && (!left.system || !right.system || left.system === right.system);
+    }
+    if (left.value !== undefined || right.value !== undefined) return Number(left.value) === Number(right.value);
+  }
+  return String(left ?? "") === String(right ?? "");
+}
+
+function conditionMatches(condition) {
+  const answers = state.structuredAnswers.get(condition.question)?.answer || [];
+  if (Object.prototype.hasOwnProperty.call(condition, "answerBoolean") && condition.operator === "exists") {
+    return (answers.length > 0) === condition.answerBoolean;
+  }
+  const expected = fhirValue(condition, "answer");
+  if (expected === undefined) return false;
+  const actual = answers.map((answer) => fhirValue(answer));
+  if (!actual.length) return false;
+  if (condition.operator === "!=") return actual.every((value) => !valuesEqual(value, expected));
+  if (condition.operator === ">" || condition.operator === "<" || condition.operator === ">=" || condition.operator === "<=") {
+    return actual.some((value) => {
+      const left = Number(value?.value ?? value);
+      const right = Number(expected?.value ?? expected);
+      if (!Number.isFinite(left) || !Number.isFinite(right)) return false;
+      if (condition.operator === ">") return left > right;
+      if (condition.operator === "<") return left < right;
+      if (condition.operator === ">=") return left >= right;
+      return left <= right;
+    });
+  }
+  return actual.some((value) => valuesEqual(value, expected));
+}
+
+function isItemEnabled(item) {
+  if (!item.enableWhen?.length) return true;
+  const matches = item.enableWhen.map(conditionMatches);
+  return item.enableBehavior === "any" ? matches.some(Boolean) : matches.every(Boolean);
+}
+
+function activeAnswerBearingItems(questionnaire) {
+  const result = [];
+  const visit = (items, parentEnabled = true) => (items || []).forEach((item) => {
+    const enabled = parentEnabled && isItemEnabled(item);
+    if (enabled && !["group", "display"].includes(item.type)) result.push(item);
+    visit(item.item, enabled);
+  });
+  visit(questionnaire?.item);
+  return result;
+}
+
+function pruneDisabledAnswers() {
+  let changed = false;
+  const visit = (items, parentEnabled = true) => (items || []).forEach((item) => {
+    const enabled = parentEnabled && isItemEnabled(item);
+    if (!enabled && state.structuredAnswers.delete(item.linkId)) changed = true;
+    visit(item.item, enabled);
+  });
+  do {
+    changed = false;
+    visit(state.questionnaire?.item);
+  } while (changed);
 }
 
 function inferVersion(questionnaire) {
@@ -144,6 +223,29 @@ function refreshOutputData() {
 function updateOutputs() {
   refreshOutputData();
   renderPreview(state.questionnaire);
+  renderResponseEntry(state.questionnaire);
+  syncRunnerVisibility();
+}
+
+function syncRunnerVisibility() {
+  const structured = state.mode === "structured";
+  const fixed = state.mode === "fixed" && state.fixedQuestions.length > 0;
+  const adaptive = state.mode === "adaptive" && Boolean(
+    state.sessionId || state.currentAdaptiveQuestion || state.adaptiveHistory.length
+  );
+  $("#structuredRunner").classList.toggle("active", structured);
+  $("#fixedConversation").hidden = !fixed;
+  $("#fixedConversation").classList.toggle("active", fixed);
+  $("#adaptiveConversation").hidden = !adaptive;
+  $("#adaptiveConversation").classList.toggle("active", adaptive);
+  const placeholder = !structured && !fixed && !adaptive;
+  $("#conversationPlaceholder").hidden = !placeholder;
+  const labels = {
+    structured: state.questionnaire ? `${activeAnswerBearingItems(state.questionnaire).length}개 활성 문항` : "준비 전",
+    fixed: fixed ? `${Math.min(state.fixedIndex + 1, state.fixedQuestions.length)} / ${state.fixedQuestions.length}` : "시작 대기",
+    adaptive: adaptive ? `${state.adaptiveHistory.length}개 답변` : "시작 대기"
+  };
+  $("#runnerStatus").textContent = labels[state.mode];
 }
 
 function append(parent, tag, text, className) {
@@ -189,40 +291,109 @@ function typedStructuredAnswer(item, raw) {
   return { valueString: raw };
 }
 
-function recordStructuredAnswer(item, answer) {
-  if (!answer) state.structuredAnswers.delete(item.linkId);
-  else state.structuredAnswers.set(item.linkId, { linkId: item.linkId, text: item.text, answer: [clone(answer)] });
+function itemControlsOthers(linkId) {
+  let controls = false;
+  walkItems(state.questionnaire?.item, (item) => {
+    if (item.enableWhen?.some((condition) => condition.question === linkId)) controls = true;
+  });
+  return controls;
+}
+
+function recordStructuredAnswers(item, answers, rerender = false) {
+  const usable = (answers || []).filter(Boolean);
+  if (!usable.length) state.structuredAnswers.delete(item.linkId);
+  else state.structuredAnswers.set(item.linkId, { linkId: item.linkId, text: item.text, answer: clone(usable) });
+  pruneDisabledAnswers();
+  if (!state.questionnaireResponse) return;
   state.questionnaireResponse.item = responseItemsFor(state.questionnaire.item, state.structuredAnswers);
   state.questionnaireResponse.status = "in-progress";
   state.handoff = {
     status: "structured_response_in_progress",
     answered_items: state.structuredAnswers.size,
+    active_items: activeAnswerBearingItems(state.questionnaire).length,
     response_storage: "browser_memory_only"
   };
   refreshOutputData();
+  if (rerender) {
+    renderResponseEntry(state.questionnaire);
+    renderPreview(state.questionnaire);
+    syncRunnerVisibility();
+  }
+}
+
+function optionsForItem(item) {
+  if (item.answerOption?.length) return item.answerOption;
+  if (item.answerValueSet && state.valueSetOptions.has(item.answerValueSet)) {
+    return state.valueSetOptions.get(item.answerValueSet);
+  }
+  return [];
+}
+
+function appendValueSetState(block, item) {
+  if (!item.answerValueSet || item.answerOption?.length) return;
+  if (state.valueSetErrors.has(item.answerValueSet)) {
+    append(block, "p", state.valueSetErrors.get(item.answerValueSet), "valueset-state error");
+  } else if (!state.valueSetOptions.has(item.answerValueSet)) {
+    append(block, "p", "용어서버에서 선택지를 확인하는 중입니다.", "valueset-state");
+  } else {
+    append(block, "p", `용어서버 ValueSet · ${state.valueSetOptions.get(item.answerValueSet).length}개 선택지`, "valueset-state");
+  }
+}
+
+function conditionalContext(item) {
+  const labels = (item.enableWhen || []).map((condition) => {
+    const expected = fhirValue(condition, "answer");
+    if (condition.operator === "exists") return condition.answerBoolean ? "선행 답변 있음" : "선행 답변 없음";
+    if (expected && typeof expected === "object") return expected.display || expected.code;
+    return expected;
+  }).filter((value) => value !== undefined && value !== "");
+  return labels.length ? `표시 조건 · ${labels.join(item.enableBehavior === "any" ? " 또는 " : " · ")}` : "";
 }
 
 function structuredControl(block, item) {
-  const existing = state.structuredAnswers.get(item.linkId)?.answer?.[0];
-  if (item.answerOption?.length || item.type === "boolean") {
+  const existingAnswers = state.structuredAnswers.get(item.linkId)?.answer || [];
+  const options = item.type === "boolean"
+    ? [{ valueBoolean: true }, { valueBoolean: false }]
+    : optionsForItem(item);
+  if (options.length && item.repeats) {
+    const choices = append(block, "div", undefined, "repeat-options");
+    options.forEach((option, index) => {
+      const label = append(choices, "label", undefined, "repeat-option");
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.value = String(index);
+      checkbox.checked = existingAnswers.some((answer) => pretty(answer) === pretty(option));
+      checkbox.addEventListener("change", () => {
+        const selected = [...choices.querySelectorAll("input:checked")].map((input) => options[Number(input.value)]);
+        recordStructuredAnswers(item, selected, true);
+      });
+      label.append(checkbox, document.createTextNode(displayAnswer(option)));
+    });
+    appendValueSetState(block, item);
+    return;
+  }
+  if (options.length || item.type === "choice" || item.type === "open-choice") {
     const select = document.createElement("select");
     select.setAttribute("aria-label", item.text || item.linkId);
     const blank = document.createElement("option");
     blank.value = "";
-    blank.textContent = "선택하세요";
+    blank.textContent = options.length ? "선택하세요" : "선택지 확인 불가";
     select.append(blank);
-    const options = item.answerOption?.length
-      ? item.answerOption
-      : [{ valueBoolean: true }, { valueBoolean: false }];
     options.forEach((option, index) => {
       const node = document.createElement("option");
       node.value = String(index);
       node.textContent = item.type === "boolean" ? (option.valueBoolean ? "예" : "아니요") : displayAnswer(option);
-      if (existing && pretty(existing) === pretty(option)) node.selected = true;
+      if (existingAnswers[0] && pretty(existingAnswers[0]) === pretty(option)) node.selected = true;
       select.append(node);
     });
-    select.addEventListener("change", () => recordStructuredAnswer(item, select.value === "" ? null : options[Number(select.value)]));
+    select.disabled = !options.length;
+    select.addEventListener("change", () => recordStructuredAnswers(
+      item,
+      select.value === "" ? [] : [options[Number(select.value)]],
+      true
+    ));
     block.append(select);
+    appendValueSetState(block, item);
     return;
   }
   const input = document.createElement(item.type === "text" ? "textarea" : "input");
@@ -230,12 +401,80 @@ function structuredControl(block, item) {
   if (input.tagName === "INPUT") input.type = inputTypes[item.type] || "text";
   if (["decimal", "quantity"].includes(item.type)) input.step = "any";
   input.placeholder = `${item.type || "string"} 응답`;
-  input.value = String(answerScalar(existing));
-  input.addEventListener("input", () => {
+  input.value = String(answerScalar(existingAnswers[0]));
+  const save = (rerender) => {
     const raw = input.value.trim();
-    recordStructuredAnswer(item, raw === "" ? null : typedStructuredAnswer(item, raw));
-  });
+    recordStructuredAnswers(item, raw === "" ? [] : [typedStructuredAnswer(item, raw)], rerender);
+  };
+  input.addEventListener("input", () => save(false));
+  if (itemControlsOthers(item.linkId)) input.addEventListener("change", () => save(true));
   block.append(input);
+}
+
+function renderQuestionnaireItems(root, items, { interactive = false, depth = 0 } = {}) {
+  (items || []).forEach((item) => {
+    if (!isItemEnabled(item)) return;
+    if (item.type === "group") {
+      const group = append(root, "div", item.text || item.linkId, "preview-group");
+      group.style.marginLeft = `${Math.min(depth, 3) * 8}px`;
+      renderQuestionnaireItems(root, item.item, { interactive, depth: depth + 1 });
+      return;
+    }
+    if (item.type === "display") {
+      append(root, "p", item.text || "", "context-copy");
+      renderQuestionnaireItems(root, item.item, { interactive, depth: depth + 1 });
+      return;
+    }
+    const block = append(root, "div", undefined, "preview-question");
+    append(block, "label", `${item.prefix ? `${item.prefix} ` : ""}${item.text || item.linkId}${item.required ? " *" : ""}`);
+    const context = conditionalContext(item);
+    if (context) append(block, "small", context, "conditional-context");
+    if (interactive) {
+      const guidance = syntheticGuidanceFor(item.text);
+      if (guidance) append(block, "p", guidance, "privacy-prompt");
+      structuredControl(block, item);
+    } else {
+      const existing = state.structuredAnswers.get(item.linkId)?.answer || [];
+      const options = existing.length ? existing : optionsForItem(item).slice(0, 12);
+      if (options.length) {
+        const list = append(block, "div", undefined, "preview-options");
+        options.forEach((option) => {
+          const node = append(list, "div", displayAnswer(option), "preview-option");
+          if (existing.some((answer) => pretty(answer) === pretty(option))) node.classList.add("selected");
+        });
+      } else {
+        const input = document.createElement(item.type === "text" ? "textarea" : "input");
+        input.disabled = true;
+        input.placeholder = `${item.type || "string"} 응답`;
+        block.append(input);
+        appendValueSetState(block, item);
+      }
+    }
+    renderQuestionnaireItems(root, item.item, { interactive, depth: depth + 1 });
+  });
+}
+
+function appendQuestionnaireTitle(root, questionnaire) {
+  const title = append(root, "div", undefined, "preview-title");
+  append(title, "span", `${inferVersion(questionnaire)} · ${questionnaire.status || "draft"}`, "step-label");
+  append(title, "h3", questionnaire.title || questionnaire.name || questionnaire.id || "Questionnaire");
+  if (questionnaire.description) append(title, "p", questionnaire.description);
+}
+
+function renderResponseEntry(questionnaire) {
+  const root = $("#responseForm");
+  const scrollTop = root.scrollTop;
+  root.replaceChildren();
+  if (!questionnaire || state.mode !== "structured") {
+    const empty = append(root, "div", undefined, "empty-state compact");
+    append(empty, "span", "◎");
+    append(empty, "strong", "설문을 실행해 주세요");
+    append(empty, "small", "Questionnaire를 불러오면 조건에 맞는 문항만 표시됩니다.");
+    return;
+  }
+  appendQuestionnaireTitle(root, questionnaire);
+  renderQuestionnaireItems(root, questionnaire.item, { interactive: true });
+  root.scrollTop = scrollTop;
 }
 
 function renderPreview(questionnaire) {
@@ -248,41 +487,8 @@ function renderPreview(questionnaire) {
     append(empty, "small", "입력 리소스를 검증하거나 대화를 시작하세요.");
     return;
   }
-  const title = append(root, "div", undefined, "preview-title");
-  append(title, "span", `${inferVersion(questionnaire)} · ${questionnaire.status || "draft"}`, "step-label");
-  append(title, "h3", questionnaire.title || questionnaire.name || questionnaire.id || "Questionnaire");
-  if (questionnaire.description) append(title, "p", questionnaire.description);
-
-  const renderItems = (items, depth = 0) => (items || []).forEach((item) => {
-    if (item.type === "group") {
-      const group = append(root, "div", item.text || item.linkId, "preview-group");
-      group.style.marginLeft = `${Math.min(depth, 3) * 8}px`;
-      renderItems(item.item, depth + 1);
-      return;
-    }
-    if (item.type === "display") {
-      append(root, "p", item.text || "", "context-copy");
-      renderItems(item.item, depth + 1);
-      return;
-    }
-    const block = append(root, "div", undefined, "preview-question");
-    append(block, "label", `${item.prefix ? `${item.prefix} ` : ""}${item.text || item.linkId}${item.required ? " *" : ""}`);
-    const guidance = syntheticGuidanceFor(item.text);
-    if (guidance) append(block, "p", guidance, "privacy-prompt");
-    if (state.mode === "structured") {
-      structuredControl(block, item);
-    } else if (item.answerOption?.length) {
-      const options = append(block, "div", undefined, "preview-options");
-      item.answerOption.slice(0, 12).forEach((option) => append(options, "div", displayAnswer(option), "preview-option"));
-    } else {
-      const input = document.createElement(item.type === "text" ? "textarea" : "input");
-      input.disabled = true;
-      input.placeholder = `${item.type || "string"} 응답`;
-      block.append(input);
-    }
-    renderItems(item.item, depth + 1);
-  });
-  renderItems(questionnaire.item);
+  appendQuestionnaireTitle(root, questionnaire);
+  renderQuestionnaireItems(root, questionnaire.item);
 }
 
 function validateQuestionnaire(value) {
@@ -298,6 +504,60 @@ function validateQuestionnaire(value) {
   return value;
 }
 
+function setTerminologyState(kind, title, detail) {
+  const strip = $(".terminology-strip");
+  strip.classList.toggle("connected", kind === "connected");
+  strip.classList.toggle("error", kind === "error");
+  $("#terminologyState").textContent = title;
+  $("#terminologyDetail").textContent = detail;
+}
+
+async function connectTerminology() {
+  setTerminologyState("pending", "용어서버 연결 확인 중", "FHIR CapabilityStatement를 확인합니다.");
+  try {
+    const status = await api("/v1/terminology/status");
+    state.terminologyAvailable = Boolean(status.available);
+    if (status.available) {
+      setTerminologyState(
+        "connected",
+        "용어서버 연결됨",
+        `${status.software_name || "FHIR terminology server"} · FHIR ${status.fhir_version || "버전 미확인"}`
+      );
+    } else {
+      setTerminologyState("error", "용어서버 미설정", "inline answerOption만 사용할 수 있습니다.");
+    }
+  } catch (error) {
+    state.terminologyAvailable = false;
+    setTerminologyState("error", "용어서버 연결 실패", "inline answerOption은 계속 사용할 수 있습니다.");
+  }
+}
+
+async function loadQuestionnaireValueSets(questionnaire) {
+  const canonicals = new Set();
+  walkItems(questionnaire?.item, (item) => {
+    if (item.answerValueSet && !item.answerOption?.length) canonicals.add(item.answerValueSet);
+  });
+  if (!canonicals.size) return;
+  await Promise.all([...canonicals].map(async (url) => {
+    state.valueSetErrors.delete(url);
+    try {
+      const expansion = await api("/v1/terminology/expand", {
+        method: "POST",
+        body: JSON.stringify({ url, count: 100 })
+      });
+      state.valueSetOptions.set(url, (expansion.contains || []).map((concept) => ({ valueCoding: concept })));
+      if (!expansion.contains?.length) state.valueSetErrors.set(url, "용어서버가 빈 ValueSet 확장을 반환했습니다.");
+    } catch (error) {
+      const message = error.code === "valueset_not_found"
+        ? "용어서버에서 이 ValueSet을 찾지 못했습니다. 선택지를 임의 생성하지 않습니다."
+        : "ValueSet 선택지를 불러오지 못했습니다. 잠시 후 다시 확인하세요.";
+      state.valueSetErrors.set(url, message);
+    }
+  }));
+  renderResponseEntry(questionnaire);
+  renderPreview(questionnaire);
+}
+
 function parseStructured() {
   const raw = $("#questionnaireJson").value.trim();
   if (!raw) return showToast("Questionnaire JSON을 입력하세요.");
@@ -305,15 +565,20 @@ function parseStructured() {
     const questionnaire = validateQuestionnaire(JSON.parse(raw));
     const response = blankResponse(questionnaire);
     state.structuredAnswers = new Map();
+    state.valueSetOptions = new Map();
+    state.valueSetErrors = new Map();
     setArtifacts(questionnaire, response, raw, {
       status: "structured_response_ready",
-      note: "정형 서식 입력을 구조 검증했습니다. 오른쪽 미리보기에서 답변을 입력할 수 있습니다. 서버 저장·SDC Extraction은 수행하지 않았습니다."
+      note: "정형 서식 입력을 구조 검증했습니다. 가운데 답변 입력 영역에는 enableWhen 조건을 만족한 문항만 표시합니다. 서버 저장·SDC Extraction은 수행하지 않았습니다."
     });
     $("#completeStructured").disabled = false;
     const count = answerBearingItems(questionnaire).length;
-    $("#questionnaireMeta").textContent = `${inferVersion(questionnaire)} · ${count}개 응답 문항 · ${canonical(questionnaire) || "canonical 없음"}`;
-    selectOutput("preview");
-    showToast("구조 검증을 마쳤습니다. 오른쪽 미리보기에서 답변을 입력하세요.");
+    const activeCount = activeAnswerBearingItems(questionnaire).length;
+    $("#questionnaireMeta").textContent = `${inferVersion(questionnaire)} · 전체 ${count}개 / 현재 ${activeCount}개 문항 · ${canonical(questionnaire) || "canonical 없음"}`;
+    syncRunnerVisibility();
+    selectOutput("source");
+    loadQuestionnaireValueSets(questionnaire);
+    showToast("구조 검증을 마쳤습니다. 가운데에서 조건에 맞는 문항에 답변하세요.");
   } catch (error) {
     showToast(`검증 실패: ${error.message}`);
   }
@@ -321,9 +586,8 @@ function parseStructured() {
 
 function completeStructuredResponse() {
   if (!state.questionnaire || !state.questionnaireResponse) return showToast("먼저 Questionnaire를 실행하세요.");
-  const missing = answerBearingItems(state.questionnaire).filter((item) => item.required && !state.structuredAnswers.has(item.linkId));
+  const missing = activeAnswerBearingItems(state.questionnaire).filter((item) => item.required && !state.structuredAnswers.has(item.linkId));
   if (missing.length) {
-    selectOutput("preview");
     return showToast(`필수 문항 ${missing.length}개에 답변이 필요합니다: ${missing.slice(0, 2).map((item) => item.text || item.linkId).join(", ")}`);
   }
   state.questionnaireResponse.status = "completed";
@@ -334,7 +598,7 @@ function completeStructuredResponse() {
     response_storage: "browser_memory_only",
     sdc_extraction: "not_implemented"
   };
-  refreshOutputData();
+  updateOutputs();
   selectOutput("response");
   showToast("응답을 완료했습니다. 결과 확인에 QuestionnaireResponse를 표시합니다.");
 }
@@ -706,6 +970,7 @@ async function connect() {
   try {
     const providers = await api("/v1/llm/providers");
     await api("/v1/demo/resources");
+    await connectTerminology();
     state.providers = (providers.providers || []).filter((item) => item.selectable);
     const select = $("#llmProvider");
     select.replaceChildren();
@@ -734,6 +999,7 @@ async function connectAnonymous() {
   try {
     const configuration = await api("/v1/llm/providers");
     await api("/v1/demo/resources");
+    await connectTerminology();
     state.providers = (configuration.providers || []).filter((item) => item.selectable);
     const select = $("#llmProvider");
     select.replaceChildren();
@@ -766,7 +1032,6 @@ function initialize() {
     $$("[data-version]").forEach((candidate) => candidate.classList.toggle("active", candidate === button));
   }));
   $("#connectButton").addEventListener("click", connect);
-  $("#anonymousConnectButton").addEventListener("click", connectAnonymous);
   $("#apiKey").addEventListener("keydown", (event) => { if (event.key === "Enter") connect(); });
   $("#parseQuestionnaire").addEventListener("click", parseStructured);
   $("#completeStructured").addEventListener("click", completeStructuredResponse);

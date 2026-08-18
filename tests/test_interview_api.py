@@ -300,6 +300,9 @@ class InterviewApiHttpTests(unittest.TestCase):
         self.assertIn("1 · 설문 유형", body)
         self.assertIn("응답 완료·결과 생성", body)
         self.assertIn("결과 확인", body)
+        self.assertIn("id=\"responseForm\"", body)
+        self.assertIn("id=\"terminologyState\"", body)
+        self.assertNotIn("id=\"anonymousConnectButton\"", body)
         self.assertIn("default-src 'self'", headers["Content-Security-Policy"])
         self.assertEqual(headers["Cache-Control"], "no-store")
 
@@ -318,11 +321,25 @@ class InterviewApiHttpTests(unittest.TestCase):
         self.assertEqual(status, 200)
         self.assertIn("completeStructuredResponse", body)
         self.assertIn("structuredAnswers", body)
+        self.assertIn("isItemEnabled", body)
+        self.assertIn("loadQuestionnaireValueSets", body)
         self.assertIn("syntheticGuidanceFor", body)
         self.assertIn("valueDate", body)
         self.assertNotIn("localStorage", body)
         self.assertNotIn("sessionStorage", body)
         self.assertNotIn("document.cookie", body)
+
+    def test_terminology_routes_are_authenticated_and_report_configuration(self):
+        status, _, body = self._request(
+            "GET", "/v1/terminology/status", authorized=False
+        )
+        self.assertEqual(status, 401)
+        self.assertEqual(body["error"]["code"], "unauthorized")
+
+        status, _, body = self._request("GET", "/v1/terminology/status")
+        self.assertEqual(status, 200)
+        self.assertFalse(body["configured"])
+        self.assertFalse(body["patient_data_transmitted"])
 
 
 class AnonymousDemoHttpTests(InterviewApiHttpTests):
@@ -385,6 +402,13 @@ class AnonymousDemoHttpTests(InterviewApiHttpTests):
         self.assertTrue(gate.allow())
         self.assertFalse(gate.allow())
         self.assertFalse(hasattr(gate, "client_addresses"))
+
+    def test_anonymous_terminology_status_needs_no_api_key(self):
+        status, _, body = self._request(
+            "GET", "/demo-api/terminology/status", authorized=False
+        )
+        self.assertEqual(status, 200)
+        self.assertFalse(body["configured"])
 
 
 class InterviewApiRuntimeIntegrationTests(unittest.TestCase):

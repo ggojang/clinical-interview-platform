@@ -25,6 +25,7 @@ from services.interview_api.llm import (
     LlmSelection,
     LlmSelectionError,
 )
+from services.interview_api.terminology import TerminologyClient, TerminologyError
 
 
 MAX_MESSAGE_CHARACTERS = 10_000
@@ -141,6 +142,7 @@ class InterviewApi:
         session_factory: Callable[[str], CoreInteractionSession] | None = None,
         llm_registry: LlmProviderRegistry | None = None,
         llm_presenter: LlmQuestionPresenter | None = None,
+        terminology_client: TerminologyClient | None = None,
     ) -> None:
         if not MIN_SESSION_TTL_SECONDS <= session_ttl_seconds <= MAX_SESSION_TTL_SECONDS:
             raise ValueError(
@@ -170,6 +172,7 @@ class InterviewApi:
         self.registry = ServiceModeRegistry()
         self.llm_registry = llm_registry or LlmProviderRegistry.from_env()
         self.llm_presenter = llm_presenter or LlmQuestionPresenter.from_env()
+        self.terminology_client = terminology_client or TerminologyClient.from_env()
         self._session_factory = session_factory or (
             lambda session_id: CoreInteractionSession(
                 session_id,
@@ -197,6 +200,7 @@ class InterviewApi:
                 "presentation_enabled": self.llm_presenter.enabled,
                 "runtime_role": "question_presentation_only",
             },
+            "terminology": self.terminology_client.configuration(),
         }
 
     def catalog(self) -> dict[str, Any]:
@@ -224,6 +228,32 @@ class InterviewApi:
         return self.llm_registry.catalog(
             presentation_enabled=self.llm_presenter.enabled
         )
+
+    def terminology_status(self) -> dict[str, Any]:
+        try:
+            return self.terminology_client.status()
+        except TerminologyError as exc:
+            raise ServiceError(exc.status, exc.code, exc.message) from exc
+
+    def expand_valueset(self, payload: dict[str, Any]) -> dict[str, Any]:
+        if not isinstance(payload, dict):
+            raise ServiceError(400, "invalid_request", "request body must be an object")
+        unknown = sorted(set(payload) - {"url", "filter", "count"})
+        if unknown:
+            raise ServiceError(
+                400,
+                "invalid_request",
+                "terminology expansion request contains unsupported fields",
+                details={"unsupported_fields": unknown},
+            )
+        try:
+            return self.terminology_client.expand(
+                payload.get("url"),
+                filter_text=payload.get("filter"),
+                count=payload.get("count", 50),
+            )
+        except TerminologyError as exc:
+            raise ServiceError(exc.status, exc.code, exc.message) from exc
 
     def demo_resources(self) -> dict[str, Any]:
         """List allowlisted, non-response-bearing resources used by the demo UI."""
@@ -291,6 +321,7 @@ class InterviewApi:
                     is_default=True,
                 )
             ],
+            "terminology": self.terminology_client.configuration(),
             "real_personal_information_allowed": False,
             "synthetic_test_information_required": True,
         }

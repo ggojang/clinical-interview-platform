@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Clinical Interview API
-  version: 0.1.0-draft
+  version: 0.2.0-draft
   description: >-
     Ephemeral API for the compiled Clinical Interview runtime. Clinical content
     is draft and unreviewed, is available only for limited testing or a
@@ -35,6 +35,34 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
+  /demo-api/terminology/status:
+    get:
+      security: []
+      summary: Check the fixed terminology server used by the anonymous demo
+      responses:
+        "200":
+          description: Safe terminology capability summary
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+  /demo-api/terminology/expand:
+    post:
+      security: []
+      summary: Expand one ValueSet canonical on the fixed terminology server
+      description: Only the canonical, optional filter, and count are transmitted; participant answers are never sent.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ValueSetExpansionRequest"
+      responses:
+        "200":
+          description: Bounded ValueSet expansion
+        "404":
+          $ref: "#/components/responses/NotFound"
   /demo-api/resources:
     get:
       security: []
@@ -165,6 +193,36 @@ paths:
                 $ref: "#/components/schemas/LlmProviderCatalog"
         "401":
           $ref: "#/components/responses/Unauthorized"
+  /v1/terminology/status:
+    get:
+      summary: Check the administrator-configured terminology server
+      responses:
+        "200":
+          description: Safe terminology capability summary
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /v1/terminology/expand:
+    post:
+      summary: Expand one ValueSet canonical on the fixed terminology server
+      description: This proxy cannot fetch a caller-supplied server URL and never receives participant answers.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ValueSetExpansionRequest"
+      responses:
+        "200":
+          description: Bounded ValueSet expansion
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
   /v1/demo/resources:
     get:
       summary: List allowlisted demo questionnaire resources
@@ -356,6 +414,23 @@ components:
         type: string
         format: uuid
   schemas:
+    ValueSetExpansionRequest:
+      type: object
+      additionalProperties: false
+      required: [url]
+      properties:
+        url:
+          type: string
+          format: uri
+          maxLength: 512
+          description: ValueSet canonical URL, optionally including a canonical version suffix.
+        filter:
+          type: string
+          maxLength: 200
+        count:
+          type: integer
+          minimum: 1
+          maximum: 100
     Health:
       type: object
       required: [status, service, api_version, execution_mode, response_storage]
