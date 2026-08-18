@@ -1,0 +1,40 @@
+http:
+  routers:
+    ciai:
+      rule: "Host(`ciai.banttas.com`)"
+      entryPoints:
+        - websecure
+      service: ciai
+      middlewares:
+        - ciai-security
+        - ciai-compress
+        - ciai-rate-limit
+        - ciai-inflight
+      tls:
+        certResolver: letsencrypt
+
+  services:
+    ciai:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: "http://10.20.0.12:9090"
+
+  middlewares:
+    ciai-security:
+      headers:
+        contentTypeNosniff: true
+        frameDeny: true
+        referrerPolicy: "no-referrer"
+        stsSeconds: 31536000
+        stsIncludeSubdomains: true
+    ciai-compress:
+      compress: {}
+    ciai-rate-limit:
+      rateLimit:
+        average: 30
+        period: "1s"
+        burst: 60
+    ciai-inflight:
+      inFlightReq:
+        amount: 64

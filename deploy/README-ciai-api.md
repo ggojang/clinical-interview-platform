@@ -14,11 +14,14 @@ Quadlet. Do not edit application source inside the running container.
 - the API container uses host networking but binds only `10.20.0.12:9090`, so
   it can reach the host-only LLM at `127.0.0.1:8000`
 
-The `/demo-api` surface may be exposed without an API key for synthetic public
-testing. It is separately bounded to the platform-local LLM, memory-only
-sessions, a ten-minute TTL, a concurrent-session cap, and a global request
-limit. The authenticated `/v1` API remains protected. Public internet exposure
-still requires an HTTPS reverse proxy, WAF/network rate limiting, and monitoring.
+The `/demo-api` surface is exposed without an API key for synthetic public
+tests at `https://ciai.banttas.com`. It is separately bounded to the
+platform-local LLM, memory-only sessions, a ten-minute TTL, a concurrent-session
+cap, and global request limits. The authenticated `/v1` API remains protected.
+`deploy/traefik-ciai.yml` is the source-controlled public edge route; install it
+as `ciai.yml` in the production Traefik file-provider directory. The edge adds
+HTTPS, security headers, compression, request-rate and in-flight limits. A WAF
+is not yet present and remains a production-hardening requirement.
 
 ## Build and install
 
