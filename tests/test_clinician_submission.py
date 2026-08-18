@@ -246,7 +246,8 @@ class ClinicianSubmissionContextTest(unittest.TestCase):
 
         self.assertEqual(
             choice["response_instruction_ko"],
-            "번호로 답하거나, 보기에 없으면 내용을 직접 입력해 주세요.",
+            "번호로 답하거나, 보기에 없으면 내용을 직접 입력해 주세요. "
+            "잘 모르겠거나 답변을 원하지 않는 경우 해당 항목을 선택할 수 있습니다.",
         )
         self.assertTrue(choice["allow_free_text"])
         self.assertIn("자유롭게 입력", open_question["response_instruction_ko"])

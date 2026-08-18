@@ -18,8 +18,16 @@ from runtime.package import DEFAULT_PACKAGE, load_package
 from runtime.question_presentation import (
     DATA_ABSENT_ACTIONS,
     PRESENTATION_CONTRACT_VERSION,
+    data_absent_actions,
     display_suggestions,
+    resolve_data_absent_input,
     resolve_presentation_input,
+)
+from runtime.adaptive_answer_presentation import (
+    patient_answer_options,
+    resolve_patient_option,
+    selector_fact_ids,
+    selector_stem_ko,
 )
 
 
@@ -618,10 +626,22 @@ class InterviewSession:
                 return self._edit_menu_state(turn, "수정할 수 있는 항목을 찾지 못했습니다.")
             answer_text = edit_action[2] or ""
         expected_fact = correction_target or self.last_question_fact
-        presentation_input = (
-            resolve_presentation_input(expected_fact, answer_text)
-            if expected_fact else None
+        patient_options = (
+            self._patient_answer_options(expected_fact) if expected_fact else []
         )
+        selected_patient_option = (
+            resolve_patient_option(patient_options, answer_text)
+            if patient_options else None
+        )
+        presentation_input = None
+        if expected_fact and selected_patient_option is None:
+            presentation_input = (
+                resolve_data_absent_input(
+                    answer_text, data_absent_actions(len(patient_options) + 1)
+                )
+                if patient_options
+                else resolve_presentation_input(expected_fact, answer_text)
+            )
         extraction_text = (
             presentation_input["answer_text"]
             if presentation_input
@@ -629,6 +649,12 @@ class InterviewSession:
             else answer_text
         )
         additions = extract(extraction_text, turn, expected_fact)
+        if (
+            expected_fact
+            and presentation_input
+            and presentation_input["kind"] == "data_absent"
+        ):
+            additions.pop(expected_fact, None)
         if extraction_text != answer_text:
             # The normalized shortcut drives extraction, while provenance keeps
             # exactly what the patient entered or selected.
@@ -679,14 +705,28 @@ class InterviewSession:
                 ):
                     additions.pop(fact_id)
 
-        if expected_fact and expected_fact not in additions:
+        if (
+            expected_fact
+            and expected_fact not in additions
+            and not (
+                presentation_input
+                and presentation_input["kind"] == "data_absent"
+            )
+        ):
             node = self._fact_node(expected_fact)
             if node:
                 allowed = node.get("allowed_values", [])
                 normalized = low_normalized
                 template = self._questions_by_fact().get(expected_fact, {})
                 answer_code_map = template.get("answer_code_map", {})
-                if normalized in answer_code_map:
+                if selected_patient_option is not None:
+                    additions[expected_fact] = fact(
+                        selected_patient_option["internal_value"],
+                        answer_text,
+                        turn,
+                        .97,
+                    )
+                elif normalized in answer_code_map:
                     additions[expected_fact] = fact(
                         answer_code_map[normalized], answer_text, turn, .95
                     )
@@ -1320,18 +1360,35 @@ class InterviewSession:
                 {"input": "3", "internal_value": "asked-unknown", "display_ko": "잘 모르겠음"},
                 {"input": "4", "internal_value": "asked-declined", "display_ko": "답변하지 않음"},
             ]
+        if not options:
+            options = self._patient_answer_options(fact_id)
         if options:
             question["answer_options"] = options
+            if fact_id in selector_fact_ids(
+                self.package.get("interview_completion_policy", {})
+            ):
+                question["stem_text"] = selector_stem_ko(fact_id)
         suggestions = display_suggestions(fact_id) if not options else []
         if suggestions:
             question["display_suggestions"] = suggestions
             question["suggestion_semantics"] = "input_shortcut_only"
             question["data_absent_actions"] = deepcopy(DATA_ABSENT_ACTIONS)
+        elif options and node.get("value_type") != "boolean":
+            question["data_absent_actions"] = data_absent_actions(len(options) + 1)
         question["presentation_contract"] = {
             "version": PRESENTATION_CONTRACT_VERSION,
             "question_count_per_turn": 1,
             "stable_question_reference": True,
             "intermediate_answer_commentary": "prohibited",
+            "internal_code_as_patient_label": "prohibited",
+            "localized_options_status": "available" if options else "unavailable",
+            "answer_dimension": (
+                "single_routing_context"
+                if fact_id in selector_fact_ids(
+                    self.package.get("interview_completion_policy", {})
+                )
+                else "fact_value"
+            ),
         }
         if binding.get("answer_value_set"):
             question["answer_value_set"] = binding["answer_value_set"]
@@ -1373,7 +1430,8 @@ class InterviewSession:
             question["allow_free_text"] = True
         if options:
             question["response_instruction_ko"] = (
-                "번호로 답하거나, 보기에 없으면 내용을 직접 입력해 주세요."
+                "번호로 답하거나, 보기에 없으면 내용을 직접 입력해 주세요. "
+                "잘 모르겠거나 답변을 원하지 않는 경우 해당 항목을 선택할 수 있습니다."
             )
         elif suggestions:
             question["response_instruction_ko"] = (
@@ -1393,6 +1451,19 @@ class InterviewSession:
         else:
             question["unlisted_text_handling"] = "accept_or_clarify_if_ambiguous"
         return question
+
+    def _patient_answer_options(self, fact_id: str) -> list[dict[str, Any]]:
+        node = self._fact_node(fact_id) or {}
+        template = self._questions_by_fact().get(fact_id, {})
+        return patient_answer_options(
+            fact_id,
+            node,
+            template,
+            self.package.get("interview_completion_policy", {}),
+            self.package.get("question_answer_terminology", {}).get(
+                "local_answer_code_system"
+            ),
+        )
 
     def _fact_nodes(self) -> list[dict[str, Any]]:
         nodes = [

@@ -12,7 +12,7 @@ from copy import deepcopy
 from typing import Any
 
 
-PRESENTATION_CONTRACT_VERSION = "0.1.0"
+PRESENTATION_CONTRACT_VERSION = "0.2.0"
 
 
 _FACT_SUGGESTIONS: dict[str, list[dict[str, str]]] = {
@@ -57,6 +57,34 @@ DATA_ABSENT_ACTIONS = [
 ]
 
 
+def data_absent_actions(start_input: int = 5) -> list[dict[str, str]]:
+    """Return separately numbered absence actions for the visible question."""
+    actions = deepcopy(DATA_ABSENT_ACTIONS)
+    for offset, action in enumerate(actions):
+        action["input"] = str(start_input + offset)
+    return actions
+
+
+def resolve_data_absent_input(
+    answer: str, actions: list[dict[str, str]]
+) -> dict[str, Any] | None:
+    """Resolve a visible absence action without treating it as an answer code."""
+    normalized = answer.strip().lower().rstrip(".!?")
+    for action in actions:
+        aliases = {
+            action["input"].lower(),
+            action["display_ko"].lower(),
+            action["answer_text"].lower(),
+        }
+        if normalized in aliases:
+            return {
+                "kind": "data_absent",
+                "answer_text": action["answer_text"],
+                "dataAbsentReason": action["dataAbsentReason"],
+            }
+    return None
+
+
 def display_suggestions(fact_id: str) -> list[dict[str, str]]:
     """Return input-only shortcuts for a Fact, never coded answer options."""
     return deepcopy(_FACT_SUGGESTIONS.get(fact_id, []))
@@ -82,16 +110,4 @@ def resolve_presentation_input(
             }
     # Inputs 5 and 6 are reserved only in the shortcut presentation.  Treating
     # them globally would corrupt legitimate numeric answers such as NRS 5.
-    for action in DATA_ABSENT_ACTIONS if suggestions else []:
-        aliases = {
-            action["input"].lower(),
-            action["display_ko"].lower(),
-            action["answer_text"].lower(),
-        }
-        if normalized in aliases:
-            return {
-                "kind": "data_absent",
-                "answer_text": action["answer_text"],
-                "dataAbsentReason": action["dataAbsentReason"],
-            }
-    return None
+    return resolve_data_absent_input(answer, DATA_ABSENT_ACTIONS) if suggestions else None

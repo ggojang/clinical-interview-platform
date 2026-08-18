@@ -375,6 +375,21 @@ function displayCoding(coding, locale) {
   return coding?.display || coding?.code || pretty(coding || {});
 }
 
+function looksLikeInternalCode(value) {
+  const text = String(value || "").trim();
+  return !text
+    || text.includes("--")
+    || text.includes("_")
+    || /^[a-z][a-z0-9.-]*$/i.test(text);
+}
+
+function patientSafeCodingLabel(coding, locale) {
+  const label = displayCoding(coding, locale);
+  if (localeMatches(locale, "ko") && !/[가-힣]/.test(label)) return "";
+  if (looksLikeInternalCode(label) || label === coding?.code) return "";
+  return label;
+}
+
 function displayAnswer(option, locale = activeLocale()) {
   const key = Object.keys(option || {}).find((name) => name.startsWith("value"));
   const value = key ? option[key] : "";
@@ -1253,15 +1268,27 @@ function buildTextSurvey() {
 function adaptiveQuestion(document) {
   const stateDoc = document?.state || {};
   const selected = stateDoc.adapter_state?.selected_question || stateDoc.selected_question;
-  const text = document?.presentation?.text || selected?.stem_text || selected?.text || stateDoc.prompt_ko;
+  // Runtime-authored stems win over optional LLM wording.  In particular,
+  // selector questions must stay one short prompt followed by deterministic
+  // choices instead of becoming an explanatory paragraph.
+  const text = selected?.stem_text || document?.presentation?.text || selected?.text || stateDoc.prompt_ko;
   if (!text) return null;
   const rawOptions = selected?.answer_options?.length ? selected.answer_options : (selected?.preferred_answer_options || []);
-  const options = rawOptions.map((option, index) => ({
-    input: String(option.input || index + 1),
-    label: option.display_ko || option.display || option.coding?.display || String(option.internal_value || option.coding?.code || index + 1).replaceAll("_", " "),
-    internalValue: option.internal_value,
-    coding: option.coding
-  }));
+  const options = rawOptions.map((option, index) => {
+    const authoredLabel = localeMatches(activeLocale(), "ko")
+      ? option.display_ko
+      : (option.display || option.coding?.display || option.display_ko);
+    const label = localeMatches(activeLocale(), "ko")
+      ? (option.display_ko || patientSafeCodingLabel(option.coding, activeLocale()))
+      : (option.display || option.coding?.display || option.display_ko || "");
+    return {
+      input: String(option.input || index + 1),
+      label,
+      patientLabelVerified: Boolean(authoredLabel),
+      internalValue: option.internal_value,
+      coding: option.coding
+    };
+  }).filter((option) => option.label && (option.patientLabelVerified || !looksLikeInternalCode(option.label)));
   const suggestions = (selected?.display_suggestions || []).map((suggestion, index) => ({
     input: String(suggestion.input || index + 1),
     label: suggestion.display_ko || suggestion.answer_text || String(index + 1),
@@ -1281,12 +1308,13 @@ function adaptiveQuestion(document) {
     questionRef: selected?.question_ref || `Q${state.adaptiveHistory.length + 1}`,
     text,
     originalText: selected?.text || text,
-    type: options.length ? "choice" : "string",
+    type: options.length ? (selected?.allow_free_text === false ? "choice" : "open-choice") : "string",
     options,
     suggestions,
     dataAbsentActions,
     answerOption,
     answerValueSet: selected?.answer_value_set,
+    repeats: Boolean(selected?.answer_repeats),
     responseInstruction: selected?.response_instruction_ko || (options.length
       ? "번호로 답하거나, 보기에 없으면 내용을 직접 입력해 주세요."
       : "내용을 자유롭게 입력해 주세요."),
@@ -1303,9 +1331,7 @@ function adaptivePrompt(question) {
   const lines = [`[${question.questionRef}] ${question.text}`];
   const choices = question.options?.length ? question.options : (question.suggestions || []);
   choices.forEach((option) => lines.push(`${option.input}. ${option.label}`));
-  if (!question.options?.length) {
-    (question.dataAbsentActions || []).forEach((action) => lines.push(`${action.input}. ${action.label}`));
-  }
+  (question.dataAbsentActions || []).forEach((action) => lines.push(`${action.input}. ${action.label}`));
   if (question.responseInstruction) lines.push(`응답 안내: ${question.responseInstruction}`);
   if (question.sourceLabel) lines.push(`출처: ${question.sourceLabel}`);
   return lines.join("\n");
@@ -1363,12 +1389,10 @@ async function renderAdaptiveSuggestions(question) {
         body: JSON.stringify({ url: question.answerValueSet, count: 12 })
       });
       if (state.currentAdaptiveQuestion !== question) return;
-      const expanded = (expansion.contains || []).map((concept, index) => ({
-        label: displayCoding(concept, activeLocale()),
-        value: displayCoding(concept, activeLocale()),
-        input: String(index + 1),
-        coding: concept
-      }));
+      const expanded = (expansion.contains || []).map((concept, index) => {
+        const label = patientSafeCodingLabel(concept, activeLocale());
+        return { label, value: label, input: String(index + 1), coding: concept };
+      }).filter((option) => option.label);
       question.options = expanded;
       question.answerOption = expanded.map((option) => ({ valueCoding: clone(option.coding) }));
       if (expanded.length) return paintAdaptiveSuggestions(question, expanded.map((option) => ({
@@ -1392,11 +1416,19 @@ function rebuildAdaptiveArtifacts(sourceDocument) {
       prefix: question.questionRef,
       text: question.text,
       type: question.type || "string",
-      answerOption: question.answerOption?.length ? clone(question.answerOption) : undefined
+      repeats: question.repeats || undefined,
+      answerValueSet: question.answerValueSet || undefined,
+      // FHIR Questionnaire does not combine answerOption and answerValueSet.
+      answerOption: !question.answerValueSet && question.answerOption?.length
+        ? clone(question.answerOption) : undefined
     }))
   };
   const response = blankResponse(questionnaire);
-  response.item = state.adaptiveHistory.map((entry, index) => ({ linkId: safeLinkId(entry.question.linkId, index), text: entry.question.text, answer: [{ valueString: entry.answer }] }));
+  response.item = state.adaptiveHistory.map((entry, index) => ({
+    linkId: safeLinkId(entry.question.linkId, index),
+    text: entry.question.text,
+    answer: [clone(entry.fhirAnswer || { valueString: entry.answer })]
+  }));
   const source = { purpose: state.adaptivePurpose, conversation: state.adaptiveHistory, current_question: state.currentAdaptiveQuestion, backend_state: sourceDocument?.state || null };
   setArtifacts(questionnaire, response, pretty(source), state.handoff);
 }
@@ -1626,6 +1658,25 @@ async function sendAdaptiveAnswer() {
   }
   if (!state.currentAdaptiveQuestion) return;
   const answered = clone(state.currentAdaptiveQuestion);
+  const selectedOption = answered.options?.find((option) =>
+    [option.input, option.label, String(option.internalValue || "")].includes(answer)
+  );
+  const selectedSuggestion = answered.suggestions?.find((option) =>
+    [option.input, option.label, option.answerText].includes(answer)
+  );
+  const selectedAbsent = answered.dataAbsentActions?.find((option) =>
+    [option.input, option.label, option.answerText].includes(answer)
+  );
+  const fhirAnswer = selectedOption?.coding
+    ? { valueCoding: clone(selectedOption.coding) }
+    : selectedAbsent?.dataAbsentReason
+      ? {
+          extension: [{
+            url: "http://hl7.org/fhir/StructureDefinition/data-absent-reason",
+            valueCode: selectedAbsent.dataAbsentReason
+          }]
+        }
+      : { valueString: selectedSuggestion?.answerText || selectedOption?.label || answer };
   bubble($("#adaptiveChatLog"), "user", answer);
   input.value = "";
   const requestSerial = ++state.adaptiveRequestSerial;
@@ -1633,7 +1684,12 @@ async function sendAdaptiveAnswer() {
   try {
     const document = await api(`/v1/sessions/${state.sessionId}/messages`, { method: "POST", body: JSON.stringify({ message: answer }) });
     if (requestSerial !== state.adaptiveRequestSerial) return;
-    state.adaptiveHistory.push({ question: answered, answer });
+    state.adaptiveHistory.push({
+      question: answered,
+      answer,
+      displayAnswer: selectedOption?.label || selectedSuggestion?.label || selectedAbsent?.label || answer,
+      fhirAnswer
+    });
     state.currentAdaptiveQuestion = adaptiveQuestion(document);
     if (state.currentAdaptiveQuestion) {
       showAdaptiveQuestion(state.currentAdaptiveQuestion);

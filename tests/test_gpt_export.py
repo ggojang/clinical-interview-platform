@@ -30,7 +30,10 @@ class GptExportTests(unittest.TestCase):
             ).read_text(encoding="utf-8")
         )
         self.assertFalse(fixture["contains_real_patient_data"])
-        case = fixture["cases"][0]
+        case = next(
+            item for item in fixture["cases"]
+            if item["id"] == "SYNTHETIC-ANKLE-INTERMITTENT-001"
+        )
         collecting = case["collecting_phase_expectations"]
         self.assertEqual(collecting["maximum_question_stems_per_assistant_turn"], 1)
         self.assertFalse(collecting["question_reference_resets_after_answer"])
@@ -62,7 +65,10 @@ class GptExportTests(unittest.TestCase):
         self.assertTrue(completion["another_chat_is_not_reusable_clinical_memory"])
         self.assertFalse(completion["diagnosis_claim_allowed"])
 
-        temporal = fixture["cases"][1]
+        temporal = next(
+            item for item in fixture["cases"]
+            if item["id"] == "SYNTHETIC-TEMPORAL-FREE-TEXT-JUST-NOW-001"
+        )
         self.assertEqual(
             temporal["expected_temporal_memory"]["normalized_relation"],
             "just_now",
@@ -80,14 +86,20 @@ class GptExportTests(unittest.TestCase):
             temporal["expected_flow"]["next_new_question_reference"], "Q2"
         )
 
-        ambiguous = fixture["cases"][2]["expected_flow"]
+        ambiguous = next(
+            item for item in fixture["cases"]
+            if item["id"] == "SYNTHETIC-TEMPORAL-FREE-TEXT-AMBIGUOUS-001"
+        )["expected_flow"]
         self.assertEqual(ambiguous["clarification_question_reference"], "Q1")
         self.assertFalse(ambiguous["new_question_reference_assigned"])
         self.assertTrue(ambiguous["preserve_understood_partial_information"])
         self.assertEqual(ambiguous["ask_only_ambiguous_dimension"], "time_range")
         self.assertFalse(ambiguous["verbatim_original_question_repeat"])
 
-        deduplication = fixture["cases"][3]
+        deduplication = next(
+            item for item in fixture["cases"]
+            if item["id"] == "SYNTHETIC-SEMANTIC-DEDUPLICATION-001"
+        )
         self.assertTrue(
             deduplication["expected_flow"]["ask_only_questions_with_new_clinical_utility"]
         )
@@ -106,7 +118,10 @@ class GptExportTests(unittest.TestCase):
             for item in deduplication["candidate_questions"]
         ))
 
-        social_history = fixture["cases"][4]
+        social_history = next(
+            item for item in fixture["cases"]
+            if item["id"] == "SYNTHETIC-SOCIAL-HISTORY-ATOMIC-001"
+        )
         self.assertEqual(
             len(social_history["expected_atomic_follow_up_facts"]), 6
         )
@@ -120,7 +135,10 @@ class GptExportTests(unittest.TestCase):
             ]
         )
 
-        older_adult = fixture["cases"][5]
+        older_adult = next(
+            item for item in fixture["cases"]
+            if item["id"] == "SYNTHETIC-OLDER-ADULT-DIZZINESS-MODEL-ADAPTER-001"
+        )
         self.assertEqual(older_adult["mapped_rfe"], "rfe.dizziness_syncope")
         self.assertTrue(all(
             item["expected_action"] == "skip"

@@ -425,6 +425,91 @@ console.log(vm.runInContext(`(() => {{
         self.assertIn("응답 안내: 보기 번호 또는 상태를 입력해 주세요.", result["prompt"])
         self.assertIn("출처: [공동 작업 지식]", result["prompt"])
 
+    def test_adaptive_selector_prefers_runtime_stem_and_keeps_absence_actions(self):
+        document = {
+            "state": {
+                "adapter_state": {
+                    "selected_question": {
+                        "question_ref": "Q1",
+                        "fact_id": "abdominal_pain.primary_group",
+                        "text": "긴 원본 분류 질문",
+                        "stem_text": "이번 복통은 어떤 상황에 가장 가깝나요?",
+                        "answer_value_set": "https://example.org/ValueSet/abdominal-context",
+                        "answer_options": [
+                            {
+                                "input": "1",
+                                "display_ko": "갑자기 시작하거나 매우 심함",
+                                "internal_value": "acute_sudden_or_severe",
+                                "coding": {
+                                    "system": "https://example.org/CodeSystem/local",
+                                    "code": "abdominal--acute",
+                                    "display": "acute_sudden_or_severe",
+                                },
+                            }
+                        ],
+                        "data_absent_actions": [
+                            {
+                                "input": "2",
+                                "display_ko": "잘 모르겠음",
+                                "answer_text": "잘 모르겠습니다",
+                                "dataAbsentReason": "asked-unknown",
+                            }
+                        ],
+                    }
+                }
+            },
+            "presentation": {"text": "LLM이 길게 바꾼 설명"},
+        }
+        script = fr"""
+const fs = require('fs');
+const vm = require('vm');
+const source = fs.readFileSync({json.dumps(str(APP_JS))}, 'utf8').replace(/initialize\(\);\s*$/, '');
+const context = {{ console }};
+vm.createContext(context);
+vm.runInContext(source, context);
+console.log(vm.runInContext(`(() => {{
+  const question = adaptiveQuestion(${{JSON.stringify({json.dumps(document)})}});
+  return JSON.stringify({{ question, prompt: adaptivePrompt(question) }});
+}})()`, context));
+"""
+        completed = subprocess.run(
+            ["node", "-e", script], check=True, capture_output=True, text=True,
+            cwd=REPOSITORY_ROOT,
+        )
+        result = json.loads(completed.stdout)
+        self.assertEqual(
+            result["question"]["text"], "이번 복통은 어떤 상황에 가장 가깝나요?"
+        )
+        self.assertEqual(result["question"]["type"], "open-choice")
+        self.assertIn("1. 갑자기 시작하거나 매우 심함", result["prompt"])
+        self.assertIn("2. 잘 모르겠음", result["prompt"])
+        self.assertEqual(
+            result["question"]["answerValueSet"],
+            "https://example.org/ValueSet/abdominal-context",
+        )
+
+    def test_terminology_internal_code_is_not_a_patient_label(self):
+        script = fr"""
+const fs = require('fs');
+const vm = require('vm');
+const source = fs.readFileSync({json.dumps(str(APP_JS))}, 'utf8').replace(/initialize\(\);\s*$/, '');
+const context = {{ console }};
+vm.createContext(context);
+vm.runInContext(source, context);
+console.log(vm.runInContext(`JSON.stringify([
+  patientSafeCodingLabel({{code:'fact--acute',display:'acute_sudden_or_severe'}}, 'ko-KR'),
+  patientSafeCodingLabel({{
+    code:'fact--acute', display:'Acute',
+    designation:[{{language:'ko',value:'갑작스러운 증상'}}]
+  }}, 'ko-KR')
+])`, context));
+"""
+        completed = subprocess.run(
+            ["node", "-e", script], check=True, capture_output=True, text=True,
+            cwd=REPOSITORY_ROOT,
+        )
+        self.assertEqual(json.loads(completed.stdout), ["", "갑작스러운 증상"])
+
     def test_adaptive_free_text_question_uses_runtime_presentation_contract(self):
         document = {
             "state": {
