@@ -830,6 +830,11 @@ class InterviewApi:
             and record.core.adapter is not None
         ):
             adapter_result = record.core.adapter.result()
+            workflow = {
+                key: deepcopy(value)
+                for key, value in adapter_result.items()
+                if key != "recommendation"
+            }
             return {
                 "session_id": session_id,
                 "mode_id": "screening_addon_recommendation",
@@ -840,7 +845,7 @@ class InterviewApi:
                 "catalog_answer_transmission": "local_memory_only",
                 "available_formats": ["screening_package_recommendation_json"],
                 "recommendation": deepcopy(adapter_result.get("recommendation")),
-                "workflow": deepcopy(adapter_result),
+                "workflow": workflow,
                 "response_storage": "memory_only",
             }
         if record.core.mode_id == "health_information" and record.core.adapter is not None:
