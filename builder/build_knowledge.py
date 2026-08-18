@@ -533,7 +533,11 @@ def add_edge(
     }
 
 
-def priority_when(branch: str, target: str) -> dict[str, Any]:
+def priority_when(
+    branch: str,
+    target: str,
+    clinical_when: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     result: dict[str, Any] = {"target_state": {target: "active"}}
     if branch == "acute":
         result["duration_class"] = "acute"
@@ -541,6 +545,15 @@ def priority_when(branch: str, target: str) -> dict[str, Any]:
         result["duration_class"] = {"in": ["subacute", "chronic"]}
     elif branch != "any":
         raise BuildError(f"unsupported priority branch: {branch}")
+    if clinical_when:
+        reserved = {"target_state", "duration_class", "fact_state"}
+        overlap = reserved.intersection(clinical_when)
+        if overlap:
+            raise BuildError(
+                "priority clinical condition uses reserved keys: "
+                + ", ".join(sorted(overlap))
+            )
+        result.update(deepcopy(clinical_when))
     return result
 
 
@@ -694,7 +707,9 @@ def merge_fragment(
                 "id": rule_id,
                 "type": "priority",
                 "priority": priority["score"],
-                "when": priority_when(priority["branch"], target["id"]),
+                "when": priority_when(
+                    priority["branch"], target["id"], priority.get("when")
+                ),
                 "then": {
                     "target": target["id"],
                     "reason": priority["reason"],

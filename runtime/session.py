@@ -2012,9 +2012,11 @@ class InterviewSession:
     def _update_target_states(self, classification: str | None) -> None:
         for target, facts in self.package["indexes"]["target_facts"].items():
             branches: set[str] = set()
+            priority_rules: list[dict[str, Any]] = []
             for rule in self.package["rule_graph"]["rules"]:
                 if rule["type"] != "priority" or rule.get("then", {}).get("target") != target:
                     continue
+                priority_rules.append(rule)
                 requirement = rule.get("when", {}).get("duration_class")
                 if isinstance(requirement, str):
                     branches.add(requirement)
@@ -2026,6 +2028,31 @@ class InterviewSession:
                 self.active_targets[target] = "not_applicable"
                 continue
             if classification in {"subacute", "chronic"} and branches and "any" not in branches and not branches.intersection({"subacute", "chronic"}):
+                self.active_targets[target] = "not_applicable"
+                continue
+            clinical_rules = [
+                rule
+                for rule in priority_rules
+                if any(
+                    key in rule.get("when", {})
+                    for key in ("fact", "all", "any")
+                )
+            ]
+            has_unconditional_rule = any(
+                not any(
+                    key in rule.get("when", {})
+                    for key in ("fact", "all", "any")
+                )
+                for rule in priority_rules
+            )
+            if (
+                clinical_rules
+                and not has_unconditional_rule
+                and not any(
+                    _condition_matches(rule["when"], self.memory)
+                    for rule in clinical_rules
+                )
+            ):
                 self.active_targets[target] = "not_applicable"
                 continue
             states = [self.memory.state(fact_id) for fact_id in facts]
@@ -2095,6 +2122,13 @@ class InterviewSession:
                 required.update(minimum.get("always_required_facts", []))
         if not self.proactive_safety_questions and safety["level"] == "routine":
             required.difference_update(self._proactive_safety_fact_ids())
+        not_applicable_target_facts = {
+            fact_id
+            for target, state in self.active_targets.items()
+            if state == "not_applicable"
+            for fact_id in self.package["indexes"]["target_facts"].get(target, [])
+        }
+        required.difference_update(not_applicable_target_facts)
         return sorted(required)
 
     def _proactive_safety_fact_ids(self) -> set[str]:
@@ -2259,6 +2293,9 @@ class InterviewSession:
             if fact_id in self.asked:
                 continue
             when = rule["when"]
+            if any(key in when for key in ("fact", "all", "any")):
+                if not _condition_matches(when, self.memory):
+                    continue
             if "fact_state" in when:
                 required = next(iter(when["fact_state"]))
                 if self.memory.state(required) != "not_asked":

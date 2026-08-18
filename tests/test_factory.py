@@ -24,7 +24,7 @@ from runtime.package import (
     VOMITING_DIARRHEA_PACKAGE,
     PackageLoadError, load_package,
 )
-from runtime.session import InterviewSession, extract
+from runtime.session import InterviewSession, extract, fact
 from sources.check_refresh import due_sources, manifest_paths_for_check
 from tools.validator.audit_expansion_queue import run as run_expansion_audit
 
@@ -1861,6 +1861,57 @@ class ClinicalMemoryTests(unittest.TestCase):
 
 
 class PackageRuntimeTests(unittest.TestCase):
+    def test_hemoptysis_detail_is_not_asked_before_presence_is_known(self):
+        session = InterviewSession(
+            "hemoptysis-detail-branch",
+            proactive_safety_questions=False,
+        )
+        session.memory.merge(
+            "symptom.duration",
+            fact({"amount": 3, "unit": "day"}, "3일", 1),
+        )
+        required = session._required_facts("acute", session._safety())
+
+        question = session._choose("acute", "routine", required)
+
+        self.assertIsNotNone(question)
+        self.assertNotEqual(
+            question["fact_id"],
+            "cough.hemoptysis_amount_frequency_appearance_and_source",
+        )
+
+    def test_hemoptysis_detail_priority_requires_positive_presence_fact(self):
+        package = load_package(DEFAULT_PACKAGE)
+        rule = next(
+            item
+            for item in package["rule_graph"]["rules"]
+            if item["id"] == "rule.generated.priority.any.hemoptysis-detail"
+        )
+
+        self.assertEqual(
+            {key: rule["when"][key] for key in ("fact", "equals")},
+            {"fact": "symptom.hemoptysis", "equals": True},
+        )
+
+    def test_hemoptysis_detail_target_reactivates_only_after_positive_presence(self):
+        session = InterviewSession(
+            "hemoptysis-detail-target-branch",
+            proactive_safety_questions=False,
+        )
+
+        session._update_target_states("acute")
+        self.assertEqual(
+            session.active_targets["target.cough.hemoptysis-detail"],
+            "not_applicable",
+        )
+
+        session.memory.merge("symptom.hemoptysis", fact(True, "예", 1))
+        session._update_target_states("acute")
+        self.assertEqual(
+            session.active_targets["target.cough.hemoptysis-detail"],
+            "active",
+        )
+
     def test_off_path_comment_is_preserved_without_forcing_pending_answer(self):
         fixture = json.loads(
             (
