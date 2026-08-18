@@ -132,6 +132,18 @@ class InterviewApiServiceTests(unittest.TestCase):
             )
         self.assertEqual(context.exception.code, "invalid_llm_selection")
 
+    def test_demo_resources_are_allowlisted_and_response_free(self):
+        catalog = self.api.demo_resources()
+        self.assertFalse(catalog["contains_patient_responses"])
+        self.assertEqual(catalog["response_storage"], "none")
+        questionnaire = self.api.demo_resource("patient-experience-5th-2025")
+        self.assertEqual(questionnaire["resourceType"], "Questionnaire")
+        screening = self.api.demo_resource("national-health-screening-2026")
+        self.assertIn("question_groups", screening)
+        with self.assertRaises(ServiceError) as context:
+            self.api.demo_resource("../../private")
+        self.assertEqual(context.exception.code, "demo_resource_not_found")
+
 
 class InterviewApiHttpTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -178,7 +190,13 @@ class InterviewApiHttpTests(unittest.TestCase):
             if ":" in line
             for key, value in [line.split(":", 1)]
         }
-        payload = json.loads(raw_payload) if raw_payload else {}
+        content_type = response_headers.get("Content-Type", "")
+        if raw_payload and content_type.startswith("application/json"):
+            payload = json.loads(raw_payload)
+        elif raw_payload:
+            payload = raw_payload.decode("utf-8")
+        else:
+            payload = {}
         return status, response_headers, payload
 
     def test_health_does_not_require_auth_and_disables_cache(self):
@@ -224,6 +242,30 @@ class InterviewApiHttpTests(unittest.TestCase):
         )
         self.assertEqual(status, 403)
         self.assertEqual(body["error"]["code"], "origin_not_allowed")
+
+    def test_demo_shell_is_public_but_resources_require_auth(self):
+        status, headers, body = self._request("GET", "/demo", authorized=False)
+        self.assertEqual(status, 200)
+        self.assertIn("Clinical Interaction Studio", body)
+        self.assertIn("default-src 'self'", headers["Content-Security-Policy"])
+        self.assertEqual(headers["Cache-Control"], "no-store")
+
+        status, _, body = self._request(
+            "GET", "/v1/demo/resources", authorized=False
+        )
+        self.assertEqual(status, 401)
+        self.assertEqual(body["error"]["code"], "unauthorized")
+
+        status, _, body = self._request("GET", "/v1/demo/resources")
+        self.assertEqual(status, 200)
+        self.assertFalse(body["contains_patient_responses"])
+
+    def test_demo_javascript_does_not_use_browser_persistence(self):
+        status, _, body = self._request("GET", "/demo/app.js", authorized=False)
+        self.assertEqual(status, 200)
+        self.assertNotIn("localStorage", body)
+        self.assertNotIn("sessionStorage", body)
+        self.assertNotIn("document.cookie", body)
 
 
 class InterviewApiRuntimeIntegrationTests(unittest.TestCase):

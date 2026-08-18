@@ -51,6 +51,44 @@ paths:
                 $ref: "#/components/schemas/LlmProviderCatalog"
         "401":
           $ref: "#/components/responses/Unauthorized"
+  /v1/demo/resources:
+    get:
+      summary: List allowlisted demo questionnaire resources
+      description: Returns metadata only and never contains participant responses.
+      responses:
+        "200":
+          description: Demo resource catalog
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /v1/demo/resources/{resource_id}:
+    parameters:
+      - name: resource_id
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+            - patient-experience-5th-2025
+            - national-health-screening-2026
+    get:
+      summary: Read one allowlisted demo questionnaire resource
+      responses:
+        "200":
+          description: Repository-owned questionnaire or knowledge resource
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
   /v1/sessions:
     post:
       summary: Create an ephemeral interaction session

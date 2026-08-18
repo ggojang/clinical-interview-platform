@@ -7,6 +7,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 COPY compiler /app/compiler
+COPY fhir /app/fhir
 COPY interoperability /app/interoperability
 COPY knowledge /app/knowledge
 COPY packages /app/packages

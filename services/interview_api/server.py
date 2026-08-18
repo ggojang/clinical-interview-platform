@@ -7,6 +7,7 @@ from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import os
+from pathlib import Path
 import re
 import threading
 from typing import Any
@@ -21,6 +22,15 @@ SESSION_PATH = re.compile(r"^/v1/sessions/([^/]+)$")
 MESSAGE_PATH = re.compile(r"^/v1/sessions/([^/]+)/messages$")
 RESULT_PATH = re.compile(r"^/v1/sessions/([^/]+)/result$")
 COMPLETE_PATH = re.compile(r"^/v1/sessions/([^/]+)/complete$")
+DEMO_RESOURCE_PATH = re.compile(r"^/v1/demo/resources/([^/]+)$")
+STATIC_ROOT = Path(__file__).resolve().parent / "static"
+STATIC_FILES = {
+    "/": ("demo.html", "text/html; charset=utf-8"),
+    "/demo": ("demo.html", "text/html; charset=utf-8"),
+    "/demo/": ("demo.html", "text/html; charset=utf-8"),
+    "/demo/styles.css": ("styles.css", "text/css; charset=utf-8"),
+    "/demo/app.js": ("app.js", "text/javascript; charset=utf-8"),
+}
 
 
 @dataclass(frozen=True)
@@ -93,6 +103,10 @@ def build_handler(api: InterviewApi, config: ServerConfig) -> type[BaseHTTPReque
                 if path == "/healthz" and method == "GET":
                     self._json(HTTPStatus.OK, api.health(), request_id)
                     return
+                if path in STATIC_FILES and method == "GET":
+                    filename, content_type = STATIC_FILES[path]
+                    self._static(filename, content_type, request_id)
+                    return
                 self._authenticate()
                 if path == "/v1/catalog" and method == "GET":
                     self._json(HTTPStatus.OK, api.catalog(), request_id)
@@ -100,6 +114,13 @@ def build_handler(api: InterviewApi, config: ServerConfig) -> type[BaseHTTPReque
                 if path == "/v1/llm/providers" and method == "GET":
                     self._json(HTTPStatus.OK, api.llm_providers(), request_id)
                     return
+                if path == "/v1/demo/resources" and method == "GET":
+                    self._json(HTTPStatus.OK, api.demo_resources(), request_id)
+                    return
+                if match := DEMO_RESOURCE_PATH.fullmatch(path):
+                    if method == "GET":
+                        self._json(HTTPStatus.OK, api.demo_resource(match.group(1)), request_id)
+                        return
                 if path == "/v1/sessions" and method == "POST":
                     self._json(HTTPStatus.CREATED, api.create_session(self._body()), request_id)
                     return
@@ -186,6 +207,24 @@ def build_handler(api: InterviewApi, config: ServerConfig) -> type[BaseHTTPReque
             self.send_header("X-Request-ID", request_id)
             if status == HTTPStatus.UNAUTHORIZED:
                 self.send_header("WWW-Authenticate", "Bearer")
+            self.end_headers()
+            self.wfile.write(body)
+
+        def _static(self, filename: str, content_type: str, request_id: str) -> None:
+            try:
+                body = (STATIC_ROOT / filename).read_bytes()
+            except OSError as exc:
+                raise ServiceError(404, "static_resource_not_found", "static resource was not found") from exc
+            self.send_response(HTTPStatus.OK)
+            self._security_headers()
+            self.send_header("Content-Type", content_type)
+            self.send_header("Content-Length", str(len(body)))
+            self.send_header("Content-Security-Policy", (
+                "default-src 'self'; script-src 'self'; style-src 'self'; "
+                "connect-src 'self'; img-src 'self' data: blob:; object-src 'none'; "
+                "base-uri 'none'; frame-ancestors 'none'; form-action 'self'"
+            ))
+            self.send_header("X-Request-ID", request_id)
             self.end_headers()
             self.wfile.write(body)
 

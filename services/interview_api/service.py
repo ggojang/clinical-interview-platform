@@ -10,6 +10,8 @@ from __future__ import annotations
 from copy import deepcopy
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+import json
+from pathlib import Path
 import threading
 import time
 from typing import Any, Callable
@@ -28,6 +30,16 @@ from services.interview_api.llm import (
 MAX_MESSAGE_CHARACTERS = 10_000
 MIN_SESSION_TTL_SECONDS = 60
 MAX_SESSION_TTL_SECONDS = 86_400
+REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
+DEMO_RESOURCE_PATHS = {
+    "patient-experience-5th-2025": (
+        REPOSITORY_ROOT
+        / "fhir/r4/questionnaires/kr-patient-experience-evaluation-5th-2025.json"
+    ),
+    "national-health-screening-2026": (
+        REPOSITORY_ROOT / "knowledge/preventive/kr-national-health-screening-2026.json"
+    ),
+}
 
 
 class ServiceError(Exception):
@@ -199,6 +211,52 @@ class InterviewApi:
         return self.llm_registry.catalog(
             presentation_enabled=self.llm_presenter.enabled
         )
+
+    def demo_resources(self) -> dict[str, Any]:
+        """List allowlisted, non-response-bearing resources used by the demo UI."""
+        return {
+            "resources": [
+                {
+                    "id": "patient-experience-5th-2025",
+                    "title": "2025년(5차) 환자경험평가 설문지",
+                    "kind": "fhir_questionnaire",
+                    "fhir_version": "R4",
+                    "source_defined": True,
+                    "use": "internal_research_test",
+                },
+                {
+                    "id": "national-health-screening-2026",
+                    "title": "2026 국가건강검진 후보 문진",
+                    "kind": "knowledge_question_groups",
+                    "fhir_version": None,
+                    "source_defined": False,
+                    "use": "advisory_candidate_selection",
+                },
+            ],
+            "contains_patient_responses": False,
+            "response_storage": "none",
+        }
+
+    def demo_resource(self, resource_id: str) -> dict[str, Any]:
+        """Read one repository resource from a strict allowlist."""
+        path = DEMO_RESOURCE_PATHS.get(resource_id)
+        if path is None:
+            raise ServiceError(404, "demo_resource_not_found", "demo resource was not found")
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise ServiceError(
+                500,
+                "demo_resource_unavailable",
+                "demo resource could not be loaded",
+            ) from exc
+        if not isinstance(payload, dict):
+            raise ServiceError(
+                500,
+                "demo_resource_invalid",
+                "demo resource must be a JSON object",
+            )
+        return deepcopy(payload)
 
     def create_session(self, payload: dict[str, Any] | None = None) -> dict[str, Any]:
         payload = payload or {}
