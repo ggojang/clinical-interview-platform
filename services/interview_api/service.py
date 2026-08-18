@@ -835,6 +835,12 @@ class InterviewApi:
                 for key, value in adapter_result.items()
                 if key != "recommendation"
             }
+            recommendation = deepcopy(adapter_result.get("recommendation"))
+            if isinstance(recommendation, dict):
+                # The conversational turn already presented the human-readable
+                # summary.  Keep the completion artifact structured and avoid
+                # duplicating the same candidate text over the public edge.
+                recommendation.pop("summary_ko", None)
             return {
                 "session_id": session_id,
                 "mode_id": "screening_addon_recommendation",
@@ -844,7 +850,7 @@ class InterviewApi:
                 "independent_diagnosis_or_treatment": False,
                 "catalog_answer_transmission": "local_memory_only",
                 "available_formats": ["screening_package_recommendation_json"],
-                "recommendation": deepcopy(adapter_result.get("recommendation")),
+                "recommendation": recommendation,
                 "workflow": workflow,
                 "response_storage": "memory_only",
             }

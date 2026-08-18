@@ -588,6 +588,7 @@ class InterviewApiRuntimeIntegrationTests(unittest.TestCase):
         result = api.result(session_id)
         self.assertEqual(result["available_formats"], ["screening_package_recommendation_json"])
         self.assertTrue(result["recommendation"]["candidates"])
+        self.assertNotIn("summary_ko", result["recommendation"])
         self.assertNotIn("recommendation", result["workflow"])
         self.assertEqual(result["catalog_answer_transmission"], "local_memory_only")
         completed = api.complete(session_id)
