@@ -81,20 +81,25 @@ The existing `vllm-api-key` Podman secret is injected into the API container as
 `CLINICAL_LLM_LOCAL_API_KEY`. The value is never copied to Git or returned by
 the API.
 
-The model has three bounded Runtime roles: it may map one opening message to an
-allowlisted RFE id, choose one next Fact from already-eligible compiled
-question candidates within the next authored semantic frontier, and render the
-chosen question. It cannot skip an authored history axis or invent an RFE,
-Fact, Rule, diagnosis, urgency, treatment, or completion condition. It never
-receives uploaded files, medical-source documents, traces, or handoff results.
-Compiled Knowledge, safety Rules, candidate eligibility, and completion remain
-authoritative. Provider or schema failure falls back to deterministic routing,
-clarification, and question planning.
+The deployed Chatbot-test Runtime keeps question order, the patient-facing
+stem, answer choices, the soft question budget, safety Rules and completion
+deterministic. The local model has two bounded roles: it may map the opening
+message to an allowlisted RFE id and extract several explicit allowlisted Facts
+from the current answer. This semantic-coverage extraction lets one natural
+answer satisfy more than one authored Fact without asking each compiled field
+separately. It receives the current answer and a bounded schema allowlist, but
+not prior answer values, uploaded files, medical-source documents, traces or
+handoff results. It cannot invent an RFE, Fact, Rule, diagnosis, negative
+finding, urgency, treatment or completion condition. Provider or schema
+failure falls back to deterministic routing, answer capture and question
+planning.
 
-The deployed demo disables the optional question-stem rewrite so the authored
-compiled Korean wording and options are shown exactly and only one LLM call is
-needed for each routine planning turn. The presentation adapter remains
-available for separately evaluated deployments.
+The deployed demo disables optional LLM question planning and question-stem
+rewriting. Compiled authoring questions remain available for audit and
+clinician handoff, while the patient sees concise questions and authored
+choices or input examples. Ordinary routine interviews move to answer review
+at the configured soft budget; unasked Facts remain visibly unresolved rather
+than being treated as negative.
 
 To offer a commercial OpenAI-compatible provider, add only non-secret metadata
 to `CLINICAL_LLM_PROVIDERS_JSON` and inject the named credential as a Podman
