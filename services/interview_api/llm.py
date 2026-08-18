@@ -176,6 +176,15 @@ class LlmChatbotInterviewRuntime:
                 {"role": "system", "content": knowledge},
                 *deepcopy(conversation),
             ]
+            if self.knowledge_delivery == "compiled_candidate_window":
+                selected_question = package["objects"]["selected_questions"][
+                    retrieval["question_ids"][0]
+                ]
+                messages.append(
+                    _selected_question_turn_directive(
+                        retrieval["question_ids"][0], selected_question
+                    )
+                )
             response = self._transport(
                 selection.provider, messages, self.timeout_seconds
             )
@@ -183,37 +192,29 @@ class LlmChatbotInterviewRuntime:
                 allowed_question_ids = retrieval["question_ids"]
                 attempts = 1
                 while (
-                    _response_has_unsupported_question_id(
-                        response, allowed_question_ids
+                    _response_violates_selected_question_contract(
+                        response, allowed_question_ids, conversation
                     )
                     and attempts < MAX_CHATBOT_GENERATION_ATTEMPTS
                 ):
                     response = self._transport(
                         selection.provider,
                         [
-                            *messages[:2],
-                            {
-                                "role": "system",
-                                "content": (
-                                    "The previous draft invented or used a Question id "
-                                    "outside the Action retrieval manifest. Discard it. "
-                                    "Return one replacement turn based only on the single "
-                                    "selected Question object. The required exact source id is "
-                                    f"{allowed_question_ids[0]}. Preserve its clinical meaning "
-                                    "and print that exact id in the provenance line. Do not "
-                                    "repeat the most recent assistant Question."
-                                ),
-                            },
-                            *messages[2:],
+                            *messages[:-1],
+                            _selected_question_turn_directive(
+                                allowed_question_ids[0],
+                                selected_question,
+                                correction=True,
+                            ),
                         ],
                         self.timeout_seconds,
                     )
                     attempts += 1
-                if _response_has_unsupported_question_id(
-                    response, allowed_question_ids
+                if _response_violates_selected_question_contract(
+                    response, allowed_question_ids, conversation
                 ):
                     raise ValueError(
-                        "generation used a Question outside the retrieval manifest"
+                        "generation violated the selected Question contract"
                     )
                 response = _ensure_question_provenance(
                     response, allowed_question_ids[0]
@@ -747,6 +748,72 @@ def _question_answer_states(
 
 def _response_question_ids(response: str) -> list[str]:
     return re.findall(r"question\.[A-Za-z0-9_.-]+", response or "")
+
+
+def _selected_question_turn_directive(
+    question_id: str,
+    question: dict[str, Any],
+    *,
+    correction: bool = False,
+) -> dict[str, str]:
+    prefix = (
+        "The previous draft violated the host contract and must be discarded. "
+        if correction else ""
+    )
+    return {
+        "role": "user",
+        "content": (
+            "<host_next_turn_contract>\n"
+            f"{prefix}Render exactly one patient-facing Question from source id "
+            f"{question_id}. The authoritative source wording is: "
+            f"{question.get('wording', '')}\n"
+            "Preserve that clinical meaning, use the next Q number, and print the "
+            "exact source id in provenance. Do not repeat or paraphrase a prior "
+            "assistant Question. Do not answer this host control message; output only "
+            "the patient-facing interview turn.\n"
+            "</host_next_turn_contract>"
+        ),
+    }
+
+
+def _patient_visible_question_stem(text: str) -> str | None:
+    match = re.search(
+        r"(?im)^(?:\*\*)?\s*(?:\[)?Q[1-9]\d*(?:\])?[.)：:]?"
+        r"(?:\*\*)?\s*(.+?)\s*$",
+        text or "",
+    )
+    return match.group(1).strip().strip("*") if match else None
+
+
+def _question_stem_key(stem: str) -> str:
+    return re.sub(r"[^0-9a-z가-힣]+", "", stem.casefold())
+
+
+def _response_repeats_prior_question(
+    response: str,
+    conversation: list[dict[str, str]],
+) -> bool:
+    current = _patient_visible_question_stem(response)
+    if not current:
+        return False
+    current_key = _question_stem_key(current)
+    return any(
+        current_key == _question_stem_key(prior)
+        for item in conversation
+        if item.get("role") == "assistant"
+        for prior in [_patient_visible_question_stem(item.get("content", ""))]
+        if prior
+    )
+
+
+def _response_violates_selected_question_contract(
+    response: str,
+    allowed_question_ids: list[str],
+    conversation: list[dict[str, str]],
+) -> bool:
+    return _response_has_unsupported_question_id(
+        response, allowed_question_ids
+    ) or _response_repeats_prior_question(response, conversation)
 
 
 def _question_id_semantic_tokens(question_id: str) -> tuple[str, ...]:

@@ -15,6 +15,7 @@ from services.interview_api.llm import (
     _question_answer_states,
     _question_id_key,
     _response_has_unsupported_question_id,
+    _response_repeats_prior_question,
     _resolve_last_numbered_answer,
 )
 
@@ -262,9 +263,16 @@ class ChatbotConversationRuntimeTest(unittest.TestCase):
 
     def test_compiled_candidate_window_skips_second_llm_and_already_shown_question(self):
         captured = []
+
+        def generation_transport(_provider, messages, _timeout):
+            captured.append(messages)
+            directive = messages[-1]["content"]
+            if "question.joint-limb.recent-injury" in directive:
+                return "Q1. 다친 뒤 시작했나요?"
+            return "Q2. 현재 증상을 조금 더 알려주세요."
+
         runtime = LlmChatbotInterviewRuntime(
-            transport=lambda _provider, messages, _timeout: captured.append(messages)
-            or "Q1. 다친 뒤 시작했나요?",
+            transport=generation_transport,
             retrieval_transport=lambda *_args: self.fail("retrieval LLM must not run"),
             knowledge_delivery="compiled_candidate_window",
             repository_root=ROOT,
@@ -286,6 +294,8 @@ class ChatbotConversationRuntimeTest(unittest.TestCase):
         )
         self.assertIn('"question.joint-limb.recent-injury"', captured[0][1]["content"])
         self.assertNotIn('"question.joint-limb.primary-context"', captured[0][1]["content"])
+        self.assertIn("<host_next_turn_contract>", captured[0][-1]["content"])
+        self.assertIn("question.joint-limb.recent-injury", captured[0][-1]["content"])
 
         runtime.respond(
             "rfe.joint_limb_complaint",
@@ -411,8 +421,9 @@ class ChatbotConversationRuntimeTest(unittest.TestCase):
         self.assertEqual(len(captured), 2)
         self.assertIn("question.symptom_onset", response)
         self.assertNotIn("invented-trigger", response)
-        self.assertIn("outside the Action retrieval manifest", captured[1][2]["content"])
-        self.assertEqual(captured[1][-1], {"role": "user", "content": "기침"})
+        self.assertIn("previous draft violated", captured[1][-1]["content"])
+        self.assertIn("question.symptom_onset", captured[1][-1]["content"])
+        self.assertEqual(captured[1][-2], {"role": "user", "content": "기침"})
 
     def test_equivalent_question_namespace_alias_is_canonicalized_without_retry(self):
         response = (
@@ -435,6 +446,24 @@ class ChatbotConversationRuntimeTest(unittest.TestCase):
                 response, ["question.symptom_cough_paroxysmal"]
             )
         )
+
+    def test_identical_prior_question_stem_is_rejected_even_with_allowed_id(self):
+        conversation = [
+            {"role": "user", "content": "기침"},
+            {
+                "role": "assistant",
+                "content": (
+                    "Q1. 기침이 처음 시작된 시점은 언제입니까?\n\n"
+                    "출처: question.symptom_onset"
+                ),
+            },
+            {"role": "user", "content": "어제"},
+        ]
+        response = (
+            "Q4. 기침이 처음 시작된 시점은 언제입니까?\n\n"
+            "출처: question.symptom_duration"
+        )
+        self.assertTrue(_response_repeats_prior_question(response, conversation))
 
     def test_inline_delivery_uses_one_generation_call_and_linked_index(self):
         captured = []
