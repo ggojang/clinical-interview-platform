@@ -747,6 +747,30 @@ def _response_question_ids(response: str) -> list[str]:
     return re.findall(r"question\.[A-Za-z0-9_.-]+", response or "")
 
 
+def _question_id_semantic_tokens(question_id: str) -> tuple[str, ...]:
+    """Return conservative semantic tokens for a model-rendered source id.
+
+    Package and symptom namespaces may be cosmetically rewritten by smaller
+    models (for example ``question.symptom_duration`` to
+    ``question.cough.duration``).  Only an exact semantic-token match is
+    accepted; added tokens such as ``trigger`` keep the id invalid.
+    """
+    ignored = {"question", "symptom", "cough", "rfe"}
+    return tuple(
+        token
+        for token in _question_id_key(question_id).split(".")
+        if token and token not in ignored
+    )
+
+
+def _question_id_matches(actual: str, expected: str) -> bool:
+    return (
+        _question_id_key(actual) == _question_id_key(expected)
+        or _question_id_semantic_tokens(actual)
+        == _question_id_semantic_tokens(expected)
+    )
+
+
 def _response_has_unsupported_question_id(
     response: str,
     allowed_question_ids: list[str],
@@ -754,14 +778,21 @@ def _response_has_unsupported_question_id(
     ids = _response_question_ids(response)
     if not ids:
         return False
-    allowed = {_question_id_key(item) for item in allowed_question_ids}
-    return any(_question_id_key(item) not in allowed for item in ids)
+    return any(
+        not any(_question_id_matches(item, allowed) for allowed in allowed_question_ids)
+        for item in ids
+    )
 
 
 def _ensure_question_provenance(response: str, question_id: str) -> str:
     """Make the host-selected source id visible even when the model omits it."""
-    if _response_question_ids(response):
-        return response
+    ids = _response_question_ids(response)
+    if ids:
+        result = response
+        for item in ids:
+            if _question_id_matches(item, question_id):
+                result = result.replace(item, question_id)
+        return result
     return (
         response.rstrip()
         + f"\n\n출처: [공동 작업 지식] {question_id} · [AI 표현] 문장"

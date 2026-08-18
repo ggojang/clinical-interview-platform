@@ -11,8 +11,10 @@ from services.interview_api.llm import (
     LlmProvider,
     LlmSelection,
     _adapt_chatbot_channel_notice,
+    _ensure_question_provenance,
     _question_answer_states,
     _question_id_key,
+    _response_has_unsupported_question_id,
     _resolve_last_numbered_answer,
 )
 
@@ -410,6 +412,28 @@ class ChatbotConversationRuntimeTest(unittest.TestCase):
         self.assertIn("question.symptom_onset", response)
         self.assertNotIn("invented-trigger", response)
         self.assertIn("outside the Action retrieval manifest", captured[1][-1]["content"])
+
+    def test_equivalent_question_namespace_alias_is_canonicalized_without_retry(self):
+        response = (
+            "Q4. 기침은 한 번 시작하면 얼마나 지속되나요?\n\n"
+            "출처: [공동 작업 지식] question.cough.duration · [AI 표현] 문장"
+        )
+        allowed = ["question.symptom_duration"]
+        self.assertFalse(_response_has_unsupported_question_id(response, allowed))
+        canonical = _ensure_question_provenance(response, allowed[0])
+        self.assertIn("question.symptom_duration", canonical)
+        self.assertNotIn("question.cough.duration", canonical)
+
+    def test_added_semantic_token_is_not_accepted_as_question_alias(self):
+        response = (
+            "Q15. 웃다가 기침이 시작되나요?\n\n"
+            "출처: question.cough.paroxysmal_trigger"
+        )
+        self.assertTrue(
+            _response_has_unsupported_question_id(
+                response, ["question.symptom_cough_paroxysmal"]
+            )
+        )
 
     def test_inline_delivery_uses_one_generation_call_and_linked_index(self):
         captured = []
