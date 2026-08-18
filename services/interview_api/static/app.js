@@ -3,6 +3,8 @@
 const MAX_FILE_BYTES = 1024 * 1024;
 const FHIR_TRANSLATION_URL = "http://hl7.org/fhir/StructureDefinition/translation";
 const FHIR_RENDERING_XHTML_URL = "http://hl7.org/fhir/StructureDefinition/rendering-xhtml";
+const FHIR_QUESTIONNAIRE_UNIT_URL = "http://hl7.org/fhir/StructureDefinition/questionnaire-unit";
+const FHIR_QUESTIONNAIRE_UNIT_OPTION_URL = "http://hl7.org/fhir/StructureDefinition/questionnaire-unitOption";
 const SDC_STATUS = {
   status: "not_implemented",
   specification: "HL7 FHIR Structured Data Capture",
@@ -359,7 +361,17 @@ function answerScalar(answer) {
   return value ?? "";
 }
 
-function typedStructuredAnswer(item, raw) {
+function quantityUnitOptions(item) {
+  const extensions = item?.extension || [];
+  const options = extensions
+    .filter((extension) => extension.url === FHIR_QUESTIONNAIRE_UNIT_OPTION_URL && extension.valueCoding)
+    .map((extension) => clone(extension.valueCoding));
+  if (options.length) return options;
+  const fixed = extensions.find((extension) => extension.url === FHIR_QUESTIONNAIRE_UNIT_URL && extension.valueCoding);
+  return fixed ? [clone(fixed.valueCoding)] : [];
+}
+
+function typedStructuredAnswer(item, raw, unitCoding = null) {
   if (item.type === "integer") return { valueInteger: Number.parseInt(raw, 10) };
   if (item.type === "decimal") return { valueDecimal: Number(raw) };
   if (item.type === "boolean") return { valueBoolean: raw === "true" };
@@ -367,7 +379,15 @@ function typedStructuredAnswer(item, raw) {
   if (item.type === "dateTime") return { valueDateTime: raw };
   if (item.type === "time") return { valueTime: raw };
   if (item.type === "url") return { valueUri: raw };
-  if (item.type === "quantity") return { valueQuantity: { value: Number(raw) } };
+  if (item.type === "quantity") {
+    const valueQuantity = { value: Number(raw) };
+    if (unitCoding) {
+      if (unitCoding.display || unitCoding.code) valueQuantity.unit = unitCoding.display || unitCoding.code;
+      if (unitCoding.system) valueQuantity.system = unitCoding.system;
+      if (unitCoding.code) valueQuantity.code = unitCoding.code;
+    }
+    return { valueQuantity };
+  }
   return { valueString: raw };
 }
 
@@ -476,10 +496,64 @@ function structuredControl(block, item) {
     appendValueSetState(block, item);
     return;
   }
+  if (item.type === "quantity") {
+    const unitOptions = quantityUnitOptions(item);
+    const quantity = existingAnswers[0]?.valueQuantity || {};
+    const control = append(block, "div", undefined, "quantity-control");
+    const input = document.createElement("input");
+    input.type = "number";
+    input.step = "any";
+    input.placeholder = "양";
+    input.setAttribute("aria-label", `${item.text || item.linkId} 양`);
+    input.value = quantity.value === undefined ? "" : String(quantity.value);
+    control.append(input);
+
+    let unitSelect = null;
+    if (unitOptions.length === 1) {
+      const unit = append(control, "span", displayCoding(unitOptions[0], activeLocale()), "quantity-fixed-unit");
+      unit.setAttribute("aria-label", "단위");
+    } else if (unitOptions.length > 1) {
+      unitSelect = document.createElement("select");
+      unitSelect.setAttribute("aria-label", `${item.text || item.linkId} 단위`);
+      const blank = document.createElement("option");
+      blank.value = "";
+      blank.textContent = "단위 선택";
+      unitSelect.append(blank);
+      unitOptions.forEach((option, index) => {
+        const node = document.createElement("option");
+        node.value = String(index);
+        node.textContent = displayCoding(option, activeLocale());
+        const sameSystem = !quantity.system || !option.system || quantity.system === option.system;
+        const sameCode = quantity.code ? quantity.code === option.code : quantity.unit === (option.display || option.code);
+        if (sameSystem && sameCode) node.selected = true;
+        unitSelect.append(node);
+      });
+      control.append(unitSelect);
+    }
+
+    const hint = append(block, "small", unitOptions.length
+      ? "양과 단위를 함께 QuestionnaireResponse.valueQuantity로 저장합니다."
+      : "서식에 단위가 지정되지 않았습니다. 숫자만 저장됩니다.", "quantity-hint");
+    const save = (rerender) => {
+      const raw = input.value.trim();
+      const unitIndex = unitSelect?.value === "" ? -1 : Number(unitSelect?.value || 0);
+      const selectedUnit = unitOptions.length === 1 ? unitOptions[0] : unitOptions[unitIndex];
+      const unitMissing = raw !== "" && unitOptions.length > 1 && !selectedUnit;
+      hint.textContent = unitMissing
+        ? "양을 저장하려면 바로 옆에서 단위를 선택하세요."
+        : (unitOptions.length ? "양과 단위를 함께 QuestionnaireResponse.valueQuantity로 저장합니다." : "서식에 단위가 지정되지 않았습니다. 숫자만 저장됩니다.");
+      hint.classList.toggle("error", unitMissing);
+      recordStructuredAnswers(item, raw === "" || unitMissing ? [] : [typedStructuredAnswer(item, raw, selectedUnit)], rerender);
+    };
+    input.addEventListener("input", () => save(false));
+    if (unitSelect) unitSelect.addEventListener("change", () => save(itemControlsOthers(item.linkId)));
+    if (itemControlsOthers(item.linkId)) input.addEventListener("change", () => save(true));
+    return;
+  }
   const input = document.createElement(item.type === "text" ? "textarea" : "input");
-  const inputTypes = { integer: "number", decimal: "number", date: "date", dateTime: "datetime-local", time: "time", url: "url", quantity: "number" };
+  const inputTypes = { integer: "number", decimal: "number", date: "date", dateTime: "datetime-local", time: "time", url: "url" };
   if (input.tagName === "INPUT") input.type = inputTypes[item.type] || "text";
-  if (["decimal", "quantity"].includes(item.type)) input.step = "any";
+  if (item.type === "decimal") input.step = "any";
   input.placeholder = `${item.type || "string"} 응답`;
   input.value = String(answerScalar(existingAnswers[0]));
   const save = (rerender) => {

@@ -13,6 +13,117 @@ APP_JS = REPOSITORY_ROOT / "services/interview_api/static/app.js"
 
 @unittest.skipUnless(shutil.which("node"), "Node.js is required for browser logic regression")
 class InterviewDemoUiLogicTests(unittest.TestCase):
+    def test_quantity_answer_keeps_amount_and_questionnaire_unit_together(self):
+        questionnaire_items = [
+            {
+                "linkId": "smoking-amount",
+                "type": "quantity",
+                "extension": [
+                    {
+                        "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-unitOption",
+                        "valueCoding": {"code": "개비", "display": "개비"},
+                    }
+                ],
+            },
+            {
+                "linkId": "alcohol-amount",
+                "type": "quantity",
+                "extension": [
+                    {
+                        "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-unitOption",
+                        "valueCoding": {
+                            "system": "http://unitsofmeasure.org",
+                            "code": "{glass}",
+                            "display": "잔",
+                        },
+                    },
+                    {
+                        "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-unitOption",
+                        "valueCoding": {"code": "병", "display": "병"},
+                    },
+                ],
+            },
+        ]
+        script = fr"""
+const fs = require('fs');
+const vm = require('vm');
+const source = fs.readFileSync({json.dumps(str(APP_JS))}, 'utf8').replace(/initialize\(\);\s*$/, '');
+const context = {{ console }};
+vm.createContext(context);
+vm.runInContext(source, context);
+const result = vm.runInContext(`
+  const items = ${{JSON.stringify({json.dumps(questionnaire_items)})}};
+  const smokingUnits = quantityUnitOptions(items[0]);
+  const alcoholUnits = quantityUnitOptions(items[1]);
+  JSON.stringify({{
+    smoking: typedStructuredAnswer(items[0], '10', smokingUnits[0]),
+    alcohol: typedStructuredAnswer(items[1], '2', alcoholUnits[0]),
+    unitCounts: [smokingUnits.length, alcoholUnits.length]
+  }});
+`, context);
+console.log(result);
+"""
+        completed = subprocess.run(
+            ["node", "-e", script],
+            check=True,
+            capture_output=True,
+            text=True,
+            cwd=REPOSITORY_ROOT,
+        )
+        result = json.loads(completed.stdout)
+        self.assertEqual(result["unitCounts"], [1, 2])
+        self.assertEqual(
+            result["smoking"],
+            {"valueQuantity": {"value": 10, "unit": "개비", "code": "개비"}},
+        )
+        self.assertEqual(
+            result["alcohol"],
+            {
+                "valueQuantity": {
+                    "value": 2,
+                    "unit": "잔",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "{glass}",
+                }
+            },
+        )
+
+    def test_r4_questionnaire_unit_is_supported_as_fixed_quantity_unit(self):
+        item = {
+            "linkId": "duration",
+            "type": "quantity",
+            "extension": [
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-unit",
+                    "valueCoding": {
+                        "system": "http://unitsofmeasure.org",
+                        "code": "a",
+                        "display": "년",
+                    },
+                }
+            ],
+        }
+        script = fr"""
+const fs = require('fs');
+const vm = require('vm');
+const source = fs.readFileSync({json.dumps(str(APP_JS))}, 'utf8').replace(/initialize\(\);\s*$/, '');
+const context = {{ console }};
+vm.createContext(context);
+vm.runInContext(source, context);
+console.log(vm.runInContext(`JSON.stringify(quantityUnitOptions(${{JSON.stringify({json.dumps(item)})}}))`, context));
+"""
+        completed = subprocess.run(
+            ["node", "-e", script],
+            check=True,
+            capture_output=True,
+            text=True,
+            cwd=REPOSITORY_ROOT,
+        )
+        self.assertEqual(
+            json.loads(completed.stdout),
+            [{"system": "http://unitsofmeasure.org", "code": "a", "display": "년"}],
+        )
+
     def test_answer_display_uses_korean_rendering_and_english_base_display(self):
         option = {
             "valueCoding": {
