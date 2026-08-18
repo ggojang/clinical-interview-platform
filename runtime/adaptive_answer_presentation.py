@@ -179,9 +179,9 @@ def patient_answer_options(
             option["coding"] = {
                 "system": system,
                 "code": f"{fact_id}--{internal_value}",
-                # Keep the CodeSystem display stable.  The Korean patient label
-                # is carried separately as display_ko.
-                "display": str(internal_value),
+                # Coding.display is the localized human-readable rendering for
+                # this response.  Stable identity remains in system + code.
+                "display": display_ko,
             }
         options.append(option)
     return options

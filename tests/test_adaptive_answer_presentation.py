@@ -72,6 +72,10 @@ class AdaptiveAnswerPresentationTests(unittest.TestCase):
             "abdominal_pain.primary_group--upper_meal_or_back",
         )
         self.assertEqual(
+            question["answer_options"][1]["coding"]["display"],
+            "윗배·식사 관련 또는 등으로 퍼짐",
+        )
+        self.assertEqual(
             [(item["input"], item["dataAbsentReason"])
              for item in question["data_absent_actions"]],
             [("11", "asked-unknown"), ("12", "asked-declined")],
