@@ -59,11 +59,12 @@ artifact ingestion are subsequent milestones and must not be advertised as
 implemented.
 
 The demo also exposes a read-only, fixed-upstream terminology proxy at
-`/demo-api/terminology`. The container is configured for
-`https://stom.banttas.com/fhir`; only ValueSet canonical/filter/count values are
-sent to STOM. QuestionnaireResponse data and participant answers are never sent
-to the terminology server. Missing ValueSets remain unresolved instead of
-receiving invented answer options.
+`/demo-api/terminology`. The container uses STOM's Tailscale-bound internal
+listener at `http://10.20.0.12:8443/fhir`; it does not hairpin through the
+public edge. Only ValueSet canonical/filter/count values are sent to STOM.
+QuestionnaireResponse data and participant answers are never sent to the
+terminology server. Missing ValueSets remain unresolved instead of receiving
+invented answer options.
 
 ## LLM providers
 
