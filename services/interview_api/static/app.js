@@ -20,6 +20,7 @@ const state = {
   providers: [],
   sessionId: null,
   adaptivePurpose: "clinical_adaptive",
+  adaptiveStarted: false,
   adaptiveHistory: [],
   currentAdaptiveQuestion: null,
   fixedQuestions: [],
@@ -86,6 +87,7 @@ function setMode(mode) {
   };
   $("#inputPanelTitle").textContent = labels[mode][0];
   $("#inputBadge").textContent = labels[mode][1];
+  if (mode === "adaptive") prepareAdaptiveConversation();
   updateOutputs();
   syncRunnerVisibility();
 }
@@ -214,7 +216,10 @@ function refreshOutputData() {
   const hasQr = Boolean(state.questionnaireResponse);
   $("#qState").textContent = hasQ ? `${answerBearingItems(state.questionnaire).length}개 문항` : "입력 대기";
   $("#qrState").textContent = hasQr ? state.questionnaireResponse.status : "입력 대기";
-  $("#sdcState").textContent = "미구현";
+  const showHandoff = state.mode === "adaptive"
+    && state.adaptivePurpose === "clinical_adaptive"
+    && Boolean(Object.keys(state.handoff || {}).length);
+  $("#handoffTab").hidden = !showHandoff;
   $("#outputStatus").textContent = state.questionnaireResponse?.status === "completed" ? "완료" : (hasQ ? "Draft" : "대기");
   $("#downloadR4").disabled = !hasQ;
   $("#downloadR5").disabled = !hasQ;
@@ -230,9 +235,7 @@ function updateOutputs() {
 function syncRunnerVisibility() {
   const structured = state.mode === "structured";
   const fixed = state.mode === "fixed" && state.fixedQuestions.length > 0;
-  const adaptive = state.mode === "adaptive" && Boolean(
-    state.sessionId || state.currentAdaptiveQuestion || state.adaptiveHistory.length
-  );
+  const adaptive = state.mode === "adaptive";
   $("#structuredRunner").classList.toggle("active", structured);
   $("#fixedConversation").hidden = !fixed;
   $("#fixedConversation").classList.toggle("active", fixed);
@@ -637,6 +640,7 @@ function startFixed(questionnaire, title, source) {
   $("#fixedConversationTitle").textContent = title;
   $("#fixedChatLog").replaceChildren();
   $("#fixedConversation").hidden = false;
+  bubble($("#fixedChatLog"), "notice", `설문: ${title}\n전체 ${state.fixedQuestions.length}문항${questionnaire.description ? `\n${questionnaire.description}` : ""}`);
   setArtifacts(questionnaire, blankResponse(questionnaire), source, {
     status: "fixed_conversation_in_progress",
     source_defined: questionnaire.id === "kr-patient-experience-evaluation-5th-2025",
@@ -651,9 +655,9 @@ function bubble(root, role, text) {
   return node;
 }
 
-function fixedPrompt(question) {
+function fixedPrompt(question, index, count) {
   const options = (question.answerOption || []).map(displayAnswer).filter(Boolean);
-  return `${question.text || question.linkId}${options.length ? `\n${options.map((value, index) => `${index + 1}. ${value}`).join("\n")}` : ""}`;
+  return `[${index + 1}/${count}] ${question.text || question.linkId}${options.length ? `\n${options.map((value, optionIndex) => `${optionIndex + 1}. ${value}`).join("\n")}` : ""}`;
 }
 
 function askFixedQuestion() {
@@ -678,7 +682,7 @@ function askFixedQuestion() {
   const question = state.fixedQuestions[state.fixedIndex];
   const guidance = syntheticGuidanceFor(question.text);
   if (guidance) bubble($("#fixedChatLog"), "notice", guidance);
-  bubble($("#fixedChatLog"), "assistant", fixedPrompt(question));
+  bubble($("#fixedChatLog"), "assistant", fixedPrompt(question, state.fixedIndex, count));
 }
 
 function answerValue(question, raw) {
@@ -732,7 +736,7 @@ async function loadPatientExperience() {
     validateQuestionnaire(questionnaire);
     state.sourceVersion = "r4";
     startFixed(questionnaire, questionnaire.title || "환자경험평가", pretty(questionnaire));
-    selectOutput("preview");
+    selectOutput("questionnaire");
   } catch (error) { showToast(error.message); }
 }
 
@@ -750,13 +754,14 @@ function eligibleScreeningGroups(resource, age, sex) {
 }
 
 function screeningQuestionnaire(resource, groups, age, sex, period) {
+  const selectedTitles = groups.map((group) => group.title?.ko || group.id);
   return {
     resourceType: "Questionnaire",
-    id: "draft-national-health-screening-candidate",
+    id: "draft-national-health-screening-interview",
     status: "draft",
     experimental: true,
-    title: `국가건강검진 후보 문진 (${period || "시기 미확정"})`,
-    description: `만 ${age}세 · 성별정보 ${sex}. 공식 수검자격이 아니라 입력정보에 따른 질문 후보입니다. 간암·폐암은 위험정보가 없어 제외했습니다.`,
+    title: `국민건강검진 문진(시험용) · ${selectedTitles.join(" · ")}`,
+    description: `만 ${age}세 · 성별정보 ${sex} · 검진 예정일 ${period || "미입력"}. 선택된 내부 검증용 문진을 원래 순서대로 제공합니다. 공식 원문 검증과 수검자격 확인 전입니다.`,
     item: groups.map((group) => ({
       linkId: group.id.replaceAll(".", "-"), type: "group", text: group.title?.ko || group.id,
       item: (group.questions || []).map((question) => ({
@@ -778,18 +783,19 @@ async function loadScreening() {
   try {
     const resource = await api("/v1/demo/resources/national-health-screening-2026");
     const groups = eligibleScreeningGroups(resource, age, sex);
-    if (!groups.length) return showToast("현재 입력값으로 선택된 질문군이 없습니다. 공식 대상 여부를 별도로 확인하세요.");
+    if (!groups.length) return showToast("현재 입력값으로 적용할 시험용 문진이 없습니다. 공식 대상 여부는 국민건강보험공단에서 확인하세요.");
     const questionnaire = screeningQuestionnaire(resource, groups, age, sex, $("#screeningDate").value);
     state.sourceVersion = "r4";
     startFixed(questionnaire, questionnaire.title, pretty({
       input: { age, sex, period: $("#screeningDate").value },
       selected_group_ids: groups.map((g) => g.id),
+      selected_questionnaire_titles: groups.map((g) => g.title?.ko || g.id),
       source: resource.id,
       periodicity_applied: false,
       periodicity_reason: "출생연도, 직역, 이전 수검일과 공식 NHIS 자격정보가 제공되지 않음",
       omitted_due_to_missing_risk_information: ["kr.nhis.cancer.liver", "kr.nhis.cancer.lung"]
     }));
-    showToast(`${groups.length}개 후보 질문군을 만들었습니다. 공식 대상 여부는 NHIS 확인이 필요합니다.`);
+    showToast(`${groups.length}개 시험용 문진, 총 ${state.fixedQuestions.length}개 문항을 시작합니다.`);
   } catch (error) { showToast(error.message); }
 }
 
@@ -855,9 +861,31 @@ function llmSelectionPayload() {
   };
 }
 
-async function startAdaptive() {
-  const opening = $("#adaptiveOpening").value.trim();
-  if (!opening) return showToast("시작 내용을 입력하세요.");
+function adaptiveOpeningPrompt() {
+  return state.adaptivePurpose === "clinical_adaptive"
+    ? "오늘 진료받으려는 이유를 자유롭게 적어주세요. 증상뿐 아니라 재진, 검사 결과 상담, 복용약 검토, 퇴원 후 상태, 예방 상담도 가능합니다."
+    : "궁금한 건강 문제나 응급 여부를 판단하는 데 필요한 상황을 자유롭게 적어주세요. 정보 제공 수준이며 진단·치료 결정을 대신하지 않습니다.";
+}
+
+function prepareAdaptiveConversation(force = false) {
+  if (state.mode !== "adaptive" || state.sessionId || state.adaptiveStarted) return;
+  const log = $("#adaptiveChatLog");
+  if (force || !log.children.length) {
+    log.replaceChildren();
+    bubble(log, "assistant", adaptiveOpeningPrompt());
+  }
+  $("#adaptiveConversationTitle").textContent = state.adaptivePurpose === "clinical_adaptive" ? "진료 전 문진" : "일반 건강상담";
+  $("#adaptiveProgress").textContent = "시작 전";
+  $("#adaptiveAnswer").placeholder = state.adaptivePurpose === "clinical_adaptive"
+    ? "예: 검사 결과 상담을 받고 싶어요"
+    : "예: 이 증상이 응급인지 궁금해요";
+  $("#adaptiveAnswer").disabled = false;
+  $("#adaptiveAnswerButton").disabled = false;
+  $("#completeAdaptive").disabled = true;
+}
+
+async function startAdaptive(opening) {
+  if (!opening) return showToast("진료 또는 상담을 원하는 이유를 입력하세요.");
   const provider = state.providers.find((item) => item.provider_id === $("#llmProvider").value);
   if (provider?.external_processing && !$("#externalConsent").checked) return showToast("외부 LLM 처리 동의가 필요합니다.");
   const modeSelection = state.adaptivePurpose === "clinical_adaptive" ? "문진 시작" : "일반 건강상담";
@@ -866,9 +894,9 @@ async function startAdaptive() {
     if (state.apiMode === "authenticated") payload.llm_selection = llmSelectionPayload();
     const document = await api("/v1/sessions", { method: "POST", body: JSON.stringify(payload) });
     state.sessionId = document.session_id;
+    state.adaptiveStarted = true;
     state.adaptiveHistory = [];
     state.currentAdaptiveQuestion = adaptiveQuestion(document);
-    $("#adaptiveChatLog").replaceChildren();
     $("#adaptiveConversation").hidden = false;
     $("#adaptiveConversationTitle").textContent = state.adaptivePurpose === "clinical_adaptive" ? "진료 전 문진" : "일반 건강상담";
     bubble($("#adaptiveChatLog"), "user", opening);
@@ -898,6 +926,12 @@ async function startAdaptive() {
 async function sendAdaptiveAnswer() {
   const input = $("#adaptiveAnswer");
   const answer = input.value.trim();
+  if (!state.adaptiveStarted && !state.sessionId) {
+    if (!answer) return showToast("진료 또는 상담을 원하는 이유를 입력하세요.");
+    input.value = "";
+    await startAdaptive(answer);
+    return;
+  }
   if (!answer || !state.sessionId || !state.currentAdaptiveQuestion) return;
   const answered = clone(state.currentAdaptiveQuestion);
   bubble($("#adaptiveChatLog"), "user", answer);
@@ -934,9 +968,11 @@ async function completeAdaptive() {
 }
 
 function selectOutput(name) {
+  const target = $(`#${name}Output`);
+  if (!target) return;
   $$("[data-output]").forEach((button) => button.classList.toggle("active", button.dataset.output === name));
   $$(".output-view").forEach((view) => view.classList.remove("active"));
-  $(`#${name}Output`).classList.add("active");
+  target.classList.add("active");
 }
 
 function downloadJson(payload, filename) {
@@ -1023,6 +1059,9 @@ function updateProviderConsent() {
   const provider = state.providers.find((item) => item.provider_id === $("#llmProvider").value);
   $("#externalConsentRow").hidden = !provider?.external_processing;
   if (!provider?.external_processing) $("#externalConsent").checked = false;
+  $("#providerPrivacy").textContent = provider?.external_processing
+    ? "선택한 상용 LLM으로 입력 내용이 전송됩니다. 전송 전에 아래 동의가 필요합니다."
+    : "Local LLM은 분리된 내부 환경에서 처리되며 외부 상용 LLM으로 전송하지 않습니다.";
 }
 
 function initialize() {
@@ -1078,9 +1117,12 @@ function initialize() {
       candidate.classList.toggle("active", active);
       candidate.setAttribute("aria-checked", String(active));
     });
+    $("#adaptivePurposeHelp").textContent = state.adaptivePurpose === "clinical_adaptive"
+      ? "증상만 입력하는 곳이 아닙니다. 예약 진료의 이유, 재진, 검사결과 상담, 복용약 검토, 퇴원 후 상태 등 의료진에게 미리 전달할 내용을 자유롭게 시작할 수 있습니다."
+      : "건강 질문과 현재 상황을 자유롭게 입력합니다. 위험 신호가 의심되면 안전 안내를 제공하지만 진단·치료 결정을 대신하지 않습니다.";
+    prepareAdaptiveConversation(true);
   }));
   $("#llmProvider").addEventListener("change", updateProviderConsent);
-  $("#startAdaptive").addEventListener("click", startAdaptive);
   $("#adaptiveAnswerButton").addEventListener("click", sendAdaptiveAnswer);
   $("#adaptiveAnswer").addEventListener("keydown", (event) => { if (event.key === "Enter") sendAdaptiveAnswer(); });
   $("#completeAdaptive").addEventListener("click", completeAdaptive);

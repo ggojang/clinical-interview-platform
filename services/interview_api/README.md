@@ -18,7 +18,9 @@
 - FHIR R4/R5 Questionnaire JSON 업로드·붙여넣기와 브라우저 미리보기
 - `enableWhen`/`enableBehavior` 조건부 문항 및 반복 선택 답변 지원
 - 고정된 STOM FHIR endpoint를 통한 `answerValueSet` 확장과 연결 상태 표시
-- 환자경험평가, 국가검진 후보 질문군, 텍스트 설문의 브라우저 정형 대화 데모
+- 환자경험평가, 나이·성별로 선택하는 국민건강검진 시험용 문진, 텍스트 설문의 브라우저 정형 대화 데모
+- 정형 대화의 설문 제목·현재 문항/전체 문항 표시와 원문 순서 기반 진행
+- 자유 대화 진입 시 별도 시작 버튼 없이 방문·상담 이유를 직접 입력하는 흐름
 - API key가 없는 외부 테스트 사용자를 위한 별도 `/demo-api` 익명 경로
 
 임상 콘텐츠는 `draft`, `unreviewed`, `limited use`입니다. 독립적인 진단·치료 결정에 사용하지 않습니다. 안전 신호는 진단을 확정하지 않고 보수적으로 알리며 의료인 확인으로 연결합니다.
@@ -26,6 +28,8 @@
 FHIR `Questionnaire`, `QuestionnaireResponse`, SDC Extraction은 아직 이 API에 구현되지 않았습니다. 현재 결과 응답에도 이를 `not_implemented`로 명시합니다. 다음 구현 단계에서 기존 질문·Fact 바인딩을 사용해 추가합니다.
 
 데모 UI가 만드는 Questionnaire/QuestionnaireResponse 및 R4/R5 다운로드는 공통 요소를 이용한 **브라우저 draft**입니다. 서버 변환이나 공식 FHIR validator 검증 결과가 아니며, SDC Extraction은 가짜 결과를 만들지 않고 `not_implemented`로 표시합니다. 이미지 설문은 브라우저 미리보기만 지원하고 OCR·문항 구조화는 아직 지원하지 않습니다. 업로드 파일과 API key는 브라우저 영구 저장소에 기록하지 않습니다. 이름·성별·생일 같은 정보가 필요한 설문도 실제 개인정보 대신 명시적인 가상 테스트 값을 사용해야 합니다.
+
+결과 화면의 SDC Extraction은 사용자에게 보여주는 설문 결과가 아니라 QuestionnaireResponse를 Observation 등 임상 리소스로 변환하는 연계 기능입니다. 현재는 상태 설명에만 남기고 일반 결과 탭에서는 제외합니다. 의료인 요약은 자유 문진을 완료했을 때 의료진에게 전달할 구조화된 handoff이며, 정형 설문에는 표시하지 않습니다.
 
 용어 조회 API는 운영자가 지정한 단일 `CLINICAL_TERMINOLOGY_BASE_URL`만 호출합니다. 클라이언트가 보낸 URL로 직접 접속하지 않으므로 범용 proxy로 동작하지 않습니다. `$expand` 요청에는 ValueSet canonical, 선택적 filter와 count만 포함되며 참가자 답변·QuestionnaireResponse·개인정보는 전송하지 않습니다. 용어서버가 canonical을 찾지 못하면 선택지를 추측하지 않고 UI에 미확인 상태로 남깁니다.
 

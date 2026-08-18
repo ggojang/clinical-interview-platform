@@ -13,6 +13,26 @@ APP_JS = REPOSITORY_ROOT / "services/interview_api/static/app.js"
 
 @unittest.skipUnless(shutil.which("node"), "Node.js is required for browser logic regression")
 class InterviewDemoUiLogicTests(unittest.TestCase):
+    def test_fixed_conversation_prompt_contains_current_and_total_number(self):
+        script = fr"""
+const fs = require('fs');
+const vm = require('vm');
+const source = fs.readFileSync({json.dumps(str(APP_JS))}, 'utf8').replace(/initialize\(\);\s*$/, '');
+const context = {{ console }};
+vm.createContext(context);
+vm.runInContext(source, context);
+console.log(vm.runInContext(`fixedPrompt({{text:'흡연 상태는 어떻게 되나요?',answerOption:[{{valueString:'현재 흡연'}}]}}, 2, 9)`, context));
+"""
+        completed = subprocess.run(
+            ["node", "-e", script],
+            check=True,
+            capture_output=True,
+            text=True,
+            cwd=REPOSITORY_ROOT,
+        )
+        self.assertTrue(completed.stdout.startswith("[3/9] "))
+        self.assertIn("1. 현재 흡연", completed.stdout)
+
     def test_enable_when_reveals_only_selected_repeated_body_area_questions(self):
         questionnaire = {
             "resourceType": "Questionnaire",
@@ -50,7 +70,7 @@ class InterviewDemoUiLogicTests(unittest.TestCase):
                 },
             ],
         }
-        script = f"""
+        script = fr"""
 const fs = require('fs');
 const vm = require('vm');
 const source = fs.readFileSync({json.dumps(str(APP_JS))}, 'utf8').replace(/initialize\(\);\s*$/, '');
