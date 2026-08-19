@@ -19,9 +19,9 @@ def load(path: Path):
 class HealthScreeningPackageCatalogTests(unittest.TestCase):
     def test_local_recommendation_workflow_is_bounded_and_includes_lowest_candidate(self):
         session = ScreeningRecommendationSession("screening-test")
-        state = session.process("서울")
+        state = session.process("가족 중 대장암이 있어 걱정됩니다")
         self.assertEqual(state["selected_question"]["fact_id"], "screening.focus")
-        for answer in ("암 검진", "가족력 없음", "가격과 관심 영역", "지금은 추가 문진만 진행"):
+        for answer in ("암 검진", "서울", "가격과 관심 영역", "지금은 추가 문진만 진행"):
             state = session.process(answer)
         recommendation = state["recommendation"]
         self.assertEqual(state["phase"], "recommendation")
@@ -36,8 +36,11 @@ class HealthScreeningPackageCatalogTests(unittest.TestCase):
         self.assertFalse(session.answers)
 
     def test_invalid_region_is_reprompted_without_consuming_an_answer(self):
-        state = ScreeningRecommendationSession("screening-invalid").process("아무 지역")
-        self.assertEqual(state["answers_collected"], 0)
+        session = ScreeningRecommendationSession("screening-invalid")
+        session.process("특별히 걱정되는 문제는 없습니다")
+        session.process("기본·종합 검진")
+        state = session.process("아무 지역")
+        self.assertEqual(state["answers_collected"], 2)
         self.assertEqual(state["selected_question"]["fact_id"], "screening.region")
 
     def test_test_catalog_is_versioned_isolated_and_response_free(self):

@@ -92,9 +92,8 @@ def _question(
 QUESTIONS = (
     _question(
         1,
-        "screening.region",
-        "추가 검진 패키지를 비교할 지역은 어디인가요?",
-        REGIONS,
+        "screening.concern",
+        "검진을 받으면서 가장 걱정되거나 확인하고 싶은 건강 문제가 있나요? 최근 이상 소견, 증상 또는 가족력이 있다면 함께 알려주세요.",
     ),
     _question(
         2,
@@ -104,8 +103,9 @@ QUESTIONS = (
     ),
     _question(
         3,
-        "screening.concern",
-        "최근 이상 소견, 가족력 또는 특별히 확인하고 싶은 건강 문제가 있나요?",
+        "screening.region",
+        "추가 검진 패키지를 비교할 지역은 어디인가요?",
+        REGIONS,
     ),
     _question(
         4,
@@ -140,17 +140,16 @@ class ScreeningRecommendationSession:
         if self.recommendation is not None:
             return self._state(status="recommendation_ready", phase="recommendation")
 
-        if self.next_question_index == 0:
+        current = QUESTIONS[self.next_question_index]
+        if current["fact_id"] == "screening.region":
             region = self._resolve_region(answer)
             if region is None:
-                self.latest_question = deepcopy(QUESTIONS[0])
+                self.latest_question = deepcopy(current)
                 return self._state(status="in-progress", phase="questioning")
             self.answers["screening.region"] = region
-            self.next_question_index = 1
         else:
-            current = QUESTIONS[self.next_question_index]
             self.answers[current["fact_id"]] = self._resolve_answer(current, answer)
-            self.next_question_index += 1
+        self.next_question_index += 1
 
         if self.next_question_index >= len(QUESTIONS):
             self.latest_question = None

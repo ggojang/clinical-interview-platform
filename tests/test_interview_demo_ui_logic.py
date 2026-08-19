@@ -13,6 +13,36 @@ APP_JS = REPOSITORY_ROOT / "services/interview_api/static/app.js"
 
 @unittest.skipUnless(shutil.which("node"), "Node.js is required for browser logic regression")
 class InterviewDemoUiLogicTests(unittest.TestCase):
+    def test_choice_prompt_does_not_repeat_button_labels_in_message(self):
+        question = {
+            "questionRef": "Q2",
+            "text": "우선 비교하고 싶은 영역은 무엇인가요?",
+            "options": [
+                {"input": "1", "label": "기본·종합 검진"},
+                {"input": "2", "label": "암 검진"},
+            ],
+            "sourceLabel": "[공동 작업 지식]",
+        }
+        script = fr"""
+const fs = require('fs');
+const vm = require('vm');
+const source = fs.readFileSync({json.dumps(str(APP_JS))}, 'utf8').replace(/initialize\(\);\s*$/, '');
+const context = {{ console }};
+vm.createContext(context);
+vm.runInContext(source, context);
+console.log(vm.runInContext(`adaptiveChoicePrompt(${{JSON.stringify({json.dumps(question)})}})`, context));
+"""
+        completed = subprocess.run(
+            ["node", "-e", script],
+            check=True,
+            capture_output=True,
+            text=True,
+            cwd=REPOSITORY_ROOT,
+        )
+        self.assertIn("아래 버튼에서 답변을 선택", completed.stdout)
+        self.assertNotIn("기본·종합 검진", completed.stdout)
+        self.assertNotIn("암 검진", completed.stdout)
+
     def test_slider_extensions_preserve_range_step_and_control(self):
         item = {
             "linkId": "pain-today",

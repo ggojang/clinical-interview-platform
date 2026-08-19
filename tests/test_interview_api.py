@@ -574,14 +574,14 @@ class InterviewApiRuntimeIntegrationTests(unittest.TestCase):
         created = api.create_session(
             {
                 "mode_selection": "건강검진 패키지 추천",
-                "initial_message": "서울",
+                "initial_message": "가족 중 대장암이 있어 걱정됩니다",
             }
         )
         self.assertEqual(created["mode_id"], "screening_addon_recommendation")
         self.assertEqual(created["presentation"]["purpose"], "screening_package_question")
         self.assertFalse(created["presentation"]["patient_input_transmitted"])
         session_id = created["session_id"]
-        for answer in ("암 검진", "없음", "가장 저렴한 후보 우선", "지금은 추가 문진만 진행"):
+        for answer in ("암 검진", "서울", "가장 저렴한 후보 우선", "지금은 추가 문진만 진행"):
             created = api.send_message(session_id, {"message": answer})
         self.assertEqual(created["presentation"]["purpose"], "screening_package_recommendation")
         self.assertFalse(created["presentation"]["patient_input_transmitted"])
