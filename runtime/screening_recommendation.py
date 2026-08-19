@@ -72,6 +72,29 @@ OPERATIONAL_FACT_IDS = frozenset({
     "screening.nhis_questionnaire_choice",
 })
 
+# Only relationships already allowed by the compiled
+# ``history.family.relationship`` Fact receive a coded value. More distant
+# relatives are still preserved in the existing narrative family-history
+# Facts without inventing a new relationship code.
+FAMILY_RELATIONSHIP_TERMS = {
+    "어머니": "mother", "어머님": "mother", "엄마": "mother",
+    "아버지": "father", "아버님": "father", "아빠": "father",
+    "부모": "parent", "형제": "sibling", "자매": "sibling",
+    "남매": "sibling", "할머니": "grandparent", "할아버지": "grandparent",
+    "자녀": "child", "아들": "son", "딸": "daughter",
+    "배우자": "spouse",
+}
+EXTENDED_FAMILY_CONTEXT_TERMS = (
+    "가족", "가족력", "이모", "이모부", "고모", "고모부", "삼촌",
+    "외삼촌", "외숙모", "숙모", "큰아버지", "작은아버지",
+    "큰어머니", "작은어머니", "조부", "조모", "외조부", "외조모",
+    "사촌", "조카",
+)
+SEX_RELEVANT_SCREENING_TERMS = (
+    "유방", "유방암", "자궁", "자궁경부", "난소", "부인과", "전립선",
+    "고환", "여성검진", "남성검진",
+)
+
 
 def _normalized(value: str) -> str:
     return re.sub(r"[^0-9a-z가-힣]+", "", value.casefold())
@@ -206,28 +229,20 @@ def _explicit_existing_fact_candidates(text: str) -> dict[str, Any]:
         if isinstance(candidate, dict) and "value" in candidate
     }
     normalized = _normalized(text)
-    family_terms = {
-        "어머니": "mother", "어머님": "mother", "엄마": "mother",
-        "아버지": "father", "아버님": "father", "아빠": "father",
-        "부모": "parent", "형제": "sibling", "자매": "sibling",
-        "남매": "sibling", "할머니": "grandparent", "할아버지": "grandparent",
-        "자녀": "child", "아들": "son", "딸": "daughter",
-        "배우자": "spouse",
-    }
     family_relationship = next(
         (
             relationship
-            for term, relationship in family_terms.items()
+            for term, relationship in FAMILY_RELATIONSHIP_TERMS.items()
             if _normalized(term) in normalized
         ),
         None,
     )
     family_context = family_relationship is not None or any(
-        term in normalized for term in ("가족", "가족력")
+        _normalized(term) in normalized for term in EXTENDED_FAMILY_CONTEXT_TERMS
     )
     family_positions = [
         text.find(term)
-        for term in (*family_terms, "가족", "가족력")
+        for term in (*FAMILY_RELATIONSHIP_TERMS, *EXTENDED_FAMILY_CONTEXT_TERMS)
         if text.find(term) >= 0
     ]
     first_family_position = min(family_positions) if family_positions else len(text)
@@ -314,7 +329,7 @@ def _explicit_existing_fact_candidates(text: str) -> dict[str, Any]:
         ]
         normalized_family_positions = [
             normalized.find(_normalized(term))
-            for term in (*family_terms, "가족", "가족력")
+            for term in (*FAMILY_RELATIONSHIP_TERMS, *EXTENDED_FAMILY_CONTEXT_TERMS)
             if normalized.find(_normalized(term)) >= 0
         ]
         normalized_family_position = (
@@ -580,11 +595,20 @@ class ScreeningRecommendationSession:
         return any(_normalized(term) in normalized for term in terms)
 
     def _concern_questions(self, concern: str) -> list[dict[str, Any]]:
-        questions: list[dict[str, Any]] = []
-        if self._contains_any(concern, ("나이", "연령", "생애주기", "연령대", "맞는 검진")):
-            questions.extend(self._age_and_sex_questions())
+        # Chatbot-test screening selection uses age, sex-related context, and
+        # reported risks before choosing a candidate group. Reuse the existing
+        # clinician-context questions and let ``_append_questions`` suppress
+        # either one when the opening or an upload already supplied its Fact.
+        questions = (
+            self._sex_and_age_questions()
+            if self._contains_any(concern, SEX_RELEVANT_SCREENING_TERMS)
+            else self._age_and_sex_questions()
+        )
         normalized_concern = _normalized(concern)
-        if "가족" in normalized_concern and "암" in normalized_concern:
+        if "암" in normalized_concern and self._contains_any(
+            concern,
+            tuple(FAMILY_RELATIONSHIP_TERMS) + EXTENDED_FAMILY_CONTEXT_TERMS,
+        ):
             questions.append(_knowledge_question(
                 "history.cancer.family",
                 question_id="kr.nhis.cancer.common.family_history",
@@ -649,8 +673,15 @@ class ScreeningRecommendationSession:
         question = deepcopy(OPERATIONAL_QUESTIONS[0])
         options = question["answer_options"]
         preferred = [item for item in options if item["internal_value"] == focus]
-        question["answer_options"] = preferred + [
+        ordered_options = preferred + [
             item for item in options if item["internal_value"] != focus
+        ]
+        # The preferred option moves to the top, so its visible shortcut must
+        # also be 1. Keeping the old input tokens made the first button start at
+        # 2 and diverged from the Chatbot-test one-question contract.
+        question["answer_options"] = [
+            {**item, "input": str(index)}
+            for index, item in enumerate(ordered_options, 1)
         ]
         label = preferred[0]["display_ko"] if preferred else "선택한"
         text = (
@@ -671,6 +702,18 @@ class ScreeningRecommendationSession:
             _knowledge_question(
                 "patient.sex_for_clinical_care",
                 template_id="question.clinician-context.sex",
+            ),
+        ]
+
+    @staticmethod
+    def _sex_and_age_questions() -> list[dict[str, Any]]:
+        return [
+            _knowledge_question(
+                "patient.sex_for_clinical_care",
+                template_id="question.clinician-context.sex",
+            ),
+            _knowledge_question(
+                "patient.age_years", template_id="question.clinician-context.age"
             ),
         ]
 

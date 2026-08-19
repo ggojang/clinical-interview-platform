@@ -685,6 +685,34 @@ class InterviewApiRuntimeIntegrationTests(unittest.TestCase):
         self.assertEqual(completed["result"]["uploaded_material_count"], 1)
         self.assertEqual(ephemeral_record.uploaded_materials, [])
 
+    def test_breast_cancer_family_history_collects_demographics_before_focus(self):
+        api = InterviewApi(max_sessions=1)
+        created = api.create_session(
+            {
+                "mode_selection": "건강검진 패키지 추천",
+                "initial_message": "이모가 유방암이었음",
+            }
+        )
+        session_id = created["session_id"]
+        selected = created["state"]["adapter_state"]["selected_question"]
+        self.assertEqual(selected["question_ref"], "Q2")
+        self.assertEqual(selected["fact_id"], "patient.sex_for_clinical_care")
+        self.assertEqual(selected["source"], "compiled_knowledge")
+        self.assertFalse(created["presentation"]["patient_input_transmitted"])
+
+        created = api.send_message(session_id, {"message": "1"})
+        selected = created["state"]["adapter_state"]["selected_question"]
+        self.assertEqual(selected["fact_id"], "patient.age_years")
+        created = api.send_message(session_id, {"message": "55세"})
+        selected = created["state"]["adapter_state"]["selected_question"]
+        self.assertEqual(selected["fact_id"], "screening.focus")
+        self.assertEqual(selected["answer_options"][0]["internal_value"], "cancer")
+        self.assertEqual(
+            [item["input"] for item in selected["answer_options"]],
+            [str(index) for index in range(1, 11)],
+        )
+        api.delete_session(session_id)
+
     def test_health_information_symptom_uses_rfe_conversation_before_advice(self):
         advisor_calls = []
         advisor = LlmHealthInformationAdvisor(

@@ -44,8 +44,19 @@ class HealthScreeningPackageCatalogTests(unittest.TestCase):
     def test_local_recommendation_workflow_is_bounded_and_includes_lowest_candidate(self):
         session = ScreeningRecommendationSession("screening-test")
         state = session.process("가족 중 대장암이 있어 걱정됩니다")
+        self.assertEqual(state["selected_question"]["fact_id"], "patient.age_years")
+        state = session.process("55세")
+        self.assertEqual(
+            state["selected_question"]["fact_id"],
+            "patient.sex_for_clinical_care",
+        )
+        state = session.process("2")
         self.assertEqual(state["selected_question"]["fact_id"], "screening.focus")
         self.assertEqual(state["selected_question"]["answer_options"][0]["internal_value"], "cancer")
+        self.assertEqual(
+            [item["input"] for item in state["selected_question"]["answer_options"]],
+            [str(index) for index in range(1, 11)],
+        )
         self.assertEqual(session.answers["history.cancer.family"], "가족 중 대장암이 있어 걱정됩니다")
         state = self._finish(session, state)
         recommendation = state["recommendation"]
@@ -107,12 +118,48 @@ class HealthScreeningPackageCatalogTests(unittest.TestCase):
         state = session.process("어머님이 뇌출혈(SAH)로 돌아가심")
         self.assertEqual(session.answers["history.family"], "어머님이 뇌출혈(SAH)로 돌아가심")
         self.assertEqual(session.inferred_focus_from_concern, "cardiovascular")
+        self.assertEqual(state["selected_question"]["fact_id"], "patient.age_years")
+        state = session.process("55세")
+        self.assertEqual(
+            state["selected_question"]["fact_id"],
+            "patient.sex_for_clinical_care",
+        )
+        state = session.process("2")
         self.assertEqual(state["selected_question"]["fact_id"], "screening.focus")
         self.assertEqual(
             state["selected_question"]["answer_options"][0]["internal_value"],
             "cardiovascular",
         )
         self.assertIn("뇌·심혈관", state["selected_question"]["text"])
+
+    def test_aunt_breast_cancer_collects_sex_and_age_before_focus(self):
+        session = ScreeningRecommendationSession("screening-aunt-breast-cancer")
+        state = session.process("이모가 유방암이었음")
+        self.assertEqual(session.answers["history.family"], "이모가 유방암이었음")
+        self.assertEqual(
+            session.answers["history.cancer.family"], "이모가 유방암이었음"
+        )
+        self.assertNotIn("history.family.relationship", session.answers)
+
+        sex_question = state["selected_question"]
+        self.assertEqual(sex_question["question_ref"], "Q2")
+        self.assertEqual(
+            sex_question["fact_id"], "patient.sex_for_clinical_care"
+        )
+        self.assertEqual(
+            sex_question["template_id"], "question.clinician-context.sex"
+        )
+        state = session.process("1")
+        self.assertEqual(state["selected_question"]["fact_id"], "patient.age_years")
+        state = session.process("55세")
+
+        focus = state["selected_question"]
+        self.assertEqual(focus["fact_id"], "screening.focus")
+        self.assertEqual(focus["answer_options"][0]["internal_value"], "cancer")
+        self.assertEqual(
+            [item["input"] for item in focus["answer_options"]],
+            [str(index) for index in range(1, 11)],
+        )
 
     def test_opening_reuses_multiple_existing_facts_without_reasking_them(self):
         session = ScreeningRecommendationSession("screening-existing-facts")
@@ -127,7 +174,7 @@ class HealthScreeningPackageCatalogTests(unittest.TestCase):
         self.assertIn("고혈압", session.answers["history.condition.current"])
         self.assertIn("혈압약", session.answers["medication.current"])
 
-        state = session.process("3")
+        state = session.process("뇌·심혈관")
         queued_fact_ids = [item["fact_id"] for item in session.question_queue]
         for fact_id in (
             "patient.age_years",
@@ -195,6 +242,14 @@ class HealthScreeningPackageCatalogTests(unittest.TestCase):
         reuse = policy["screening_recommendation"]["compiled_knowledge_reuse"]
         self.assertTrue(reuse["parallel_screening_clinical_fact_creation_prohibited"])
         self.assertTrue(reuse["skip_question_when_fact_is_already_known"])
+        self.assertEqual(
+            reuse["demographic_context_required_before_focus"],
+            ["patient.age_years", "patient.sex_for_clinical_care"],
+        )
+        self.assertEqual(
+            reuse["sex_relevant_concern_question_order"],
+            ["patient.sex_for_clinical_care", "patient.age_years"],
+        )
         self.assertEqual(
             set(reuse["workflow_only_fact_ids"]),
             {

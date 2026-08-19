@@ -1,7 +1,7 @@
 # Purpose-first multi-purpose interaction core
 
 Status: Draft, unreviewed
-Version: 0.5.0
+Version: 0.6.0
 
 ## Decision
 
@@ -63,6 +63,14 @@ budget preference, and optional NHIS follow-up choice are workflow-local Facts.
 Information about a relative must not populate the participant's age, sex,
 symptom, condition, or medication Fact, and symptoms must not be converted into
 an inferred diagnosis.
+
+Package focus is chosen only after the participant's missing age and
+sex-related screening context have been collected through the existing
+clinician-context questions. For a breast, uterine, ovarian, prostate, or other
+sex-relevant concern, the sex-related context question precedes age. A stated
+extended-family history such as an aunt with breast cancer remains in the
+existing narrative family and cancer-family Facts; Runtime must not invent a
+relationship code that the compiled Fact does not allow.
 
 If supplemental Facts already exist, a versioned mapping may prepopulate an official QuestionnaireResponse. Only exact or equivalent mappings may populate automatically. A compound official item is populated only when every required atomic source Fact is known. Partial and related mappings remain review candidates. The prepopulated response remains `in-progress` until the user reviews it.
 
