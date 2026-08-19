@@ -31,6 +31,7 @@ class ChatbotConversationRuntimeTest(unittest.TestCase):
 
         self.assertIn("`만 나이`를 첫 질문으로", instructions)
         self.assertIn("`성별 관련 맥락`을 두 번째 질문으로", instructions)
+        self.assertIn("`gpt_config_version: 1.50.0`만 보낸다", instructions)
         self.assertIn("통계 안내만 표시한 채 응답을 끝내지 않는다", instructions)
         self.assertIn("workflow의 첫 질문까지 반드시 계속한다", instructions)
 
