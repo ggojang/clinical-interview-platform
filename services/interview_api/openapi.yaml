@@ -352,6 +352,57 @@ paths:
           $ref: "#/components/responses/BadRequest"
         "404":
           $ref: "#/components/responses/NotFound"
+  /v1/sessions/{session_id}/attachments:
+    parameters:
+      - $ref: "#/components/parameters/SessionId"
+      - name: X-Clinical-Filename
+        in: header
+        required: true
+        description: UTF-8 filename encoded with encodeURIComponent/RFC 3986 percent encoding
+        schema:
+          type: string
+          maxLength: 540
+    post:
+      summary: Attach one ephemeral health or clinical document to a screening recommendation session
+      description: The original bytes remain in session memory, are never sent to an LLM, and are purged on completion, deletion, or expiry. Textual formats are extracted locally; scans, images, PDF, DOCX, and DICOM are accepted with extraction pending.
+      requestBody:
+        required: true
+        content:
+          application/fhir+json:
+            schema: {type: string, format: binary, maxLength: 5242880}
+          application/json:
+            schema: {type: string, format: binary, maxLength: 5242880}
+          application/pdf:
+            schema: {type: string, format: binary, maxLength: 5242880}
+          application/dicom:
+            schema: {type: string, format: binary, maxLength: 5242880}
+          image/jpeg:
+            schema: {type: string, format: binary, maxLength: 5242880}
+          image/png:
+            schema: {type: string, format: binary, maxLength: 5242880}
+          image/webp:
+            schema: {type: string, format: binary, maxLength: 5242880}
+          text/plain:
+            schema: {type: string, format: binary, maxLength: 5242880}
+          text/csv:
+            schema: {type: string, format: binary, maxLength: 5242880}
+      responses:
+        "201":
+          description: Clinical material accepted into ephemeral session memory
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClinicalMaterialUploadResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "413":
+          description: Per-file, file-count, or total-session upload limit exceeded
+        "415":
+          description: Unsupported clinical material content type
   /v1/sessions/{session_id}/result:
     parameters:
       - $ref: "#/components/parameters/SessionId"
@@ -415,6 +466,28 @@ components:
         type: string
         format: uuid
   schemas:
+    ClinicalMaterialManifest:
+      type: object
+      required: [filename, content_type, size_bytes, extraction_status, storage, patient_data_transmitted_to_llm]
+      properties:
+        filename: {type: string}
+        content_type: {type: string}
+        size_bytes: {type: integer, minimum: 1, maximum: 5242880}
+        extraction_status:
+          type: string
+          enum: [text_extracted_locally, text_decode_failed, accepted_pending_extraction]
+        storage: {const: memory_only}
+        patient_data_transmitted_to_llm: {const: false}
+    ClinicalMaterialUploadResult:
+      type: object
+      required: [session_id, status, material, uploaded_material_count, response_storage, patient_data_transmitted_to_llm]
+      properties:
+        session_id: {type: string, format: uuid}
+        status: {const: accepted}
+        material: {$ref: "#/components/schemas/ClinicalMaterialManifest"}
+        uploaded_material_count: {type: integer, minimum: 1, maximum: 5}
+        response_storage: {const: memory_only}
+        patient_data_transmitted_to_llm: {const: false}
     ValueSetExpansionRequest:
       type: object
       additionalProperties: false

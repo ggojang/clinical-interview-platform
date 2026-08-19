@@ -13,6 +13,32 @@ APP_JS = REPOSITORY_ROOT / "services/interview_api/static/app.js"
 
 @unittest.skipUnless(shutil.which("node"), "Node.js is required for browser logic regression")
 class InterviewDemoUiLogicTests(unittest.TestCase):
+    def test_clinical_material_mime_fallback_supports_scan_and_electronic_media(self):
+        script = fr"""
+const fs = require('fs');
+const vm = require('vm');
+const source = fs.readFileSync({json.dumps(str(APP_JS))}, 'utf8').replace(/initialize\(\);\s*$/, '');
+const context = {{ console }};
+vm.createContext(context);
+vm.runInContext(source, context);
+console.log(vm.runInContext(`JSON.stringify([
+  clinicalMaterialContentType({{name:'scan.dcm',type:''}}),
+  clinicalMaterialContentType({{name:'result.json',type:'application/fhir+json'}}),
+  clinicalMaterialContentType({{name:'note.txt',type:''}})
+])`, context));
+"""
+        completed = subprocess.run(
+            ["node", "-e", script],
+            check=True,
+            capture_output=True,
+            text=True,
+            cwd=REPOSITORY_ROOT,
+        )
+        self.assertEqual(
+            json.loads(completed.stdout),
+            ["application/dicom", "application/fhir+json", "text/plain"],
+        )
+
     def test_choice_prompt_does_not_repeat_button_labels_in_message(self):
         question = {
             "questionRef": "Q2",

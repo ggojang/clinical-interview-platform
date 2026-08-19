@@ -130,7 +130,20 @@ class ScreeningRecommendationSession:
     next_question_index: int = 0
     latest_question: dict[str, Any] | None = None
     recommendation: dict[str, Any] | None = None
+    uploaded_health_contexts: list[str] = field(default_factory=list)
     closed: bool = False
+
+    def add_uploaded_health_context(self, text: str) -> None:
+        """Add locally extracted text without treating it as a questionnaire answer."""
+        self._ensure_open()
+        if self.recommendation is not None:
+            raise RuntimeError("screening recommendation is already ready")
+        normalized = text.strip()
+        if not normalized:
+            return
+        if len(self.uploaded_health_contexts) >= 5:
+            raise ValueError("uploaded health context limit has been reached")
+        self.uploaded_health_contexts.append(normalized[:20_000])
 
     def process(self, message: str) -> dict[str, Any]:
         self._ensure_open()
@@ -170,6 +183,7 @@ class ScreeningRecommendationSession:
 
     def close(self) -> dict[str, Any]:
         self.answers.clear()
+        self.uploaded_health_contexts.clear()
         self.latest_question = None
         self.recommendation = None
         self.closed = True
@@ -241,10 +255,14 @@ class ScreeningRecommendationSession:
             (tokens for code, _, tokens in FOCUS_OPTIONS if code == focus),
             (),
         )
-        concern_tokens = tuple(
-            token for token in re.findall(r"[0-9a-z가-힣]+", self.answers.get("screening.concern", "").casefold())
+        combined_concern = " ".join([
+            self.answers.get("screening.concern", ""),
+            *self.uploaded_health_contexts,
+        ])
+        concern_tokens = tuple(dict.fromkeys(
+            token for token in re.findall(r"[0-9a-z가-힣]+", combined_concern.casefold())
             if len(token) >= 2 and token not in {"없음", "모름", "잘모르겠음"}
-        )
+        ))[:60]
 
         ranked: list[tuple[int, int, dict[str, Any]]] = []
         for summary in summaries:
@@ -295,6 +313,7 @@ class ScreeningRecommendationSession:
             "selection_basis": {
                 "focus": focus,
                 "concern_terms_used_locally": list(concern_tokens),
+                "uploaded_text_context_count": len(self.uploaded_health_contexts),
                 "budget_preference": preference,
                 "lowest_price_candidate_always_included": True,
                 "medical_necessity_inferred": False,

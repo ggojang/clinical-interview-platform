@@ -216,18 +216,26 @@ class InterviewApiHttpTests(unittest.TestCase):
         authorized=True,
         origin=None,
         host="demo.example",
+        raw_body=None,
+        content_type=None,
+        extra_headers=None,
     ):
         headers = HTTPMessage()
         headers.add_header("Host", host)
-        raw_body = b""
+        request_body = b"" if raw_body is None else raw_body
         if authorized:
             headers.add_header("Authorization", "Bearer test-secret")
         if origin:
             headers.add_header("Origin", origin)
+        for key, value in (extra_headers or {}).items():
+            headers.add_header(key, value)
         if body is not None:
-            raw_body = json.dumps(body).encode("utf-8")
+            request_body = json.dumps(body).encode("utf-8")
             headers.add_header("Content-Type", "application/json")
-            headers.add_header("Content-Length", str(len(raw_body)))
+            headers.add_header("Content-Length", str(len(request_body)))
+        elif raw_body is not None:
+            headers.add_header("Content-Type", content_type or "application/octet-stream")
+            headers.add_header("Content-Length", str(len(request_body)))
         handler = self.handler_class.__new__(self.handler_class)
         handler.command = method
         handler.path = path
@@ -235,7 +243,7 @@ class InterviewApiHttpTests(unittest.TestCase):
         handler.requestline = f"{method} {path} HTTP/1.1"
         handler.client_address = ("127.0.0.1", 12345)
         handler.headers = headers
-        handler.rfile = BytesIO(raw_body)
+        handler.rfile = BytesIO(request_body)
         handler.wfile = BytesIO()
         getattr(handler, f"do_{method}")()
         response = handler.wfile.getvalue()
@@ -326,6 +334,9 @@ class InterviewApiHttpTests(unittest.TestCase):
         self.assertIn("<details class=\"api-key-panel\" open>", body)
         self.assertIn("<strong>비정형 대화</strong>", body)
         self.assertIn("id=\"adaptiveProcessing\"", body)
+        self.assertIn("id=\"screeningMaterialPanel\"", body)
+        self.assertIn("id=\"screeningMaterialFiles\"", body)
+        self.assertIn("개인 건강·진료자료 추가", body)
         self.assertIn("플랫폼 API key (상용 LLM key 아님)", body)
         self.assertIn("Key만으로 제공자·모델을 판별할 수 없으므로", body)
         self.assertIn("id=\"fixedRevision\"", body)
@@ -461,6 +472,49 @@ class AnonymousDemoHttpTests(InterviewApiHttpTests):
         self.assertEqual(status, 200)
         self.assertFalse(body["configured"])
 
+    def test_anonymous_screening_accepts_only_synthetic_ephemeral_material(self):
+        self.handler_class = build_handler(
+            InterviewApi(),
+            ServerConfig(
+                api_key="test-secret",
+                anonymous_demo_enabled=True,
+                anonymous_demo_requests_per_minute=30,
+            ),
+        )
+        status, _, created = self._request(
+            "POST",
+            "/demo-api/sessions",
+            {"mode_selection": "건강검진 패키지 추천", "initial_message": "가상 가족력"},
+            authorized=False,
+        )
+        self.assertEqual(status, 201)
+        path = f"/demo-api/sessions/{created['session_id']}/attachments"
+        status, _, rejected = self._request(
+            "POST",
+            path,
+            authorized=False,
+            raw_body="가상 검사결과: 이상 없음".encode("utf-8"),
+            content_type="text/plain",
+            extra_headers={"X-Clinical-Filename": "%EA%B0%80%EC%83%81.txt"},
+        )
+        self.assertEqual(status, 400)
+        self.assertEqual(rejected["error"]["code"], "synthetic_test_material_required")
+        status, _, accepted = self._request(
+            "POST",
+            path,
+            authorized=False,
+            raw_body="가상 검사결과: 이상 없음".encode("utf-8"),
+            content_type="text/plain",
+            extra_headers={
+                "X-Clinical-Filename": "%EA%B0%80%EC%83%81.txt",
+                "X-Synthetic-Test-Data": "true",
+            },
+        )
+        self.assertEqual(status, 201)
+        self.assertEqual(accepted["material"]["filename"], "가상.txt")
+        self.assertEqual(accepted["material"]["extraction_status"], "text_extracted_locally")
+        self.assertFalse(accepted["patient_data_transmitted_to_llm"])
+
 
 class InterviewApiRuntimeIntegrationTests(unittest.TestCase):
     @staticmethod
@@ -581,6 +635,19 @@ class InterviewApiRuntimeIntegrationTests(unittest.TestCase):
         self.assertEqual(created["presentation"]["purpose"], "screening_package_question")
         self.assertFalse(created["presentation"]["patient_input_transmitted"])
         session_id = created["session_id"]
+        uploaded = api.upload_clinical_material(
+            session_id,
+            filename="synthetic-result.txt",
+            content_type="text/plain",
+            data="가상 대장내시경 용종 가족력".encode("utf-8"),
+        )
+        self.assertEqual(uploaded["material"]["extraction_status"], "text_extracted_locally")
+        self.assertFalse(uploaded["patient_data_transmitted_to_llm"])
+        ephemeral_record = api._sessions[session_id]
+        self.assertTrue(ephemeral_record.uploaded_materials[0].data)
+        session = api.get_session(session_id)
+        self.assertEqual(len(session["uploaded_materials"]), 1)
+        self.assertNotIn("가상 대장내시경", json.dumps(session, ensure_ascii=False))
         for answer in ("암 검진", "서울", "가장 저렴한 후보 우선", "지금은 추가 문진만 진행"):
             created = api.send_message(session_id, {"message": answer})
         self.assertEqual(created["presentation"]["purpose"], "screening_package_recommendation")
@@ -592,6 +659,8 @@ class InterviewApiRuntimeIntegrationTests(unittest.TestCase):
         self.assertTrue(result["recommendation"]["candidates"])
         self.assertNotIn("summary_ko", result["recommendation"])
         self.assertNotIn("recommendation", result["workflow"])
+        self.assertEqual(result["recommendation"]["selection_basis"]["uploaded_text_context_count"], 1)
+        self.assertEqual(result["uploaded_materials"][0]["storage"], "memory_only")
         self.assertEqual(result["catalog_answer_transmission"], "local_memory_only")
         completed = api.complete(session_id)
         self.assertTrue(completed["response_state_purged"])
@@ -599,6 +668,8 @@ class InterviewApiRuntimeIntegrationTests(unittest.TestCase):
         compact_candidate = completed["result"]["recommendation"]["candidates"][0]
         self.assertIn("source_url", compact_candidate)
         self.assertNotIn("package_id", compact_candidate)
+        self.assertEqual(completed["result"]["uploaded_material_count"], 1)
+        self.assertEqual(ephemeral_record.uploaded_materials, [])
 
     def test_health_information_symptom_uses_rfe_conversation_before_advice(self):
         advisor_calls = []

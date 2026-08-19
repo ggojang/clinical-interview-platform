@@ -1,6 +1,8 @@
 "use strict";
 
 const MAX_FILE_BYTES = 1024 * 1024;
+const MAX_CLINICAL_MATERIAL_BYTES = 5 * 1024 * 1024;
+const MAX_CLINICAL_MATERIAL_FILES = 5;
 const FHIR_TRANSLATION_URL = "http://hl7.org/fhir/StructureDefinition/translation";
 const FHIR_RENDERING_XHTML_URL = "http://hl7.org/fhir/StructureDefinition/rendering-xhtml";
 const FHIR_QUESTIONNAIRE_HIDDEN_URL = "http://hl7.org/fhir/StructureDefinition/questionnaire-hidden";
@@ -68,6 +70,8 @@ const state = {
   adaptiveRequestSerial: 0,
   adaptiveHistory: [],
   healthInformationHistory: [],
+  screeningMaterials: [],
+  screeningMaterialManifests: [],
   currentAdaptiveQuestion: null,
   fixedQuestions: [],
   fixedAnswers: [],
@@ -92,6 +96,78 @@ function showToast(message) {
   toast.textContent = message;
   toast.classList.add("show");
   window.setTimeout(() => toast.classList.remove("show"), 3200);
+}
+
+function clinicalMaterialContentType(file) {
+  if (file.type) return file.type;
+  const extension = file.name.split(".").pop()?.toLowerCase();
+  return ({
+    pdf: "application/pdf", json: "application/json", txt: "text/plain",
+    md: "text/markdown", csv: "text/csv", png: "image/png",
+    jpg: "image/jpeg", jpeg: "image/jpeg", webp: "image/webp",
+    dcm: "application/dicom"
+  })[extension] || "application/octet-stream";
+}
+
+function renderScreeningMaterials() {
+  const list = $("#screeningMaterialList");
+  const entries = state.screeningMaterialManifests.length
+    ? state.screeningMaterialManifests.map((material) => ({
+        name: material.filename,
+        detail: material.extraction_status === "text_extracted_locally"
+          ? "텍스트 로컬 반영"
+          : "접수 · 추출 대기"
+      }))
+    : state.screeningMaterials.map((file) => ({
+        name: file.name,
+        detail: `${Math.max(1, Math.ceil(file.size / 1024))} KB · 시작 시 업로드`
+      }));
+  if (!entries.length) {
+    const empty = document.createElement("span");
+    empty.textContent = "선택한 자료가 없습니다.";
+    list.replaceChildren(empty);
+    return;
+  }
+  list.replaceChildren(...entries.map((entry) => {
+    const row = document.createElement("div");
+    row.className = "clinical-material-item";
+    append(row, "strong", entry.name);
+    append(row, "span", entry.detail);
+    return row;
+  }));
+}
+
+function queueScreeningMaterials(files) {
+  const selected = [...files];
+  if (selected.length > MAX_CLINICAL_MATERIAL_FILES) {
+    showToast("건강·진료자료는 최대 5개까지 선택할 수 있습니다.");
+    return;
+  }
+  const oversized = selected.find((file) => file.size > MAX_CLINICAL_MATERIAL_BYTES);
+  if (oversized) {
+    showToast(`${oversized.name}: 파일당 5 MB를 넘을 수 없습니다.`);
+    return;
+  }
+  state.screeningMaterials = selected;
+  state.screeningMaterialManifests = [];
+  renderScreeningMaterials();
+}
+
+async function uploadScreeningMaterial(file) {
+  const path = `/v1/sessions/${state.sessionId}/attachments`;
+  const target = state.apiMode === "authenticated"
+    ? path
+    : path.replace(/^\/v1\/sessions/, "/demo-api/sessions");
+  const headers = {
+    "Content-Type": clinicalMaterialContentType(file),
+    "X-Clinical-Filename": encodeURIComponent(file.name)
+  };
+  if (state.apiMode === "authenticated") headers.Authorization = `Bearer ${state.apiKey}`;
+  else headers["X-Synthetic-Test-Data"] = "true";
+  const response = await fetch(target, { method: "POST", headers, body: file });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(payload.error?.message || `자료 업로드 오류 (${response.status})`);
+  return payload.material;
 }
 
 async function api(path, options = {}) {
@@ -1588,6 +1664,7 @@ function rebuildScreeningRecommendationArtifacts(completed) {
     purpose: "screening_addon_recommendation",
     conversation: state.adaptiveHistory,
     recommendation,
+    uploaded_materials: completed?.result?.uploaded_materials || state.screeningMaterialManifests,
     limitations: recommendation.limitations_ko,
     response_storage: "browser_memory_only"
   });
@@ -1638,6 +1715,7 @@ function setAdaptiveBusy(busy, message = "다음 질문을 준비하고 있습�
   $("#adaptiveAnswerButton").disabled = busy || closedAfterStart;
   $("#llmProvider").disabled = busy || state.apiMode !== "authenticated" || state.adaptiveStarted;
   $("#completeAdaptive").disabled = busy || !state.sessionId;
+  $("#screeningMaterialFiles").disabled = busy || state.adaptiveStarted;
 }
 
 async function resetAdaptiveConversation(nextPurpose = state.adaptivePurpose) {
@@ -1648,6 +1726,8 @@ async function resetAdaptiveConversation(nextPurpose = state.adaptivePurpose) {
   state.adaptiveStarted = false;
   state.adaptiveHistory = [];
   state.healthInformationHistory = [];
+  state.screeningMaterials = [];
+  state.screeningMaterialManifests = [];
   state.currentAdaptiveQuestion = null;
   state.handoff = {};
   state.questionnaire = null;
@@ -1656,6 +1736,8 @@ async function resetAdaptiveConversation(nextPurpose = state.adaptivePurpose) {
   state.artifactsFinalized = false;
   $("#adaptiveSuggestions").hidden = true;
   $("#adaptiveSuggestions").replaceChildren();
+  $("#screeningMaterialFiles").value = "";
+  renderScreeningMaterials();
   setAdaptiveBusy(false);
   $("#adaptiveChatLog").replaceChildren();
   prepareAdaptiveConversation(true);
@@ -1700,6 +1782,22 @@ async function startAdaptive(opening) {
       return;
     }
     state.sessionId = document.session_id;
+    if (state.adaptivePurpose === "screening_addon_recommendation" && state.screeningMaterials.length) {
+      try {
+        for (const file of state.screeningMaterials) {
+          state.screeningMaterialManifests.push(await uploadScreeningMaterial(file));
+        }
+      } catch (error) {
+        try { await api(`/v1/sessions/${state.sessionId}`, { method: "DELETE" }); } catch (_) { /* TTL remains the fallback. */ }
+        state.sessionId = null;
+        state.screeningMaterialManifests = [];
+        renderScreeningMaterials();
+        throw error;
+      }
+      state.screeningMaterials = [];
+      $("#screeningMaterialFiles").value = "";
+      renderScreeningMaterials();
+    }
     state.adaptiveStarted = true;
     state.adaptiveHistory = [];
     state.healthInformationHistory = [];
@@ -1721,6 +1819,13 @@ async function startAdaptive(opening) {
     $("#adaptiveConversation").hidden = false;
     $("#adaptiveConversationTitle").textContent = purposeConfig.title;
     bubble($("#adaptiveChatLog"), "user", opening);
+    if (state.adaptivePurpose === "screening_addon_recommendation" && state.screeningMaterialManifests.length) {
+      bubble(
+        $("#adaptiveChatLog"),
+        "notice",
+        `건강·진료자료 ${state.screeningMaterialManifests.length}개를 세션 메모리에 접수했습니다. 외부 LLM에는 전달하지 않습니다.`
+      );
+    }
     if (state.adaptivePurpose === "health_information") {
       if (state.currentAdaptiveQuestion) {
         showAdaptiveQuestion(state.currentAdaptiveQuestion);
@@ -1956,6 +2061,10 @@ async function connectAnonymous() {
 function updateProviderConsent() {
   const provider = state.providers.find((item) => item.provider_id === $("#llmProvider").value);
   const screening = state.adaptivePurpose === "screening_addon_recommendation";
+  $("#screeningMaterialPanel").hidden = !screening;
+  $("#screeningMaterialNotice").textContent = state.apiMode === "anonymous_demo"
+    ? "익명 데모에서는 실제 개인정보가 없는 가상 자료만 업로드하세요. 자료는 세션 메모리에서만 처리되고 외부 LLM에는 전달되지 않으며 완료·삭제·10분 만료 시 폐기됩니다. 텍스트 자료는 추천 비교에 로컬 반영하고, 스캔·영상은 현재 원본 접수 후 추출 대기 상태로 표시합니다."
+    : "기관 인증 세션에서는 적법한 동의·권한과 기관 정책 범위의 개인 건강·진료자료를 업로드할 수 있습니다. 원본은 세션 메모리에서만 처리되고 외부 LLM에는 전달되지 않으며 완료·삭제·만료 시 폐기됩니다.";
   $("#providerField").hidden = screening;
   $("#providerPrivacy").hidden = screening;
   $("#providerAuthHelp").hidden = screening || Boolean(provider?.external_processing);
@@ -2023,6 +2132,9 @@ function initialize() {
     image.src = URL.createObjectURL(file);
     image.addEventListener("load", () => URL.revokeObjectURL(image.src), { once: true });
     $("#imagePreview").replaceChildren(image);
+  });
+  $("#screeningMaterialFiles").addEventListener("change", (event) => {
+    queueScreeningMaterials(event.target.files || []);
   });
   let fixedAnswerComposing = false;
   $("#fixedAnswer").addEventListener("compositionstart", () => { fixedAnswerComposing = true; });

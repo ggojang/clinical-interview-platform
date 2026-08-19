@@ -35,6 +35,26 @@ from services.interview_api.terminology import TerminologyClient, TerminologyErr
 
 
 MAX_MESSAGE_CHARACTERS = 10_000
+MAX_CLINICAL_MATERIAL_BYTES = 5 * 1024 * 1024
+MAX_CLINICAL_MATERIAL_COUNT = 5
+MAX_CLINICAL_MATERIAL_TOTAL_BYTES = 15 * 1024 * 1024
+TEXTUAL_CLINICAL_MATERIAL_TYPES = {
+    "application/fhir+json",
+    "application/json",
+    "application/xml",
+    "text/csv",
+    "text/markdown",
+    "text/plain",
+    "text/xml",
+}
+ALLOWED_CLINICAL_MATERIAL_TYPES = TEXTUAL_CLINICAL_MATERIAL_TYPES | {
+    "application/dicom",
+    "application/pdf",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+}
 MIN_SESSION_TTL_SECONDS = 60
 MAX_SESSION_TTL_SECONDS = 86_400
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
@@ -124,6 +144,25 @@ def _optional_text(
 
 
 @dataclass
+class UploadedClinicalMaterial:
+    filename: str
+    content_type: str
+    data: bytes
+    extraction_status: str
+    received_at: float
+
+    def manifest(self) -> dict[str, Any]:
+        return {
+            "filename": self.filename,
+            "content_type": self.content_type,
+            "size_bytes": len(self.data),
+            "extraction_status": self.extraction_status,
+            "storage": "memory_only",
+            "patient_data_transmitted_to_llm": False,
+        }
+
+
+@dataclass
 class SessionRecord:
     core: CoreInteractionSession
     created_at: float
@@ -133,6 +172,7 @@ class SessionRecord:
     llm_selection: LlmSelection
     llm_presentation: dict[str, Any]
     access_scope: str = "authenticated"
+    uploaded_materials: list[UploadedClinicalMaterial] = field(default_factory=list)
     lock: threading.RLock = field(default_factory=threading.RLock)
 
 
@@ -240,6 +280,14 @@ class InterviewApi:
                 "health_information_enabled": self.health_information_advisor.enabled,
             },
             "terminology": self.terminology_client.configuration(),
+            "clinical_material_upload": {
+                "implemented": True,
+                "screening_recommendation_only": True,
+                "storage": "memory_only",
+                "patient_data_transmitted_to_llm": False,
+                "max_file_bytes": MAX_CLINICAL_MATERIAL_BYTES,
+                "max_files_per_session": MAX_CLINICAL_MATERIAL_COUNT,
+            },
         }
 
     def catalog(self) -> dict[str, Any]:
@@ -420,6 +468,24 @@ class InterviewApi:
     def complete_anonymous_demo_session(self, session_id: str) -> dict[str, Any]:
         return self.complete(session_id, required_access_scope="anonymous_demo")
 
+    def upload_anonymous_demo_clinical_material(
+        self,
+        session_id: str,
+        *,
+        filename: str,
+        content_type: str,
+        data: bytes,
+        synthetic_test_data: bool,
+    ) -> dict[str, Any]:
+        return self.upload_clinical_material(
+            session_id,
+            filename=filename,
+            content_type=content_type,
+            data=data,
+            synthetic_test_data=synthetic_test_data,
+            required_access_scope="anonymous_demo",
+        )
+
     def delete_anonymous_demo_session(self, session_id: str) -> dict[str, Any]:
         return self.delete_session(session_id, required_access_scope="anonymous_demo")
 
@@ -597,6 +663,91 @@ class InterviewApi:
             self._touch(record)
             return self._session_document(session_id, record)
 
+    def upload_clinical_material(
+        self,
+        session_id: str,
+        *,
+        filename: str,
+        content_type: str,
+        data: bytes,
+        synthetic_test_data: bool = False,
+        required_access_scope: str | None = None,
+    ) -> dict[str, Any]:
+        session_id, record = self._record(
+            session_id, required_access_scope=required_access_scope
+        )
+        normalized_name = filename.strip()
+        if (
+            not normalized_name
+            or len(normalized_name) > 180
+            or "\x00" in normalized_name
+            or "/" in normalized_name
+            or "\\" in normalized_name
+        ):
+            raise ServiceError(400, "invalid_filename", "clinical material filename is invalid")
+        normalized_type = content_type.split(";", 1)[0].strip().lower()
+        if normalized_type not in ALLOWED_CLINICAL_MATERIAL_TYPES:
+            raise ServiceError(
+                415,
+                "unsupported_clinical_material_type",
+                "clinical material content type is not supported",
+                details={"content_type": normalized_type},
+            )
+        if not isinstance(data, bytes) or not data:
+            raise ServiceError(400, "empty_clinical_material", "clinical material is empty")
+        if len(data) > MAX_CLINICAL_MATERIAL_BYTES:
+            raise ServiceError(413, "clinical_material_too_large", "clinical material exceeds 5 MiB")
+        if record.access_scope == "anonymous_demo" and not synthetic_test_data:
+            raise ServiceError(
+                400,
+                "synthetic_test_material_required",
+                "anonymous demo accepts only synthetic test clinical material",
+            )
+        with record.lock:
+            if record.core.mode_id != "screening_addon_recommendation":
+                raise ServiceError(
+                    409,
+                    "clinical_material_mode_not_supported",
+                    "clinical material upload is currently supported only for screening package recommendation",
+                )
+            if len(record.uploaded_materials) >= MAX_CLINICAL_MATERIAL_COUNT:
+                raise ServiceError(413, "clinical_material_count_exceeded", "no more than 5 files are allowed")
+            total_bytes = sum(len(item.data) for item in record.uploaded_materials)
+            if total_bytes + len(data) > MAX_CLINICAL_MATERIAL_TOTAL_BYTES:
+                raise ServiceError(413, "clinical_material_total_exceeded", "clinical materials exceed 15 MiB")
+            extraction_status = "accepted_pending_extraction"
+            if normalized_type in TEXTUAL_CLINICAL_MATERIAL_TYPES:
+                try:
+                    extracted_text = data.decode("utf-8")
+                except UnicodeDecodeError:
+                    extraction_status = "text_decode_failed"
+                else:
+                    adapter = record.core.adapter
+                    if adapter is None or not hasattr(adapter, "add_uploaded_health_context"):
+                        raise ServiceError(409, "screening_runtime_not_ready", "screening runtime is not ready")
+                    try:
+                        adapter.add_uploaded_health_context(extracted_text)
+                    except (RuntimeError, ValueError) as exc:
+                        raise ServiceError(409, "clinical_material_context_rejected", str(exc)) from exc
+                    extraction_status = "text_extracted_locally"
+            material = UploadedClinicalMaterial(
+                filename=normalized_name,
+                content_type=normalized_type,
+                data=data,
+                extraction_status=extraction_status,
+                received_at=self.clock(),
+            )
+            record.uploaded_materials.append(material)
+            self._touch(record)
+            return {
+                "session_id": session_id,
+                "status": "accepted",
+                "material": material.manifest(),
+                "uploaded_material_count": len(record.uploaded_materials),
+                "response_storage": "memory_only",
+                "patient_data_transmitted_to_llm": False,
+            }
+
     def result(self, session_id: str) -> dict[str, Any]:
         session_id, record = self._record(session_id)
         with record.lock:
@@ -612,6 +763,7 @@ class InterviewApi:
         with record.lock:
             result = self._result_document(session_id, record)
             closure = record.core.close()
+            record.uploaded_materials.clear()
         if result.get("mode_id") == "screening_addon_recommendation":
             result = self._screening_completion_result(result)
         with self._lock:
@@ -665,18 +817,31 @@ class InterviewApi:
             for key in (
                 "status",
                 "catalog_version",
-                "selection_basis",
                 "official_nhis_questionnaire",
                 "limitations_ko",
             )
             if key in recommendation
         }
+        selection_basis = recommendation.get("selection_basis")
+        if isinstance(selection_basis, dict):
+            compact_recommendation["selection_basis"] = {
+                key: deepcopy(selection_basis[key])
+                for key in (
+                    "focus",
+                    "budget_preference",
+                    "lowest_price_candidate_always_included",
+                    "medical_necessity_inferred",
+                    "uploaded_text_context_count",
+                )
+                if key in selection_basis
+            }
         if compact_region is not None:
             compact_recommendation["region"] = compact_region
         compact_recommendation["candidates"] = candidates
         return {
             "mode_id": result.get("mode_id"),
             "recommendation": compact_recommendation,
+            "uploaded_material_count": len(result.get("uploaded_materials", [])),
             "response_storage": result.get("response_storage", "memory_only"),
         }
 
@@ -697,6 +862,7 @@ class InterviewApi:
             raise ServiceError(404, "session_not_found", "session was not found or expired")
         with record.lock:
             closure = record.core.close()
+            record.uploaded_materials.clear()
         return {
             "session_id": session_id,
             "status": "deleted",
@@ -715,6 +881,7 @@ class InterviewApi:
         for record in expired:
             with record.lock:
                 record.core.close()
+                record.uploaded_materials.clear()
         return len(expired)
 
     def purge_all(self) -> int:
@@ -725,6 +892,7 @@ class InterviewApi:
         for record in records:
             with record.lock:
                 record.core.close()
+                record.uploaded_materials.clear()
         return len(records)
 
     def _record(
@@ -779,6 +947,9 @@ class InterviewApi:
             ),
             "presentation": deepcopy(record.llm_presentation),
             "state": deepcopy(record.last_state),
+            "uploaded_materials": [
+                material.manifest() for material in record.uploaded_materials
+            ],
         }
 
     def _render_llm_output(
@@ -913,6 +1084,9 @@ class InterviewApi:
                 "available_formats": ["screening_package_recommendation_json"],
                 "recommendation": recommendation,
                 "workflow": workflow,
+                "uploaded_materials": [
+                    material.manifest() for material in record.uploaded_materials
+                ],
                 "response_storage": "memory_only",
             }
         if record.core.mode_id == "health_information" and record.core.adapter is not None:

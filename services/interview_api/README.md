@@ -28,7 +28,7 @@
 
 FHIR `Questionnaire`, `QuestionnaireResponse`, SDC Extraction은 아직 이 API에 구현되지 않았습니다. 현재 결과 응답에도 이를 `not_implemented`로 명시합니다. 다음 구현 단계에서 기존 질문·Fact 바인딩을 사용해 추가합니다.
 
-데모 UI가 만드는 Questionnaire/QuestionnaireResponse 및 R4/R5 다운로드는 공통 요소를 이용한 **브라우저 draft**입니다. 서버 변환이나 공식 FHIR validator 검증 결과가 아니며, SDC Extraction은 가짜 결과를 만들지 않고 `not_implemented`로 표시합니다. 이미지 설문은 브라우저 미리보기만 지원하고 OCR·문항 구조화는 아직 지원하지 않습니다. 업로드 파일과 API key는 브라우저 영구 저장소에 기록하지 않습니다. 이름·성별·생일 같은 정보가 필요한 설문도 실제 개인정보 대신 명시적인 가상 테스트 값을 사용해야 합니다.
+데모 UI가 만드는 Questionnaire/QuestionnaireResponse 및 R4/R5 다운로드는 공통 요소를 이용한 **브라우저 draft**입니다. 서버 변환이나 공식 FHIR validator 검증 결과가 아니며, SDC Extraction은 가짜 결과를 만들지 않고 `not_implemented`로 표시합니다. 이미지 설문은 브라우저 미리보기만 지원하고 OCR·문항 구조화는 아직 지원하지 않습니다. 건강검진 패키지 추천 세션은 `/v1/sessions/{session_id}/attachments`에서 PDF, JSON/FHIR, 텍스트·CSV, PNG/JPEG/WebP, DICOM 등의 개인 건강·진료자료를 파일당 5 MiB, 세션당 최대 5개·15 MiB로 받을 수 있습니다. 원본은 세션 메모리에만 보관하고 외부 LLM에는 전달하지 않으며, 텍스트 형식만 로컬 추출해 추천 비교에 반영합니다. 스캔·영상은 현재 `accepted_pending_extraction`으로 접수하며 OCR·영상 해석을 수행한 것처럼 표시하지 않습니다. 완료·삭제·만료 때 원본 바이트를 폐기합니다. 익명 데모에서는 실제 개인정보가 없는 가상 테스트 자료만 허용합니다.
 
 결과 화면의 SDC Extraction은 사용자에게 보여주는 설문 결과가 아니라 QuestionnaireResponse를 Observation 등 임상 리소스로 변환하는 연계 기능입니다. 현재는 상태 설명에만 남기고 일반 결과 탭에서는 제외합니다. 의료인 요약은 자유 문진을 완료했을 때 의료진에게 전달할 구조화된 handoff이며, 정형 설문에는 표시하지 않습니다.
 

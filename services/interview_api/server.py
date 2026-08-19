@@ -13,22 +13,27 @@ import re
 import threading
 import time
 from typing import Any
-from urllib.parse import urlsplit
+from urllib.parse import unquote, urlsplit
 from uuid import uuid4
 
 from services.interview_api.service import InterviewApi, ServiceError
 
 
 MAX_JSON_BODY_BYTES = 65_536
+MAX_CLINICAL_MATERIAL_BODY_BYTES = 5 * 1024 * 1024
 SESSION_PATH = re.compile(r"^/v1/sessions/([^/]+)$")
 MESSAGE_PATH = re.compile(r"^/v1/sessions/([^/]+)/messages$")
 RESULT_PATH = re.compile(r"^/v1/sessions/([^/]+)/result$")
 COMPLETE_PATH = re.compile(r"^/v1/sessions/([^/]+)/complete$")
+CLINICAL_MATERIAL_PATH = re.compile(r"^/v1/sessions/([^/]+)/attachments$")
 DEMO_RESOURCE_PATH = re.compile(r"^/v1/demo/resources/([^/]+)$")
 ANONYMOUS_DEMO_RESOURCE_PATH = re.compile(r"^/demo-api/resources/([^/]+)$")
 ANONYMOUS_DEMO_SESSION_PATH = re.compile(r"^/demo-api/sessions/([^/]+)$")
 ANONYMOUS_DEMO_MESSAGE_PATH = re.compile(r"^/demo-api/sessions/([^/]+)/messages$")
 ANONYMOUS_DEMO_COMPLETE_PATH = re.compile(r"^/demo-api/sessions/([^/]+)/complete$")
+ANONYMOUS_DEMO_CLINICAL_MATERIAL_PATH = re.compile(
+    r"^/demo-api/sessions/([^/]+)/attachments$"
+)
 STATIC_ROOT = Path(__file__).resolve().parent / "static"
 STATIC_FILES = {
     "/": ("demo.html", "text/html; charset=utf-8"),
@@ -137,7 +142,10 @@ def build_handler(api: InterviewApi, config: ServerConfig) -> type[BaseHTTPReque
             self.send_response(HTTPStatus.NO_CONTENT)
             self._security_headers()
             self.send_header("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
-            self.send_header("Access-Control-Allow-Headers", "Authorization, Content-Type, X-Request-ID")
+            self.send_header(
+                "Access-Control-Allow-Headers",
+                "Authorization, Content-Type, X-Request-ID, X-Clinical-Filename, X-Synthetic-Test-Data",
+            )
             self.send_header("Access-Control-Max-Age", "600")
             self.end_headers()
 
@@ -194,6 +202,16 @@ def build_handler(api: InterviewApi, config: ServerConfig) -> type[BaseHTTPReque
                 if match := MESSAGE_PATH.fullmatch(path):
                     if method == "POST":
                         self._json(HTTPStatus.OK, api.send_message(match.group(1), self._body()), request_id)
+                        return
+                if match := CLINICAL_MATERIAL_PATH.fullmatch(path):
+                    if method == "POST":
+                        self._json(
+                            HTTPStatus.CREATED,
+                            api.upload_clinical_material(
+                                match.group(1), **self._clinical_material_body()
+                            ),
+                            request_id,
+                        )
                         return
                 if match := RESULT_PATH.fullmatch(path):
                     if method == "GET":
@@ -262,6 +280,22 @@ def build_handler(api: InterviewApi, config: ServerConfig) -> type[BaseHTTPReque
                         HTTPStatus.OK,
                         api.send_anonymous_demo_message(
                             match.group(1), self._body()
+                        ),
+                        request_id,
+                    )
+                    return
+            if match := ANONYMOUS_DEMO_CLINICAL_MATERIAL_PATH.fullmatch(path):
+                if method == "POST":
+                    material = self._clinical_material_body()
+                    self._json(
+                        HTTPStatus.CREATED,
+                        api.upload_anonymous_demo_clinical_material(
+                            match.group(1),
+                            **material,
+                            synthetic_test_data=(
+                                self.headers.get("X-Synthetic-Test-Data", "").strip().lower()
+                                == "true"
+                            ),
                         ),
                         request_id,
                     )
@@ -337,6 +371,37 @@ def build_handler(api: InterviewApi, config: ServerConfig) -> type[BaseHTTPReque
             if not isinstance(body, dict):
                 raise ServiceError(400, "invalid_request", "request body must be an object")
             return body
+
+        def _clinical_material_body(self) -> dict[str, Any]:
+            content_type = self.headers.get("Content-Type", "").split(";", 1)[0].strip().lower()
+            if not content_type:
+                raise ServiceError(415, "unsupported_media_type", "Content-Type is required")
+            filename_header = self.headers.get("X-Clinical-Filename", "").strip()
+            if not filename_header:
+                raise ServiceError(400, "invalid_filename", "X-Clinical-Filename is required")
+            try:
+                filename = unquote(filename_header, encoding="utf-8", errors="strict")
+            except (UnicodeDecodeError, ValueError) as exc:
+                raise ServiceError(400, "invalid_filename", "X-Clinical-Filename is invalid") from exc
+            raw_length = self.headers.get("Content-Length")
+            if raw_length is None:
+                raise ServiceError(411, "content_length_required", "Content-Length is required")
+            try:
+                length = int(raw_length)
+            except ValueError as exc:
+                raise ServiceError(400, "invalid_request", "Content-Length is invalid") from exc
+            if length <= 0:
+                raise ServiceError(400, "empty_clinical_material", "clinical material is empty")
+            if length > MAX_CLINICAL_MATERIAL_BODY_BYTES:
+                raise ServiceError(413, "clinical_material_too_large", "clinical material exceeds 5 MiB")
+            data = self.rfile.read(length)
+            if len(data) != length:
+                raise ServiceError(400, "incomplete_clinical_material", "clinical material body is incomplete")
+            return {
+                "filename": filename,
+                "content_type": content_type,
+                "data": data,
+            }
 
         def _json(self, status: int, payload: dict[str, Any], request_id: str) -> None:
             body = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
