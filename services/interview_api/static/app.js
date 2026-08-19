@@ -1458,6 +1458,32 @@ function adaptiveChoicePrompt(question) {
   return lines.join("\n");
 }
 
+function adaptiveControlVisibility({ started, hasQuestion, purpose, completed = false }) {
+  const followUpConversation = purpose === "health_information" && started;
+  return {
+    answer: !completed && (!started || hasQuestion || followUpConversation),
+    suggestions: !completed && started && hasQuestion,
+    complete: !completed && started
+  };
+}
+
+function updateAdaptiveControls({ completed = false } = {}) {
+  const visibility = adaptiveControlVisibility({
+    started: state.adaptiveStarted,
+    hasQuestion: Boolean(state.currentAdaptiveQuestion),
+    purpose: state.adaptivePurpose,
+    completed
+  });
+  const suggestions = $("#adaptiveSuggestions");
+  if (!visibility.suggestions) {
+    suggestions.replaceChildren();
+    suggestions.hidden = true;
+  }
+  $("#adaptiveAnswer").hidden = !visibility.answer;
+  $("#adaptiveAnswerButton").hidden = !visibility.answer;
+  $("#completeAdaptive").hidden = !visibility.complete;
+}
+
 function showAdaptiveQuestion(question) {
   // The full assistant turn is the Custom GPT-compatible contract.  Do not
   // reconstruct it from a deterministic question planner or duplicate its
@@ -1474,6 +1500,7 @@ function showAdaptiveQuestion(question) {
   if (guidance) bubble($("#adaptiveChatLog"), "notice", guidance);
   $("#adaptiveProgress").textContent = `${question.questionRef} · Knowledge Runtime`;
   $("#adaptiveAnswer").placeholder = question.options?.length ? "번호 또는 직접 답변" : "답변을 입력하세요";
+  updateAdaptiveControls();
   renderAdaptiveSuggestions(question);
 }
 
@@ -1736,6 +1763,7 @@ async function resetAdaptiveConversation(nextPurpose = state.adaptivePurpose) {
   state.artifactsFinalized = false;
   $("#adaptiveSuggestions").hidden = true;
   $("#adaptiveSuggestions").replaceChildren();
+  updateAdaptiveControls();
   $("#screeningMaterialFiles").value = "";
   renderScreeningMaterials();
   setAdaptiveBusy(false);
@@ -1842,6 +1870,7 @@ async function startAdaptive(opening) {
       $("#completeAdaptive").disabled = false;
     } else {
       bubble($("#adaptiveChatLog"), "assistant", "현재 입력에 맞는 전용 Knowledge 패키지를 찾지 못했습니다. 다른 증상으로 임의 대체하지 않습니다.");
+      updateAdaptiveControls();
     }
   } catch (error) { showToast(error.message); }
   finally { if (requestSerial === state.adaptiveRequestSerial) setAdaptiveBusy(false); }
@@ -1922,12 +1951,14 @@ async function sendAdaptiveAnswer() {
       if (state.adaptivePurpose === "health_information") {
         showHealthInformationReply(document);
         $("#adaptiveProgress").textContent = `${state.adaptiveHistory.length}개 확인 후 정보 제공`;
+        updateAdaptiveControls();
         return;
       }
       if (state.adaptivePurpose === "screening_addon_recommendation") {
         const recommendationText = document?.presentation?.text || "패키지 비교 결과를 만들었습니다. 종료·결과를 눌러 산출물을 확인하세요.";
         bubble($("#adaptiveChatLog"), "assistant", recommendationText);
         $("#adaptiveProgress").textContent = `${state.adaptiveHistory.length}개 답변 · 비교 완료`;
+        updateAdaptiveControls();
         return;
       }
       const flow = document?.state?.adapter_state?.interview_flow || document?.state?.interview_flow || {};
@@ -1936,6 +1967,7 @@ async function sendAdaptiveAnswer() {
         ? "진료 준비에 필요한 핵심 질문을 마쳤습니다. 지금까지의 답변과 확인하지 못한 항목은 결과에 구분해 표시됩니다. 답변을 검토한 뒤 ‘문진 완료’를 눌러주세요."
         : "현재 Runtime 단계가 종료 또는 확인 대기 상태입니다. 결과를 확인하거나 대화를 종료하세요."));
       $("#adaptiveProgress").textContent = `${state.adaptiveHistory.length}개 답변`;
+      updateAdaptiveControls();
     }
   } catch (error) { showToast(error.message); }
   finally { if (requestSerial === state.adaptiveRequestSerial) setAdaptiveBusy(false); }
@@ -1962,6 +1994,7 @@ async function completeAdaptive() {
         ? "검진 패키지 후보 비교를 완료했습니다. 시험용 공개 카탈로그 결과이므로 실제 가격·구성·대상·예약 가능 여부는 해당 기관에 확인해 주세요."
         : "문진이 완료되었습니다. 가능한 진단을 제시하지 않고, 확인한 내용과 미확인 항목만 의료진 전달용으로 정리했습니다. 진단·치료 판단은 담당 의료진과 상의해 주세요.");
     bubble($("#adaptiveChatLog"), "assistant", completionMessage);
+    updateAdaptiveControls({ completed: true });
     $("#adaptiveAnswer").disabled = true;
     $("#adaptiveAnswerButton").disabled = true;
     $("#completeAdaptive").disabled = true;

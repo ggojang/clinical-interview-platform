@@ -13,6 +13,38 @@ APP_JS = REPOSITORY_ROOT / "services/interview_api/static/app.js"
 
 @unittest.skipUnless(shutil.which("node"), "Node.js is required for browser logic regression")
 class InterviewDemoUiLogicTests(unittest.TestCase):
+    def test_adaptive_controls_hide_question_actions_after_terminal_state(self):
+        script = fr"""
+const fs = require('fs');
+const vm = require('vm');
+const source = fs.readFileSync({json.dumps(str(APP_JS))}, 'utf8').replace(/initialize\(\);\s*$/, '');
+const context = {{ console }};
+vm.createContext(context);
+vm.runInContext(source, context);
+console.log(vm.runInContext(`JSON.stringify([
+  adaptiveControlVisibility({{started:true,hasQuestion:true,purpose:'screening_addon_recommendation'}}),
+  adaptiveControlVisibility({{started:true,hasQuestion:false,purpose:'screening_addon_recommendation'}}),
+  adaptiveControlVisibility({{started:true,hasQuestion:false,purpose:'health_information'}}),
+  adaptiveControlVisibility({{started:true,hasQuestion:false,purpose:'health_information',completed:true}})
+])`, context));
+"""
+        completed = subprocess.run(
+            ["node", "-e", script],
+            check=True,
+            capture_output=True,
+            text=True,
+            cwd=REPOSITORY_ROOT,
+        )
+        self.assertEqual(
+            json.loads(completed.stdout),
+            [
+                {"answer": True, "suggestions": True, "complete": True},
+                {"answer": False, "suggestions": False, "complete": True},
+                {"answer": True, "suggestions": False, "complete": True},
+                {"answer": False, "suggestions": False, "complete": False},
+            ],
+        )
+
     def test_clinical_material_mime_fallback_supports_scan_and_electronic_media(self):
         script = fr"""
 const fs = require('fs');
