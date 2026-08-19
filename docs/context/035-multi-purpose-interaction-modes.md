@@ -1,7 +1,7 @@
 # Purpose-first multi-purpose interaction core
 
 Status: Draft, unreviewed
-Version: 0.6.0
+Version: 0.7.0
 
 ## Decision
 
@@ -26,15 +26,15 @@ For `clinical_adaptive`, the test context assumes that the user already has a sc
 
 Adaptive clinical questions are generated from compiled atomic Facts and Rules. Source-defined fixed questionnaires and supplied FHIR Questionnaires control their own wording, order, answer options, and scoring. The LLM may explain or present those items but must not rewrite their clinical meaning. Automatic question terminology mapping remains excluded for fixed questionnaires unless the official source and mapping were explicitly verified.
 
-Within `clinical_adaptive`, the patient-facing default follows the Custom GPT
-test interaction contract rather than exposing the compiled authoring graph as
-a Fact-by-Fact checklist. It asks one short question at a time, prints audited
-answer shortcuts or non-coded examples when available, accepts free text, and
-uses a semantic coverage ledger so one answer may satisfy several allowlisted
-Facts. The ordinary scheduled-visit flow has an 18-question soft budget within
-the GPT policy's 12–24 range. It may continue only for unresolved safety or a
-value explicitly declared mandatory; unasked compiled Facts remain visible as
-`not-asked` in the clinician handoff instead of being disguised as negative.
+Within `clinical_adaptive`, the patient-facing default uses the same verbatim
+editor instruction contract as the Chatbot test rather than exposing the
+compiled authoring graph as a Fact-by-Fact checklist. A first LLM pass retrieves
+a bounded set of exact unresolved Knowledge objects. A second LLM pass chooses
+one of those Questions from the full conversation, presents one short question
+with its authored choices, and cites the exact source id. Runtime rejects an
+invented, repeated, uncited, or out-of-window Question. The ordinary pre-visit
+flow currently has an eight-question clinician-handoff budget; unasked compiled
+Facts remain visible as `not-asked` instead of being disguised as negative.
 
 An enabled LLM adapter may map the opening free text to one implemented RFE and
 extract several explicitly stated, allowlisted Facts from the current answer.
@@ -64,13 +64,15 @@ Information about a relative must not populate the participant's age, sex,
 symptom, condition, or medication Fact, and symptoms must not be converted into
 an inferred diagnosis.
 
-Package focus is chosen only after the participant's missing age and
-sex-related screening context have been collected through the existing
-clinician-context questions. For a breast, uterine, ovarian, prostate, or other
-sex-relevant concern, the sex-related context question precedes age. A stated
-extended-family history such as an aunt with breast cancer remains in the
-existing narrative family and cancer-family Facts; Runtime must not invent a
-relationship code that the compiled Fact does not allow.
+Every package-recommendation session begins with the existing compiled age
+Question, then the existing compiled sex-related clinical-context Question,
+and only then asks the open concern/abnormal-result/symptom/family-history
+Question. Package focus is selected after these three steps, so later questions
+can respond to participant context without inferring sex or age from a disease
+or relative. A stated extended-family history such as an aunt with breast
+cancer remains in the existing narrative family and cancer-family Facts;
+Runtime must not invent a relationship code that the compiled Fact does not
+allow.
 
 If supplemental Facts already exist, a versioned mapping may prepopulate an official QuestionnaireResponse. Only exact or equivalent mappings may populate automatically. A compound official item is populated only when every required atomic source Fact is known. Partial and related mappings remain review candidates. The prepopulated response remains `in-progress` until the user reviews it.
 

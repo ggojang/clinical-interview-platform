@@ -198,6 +198,12 @@ def _parse_question(message: str) -> dict[str, Any] | None:
         return None
     question_ref = f"Q{match.group('number')}"
     stem = match.group("stem").strip().strip("*").strip()
+    stem = re.sub(
+        r"\s*\*{0,2}\s*\[(?:공동 작업 지식|AI 표현|AI 자체 생성|"
+        r"STOM 용어 조회|사용자 제공|첨부자료)\].*$",
+        "",
+        stem,
+    ).strip().strip("*").strip()
     suffix = message[match.end():]
     options: list[dict[str, Any]] = []
     for line in suffix.splitlines():

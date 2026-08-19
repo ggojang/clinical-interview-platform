@@ -519,23 +519,32 @@ class AnonymousDemoHttpTests(InterviewApiHttpTests):
 class InterviewApiRuntimeIntegrationTests(unittest.TestCase):
     @staticmethod
     def _chatbot_runtime(text=None):
+        selected = {"question_id": None}
+
         def retrieval_transport(_provider, messages, _timeout):
             request = json.loads(messages[-1]["content"])
             question = request["package_index"]["questions"][0]
+            selected["question_id"] = question["id"]
             return json.dumps({
                 "question_ids": [question["id"]],
                 "fact_ids": [question["fact_id"]],
                 "priority_rule_ids": question.get("priority_rule_ids", [])[:1],
             })
 
+        def generation_transport(_provider, _messages, _timeout):
+            rendered = text or (
+                "**Q1.** 지금 복통은 0점부터 10점 중 몇 점인가요?\n\n"
+                "내용을 자유롭게 입력해 주세요."
+            )
+            return (
+                f"{rendered}\n\n출처: [공동 작업 지식] "
+                f"{selected['question_id']} · [AI 표현] 문장"
+            )
+
         return LlmChatbotInterviewRuntime(
             enabled=True,
             retrieval_transport=retrieval_transport,
-            transport=lambda *_args: text or (
-                "**Q1.** 지금 복통은 0점부터 10점 중 몇 점인가요?\n\n"
-                "내용을 자유롭게 입력해 주세요.\n\n"
-                "출처: [공동 작업 지식] package.primary-care-abdominal-pain"
-            ),
+            transport=generation_transport,
         )
 
     def test_real_api_routes_colloquial_rfe_then_uses_custom_gpt_conversation(self):
@@ -628,7 +637,7 @@ class InterviewApiRuntimeIntegrationTests(unittest.TestCase):
         created = api.create_session(
             {
                 "mode_selection": "건강검진 패키지 추천",
-                "initial_message": "가족 중 대장암이 있어 걱정됩니다",
+                "initial_message": "55세",
             }
         )
         self.assertEqual(created["mode_id"], "screening_addon_recommendation")
@@ -650,6 +659,7 @@ class InterviewApiRuntimeIntegrationTests(unittest.TestCase):
         self.assertNotIn("가상 대장내시경", json.dumps(session, ensure_ascii=False))
         answer_by_fact = {
             "history.cancer.family": "아버지 대장암",
+            "screening.additional_concern": "가족 중 대장암이 있어 걱정됩니다",
             "screening.focus": "암 검진",
             "patient.age_years": "55",
             "patient.sex_for_clinical_care": "남성",
@@ -690,7 +700,7 @@ class InterviewApiRuntimeIntegrationTests(unittest.TestCase):
         created = api.create_session(
             {
                 "mode_selection": "건강검진 패키지 추천",
-                "initial_message": "이모가 유방암이었음",
+                "initial_message": "55세",
             }
         )
         session_id = created["session_id"]
@@ -702,8 +712,8 @@ class InterviewApiRuntimeIntegrationTests(unittest.TestCase):
 
         created = api.send_message(session_id, {"message": "1"})
         selected = created["state"]["adapter_state"]["selected_question"]
-        self.assertEqual(selected["fact_id"], "patient.age_years")
-        created = api.send_message(session_id, {"message": "55세"})
+        self.assertEqual(selected["fact_id"], "screening.additional_concern")
+        created = api.send_message(session_id, {"message": "이모가 유방암이었음"})
         selected = created["state"]["adapter_state"]["selected_question"]
         self.assertEqual(selected["fact_id"], "screening.focus")
         self.assertEqual(selected["answer_options"][0]["internal_value"], "cancer")
@@ -711,6 +721,11 @@ class InterviewApiRuntimeIntegrationTests(unittest.TestCase):
             [item["input"] for item in selected["answer_options"]],
             [str(index) for index in range(1, 11)],
         )
+        runtime_session = api._sessions[session_id].core.adapter
+        self.assertEqual(
+            runtime_session.answers["history.cancer.family"], "이모가 유방암이었음"
+        )
+        self.assertNotIn("history.family.relationship", runtime_session.answers)
         api.delete_session(session_id)
 
     def test_health_information_symptom_uses_rfe_conversation_before_advice(self):

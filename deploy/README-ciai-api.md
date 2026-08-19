@@ -81,23 +81,19 @@ The existing `vllm-api-key` Podman secret is injected into the API container as
 `CLINICAL_LLM_LOCAL_API_KEY`. The value is never copied to Git or returned by
 the API.
 
-The GPT editor continues to use `docs/gpt/GPT_INSTRUCTIONS.md` verbatim. The
-CIAI adaptive Runtime defaults to the semantically equivalent, channel-specific
-`docs/gpt/CLINICAL_ADAPTIVE_RUNTIME_INSTRUCTIONS.md` profile so it does not
-reprocess the 61 KB editor and ChatGPT operating instructions on every turn.
-Set `CLINICAL_LLM_CHATBOT_INSTRUCTION_PROFILE=verbatim_gpt_editor` only for
-explicit regression comparison. The CIAI demo defaults to
-`compiled_candidate_window`: the host removes already displayed Questions,
-applies explicit branch answers, and selects one exact source Question from
-compiled priority and core symptom axes. The LLM adapts only the patient-facing
-wording and must return that exact Question id; an invented id is rejected and
-retried once instead of becoming session state. The final call receives that
-one exact repository Question and Fact plus every safety Rule. The regression
-strategy `action_two_stage_exact_objects` asks the LLM to retrieve ids first
-and keeps retrieval and generation in separate llama.cpp KV-cache slots. The
-optional `inline_linked_index` strategy performs one call
-but remains non-default because its broader candidate context produced less
-reliable first-question selection in Qwen3-27B testing.
+The GPT editor source remains in `docs/gpt/GPT_INSTRUCTIONS.md`. CIAI uses the
+user-supplied integrated Chatbot-test contract in
+`docs/gpt/CHATBOT_TEST_RUNTIME_INSTRUCTIONS.md` through the
+`verbatim_chatbot_test` profile. The default
+`action_two_stage_exact_objects` strategy keeps retrieval and generation in
+separate llama.cpp KV-cache slots. The first pass retrieves a small set of exact
+unresolved Knowledge objects; the second pass uses the complete conversation to
+choose one clinically useful Question, renders it concisely, and cites its exact
+source id. Invented, uncited, repeated, or out-of-window Questions are rejected
+and retried once instead of becoming session state. The optional
+`compiled_candidate_window` strategy remains available for latency comparison,
+but it is not the default because host-side single-question selection diverged
+from the Chatbot-test conversation.
 
 Both strategies use the full in-memory conversation as a semantic coverage
 ledger. The opening symptom remains part of the conversation, so already

@@ -54,6 +54,7 @@ CHATBOT_KNOWLEDGE_DELIVERY_STRATEGIES = {
     "compiled_candidate_window",
 }
 CHATBOT_INSTRUCTION_PROFILES = {
+    "verbatim_chatbot_test",
     "verbatim_gpt_editor",
     "compiled_clinical_adaptive",
 }
@@ -104,22 +105,27 @@ class LlmChatbotInterviewRuntime:
         self._retrieval_transport = retrieval_transport or _chatbot_retrieval_completion
         self.knowledge_delivery = knowledge_delivery or os.getenv(
             "CLINICAL_LLM_CHATBOT_KNOWLEDGE_DELIVERY",
-            "compiled_candidate_window",
+            "action_two_stage_exact_objects",
         )
         if self.knowledge_delivery not in CHATBOT_KNOWLEDGE_DELIVERY_STRATEGIES:
             raise LlmConfigurationError("unsupported chatbot Knowledge delivery strategy")
         self.instruction_profile = instruction_profile or os.getenv(
             "CLINICAL_LLM_CHATBOT_INSTRUCTION_PROFILE",
-            "compiled_clinical_adaptive",
+            "verbatim_chatbot_test",
         )
         if self.instruction_profile not in CHATBOT_INSTRUCTION_PROFILES:
             raise LlmConfigurationError("unsupported chatbot instruction profile")
         self.repository_root = repository_root
-        instruction_path = (
-            repository_root / "docs/gpt/GPT_INSTRUCTIONS.md"
-            if self.instruction_profile == "verbatim_gpt_editor"
-            else repository_root / "docs/gpt/CLINICAL_ADAPTIVE_RUNTIME_INSTRUCTIONS.md"
-        )
+        instruction_paths = {
+            "verbatim_chatbot_test": (
+                repository_root / "docs/gpt/CHATBOT_TEST_RUNTIME_INSTRUCTIONS.md"
+            ),
+            "verbatim_gpt_editor": repository_root / "docs/gpt/GPT_INSTRUCTIONS.md",
+            "compiled_clinical_adaptive": (
+                repository_root / "docs/gpt/CLINICAL_ADAPTIVE_RUNTIME_INSTRUCTIONS.md"
+            ),
+        }
+        instruction_path = instruction_paths[self.instruction_profile]
         self.instructions_source = str(instruction_path.relative_to(repository_root))
         self.instructions = instruction_path.read_text(encoding="utf-8")
         health_instruction_path = (
@@ -187,14 +193,22 @@ class LlmChatbotInterviewRuntime:
                     package,
                     interaction_purpose=interaction_purpose,
                 )
+            active_instructions = (
+                self.instructions
+                if self.instruction_profile in {
+                    "verbatim_chatbot_test",
+                    "verbatim_gpt_editor",
+                }
+                else (
+                    self.health_instructions
+                    if interaction_purpose == "health_information"
+                    else self.instructions
+                )
+            )
             messages = [
                 {
                     "role": "system",
-                    "content": (
-                        self.health_instructions
-                        if interaction_purpose == "health_information"
-                        else self.instructions
-                    ),
+                    "content": active_instructions,
                 },
                 {"role": "system", "content": knowledge},
                 *deepcopy(conversation),
@@ -210,40 +224,77 @@ class LlmChatbotInterviewRuntime:
                         interaction_purpose=interaction_purpose,
                     )
                 )
+            elif self.knowledge_delivery == "action_two_stage_exact_objects":
+                messages.append(
+                    _candidate_questions_turn_directive(
+                        retrieval["question_ids"],
+                        interaction_purpose=interaction_purpose,
+                    )
+                )
             response = self._transport(
                 selection.provider, messages, self.timeout_seconds
             )
-            if self.knowledge_delivery == "compiled_candidate_window":
+            if self.knowledge_delivery in {
+                "compiled_candidate_window",
+                "action_two_stage_exact_objects",
+            }:
                 allowed_question_ids = retrieval["question_ids"]
                 attempts = 1
                 while (
-                    _response_violates_selected_question_contract(
-                        response, allowed_question_ids, conversation
+                    _response_violates_question_contract(
+                        response,
+                        allowed_question_ids,
+                        conversation,
+                        require_source_id=(
+                            self.knowledge_delivery
+                            == "action_two_stage_exact_objects"
+                        ),
                     )
                     and attempts < MAX_CHATBOT_GENERATION_ATTEMPTS
                 ):
+                    correction_directive = (
+                        _selected_question_turn_directive(
+                            allowed_question_ids[0],
+                            package["objects"]["selected_questions"][
+                                allowed_question_ids[0]
+                            ],
+                            correction=True,
+                            interaction_purpose=interaction_purpose,
+                        )
+                        if self.knowledge_delivery == "compiled_candidate_window"
+                        else _candidate_questions_turn_directive(
+                            allowed_question_ids,
+                            correction=True,
+                            interaction_purpose=interaction_purpose,
+                        )
+                    )
                     response = self._transport(
                         selection.provider,
-                        [
-                            *messages[:-1],
-                            _selected_question_turn_directive(
-                                allowed_question_ids[0],
-                                selected_question,
-                                correction=True,
-                                interaction_purpose=interaction_purpose,
-                            ),
-                        ],
+                        [*messages[:-1], correction_directive],
                         self.timeout_seconds,
                     )
                     attempts += 1
-                if _response_violates_selected_question_contract(
-                    response, allowed_question_ids, conversation
+                if _response_violates_question_contract(
+                    response,
+                    allowed_question_ids,
+                    conversation,
+                    require_source_id=(
+                        self.knowledge_delivery
+                        == "action_two_stage_exact_objects"
+                    ),
                 ):
                     raise ValueError(
-                        "generation violated the selected Question contract"
+                        "generation violated the retrieved Question contract"
                     )
+                canonical_question_id = (
+                    allowed_question_ids[0]
+                    if self.knowledge_delivery == "compiled_candidate_window"
+                    else _canonical_response_question_id(
+                        response, allowed_question_ids
+                    )
+                )
                 response = _ensure_question_provenance(
-                    response, allowed_question_ids[0]
+                    response, canonical_question_id
                 )
         except (HTTPError, URLError, TimeoutError, OSError, ValueError, KeyError) as exc:
             raise LlmChatbotRuntimeError(
@@ -980,6 +1031,43 @@ def _selected_question_turn_directive(
     }
 
 
+def _candidate_questions_turn_directive(
+    question_ids: list[str],
+    *,
+    correction: bool = False,
+    interaction_purpose: str = "clinical_adaptive",
+) -> dict[str, str]:
+    """Let the LLM choose one retrieved Question as the Custom GPT does.
+
+    The retrieval model narrows the package but does not dictate the final
+    question.  This preserves the complementary LLM/Knowledge relationship of
+    the Chatbot test while keeping generation inside exact repository objects.
+    """
+    prefix = (
+        "The previous draft omitted or violated the source Question contract "
+        "and must be discarded. "
+        if correction else ""
+    )
+    return {
+        "role": "user",
+        "content": (
+            "<host_next_turn_contract>\n"
+            f"{prefix}Choose exactly one clinically useful, unresolved source "
+            "Question from the retrieved candidates below. Use the complete "
+            "conversation as a semantic coverage ledger; do not simply choose "
+            "the first id and do not repeat an answered meaning. Render one "
+            "concise patient-facing question with its authored answer choices "
+            "when available. Use the next Q number. End with exactly one "
+            "provenance line containing the chosen exact source id in this form: "
+            "출처: [공동 작업 지식] question.id · [AI 표현] 문장. "
+            f"Interaction purpose: {interaction_purpose}. Candidate source ids: "
+            f"{json.dumps(question_ids, ensure_ascii=False)}. Do not answer this "
+            "host control message; output only the patient-facing question turn.\n"
+            "</host_next_turn_contract>"
+        ),
+    }
+
+
 def _patient_visible_question_stem(text: str) -> str | None:
     match = re.search(
         r"(?im)^(?:\*\*)?\s*(?:\[)?Q[1-9]\d*(?:\])?[.)：:]?"
@@ -1018,6 +1106,40 @@ def _response_violates_selected_question_contract(
     return _response_has_unsupported_question_id(
         response, allowed_question_ids
     ) or _response_repeats_prior_question(response, conversation)
+
+
+def _canonical_response_question_id(
+    response: str, allowed_question_ids: list[str]
+) -> str:
+    matched = {
+        expected
+        for actual in _response_question_ids(response)
+        for expected in allowed_question_ids
+        if _question_id_matches(actual, expected)
+    }
+    if len(matched) != 1:
+        raise ValueError("response must cite exactly one retrieved Question id")
+    return next(iter(matched))
+
+
+def _response_violates_question_contract(
+    response: str,
+    allowed_question_ids: list[str],
+    conversation: list[dict[str, str]],
+    *,
+    require_source_id: bool,
+) -> bool:
+    if _response_violates_selected_question_contract(
+        response, allowed_question_ids, conversation
+    ):
+        return True
+    if not require_source_id:
+        return False
+    try:
+        _canonical_response_question_id(response, allowed_question_ids)
+    except ValueError:
+        return True
+    return False
 
 
 def _question_id_semantic_tokens(question_id: str) -> tuple[str, ...]:

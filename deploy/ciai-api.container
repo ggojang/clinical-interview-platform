@@ -21,15 +21,15 @@ Environment=CLINICAL_LLM_LOCAL_ENABLED=true
 Environment=CLINICAL_LLM_LOCAL_BASE_URL=http://127.0.0.1:8000/v1
 Environment=CLINICAL_LLM_LOCAL_MODEL=qwen3-27b
 Environment=CLINICAL_LLM_DEFAULT_PROVIDER=local_vllm
-# The adaptive interview selects one exact compiled source Question per turn,
-# then lets the local LLM adapt only its patient-facing wording. Invented source
-# ids are rejected; there is no legacy question fallback.
+# Match the Chatbot test: one LLM pass retrieves exact eligible Knowledge
+# objects and the next pass chooses and renders one cited source Question.
+# Invented, uncited and repeated Questions are rejected.
 Environment=CLINICAL_LLM_CHATBOT_RUNTIME_ENABLED=true
-Environment=CLINICAL_LLM_CHATBOT_KNOWLEDGE_DELIVERY=compiled_candidate_window
-Environment=CLINICAL_LLM_CHATBOT_INSTRUCTION_PROFILE=compiled_clinical_adaptive
+Environment=CLINICAL_LLM_CHATBOT_KNOWLEDGE_DELIVERY=action_two_stage_exact_objects
+Environment=CLINICAL_LLM_CHATBOT_INSTRUCTION_PROFILE=verbatim_chatbot_test
 Environment=CLINICAL_LLM_CHATBOT_GENERATION_SLOT=2
 Environment=CLINICAL_LLM_CHATBOT_RETRIEVAL_SLOT=3
-Environment=CLINICAL_LLM_CHATBOT_RUNTIME_TIMEOUT_SECONDS=90
+Environment=CLINICAL_LLM_CHATBOT_RUNTIME_TIMEOUT_SECONDS=120
 Environment=CLINICAL_LLM_CHATBOT_MAX_TOKENS=1800
 Environment=CLINICAL_LLM_PRESENTATION_ENABLED=false
 Environment=CLINICAL_LLM_INTERPRETATION_ENABLED=true

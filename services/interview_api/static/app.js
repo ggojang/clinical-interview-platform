@@ -40,9 +40,9 @@ const ADAPTIVE_PURPOSES = {
   screening_addon_recommendation: {
     title: "건강검진 패키지 추천",
     modeSelection: "건강검진 패키지 추천",
-    opening: "국가에서 정기적으로 제공하는 건강검진 외에 검진센터의 추가 패키지를 비교합니다. 먼저 검진을 받으면서 가장 걱정되거나 확인하고 싶은 문제를 알려주세요. 최근 이상 소견, 증상 또는 가족력이 있으면 함께 적어주세요. 특별한 문제가 없으면 ‘없음’이라고 입력할 수 있습니다.\n\n국가건강검진 문진은 선택사항이며 별도 Questionnaire/QuestionnaireResponse로 관리합니다.",
-    placeholder: "예: 가족 중 대장암이 있어 걱정돼요 / 특별히 없음",
-    help: "걱정하는 문제·최근 이상 소견·가족력부터 확인하고 관심 영역·지역·가격 선호를 필요한 만큼만 물은 뒤, 시험용 공개 카탈로그에서 추가 검진 패키지를 비교합니다. 의학적 필요성과 실제 가격·구성은 확정하지 않습니다.",
+    opening: "국가에서 정기적으로 제공하는 건강검진 외에 검진센터의 추가 패키지를 비교합니다. 먼저 만 나이를 입력해 주세요. 다음으로 성별 관련 맥락을 확인한 뒤, 걱정하는 문제·최근 이상 소견·증상·가족력을 질문합니다.\n\n국가건강검진 문진은 선택사항이며 별도 Questionnaire/QuestionnaireResponse로 관리합니다.",
+    placeholder: "예: 55세",
+    help: "나이와 성별을 먼저 확인하고, 걱정하는 문제·최근 이상 소견·가족력에 따라 기존 Knowledge 질문을 재사용한 뒤 시험용 공개 카탈로그에서 추가 검진 패키지를 비교합니다. 의학적 필요성과 실제 가격·구성은 확정하지 않습니다.",
     busy: "로컬 시험 카탈로그에서 비교 절차를 준비하고 있습니다…"
   }
 };
@@ -1833,9 +1833,9 @@ async function startAdaptive(opening) {
     if (state.adaptivePurpose === "screening_addon_recommendation" && screeningState.answers_collected > 0) {
       state.adaptiveHistory.push({
         question: {
-          linkId: "screening.additional_concern",
+          linkId: "patient.age_years",
           questionRef: "Q1",
-          text: "검진을 받으면서 가장 걱정되거나 확인하고 싶은 건강 문제가 있나요?",
+          text: "만 나이는 몇 세인가요?",
           type: "string"
         },
         answer: opening,

@@ -92,6 +92,27 @@ class ChatbotConversationRuntimeTest(unittest.TestCase):
             "question.abdominal_pain.collapse-shock",
         )
 
+    def test_same_line_source_marker_is_not_exposed_as_question_text(self):
+        session = ChatbotInterviewSession(
+            "same-line-source",
+            "rfe.abdominal_pain",
+            lambda _rfe, _conversation: (
+                "**Q1. 통증이 갑자기 시작했나요?** "
+                "[공동 작업 지식] question.abdominal_pain.sudden-onset\n\n"
+                "1 예\n2 아니오"
+            ),
+        )
+
+        state = session.process("배가 아파요")
+
+        self.assertEqual(
+            state["selected_question"]["text"],
+            "통증이 갑자기 시작했나요?",
+        )
+        self.assertNotIn(
+            "공동 작업 지식", state["selected_question"]["text"]
+        )
+
     def test_chatbot_session_preserves_opening_semantics_and_visible_turn(self):
         calls = []
 
@@ -272,7 +293,7 @@ class ChatbotConversationRuntimeTest(unittest.TestCase):
         self.assertIsNotNone(matched)
         self.assertEqual(matched["id"], "rfe.joint_limb_complaint")
 
-    def test_llm_runtime_uses_compiled_runtime_instructions_and_exact_objects(self):
+    def test_llm_runtime_uses_chatbot_test_instructions_and_exact_objects(self):
         captured = {"retrieval": [], "generation": []}
 
         def retrieval_transport(provider, messages, timeout):
@@ -286,7 +307,11 @@ class ChatbotConversationRuntimeTest(unittest.TestCase):
 
         def generation_transport(provider, messages, timeout):
             captured["generation"].append(messages)
-            return "**Q1.** 다친 뒤 시작했나요?\n\n1 예\n2 아니오"
+            return (
+                "**Q1.** 다친 뒤 시작했나요?\n\n1 예\n2 아니오\n\n"
+                "출처: [공동 작업 지식] question.joint-limb.recent-injury "
+                "· [AI 표현] 문장"
+            )
 
         runtime = LlmChatbotInterviewRuntime(
             transport=generation_transport,
@@ -319,7 +344,7 @@ class ChatbotConversationRuntimeTest(unittest.TestCase):
         messages = captured["generation"][0]
         self.assertEqual(
             messages[0]["content"],
-            (ROOT / "docs/gpt/CLINICAL_ADAPTIVE_RUNTIME_INSTRUCTIONS.md").read_text(
+            (ROOT / "docs/gpt/CHATBOT_TEST_RUNTIME_INSTRUCTIONS.md").read_text(
                 encoding="utf-8"
             ),
         )
@@ -340,10 +365,9 @@ class ChatbotConversationRuntimeTest(unittest.TestCase):
             "Do not ask the core-purpose question",
             messages[1]["content"],
         )
-        self.assertEqual(
-            messages[-1],
-            {"role": "user", "content": "왼쪽 발목 통증"},
-        )
+        self.assertEqual(messages[-2], {"role": "user", "content": "왼쪽 발목 통증"})
+        self.assertIn("<host_next_turn_contract>", messages[-1]["content"])
+        self.assertIn("question.joint-limb.recent-injury", messages[-1]["content"])
         retrieval_request = json.loads(captured["retrieval"][0][-1]["content"])
         self.assertIn("package_index", retrieval_request)
         self.assertNotIn(
@@ -355,7 +379,10 @@ class ChatbotConversationRuntimeTest(unittest.TestCase):
         captured = []
         runtime = LlmChatbotInterviewRuntime(
             transport=lambda _provider, messages, _timeout: captured.append(messages)
-            or "Q1. 다친 뒤 시작했나요?",
+            or (
+                "Q1. 다친 뒤 시작했나요?\n\n"
+                "출처: [공동 작업 지식] question.joint-limb.recent-injury"
+            ),
             retrieval_transport=lambda *_args: (
                 '{"question_ids":["question.joint-limb.recent-injury"],'
                 '"fact_ids":["event.joint_limb.recent_injury"],'
@@ -685,7 +712,7 @@ class ChatbotConversationRuntimeTest(unittest.TestCase):
         self.assertEqual(len(captured), 1)
         self.assertEqual(
             captured[0][0]["content"],
-            (ROOT / "docs/gpt/CLINICAL_ADAPTIVE_RUNTIME_INSTRUCTIONS.md").read_text(
+            (ROOT / "docs/gpt/CHATBOT_TEST_RUNTIME_INSTRUCTIONS.md").read_text(
                 encoding="utf-8"
             ),
         )

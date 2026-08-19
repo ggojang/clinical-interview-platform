@@ -460,7 +460,14 @@ class ScreeningRecommendationSession:
     closed: bool = False
 
     def __post_init__(self) -> None:
-        self._append_questions([deepcopy(INITIAL_CONCERN_QUESTION)])
+        # Screening candidate groups depend on participant age and sex-related
+        # context. Collect both explicitly before asking the open concern so
+        # every later branch can respond to the participant rather than infer
+        # demographics from a relative or disease name.
+        self._append_questions([
+            *self._age_and_sex_questions(),
+            deepcopy(INITIAL_CONCERN_QUESTION),
+        ])
         self.latest_question = deepcopy(self.question_queue[0])
 
     def add_uploaded_health_context(self, text: str) -> None:
@@ -595,15 +602,9 @@ class ScreeningRecommendationSession:
         return any(_normalized(term) in normalized for term in terms)
 
     def _concern_questions(self, concern: str) -> list[dict[str, Any]]:
-        # Chatbot-test screening selection uses age, sex-related context, and
-        # reported risks before choosing a candidate group. Reuse the existing
-        # clinician-context questions and let ``_append_questions`` suppress
-        # either one when the opening or an upload already supplied its Fact.
-        questions = (
-            self._sex_and_age_questions()
-            if self._contains_any(concern, SEX_RELEVANT_SCREENING_TERMS)
-            else self._age_and_sex_questions()
-        )
+        # Age and sex are always collected before the open concern. Add only
+        # compiled risk/history follow-ups that the concern actually activates.
+        questions: list[dict[str, Any]] = []
         normalized_concern = _normalized(concern)
         if "암" in normalized_concern and self._contains_any(
             concern,
@@ -718,7 +719,7 @@ class ScreeningRecommendationSession:
         ]
 
     def _focus_questions(self, focus: str) -> list[dict[str, Any]]:
-        questions = self._age_and_sex_questions()
+        questions: list[dict[str, Any]] = []
         if focus in {"basic", "precision", "unsure"}:
             questions.extend([
                 _knowledge_question(
@@ -886,12 +887,12 @@ class ScreeningRecommendationSession:
                 return str(option["internal_value"])
         return answer
 
-    def _resolve_fact_answer(self, question: dict[str, Any], answer: str) -> str:
+    def _resolve_fact_answer(self, question: dict[str, Any], answer: str) -> Any:
         resolved = self._resolve_answer(question, answer)
         if question["fact_id"] == "patient.age_years":
             match = re.search(r"(?<!\d)(\d{1,3})(?!\d)", resolved)
             if match and 0 <= int(match.group(1)) <= 120:
-                return match.group(1)
+                return int(match.group(1))
         return resolved
 
     def _age_years(self) -> int | None:
