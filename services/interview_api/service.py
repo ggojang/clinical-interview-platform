@@ -18,6 +18,7 @@ from typing import Any, Callable
 from uuid import UUID, uuid4
 
 from runtime.core import CoreInteractionSession
+from runtime.clinical_output import build_completed_clinical_outputs
 from runtime.service_modes import ServiceModeRegistry
 from services.interview_api.llm import (
     LlmAdaptiveAnswerInterpreter,
@@ -310,9 +311,9 @@ class InterviewApi:
             "result_formats": {
                 "clinical_handoff_json": "implemented",
                 "screening_package_recommendation_json": "implemented",
-                "fhir_questionnaire": "not_implemented",
-                "fhir_questionnaire_response": "not_implemented",
-                "sdc_extraction": "not_implemented",
+                "fhir_questionnaire": "implemented_after_adaptive_completion",
+                "fhir_questionnaire_response": "implemented_after_adaptive_completion",
+                "sdc_extraction": "draft_projection_after_adaptive_completion",
             },
             "llm": self.llm_registry.catalog(
                 presentation_enabled=self.llm_presenter.enabled
@@ -1113,6 +1114,25 @@ class InterviewApi:
                 "this session does not yet have a completed runtime adapter result",
             )
         handoff = record.core.adapter.clinician_handoff()
+        completed = bool(getattr(record.core.adapter, "completed", False))
+        completed_outputs = None
+        if completed:
+            completed_outputs = build_completed_clinical_outputs(
+                session_id=session_id,
+                reason_for_encounter=record.core.adapter.reason_for_encounter,
+                conversation=record.core.adapter.conversation,
+            )
+            chart = completed_outputs["clinical_handoff"]
+            handoff = {
+                **chart,
+                "session_id": session_id,
+                "reason_for_encounter": record.core.adapter.reason_for_encounter,
+                "status": "completed_draft",
+                "lifecycle_status": "draft",
+                "review_status": "unreviewed",
+                "clinical_use_status": "limited",
+                "independent_diagnosis_or_treatment": False,
+            }
         return {
             "session_id": session_id,
             "mode_id": record.core.mode_id,
@@ -1123,11 +1143,34 @@ class InterviewApi:
             "llm": record.llm_selection.public_document(
                 presentation_enabled=self.llm_presenter.enabled
             ),
-            "available_formats": ["clinical_handoff_json"],
+            "available_formats": (
+                [
+                    "clinical_handoff_json",
+                    "fhir_r4_questionnaire_json",
+                    "fhir_r4_questionnaire_response_json",
+                    "draft_sdc_extraction_bundle_json",
+                ]
+                if completed_outputs
+                else ["clinical_handoff_json"]
+            ),
             "clinical_handoff": deepcopy(handoff),
-            "fhir": {
-                "status": "not_implemented",
-                "planned_resources": ["Questionnaire", "QuestionnaireResponse"],
-                "sdc_extraction": "not_implemented",
-            },
+            "fhir": (
+                {
+                    "status": "generated_after_completion",
+                    "version": "R4",
+                    "questionnaire": completed_outputs["questionnaire"],
+                    "questionnaire_response": completed_outputs[
+                        "questionnaire_response"
+                    ],
+                    "sdc_extraction": completed_outputs["sdc_extraction"],
+                }
+                if completed_outputs
+                else {
+                    "status": "not_ready_until_completion",
+                    "planned_resources": [
+                        "Questionnaire", "QuestionnaireResponse", "Bundle"
+                    ],
+                    "sdc_extraction": "not_ready_until_completion",
+                }
+            ),
         }

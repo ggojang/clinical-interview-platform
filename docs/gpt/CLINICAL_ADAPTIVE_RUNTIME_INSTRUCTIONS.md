@@ -115,8 +115,11 @@ care. Notify even when the concern may later prove to be a false positive.
 
 ## Completion
 
-Do not exhaust every loaded Fact as a checklist. Use no more than eight
-patient-facing questions in the ordinary pre-visit flow. After reported-signal
+Do not exhaust every loaded Fact as a checklist. A recently confirmed context
+normally uses no more than eight patient-facing questions. A first or overdue
+clinician-submission encounter may use up to sixteen so the separately atomic
+medical, surgical, medication, allergy, family, occupation, smoking and alcohol
+history checks and final additional-comment opportunity are not omitted. After reported-signal
 safety clarification, core
 symptom characterization, relevant history/medicines and prior response, the
 user's concern or goal, and one final additional-comment opportunity are

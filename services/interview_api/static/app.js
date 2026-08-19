@@ -60,6 +60,7 @@ const state = {
   questionnaire: null,
   questionnaireSource: "",
   questionnaireResponse: null,
+  extraction: null,
   artifactsFinalized: false,
   handoff: {},
   providers: [],
@@ -363,11 +364,12 @@ function blankResponse(questionnaire, status = "in-progress") {
   return response;
 }
 
-function setArtifacts(questionnaire, response, source, handoff = {}, finalized = false) {
+function setArtifacts(questionnaire, response, source, handoff = {}, finalized = false, extraction = null) {
   state.questionnaire = questionnaire ? clone(questionnaire) : null;
   state.questionnaireResponse = response ? clone(response) : null;
   state.questionnaireSource = typeof source === "string" ? source : pretty(source || {});
   state.handoff = clone(handoff || {});
+  state.extraction = extraction ? clone(extraction) : null;
   state.artifactsFinalized = finalized;
   updateOutputs();
 }
@@ -377,7 +379,7 @@ function refreshOutputData() {
   $("#sourceCode").textContent = finalized ? (state.questionnaireSource || "입력 소스가 없습니다.") : "설문 최종 완료 후 생성됩니다.";
   $("#questionnaireCode").textContent = finalized ? pretty(state.questionnaire || {}) : "설문 최종 완료 후 생성됩니다.";
   $("#responseCode").textContent = finalized ? pretty(state.questionnaireResponse || {}) : "설문 최종 완료 후 생성됩니다.";
-  $("#extractionCode").textContent = pretty(SDC_STATUS);
+  $("#extractionCode").textContent = pretty(state.extraction || SDC_STATUS);
   $("#handoffCode").textContent = pretty(state.handoff || {});
   const hasQ = finalized && Boolean(state.questionnaire);
   const hasQr = finalized && Boolean(state.questionnaireResponse);
@@ -1463,7 +1465,9 @@ function adaptiveControlVisibility({ started, hasQuestion, purpose, completed = 
   return {
     answer: !completed && (!started || hasQuestion || followUpConversation),
     suggestions: !completed && started && hasQuestion,
-    complete: !completed && started
+    complete: !completed && started && (
+      purpose !== "clinical_adaptive" || !hasQuestion
+    )
   };
 }
 
@@ -1569,6 +1573,23 @@ async function renderAdaptiveSuggestions(question) {
 }
 
 function rebuildAdaptiveArtifacts(sourceDocument, finalized = false) {
+  const backendFhir = sourceDocument?.result?.fhir;
+  if (finalized && backendFhir?.status === "generated_after_completion") {
+    const source = {
+      purpose: state.adaptivePurpose,
+      conversation: state.adaptiveHistory,
+      backend_generation: "completed_conversation_projection"
+    };
+    setArtifacts(
+      backendFhir.questionnaire,
+      backendFhir.questionnaire_response,
+      pretty(source),
+      sourceDocument?.result?.clinical_handoff || state.handoff,
+      true,
+      backendFhir.sdc_extraction
+    );
+    return;
+  }
   const asked = [...state.adaptiveHistory.map((entry) => entry.question)];
   if (state.currentAdaptiveQuestion) asked.push(state.currentAdaptiveQuestion);
   const questionnaire = {
@@ -1759,6 +1780,7 @@ async function resetAdaptiveConversation(nextPurpose = state.adaptivePurpose) {
   state.handoff = {};
   state.questionnaire = null;
   state.questionnaireResponse = null;
+  state.extraction = null;
   state.questionnaireSource = "";
   state.artifactsFinalized = false;
   $("#adaptiveSuggestions").hidden = true;
@@ -1796,6 +1818,7 @@ async function startAdaptive(opening) {
   const modeSelection = purposeConfig.modeSelection;
   state.questionnaire = null;
   state.questionnaireResponse = null;
+  state.extraction = null;
   state.questionnaireSource = "";
   state.artifactsFinalized = false;
   updateOutputs();
@@ -1978,6 +2001,12 @@ async function completeAdaptive() {
   const requestSerial = ++state.adaptiveRequestSerial;
   setAdaptiveBusy(true, "답변을 정리하고 최종 결과를 생성하고 있습니다…");
   try {
+    if (state.adaptivePurpose === "clinical_adaptive") {
+      await api(`/v1/sessions/${state.sessionId}/messages`, {
+        method: "POST",
+        body: JSON.stringify({ message: "종료 확인" })
+      });
+    }
     const completed = await api(`/v1/sessions/${state.sessionId}/complete`, { method: "POST", body: "{}" });
     state.sessionId = null;
     state.handoff = completed.result?.clinical_handoff || completed.result || {};

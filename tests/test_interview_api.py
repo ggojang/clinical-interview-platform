@@ -7,6 +7,7 @@ import unittest
 from http.client import HTTPMessage
 from unittest.mock import patch
 
+from runtime.chatbot_session import ChatbotInterviewSession
 from services.interview_api.llm import (
     LlmChatbotInterviewRuntime,
     LlmClinicalInterpreter,
@@ -81,7 +82,7 @@ class InterviewApiServiceTests(unittest.TestCase):
         result = self.api.result(session_id)
         self.assertEqual(result["lifecycle_status"], "draft")
         self.assertFalse(result["independent_diagnosis_or_treatment"])
-        self.assertEqual(result["fhir"]["status"], "not_implemented")
+        self.assertEqual(result["fhir"]["status"], "not_ready_until_completion")
 
         completed = self.api.complete(session_id)
         self.assertTrue(completed["response_state_purged"])
@@ -98,7 +99,7 @@ class InterviewApiServiceTests(unittest.TestCase):
             self.api.get_session(session_id)
         self.assertEqual(context.exception.code, "session_not_found")
 
-    def test_catalog_does_not_overstate_unimplemented_adapters(self):
+    def test_catalog_reports_completion_only_fhir_projection(self):
         capabilities = self.api.catalog()["api_capabilities"]
         self.assertEqual(
             capabilities["implemented_mode_ids"],
@@ -110,7 +111,7 @@ class InterviewApiServiceTests(unittest.TestCase):
         )
         self.assertEqual(
             capabilities["result_formats"]["fhir_questionnaire_response"],
-            "not_implemented",
+            "implemented_after_adaptive_completion",
         )
 
     def test_purge_all_closes_every_live_session(self):
@@ -586,7 +587,7 @@ class InterviewApiRuntimeIntegrationTests(unittest.TestCase):
         self.assertFalse(adapter["interview_flow"]["legacy_deterministic_fallback"])
         api.delete_session(created["session_id"])
 
-    def test_real_core_exposes_draft_handoff_without_fhir_claim(self):
+    def test_real_core_defers_fhir_projection_until_completion(self):
         api = InterviewApi(
             max_sessions=1,
             chatbot_runtime=self._chatbot_runtime(
@@ -603,8 +604,48 @@ class InterviewApiRuntimeIntegrationTests(unittest.TestCase):
         result = api.result(created["session_id"])
         self.assertIsNotNone(result["clinical_handoff"])
         self.assertEqual(result["clinical_handoff"]["lifecycle_status"], "draft")
-        self.assertEqual(result["fhir"]["status"], "not_implemented")
+        self.assertEqual(result["fhir"]["status"], "not_ready_until_completion")
         api.delete_session(created["session_id"])
+
+    def test_completed_adaptive_result_is_chart_style_and_fhir_coded(self):
+        api = InterviewApi(max_sessions=1)
+        created = api.create_session({
+            "mode_selection": "문진 시작",
+        })
+        session_id = created["session_id"]
+        record = api._sessions[session_id]
+        record.core.adapter = ChatbotInterviewSession(
+            session_id,
+            "rfe.cough",
+            lambda _rfe, _conversation: "",
+        )
+        record.core.adapter.conversation = [
+            {"role": "user", "content": "기침이 나요"},
+            {
+                "role": "assistant",
+                "content": (
+                    "Q1. 기침은 언제 시작되었나요?\n"
+                    "출처: question.symptom_onset"
+                ),
+            },
+            {"role": "user", "content": "어제"},
+        ]
+        record.core.adapter.completed = True
+
+        result = api.result(session_id)
+
+        self.assertEqual(
+            result["clinical_handoff"]["format"], "clinical_chart_note"
+        )
+        self.assertNotIn("conversation", result["clinical_handoff"])
+        self.assertEqual(result["fhir"]["status"], "generated_after_completion")
+        self.assertEqual(
+            result["fhir"]["questionnaire_response"]["status"], "completed"
+        )
+        self.assertEqual(
+            result["fhir"]["sdc_extraction"]["status"], "draft_projection"
+        )
+        api.delete_session(session_id)
 
     def test_health_information_adapter_generates_information_and_completes(self):
         captured = []

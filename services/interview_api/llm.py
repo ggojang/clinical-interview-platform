@@ -61,6 +61,25 @@ CHATBOT_INSTRUCTION_PROFILES = {
 }
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 
+CLINICIAN_CONTEXT_REVIEW_QUESTION_ID = "question.clinician-context.review-state"
+CLINICIAN_FINAL_COMMENT_QUESTION_ID = "question.clinician-context.final-comment"
+CLINICIAN_RFE_QUESTION_IDS = {
+    "question.clinician-rfe.prior-episode-evaluation",
+    "question.clinician-rfe.treatment-response",
+    "question.clinician-rfe.functional-impact",
+    "question.clinician-rfe.concern-expectation",
+}
+CLINICIAN_BACKGROUND_QUESTION_IDS = (
+    "question.clinician-context.conditions",
+    "question.clinician-context.procedures",
+    "question.clinician-context.medications",
+    "question.clinician-context.allergies",
+    "question.clinician-context.family-history",
+    "question.clinician-context.occupation",
+    "question.clinician-context.smoking-status",
+    "question.clinician-context.alcohol-status",
+)
+
 
 class LlmConfigurationError(ValueError):
     """Raised for unsafe or malformed server-side provider configuration."""
@@ -202,17 +221,14 @@ class LlmChatbotInterviewRuntime:
                     package,
                     interaction_purpose=interaction_purpose,
                 )
+            # General health consultation has a different service objective
+            # from clinician-submission interviewing.  Always use its dedicated
+            # instruction contract even when the platform is otherwise running
+            # the verbatim Chatbot-test profile.
             active_instructions = (
-                self.instructions
-                if self.instruction_profile in {
-                    "verbatim_chatbot_test",
-                    "verbatim_gpt_editor",
-                }
-                else (
-                    self.health_instructions
-                    if interaction_purpose == "health_information"
-                    else self.instructions
-                )
+                self.health_instructions
+                if interaction_purpose == "health_information"
+                else self.instructions
             )
             messages = [
                 {
@@ -344,8 +360,18 @@ class LlmChatbotInterviewRuntime:
             label: json.loads(path.read_text(encoding="utf-8"))
             for label, path in required.items()
         }
+        context_document = json.loads(
+            (root / "clinician-submission-context.json").read_text(encoding="utf-8")
+        )
+        common_facts_document = json.loads(
+            (root / "common-facts.json").read_text(encoding="utf-8")
+        )
         package = {
-            "documents": documents,
+            "documents": {
+                **documents,
+                "clinician_submission_context": context_document,
+                "common_facts": common_facts_document,
+            },
             "paths": {
                 label: str(path.relative_to(root))
                 for label, path in required.items()
@@ -355,6 +381,28 @@ class LlmChatbotInterviewRuntime:
                 for label, document in documents.items()
                 if label != "draft_clinical_use_policy"
             },
+        }
+        context_questions: dict[str, dict[str, Any]] = {}
+        for item in context_document.get("questions", []):
+            template_id = item.get("template_id") if isinstance(item, dict) else None
+            if not isinstance(template_id, str):
+                continue
+            context_questions[template_id] = {
+                **deepcopy(item),
+                "id": template_id,
+                "collects": item.get("fact_id"),
+                "language": "ko",
+                "type": "QuestionTemplate",
+                "source_document": "clinician-submission-context.json",
+            }
+        common_facts = _items_by_id(common_facts_document, "common_facts")
+        package["objects"]["selected_questions"] = {
+            **context_questions,
+            **package["objects"]["selected_questions"],
+        }
+        package["objects"]["selected_facts"] = {
+            **common_facts,
+            **package["objects"]["selected_facts"],
         }
         package["index"] = _chatbot_package_index(package)
         self._package_cache[reason_for_encounter] = package
@@ -567,6 +615,23 @@ class LlmChatbotInterviewRuntime:
         )
         asked_ids = set(re.findall(r"question\.[A-Za-z0-9_.-]+", assistant_text))
         asked_id_keys = {_question_id_key(item) for item in asked_ids}
+        asked_context_ids = {
+            item
+            for item in asked_ids
+            if item.startswith("question.clinician-context.")
+        }
+        rfe_questions_asked = len(asked_ids - asked_context_ids)
+        context_review_state = _resolved_question_code(
+            conversation,
+            package,
+            CLINICIAN_CONTEXT_REVIEW_QUESTION_ID,
+        )
+        due_background_ids = set()
+        if context_review_state in {"first_encounter", "all_due"}:
+            due_background_ids = set(CLINICIAN_BACKGROUND_QUESTION_IDS)
+        elif context_review_state == "medication_due":
+            due_background_ids = {"question.clinician-context.medications"}
+        unresolved_background_ids = due_background_ids - asked_ids
         answer_states = _question_answer_states(conversation, package)
         questions = package["objects"]["selected_questions"]
         index_by_id = {
@@ -597,7 +662,14 @@ class LlmChatbotInterviewRuntime:
             fact_id = indexed.get("fact_id")
             safety_relevant = isinstance(fact_id, str) and fact_id in safety_fact_ids
             if interaction_purpose == "health_information" and safety_relevant:
-                stage_bonus += 1_500 + 3 * safety_fact_priorities.get(fact_id, 0)
+                # Start with ordinary symptom characterization. After enough
+                # context for a useful first-pass consultation, permit the
+                # smallest relevant safety check. Direct emergency language is
+                # still intercepted before this retrieval step.
+                if len(asked_ids) < 3:
+                    stage_bonus -= 2_500
+                else:
+                    stage_bonus += 1_000 + 2 * safety_fact_priorities.get(fact_id, 0)
             elif (
                 interaction_purpose == "clinical_adaptive"
                 and safety_relevant
@@ -617,6 +689,23 @@ class LlmChatbotInterviewRuntime:
                     stage_bonus += 3_500
                 elif "severity" in question_id:
                     stage_bonus += 3_000
+            if interaction_purpose == "clinical_adaptive":
+                if question_id in CLINICIAN_RFE_QUESTION_IDS:
+                    stage_bonus += 700 if rfe_questions_asked >= 2 else -1_000
+                if question_id == CLINICIAN_CONTEXT_REVIEW_QUESTION_ID:
+                    stage_bonus += 12_000 if rfe_questions_asked >= 5 else -12_000
+                if question_id in due_background_ids:
+                    # Preserve the compiled, atomic order of the due review.
+                    order = list(CLINICIAN_BACKGROUND_QUESTION_IDS)
+                    stage_bonus += 10_000 - order.index(question_id) * 1_000
+                if question_id == CLINICIAN_FINAL_COMMENT_QUESTION_ID:
+                    ready = (
+                        context_review_state in {
+                            "current", "first_encounter", "all_due", "medication_due"
+                        }
+                        and not unresolved_background_ids
+                    )
+                    stage_bonus += 20_000 if ready else -20_000
             if reason_for_encounter == "rfe.cough":
                 if interaction_purpose == "clinical_adaptive":
                     cough_handoff_order = {
@@ -677,6 +766,23 @@ class LlmChatbotInterviewRuntime:
         def applicable(question_id: str) -> bool:
             if question_id in CHATBOT_RUNTIME_EXCLUDED_QUESTION_IDS:
                 return False
+            if interaction_purpose == "health_information" and (
+                question_id.startswith("question.clinician-context.")
+                or question_id.startswith("question.clinician-rfe.")
+            ):
+                return False
+            if interaction_purpose == "clinical_adaptive":
+                if question_id == CLINICIAN_CONTEXT_REVIEW_QUESTION_ID:
+                    return rfe_questions_asked >= 5
+                if question_id in CLINICIAN_BACKGROUND_QUESTION_IDS:
+                    return question_id in due_background_ids
+                if question_id == CLINICIAN_FINAL_COMMENT_QUESTION_ID:
+                    return (
+                        context_review_state in {
+                            "current", "first_encounter", "all_due", "medication_due"
+                        }
+                        and not unresolved_background_ids
+                    )
             if reason_for_encounter == "rfe.cough":
                 if (
                     question_id == "question.symptom_duration"
@@ -901,7 +1007,11 @@ def _chatbot_package_index(package: dict[str, Any]) -> dict[str, Any]:
             "priority_rule_ids": [rule["id"] for rule in linked_priority],
             "priority": max(
                 (rule.get("priority", 0) for rule in linked_priority),
-                default=0,
+                default=(
+                    item.get("priority", 0)
+                    if isinstance(item.get("priority"), int)
+                    else 0
+                ),
             ),
             "allowed_values": fact.get("allowed_values"),
             "minimum": fact.get("minimum"),
@@ -1010,6 +1120,39 @@ def _question_answer_states(
         }:
             states[source_key] = "negative"
     return states
+
+
+def _resolved_question_code(
+    conversation: list[dict[str, str]],
+    package: dict[str, Any],
+    question_id: str,
+) -> str | None:
+    """Resolve one compiled numbered/free-text answer to its authored code."""
+    question = package["objects"]["selected_questions"].get(question_id)
+    if not isinstance(question, dict):
+        return None
+    code_map = question.get("answer_code_map", {})
+    text_cues = question.get("answer_text_cues", {})
+    for index, assistant in enumerate(conversation[:-1]):
+        if assistant.get("role") != "assistant":
+            continue
+        if question_id not in assistant.get("content", ""):
+            continue
+        user = conversation[index + 1]
+        if user.get("role") != "user":
+            continue
+        answer = user.get("content", "").strip()
+        numeric = re.fullmatch(r"(\d{1,2})(?:[.)])?", answer)
+        if numeric is not None and numeric.group(1) in code_map:
+            return str(code_map[numeric.group(1)])
+        normalized = re.sub(r"[^0-9a-z가-힣]+", "", answer.casefold())
+        for code, cues in text_cues.items():
+            if any(
+                re.sub(r"[^0-9a-z가-힣]+", "", str(cue).casefold()) in normalized
+                for cue in cues
+            ):
+                return str(code)
+    return None
 
 
 def _response_question_ids(response: str) -> list[str]:

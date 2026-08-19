@@ -6,6 +6,7 @@ from runtime.chatbot_session import ChatbotInterviewSession
 from runtime.core import CoreInteractionSession
 from runtime.service_modes import ServiceModeRegistry
 from services.interview_api.llm import (
+    CLINICIAN_BACKGROUND_QUESTION_IDS,
     LlmChatbotInterviewRuntime,
     LlmChatbotRuntimeError,
     LlmProvider,
@@ -152,7 +153,7 @@ class ChatbotConversationRuntimeTest(unittest.TestCase):
             ["예", "아니오", "잘 모르겠음", "답변하지 않음"],
         )
 
-    def test_previsit_session_stops_questioning_at_eight_and_enters_review(self):
+    def test_first_or_overdue_previsit_can_use_sixteen_before_review(self):
         calls = []
 
         def turn(_rfe_id, _conversation):
@@ -162,13 +163,13 @@ class ChatbotConversationRuntimeTest(unittest.TestCase):
 
         session = ChatbotInterviewSession("budget", "rfe.cough", turn)
         state = session.process("기침")
-        for _ in range(8):
+        for _ in range(16):
             state = session.process("답변")
 
-        self.assertEqual(calls, list(range(1, 9)))
+        self.assertEqual(calls, list(range(1, 17)))
         self.assertEqual(state["interview_flow"]["status"], "review")
         self.assertIn("응답 검토", state["assistant_message"])
-        self.assertEqual(state["interview_flow"]["questions_asked"], 8)
+        self.assertEqual(state["interview_flow"]["questions_asked"], 16)
 
     def test_health_consultation_uses_six_questions_then_requests_advice(self):
         calls = []
@@ -193,6 +194,24 @@ class ChatbotConversationRuntimeTest(unittest.TestCase):
         self.assertEqual(state["interview_flow"]["status"], "information_ready")
         self.assertEqual(state["interview_flow"]["phase"], "advice")
         self.assertIsNone(state["assistant_message"])
+
+    def test_final_additional_comment_moves_directly_to_review(self):
+        calls = []
+
+        def turn(_rfe_id, _conversation):
+            calls.append(1)
+            return (
+                "Q1. 앞 질문에 없었지만 의료진에게 꼭 전달할 내용이 있나요?\n"
+                "출처: question.clinician-context.final-comment"
+            )
+
+        session = ChatbotInterviewSession("final-comment", "rfe.cough", turn)
+        session.process("기침")
+        state = session.process("없음")
+
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(state["interview_flow"]["status"], "review")
+        self.assertTrue(session.review_pending)
 
     def test_numbered_yes_to_direct_health_safety_question_triggers_action(self):
         runtime = LlmChatbotInterviewRuntime(enabled=False, repository_root=ROOT)
@@ -284,7 +303,46 @@ class ChatbotConversationRuntimeTest(unittest.TestCase):
         )
         self.assertNotEqual(previsit_second, "question.abdominal_pain.collapse-shock")
         self.assertNotEqual(previsit_third, "question.abdominal_pain.collapse-shock")
-        self.assertEqual(health_third, "question.abdominal_pain.collapse-shock")
+        self.assertNotEqual(health_third, "question.abdominal_pain.collapse-shock")
+
+    def test_clinician_context_is_forced_after_core_questions_and_ends_with_comment(self):
+        runtime = LlmChatbotInterviewRuntime(enabled=False, repository_root=ROOT)
+        package = runtime._load_package("rfe.abdominal_pain")
+        conversation = [{"role": "user", "content": "배가 아파요"}]
+        selected = []
+        for number in range(1, 16):
+            question_id = runtime._compiled_candidate_retrieval(
+                "rfe.abdominal_pain",
+                conversation,
+                package,
+                interaction_purpose="clinical_adaptive",
+            )["question_ids"][0]
+            selected.append(question_id)
+            if question_id == "question.clinician-context.review-state":
+                answer = "1"
+                body = (
+                    "1 처음 작성함\n2 복용약만 90일 넘게 확인하지 않음\n"
+                    "3 전체 기본정보를 1년 넘게 확인하지 않음\n"
+                    "4 최근 확인하여 현재 정보임"
+                )
+            else:
+                answer = "없음"
+                body = ""
+            conversation.extend([
+                {
+                    "role": "assistant",
+                    "content": f"Q{number}. 질문?\n{body}\n출처: {question_id}",
+                },
+                {"role": "user", "content": answer},
+            ])
+
+        self.assertEqual(
+            selected[5], "question.clinician-context.review-state"
+        )
+        self.assertTrue(set(CLINICIAN_BACKGROUND_QUESTION_IDS).issubset(set(selected)))
+        self.assertEqual(
+            selected[-1], "question.clinician-context.final-comment"
+        )
 
     def test_core_uses_conversation_runtime_not_legacy_interview_session(self):
         core = CoreInteractionSession("core-chatbot")

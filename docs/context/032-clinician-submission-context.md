@@ -114,3 +114,13 @@ The handoff is `research_only` and `unreviewed` until clinical review is complet
 Fixed questionnaires remain source-preserving workflows with their own items and answer options.
 
 FHIR R4 resources are later projections of Clinical Memory and the clinician handoff. FHIR structure must not control current Fact collection or completion semantics.
+
+The research backend now creates those projections only after explicit
+completion. It emits the actually asked items as a draft Questionnaire and
+QuestionnaireResponse, prefers a declared LOINC question code and SNOMED CT
+coded answer when verified, and otherwise retains registered local Question
+and Fact codes. A draft extraction Bundle may contain Patient, Encounter,
+Condition, Procedure, MedicationStatement, AllergyIntolerance,
+FamilyMemberHistory and Observation candidates. This is an unreviewed
+interoperability projection requiring clinician and profile validation; it is
+not a diagnosis, an order, or an independently confirmed clinical record.

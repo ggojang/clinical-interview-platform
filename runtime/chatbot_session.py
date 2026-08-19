@@ -17,7 +17,7 @@ from typing import Any, Callable, Optional
 ChatbotTurn = Callable[[str, list[dict[str, str]]], str]
 SafetyAssessor = Callable[[str, Optional[dict[str, Any]]], dict[str, Any]]
 
-DEFAULT_PREVISIT_QUESTION_BUDGET = 8
+DEFAULT_PREVISIT_QUESTION_BUDGET = 16
 DEFAULT_HEALTH_INFORMATION_QUESTION_BUDGET = 6
 
 _QUESTION_RE = re.compile(
@@ -40,6 +40,7 @@ class ChatbotInterviewSession:
     latest_question: dict[str, Any] | None = None
     review_pending: bool = False
     information_ready: bool = False
+    completed: bool = False
     latest_safety_status: dict[str, Any] | None = None
 
     def process(self, message: str) -> dict[str, Any]:
@@ -74,7 +75,22 @@ class ChatbotInterviewSession:
             )
             self.conversation.append({"role": "assistant", "content": assistant})
             self.latest_question = None
+            self.completed = True
             return self._state(assistant, status="completed", phase="completed")
+
+        # The compiled final-comment Question is a terminal collection target,
+        # not merely another item in the numeric budget. Once it has an answer,
+        # move directly to review so no unrelated Q is appended afterward.
+        if (
+            isinstance(self.latest_question, dict)
+            and self.latest_question.get("source_question_id")
+            == "question.clinician-context.final-comment"
+        ):
+            self.latest_question = None
+            assistant = _previsit_review_message(self.conversation)
+            self.conversation.append({"role": "assistant", "content": assistant})
+            self.review_pending = True
+            return self._state(assistant, status="review", phase="review")
 
         if self._question_count() >= self.question_budget:
             self.latest_question = None
@@ -136,7 +152,9 @@ class ChatbotInterviewSession:
         self._ensure_open()
         return {
             "status": (
-                "information_ready"
+                "completed"
+                if self.completed
+                else "information_ready"
                 if self.information_ready
                 else "review_pending"
                 if self.review_pending
@@ -179,6 +197,7 @@ class ChatbotInterviewSession:
         self.conversation.clear()
         self.latest_question = None
         self.latest_safety_status = None
+        self.completed = False
         self.closed = True
         return {
             "status": "closed",

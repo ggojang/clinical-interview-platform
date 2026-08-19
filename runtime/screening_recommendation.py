@@ -54,6 +54,7 @@ FOCUS_OPTIONS = (
 BUDGET_OPTIONS = (
     ("lowest", "가장 저렴한 후보 우선"),
     ("balanced", "관심 영역과 가격을 함께 비교"),
+    ("best_scope", "가격과 관계없이 관심 영역 부합도·포함항목이 높은 후보 우선"),
     ("no_preference", "가격 선호 없음"),
     ("declined", "답변하지 않음"),
 )
@@ -632,7 +633,60 @@ class ScreeningRecommendationSession:
         if fact_id == "screening.focus":
             focus = self.answers[fact_id]
             self._append_questions(self._focus_questions(focus))
+            # Lifestyle risk is reusable screening context, not a package-
+            # specific invention.  Ask both smoking and alcohol status for the
+            # recommendation profile and collect quantity only when applicable.
+            self._append_questions([
+                _knowledge_question(
+                    "patient.smoking.status",
+                    template_id="question.clinician-context.smoking-status",
+                ),
+                _knowledge_question(
+                    "patient.alcohol.use_status",
+                    template_id="question.clinician-context.alcohol-status",
+                ),
+            ])
             self._append_questions([deepcopy(item) for item in OPERATIONAL_QUESTIONS[1:]])
+            return
+        if fact_id == "patient.smoking.status" and self.answers.get(fact_id) in {
+            "current", "former"
+        }:
+            self._append_questions([
+                _knowledge_question(
+                    "patient.smoking.product_types",
+                    template_id="question.clinician-context.smoking-product-types",
+                ),
+                _knowledge_question(
+                    "patient.smoking.cigarettes_per_day",
+                    template_id="question.clinician-context.smoking-cigarettes-per-day",
+                ),
+                _knowledge_question(
+                    "patient.smoking.duration_years",
+                    template_id="question.clinician-context.smoking-duration-years",
+                ),
+                _knowledge_question(
+                    "patient.smoking.quit_timing",
+                    template_id="question.clinician-context.smoking-quit-timing",
+                ),
+            ])
+            return
+        if fact_id == "patient.alcohol.use_status" and self.answers.get(fact_id) in {
+            "current", "former"
+        }:
+            self._append_questions([
+                _knowledge_question(
+                    "patient.alcohol.beverage_types",
+                    template_id="question.clinician-context.alcohol-beverage-types",
+                ),
+                _knowledge_question(
+                    "patient.alcohol.frequency",
+                    template_id="question.clinician-context.alcohol-frequency",
+                ),
+                _knowledge_question(
+                    "patient.alcohol.amount_per_occasion",
+                    template_id="question.clinician-context.alcohol-amount-per-occasion",
+                ),
+            ])
 
     @staticmethod
     def _contains_any(text: str, terms: tuple[str, ...]) -> bool:
@@ -1071,7 +1125,11 @@ class ScreeningRecommendationSession:
         else:
             matched = [item for item in ranked if item[0] > 0]
             ordered = sorted(matched or ranked, key=lambda item: (-item[0], item[1]))
-        selected = [cheapest, *ordered]
+        selected = (
+            [*ordered, cheapest]
+            if preference == "best_scope"
+            else [cheapest, *ordered]
+        )
         deduplicated: list[tuple[int, int, dict[str, Any], list[str]]] = []
         seen: set[str] = set()
         for item in selected:
@@ -1128,6 +1186,8 @@ class ScreeningRecommendationSession:
                 "uploaded_text_context_count": len(self.uploaded_health_contexts),
                 "budget_preference": preference,
                 "lowest_price_candidate_always_included": True,
+                "best_scope_candidate_included": preference == "best_scope",
+                "price_used_as_quality_proxy": False,
                 "medical_necessity_inferred": False,
                 "patient_profile_transmitted_to_catalog_action": False,
             },

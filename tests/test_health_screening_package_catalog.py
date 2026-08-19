@@ -30,6 +30,7 @@ class HealthScreeningPackageCatalogTests(unittest.TestCase):
             "screening.current_symptom": "없음",
             "patient.smoking.status": "평생 비흡연",
             "patient.smoking.pack_years": "0 갑년",
+            "patient.alcohol.use_status": "평생 비음주",
             "screening.focus": "암 검진",
             "screening.region": "서울",
             "screening.budget_preference": "가장 저렴한 후보 우선",
@@ -85,6 +86,27 @@ class HealthScreeningPackageCatalogTests(unittest.TestCase):
         closed = session.close()
         self.assertTrue(closed["response_state_purged"])
         self.assertFalse(session.answers)
+
+    def test_screening_checks_alcohol_and_supports_price_independent_best_scope(self):
+        session = ScreeningRecommendationSession("screening-lifestyle-scope")
+        state = session.process("55세")
+        state = session.process("남성")
+        state = session.process("나이에 맞는 검진")
+        while state["phase"] != "recommendation":
+            fact_id = state["selected_question"]["fact_id"]
+            if fact_id == "screening.budget_preference":
+                answer = "가격과 관계없이 관심 영역 부합도·포함항목이 높은 후보 우선"
+            else:
+                answer = self._answer_for(fact_id)
+            state = session.process(answer)
+
+        queued = [item["fact_id"] for item in session.question_queue]
+        self.assertIn("patient.smoking.status", queued)
+        self.assertIn("patient.alcohol.use_status", queued)
+        basis = state["recommendation"]["selection_basis"]
+        self.assertEqual(basis["budget_preference"], "best_scope")
+        self.assertTrue(basis["best_scope_candidate_included"])
+        self.assertFalse(basis["price_used_as_quality_proxy"])
 
     def test_invalid_region_is_reprompted_without_consuming_an_answer(self):
         session = ScreeningRecommendationSession("screening-invalid")
