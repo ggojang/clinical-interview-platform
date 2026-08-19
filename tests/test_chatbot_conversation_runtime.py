@@ -678,6 +678,44 @@ class ChatbotConversationRuntimeTest(unittest.TestCase):
         self.assertIn("question.symptom_onset", captured[1][-1]["content"])
         self.assertEqual(captured[1][-2], {"role": "user", "content": "기침"})
 
+    def test_missing_question_number_is_retried_before_session_state(self):
+        responses = iter([
+            (
+                "기침이 언제 처음 시작되었나요?\n\n"
+                "출처: [공동 작업 지식] question.symptom_onset"
+            ),
+            (
+                "Q1. 기침이 언제 처음 시작되었나요?\n\n"
+                "출처: [공동 작업 지식] question.symptom_onset · [AI 표현] 문장"
+            ),
+        ])
+        captured = []
+        runtime = LlmChatbotInterviewRuntime(
+            transport=lambda _provider, messages, _timeout: (
+                captured.append(messages) or next(responses)
+            ),
+            retrieval_transport=lambda *_args: self.fail("retrieval LLM must not run"),
+            repository_root=ROOT,
+        )
+        provider = LlmProvider(
+            provider_id="local_vllm", display_name="Local",
+            adapter="openai_compatible_chat", base_url="http://127.0.0.1:8000/v1",
+            model="qwen3-27b", external_processing=False,
+        )
+        selection = LlmSelection(
+            provider=provider, selected_by="platform_default",
+            external_processing_consent=False, allowed_provider_ids=("local_vllm",),
+            participant_may_choose=False,
+        )
+
+        response = runtime.respond(
+            "rfe.cough", [{"role": "user", "content": "기침"}], selection
+        )
+
+        self.assertEqual(len(captured), 2)
+        self.assertTrue(response.startswith("Q1."))
+        self.assertIn("previous draft omitted", captured[1][-1]["content"])
+
     def test_equivalent_question_namespace_alias_is_canonicalized_without_retry(self):
         response = (
             "Q4. 기침은 한 번 시작하면 얼마나 지속되나요?\n\n"

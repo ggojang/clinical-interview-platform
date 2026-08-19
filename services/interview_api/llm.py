@@ -1144,6 +1144,8 @@ def _response_violates_question_contract(
     *,
     require_source_id: bool,
 ) -> bool:
+    if _patient_visible_question_stem(response) is None:
+        return True
     if _response_violates_selected_question_contract(
         response, allowed_question_ids, conversation
     ):
