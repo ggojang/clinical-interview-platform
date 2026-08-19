@@ -741,6 +741,9 @@ class InterviewApi:
                 if isinstance(adapter_state, dict)
                 else None
             )
+            internal_recommendation = getattr(core.adapter, "recommendation", None)
+            if isinstance(internal_recommendation, dict):
+                recommendation = internal_recommendation
             if isinstance(question, dict):
                 lines = [str(question.get("text", ""))]
                 for option in question.get("answer_options", []):

@@ -148,11 +148,19 @@ class CoreInteractionSession:
     def _wrap_screening_recommendation(
         self, adapter_state: dict[str, Any]
     ) -> dict[str, Any]:
+        public_state = dict(adapter_state)
+        recommendation = adapter_state.get("recommendation")
+        if isinstance(recommendation, dict):
+            public_state["recommendation"] = {
+                "status": recommendation.get("status"),
+                "catalog_version": recommendation.get("catalog_version"),
+                "candidate_count": len(recommendation.get("candidates", [])),
+            }
         return {
             "status": "active",
             "mode_id": "screening_addon_recommendation",
             "core_entry": "interaction_purpose",
-            "adapter_state": adapter_state,
+            "adapter_state": public_state,
         }
 
     def close(self) -> dict[str, Any]:

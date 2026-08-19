@@ -585,6 +585,8 @@ class InterviewApiRuntimeIntegrationTests(unittest.TestCase):
             created = api.send_message(session_id, {"message": answer})
         self.assertEqual(created["presentation"]["purpose"], "screening_package_recommendation")
         self.assertFalse(created["presentation"]["patient_input_transmitted"])
+        self.assertEqual(created["state"]["adapter_state"]["recommendation"]["candidate_count"], 4)
+        self.assertNotIn("candidates", created["state"]["adapter_state"]["recommendation"])
         result = api.result(session_id)
         self.assertEqual(result["available_formats"], ["screening_package_recommendation_json"])
         self.assertTrue(result["recommendation"]["candidates"])
