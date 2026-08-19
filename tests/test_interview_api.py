@@ -595,6 +595,10 @@ class InterviewApiRuntimeIntegrationTests(unittest.TestCase):
         self.assertEqual(result["catalog_answer_transmission"], "local_memory_only")
         completed = api.complete(session_id)
         self.assertTrue(completed["response_state_purged"])
+        self.assertLess(len(json.dumps(completed, ensure_ascii=False).encode("utf-8")), 3000)
+        compact_candidate = completed["result"]["recommendation"]["candidates"][0]
+        self.assertIn("source_url", compact_candidate)
+        self.assertNotIn("package_id", compact_candidate)
 
     def test_health_information_symptom_uses_rfe_conversation_before_advice(self):
         advisor_calls = []

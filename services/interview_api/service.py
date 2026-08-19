@@ -612,6 +612,8 @@ class InterviewApi:
         with record.lock:
             result = self._result_document(session_id, record)
             closure = record.core.close()
+        if result.get("mode_id") == "screening_addon_recommendation":
+            result = self._screening_completion_result(result)
         with self._lock:
             self._sessions.pop(session_id, None)
         return {
@@ -620,6 +622,62 @@ class InterviewApi:
             "response_state_purged": True,
             "result": result,
             "closure": closure,
+        }
+
+    @staticmethod
+    def _screening_completion_result(result: dict[str, Any]) -> dict[str, Any]:
+        """Return the compact public completion artifact used by the demo UI.
+
+        The full structured catalog result remains available through ``result()``.
+        Completion only needs the fields rendered or downloaded by the browser;
+        removing internal ranking and catalog paging metadata also keeps the public
+        reverse-proxy response comfortably bounded.
+        """
+        recommendation = result.get("recommendation")
+        if not isinstance(recommendation, dict):
+            return result
+        region = recommendation.get("region")
+        compact_region = None
+        if isinstance(region, dict):
+            compact_region = {
+                key: deepcopy(region[key])
+                for key in ("id", "display_ko")
+                if key in region
+            }
+        candidates = []
+        for candidate in recommendation.get("candidates", []):
+            if not isinstance(candidate, dict):
+                continue
+            candidates.append({
+                key: deepcopy(candidate[key])
+                for key in (
+                    "institution",
+                    "package_name",
+                    "minimum_price_krw",
+                    "items_text",
+                    "source_url",
+                    "lowest_price_candidate",
+                )
+                if key in candidate
+            })
+        compact_recommendation = {
+            key: deepcopy(recommendation[key])
+            for key in (
+                "status",
+                "catalog_version",
+                "selection_basis",
+                "official_nhis_questionnaire",
+                "limitations_ko",
+            )
+            if key in recommendation
+        }
+        if compact_region is not None:
+            compact_recommendation["region"] = compact_region
+        compact_recommendation["candidates"] = candidates
+        return {
+            "mode_id": result.get("mode_id"),
+            "recommendation": compact_recommendation,
+            "response_storage": result.get("response_storage", "memory_only"),
         }
 
     def delete_session(
