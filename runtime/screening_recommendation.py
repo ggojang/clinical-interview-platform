@@ -531,6 +531,7 @@ class ScreeningRecommendationSession:
         )
         self._extend_questionnaire_after(current)
         self.question_cursor += 1
+        self._skip_questions_already_answered_in_the_same_turn()
 
         if self.question_cursor >= len(self.question_queue):
             self.latest_question = None
@@ -539,6 +540,21 @@ class ScreeningRecommendationSession:
 
         self.latest_question = deepcopy(self.question_queue[self.question_cursor])
         return self._state(status="in-progress", phase="questioning")
+
+    def _skip_questions_already_answered_in_the_same_turn(self) -> None:
+        """Do not ask a Fact that an earlier free-text answer already supplied.
+
+        Screening starts with age and sex as separate atomic questions, but a
+        participant may volunteer both in one answer.  The shared extractors
+        preserve that extra Fact; this cursor step makes the visible flow obey
+        the same no-repeat rule as the Chatbot-test instructions.
+        """
+        while self.question_cursor < len(self.question_queue):
+            question = self.question_queue[self.question_cursor]
+            if question["fact_id"] not in self.answers:
+                break
+            self._extend_questionnaire_after(question)
+            self.question_cursor += 1
 
     def result(self) -> dict[str, Any]:
         self._ensure_open()

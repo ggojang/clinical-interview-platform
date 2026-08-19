@@ -24,6 +24,16 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class ChatbotConversationRuntimeTest(unittest.TestCase):
+    def test_shared_chatbot_instructions_require_screening_demographics_first(self):
+        instructions = (
+            ROOT / "docs/gpt/CHATBOT_TEST_RUNTIME_INSTRUCTIONS.md"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn("`만 나이`를 첫 질문으로", instructions)
+        self.assertIn("`성별 관련 맥락`을 두 번째 질문으로", instructions)
+        self.assertIn("통계 안내만 표시한 채 응답을 끝내지 않는다", instructions)
+        self.assertIn("workflow의 첫 질문까지 반드시 계속한다", instructions)
+
     def test_ciai_channel_replaces_chatgpt_plan_notice(self):
         adapted = _adapt_chatbot_channel_notice(
             "익명 테스트 안내입니다.\n\n"

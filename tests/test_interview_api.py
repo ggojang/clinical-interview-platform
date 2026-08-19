@@ -729,6 +729,26 @@ class InterviewApiRuntimeIntegrationTests(unittest.TestCase):
         self.assertNotIn("history.family.relationship", runtime_session.answers)
         api.delete_session(session_id)
 
+    def test_screening_opening_with_age_and_sex_skips_redundant_sex_question(self):
+        api = InterviewApi(max_sessions=1)
+
+        created = api.create_session(
+            {
+                "mode_selection": "건강검진 패키지 추천",
+                "initial_message": "저는 55세 여성이고 이모가 유방암이었습니다",
+            }
+        )
+
+        selected = created["state"]["adapter_state"]["selected_question"]
+        self.assertEqual(selected["fact_id"], "screening.additional_concern")
+        runtime_session = api._sessions[created["session_id"]].core.adapter
+        self.assertEqual(runtime_session.answers["patient.age_years"], 55)
+        self.assertEqual(
+            runtime_session.answers["patient.sex_for_clinical_care"], "female"
+        )
+        self.assertNotEqual(selected["fact_id"], "patient.sex_for_clinical_care")
+        api.delete_session(created["session_id"])
+
     def test_health_information_symptom_uses_rfe_conversation_before_advice(self):
         advisor_calls = []
         advisor = LlmHealthInformationAdvisor(
