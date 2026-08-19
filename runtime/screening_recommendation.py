@@ -397,6 +397,21 @@ def _labels_from_numbered_wording(
     return tuple(labels)
 
 
+def _stem_without_numbered_options(
+    wording: str, answer_code_map: dict[str, str]
+) -> str:
+    """Keep the authored stem while the UI renders options as buttons."""
+    first_option = next(
+        (
+            match
+            for match in re.finditer(r"(?<!\d)(\d+)\s+", wording)
+            if match.group(1) in answer_code_map
+        ),
+        None,
+    )
+    return wording[: first_option.start()].strip() if first_option else wording
+
+
 def _knowledge_question(
     fact_id: str,
     *,
@@ -410,7 +425,14 @@ def _knowledge_question(
         options = _labels_from_numbered_wording(
             wording, authored.get("answer_code_map", {})
         )
-        question = _question(fact_id, wording, options)
+        patient_wording = (
+            _stem_without_numbered_options(
+                wording, authored.get("answer_code_map", {})
+            )
+            if options
+            else wording
+        )
+        question = _question(fact_id, patient_wording, options)
         question.update({
             "template_id": authored["template_id"],
             "knowledge_source_id": catalog["clinician_document_id"],

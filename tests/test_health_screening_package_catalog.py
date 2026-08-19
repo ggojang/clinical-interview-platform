@@ -110,6 +110,8 @@ class HealthScreeningPackageCatalogTests(unittest.TestCase):
         self.assertEqual(sex_question["fact_id"], "patient.sex_for_clinical_care")
         self.assertEqual(sex_question["template_id"], "question.clinician-context.sex")
         self.assertEqual([item["display_ko"] for item in sex_question["answer_options"][:2]], ["여성", "남성"])
+        self.assertNotIn("1 여성", sex_question["text"])
+        self.assertTrue(sex_question["text"].endswith("주세요."))
         state = session.process("2")
         self.assertEqual(state["selected_question"]["fact_id"], "screening.additional_concern")
         state = session.process("나이에 적절한 검진을 추천받고 싶음")
