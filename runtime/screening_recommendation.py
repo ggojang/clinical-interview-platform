@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from dataclasses import dataclass, field
+from functools import lru_cache
 import json
 from pathlib import Path
 import re
@@ -18,6 +19,12 @@ from typing import Any
 CATALOG_ROOT = (
     Path(__file__).resolve().parents[1]
     / "docs/gpt/test-catalogs/health-screening-packages"
+)
+COMPILED_SCREENING_KNOWLEDGE = (
+    Path(__file__).resolve().parents[1] / "docs/gpt/screening-kr.json"
+)
+COMPILED_CLINICIAN_CONTEXT = (
+    Path(__file__).resolve().parents[1] / "docs/gpt/clinician-submission-context.json"
 )
 
 REGIONS = (
@@ -62,13 +69,11 @@ def _normalized(value: str) -> str:
 
 
 def _question(
-    number: int,
     fact_id: str,
     text: str,
     options: tuple[tuple[str, str], ...] = (),
 ) -> dict[str, Any]:
     return {
-        "question_ref": f"Q{number}",
         "fact_id": fact_id,
         "text": text,
         "stem_text": text,
@@ -86,39 +91,123 @@ def _question(
             if options else "필요한 내용만 간단히 입력해 주세요. 없으면 '없음'이라고 답할 수 있습니다."
         ),
         "source": "screening_recommendation_workflow",
+        "source_kind": "operational_comparison_condition",
     }
 
 
-QUESTIONS = (
+OPERATIONAL_QUESTIONS = (
     _question(
-        1,
-        "screening.concern",
-        "검진을 받으면서 가장 걱정되거나 확인하고 싶은 건강 문제가 있나요? 최근 이상 소견, 증상 또는 가족력이 있다면 함께 알려주세요.",
-    ),
-    _question(
-        2,
         "screening.focus",
         "추가 검진에서 우선 비교하고 싶은 영역은 무엇인가요?",
         tuple((code, label) for code, label, _ in FOCUS_OPTIONS),
     ),
     _question(
-        3,
         "screening.region",
         "추가 검진 패키지를 비교할 지역은 어디인가요?",
         REGIONS,
     ),
     _question(
-        4,
         "screening.budget_preference",
         "가격은 어떻게 비교할까요? 경제능력은 추정하지 않으며 선택하지 않아도 됩니다.",
         BUDGET_OPTIONS,
     ),
     _question(
-        5,
         "screening.nhis_questionnaire_choice",
         "국가건강검진 문진은 어떻게 할까요? 패키지 비교의 필수 조건은 아닙니다.",
         NHIS_OPTIONS,
     ),
+)
+
+
+@lru_cache(maxsize=1)
+def _compiled_question_catalog() -> dict[str, Any]:
+    """Index existing compiled questions without creating parallel clinical content."""
+    screening = json.loads(COMPILED_SCREENING_KNOWLEDGE.read_text(encoding="utf-8"))
+    clinician = json.loads(COMPILED_CLINICIAN_CONTEXT.read_text(encoding="utf-8"))
+    screening_by_id: dict[str, dict[str, Any]] = {}
+    screening_by_fact: dict[str, list[dict[str, Any]]] = {}
+    for group in screening.get("question_groups", []):
+        for item in group.get("questions", []):
+            indexed = {**deepcopy(item), "group_id": group.get("id")}
+            screening_by_id[str(item["id"])] = indexed
+            screening_by_fact.setdefault(str(item["fact_id"]), []).append(indexed)
+    clinician_by_id = {
+        str(item["template_id"]): deepcopy(item)
+        for item in clinician.get("questions", [])
+    }
+    clinician_by_fact: dict[str, list[dict[str, Any]]] = {}
+    for item in clinician.get("questions", []):
+        clinician_by_fact.setdefault(str(item["fact_id"]), []).append(deepcopy(item))
+    return {
+        "screening_document_id": screening["id"],
+        "clinician_document_id": clinician["id"],
+        "screening_by_id": screening_by_id,
+        "screening_by_fact": screening_by_fact,
+        "clinician_by_id": clinician_by_id,
+        "clinician_by_fact": clinician_by_fact,
+    }
+
+
+def _labels_from_numbered_wording(
+    wording: str, answer_code_map: dict[str, str]
+) -> tuple[tuple[str, str], ...]:
+    labels: list[tuple[str, str]] = []
+    positions = list(re.finditer(r"(?:^|[,.?]\s*)?(\d+)\s+", wording))
+    for index, match in enumerate(positions):
+        number = match.group(1)
+        if number not in answer_code_map:
+            continue
+        end = positions[index + 1].start() if index + 1 < len(positions) else len(wording)
+        label = wording[match.end():end].strip(" ,.?·")
+        if label:
+            labels.append((str(answer_code_map[number]), label))
+    return tuple(labels)
+
+
+def _knowledge_question(
+    fact_id: str,
+    *,
+    question_id: str | None = None,
+    template_id: str | None = None,
+) -> dict[str, Any]:
+    catalog = _compiled_question_catalog()
+    if template_id:
+        authored = catalog["clinician_by_id"][template_id]
+        wording = str(authored["wording"])
+        options = _labels_from_numbered_wording(
+            wording, authored.get("answer_code_map", {})
+        )
+        question = _question(fact_id, wording, options)
+        question.update({
+            "template_id": authored["template_id"],
+            "knowledge_source_id": catalog["clinician_document_id"],
+            "source": "compiled_knowledge",
+            "source_kind": "reused_compiled_question_template",
+            "allow_free_text": authored.get("accept_free_text", True),
+        })
+        return question
+
+    if question_id:
+        authored = catalog["screening_by_id"][question_id]
+    else:
+        authored = catalog["screening_by_fact"][fact_id][0]
+    text = authored.get("text", {})
+    wording = text.get("ko") if isinstance(text, dict) else text
+    question = _question(fact_id, str(wording))
+    question.update({
+        "template_id": authored["id"],
+        "knowledge_source_id": catalog["screening_document_id"],
+        "question_group_id": authored.get("group_id"),
+        "source": "compiled_knowledge",
+        "source_kind": "reused_compiled_question",
+        "allow_free_text": authored.get("accept_free_text", True),
+    })
+    return question
+
+
+INITIAL_CONCERN_QUESTION = _knowledge_question(
+    "screening.additional_concern",
+    question_id="kr.nhis.general.common.additional_concern",
 )
 
 
@@ -127,11 +216,18 @@ class ScreeningRecommendationSession:
     session_id: str
     catalog_root: Path = CATALOG_ROOT
     answers: dict[str, str] = field(default_factory=dict)
-    next_question_index: int = 0
+    question_queue: list[dict[str, Any]] = field(default_factory=list)
+    question_cursor: int = 0
     latest_question: dict[str, Any] | None = None
     recommendation: dict[str, Any] | None = None
     uploaded_health_contexts: list[str] = field(default_factory=list)
+    inferred_fact_ids: set[str] = field(default_factory=set)
+    inferred_focus_from_concern: str | None = None
     closed: bool = False
+
+    def __post_init__(self) -> None:
+        self._append_questions([deepcopy(INITIAL_CONCERN_QUESTION)])
+        self.latest_question = deepcopy(self.question_queue[0])
 
     def add_uploaded_health_context(self, text: str) -> None:
         """Add locally extracted text without treating it as a questionnaire answer."""
@@ -153,7 +249,9 @@ class ScreeningRecommendationSession:
         if self.recommendation is not None:
             return self._state(status="recommendation_ready", phase="recommendation")
 
-        current = QUESTIONS[self.next_question_index]
+        if self.latest_question is None:
+            raise RuntimeError("screening recommendation has no pending question")
+        current = self.latest_question
         if current["fact_id"] == "screening.region":
             region = self._resolve_region(answer)
             if region is None:
@@ -161,15 +259,16 @@ class ScreeningRecommendationSession:
                 return self._state(status="in-progress", phase="questioning")
             self.answers["screening.region"] = region
         else:
-            self.answers[current["fact_id"]] = self._resolve_answer(current, answer)
-        self.next_question_index += 1
+            self.answers[current["fact_id"]] = self._resolve_fact_answer(current, answer)
+        self._extend_questionnaire_after(current)
+        self.question_cursor += 1
 
-        if self.next_question_index >= len(QUESTIONS):
+        if self.question_cursor >= len(self.question_queue):
             self.latest_question = None
             self.recommendation = self._build_recommendation()
             return self._state(status="recommendation_ready", phase="recommendation")
 
-        self.latest_question = deepcopy(QUESTIONS[self.next_question_index])
+        self.latest_question = deepcopy(self.question_queue[self.question_cursor])
         return self._state(status="in-progress", phase="questioning")
 
     def result(self) -> dict[str, Any]:
@@ -184,6 +283,9 @@ class ScreeningRecommendationSession:
     def close(self) -> dict[str, Any]:
         self.answers.clear()
         self.uploaded_health_contexts.clear()
+        self.inferred_fact_ids.clear()
+        self.inferred_focus_from_concern = None
+        self.question_queue.clear()
         self.latest_question = None
         self.recommendation = None
         self.closed = True
@@ -196,9 +298,293 @@ class ScreeningRecommendationSession:
             "phase": phase,
             "selected_question": deepcopy(self.latest_question),
             "recommendation": deepcopy(self.recommendation),
-            "answers_collected": len(self.answers),
+            "answers_collected": sum(
+                item["fact_id"] in self.answers
+                for item in self.question_queue[:self.question_cursor]
+            ),
             "response_storage": "memory_only",
         }
+
+    def _append_questions(self, questions: list[dict[str, Any]]) -> None:
+        existing = {item["fact_id"] for item in self.question_queue}
+        for question in questions:
+            if question["fact_id"] in existing or question["fact_id"] in self.answers:
+                continue
+            authored = deepcopy(question)
+            authored["question_ref"] = f"Q{len(self.question_queue) + 1}"
+            self.question_queue.append(authored)
+            existing.add(authored["fact_id"])
+
+    def _extend_questionnaire_after(self, current: dict[str, Any]) -> None:
+        fact_id = current["fact_id"]
+        if fact_id == "screening.additional_concern":
+            concern = self.answers[fact_id]
+            self._capture_reusable_facts_from_concern(concern)
+            self._append_questions(self._concern_questions(concern))
+            inferred_focus = self._infer_focus_from_concern(concern)
+            if inferred_focus is None:
+                self._append_questions([deepcopy(OPERATIONAL_QUESTIONS[0])])
+            else:
+                self.inferred_focus_from_concern = inferred_focus
+                self._append_questions([
+                    self._personalized_focus_question(inferred_focus)
+                ])
+            return
+        if fact_id == "screening.focus":
+            focus = self.answers[fact_id]
+            self._append_questions(self._focus_questions(focus))
+            self._append_questions([deepcopy(item) for item in OPERATIONAL_QUESTIONS[1:]])
+
+    @staticmethod
+    def _contains_any(text: str, terms: tuple[str, ...]) -> bool:
+        normalized = _normalized(text)
+        return any(_normalized(term) in normalized for term in terms)
+
+    def _concern_questions(self, concern: str) -> list[dict[str, Any]]:
+        questions: list[dict[str, Any]] = []
+        if self._contains_any(concern, ("나이", "연령", "생애주기", "연령대", "맞는 검진")):
+            questions.extend(self._age_and_sex_questions())
+        normalized_concern = _normalized(concern)
+        if "가족" in normalized_concern and "암" in normalized_concern:
+            questions.append(_knowledge_question(
+                "history.cancer.family",
+                question_id="kr.nhis.cancer.common.family_history",
+            ))
+        elif self._contains_any(concern, ("가족력", "유전", "가족 질환")):
+            questions.append(_knowledge_question(
+                "history.family", template_id="question.clinician-context.family-history"
+            ))
+        if self._contains_any(concern, ("만성질환", "기저질환", "진단받", "치료받")):
+            questions.append(_knowledge_question(
+                "history.condition.current",
+                question_id="kr.nhis.general.common.medical_history",
+            ))
+        if self._contains_any(concern, ("복용약", "먹는 약", "약물", "처방약")):
+            questions.append(_knowledge_question(
+                "medication.current",
+                question_id="kr.nhis.general.common.medication",
+            ))
+        if self._contains_any(concern, ("흡연", "담배", "폐", "호흡기")):
+            questions.append(_knowledge_question(
+                "patient.smoking.status",
+                template_id="question.clinician-context.smoking-status",
+            ))
+        return questions
+
+    def _capture_reusable_facts_from_concern(self, concern: str) -> None:
+        normalized = _normalized(concern)
+        family_terms = (
+            "어머니", "어머님", "엄마", "아버지", "아버님", "아빠",
+            "부모", "형제", "자매", "남매", "할머니", "할아버지",
+            "가족", "가족력",
+        )
+        if any(_normalized(term) in normalized for term in family_terms):
+            self.answers.setdefault("history.family", concern)
+            self.inferred_fact_ids.add("history.family")
+            if "암" in normalized:
+                self.answers.setdefault("history.cancer.family", concern)
+                self.inferred_fact_ids.add("history.cancer.family")
+
+    def _infer_focus_from_concern(self, concern: str) -> str | None:
+        mappings: tuple[tuple[str, tuple[str, ...]], ...] = (
+            ("cardiovascular", (
+                "뇌출혈", "지주막하출혈", "sah", "뇌동맥류", "뇌졸중",
+                "중풍", "심근경색", "협심증", "심혈관", "심장", "뇌혈관",
+            )),
+            ("cancer", ("암", "종양", "악성")),
+            ("digestive", (
+                "위암", "대장암", "위장", "대장", "소화기", "내시경",
+                "복통", "혈변",
+            )),
+            ("lung", ("폐암", "폐", "호흡기", "기침", "숨참", "흡연", "담배")),
+            ("women", ("유방", "자궁", "난소", "부인과", "여성검진")),
+            ("men", ("전립선", "남성검진")),
+            ("senior", ("고령", "노년", "노인", "시니어")),
+        )
+        for focus, terms in mappings:
+            if self._contains_any(concern, terms):
+                return focus
+        return None
+
+    @staticmethod
+    def _personalized_focus_question(focus: str) -> dict[str, Any]:
+        question = deepcopy(OPERATIONAL_QUESTIONS[0])
+        options = question["answer_options"]
+        preferred = [item for item in options if item["internal_value"] == focus]
+        question["answer_options"] = preferred + [
+            item for item in options if item["internal_value"] != focus
+        ]
+        label = preferred[0]["display_ko"] if preferred else "선택한"
+        text = (
+            f"말씀하신 내용은 {label} 영역과 관련해 비교할 수 있습니다. "
+            "이 영역을 우선할까요? 다른 영역을 선택할 수도 있습니다."
+        )
+        question["text"] = text
+        question["stem_text"] = text
+        question["suggested_from_concern"] = focus
+        return question
+
+    @staticmethod
+    def _age_and_sex_questions() -> list[dict[str, Any]]:
+        return [
+            _knowledge_question(
+                "patient.age_years", template_id="question.clinician-context.age"
+            ),
+            _knowledge_question(
+                "patient.sex_for_clinical_care",
+                template_id="question.clinician-context.sex",
+            ),
+        ]
+
+    def _focus_questions(self, focus: str) -> list[dict[str, Any]]:
+        questions = self._age_and_sex_questions()
+        if focus in {"basic", "precision", "unsure"}:
+            questions.extend([
+                _knowledge_question(
+                    "history.condition.current",
+                    question_id="kr.nhis.general.common.medical_history",
+                ),
+                _knowledge_question(
+                    "medication.current",
+                    question_id="kr.nhis.general.common.medication",
+                ),
+                _knowledge_question(
+                    "history.family",
+                    template_id="question.clinician-context.family-history",
+                ),
+            ])
+        elif focus == "cancer":
+            questions.extend([
+                _knowledge_question(
+                    "screening.current_symptom",
+                    question_id="kr.nhis.cancer.common.current_symptom",
+                ),
+                _knowledge_question(
+                    "history.cancer.family",
+                    question_id="kr.nhis.cancer.common.family_history",
+                ),
+            ])
+        elif focus == "cardiovascular":
+            questions.extend([
+                _knowledge_question(
+                    "history.condition.current",
+                    question_id="kr.nhis.general.common.medical_history",
+                ),
+                _knowledge_question(
+                    "medication.current",
+                    question_id="kr.nhis.general.common.medication",
+                ),
+                _knowledge_question(
+                    "history.family",
+                    template_id="question.clinician-context.family-history",
+                ),
+                _knowledge_question(
+                    "patient.smoking.status",
+                    template_id="question.clinician-context.smoking-status",
+                ),
+            ])
+        elif focus == "digestive":
+            questions.extend([
+                _knowledge_question(
+                    "history.condition.current",
+                    question_id="kr.nhis.general.common.medical_history",
+                ),
+                _knowledge_question(
+                    "history.cancer.family",
+                    question_id="kr.nhis.cancer.common.family_history",
+                ),
+            ])
+            age = self._age_years()
+            if age is not None and age >= 40:
+                questions.extend([
+                    _knowledge_question(
+                        "screening.gastric.last_test",
+                        question_id="kr.nhis.cancer.gastric.last_test",
+                    ),
+                    _knowledge_question(
+                        "screening.gastric.last_result",
+                        question_id="kr.nhis.cancer.gastric.last_result",
+                    ),
+                ])
+            if age is not None and age >= 50:
+                questions.extend([
+                    _knowledge_question(
+                        "screening.colorectal.last_test",
+                        question_id="kr.nhis.cancer.colorectal.last_test",
+                    ),
+                    _knowledge_question(
+                        "screening.colorectal.last_result",
+                        question_id="kr.nhis.cancer.colorectal.last_result",
+                    ),
+                ])
+        elif focus == "lung":
+            questions.extend([
+                _knowledge_question(
+                    "patient.smoking.status",
+                    template_id="question.clinician-context.smoking-status",
+                ),
+                _knowledge_question(
+                    "patient.smoking.pack_years",
+                    question_id="kr.nhis.cancer.lung.pack_years",
+                ),
+                _knowledge_question(
+                    "screening.current_symptom",
+                    question_id="kr.nhis.cancer.common.current_symptom",
+                ),
+            ])
+        elif focus == "women":
+            questions.extend([
+                _knowledge_question(
+                    "screening.breast.last_mammography",
+                    question_id="kr.nhis.cancer.breast.last_mammography",
+                ),
+                _knowledge_question(
+                    "screening.cervical.last_cytology",
+                    question_id="kr.nhis.cancer.cervical.last_cytology",
+                ),
+                _knowledge_question(
+                    "history.condition.current",
+                    question_id="kr.nhis.general.common.medical_history",
+                ),
+            ])
+        elif focus == "men":
+            questions.extend([
+                _knowledge_question(
+                    "history.condition.current",
+                    question_id="kr.nhis.general.common.medical_history",
+                ),
+                _knowledge_question(
+                    "history.family",
+                    template_id="question.clinician-context.family-history",
+                ),
+                _knowledge_question(
+                    "patient.smoking.status",
+                    template_id="question.clinician-context.smoking-status",
+                ),
+            ])
+        elif focus == "senior":
+            questions.extend([
+                _knowledge_question(
+                    "history.condition.current",
+                    question_id="kr.nhis.general.common.medical_history",
+                ),
+                _knowledge_question(
+                    "medication.current",
+                    question_id="kr.nhis.general.common.medication",
+                ),
+            ])
+            if self._age_years() == 66:
+                questions.extend([
+                    _knowledge_question(
+                        "screening.cognition.concern",
+                        question_id="kr.nhis.general.age66.additional.cognition",
+                    ),
+                    _knowledge_question(
+                        "screening.fall.last_year",
+                        question_id="kr.nhis.general.age66.additional.fall",
+                    ),
+                ])
+        return questions
 
     def _resolve_region(self, answer: str) -> str | None:
         normalized = _normalized(answer)
@@ -218,6 +604,55 @@ class ScreeningRecommendationSession:
             }:
                 return str(option["internal_value"])
         return answer
+
+    def _resolve_fact_answer(self, question: dict[str, Any], answer: str) -> str:
+        resolved = self._resolve_answer(question, answer)
+        if question["fact_id"] == "patient.age_years":
+            match = re.search(r"(?<!\d)(\d{1,3})(?!\d)", resolved)
+            if match and 0 <= int(match.group(1)) <= 120:
+                return match.group(1)
+        return resolved
+
+    def _age_years(self) -> int | None:
+        raw = self.answers.get("patient.age_years", "")
+        return int(raw) if raw.isdigit() and 0 <= int(raw) <= 120 else None
+
+    @staticmethod
+    def _profile_catalog_score(
+        summary: dict[str, Any], age: int | None, sex: str | None
+    ) -> tuple[int, list[str]]:
+        target = " ".join(str(item) for item in summary.get("target_texts", []))
+        name = str(summary.get("package_name", ""))
+        combined = f"{target} {name}"
+        score = 0
+        reasons: list[str] = []
+
+        if sex in {"female", "male"}:
+            female_marked = "여성" in combined
+            male_marked = "남성" in combined
+            if sex == "female" and female_marked:
+                score += 2
+                reasons.append("표기 대상의 여성 조건과 일치")
+            elif sex == "male" and male_marked:
+                score += 2
+                reasons.append("표기 대상의 남성 조건과 일치")
+            elif female_marked != male_marked:
+                score -= 4
+
+        if age is not None:
+            matched_age = False
+            for upper in re.findall(r"(\d{1,3})세\s*이하", combined):
+                matched_age = matched_age or age <= int(upper)
+            for lower in re.findall(r"(\d{1,3})세\s*이상", combined):
+                matched_age = matched_age or age >= int(lower)
+            for low, high in re.findall(r"(\d{1,3})\s*[-~]\s*(\d{1,3})세", combined):
+                matched_age = matched_age or int(low) <= age <= int(high)
+            for low, high in re.findall(r"(\d)0\s*[-~]\s*(\d)0대", combined):
+                matched_age = matched_age or int(low) * 10 <= age <= int(high) * 10 + 9
+            if matched_age:
+                score += 3
+                reasons.append("표기 연령 조건과 일치")
+        return score, reasons
 
     def _build_recommendation(self) -> dict[str, Any]:
         registry_path = self.catalog_root / "registry.json"
@@ -255,8 +690,19 @@ class ScreeningRecommendationSession:
             (tokens for code, _, tokens in FOCUS_OPTIONS if code == focus),
             (),
         )
+        clinical_answer_texts = [
+            value
+            for fact_id, value in self.answers.items()
+            if fact_id not in {
+                "screening.focus",
+                "screening.region",
+                "screening.budget_preference",
+                "screening.nhis_questionnaire_choice",
+                "patient.sex_for_clinical_care",
+            }
+        ]
         combined_concern = " ".join([
-            self.answers.get("screening.concern", ""),
+            *clinical_answer_texts,
             *self.uploaded_health_contexts,
         ])
         concern_tokens = tuple(dict.fromkeys(
@@ -264,7 +710,9 @@ class ScreeningRecommendationSession:
             if len(token) >= 2 and token not in {"없음", "모름", "잘모르겠음"}
         ))[:60]
 
-        ranked: list[tuple[int, int, dict[str, Any]]] = []
+        age = self._age_years()
+        sex = self.answers.get("patient.sex_for_clinical_care")
+        ranked: list[tuple[int, int, dict[str, Any], list[str]]] = []
         for summary in summaries:
             price = summary.get("price_summary", {}).get("minimum_krw")
             if not isinstance(price, int) or price < 0:
@@ -275,9 +723,18 @@ class ScreeningRecommendationSession:
                 " ".join(str(item) for item in summary.get("lexical_tags", [])),
                 " ".join(str(item) for item in summary.get("target_texts", [])),
             ]))
-            score = 3 * sum(_normalized(token) in haystack for token in focus_tokens)
-            score += 2 * sum(_normalized(token) in haystack for token in concern_tokens)
-            ranked.append((score, price, summary))
+            focus_hits = sum(_normalized(token) in haystack for token in focus_tokens)
+            concern_hits = sum(_normalized(token) in haystack for token in concern_tokens)
+            score = 3 * focus_hits + 2 * concern_hits
+            reasons: list[str] = []
+            if focus_hits:
+                reasons.append("선택한 비교 영역과 카탈로그 표기가 일치")
+            if concern_hits:
+                reasons.append("입력한 건강 관심 내용과 카탈로그 표기가 일치")
+            profile_score, profile_reasons = self._profile_catalog_score(summary, age, sex)
+            score += profile_score
+            reasons.extend(profile_reasons)
+            ranked.append((score, price, summary, reasons))
         if not ranked:
             return self._blocked("priced package candidates are unavailable")
 
@@ -289,7 +746,7 @@ class ScreeningRecommendationSession:
             matched = [item for item in ranked if item[0] > 0]
             ordered = sorted(matched or ranked, key=lambda item: (-item[0], item[1]))
         selected = [cheapest, *ordered]
-        deduplicated: list[tuple[int, int, dict[str, Any]]] = []
+        deduplicated: list[tuple[int, int, dict[str, Any], list[str]]] = []
         seen: set[str] = set()
         for item in selected:
             package_id = str(item[2].get("package_id", ""))
@@ -301,8 +758,10 @@ class ScreeningRecommendationSession:
                 break
 
         candidates = [
-            self._candidate_detail(version_root, score, price, summary, summary is cheapest[2])
-            for score, price, summary in deduplicated
+            self._candidate_detail(
+                version_root, score, price, summary, summary is cheapest[2], reasons
+            )
+            for score, price, summary, reasons in deduplicated
         ]
         nhis_choice = self.answers.get("screening.nhis_questionnaire_choice", "not_now")
         result = {
@@ -313,10 +772,34 @@ class ScreeningRecommendationSession:
             "selection_basis": {
                 "focus": focus,
                 "concern_terms_used_locally": list(concern_tokens),
+                "reused_fact_ids": sorted(
+                    fact_id
+                    for fact_id in self.answers
+                    if fact_id not in {
+                        "screening.focus",
+                        "screening.region",
+                        "screening.budget_preference",
+                        "screening.nhis_questionnaire_choice",
+                    }
+                ),
+                "knowledge_sources": sorted({
+                    item["knowledge_source_id"]
+                    for item in self.question_queue
+                    if item.get("knowledge_source_id")
+                }),
+                "age_used_locally": age is not None,
+                "sex_context_used_locally": sex in {"female", "male"},
+                "adaptive_question_count": sum(
+                    item.get("source") == "compiled_knowledge"
+                    for item in self.question_queue
+                ),
+                "inferred_fact_ids": sorted(self.inferred_fact_ids),
+                "focus_suggested_from_concern": self.inferred_focus_from_concern,
                 "uploaded_text_context_count": len(self.uploaded_health_contexts),
                 "budget_preference": preference,
                 "lowest_price_candidate_always_included": True,
                 "medical_necessity_inferred": False,
+                "patient_profile_transmitted_to_catalog_action": False,
             },
             "official_nhis_questionnaire": {
                 "choice": nhis_choice,
@@ -343,6 +826,7 @@ class ScreeningRecommendationSession:
         price: int,
         summary: dict[str, Any],
         is_lowest: bool,
+        match_reasons: list[str],
     ) -> dict[str, Any]:
         detail_path = version_root / "packages" / f"{summary['package_id']}.json"
         detail = json.loads(detail_path.read_text(encoding="utf-8"))
@@ -358,6 +842,7 @@ class ScreeningRecommendationSession:
             "items_text": first.get("items_text"),
             "source_url": urls[0] if urls else None,
             "match_score": score,
+            "match_reasons": match_reasons or ["가격 비교 후보"],
             "lowest_price_candidate": is_lowest,
             "listing_statuses": deepcopy(summary.get("listing_statuses", [])),
         }
@@ -376,6 +861,8 @@ class ScreeningRecommendationSession:
             )
             if candidate.get("items_text"):
                 lines.append(f"   주요 표기 항목: {candidate['items_text']}")
+            if candidate.get("match_reasons"):
+                lines.append(f"   비교 근거: {', '.join(candidate['match_reasons'])}")
             if candidate.get("source_url"):
                 lines.append(f"   확인: {candidate['source_url']}")
         lines.append(result["limitations_ko"])

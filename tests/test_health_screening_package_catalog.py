@@ -17,19 +17,56 @@ def load(path: Path):
 
 
 class HealthScreeningPackageCatalogTests(unittest.TestCase):
+    @staticmethod
+    def _answer_for(fact_id: str) -> str:
+        return {
+            "patient.age_years": "55",
+            "patient.sex_for_clinical_care": "남성",
+            "history.condition.current": "고혈압",
+            "medication.current": "고혈압약",
+            "history.family": "없음",
+            "history.cancer.family": "아버지 대장암",
+            "screening.current_symptom": "없음",
+            "patient.smoking.status": "평생 비흡연",
+            "patient.smoking.pack_years": "0 갑년",
+            "screening.focus": "암 검진",
+            "screening.region": "서울",
+            "screening.budget_preference": "가장 저렴한 후보 우선",
+            "screening.nhis_questionnaire_choice": "지금은 추가 문진만 진행",
+        }.get(fact_id, "없음")
+
+    def _finish(self, session, state):
+        while state["phase"] != "recommendation":
+            fact_id = state["selected_question"]["fact_id"]
+            state = session.process(self._answer_for(fact_id))
+        return state
+
     def test_local_recommendation_workflow_is_bounded_and_includes_lowest_candidate(self):
         session = ScreeningRecommendationSession("screening-test")
         state = session.process("가족 중 대장암이 있어 걱정됩니다")
         self.assertEqual(state["selected_question"]["fact_id"], "screening.focus")
-        for answer in ("암 검진", "서울", "가격과 관심 영역", "지금은 추가 문진만 진행"):
-            state = session.process(answer)
+        self.assertEqual(state["selected_question"]["answer_options"][0]["internal_value"], "cancer")
+        self.assertEqual(session.answers["history.cancer.family"], "가족 중 대장암이 있어 걱정됩니다")
+        state = self._finish(session, state)
         recommendation = state["recommendation"]
         self.assertEqual(state["phase"], "recommendation")
         self.assertEqual(recommendation["status"], "candidate_comparison_ready")
         self.assertLessEqual(len(recommendation["candidates"]), 4)
         self.assertTrue(any(item["lowest_price_candidate"] for item in recommendation["candidates"]))
         self.assertFalse(recommendation["selection_basis"]["medical_necessity_inferred"])
+        self.assertFalse(
+            recommendation["selection_basis"]["patient_profile_transmitted_to_catalog_action"]
+        )
+        self.assertIn(
+            "knowledge.kr-national-health-screening.2026",
+            recommendation["selection_basis"]["knowledge_sources"],
+        )
+        self.assertIn(
+            "history.cancer.family",
+            recommendation["selection_basis"]["reused_fact_ids"],
+        )
         self.assertTrue(all(item["source_url"] for item in recommendation["candidates"]))
+        self.assertTrue(all(item["match_reasons"] for item in recommendation["candidates"]))
         self.assertIn("해당 기관에 직접 확인", recommendation["limitations_ko"])
         closed = session.close()
         self.assertTrue(closed["response_state_purged"])
@@ -37,11 +74,45 @@ class HealthScreeningPackageCatalogTests(unittest.TestCase):
 
     def test_invalid_region_is_reprompted_without_consuming_an_answer(self):
         session = ScreeningRecommendationSession("screening-invalid")
-        session.process("특별히 걱정되는 문제는 없습니다")
-        session.process("기본·종합 검진")
+        state = session.process("특별히 걱정되는 문제는 없습니다")
+        while state["selected_question"]["fact_id"] != "screening.region":
+            state = session.process(self._answer_for(state["selected_question"]["fact_id"]))
+        answer_count = state["answers_collected"]
         state = session.process("아무 지역")
-        self.assertEqual(state["answers_collected"], 2)
+        self.assertEqual(state["answers_collected"], answer_count)
         self.assertEqual(state["selected_question"]["fact_id"], "screening.region")
+
+    def test_age_intent_reuses_shared_age_and_sex_questions_before_package_focus(self):
+        session = ScreeningRecommendationSession("screening-age")
+        state = session.process("나이에 적절한 검진을 추천받고 싶음")
+        age_question = state["selected_question"]
+        self.assertEqual(age_question["fact_id"], "patient.age_years")
+        self.assertEqual(age_question["template_id"], "question.clinician-context.age")
+        self.assertEqual(
+            age_question["knowledge_source_id"],
+            "knowledge.shared.clinician-submission-context",
+        )
+        state = session.process("55세")
+        sex_question = state["selected_question"]
+        self.assertEqual(sex_question["fact_id"], "patient.sex_for_clinical_care")
+        self.assertEqual(sex_question["template_id"], "question.clinician-context.sex")
+        self.assertEqual([item["display_ko"] for item in sex_question["answer_options"][:2]], ["여성", "남성"])
+        state = session.process("2")
+        self.assertEqual(state["selected_question"]["fact_id"], "screening.focus")
+        self.assertEqual(session.answers["patient.age_years"], "55")
+        self.assertEqual(session.answers["patient.sex_for_clinical_care"], "male")
+
+    def test_family_sah_reuses_family_fact_and_routes_to_cardiovascular_focus(self):
+        session = ScreeningRecommendationSession("screening-family-sah")
+        state = session.process("어머님이 뇌출혈(SAH)로 돌아가심")
+        self.assertEqual(session.answers["history.family"], "어머님이 뇌출혈(SAH)로 돌아가심")
+        self.assertEqual(session.inferred_focus_from_concern, "cardiovascular")
+        self.assertEqual(state["selected_question"]["fact_id"], "screening.focus")
+        self.assertEqual(
+            state["selected_question"]["answer_options"][0]["internal_value"],
+            "cardiovascular",
+        )
+        self.assertIn("뇌·심혈관", state["selected_question"]["text"])
 
     def test_test_catalog_is_versioned_isolated_and_response_free(self):
         registry = load(CATALOG / "registry.json")

@@ -1833,7 +1833,7 @@ async function startAdaptive(opening) {
     if (state.adaptivePurpose === "screening_addon_recommendation" && screeningState.answers_collected > 0) {
       state.adaptiveHistory.push({
         question: {
-          linkId: "screening.concern",
+          linkId: "screening.additional_concern",
           questionRef: "Q1",
           text: "검진을 받으면서 가장 걱정되거나 확인하고 싶은 건강 문제가 있나요?",
           type: "string"

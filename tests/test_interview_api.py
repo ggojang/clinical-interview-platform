@@ -648,8 +648,22 @@ class InterviewApiRuntimeIntegrationTests(unittest.TestCase):
         session = api.get_session(session_id)
         self.assertEqual(len(session["uploaded_materials"]), 1)
         self.assertNotIn("가상 대장내시경", json.dumps(session, ensure_ascii=False))
-        for answer in ("암 검진", "서울", "가장 저렴한 후보 우선", "지금은 추가 문진만 진행"):
-            created = api.send_message(session_id, {"message": answer})
+        answer_by_fact = {
+            "history.cancer.family": "아버지 대장암",
+            "screening.focus": "암 검진",
+            "patient.age_years": "55",
+            "patient.sex_for_clinical_care": "남성",
+            "screening.current_symptom": "없음",
+            "screening.region": "서울",
+            "screening.budget_preference": "가장 저렴한 후보 우선",
+            "screening.nhis_questionnaire_choice": "지금은 추가 문진만 진행",
+        }
+        while created["presentation"]["purpose"] != "screening_package_recommendation":
+            selected = created["state"]["adapter_state"]["selected_question"]
+            created = api.send_message(
+                session_id,
+                {"message": answer_by_fact.get(selected["fact_id"], "없음")},
+            )
         self.assertEqual(created["presentation"]["purpose"], "screening_package_recommendation")
         self.assertFalse(created["presentation"]["patient_input_transmitted"])
         self.assertEqual(created["state"]["adapter_state"]["recommendation"]["candidate_count"], 4)
