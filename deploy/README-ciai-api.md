@@ -84,16 +84,16 @@ the API.
 The GPT editor source remains in `docs/gpt/GPT_INSTRUCTIONS.md`. CIAI uses the
 user-supplied integrated Chatbot-test contract in
 `docs/gpt/CHATBOT_TEST_RUNTIME_INSTRUCTIONS.md` through the
-`verbatim_chatbot_test` profile. The default
-`action_two_stage_exact_objects` strategy keeps retrieval and generation in
-separate llama.cpp KV-cache slots. The first pass retrieves a small set of exact
-unresolved Knowledge objects; the second pass uses the complete conversation to
-choose one clinically useful Question, renders it concisely, and cites its exact
-source id. Invented, uncited, repeated, or out-of-window Questions are rejected
-and retried once instead of becoming session state. The optional
-`compiled_candidate_window` strategy remains available for latency comparison,
-but it is not the default because host-side single-question selection diverged
-from the Chatbot-test conversation.
+`verbatim_chatbot_test` profile. The default `compiled_candidate_set` strategy
+uses Runtime to narrow the package to at most four exact unresolved Knowledge
+objects and then uses one LLM call to choose one clinically useful Question from
+the complete conversation, render it concisely, and cite its exact source id.
+Invented, uncited, repeated, or out-of-window Questions are rejected and retried
+once instead of becoming session state. `action_two_stage_exact_objects` remains
+available for semantic-regression comparison with a separate LLM retrieval
+slot. `compiled_candidate_window` remains available for latency comparison but
+is not the default because host-side single-question selection diverged from the
+Chatbot-test conversation.
 
 Both strategies use the full in-memory conversation as a semantic coverage
 ledger. The opening symptom remains part of the conversation, so already

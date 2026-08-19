@@ -28,9 +28,10 @@ Adaptive clinical questions are generated from compiled atomic Facts and Rules. 
 
 Within `clinical_adaptive`, the patient-facing default uses the same verbatim
 editor instruction contract as the Chatbot test rather than exposing the
-compiled authoring graph as a Fact-by-Fact checklist. A first LLM pass retrieves
-a bounded set of exact unresolved Knowledge objects. A second LLM pass chooses
-one of those Questions from the full conversation, presents one short question
+compiled authoring graph as a Fact-by-Fact checklist. Runtime retrieves a
+bounded set of exact unresolved Knowledge objects without transmitting the
+participant response to an additional model call. One LLM pass chooses one of
+those Questions from the full conversation, presents one short question
 with its authored choices, and cites the exact source id. Runtime rejects an
 invented, repeated, uncited, or out-of-window Question. The ordinary pre-visit
 flow currently has an eight-question clinician-handoff budget; unasked compiled

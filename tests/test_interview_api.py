@@ -545,6 +545,7 @@ class InterviewApiRuntimeIntegrationTests(unittest.TestCase):
             enabled=True,
             retrieval_transport=retrieval_transport,
             transport=generation_transport,
+            knowledge_delivery="action_two_stage_exact_objects",
         )
 
     def test_real_api_routes_colloquial_rfe_then_uses_custom_gpt_conversation(self):

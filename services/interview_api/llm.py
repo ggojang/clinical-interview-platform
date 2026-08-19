@@ -51,6 +51,7 @@ CHATBOT_RUNTIME_EXCLUDED_QUESTION_IDS = {
 CHATBOT_KNOWLEDGE_DELIVERY_STRATEGIES = {
     "inline_linked_index",
     "action_two_stage_exact_objects",
+    "compiled_candidate_set",
     "compiled_candidate_window",
 }
 CHATBOT_INSTRUCTION_PROFILES = {
@@ -105,7 +106,7 @@ class LlmChatbotInterviewRuntime:
         self._retrieval_transport = retrieval_transport or _chatbot_retrieval_completion
         self.knowledge_delivery = knowledge_delivery or os.getenv(
             "CLINICAL_LLM_CHATBOT_KNOWLEDGE_DELIVERY",
-            "action_two_stage_exact_objects",
+            "compiled_candidate_set",
         )
         if self.knowledge_delivery not in CHATBOT_KNOWLEDGE_DELIVERY_STRATEGIES:
             raise LlmConfigurationError("unsupported chatbot Knowledge delivery strategy")
@@ -174,12 +175,20 @@ class LlmChatbotInterviewRuntime:
                     retrieval,
                     interaction_purpose=interaction_purpose,
                 )
-            elif self.knowledge_delivery == "compiled_candidate_window":
+            elif self.knowledge_delivery in {
+                "compiled_candidate_set",
+                "compiled_candidate_window",
+            }:
                 retrieval = self._compiled_candidate_retrieval(
                     reason_for_encounter,
                     conversation,
                     package,
                     interaction_purpose=interaction_purpose,
+                    candidate_limit=(
+                        MAX_CHATBOT_RETRIEVAL_QUESTIONS
+                        if self.knowledge_delivery == "compiled_candidate_set"
+                        else 1
+                    ),
                 )
                 knowledge = self._selected_knowledge_context(
                     reason_for_encounter,
@@ -224,7 +233,10 @@ class LlmChatbotInterviewRuntime:
                         interaction_purpose=interaction_purpose,
                     )
                 )
-            elif self.knowledge_delivery == "action_two_stage_exact_objects":
+            elif self.knowledge_delivery in {
+                "action_two_stage_exact_objects",
+                "compiled_candidate_set",
+            }:
                 messages.append(
                     _candidate_questions_turn_directive(
                         retrieval["question_ids"],
@@ -237,6 +249,7 @@ class LlmChatbotInterviewRuntime:
             if self.knowledge_delivery in {
                 "compiled_candidate_window",
                 "action_two_stage_exact_objects",
+                "compiled_candidate_set",
             }:
                 allowed_question_ids = retrieval["question_ids"]
                 attempts = 1
@@ -247,7 +260,7 @@ class LlmChatbotInterviewRuntime:
                         conversation,
                         require_source_id=(
                             self.knowledge_delivery
-                            == "action_two_stage_exact_objects"
+                            != "compiled_candidate_window"
                         ),
                     )
                     and attempts < MAX_CHATBOT_GENERATION_ATTEMPTS
@@ -280,7 +293,7 @@ class LlmChatbotInterviewRuntime:
                     conversation,
                     require_source_id=(
                         self.knowledge_delivery
-                        == "action_two_stage_exact_objects"
+                        != "compiled_candidate_window"
                     ),
                 ):
                     raise ValueError(
@@ -537,6 +550,7 @@ class LlmChatbotInterviewRuntime:
         package: dict[str, Any],
         *,
         interaction_purpose: str = "clinical_adaptive",
+        candidate_limit: int = 1,
     ) -> dict[str, list[str]]:
         """Build a small exact-object window without a second model call.
 
@@ -713,10 +727,9 @@ class LlmChatbotInterviewRuntime:
             and not question_id.endswith((".primary-group", ".primary-context"))
         ]
         ranked = sorted(available, key=score, reverse=True)
-        # A single exact object gives a smaller local model the same bounded
-        # contract that the Custom GPT follows: the model adapts language, but
-        # cannot choose an unrelated Question from the rest of the package.
-        selected_question_ids = ranked[:1]
+        selected_question_ids = ranked[: max(1, min(
+            candidate_limit, MAX_CHATBOT_RETRIEVAL_QUESTIONS
+        ))]
         if not selected_question_ids:
             raise ValueError("no unresolved source Question remains")
 
@@ -1055,7 +1068,9 @@ def _candidate_questions_turn_directive(
             f"{prefix}Choose exactly one clinically useful, unresolved source "
             "Question from the retrieved candidates below. Use the complete "
             "conversation as a semantic coverage ledger; do not simply choose "
-            "the first id and do not repeat an answered meaning. Render one "
+            "the first id and do not repeat an answered meaning. Prefer a "
+            "high-yield branch-changing, body-site-specific Question over a "
+            "generic timeline Question when both are unresolved. Render one "
             "concise patient-facing question with its authored answer choices "
             "when available. Use the next Q number. End with exactly one "
             "provenance line containing the chosen exact source id in this form: "

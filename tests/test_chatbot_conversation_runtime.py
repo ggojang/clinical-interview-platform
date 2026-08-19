@@ -388,6 +388,7 @@ class ChatbotConversationRuntimeTest(unittest.TestCase):
                 '"fact_ids":["event.joint_limb.recent_injury"],'
                 '"priority_rule_ids":[]}'
             ),
+            knowledge_delivery="action_two_stage_exact_objects",
             instruction_profile="verbatim_gpt_editor",
             repository_root=ROOT,
         )
@@ -500,6 +501,47 @@ class ChatbotConversationRuntimeTest(unittest.TestCase):
         )
         self.assertEqual(retrieval["question_ids"], ["question.symptom_onset"])
         self.assertNotIn("question.cough.frequency-bouts", retrieval["question_ids"])
+
+    def test_default_candidate_set_uses_one_llm_call_and_multiple_exact_questions(self):
+        captured = []
+
+        def generation_transport(_provider, messages, _timeout):
+            captured.append(messages)
+            return (
+                "Q1. 넘어짐, 충돌, 비틀림 또는 직접 충격 뒤 시작했나요?\n\n"
+                "1 예\n2 아니오\n3 잘 모르겠음\n4 답변하지 않음\n\n"
+                "출처: [공동 작업 지식] question.joint-limb.recent-injury "
+                "· [AI 표현] 문장"
+            )
+
+        runtime = LlmChatbotInterviewRuntime(
+            transport=generation_transport,
+            retrieval_transport=lambda *_args: self.fail("retrieval LLM must not run"),
+            repository_root=ROOT,
+        )
+        provider = LlmProvider(
+            provider_id="local_vllm", display_name="Local",
+            adapter="openai_compatible_chat", base_url="http://127.0.0.1:8000/v1",
+            model="qwen3-27b", external_processing=False,
+        )
+        selection = LlmSelection(
+            provider=provider, selected_by="platform_default",
+            external_processing_consent=False, allowed_provider_ids=("local_vllm",),
+            participant_may_choose=False,
+        )
+
+        response = runtime.respond(
+            "rfe.joint_limb_complaint",
+            [{"role": "user", "content": "왼쪽 발목 통증"}],
+            selection,
+        )
+
+        self.assertEqual(runtime.knowledge_delivery, "compiled_candidate_set")
+        self.assertEqual(len(captured), 1)
+        directive = captured[0][-1]["content"]
+        self.assertIn("question.joint-limb.recent-injury", directive)
+        self.assertIn("question.joint-limb.onset", directive)
+        self.assertIn("question.joint-limb.recent-injury", response)
 
     def test_cough_sudden_onset_positive_prioritizes_swallowing_context(self):
         runtime = LlmChatbotInterviewRuntime(
