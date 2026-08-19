@@ -1,7 +1,7 @@
 # Purpose-first multi-purpose interaction core
 
 Status: Draft, unreviewed
-Version: 0.4.0
+Version: 0.5.0
 
 ## Decision
 
@@ -51,6 +51,18 @@ Clinical adaptive output may project to a session-specific FHIR R4 Questionnaire
 ## Additional screening recommendation
 
 The goal is to compare screening-center add-ons beyond the nationally provided screening baseline. The default entry is a short supplemental adaptive interview. The official NHIS questionnaire is offered only when the user wants it; it is not a mandatory gate.
+
+This mode does not define a second clinical questionnaire model. Every explicit
+clinical statement in the opening concern, later answer, or locally extracted
+upload is matched only to an allowlisted Fact that already exists in compiled
+Knowledge. A known Fact suppresses the corresponding follow-up question and is
+reused for adaptive selection, optional official-form prepopulation, candidate
+ranking, and the recommendation audit trail. Follow-up clinical questions must
+also come from compiled Knowledge. Only comparison focus, region, optional
+budget preference, and optional NHIS follow-up choice are workflow-local Facts.
+Information about a relative must not populate the participant's age, sex,
+symptom, condition, or medication Fact, and symptoms must not be converted into
+an inferred diagnosis.
 
 If supplemental Facts already exist, a versioned mapping may prepopulate an official QuestionnaireResponse. Only exact or equivalent mappings may populate automatically. A compound official item is populated only when every required atomic source Fact is known. Partial and related mappings remain review candidates. The prepopulated response remains `in-progress` until the user reviews it.
 

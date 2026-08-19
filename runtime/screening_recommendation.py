@@ -15,6 +15,8 @@ from pathlib import Path
 import re
 from typing import Any
 
+from runtime.session import extract, extract_atomic_social_history
+
 
 CATALOG_ROOT = (
     Path(__file__).resolve().parents[1]
@@ -62,6 +64,13 @@ NHIS_OPTIONS = (
     ("already_completed", "이미 국가건강검진 문진을 작성함"),
     ("unsure", "잘 모르겠음"),
 )
+
+OPERATIONAL_FACT_IDS = frozenset({
+    "screening.focus",
+    "screening.region",
+    "screening.budget_preference",
+    "screening.nhis_questionnaire_choice",
+})
 
 
 def _normalized(value: str) -> str:
@@ -138,6 +147,33 @@ def _compiled_question_catalog() -> dict[str, Any]:
     clinician_by_fact: dict[str, list[dict[str, Any]]] = {}
     for item in clinician.get("questions", []):
         clinician_by_fact.setdefault(str(item["fact_id"]), []).append(deepcopy(item))
+
+    # The screening workflow may reuse an explicitly stated Fact from any
+    # compiled package.  It still asks follow-up questions only from the two
+    # compiled documents indexed above.  This separates reusable clinical
+    # memory from the small set of workflow-only comparison conditions.
+    fact_sources: dict[str, set[str]] = {}
+
+    def index_facts(document: dict[str, Any], source: str) -> None:
+        for item in document.get("facts", document.get("items", [])):
+            if not isinstance(item, dict) or not isinstance(item.get("id"), str):
+                continue
+            fact_sources.setdefault(item["id"], set()).add(source)
+
+    index_facts(screening, str(COMPILED_SCREENING_KNOWLEDGE.relative_to(
+        COMPILED_SCREENING_KNOWLEDGE.parents[2]
+    )))
+    index_facts(clinician, str(COMPILED_CLINICIAN_CONTEXT.relative_to(
+        COMPILED_CLINICIAN_CONTEXT.parents[2]
+    )))
+    gpt_root = COMPILED_SCREENING_KNOWLEDGE.parent
+    for path in [gpt_root / "common-facts.json", *sorted(gpt_root.glob("rfe/*/facts.json"))]:
+        if not path.is_file():
+            continue
+        index_facts(
+            json.loads(path.read_text(encoding="utf-8")),
+            str(path.relative_to(gpt_root.parents[1])),
+        )
     return {
         "screening_document_id": screening["id"],
         "clinician_document_id": clinician["id"],
@@ -145,6 +181,188 @@ def _compiled_question_catalog() -> dict[str, Any]:
         "screening_by_fact": screening_by_fact,
         "clinician_by_id": clinician_by_id,
         "clinician_by_fact": clinician_by_fact,
+        "compiled_fact_ids": frozenset(fact_sources),
+        "fact_sources": {
+            fact_id: tuple(sorted(sources))
+            for fact_id, sources in fact_sources.items()
+        },
+    }
+
+
+def _explicit_existing_fact_candidates(text: str) -> dict[str, Any]:
+    """Capture only explicitly stated values for already compiled Facts.
+
+    The shared Runtime extractors provide the first pass.  The small context
+    adapters below project unstructured demographic and history statements to
+    existing common Facts; they do not define screening-specific clinical
+    concepts or infer a diagnosis from a symptom.
+    """
+    candidates = {
+        fact_id: candidate.get("value")
+        for fact_id, candidate in {
+            **extract(text, 0),
+            **extract_atomic_social_history(text, 0),
+        }.items()
+        if isinstance(candidate, dict) and "value" in candidate
+    }
+    normalized = _normalized(text)
+    family_terms = {
+        "어머니": "mother", "어머님": "mother", "엄마": "mother",
+        "아버지": "father", "아버님": "father", "아빠": "father",
+        "부모": "parent", "형제": "sibling", "자매": "sibling",
+        "남매": "sibling", "할머니": "grandparent", "할아버지": "grandparent",
+        "자녀": "child", "아들": "son", "딸": "daughter",
+        "배우자": "spouse",
+    }
+    family_relationship = next(
+        (
+            relationship
+            for term, relationship in family_terms.items()
+            if _normalized(term) in normalized
+        ),
+        None,
+    )
+    family_context = family_relationship is not None or any(
+        term in normalized for term in ("가족", "가족력")
+    )
+    family_positions = [
+        text.find(term)
+        for term in (*family_terms, "가족", "가족력")
+        if text.find(term) >= 0
+    ]
+    first_family_position = min(family_positions) if family_positions else len(text)
+    self_context = bool(re.search(
+        r"(?:^|[\s,])(저는|나는|제가|본인|수검자|환자)(?:[\s,은는이가]|$)",
+        text,
+    )) or bool(re.search(
+        r"^\s*(?:만\s*)?\d{1,3}\s*세\s*(?:남성|여성|남자|여자)",
+        text,
+    ))
+    family_only_context = family_context and not self_context
+
+    # A relative's age, sex, symptoms, diagnoses, or medication must never be
+    # silently projected onto the participant.
+    if family_context:
+        # Symptom extraction cannot safely assign a mixed sentence to the
+        # participant once a relative is mentioned. A later targeted compiled
+        # question can collect it without making that attribution error.
+        candidates.pop("patient.age_years", None)
+        candidates = {
+            fact_id: value
+            for fact_id, value in candidates.items()
+            if not fact_id.startswith("symptom.")
+        }
+        if self_context:
+            age = extract(text[:first_family_position], 0).get("patient.age_years")
+            if isinstance(age, dict) and "value" in age:
+                candidates["patient.age_years"] = age["value"]
+
+        for prefix, cues in (
+            ("patient.smoking.", ("흡연", "담배", "vape", "smok")),
+            ("patient.alcohol.", ("음주", "술", "alcohol")),
+        ):
+            cue_positions = [
+                text.casefold().find(cue)
+                for cue in cues
+                if text.casefold().find(cue) >= 0
+            ]
+            participant_statement = bool(
+                self_context
+                and cue_positions
+                and min(cue_positions) < first_family_position
+            )
+            if not participant_statement:
+                candidates = {
+                    fact_id: value
+                    for fact_id, value in candidates.items()
+                    if not fact_id.startswith(prefix)
+                }
+
+    if not family_only_context:
+        participant_segment = (
+            text[:first_family_position] if family_context else text
+        )
+        participant_normalized = _normalized(participant_segment)
+        if re.search(
+            r"(?:^|[\s,])(남성|남자)(?=$|[\s,]|이고|이며|입니다)",
+            participant_segment,
+        ):
+            candidates["patient.sex_for_clinical_care"] = "male"
+        elif re.search(
+            r"(?:^|[\s,])(여성|여자)(?=$|[\s,]|이고|이며|입니다)",
+            participant_segment,
+        ):
+            candidates["patient.sex_for_clinical_care"] = "female"
+
+        condition_markers = (
+            "진단받", "진단을받", "진단되어", "앓고", "기저질환",
+            "만성질환", "치료중", "치료를받",
+        )
+        medication_markers = (
+            "복용중", "복용하고", "복용함", "먹는약", "처방약",
+            "투약중", "약을먹", "약복용",
+        )
+        condition_positions = [
+            normalized.find(marker)
+            for marker in condition_markers
+            if normalized.find(marker) >= 0
+        ]
+        medication_positions = [
+            normalized.find(marker)
+            for marker in medication_markers
+            if normalized.find(marker) >= 0
+        ]
+        normalized_family_positions = [
+            normalized.find(_normalized(term))
+            for term in (*family_terms, "가족", "가족력")
+            if normalized.find(_normalized(term)) >= 0
+        ]
+        normalized_family_position = (
+            min(normalized_family_positions)
+            if normalized_family_positions else len(normalized)
+        )
+        participant_condition = bool(condition_positions) and (
+            not family_context
+            or (self_context and min(condition_positions) < normalized_family_position)
+        )
+        participant_medication = bool(medication_positions) and (
+            not family_context
+            or (self_context and min(medication_positions) < normalized_family_position)
+        )
+        if participant_condition:
+            candidates["history.condition.current"] = text.strip()
+        if participant_medication:
+            candidates["medication.current"] = text.strip()
+        if "알레르기" in participant_normalized and any(
+            marker in participant_normalized for marker in ("있", "없", "반응", "알러지")
+        ):
+            candidates["allergy.current"] = text.strip()
+
+    if family_context:
+        candidates["history.family"] = text.strip()
+        if family_relationship is not None:
+            candidates["history.family.relationship"] = family_relationship
+        if "암" in normalized:
+            candidates["history.cancer.family"] = text.strip()
+
+    # Preserve an explicit symptom statement in the existing screening Fact
+    # while retaining each more specific compiled symptom Fact as well.
+    symptom_values = [
+        value
+        for fact_id, value in candidates.items()
+        if fact_id.startswith("symptom.")
+        and value is not False
+        and value is not None
+        and value != "none"
+    ]
+    if symptom_values and not family_only_context:
+        candidates["screening.current_symptom"] = text.strip()
+
+    allowed = _compiled_question_catalog()["compiled_fact_ids"]
+    return {
+        fact_id: value
+        for fact_id, value in candidates.items()
+        if fact_id in allowed
     }
 
 
@@ -215,13 +433,14 @@ INITIAL_CONCERN_QUESTION = _knowledge_question(
 class ScreeningRecommendationSession:
     session_id: str
     catalog_root: Path = CATALOG_ROOT
-    answers: dict[str, str] = field(default_factory=dict)
+    answers: dict[str, Any] = field(default_factory=dict)
     question_queue: list[dict[str, Any]] = field(default_factory=list)
     question_cursor: int = 0
     latest_question: dict[str, Any] | None = None
     recommendation: dict[str, Any] | None = None
     uploaded_health_contexts: list[str] = field(default_factory=list)
     inferred_fact_ids: set[str] = field(default_factory=set)
+    reused_fact_sources: dict[str, set[str]] = field(default_factory=dict)
     inferred_focus_from_concern: str | None = None
     closed: bool = False
 
@@ -240,6 +459,9 @@ class ScreeningRecommendationSession:
         if len(self.uploaded_health_contexts) >= 5:
             raise ValueError("uploaded health context limit has been reached")
         self.uploaded_health_contexts.append(normalized[:20_000])
+        self._capture_reusable_facts_from_text(
+            normalized[:20_000], source_kind="uploaded_health_context"
+        )
 
     def process(self, message: str) -> dict[str, Any]:
         self._ensure_open()
@@ -260,6 +482,9 @@ class ScreeningRecommendationSession:
             self.answers["screening.region"] = region
         else:
             self.answers[current["fact_id"]] = self._resolve_fact_answer(current, answer)
+        self._capture_reusable_facts_from_text(
+            answer, source_kind="question_answer"
+        )
         self._extend_questionnaire_after(current)
         self.question_cursor += 1
 
@@ -284,6 +509,7 @@ class ScreeningRecommendationSession:
         self.answers.clear()
         self.uploaded_health_contexts.clear()
         self.inferred_fact_ids.clear()
+        self.reused_fact_sources.clear()
         self.inferred_focus_from_concern = None
         self.question_queue.clear()
         self.latest_question = None
@@ -308,6 +534,20 @@ class ScreeningRecommendationSession:
     def _append_questions(self, questions: list[dict[str, Any]]) -> None:
         existing = {item["fact_id"] for item in self.question_queue}
         for question in questions:
+            fact_id = question["fact_id"]
+            source = question.get("source")
+            if source == "screening_recommendation_workflow":
+                if fact_id not in OPERATIONAL_FACT_IDS:
+                    raise RuntimeError(
+                        f"non-operational screening question is prohibited: {fact_id}"
+                    )
+            elif source == "compiled_knowledge":
+                if fact_id not in _compiled_question_catalog()["compiled_fact_ids"]:
+                    raise RuntimeError(
+                        f"question Fact is absent from compiled Knowledge: {fact_id}"
+                    )
+            else:
+                raise RuntimeError(f"unsupported screening question source: {source}")
             if question["fact_id"] in existing or question["fact_id"] in self.answers:
                 continue
             authored = deepcopy(question)
@@ -319,7 +559,6 @@ class ScreeningRecommendationSession:
         fact_id = current["fact_id"]
         if fact_id == "screening.additional_concern":
             concern = self.answers[fact_id]
-            self._capture_reusable_facts_from_concern(concern)
             self._append_questions(self._concern_questions(concern))
             inferred_focus = self._infer_focus_from_concern(concern)
             if inferred_focus is None:
@@ -371,19 +610,18 @@ class ScreeningRecommendationSession:
             ))
         return questions
 
-    def _capture_reusable_facts_from_concern(self, concern: str) -> None:
-        normalized = _normalized(concern)
-        family_terms = (
-            "어머니", "어머님", "엄마", "아버지", "아버님", "아빠",
-            "부모", "형제", "자매", "남매", "할머니", "할아버지",
-            "가족", "가족력",
-        )
-        if any(_normalized(term) in normalized for term in family_terms):
-            self.answers.setdefault("history.family", concern)
-            self.inferred_fact_ids.add("history.family")
-            if "암" in normalized:
-                self.answers.setdefault("history.cancer.family", concern)
-                self.inferred_fact_ids.add("history.cancer.family")
+    def _capture_reusable_facts_from_text(
+        self, text: str, *, source_kind: str
+    ) -> None:
+        """Reuse explicit compiled Facts from any local in-session input."""
+        current_fact_ids = set(self.answers)
+        for fact_id, value in _explicit_existing_fact_candidates(text).items():
+            if fact_id in OPERATIONAL_FACT_IDS:
+                continue
+            self.answers.setdefault(fact_id, value)
+            if fact_id not in current_fact_ids:
+                self.inferred_fact_ids.add(fact_id)
+                self.reused_fact_sources.setdefault(fact_id, set()).add(source_kind)
 
     def _infer_focus_from_concern(self, concern: str) -> str | None:
         mappings: tuple[tuple[str, tuple[str, ...]], ...] = (
@@ -615,7 +853,13 @@ class ScreeningRecommendationSession:
 
     def _age_years(self) -> int | None:
         raw = self.answers.get("patient.age_years", "")
-        return int(raw) if raw.isdigit() and 0 <= int(raw) <= 120 else None
+        if isinstance(raw, int) and 0 <= raw <= 120:
+            return raw
+        return (
+            int(raw)
+            if isinstance(raw, str) and raw.isdigit() and 0 <= int(raw) <= 120
+            else None
+        )
 
     @staticmethod
     def _profile_catalog_score(
@@ -691,7 +935,7 @@ class ScreeningRecommendationSession:
             (),
         )
         clinical_answer_texts = [
-            value
+            str(value)
             for fact_id, value in self.answers.items()
             if fact_id not in {
                 "screening.focus",
@@ -794,6 +1038,10 @@ class ScreeningRecommendationSession:
                     for item in self.question_queue
                 ),
                 "inferred_fact_ids": sorted(self.inferred_fact_ids),
+                "reused_fact_sources": {
+                    fact_id: sorted(sources)
+                    for fact_id, sources in sorted(self.reused_fact_sources.items())
+                },
                 "focus_suggested_from_concern": self.inferred_focus_from_concern,
                 "uploaded_text_context_count": len(self.uploaded_health_contexts),
                 "budget_preference": preference,

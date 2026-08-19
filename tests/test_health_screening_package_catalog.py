@@ -114,6 +114,97 @@ class HealthScreeningPackageCatalogTests(unittest.TestCase):
         )
         self.assertIn("뇌·심혈관", state["selected_question"]["text"])
 
+    def test_opening_reuses_multiple_existing_facts_without_reasking_them(self):
+        session = ScreeningRecommendationSession("screening-existing-facts")
+        state = session.process(
+            "만 55세 남성이고 고혈압 진단을 받아 혈압약을 복용 중이며 "
+            "평생 비흡연입니다."
+        )
+        self.assertEqual(state["selected_question"]["fact_id"], "screening.focus")
+        self.assertEqual(session.answers["patient.age_years"], 55)
+        self.assertEqual(session.answers["patient.sex_for_clinical_care"], "male")
+        self.assertEqual(session.answers["patient.smoking.status"], "never")
+        self.assertIn("고혈압", session.answers["history.condition.current"])
+        self.assertIn("혈압약", session.answers["medication.current"])
+
+        state = session.process("3")
+        queued_fact_ids = [item["fact_id"] for item in session.question_queue]
+        for fact_id in (
+            "patient.age_years",
+            "patient.sex_for_clinical_care",
+            "patient.smoking.status",
+            "history.condition.current",
+            "medication.current",
+        ):
+            self.assertNotIn(fact_id, queued_fact_ids)
+        self.assertEqual(state["selected_question"]["fact_id"], "history.family")
+
+    def test_relative_age_and_symptom_do_not_populate_participant_facts(self):
+        session = ScreeningRecommendationSession("screening-relative-context")
+        session.process("어머님이 62세에 뇌출혈(SAH)로 돌아가심")
+        self.assertNotIn("patient.age_years", session.answers)
+        self.assertNotIn("screening.current_symptom", session.answers)
+        self.assertEqual(session.answers["history.family.relationship"], "mother")
+        self.assertIn("history.family", session.inferred_fact_ids)
+
+        mixed = ScreeningRecommendationSession("screening-mixed-relative-context")
+        mixed.process(
+            "저는 55세 남성입니다. 어머님은 62세에 고혈압 진단을 받았습니다."
+        )
+        self.assertEqual(mixed.answers["patient.age_years"], 55)
+        self.assertEqual(mixed.answers["patient.sex_for_clinical_care"], "male")
+        self.assertNotIn("history.condition.current", mixed.answers)
+        self.assertEqual(mixed.answers["history.family.relationship"], "mother")
+
+    def test_local_upload_reuses_existing_facts_and_question_sources_are_bounded(self):
+        session = ScreeningRecommendationSession("screening-upload-reuse")
+        session.add_uploaded_health_context(
+            "만 66세 여성이고 고혈압 진단을 받아 처방약을 복용 중입니다."
+        )
+        state = session.process("나이에 맞는 검진을 추천받고 싶습니다")
+        self.assertEqual(state["selected_question"]["fact_id"], "screening.focus")
+        self.assertEqual(session.answers["patient.age_years"], 66)
+        self.assertEqual(session.answers["patient.sex_for_clinical_care"], "female")
+        self.assertEqual(
+            session.reused_fact_sources["patient.age_years"],
+            {"uploaded_health_context"},
+        )
+
+        state = self._finish(session, state)
+        workflow_only = {
+            "screening.focus",
+            "screening.region",
+            "screening.budget_preference",
+            "screening.nhis_questionnaire_choice",
+        }
+        for question in session.question_queue:
+            if question["source"] == "screening_recommendation_workflow":
+                self.assertIn(question["fact_id"], workflow_only)
+            else:
+                self.assertEqual(question["source"], "compiled_knowledge")
+                self.assertTrue(question.get("knowledge_source_id"))
+        basis = state["recommendation"]["selection_basis"]
+        self.assertIn("patient.age_years", basis["reused_fact_ids"])
+        self.assertEqual(
+            basis["reused_fact_sources"]["patient.age_years"],
+            ["uploaded_health_context"],
+        )
+
+    def test_policy_prohibits_parallel_screening_clinical_facts(self):
+        policy = load(ROOT / "policies/interaction-service-modes.json")
+        reuse = policy["screening_recommendation"]["compiled_knowledge_reuse"]
+        self.assertTrue(reuse["parallel_screening_clinical_fact_creation_prohibited"])
+        self.assertTrue(reuse["skip_question_when_fact_is_already_known"])
+        self.assertEqual(
+            set(reuse["workflow_only_fact_ids"]),
+            {
+                "screening.focus",
+                "screening.region",
+                "screening.budget_preference",
+                "screening.nhis_questionnaire_choice",
+            },
+        )
+
     def test_test_catalog_is_versioned_isolated_and_response_free(self):
         registry = load(CATALOG / "registry.json")
         self.assertEqual(
